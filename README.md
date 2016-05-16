@@ -25,3 +25,12 @@ Also includes profile support and customisation options:
 
 Set effects, brightness, game mode and macro features, plus load your saved profiles from the tray.
 
+
+## Dependencies
+
+Based on Python3 and WebKit.
+
+* [Razer Python Modules](https://github.com/pez2001/razer_chroma_drivers)
+* gir1.2-webkit-3.0
+* python3-gi
+* gir1.2-appindicator3-0.1

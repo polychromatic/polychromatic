@@ -37,9 +37,23 @@ fi
 if [ -d "$TARGET" ]; then
     echo "An installation already exists. Removing first..."
     $(dirname "$0")/uninstall.sh
-    sleep 1
     if [ -d "$TARGET" ]; then
         echo "Uninstall failed. Aborting."
+        exit 1
+    fi
+fi
+
+# Check if the Razer Python modules are present.
+razer_path='/usr/lib/python3/dist-packages/razer/'
+if [ ! -d "$razer_lib" ]; then
+    echo "*************************"
+    echo "The razer-chroma-drivers Python modules are missing!"
+    echo "Please install them from http://pez2001.github.io/razer_chroma_drivers/"
+    echo -e "It could be possible that they are in a different path to '$razer_path'"
+    echo "*************************"
+    read -p "Continue anyway? [y] " action
+    if [ ! "$action" == 'y' ]; then
+        echo "Install Aborted."
         exit 1
     fi
 fi
@@ -54,8 +68,7 @@ cp    "$SOURCE/controller.py" "$TARGET/controller.py"
 cp    "$SOURCE/tray_applet.py" "$TARGET/tray_applet.py"
 
 # Copy Python modules
-cp -r "$SOURCE/pylib/" "$MODULES/../"
-mv "$MODULES/../pylib/" "$MODULES"
+cp -r "$SOURCE/pylib/"* "$MODULES/"
 
 # Copy desktop launchers
 cp "$SOURCE/install/polychromatic-controller.desktop" /usr/share/applications/
@@ -63,5 +76,5 @@ cp "$SOURCE/install/polychromatic-tray.desktop" /usr/share/applications/
 
 # Success!
 echo "Installation Success!"
-exit
+exit 0
 

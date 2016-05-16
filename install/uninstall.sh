@@ -31,16 +31,12 @@ if [ "$(id -u)" != "0" ]; then
    exit
 fi
 
-# Are you sure?
-read -p "This will remove Polychromatic Controller from your system. Continue? [y/n] " answer
+# Deleting files
+rm -rfv "$TARGET"
+rm -rfv "$MODULES"
+rm -rfv /usr/share/applications/polychromatic-controller.desktop
+rm -rfv /usr/share/applications/polychromatic-tray.desktop
 
-if [ "$answer" == 'y' ]; then
-    rm -rfv "$TARGET"
-    rm -rfv "$MODULES"
-    rm -rfv /usr/share/applications/polychromatic-controller.desktop
-    rm -rfv /usr/share/applications/polychromatic-tray.desktop
-    echo "Uninstall Success!"
-else
-    exit
-fi
-
+# Success!
+echo "Uninstall Success!"
+exit 0
