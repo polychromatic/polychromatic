@@ -25,8 +25,8 @@ import os, sys, signal, json
 from gi.repository import Gtk, Gdk, WebKit
 import razer.daemon_dbus
 import razer.keyboard
-import razer.preferences
-import razer.profiles
+import polychromatic.preferences
+import polychromatic.profiles
 
 # Where is the application being ran?
 LOCATION_DATA = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/'))
@@ -589,7 +589,7 @@ class ChromaController(object):
             sys.exit(1)
 
         # Initialize Preferences
-        self.preferences = razer.preferences.ChromaPreferences()
+        self.preferences = polychromatic.preferences.ChromaPreferences()
 
         # Set up the daemon
         try:
@@ -597,7 +597,7 @@ class ChromaController(object):
             self.daemon = razer.daemon_dbus.DaemonInterface()
 
             # Initialize Profiles
-            self.profiles = razer.profiles.ChromaProfiles(self.daemon)
+            self.profiles = polychromatic.profiles.ChromaProfiles(self.daemon)
 
             # Load devices page normally.
             #~ self.current_page = 'controller_devices' # TODO: Multi-device not yet supported.

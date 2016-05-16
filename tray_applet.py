@@ -27,8 +27,8 @@ import sys, signal
 
 import razer.daemon_dbus
 import razer.keyboard
-import razer.preferences
-import razer.profiles
+import polychromatic.preferences
+import polychromatic.profiles
 
 
 class AppIndicator:
@@ -59,8 +59,8 @@ class AppIndicator:
         self.active_effect = None
 
         # Read preferences and profiles.
-        self.preferences = razer.preferences.ChromaPreferences()
-        self.profiles = razer.profiles.ChromaProfiles(self.daemon)
+        self.preferences = polychromatic.preferences.ChromaPreferences()
+        self.profiles = polychromatic.profiles.ChromaProfiles(self.daemon)
 
         # Determine which icon to display.
         icon_type = self.preferences.get_pref('tray_applet','icon_type','system')

@@ -2,14 +2,14 @@
 
 import os
 import razer.daemon_dbus
-import razer.preferences
 import razer.keyboard
+import polychromatic.preferences
 
 class ChromaProfiles(object):
     ''' Create, edit, delete and submit profiles to the keyboard. '''
 
     def __init__(self, dbus_object):
-        self.preferences = razer.preferences.ChromaPreferences()
+        self.preferences = polychromatic.preferences.ChromaPreferences()
         self.profiles = {}
         self.active_profile = None
         self.daemon = dbus_object

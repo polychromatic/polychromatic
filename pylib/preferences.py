@@ -38,7 +38,7 @@ class ChromaPreferences(object):
     def __init__(self):
         """ Initializes the preferences module. """
         # Determine locations for storing data.
-        self.SAVE_ROOT = os.path.expanduser('~') + '/.config/razer_chroma'
+        self.SAVE_ROOT = os.path.expanduser('~') + '/.config/polychromatic'
         self.SAVE_PROFILES = self.SAVE_ROOT + '/profiles'
         self.SAVE_BACKUPS = self.SAVE_ROOT + '/backups'
 
