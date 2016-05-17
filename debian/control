@@ -1,0 +1,15 @@
+Package: polychromatic-controller
+Source: polychromatic-controller
+Version: 0.1.0
+Section: x11
+Priority: optional
+Maintainer: Luke Horwell
+Homepage: https://github.com/lah7/polychromatic-controller
+Architecture: all
+Depends: python3-gi,
+         gir1.2-webkit-3.0,
+         gir1.2-appindicator3-0.1,
+         razer-chroma-driver
+Description: Graphical front-end for managing Razer peripherals.
+ A Python and WebKit based management application to manage
+ Razer peripherals, such as the BlackWidow Chroma keyboard.
