@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 #
-# Polychromatic Controller is free software: you can redistribute it and/or modify
+# Polychromatic is free software: you can redistribute it and/or modify
 # it under the temms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Polychromatic Controller is distributed in the hope that it will be useful,
+# Polychromatic is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with the software. If not, see <http://www.gnu.org/licenses/>.
+# along with Polychromatic. If not, see <http://www.gnu.org/licenses/>.
 #
 # Copyright (C) 2015-2016 Luke Horwell <lukehorwell37+code@gmail.com>
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
@@ -21,7 +21,10 @@ import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('WebKit', '3.0')
-import os, sys, signal, json
+import os
+import sys
+import signal
+import json
 from gi.repository import Gtk, Gdk, WebKit
 import razer.daemon_dbus
 import razer.keyboard

@@ -1,4 +1,4 @@
-# Polychromatic Controller
+# Polychromatic
 
 A graphical front end for managing the [Chroma Linux Drivers](http://pez2001.github.io/razer_chroma_drivers/) for Razer peripherals on GNU/Linux.
 
