@@ -77,7 +77,7 @@ $(document).ready(function () {
         if (brightnessRaw == 0) {
             $(this).next().text("Off")
         }
-        window.location.href = 'cmd://brightness?' + Math.round($(this).val());
+        cmd('brightness?' + Math.round($(this).val()));
     });
 
     // Instant profile activation (if 'live_switch' is enabled in preferences)

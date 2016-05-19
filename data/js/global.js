@@ -19,6 +19,13 @@
  ** Functions here are persistent on all pages.
  */
 
+/**
+ *  Sends commands to Python
+ */
+function cmd(instruction) {
+  document.title = instruction;
+}
+
 
 /**
  * Fade in and out between 2 elements
@@ -51,20 +58,6 @@ function change_header(text) {
         header.fadeIn();
         header.html(text);
     }, 400);
-}
-
-
-/**
- * Sends command to python.
- *
- * @param parameters {string} Command parameters
- */
-function cmd(parameters) {
-    // TODO Change this to use the page title as that is quicker and the title is not used.
-    // If we use the title then we can then split up the main UI into seperate HMTL files
-    // Also will redo the command to pass through JSON as that way there is less
-    // string splitting and can do better communication.
-    window.location.href = 'cmd://' + parameters;
 }
 
 

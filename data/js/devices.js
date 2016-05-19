@@ -13,5 +13,5 @@ function add_device(serial, hardware_type) {
 }
 
 function configure_device(serial) {
-    window.location.href = 'cmd://set-device?' + serial;
+    cmd('set-device?' + serial);
 }
