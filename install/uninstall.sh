@@ -21,7 +21,8 @@
 ############################################################################
 
 # Paths
-TARGET="/usr/share/polychromatic/"
+TARGET_DATA="/usr/share/polychromatic/"
+TARGET_BIN="/usr/bin"
 MODULES="/usr/lib/python3/dist-packages/polychromatic/"
 
 # Are we root?
@@ -32,8 +33,10 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 # Deleting files
-rm -rfv "$TARGET"
+rm -rfv "$TARGET_DATA"
 rm -rfv "$MODULES"
+rm -v "$TARGET_BIN/polychromatic-controller"
+rm -v "$TARGET_BIN/polychromatic-tray-applet"
 rm -rfv /usr/share/applications/polychromatic-controller.desktop
 rm -rfv /usr/share/applications/polychromatic-tray.desktop
 

@@ -32,8 +32,13 @@ import polychromatic.preferences
 import polychromatic.profiles
 
 # Where is the application being ran?
-LOCATION_DATA = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/'))
-
+if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/'))):
+    LOCATION_DATA = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/'))
+elif os.path.exists('/usr/share/polychromatic/data/'):
+    LOCATION_DATA = '/usr/share/polychromatic/data/'
+else:
+    print('Could not source the data directory!')
+    exit(1)
 
 class ChromaController(object):
     ##################################################

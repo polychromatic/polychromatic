@@ -21,7 +21,8 @@
 ############################################################################
 
 # Paths
-TARGET="/usr/share/polychromatic/"
+TARGET_DATA="/usr/share/polychromatic/"
+TARGET_BIN="/usr/bin"
 MODULES="/usr/lib/python3/dist-packages/polychromatic/"
 SOURCE=$(dirname "$0")/..
 
@@ -34,10 +35,10 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 # Check for existing installation.
-if [ -d "$TARGET" ]; then
+if [ -d "$TARGET_DATA" ]; then
     echo "An installation already exists. Removing first..."
     $(dirname "$0")/uninstall.sh
-    if [ -d "$TARGET" ]; then
+    if [ -d "$TARGET_DATA" ]; then
         echo "Uninstall failed. Aborting."
         exit 1
     fi
@@ -59,13 +60,19 @@ if [ ! -d "$razer_lib" ]; then
 fi
 
 # Create directories
-mkdir "$TARGET"
+mkdir "$TARGET_DATA"
 mkdir "$MODULES"
 
+# Copy bin files.
+cp "$SOURCE/controller.py" "$TARGET_BIN/polychromatic-controller"
+cp "$SOURCE/tray_applet.py" "$TARGET_BIN/polychromatic-tray-applet"
+chmod +x "$TARGET_BIN/polychromatic-controller"
+chmod +x "$TARGET_BIN/polychromatic-tray-applet"
+
 # Copy data files.
-cp -r "$SOURCE/data/" "$TARGET/data/"
-cp    "$SOURCE/controller.py" "$TARGET/controller.py"
-cp    "$SOURCE/tray_applet.py" "$TARGET/tray_applet.py"
+cp -r "$SOURCE/data/" "$TARGET_DATA/data/"
+cp    "$SOURCE/controller.py" "$TARGET_DATA/controller.py"
+cp    "$SOURCE/tray_applet.py" "$TARGET_DATA/tray_applet.py"
 
 # Copy Python modules
 cp -r "$SOURCE/pylib/"* "$MODULES/"
