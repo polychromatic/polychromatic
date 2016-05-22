@@ -653,6 +653,9 @@ class ChromaController(object):
         self.webkit.connect('notify::title', self.title_changed_cb)
         self.webkit.connect('context-menu', self.context_menu_cb)
 
+        # Allows Keyboard SVGs to load.
+        self.webkit.get_settings().set_property('allow-file-access-from-file-urls', 1)
+
         # Load the starting page
         self.webkit.load_uri('file://' + os.path.join(LOCATION_DATA, self.current_page + '.html'))
 
