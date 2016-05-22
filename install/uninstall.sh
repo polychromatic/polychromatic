@@ -23,6 +23,7 @@
 # Paths
 TARGET_DATA="/usr/share/polychromatic/"
 TARGET_BIN="/usr/bin"
+TARGET_ICON="/usr/share/icons"
 MODULES="/usr/lib/python3/dist-packages/polychromatic/"
 
 # Are we root?
@@ -37,8 +38,12 @@ rm -rfv "$TARGET_DATA"
 rm -rfv "$MODULES"
 rm -v "$TARGET_BIN/polychromatic-controller"
 rm -v "$TARGET_BIN/polychromatic-tray-applet"
+rm -v "$TARGET_ICON/hicolor/scalable/apps/polychromatic.svg"
 rm -rfv /usr/share/applications/polychromatic-controller.desktop
 rm -rfv /usr/share/applications/polychromatic-tray.desktop
+
+# Post removal
+update-icon-caches /usr/share/icons/hicolor/
 
 # Success!
 echo "Uninstall Success!"

@@ -588,7 +588,10 @@ class ChromaController(object):
         w.set_position(Gtk.WindowPosition.CENTER)
         w.set_size_request(1000, 600)
         w.set_resizable(False)
-        w.set_icon_from_file(os.path.join(LOCATION_DATA, 'img/app-icon.svg'))
+        try:
+            w.set_icon_from_file(os.path.join(LOCATION_DATA, 'img/app-icon.svg'))
+        except:
+            w.set_icon_from_file('/usr/share/icons/hicolor/scalable/apps/polychromatic.svg')
         w.connect("delete-event", Gtk.main_quit)
 
         if not os.path.exists(LOCATION_DATA):

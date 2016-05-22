@@ -23,6 +23,7 @@
 # Paths
 TARGET_DATA="/usr/share/polychromatic/"
 TARGET_BIN="/usr/bin"
+TARGET_ICON="/usr/share/icons"
 MODULES="/usr/lib/python3/dist-packages/polychromatic/"
 SOURCE=$(dirname "$0")/..
 
@@ -46,7 +47,7 @@ fi
 
 # Check if the Razer Python modules are present.
 razer_path='/usr/lib/python3/dist-packages/razer/'
-if [ ! -d "$razer_lib" ]; then
+if [ ! -d "$razer_path" ]; then
     echo "*************************"
     echo "The razer-chroma-drivers Python modules are missing!"
     echo "Please install them from http://pez2001.github.io/razer_chroma_drivers/"
@@ -77,9 +78,15 @@ cp    "$SOURCE/tray_applet.py" "$TARGET_DATA/tray_applet.py"
 # Copy Python modules
 cp -r "$SOURCE/pylib/"* "$MODULES/"
 
+# Copy icons
+cp "$SOURCE/install/hicolor/scalable/apps/polychromatic.svg" "$TARGET_ICON/hicolor/scalable/apps/polychromatic.svg"
+
 # Copy desktop launchers
 cp "$SOURCE/install/polychromatic-controller.desktop" /usr/share/applications/
 cp "$SOURCE/install/polychromatic-tray.desktop" /usr/share/applications/
+
+# Post installation
+update-icon-caches /usr/share/icons/hicolor/
 
 # Success!
 echo "Installation Success!"
