@@ -21,16 +21,25 @@
 ############################################################################
 
 # Paths
-TARGET_DATA="/usr/share/polychromatic/"
+TARGET_DATA="/usr/share/polychromatic"
 TARGET_BIN="/usr/bin"
 TARGET_ICON="/usr/share/icons"
-MODULES="/usr/lib/python3/dist-packages/polychromatic/"
+MODULES="/usr/lib/python3/dist-packages/polychromatic"
 
 # Are we root?
 if [ "$(id -u)" != "0" ]; then
-   echo "This script must be run as root." 1>&2
+   echo "To uninstall, this script must be run as root." 1>&2
    exec sudo "$0"
    exit
+fi
+
+# If a clean removal script is present, run that instead.
+clean_script="$TARGET_DATA/uninstall-polychromatic.sh"
+if [ ! "$0" == "$clean_script" ]; then
+    if [ -f "$clean_script" ]; then
+        echo "Cleanly removing the software from your system..."
+        exec "$clean_script"
+    fi
 fi
 
 # Deleting files
@@ -48,3 +57,4 @@ update-icon-caches /usr/share/icons/hicolor/
 # Success!
 echo "Uninstall Success!"
 exit 0
+

@@ -21,16 +21,16 @@
 ############################################################################
 
 # Paths
-TARGET_DATA="/usr/share/polychromatic/"
+TARGET_DATA="/usr/share/polychromatic"
 TARGET_BIN="/usr/bin"
 TARGET_ICON="/usr/share/icons"
-MODULES="/usr/lib/python3/dist-packages/polychromatic/"
+MODULES="/usr/lib/python3/dist-packages/polychromatic"
 SOURCE=$(dirname "$0")/..
 
 
 # Are we root?
 if [ "$(id -u)" != "0" ]; then
-   echo "This script must be run as root." 1>&2
+   echo "To install, this script must be run as root." 1>&2
    exec sudo "$0"
    exit
 fi
@@ -88,7 +88,13 @@ cp "$SOURCE/install/polychromatic-tray.desktop" /usr/share/applications/
 # Post installation
 update-icon-caches /usr/share/icons/hicolor/
 
+# Keep a copy of the uninstall script for manual removal later.
+cp "$SOURCE/install/uninstall.sh" "$TARGET_DATA/uninstall-polychromatic.sh"
+
 # Success!
 echo "Installation Success!"
+echo "----------------------------"
+echo "If you wish to manually remove the software from your system cleanly later, run:"
+echo "$TARGET_DATA/uninstall-polychromatic.sh"
 exit 0
 
