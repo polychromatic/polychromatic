@@ -673,8 +673,9 @@ class ChromaController(object):
 
     def title_changed_cb(self, view, frame):
         title = self.webkit.get_title()
-        print('[Debug] Command: ' + title)
-        self.process_command(title)
+        if title:
+            print('[Debug] Command: ' + title)
+            self.process_command(title)
 
     def load_changed_cb(self, view, frame):
         uri = str(self.webkit.get_uri())
