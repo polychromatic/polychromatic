@@ -52,8 +52,17 @@ To update your clone:
 
 ### Dependencies
 
+**All:**
+
 * [Razer Python Modules](https://github.com/pez2001/razer_chroma_drivers)
-* gir1.2-webkit-3.0
-* python3-gi
-* gir1.2-appindicator3-0.1
+
+**Arch:**
+* [webkitgtk](https://www.archlinux.org/packages/extra/x86_64/webkitgtk/)
+* [python-gobject](https://www.archlinux.org/packages/extra/x86_64/python-gobject/)
+* [libappindicator](https://aur.archlinux.org/pkgbase/libappindicator/?comments=all)
+
+**Debian:**
+* [gir1.2-webkit2-4.0](https://packages.debian.org/sid/gir1.2-webkit2-4.0)
+* [python3-gi](https://packages.debian.org/sid/python3-gi)
+* [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1)
 
