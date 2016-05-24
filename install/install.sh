@@ -21,26 +21,25 @@
 ############################################################################
 
 # Paths
-TARGET_DATA="/usr/share/polychromatic"
-TARGET_BIN="/usr/bin"
-TARGET_ICON="/usr/share/icons"
-MODULES="/usr/lib/python3/dist-packages/polychromatic"
-SOURCE=$(dirname "$0")/..
-DEPENDENCIES_APT="gir1.2-webkit2-4.0 python3-gi gir1.2-appindicator3-0.1"
-
+target_data="/usr/share/polychromatic"
+target_bin="/usr/bin"
+target_icon="/usr/share/icons"
+modules="/usr/lib/python3/dist-packages/polychromatic"
+source=$(dirname "$0")/..
+dependencies_apt="gir1.2-webkit2-4.0 python3-gi gir1.2-appindicator3-0.1"
 
 # Are we root?
 if [ "$(id -u)" != "0" ]; then
-   echo "To install, this script must be run as root." 1>&2
-   exec sudo "$0"
-   exit
+    echo "To install, this script must be run as root." 1>&2
+    exec sudo "$0"
+    exit
 fi
 
 # Check for existing installation.
-if [ -d "$TARGET_DATA" ]; then
+if [ -d "$target_data" ]; then
     echo "An installation already exists. Removing first..."
     $(dirname "$0")/uninstall.sh
-    if [ -d "$TARGET_DATA" ]; then
+    if [ -d "$target_data" ]; then
         echo "Uninstall failed. Aborting."
         exit 1
     fi
@@ -55,8 +54,8 @@ function get_distro() {
 distro=`get_distro`
 if [ "$distro" == "debian" ] || [ "$distro" == "ubuntu" ]; then
     echo -e "Installing dependencies...\n"
-    sudo apt install $DEPENDENCIES_APT
-    echo -e '\n'
+    sudo apt install $dependencies_apt
+    echo -e ''
 else
     echo "*************************"
     echo "Dependencies cannot be automatically installed on this distro."
@@ -65,6 +64,7 @@ else
 fi
 
 # Check if the Razer Python modules are present.
+echo "Checking if Razer modules are present..."
 razer_path='/usr/lib/python3/dist-packages/razer/'
 if [ ! -d "$razer_path" ]; then
     echo "*************************"
@@ -80,40 +80,42 @@ if [ ! -d "$razer_path" ]; then
 fi
 
 # Create directories
-mkdir "$TARGET_DATA"
-mkdir "$MODULES"
+echo "Copying files..."
+mkdir "$target_data"
+mkdir "$modules"
 
 # Copy bin files.
-cp "$SOURCE/controller.py" "$TARGET_BIN/polychromatic-controller"
-cp "$SOURCE/tray_applet.py" "$TARGET_BIN/polychromatic-tray-applet"
-chmod +x "$TARGET_BIN/polychromatic-controller"
-chmod +x "$TARGET_BIN/polychromatic-tray-applet"
+cp "$source/controller.py" "$target_bin/polychromatic-controller"
+cp "$source/tray_applet.py" "$target_bin/polychromatic-tray-applet"
+chmod +x "$target_bin/polychromatic-controller"
+chmod +x "$target_bin/polychromatic-tray-applet"
 
 # Copy data files.
-cp -r "$SOURCE/data/" "$TARGET_DATA/data/"
-cp    "$SOURCE/controller.py" "$TARGET_DATA/controller.py"
-cp    "$SOURCE/tray_applet.py" "$TARGET_DATA/tray_applet.py"
+cp -r "$source/data/" "$target_data/data/"
+cp    "$source/controller.py" "$target_data/controller.py"
+cp    "$source/tray_applet.py" "$target_data/tray_applet.py"
 
 # Copy Python modules
-cp -r "$SOURCE/pylib/"* "$MODULES/"
+cp -r "$source/pylib/"* "$modules/"
 
 # Copy icons
-cp "$SOURCE/install/hicolor/scalable/apps/polychromatic.svg" "$TARGET_ICON/hicolor/scalable/apps/polychromatic.svg"
+cp "$source/install/hicolor/scalable/apps/polychromatic.svg" "$target_icon/hicolor/scalable/apps/polychromatic.svg"
 
 # Copy desktop launchers
-cp "$SOURCE/install/polychromatic-controller.desktop" /usr/share/applications/
-cp "$SOURCE/install/polychromatic-tray.desktop" /usr/share/applications/
-
-# Post installation
-update-icon-caches /usr/share/icons/hicolor/
+cp "$source/install/polychromatic-controller.desktop" /usr/share/applications/
+cp "$source/install/polychromatic-tray.desktop" /usr/share/applications/
 
 # Keep a copy of the uninstall script for manual removal later.
-cp "$SOURCE/install/uninstall.sh" "$TARGET_DATA/uninstall-polychromatic.sh"
+cp "$source/install/uninstall.sh" "$target_data/uninstall-polychromatic.sh"
+
+# Post installation
+echo "Updating icon cache..."
+update-icon-caches /usr/share/icons/hicolor/
 
 # Success!
 echo "Installation Success!"
 echo "----------------------------"
-echo "If you wish to manually remove the software from your system cleanly later, run:"
-echo "$TARGET_DATA/uninstall-polychromatic.sh"
+echo "To manually remove the software from your system cleanly later, run:"
+echo "$target_data/uninstall-polychromatic.sh"
 exit 0
 
