@@ -72,11 +72,11 @@ class AppIndicator:
 
         if icon_type == 'logo':
             # TODO: Retrieve icon relative to the program.
-            logo_path = '/usr/share/razer_tray_applet/tray_icon.png'
+            logo_path = '/usr/share/polychromatic/data/img/tray_icon.png'
 
         if icon_type == 'animated':
             # TODO: Retrieve icon relative to the program.
-            logo_path = '/usr/share/razer_tray_applet/tray_icon_animated.gif'
+            logo_path = '/usr/share/polychromatic/data/img/tray_icon_animated.gif'
 
         if icon_type == 'logo' or icon_type == 'animated':
             if os.path.exists(logo_path):
@@ -200,7 +200,7 @@ class AppIndicator:
         sep3.show()
         self.menu.append(sep3)
 
-        if os.path.exists('/usr/share/razer_chroma_controller/chroma_controller.py'):
+        if os.path.exists('/usr/bin/polychromatic-controller'):
             open_config_button = Gtk.MenuItem("Open Configuration Utility")
             open_config_button.connect("activate", self.menuitem_open_config)
             open_config_button.show()
@@ -210,7 +210,7 @@ class AppIndicator:
             sep4.show()
             self.menu.append(sep4)
         else:
-            print('Chroma Controller GUI not installed. Not integrating to menu.')
+            print('Polychromatic Controller not present. Not integrating to menu.')
 
         quit_button = Gtk.MenuItem("Quit")
         quit_button.connect("activate", self.quit, "quit")
@@ -353,7 +353,7 @@ class AppIndicator:
         """
         Opens the Chroma Configuration Tool.
         """
-        os.system('/usr/share/razer_chroma_controller/chroma_controller.py')
+        os.system('/usr/bin/polychromatic-controller')
 
     def menuitem_set_profile(self, widget, profile_name):
         self.set_profile(profile_name)
