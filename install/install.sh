@@ -26,6 +26,7 @@ TARGET_BIN="/usr/bin"
 TARGET_ICON="/usr/share/icons"
 MODULES="/usr/lib/python3/dist-packages/polychromatic"
 SOURCE=$(dirname "$0")/..
+DEPENDENCIES_APT="gir1.2-webkit2-4.0 python3-gi gir1.2-appindicator3-0.1"
 
 
 # Are we root?
@@ -43,6 +44,24 @@ if [ -d "$TARGET_DATA" ]; then
         echo "Uninstall failed. Aborting."
         exit 1
     fi
+fi
+
+# Install dependencies on Ubuntu/Debian
+function get_distro() {
+    . /etc/os-release
+    echo "$ID"
+}
+
+distro=`get_distro`
+if [ "$distro" == "debian" ] || [ "$distro" == "ubuntu" ]; then
+    echo -e "Installing dependencies...\n"
+    sudo apt install $DEPENDENCIES_APT
+    echo -e '\n'
+else
+    echo "*************************"
+    echo "Dependencies cannot be automatically installed on this distro."
+    echo "Please see the README before using the application."
+    echo "*************************"
 fi
 
 # Check if the Razer Python modules are present.
