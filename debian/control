@@ -1,13 +1,16 @@
-Package: polychromatic
 Source: polychromatic
-Version: 0.1.0
 Section: x11
 Priority: optional
-Maintainer: Luke Horwell
+Maintainer: Luke Horwell <lukehorwell37+code@gmail.com>
+Build-Depends: debhelper (>= 9),
+               python3,
+               python3-polib
 Homepage: https://github.com/lah7/polychromatic
+
+Package: polychromatic
 Architecture: all
 Depends: python3-gi,
-         gir1.2-webkit-3.0,
+         gir1.2-webkit2-4.0,
          gir1.2-appindicator3-0.1,
          razer-chroma-driver
 Description: Graphical front-end for managing Razer peripherals.
