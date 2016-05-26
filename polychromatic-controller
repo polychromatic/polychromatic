@@ -130,6 +130,7 @@ class Controller(object):
         self.preferences = polychromatic.preferences.ChromaPreferences()
 
         # Set up the application
+        self.set_process_title()
         self.webkit = AppView()
         self.build_app()
 
@@ -144,6 +145,22 @@ class Controller(object):
             print("Data directory is missing.")
             FatalError("Data directory is missing: /usr/share/polychromatic/", True)
         return path
+
+    """ Appear as its own process then a Python script to ps """
+    @staticmethod
+    def set_process_title():
+
+        name = os.path.basename(sys.argv[0])
+
+        libc = cdll.LoadLibrary('libc.so.6')
+        buff = create_string_buffer(len(name)+1)
+        buff.value = name.encode("UTF-8")
+        ret = libc.prctl(15, byref(buff), 0, 0, 0)
+
+        if ret != 0:
+            print("Failed to set process title")
+
+        return ret
 
     """ Assemble the application """
     def build_app(self):
