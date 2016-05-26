@@ -142,6 +142,7 @@ class Controller(object):
             path = '/usr/share/polychromatic/'
         else:
             print("Data directory is missing.")
+            FatalError("Data directory is missing: /usr/share/polychromatic/", True)
         return path
 
     """ Assemble the application """
@@ -168,10 +169,6 @@ class Controller(object):
         w.add(b)
         w.connect("delete-event", Gtk.main_quit)
         w.show_all()
-
-        if not os.path.exists(self.data_path):
-            print('Data folder is missing. Exiting.')
-            sys.exit(1)
 
         # Set up Razer daemon
         try:
@@ -211,8 +208,10 @@ class Controller(object):
         except Exception as e:
             # Load an error page instead.
             print('There was a problem initializing the application or DBUS.')
-            self.current_page = 'error'
-            print('Exception: ', e)
+            print('Exception: ' + str(e))
+            FatalError("Unable to connect to the Razer driver service." + \
+            "\nPlease check the driver is properly installed and the service is running." + \
+            "\n\nException: " + str(e), True)
 
     """ Run the application """
     def run_app(self):
@@ -675,7 +674,6 @@ class Controller(object):
             self.profiles.new_profile(profile_name)
             self.show_menu('profile_editor')
 
-
         elif command == 'profile-save':
             profile_name = self.profiles.get_active_profile_name()
             print('Saving profile "{0}" ...'.format(profile_name))
@@ -706,6 +704,17 @@ class Controller(object):
             print("         ... unimplemented!")
 
 
+
+
+class FatalError(object):
+    def __init__(self, message, do_quit=False):
+        dialog = Gtk.MessageDialog(type = Gtk.MessageType.ERROR, buttons = Gtk.ButtonsType.OK)
+        dialog.set_title("Polychromatic Controller")
+        dialog.set_markup(message)
+        response = dialog.run()
+        dialog.destroy()
+        if do_quit:
+            sys.exit()
 
 
 if __name__ == "__main__":
