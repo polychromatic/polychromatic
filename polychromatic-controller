@@ -21,29 +21,216 @@ import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('WebKit2', '4.0')
+from gi.repository import Gtk, Gdk, WebKit2
 import os
 import sys
 import signal
 import json
-from gi.repository import Gtk, Gdk, WebKit2
 import razer.daemon_dbus
 import razer.keyboard
 import polychromatic.preferences
 import polychromatic.profiles
 
-# Where is the application being ran?
-if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/'))):
-    LOCATION_DATA = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/'))
-elif os.path.exists('/usr/share/polychromatic/data/'):
-    LOCATION_DATA = '/usr/share/polychromatic/data/'
-else:
-    print('Could not source the data directory!')
-    exit(1)
 
-class ChromaController(object):
-    ##################################################
-    # Page Switcher
-    ##################################################
+class AppView(WebKit2.WebView):
+    """ Initialise WebKit2 """
+    def __init__(self):
+        # Create WebKit Container
+        webkit = WebKit2
+        webkit.WebView.__init__(self)
+
+        # Post-actions after pages fully load.
+        self.connect('load-changed', self.load_changed_cb)
+        self.connect('notify::title', self.title_changed_cb)
+        self.connect('context-menu', self.context_menu_cb)
+
+        # Allows Keyboard SVGs to load.
+        self.get_settings().set_property('allow-file-access-from-file-urls', 1)
+
+        # Load the starting page
+        default_page = 'menu'
+        data_path = Controller.whereami()
+        self.load_uri('file://' + os.path.join(data_path, 'menu.html'))
+
+    """ Callback: Title changed """
+    def title_changed_cb(self, view, frame):
+        title = self.get_title()
+        if title:
+            print('[Debug] Command: ' + title)
+            app.process_command(title)
+
+    """ Callback: Page changed """
+    def load_changed_cb(self, view, frame):
+        uri = str(self.get_uri())
+        page = uri.rsplit('/', 1)[1].split('.html')[0]
+        if not self.is_loading():
+            app.current_page = page
+            print('[Debug] Page: ' + page)
+            app.page_loaded()
+
+    """ Callback: Disable context menu """
+    def context_menu_cb(self, view, menu, event, htr, user_data=None):
+        return True
+
+    """ Collects JavaScript and send altogether """
+    class JavaScriptExecutor(object):
+        """ Simple class to execute scripts """
+        def __init__(self, webkit, script=None, wrapper=None):
+            if wrapper is not None:
+                self.wrapper = wrapper
+            else:
+                self.wrapper = "$(document).ready(function(){{{0}}});"
+            self.lines = []
+            self.webkit = webkit
+
+            if script is not None:
+                self.add(script)
+
+        """ Adds a line to the collection """
+        def add(self, line):
+            """
+            :param line: Line to execute
+            :type line: str
+
+            :return: Returns a copy of the object
+            :rtype: JavaScriptExecutor
+            """
+            line = str(line)
+
+            if line.endswith(';'):
+                self.lines.append(line)
+            else:
+                self.lines.append(line + ';')
+
+            return self
+
+        """ Runs the collection """
+        def exec(self):
+            payload = str(self)
+            self.webkit.run_javascript(payload)
+
+        def __lshift__(self, other):
+            self.add(other)
+            return self
+
+        def __str__(self):
+            lines = '\n' + '\n'.join(self.lines) + '\n'
+            result = self.wrapper.format(lines)
+            return result
+
+
+class Controller(object):
+    """ Initalise the application """
+    def __init__(self):
+        # Variables
+        self.current_page = 'menu'
+        self.data_path = self.whereami()
+
+        # Initialise preferences
+        self.preferences = polychromatic.preferences.ChromaPreferences()
+
+        # Set up the application
+        self.webkit = AppView()
+        self.build_app()
+
+    """ Where are the data files? """
+    @staticmethod
+    def whereami():
+        if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/'))):
+            path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/'))
+        elif os.path.exists('/usr/share/polychromatic/'):
+            path = '/usr/share/polychromatic/'
+        else:
+            print("Data directory is missing.")
+        return path
+
+    """ Assemble the application """
+    def build_app(self):
+        # Create window
+        w = Gtk.Window(title="Polychromatic Controller")
+        w.set_wmclass('polychromatic-controller', 'polychromatic-controller')
+        w.set_position(Gtk.WindowPosition.CENTER)
+        w.set_size_request(1000, 600)
+        w.set_resizable(False)
+        try:
+            w.set_icon_from_file(os.path.join(self.data_path, '../install/hicolor/scalable/apps/polychromatic.svg'))
+        except:
+            w.set_icon_from_file('/usr/share/icons/hicolor/scalable/apps/polychromatic.svg')
+
+        # Add elements to window
+        sw = Gtk.ScrolledWindow()
+        sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        sw.add(self.webkit)
+
+        # Build an auto expanding box and add our scrolled window
+        b = Gtk.VBox(homogeneous=False, spacing=0)
+        b.pack_start(sw, expand=True, fill=True, padding=0)
+        w.add(b)
+        w.connect("delete-event", Gtk.main_quit)
+        w.show_all()
+
+        if not os.path.exists(self.data_path):
+            print('Data folder is missing. Exiting.')
+            sys.exit(1)
+
+        # Set up Razer daemon
+        try:
+            # Connect to the DBUS
+            self.daemon = razer.daemon_dbus.DaemonInterface()
+
+            # Initialise Profiles
+            self.profiles = polychromatic.profiles.ChromaProfiles(self.daemon)
+
+            # Load devices page normally.
+            #~ self.current_page = 'controller_devices' # TODO: Multi-device not yet supported.
+            self.current_page = 'menu'
+            self.multi_device_present = False
+
+            # "Globals"
+            self.kb_layout = razer.keyboard.get_keyboard_layout()
+            self.reactive_speed = 1
+            self.primary_rgb = razer.keyboard.RGB(0, 255, 0)
+            self.secondary_rgb = razer.keyboard.RGB(0, 0, 255)
+            self.current_effect = 'custom'
+            self.last_effect = 'unknown'
+            self.open_this_profile = None
+
+            # Set preferred colours
+            p_red = self.preferences.get_pref('primary_colors', 'red', 0)
+            p_green = self.preferences.get_pref('primary_colors', 'green', 255)
+            p_blue = self.preferences.get_pref('primary_colors', 'blue', 0)
+            s_red = self.preferences.get_pref('secondary_colors', 'red', 255)
+            s_green = self.preferences.get_pref('secondary_colors', 'green', 0)
+            s_blue = self.preferences.get_pref('secondary_colors', 'blue', 0)
+
+            self.primary_rgb_values = [p_red, p_green, p_blue]
+            self.primary_rgb = razer.keyboard.RGB(p_red, p_green, p_blue)
+
+            self.secondary_rgb_values = [s_red, s_green, s_blue]
+            self.secondary_rgb = razer.keyboard.RGB(s_red, s_green, s_blue)
+        except Exception as e:
+            # Load an error page instead.
+            print('There was a problem initializing the application or DBUS.')
+            self.current_page = 'error'
+            print('Exception: ', e)
+
+    """ Run the application """
+    def run_app(self):
+        signal.signal(signal.SIGINT, signal.SIG_DFL)    # Kills process when CTRL+C'd.
+        Gtk.main()
+
+    """ Send jQuery code to page """
+    def update_page(self, element, function, parm1=None, parm2=None):
+        """ Runs a JavaScript jQuery function on the page,
+            ensuring correctly parsed quotes. """
+        if parm1 and parm2:
+            self.webkit.run_javascript('$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "', '" + parm2.replace("'", '\\\'') + "')")
+        if parm1:
+            self.webkit.run_javascript('$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "')")
+        else:
+            self.webkit.run_javascript('$("' + element + '").' + function + '()')
+
+    """ Requests to change the page """
     def show_menu(self, page):
         self.current_page = page
         print("Opening page '" + page + "'")
@@ -53,22 +240,20 @@ class ChromaController(object):
             self.update_page('#'+element, 'hide')
 
         if page == 'menu':
-            self.webkit.load_uri('file://' + os.path.join(LOCATION_DATA, 'menu.html'))
+            self.webkit.load_uri('file://' + os.path.join(app.data_path, 'menu.html'))
 
         elif page == 'profile_editor':
-            self.webkit.load_uri('file://' + os.path.join(LOCATION_DATA, 'profile_editor.html'))
+            self.webkit.load_uri('file://' + os.path.join(app.data_path, 'profile_editor.html'))
 
         elif page == 'preferences':
-            self.webkit.load_uri('file://' + os.path.join(LOCATION_DATA, 'preferences.html'))
+            self.webkit.load_uri('file://' + os.path.join(app.data_path, 'preferences.html'))
 
         elif page == 'devices':
-            self.webkit.load_uri('file://' + os.path.join(LOCATION_DATA, 'devices.html'))
+            self.webkit.load_uri('file://' + os.path.join(app.data_path, 'devices.html'))
         else:
             print("Unknown menu '" + page + "'!")
 
-    ##################################################
-    # Page Initialization
-    ##################################################
+    """ Page Initialisation """
     def page_loaded(self):
         print('Running page post-actions for "' + self.current_page + '"...')
 
@@ -100,14 +285,14 @@ class ChromaController(object):
             self.update_page('#rgb_primary_preview', 'css', 'background-color', 'rgba(' + str(p_red) + ',' + str(p_green) + ',' + str(p_blue) + ',1.0)')
             self.update_page('#rgb_secondary_preview', 'css', 'background-color', 'rgba(' + str(s_red) + ',' + str(s_green) + ',' + str(s_blue) + ',1.0)')
 
-
         elif self.current_page == 'profile_editor':
-            js_exec = WebkitJavaScriptExecutor(self.webkit)
-            kb_callback = WebkitJavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
+            js_exec = self.webkit.JavaScriptExecutor(self.webkit)
+            kb_callback = self.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
 
-
+            # Set page title
             js_exec << 'change_header("Edit ' + self.open_this_profile + '")'
 
+            # Set keyboard layout
             kb_callback << "keyboard_obj.set_layout(\"kb-" + self.kb_layout + "\")"
 
             # Load profile into keyboard.
@@ -198,10 +383,7 @@ class ChromaController(object):
         else:
             print('No post actions necessary.')
 
-
-    ##################################################
-    # Reusable Page Functions
-    ##################################################
+    """ Reloads the profile list """
     def refresh_profiles_list(self):
         self.update_page('#profiles-list', 'html' , '')
         profiles = list(self.profiles.get_profiles())
@@ -209,9 +391,7 @@ class ChromaController(object):
         for profile in profiles:
             self.update_page('#profiles-list', 'append', '<option value="'+profile+'">'+profile+'</option>')
 
-    ##################################################
-    # Commands
-    ##################################################
+    """ Process a command """
     def process_command(self, command):
         if command == 'quit':
             quit()
@@ -525,223 +705,9 @@ class ChromaController(object):
         else:
             print("         ... unimplemented!")
 
-    def update_page(self, element, function, parm1=None, parm2=None):
-        """ Runs a JavaScript jQuery function on the page,
-            ensuring correctly parsed quotes. """
-        if parm1 and parm2:
-            self.webkit.run_javascript('$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "', '" + parm2.replace("'", '\\\'') + "')")
-        if parm1:
-            self.webkit.run_javascript('$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "')")
-        else:
-            self.webkit.run_javascript('$("' + element + '").' + function + '()')
-
-
-    ##################################################
-    # Multi-device support
-    ##################################################
-    def detect_devices(self):
-        # FIXME: Only UI frontend implemented.
-        print('fixme:ChromaController.detect_devices')
-
-        # TODO:
-        #   -  Program will detect all connected Razer devices and add them to the 'devices' table using JS function.
-        #   -  If only one device is avaliable (such as only having one Chroma Keyboard), then automatically open that config page.
-
-        # FIXME: Just a placebo...
-        serial = self.daemon.get_serial_number()
-        hardware_type = 'blackwidow_chroma'
-        self.multi_device_present = True
-        print('Found "{0}" (S/N: {1}).'.format(hardware_type, serial))
-        self.webkit.run_javascript('add_device("' + serial + '", "' + hardware_type + '")')
-
-        # If this is the only Razer device that can be configured, skip the screen.
-        if not self.multi_device_present:
-            if hardware_type == 'blackwidow_chroma':
-                self.show_menu('menu')
-
-    def set_device(self, serial):
-        print('fixme:ChromaController.set_device')
-        # TODO:
-        #   -  Program knows that this is the 'active' device for configuration.
-        #   -  Changes the page based on the type of device.
-
-
-        serial = self.daemon.get_serial_number()
-        hardware_type = 'blackwidow_chroma'
-        print('Configuring "{0}" (S/N: {1})".'.format(hardware_type, serial))
-
-        # Open the relevant configuration menu for the selected device.
-        if hardware_type == 'blackwidow_chroma' :
-            self.current_page = 'menu'
-            self.webkit.load_uri('file://' + os.path.join(LOCATION_DATA, 'menu.html'))
-
-
-    ##################################################
-    # Application Initialization
-    ##################################################
-    def __init__(self):
-        """
-        Initialise the class
-        """
-        w = Gtk.Window(title="Chroma Driver Configuration")
-        w.set_wmclass('razer_bcd_utility', 'razer_bcd_utility')
-        w.set_position(Gtk.WindowPosition.CENTER)
-        w.set_size_request(1000, 600)
-        w.set_resizable(False)
-        try:
-            w.set_icon_from_file(os.path.join(LOCATION_DATA, 'img/app-icon.svg'))
-        except:
-            w.set_icon_from_file('/usr/share/icons/hicolor/scalable/apps/polychromatic.svg')
-        w.connect("delete-event", Gtk.main_quit)
-
-        if not os.path.exists(LOCATION_DATA):
-            print('Data folder is missing. Exiting.')
-            sys.exit(1)
-
-        # Initialize Preferences
-        self.preferences = polychromatic.preferences.ChromaPreferences()
-
-        # Set up the daemon
-        try:
-            # Connect to the DBUS
-            self.daemon = razer.daemon_dbus.DaemonInterface()
-
-            # Initialize Profiles
-            self.profiles = polychromatic.profiles.ChromaProfiles(self.daemon)
-
-            # Load devices page normally.
-            #~ self.current_page = 'controller_devices' # TODO: Multi-device not yet supported.
-            self.current_page = 'menu'
-            self.multi_device_present = False
-
-            # "Globals"
-            self.kb_layout = razer.keyboard.get_keyboard_layout()
-            self.reactive_speed = 1
-            self.primary_rgb = razer.keyboard.RGB(0, 255, 0)
-            self.secondary_rgb = razer.keyboard.RGB(0, 0, 255)
-            self.current_effect = 'custom'
-            self.last_effect = 'unknown'
-            self.open_this_profile = None
-
-            # Set preferred colours
-            p_red = self.preferences.get_pref('primary_colors', 'red', 0)
-            p_green = self.preferences.get_pref('primary_colors', 'green', 255)
-            p_blue = self.preferences.get_pref('primary_colors', 'blue', 0)
-            s_red = self.preferences.get_pref('secondary_colors', 'red', 255)
-            s_green = self.preferences.get_pref('secondary_colors', 'green', 0)
-            s_blue = self.preferences.get_pref('secondary_colors', 'blue', 0)
-
-            self.primary_rgb_values = [p_red, p_green, p_blue]
-            self.primary_rgb = razer.keyboard.RGB(p_red, p_green, p_blue)
-
-            self.secondary_rgb_values = [s_red, s_green, s_blue]
-            self.secondary_rgb = razer.keyboard.RGB(s_red, s_green, s_blue)
-
-        except Exception as e:
-            # Load an error page instead.
-            print('There was a problem initializing the application or DBUS.')
-            self.current_page = 'error'
-            print('Exception: ', e)
-
-
-        # Create WebKit Container
-        self.webkit = WebKit2.WebView()
-
-        sw = Gtk.ScrolledWindow()
-        sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        sw.add(self.webkit)
-
-        # Build an auto expanding box and add our scrolled window
-        b = Gtk.VBox(homogeneous=False, spacing=0)
-        b.pack_start(sw, expand=True, fill=True, padding=0)
-        w.add(b)
-
-        # Post-actions after pages fully load.
-        self.webkit.connect('load-changed', self.load_changed_cb)
-        self.webkit.connect('notify::title', self.title_changed_cb)
-        self.webkit.connect('context-menu', self.context_menu_cb)
-
-        # Allows Keyboard SVGs to load.
-        self.webkit.get_settings().set_property('allow-file-access-from-file-urls', 1)
-
-        # Load the starting page
-        self.webkit.load_uri('file://' + os.path.join(LOCATION_DATA, self.current_page + '.html'))
-
-        # Show the window.
-        w.show_all()
-        Gtk.main()
-
-    def title_changed_cb(self, view, frame):
-        title = self.webkit.get_title()
-        if title:
-            print('[Debug] Command: ' + title)
-            self.process_command(title)
-
-    def load_changed_cb(self, view, frame):
-        uri = str(self.webkit.get_uri())
-        if not self.webkit.is_loading():
-            self.current_page = uri.rsplit('/', 1)[1].split('.html')[0]
-            print('[Debug] Page: ' + self.current_page)
-            self.page_loaded()
-
-    def context_menu_cb(self, view, menu, event, htr, user_data=None):
-        # Disable context menu.
-        return True
-
-
-
-class WebkitJavaScriptExecutor(object):
-    """
-    Simple class to execute scripts
-    """
-    def __init__(self, webkit, script=None, wrapper=None):
-        if wrapper is not None:
-            self.wrapper = wrapper
-        else:
-            self.wrapper = "$(document).ready(function(){{{0}}});"
-        self.lines = []
-        self.webkit = webkit
-
-        if script is not None:
-            self.add(script)
-
-    def add(self, line):
-        """
-        Adds a line to the collection
-
-        :param line: Line to execute
-        :type line: str
-
-        :return: Returns a copy of the object
-        :rtype: WebkitJavaScriptExecutor
-        """
-        line = str(line)
-
-        if line.endswith(';'):
-            self.lines.append(line)
-        else:
-            self.lines.append(line + ';')
-
-        return self
-
-    def exec(self):
-        payload = str(self)
-        self.webkit.run_javascript(payload)
-
-    def __lshift__(self, other):
-        self.add(other)
-
-        return self
-
-    def __str__(self):
-        lines = '\n' + '\n'.join(self.lines) + '\n'
-        result = self.wrapper.format(lines)
-        return result
 
 
 
 if __name__ == "__main__":
-    # Kill the process when CTRL+C'd.
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-    ChromaController()
+    app = Controller()
+    app.run_app()
