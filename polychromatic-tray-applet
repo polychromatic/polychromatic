@@ -72,11 +72,11 @@ class AppIndicator:
 
         if icon_type == 'logo':
             # TODO: Retrieve icon relative to the program.
-            logo_path = '/usr/share/polychromatic/data/img/tray_icon.png'
+            logo_path = '/usr/share/polychromatic/img/tray_icon.png'
 
         if icon_type == 'animated':
             # TODO: Retrieve icon relative to the program.
-            logo_path = '/usr/share/polychromatic/data/img/tray_icon_animated.gif'
+            logo_path = '/usr/share/polychromatic/img/tray_icon_animated.gif'
 
         if icon_type == 'logo' or icon_type == 'animated':
             if os.path.exists(logo_path):

@@ -91,9 +91,7 @@ chmod +x "$target_bin/polychromatic-controller"
 chmod +x "$target_bin/polychromatic-tray-applet"
 
 # Copy data files.
-cp -r "$source/data/" "$target_data/data/"
-cp    "$source/controller.py" "$target_data/controller.py"
-cp    "$source/tray_applet.py" "$target_data/tray_applet.py"
+cp -r "$source/data/"* "$target_data/"
 
 # Copy Python modules
 cp -r "$source/pylib/"* "$modules/"
