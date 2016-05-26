@@ -85,8 +85,8 @@ mkdir "$target_data"
 mkdir "$modules"
 
 # Copy bin files.
-cp "$source/controller.py" "$target_bin/polychromatic-controller"
-cp "$source/tray_applet.py" "$target_bin/polychromatic-tray-applet"
+cp "$source/polychromatic-controller" "$target_bin/"
+cp "$source/polychromatic-tray-applet" "$target_bin/"
 chmod +x "$target_bin/polychromatic-controller"
 chmod +x "$target_bin/polychromatic-tray-applet"
 
