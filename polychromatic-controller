@@ -734,6 +734,34 @@ class FatalError(object):
             sys.exit()
 
 
+class Terminal(object):
+    """ Process arguments passed via the terminal. """
+    def __init__(self):
+        self.be_verbose = False
+        for arg in sys.argv[1:]:
+            if arg == '--help' or arg == '-h':
+                self.show_help()
+            elif arg == '--verbose' or arg == '-v':
+                self.be_verbose = True
+                self.vprint('Verbose set.')
+            else:
+                print('Unrecognised parameter:' + arg)
+
+    def show_help(self):
+      print('\nPolychromatic Controller Arguments\n')
+      print('\nUsage: polychromatic-controller [arguments]')
+      #     | Command                      | Help Text                                     |
+      print('  -h, --help                   Show this help text.')
+      print('  -v, --verbose                Show more details to stdout (for debugging).')
+      print('')
+      exit()
+
+    def vprint(self, text):
+        if self.be_verbose:
+            print(text)
+
+
 if __name__ == "__main__":
+    stdout = Terminal()
     app = Controller()
     app.run_app()
