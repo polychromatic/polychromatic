@@ -121,14 +121,11 @@ class AppView(WebKit2.WebView):
 
 
 class Controller(object):
-    """ Initalise the application """
+    """ Initialise the application """
     def __init__(self):
         # Variables
         self.current_page = 'menu'
         self.data_path = self.whereami()
-
-        # Initialise preferences
-        self.preferences = polychromatic.preferences.ChromaPreferences()
 
         # Set up the application
         self.set_process_title()
@@ -194,7 +191,7 @@ class Controller(object):
             self.daemon = razer.daemon_dbus.DaemonInterface()
 
             # Initialise Profiles
-            self.profiles = polychromatic.profiles.ChromaProfiles(self.daemon)
+            self.profiles = polychromatic.profiles.Profiles(self.daemon)
 
             # Load devices page normally.
             #~ self.current_page = 'controller_devices' # TODO: Multi-device not yet supported.
@@ -211,12 +208,12 @@ class Controller(object):
             self.open_this_profile = None
 
             # Set preferred colours
-            p_red = self.preferences.get_pref('primary_colors', 'red', 0)
-            p_green = self.preferences.get_pref('primary_colors', 'green', 255)
-            p_blue = self.preferences.get_pref('primary_colors', 'blue', 0)
-            s_red = self.preferences.get_pref('secondary_colors', 'red', 255)
-            s_green = self.preferences.get_pref('secondary_colors', 'green', 0)
-            s_blue = self.preferences.get_pref('secondary_colors', 'blue', 0)
+            p_red = pref.get('primary_colors', 'red', 0)
+            p_green = pref.get('primary_colors', 'green', 255)
+            p_blue = pref.get('primary_colors', 'blue', 0)
+            s_red = pref.get('secondary_colors', 'red', 255)
+            s_green = pref.get('secondary_colors', 'green', 0)
+            s_blue = pref.get('secondary_colors', 'blue', 0)
 
             self.primary_rgb_values = [p_red, p_green, p_blue]
             self.primary_rgb = razer.keyboard.RGB(p_red, p_green, p_blue)
@@ -284,7 +281,7 @@ class Controller(object):
                 self.update_page('#multi-device-switcher', 'show')
 
             # Tell JavaScript whether live profile switching is enabled.
-            if self.preferences.get_pref('chroma_editor', 'live_switch') == 'true':
+            if pref.get('chroma_editor', 'live_switch') == 'true':
                 self.webkit.run_javascript('live_switch = true;')
                 self.update_page('#profiles-activate', 'hide')
             else:
@@ -315,7 +312,7 @@ class Controller(object):
             # Load profile into keyboard.
             profile_name = self.open_this_profile
             self.profiles.set_active_profile(profile_name)
-            if self.preferences.get_pref('chroma_editor', 'live_preview') == 'true':
+            if pref.get('chroma_editor', 'live_preview') == 'true':
                 self.profiles.activate_profile_from_memory()
             self.profiles.get_active_profile().backup_configuration()
 
@@ -330,7 +327,7 @@ class Controller(object):
             kb_callback << "keyboard_obj.disable_key(5,7)"
             kb_callback << "keyboard_obj.disable_key(5,12)"
             # Hide preview button if live previewing is enabled.
-            if self.preferences.get_pref('chroma_editor', 'live_preview') == 'true':
+            if pref.get('chroma_editor', 'live_preview') == 'true':
                 kb_callback << '$("#edit-preview").hide();'
 
 
@@ -345,17 +342,17 @@ class Controller(object):
 
             # Set checkboxes
             for setting in ['live_switch','live_preview','activate_on_save']:
-                if (self.preferences.pref_data['chroma_editor'][setting] == 'true'):
+                if (pref.pref_data['chroma_editor'][setting] == 'true'):
                     self.update_page('#'+setting, 'prop', 'checked', 'true')
 
             # Fetch settings for tray/start-up settings.
-            tray_icon_type = self.preferences.get_pref('tray_applet', 'icon_type', 'system')
-            tray_icon_path = self.preferences.get_pref('tray_applet', 'icon_path', '')
-            start_enabled = self.preferences.get_pref('startup', 'enabled', 'false')
-            start_effect = self.preferences.get_pref('startup', 'start_effect', None)
-            start_profile = self.preferences.get_pref('startup', 'start_profile', None)
-            start_brightness = int(self.preferences.get_pref('startup', 'start_brightness', 0))
-            start_macro = self.preferences.get_pref('startup', 'start_macro', 'false')
+            tray_icon_type = pref.get('tray_applet', 'icon_type', 'system')
+            tray_icon_path = pref.get('tray_applet', 'icon_path', '')
+            start_enabled = pref.get('startup', 'enabled', 'false')
+            start_effect = pref.get('startup', 'start_effect', None)
+            start_profile = pref.get('startup', 'start_profile', None)
+            start_brightness = int(pref.get('startup', 'start_brightness', 0))
+            start_macro = pref.get('startup', 'start_macro', 'false')
 
             # Set 'values' for textboxes and dropdowns.
             self.update_page('#tray-'+tray_icon_type, 'prop', 'checked', 'true')
@@ -383,13 +380,13 @@ class Controller(object):
                 self.update_page('#start-brightness-text', 'html', str(int((start_brightness * 100) / 255 )) + '%')
 
             # Get default 'preferred' colours.
-            self.start_p_red =   self.preferences.get_pref('primary_colors', 'red', 0)
-            self.start_p_green = self.preferences.get_pref('primary_colors', 'green', 255)
-            self.start_p_blue =  self.preferences.get_pref('primary_colors', 'blue', 0)
+            self.start_p_red =   pref.get('primary_colors', 'red', 0)
+            self.start_p_green = pref.get('primary_colors', 'green', 255)
+            self.start_p_blue =  pref.get('primary_colors', 'blue', 0)
 
-            self.start_s_red =   self.preferences.get_pref('secondary_colors', 'red', 255)
-            self.start_s_green = self.preferences.get_pref('secondary_colors', 'green', 0)
-            self.start_s_blue =  self.preferences.get_pref('secondary_colors', 'blue', 0)
+            self.start_s_red =   pref.get('secondary_colors', 'red', 255)
+            self.start_s_green = pref.get('secondary_colors', 'green', 0)
+            self.start_s_blue =  pref.get('secondary_colors', 'blue', 0)
 
             self.update_page('#rgb_start_primary_preview', 'css', 'background-color', 'rgba(' + str(self.start_p_red) + ',' + str(self.start_p_green) + ',' + str(self.start_p_blue) + ',1.0)')
             self.update_page('#rgb_start_secondary_preview', 'css', 'background-color', 'rgba(' + str(self.start_s_red) + ',' + str(self.start_s_green) + ',' + str(self.start_s_blue) + ',1.0)')
@@ -561,11 +558,11 @@ class Controller(object):
 
                 if cancel_type == "new-profile":
                     self.profiles.remove_profile(cancel_args, del_from_fs=False)
-                    if self.preferences.get_pref('chroma_editor', 'live_switch') == 'true' or self.preferences.get_pref('chroma_editor', 'live_preview') == 'true':
+                    if pref.get('chroma_editor', 'live_switch') == 'true' or pref.get('chroma_editor', 'live_preview') == 'true':
                         self.daemon.set_custom_colour(self.old_profile)
                 elif cancel_type == "edit-profile":
                     self.profiles.get_active_profile().restore_configuration()
-                    if self.preferences.get_pref('chroma_editor', 'live_switch') == 'true' or self.preferences.get_pref('chroma_editor', 'live_preview') == 'true':
+                    if pref.get('chroma_editor', 'live_switch') == 'true' or pref.get('chroma_editor', 'live_preview') == 'true':
                         self.daemon.set_custom_colour(self.old_profile)
 
                 self.update_page('#cancel', 'attr', '{onclick: \"cmd(\'cancel-changes\')\"}')
@@ -585,38 +582,38 @@ class Controller(object):
             group = command.split('?')[1]
             setting = command.split('?')[2]
             value = command.split('?')[3]
-            self.preferences.set_pref(group, setting, value)
+            pref.set(group, setting, value)
 
         elif command == 'pref-revert':
             print('Reverted preferences.')
-            self.preferences.load_pref()
+            pref.load_pref()
             self.show_menu('menu')
 
         elif command == 'pref-save':
             # Saves initial colours.
-            self.preferences.set_pref('primary_colors', 'red', self.start_p_red)
-            self.preferences.set_pref('primary_colors', 'green', self.start_p_green)
-            self.preferences.set_pref('primary_colors', 'blue', self.start_p_blue)
+            pref.set('primary_colors', 'red', self.start_p_red)
+            pref.set('primary_colors', 'green', self.start_p_green)
+            pref.set('primary_colors', 'blue', self.start_p_blue)
 
-            self.preferences.set_pref('secondary_colors', 'red', self.start_s_red)
-            self.preferences.set_pref('secondary_colors', 'green', self.start_s_green)
-            self.preferences.set_pref('secondary_colors', 'blue', self.start_s_blue)
+            pref.set('secondary_colors', 'red', self.start_s_red)
+            pref.set('secondary_colors', 'green', self.start_s_green)
+            pref.set('secondary_colors', 'blue', self.start_s_blue)
 
             # Commits preferences from memory to disk.
-            self.preferences.save_pref()
+            pref.save_pref()
 
             self.show_menu('menu')
 
         elif command == 'pref-reset-conf':
             print('User requested to reset configuration.')
-            self.preferences.create_default_config()
-            self.preferences.load_pref()
+            pref.create_default_config()
+            pref.load_pref()
             print('Configuration successfully reset.')
             self.show_menu('preferences')
 
         elif command == 'pref-reset-all':
             print('User requested to reset everything.')
-            self.preferences.clear_config()
+            pref.clear_config()
             print('\nRestarting the application...\n')
             os.execv(__file__, sys.argv)
 
@@ -646,7 +643,7 @@ class Controller(object):
             self.profiles.get_active_profile().set_key_colour(row, col, rgb)
 
             # Live preview (if 'live_preview' is enabled in preferences)
-            if self.preferences.get_pref('chroma_editor', 'live_preview') == 'true':
+            if pref.get('chroma_editor', 'live_preview') == 'true':
                 self.profiles.activate_profile_from_memory()
 
         elif command.startswith('clear-key'):
@@ -657,7 +654,7 @@ class Controller(object):
             self.profiles.get_active_profile().reset_key(row, col)
 
             # Live preview (if 'live_preview' is enabled in preferences)
-            if self.preferences.get_pref('chroma_editor', 'live_preview') == 'true':
+            if pref.get('chroma_editor', 'live_preview') == 'true':
                 self.profiles.activate_profile_from_memory()
 
         elif command.startswith('profile-activate'):
@@ -699,12 +696,12 @@ class Controller(object):
             print('Saved "{0}".'.format(profile_name))
             self.show_menu('menu')
 
-            if self.preferences.get_pref('chroma_editor', 'activate_on_save') == 'true':
+            if pref.get('chroma_editor', 'activate_on_save') == 'true':
                 self.profiles.activate_profile_from_file(self.profiles.get_active_profile_name())
 
         ## Miscellaneous
         elif command == 'open-config-folder':
-            os.system('xdg-open "' + self.preferences.SAVE_ROOT + '"')
+            os.system('xdg-open "' + pref.SAVE_ROOT + '"')
 
         ## Multi-device Management
         elif command.startswith('set-device?'):
@@ -720,8 +717,6 @@ class Controller(object):
 
         else:
             print("         ... unimplemented!")
-
-
 
 
 class FatalError(object):
@@ -763,6 +758,7 @@ class Terminal(object):
 
 
 if __name__ == "__main__":
+    pref = polychromatic.preferences.Preferences()
     stdout = Terminal()
     app = Controller()
     app.run_app()

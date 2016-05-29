@@ -6,7 +6,7 @@ import razer.keyboard
 
 module_config_version = 2
 
-class ChromaPreferences(object):
+class Preferences(object):
     ''' Retrieves and set persistant options. '''
     #
     # Default JSON Settings
@@ -36,7 +36,7 @@ class ChromaPreferences(object):
     #
 
     def __init__(self):
-        """ Initializes the preferences module. """
+        """ Initialises the preferences module. """
         # Determine locations for storing data.
         self.SAVE_ROOT = os.path.expanduser('~') + '/.config/polychromatic'
         self.SAVE_PROFILES = self.SAVE_ROOT + '/profiles'
@@ -93,7 +93,7 @@ class ChromaPreferences(object):
         pref_file.write(json.dumps(self.pref_data))
         pref_file.close()
 
-    def set_pref(self, group, setting, value):
+    def set(self, group, setting, value):
         """ Write an option. """
         # Strings with spaces may have HTML codes, eg. %20 for a space.
         if type(value) is str:
@@ -113,7 +113,7 @@ class ChromaPreferences(object):
         except:
             print('Failed to write setting "' + str(value) + '" for "' + setting + '" in "' + group + '".')
 
-    def get_pref(self, group, setting, default_value='false'):
+    def get(self, group, setting, default_value='false'):
         """ Read an option, optionally specifying a default value if none exists. """
         try:
             # Read data from preferences, if it exists.
