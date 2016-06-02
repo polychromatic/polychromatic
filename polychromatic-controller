@@ -44,6 +44,7 @@ class AppView(WebKit2.WebView):
         self.connect('load-changed', self.load_changed_cb)
         self.connect('notify::title', self.title_changed_cb)
         self.connect('context-menu', self.context_menu_cb)
+        stdout.vvprint('Initialised WebKit2.')
 
         # Allows Keyboard SVGs to load.
         self.get_settings().set_property('allow-file-access-from-file-urls', 1)
@@ -57,7 +58,7 @@ class AppView(WebKit2.WebView):
     def title_changed_cb(self, view, frame):
         title = self.get_title()
         if title:
-            print('[Debug] Command: ' + title)
+            stdout.vvprint('** Command: ' + title)
             app.process_command(title)
 
     """ Callback: Page changed """
@@ -66,7 +67,7 @@ class AppView(WebKit2.WebView):
         page = uri.rsplit('/', 1)[1].split('.html')[0]
         if not self.is_loading():
             app.current_page = page
-            print('[Debug] Page: ' + page)
+            stdout.vvprint(' ** Page Changed: ' + page)
             app.page_loaded()
 
     """ Callback: Disable context menu """
@@ -83,6 +84,7 @@ class AppView(WebKit2.WebView):
                 self.wrapper = "$(document).ready(function(){{{0}}});"
             self.lines = []
             self.webkit = webkit
+            stdout.vvprint(' => JSExec: Ready.')
 
             if script is not None:
                 self.add(script)
@@ -97,6 +99,7 @@ class AppView(WebKit2.WebView):
             :rtype: JavaScriptExecutor
             """
             line = str(line)
+            stdout.vvprint(' => JSExec: Line added: ' + line)
 
             if line.endswith(';'):
                 self.lines.append(line)
@@ -108,6 +111,7 @@ class AppView(WebKit2.WebView):
         """ Runs the collection """
         def exec(self):
             payload = str(self)
+            stdout.vvprint(' => JSExec: Pushed to page.')
             self.webkit.run_javascript(payload)
 
         def __lshift__(self, other):
@@ -140,7 +144,7 @@ class Controller(object):
         elif os.path.exists('/usr/share/polychromatic/'):
             path = '/usr/share/polychromatic/'
         else:
-            print("Data directory is missing.")
+            print("Data directory is missing. Exiting...")
             FatalError("Data directory is missing: /usr/share/polychromatic/", True)
         return path
 
@@ -158,6 +162,7 @@ class Controller(object):
         if ret != 0:
             print("Failed to set process title")
 
+        stdout.vvprint('Process title set to "' + name + '".')
         return ret
 
     """ Assemble the application """
@@ -169,8 +174,10 @@ class Controller(object):
         w.set_resizable(False)
         try:
             w.set_icon_from_file(os.path.join(self.data_path, '../install/hicolor/scalable/apps/polychromatic.svg'))
+            stdout.vvprint('Window icon set from relative path.')
         except:
             w.set_icon_from_file('/usr/share/icons/hicolor/scalable/apps/polychromatic.svg')
+            stdout.vvprint('Window icon set from /usr/share/ path.')
 
         # Add elements to window
         sw = Gtk.ScrolledWindow()
@@ -191,6 +198,7 @@ class Controller(object):
         else:
             self.webkit.set_zoom_level(1)
             w.set_size_request(1000, 600)
+        stdout.vprint('Program Scale Set: ' + str(scale))
 
         # Build an auto expanding box and add our scrolled window
         b = Gtk.VBox(homogeneous=False, spacing=0)
@@ -198,19 +206,20 @@ class Controller(object):
         w.add(b)
         w.connect("delete-event", Gtk.main_quit)
         w.show_all()
+        stdout.vvprint('Initialised Window.')
 
         # Set up Razer daemon
         try:
             # Connect to the DBUS
+            stdout.vprint('Initialising Razer DBUS...')
             self.daemon = razer.daemon_dbus.DaemonInterface()
 
             # Initialise Profiles
+            stdout.vprint('Initialising Polychromatic Profiles...')
             self.profiles = polychromatic.profiles.Profiles(self.daemon)
 
-            # Load devices page normally.
-            #~ self.current_page = 'controller_devices' # TODO: Multi-device not yet supported.
+            # Starting page
             self.current_page = 'menu'
-            self.multi_device_present = False
 
             # "Globals"
             self.kb_layout = razer.keyboard.get_keyboard_layout()
@@ -242,9 +251,12 @@ class Controller(object):
             "\nPlease check the driver is properly installed and the service is running." + \
             "\n\nException: " + str(e), True)
 
+        stdout.vprint('Application Ready.\n')
+
     """ Run the application """
     def run_app(self):
-        signal.signal(signal.SIGINT, signal.SIG_DFL)    # Kills process when CTRL+C'd.
+        # Kills process when CTRL+C'd.
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
         Gtk.main()
 
     """ Send jQuery code to page """
@@ -252,16 +264,21 @@ class Controller(object):
         """ Runs a JavaScript jQuery function on the page,
             ensuring correctly parsed quotes. """
         if parm1 and parm2:
-            self.webkit.run_javascript('$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "', '" + parm2.replace("'", '\\\'') + "')")
+            buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "', '" + parm2.replace("'", '\\\'') + "')"
+            stdout.vvprint(' => Push JS: ' + buffer)
+            self.webkit.run_javascript(buffer)
         if parm1:
-            self.webkit.run_javascript('$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "')")
+            buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "')"
+            stdout.vvprint(' => Push JS: ' + buffer)
+            self.webkit.run_javascript(buffer)
         else:
-            self.webkit.run_javascript('$("' + element + '").' + function + '()')
+            buffer = '$("' + element + '").' + function + '()'
+            stdout.vvprint(' => Push JS: ' + buffer)
+            self.webkit.run_javascript(buffer)
 
     """ Requests to change the page """
     def show_menu(self, page):
         self.current_page = page
-        print("Opening page '" + page + "'")
 
         # Hide all footer buttons
         for element in ['retry', 'edit-save', 'edit-preview', 'cancel', 'close-window', 'pref-open', 'pref-save']:
@@ -283,16 +300,12 @@ class Controller(object):
 
     """ Page Initialisation """
     def page_loaded(self):
-        print('Running page post-actions for "' + self.current_page + '"...')
+        stdout.vvprint(' ** Running post-actions for page: "' + self.current_page + '"...')
 
         if self.current_page == 'menu':
             self.webkit.run_javascript('instantProfileSwitch = false;') # Unimplemented instant profile change option.
             self.update_page('#profiles-activate', 'show')
             self.refresh_profiles_list()
-
-            # If there are multiple devices on the system, show the "switch" button.
-            if self.multi_device_present:
-                self.update_page('#multi-device-switcher', 'show')
 
             # Tell JavaScript whether live profile switching is enabled.
             if pref.get('chroma_editor', 'live_switch') == 'true':
@@ -369,7 +382,7 @@ class Controller(object):
             start_macro = pref.get('startup', 'start_macro', 'false')
 
             # Set value for slider
-            scaling = pref.get('chroma_editor', 'scaling',1)
+            scaling = pref.get('chroma_editor', 'scaling', 1)
             self.update_page('#scaling', 'val', str(scaling))
 
             # Set 'values' for textboxes and dropdowns.
@@ -413,11 +426,12 @@ class Controller(object):
             self.detect_devices()
 
         else:
-            print('No post actions necessary.')
+            stdout.vvprint('No post-actions for this page.')
 
     """ Reloads the profile list """
     def refresh_profiles_list(self):
-        self.update_page('#profiles-list', 'html' , '')
+        stdout.vvprint('Refreshing profile list...')
+        self.update_page('#profiles-list', 'html' , ' ')
         profiles = list(self.profiles.get_profiles())
         profiles.sort()
         for profile in profiles:
@@ -721,20 +735,8 @@ class Controller(object):
         elif command == 'open-config-folder':
             os.system('xdg-open "' + pref.SAVE_ROOT + '"')
 
-        ## Multi-device Management
-        elif command.startswith('set-device?'):
-            serial = command.split('?')[1]
-            self.set_device(serial)
-
-        elif command == 'rescan-devices':
-            self.update_page('#detected-devices tr', 'remove')
-            self.detect_devices()
-
-        elif command == 'change-device':
-            self.show_menu('controller_devices')
-
         else:
-            print("         ... unimplemented!")
+            print("Unimplemented command.")
 
 
 class FatalError(object):
@@ -752,26 +754,40 @@ class Terminal(object):
     """ Process arguments passed via the terminal. """
     def __init__(self):
         self.be_verbose = False
+        self.be_very_verbose = False
+
         for arg in sys.argv[1:]:
             if arg == '--help' or arg == '-h':
                 self.show_help()
+
             elif arg == '--verbose' or arg == '-v':
                 self.be_verbose = True
-                self.vprint('Verbose set.')
+                self.vprint('Verbose enabled.')
+
+            elif arg == '-vv' or arg == '--debug':
+                self.be_verbose = True
+                self.be_very_verbose = True
+                self.vvprint('Debug verbose enabled.')
+
             else:
-                print('Unrecognised parameter:' + arg)
+                print('Ignoring unrecognised parameters:' + arg)
 
     def show_help(self):
       print('\nPolychromatic Controller Arguments\n')
       print('\nUsage: polychromatic-controller [arguments]')
       #     | Command                      | Help Text                                     |
       print('  -h, --help                   Show this help text.')
-      print('  -v, --verbose                Show more details to stdout (for debugging).')
+      print('  -v, --verbose                Be verbose to stdout.')
+      print('  -vv, --debug                 Be very verbose. For debugging only.')
       print('')
       exit()
 
     def vprint(self, text):
         if self.be_verbose:
+            print(text)
+
+    def vvprint(self, text):
+        if self.be_very_verbose:
             print(text)
 
 
