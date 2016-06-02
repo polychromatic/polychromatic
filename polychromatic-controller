@@ -166,7 +166,6 @@ class Controller(object):
         w = Gtk.Window(title="Polychromatic Controller")
         w.set_wmclass('polychromatic-controller', 'polychromatic-controller')
         w.set_position(Gtk.WindowPosition.CENTER)
-        w.set_size_request(1000, 600)
         w.set_resizable(False)
         try:
             w.set_icon_from_file(os.path.join(self.data_path, '../install/hicolor/scalable/apps/polychromatic.svg'))
@@ -177,6 +176,21 @@ class Controller(object):
         sw = Gtk.ScrolledWindow()
         sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         sw.add(self.webkit)
+
+        # Scale the application so it looks good on large displays.
+        scale = float(pref.get('chroma_editor', 'scaling', 1))
+        if scale == 1.5:
+            self.webkit.set_zoom_level(1.5)
+            w.set_size_request(1500, 900)
+        elif scale == 2:
+            self.webkit.set_zoom_level(2)
+            w.set_size_request(2000, 1200)
+        elif scale == 2.5:
+            self.webkit.set_zoom_level(2.5)
+            w.set_size_request(2500, 1500)
+        else:
+            self.webkit.set_zoom_level(1)
+            w.set_size_request(1000, 600)
 
         # Build an auto expanding box and add our scrolled window
         b = Gtk.VBox(homogeneous=False, spacing=0)
@@ -353,6 +367,10 @@ class Controller(object):
             start_profile = pref.get('startup', 'start_profile', None)
             start_brightness = int(pref.get('startup', 'start_brightness', 0))
             start_macro = pref.get('startup', 'start_macro', 'false')
+
+            # Set value for slider
+            scaling = pref.get('chroma_editor', 'scaling',1)
+            self.update_page('#scaling', 'val', str(scaling))
 
             # Set 'values' for textboxes and dropdowns.
             self.update_page('#tray-'+tray_icon_type, 'prop', 'checked', 'true')

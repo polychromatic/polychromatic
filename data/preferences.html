@@ -60,6 +60,10 @@
         <tr>
           <td><label class="pref-label"><input type="checkbox" id="activate_on_save" onclick="set_pref_chkstate('chroma_editor','activate_on_save',this)"/> Always activate profiles after saving.</label></td>
         </tr>
+        <tr>
+          <td><label class="pref-label">Interface Scale: <input type="range" id="scaling" onmouseout="set_pref_str('chroma_editor','scaling',$(this).val())" min="1" max="2.5" value="1" step="0.5"/></label></td>
+          <td><p>Scale the application so it looks good on large displays.</p></td>
+        </tr>
       </table>
       <hr>
 
