@@ -99,7 +99,7 @@ class Preferences(object):
         if type(value) is str:
             value = value.replace('%20', ' ')
 
-        print('Set preference: "' + str(value) + '" to "' + setting + '" in "' + group + '"')
+        print('Set preference: "' + str(value) + '" to "' + str(setting) + '" in "' + group + '"')
         # Check the group exists.
         try:
             self.pref_data[group]
@@ -111,7 +111,7 @@ class Preferences(object):
         try:
             self.pref_data[group][setting] = value;
         except:
-            print('Failed to write setting "' + str(value) + '" for "' + setting + '" in "' + group + '".')
+            print('Failed to write setting "' + str(value) + '" for "' + str(setting) + '" in "' + group + '".')
 
     def get(self, group, setting, default_value='false'):
         """ Read an option, optionally specifying a default value if none exists. """
@@ -119,11 +119,11 @@ class Preferences(object):
             # Read data from preferences, if it exists.
             value = self.pref_data[group][setting]
             return value
-            print('Read preference: "' + value + '" from "' + setting + '"')
+            print('Read preference: "' + str(value) + '" from "' + str(setting) + '"')
         except:
             # Should it be non-existent, return a fallback option.
-            print("Preference '" + setting + "' in '" + group + "' doesn't exist.")
-            self.set_pref(group, setting, default_value)
+            print("Preference '" + str(setting) + "' in '" + str(group) + "' doesn't exist.")
+            self.set(group, setting, default_value)
             self.save_pref()
             return default_value
 
