@@ -547,7 +547,8 @@ class Controller(object):
             print("Set colour of '{0}' to RGB: {1}, {2}, {3}".format(element, red, green, blue))
 
             self.update_page('#'+element+'_preview', 'css', 'background-color', 'rgba(' + str(red) + ',' + str(green) + ',' + str(blue) + ',1.0)')
-            self.webkit.run_javascript('set_mode("set")')
+            if app.current_page == 'profile_editor':
+                self.webkit.run_javascript('set_mode("set")')
 
             if element == 'rgb_primary':    # Primary effect colour
                 update_effects = True
