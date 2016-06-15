@@ -25,6 +25,7 @@ target_data="/usr/share/polychromatic"
 target_bin="/usr/bin"
 target_icon="/usr/share/icons"
 modules="/usr/lib/python3/dist-packages/polychromatic"
+locale_dir="/usr/share/locale/"
 
 # Are we root?
 if [ "$(id -u)" != "0" ]; then
@@ -50,6 +51,10 @@ rm     "$target_bin/polychromatic-tray-applet"
 rm     "$target_icon/hicolor/scalable/apps/polychromatic.svg"
 rm -rf /usr/share/applications/polychromatic-controller.desktop
 rm -rf /usr/share/applications/polychromatic-tray.desktop
+
+# Delete locales
+find $locale_dir -name "polychromatic-controller.mo" -type f -delete
+find $locale_dir -name "polychromatic-tray-applet.mo" -type f -delete
 
 # Post removal
 update-icon-caches /usr/share/icons/hicolor/

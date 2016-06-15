@@ -25,6 +25,7 @@ target_data="/usr/share/polychromatic"
 target_bin="/usr/bin"
 target_icon="/usr/share/icons"
 modules="/usr/lib/python3/dist-packages/polychromatic"
+locale_dir="/usr/share/locale/"
 source=$(dirname "$0")/..
 dependencies_apt="gir1.2-webkit2-4.0 python3-gi gir1.2-appindicator3-0.1"
 
@@ -98,6 +99,9 @@ cp -r "$source/pylib/"* "$modules/"
 
 # Copy icons
 cp "$source/install/hicolor/scalable/apps/polychromatic.svg" "$target_icon/hicolor/scalable/apps/polychromatic.svg"
+
+# Copy locales
+rsync -rlpt --exclude="polychromatic-controller.pot" --exclude="polychromatic-tray-applet.pot" --exclude=*.po "$source/locale/" "$locale_dir"
 
 # Copy desktop launchers
 cp "$source/install/polychromatic-controller.desktop" /usr/share/applications/
