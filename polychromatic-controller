@@ -50,6 +50,18 @@ class Translations(object):
         t = gettext.translation('polychromatic-controller', localedir=self.locale_path, fallback=True)
         _ = t.gettext
 
+    """ Pushes a string to the page. """
+    def push(self, element, string, append=False):
+        # "append=True" is useful for elements that share contents.
+        if append:
+            app.update_page(element, 'append', "{0}".format(string))
+        else:
+            app.update_page(element, 'html', "{0}".format(string))
+
+    """ Pushes a string to a variable on the page. """
+    def push_var(self, variable, string):
+        app.webkit.run_javascript('var {0} = "{1}"'.format(variable, string))
+
 
 class AppView(WebKit2.WebView):
     """ Initialise WebKit2 """
@@ -320,9 +332,49 @@ class Controller(object):
     """ Page Initialisation """
     def page_loaded(self):
         stdout.vvprint(' ** Running post-actions for page: "' + self.current_page + '"...')
+        trans.push('#close-window', _("Close"))
 
         if self.current_page == 'menu':
-            self.webkit.run_javascript('instantProfileSwitch = false;') # Unimplemented instant profile change option.
+            # Push strings
+            trans.push('#page-header', _("Configure your Keyboard"))
+            trans.push('#str-brightness', _("Brightness"))
+            trans.push('#str-effects', _("Effects"))
+            trans.push('#str-spectrum', _("Spectrum"), True)
+            trans.push('#str-wave', _("Wave"), True)
+            trans.push('#str-reactive', _("Reactive"), True)
+            trans.push('#str-breath', _("Breath"), True)
+            trans.push('#breath-random', _("Switch to Random"), True)
+            trans.push('#breath-select', _("Choose Colors"), True)
+            trans.push('#str-static', _("Static"), True)
+            trans.push('#str-color', _("Color:"), True)
+            trans.push('.str-custom', _("Custom..."))
+            trans.push('.str-none', _("None"), True)
+            trans.push('#str-direction', _("Direction:"), True)
+            trans.push('#str-left', _("Left"), True)
+            trans.push('#str-right', _("Right"), True)
+            trans.push('#str-speed', _("Speed:"), True)
+            trans.push('#str-slow', _("Slow"), True)
+            trans.push('#str-med', _("Medium"), True)
+            trans.push('#str-fast', _("Fast"), True)
+            trans.push('#str-modes', _("Key Modes"))
+            trans.push('#str-game-mode', _("Gaming Mode"))
+            trans.push('#game-mode-disable', _("Disable"))
+            trans.push('#game-mode-enable', _("Enable"))
+            trans.push('#game-mode-tip', _("Disables ALT+F4 and Super key."))
+            trans.push('#str-macro-keys', _("Macro Keys"))
+            trans.push('#macro-keys-enable', _("Activate"))
+            trans.push('#macro-tip', _("Allows usage of the M1-M5 keys."))
+            trans.push('#profiles-activate', _("Activate"), True)
+            trans.push('#str-profiles', _("Profiles"), True)
+            trans.push('#profiles-new', _("New"), True)
+            trans.push('#profiles-edit', _("Edit"), True)
+            trans.push('#profiles-delete', _("Delete"), True)
+
+            trans.push_var('new_text', _("Please name your new profile."))
+            trans.push_var('del_text', _("Are you sure you wish to delete this?"))
+
+            # Page actions
+            self.webkit.run_javascript('instantProfileSwitch = false;')
             self.update_page('#profiles-activate', 'show')
             self.refresh_profiles_list()
 
@@ -346,6 +398,22 @@ class Controller(object):
             self.update_page('#rgb_secondary_preview', 'css', 'background-color', 'rgba(' + str(s_red) + ',' + str(s_green) + ',' + str(s_blue) + ',1.0)')
 
         elif self.current_page == 'profile_editor':
+            # Push strings
+            trans.push('#str-color', _("Color:"))
+            trans.push('#str-custom', _("Custom..."))
+            trans.push('#cancel', _("Cancel"))
+            trans.push('#edit-preview', _("Preview"))
+            trans.push('#edit-save', _("Save"), True)
+
+            trans.push_var('str_set', _("Set"))
+            trans.push_var('str_set_help', _("Click on a key to assign a color here."))
+            trans.push_var('str_picker', _("Picker"))
+            trans.push_var('str_picker_help', _("Click on a key to grab its color."))
+            trans.push_var('str_clear', _("Clear"))
+            trans.push_var('str_clear_help', _("Click on a key to clear."))
+            app.webkit.run_javascript("set_mode('set')")
+
+            # Initialise keyboard layout
             js_exec = self.webkit.JavaScriptExecutor(self.webkit)
             kb_callback = self.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
 
@@ -383,6 +451,55 @@ class Controller(object):
             js_exec.exec()
 
         elif self.current_page == 'preferences':
+            # Push strings
+            trans.push('#page-header', _("Preferences"))
+            trans.push('#str-intro', _("Change the application preferences for managing your Razer devices."))
+            trans.push('#str-app-settings', _("Application Settings"))
+            trans.push('#str-live-switch', _("Enable live switching"), True)
+            trans.push('#str-live-switch-help', _("Activate profiles instantly as soon as you click on them."))
+            trans.push('#str-live-preview', _("Enable live preview"), True)
+            trans.push('#str-live-preview-help', _("While editing, show your changes on the actual keyboard."))
+            trans.push('#str-activate-on-save', _("Always activate profiles after saving."), True)
+            trans.push('#str-scaling', _("Interface Scale:"))
+            trans.push('#str-scaling-help', _("Scale the application so it looks good on large displays."))
+            trans.push('#str-tray-applet', _("Tray Applet"))
+            trans.push('#str-system-logo', _("System Keyboard"), True)
+            trans.push('#str-static-logo', _("Static Green Logo"), True)
+            trans.push('#str-animated-logo', _("Animated Chroma Logo"), True)
+            trans.push('#str-custom-logo', _("Custom Image"), True)
+            trans.push('#tray-custom', _("Custom Icon:"), True)
+            trans.push('#str-custom-tip', _("Copy and paste the path to the image you'd like to use. You may need to resize your icon smaller."), True)
+            trans.push('#str-restart-tray', _("For changes to take effect, please restart the Tray Applet."))
+            trans.push('#str-preferred-cols', _("Preferred Colors"), True)
+            trans.push('#str-primary', _("Primary Color:"))
+            trans.push('#str-secondary', _("Secondary Color:"))
+            trans.push('.str-set', _("Set..."))
+            trans.push('#str-startup', _("Start-up Settings"))
+            trans.push('#str-startup-hint', _("These settings are applied when the Tray Applet is started. Ensure the tray applet automatically starts when you login."))
+            trans.push('#str-enable-startup', _("Set preferences when the tray applet starts."), True)
+            trans.push('#str-start-effect', _("Start Effect:"))
+            trans.push('#str-disabled', _("No Change"))
+            trans.push('#str-spectrum', _("Spectrum"))
+            trans.push('#str-wave', _("Wave"))
+            trans.push('#str-reactive', _("Reactive"))
+            trans.push('#str-breath-r', _("Breath (Random)"))
+            trans.push('#str-breath-s', _("Breath (Single Color)"))
+            trans.push('#str-breath-d', _("Breath (Dual Color)"))
+            trans.push('#str-static', _("Static"))
+            trans.push('#str-none', _("None"))
+            trans.push('#str-profile-mode', _("Activate a Profile"))
+            trans.push('#str-profile', _("Profile:"))
+            trans.push('#str-start-bright', _("Start Brightness:"))
+            trans.push('#str-auto-macro', _("Automatically enable the macro keys."), True)
+            trans.push('#str-advanced', _("Advanced"))
+            trans.push('#str-reset-pref', _("Reset Preferences"), True)
+            trans.push('#str-reset-all', _("Reset Everything"))
+            trans.push('#pref-revert', _("Revert"), True)
+            trans.push('#pref-save', _("Save"), True)
+
+            trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
+            trans.push_var('no_change', _("No Change"))
+
             # Populate start-up profiles list.
             self.refresh_profiles_list()
 
@@ -425,7 +542,7 @@ class Controller(object):
                 self.update_page('#start-profile', 'hide')
 
             if start_brightness == 0:
-                self.update_page('#start-brightness-text', 'html', "No Change")
+                self.update_page('#start-brightness-text', 'html', _("No Change"))
             else:
                 self.update_page('#start-brightness-text', 'html', str(int((start_brightness * 100) / 255 )) + '%')
 
@@ -491,7 +608,7 @@ class Controller(object):
                 else:
                     self.reactive_speed = int(command.split('?')[1])
                     self.daemon.set_effect('reactive', self.reactive_speed, self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
-                enabled_options = ['rgb_primary', 'reactive']
+                enabled_options = ['rgb_primary', 'reactive-options']
 
             elif command.startswith('effect-breath'):
                 breath_random = int(command.split('?')[1])
@@ -514,7 +631,7 @@ class Controller(object):
             # Fade between options for that effect, should it have been changed.
             if not self.current_effect == self.last_effect:
                 # Effect changed, fade out all previous options.
-                for element in ['rgb_primary', 'rgb_secondary', 'waves', 'reactive', 'breath-random', 'breath-select']:
+                for element in ['rgb_primary', 'rgb_secondary', 'waves', 'reactive-options', 'breath-random', 'breath-select']:
                     self.update_page('#'+element, 'fadeOut', 'fast')
 
                 # Fade in desired options for this effect.

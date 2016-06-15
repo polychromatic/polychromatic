@@ -31,7 +31,8 @@ function profile_list_change() {
  * Get the name for a new profile.
  */
 function profile_new() {
-    var dialog_response = window.prompt("Please name your new key profile.");
+    // Expects string variable pushed: new_text
+    var dialog_response = window.prompt(new_text);
     if (dialog_response != null && dialog_response.length > 0) {
         cmd('profile-new?' + dialog_response);
     }
@@ -51,7 +52,8 @@ function profile_edit() {
 function profile_del() {
     var selected_profile = $("#profiles-list option:selected").text();
 
-    var dialog_response = window.confirm("Are you sure you wish to delete '" + selected_profile + "'?");
+    // Expects string variable pushed: del_text
+    var dialog_response = window.confirm(del_text + ' \n' + '"' + selected_profile + '"');
     if (dialog_response == true) {
         cmd('profile-del?' + selected_profile);
     }

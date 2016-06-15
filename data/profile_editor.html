@@ -33,11 +33,11 @@
         <div id="rgb_tmp">
           <table>
             <tr>
-                <td>Colour:</td>
+                <td id="str-color"></td>
                 <td>
                     <div id="rgb_tmp_preview" class="color-preview" style="background-color:rgba(0,255,0,1)"></div>
                 </td>
-                <td><a class="btn" onclick="cmd('ask-color?rgb_tmp')">Custom...</a></td>
+                <td><a id="str-custom" class="btn" onclick="cmd('ask-color?rgb_tmp')"></a></td>
             </tr>
             <tr>
               <td></td>
@@ -78,9 +78,9 @@
   <div class="footer">
     <div class="left"></div>
     <div class="right">
-      <a class="btn" id="cancel" onclick="cmd('cancel-changes')">Cancel</a>
-      <a class="btn" id="edit-preview" onclick="cmd('profile-preview')">Preview</a>
-      <a class="btn" id="edit-save" onclick="cmd('profile-save')"><span class="fa fa-check"></span> Save</a>
+      <a class="btn" id="cancel" onclick="cmd('cancel-changes')"></a>
+      <a class="btn" id="edit-preview" onclick="cmd('profile-preview')"></a>
+      <a class="btn" id="edit-save" onclick="cmd('profile-save')"><span class="fa fa-check"></span> </a>
     </div>
   </div>
 

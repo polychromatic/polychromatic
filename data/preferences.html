@@ -22,13 +22,13 @@
 </head>
 <body>
   <div class="header">
-    <h3 id="page-header">Preferences</h3>
+    <h3 id="page-header"></h3>
   </div>
 
   <div class="content" hidden>
     <!-- Preferences Menu -->
     <div class="menu_area">
-      <p>Change the application preferences for managing your Chroma BlackWidow Keyboard.</p>
+      <p id="str-intro"></p>
       <br>
 <!--
       **** Unimplemented Language/Layout Settings ****
@@ -47,67 +47,66 @@
       </table>
       <hr>
 -->
-      <h3>Application Settings</h3>
+      <h3 id="str-app-settings"></h3>
       <table>
         <tr>
-          <td><label class="pref-label"><input type="checkbox" id="live_switch" onclick="set_pref_chkstate('chroma_editor','live_switch',this)"/> Enable live switching</label></td>
-          <td><p>Activate profiles instantly as soon as you click on them.</p></td>
+          <td><label id="str-live-switch" class="pref-label"><input type="checkbox" id="live_switch" onclick="set_pref_chkstate('chroma_editor','live_switch',this)"/> </label></td>
+          <td><p id="str-live-switch-help"></p></td>
         </tr>
         <tr>
-          <td><label class="pref-label"><input type="checkbox" id="live_preview" onclick="set_pref_chkstate('chroma_editor','live_preview',this)"/> Enable live preview</label></td>
-          <td><p>While editing, show your changes on the actual keyboard.</p></td>
+          <td><label id="str-live-preview" class="pref-label"><input type="checkbox" id="live_preview" onclick="set_pref_chkstate('chroma_editor','live_preview',this)"/> </label></td>
+          <td><p id="str-live-preview-help"></p></td>
         </tr>
         <tr>
-          <td><label class="pref-label"><input type="checkbox" id="activate_on_save" onclick="set_pref_chkstate('chroma_editor','activate_on_save',this)"/> Always activate profiles after saving.</label></td>
+          <td><label id="str-activate-on-save" class="pref-label"><input type="checkbox" id="activate_on_save" onclick="set_pref_chkstate('chroma_editor','activate_on_save',this)"/> </label></td>
         </tr>
         <tr>
-          <td><label class="pref-label">Interface Scale: <input type="range" id="scaling" onmouseout="set_pref_str('chroma_editor','scaling',$(this).val())" min="1" max="2.5" value="1" step="0.5"/></label></td>
-          <td><p>Scale the application so it looks good on large displays.</p></td>
+          <td><label class="pref-label"><span id="str-scaling"></span> <input type="range" id="scaling" onmouseout="set_pref_str('chroma_editor','scaling',$(this).val())" min="1" max="2.5" value="1" step="0.5"/></label></td>
+          <td><p id="str-scaling-help"></p></td>
         </tr>
       </table>
       <hr>
 
-      <h3>Tray Applet</h3>
+      <h3 id="str-tray-applet"></h3>
       <table>
-        <tr><td>  <label class="pref-label"><input type="radio" name="tray-icon" id="tray-system"  onclick="set_pref_str('tray_applet','icon_type','system')"/> System Keyboard</label><br>  </td></tr>
-        <tr><td>  <label class="pref-label"><input type="radio" name="tray-icon" id="tray-logo"    onclick="set_pref_str('tray_applet','icon_type','logo')"/> Static Chroma Logo</label><br>  </td></tr>
-        <tr><td>  <label class="pref-label"><input type="radio" name="tray-icon" id="tray-animated" onclick="set_pref_str('tray_applet','icon_type','animated')"/>  Animated Chroma Logo</label><br>  </td></tr>
+        <tr><td>  <label id="str-system-logo" class="pref-label"><input type="radio" name="tray-icon" id="tray-system"  onclick="set_pref_str('tray_applet','icon_type','system')"/> </label><br>  </td></tr>
+        <tr><td>  <label id="str-static-logo" class="pref-label"><input type="radio" name="tray-icon" id="tray-logo"    onclick="set_pref_str('tray_applet','icon_type','logo')"/> </label><br>  </td></tr>
+        <tr><td>  <label id="str-animated-logo" class="pref-label"><input type="radio" name="tray-icon" id="tray-animated" onclick="set_pref_str('tray_applet','icon_type','animated')"/> </label><br>  </td></tr>
         <tr>
           <td>
-            <label class="pref-label">
-              <input id="tray-custom" type="radio" name="tray-icon" value="custom" onclick="set_pref_str('tray_applet','icon_type','custom')"/>
-              Custom Icon:</label>
+            <label id="str-custom-logo" class="pref-label">
+              <input id="tray-custom" type="radio" name="tray-icon" value="custom" onclick="set_pref_str('tray_applet','icon_type','custom')"/> </label>
               <!-- Hacky way to ensure the data is always updated to Python, "onchange" doesn't always catch changes. -->
               <input class="pref-input" type="text" id="tray-icon-path"
                  onchange="set_pref_str('tray_applet','icon_path', $(this).val())"
               onmouseover="set_pref_str('tray_applet','icon_path', $(this).val())"
                onmouseout="set_pref_str('tray_applet','icon_path', $(this).val())"/>
           </td>
-          <td><p>Copy and paste the path to the image you'd like to use. You may need to resize your icon smaller.</p></td>
+          <td><p id="str-custom-tip"></p></td>
         </tr>
       </table>
-      <p>For changes to take effect, please restart the Tray Applet.</p>
+      <p id="str-restart-tray"></p>
       <hr>
 
-    <h3>Preferred Colours</h3>
+    <h3 id="str-preferred-cols"></h3>
     <table>
       <tr>
         <td>
           <div id="rgb_primary">
             <table>
               <tr>
-                <td>Primary Colour: </td>
+                <td id="str-primary"></td>
                 <td><div id="rgb_start_primary_preview" class="color-preview" style="background-color:rgba(0,0,0,1)"></div></td>
-                <td><a class="btn" onclick="cmd('ask-color?rgb_start_primary')">Set...</a></td>
+                <td><a class="btn str-set" onclick="cmd('ask-color?rgb_start_primary')"></a></td>
               </tr>
             </table>
           </div>
           <div id="rgb_primary">
             <table>
               <tr>
-                <td>Secondary Colour: </td>
+                <td id="str-secondary"></td>
                 <td><div id="rgb_start_secondary_preview" class="color-preview" style="background-color:rgba(0,0,0,1)"></div></td>
-                <td><a class="btn" onclick="cmd('ask-color?rgb_start_secondary')">Set...</a></td>
+                <td><a class="btn str-set" onclick="cmd('ask-color?rgb_start_secondary')"></a></td>
               </tr>
             </table>
           </div>
@@ -115,37 +114,37 @@
       </tr>
     </table>
 
-    <h3>Start-up Settings</h3>
-    <p>These settings are applied when the Tray Applet is started, which is presumed to be automatically started when you login.</p>
+    <h3 id="str-startup"></h3>
+    <p id="str-startup-hint"></p>
       <table>
         <tr>
           <td>
-            <label class="pref-label"><input type="checkbox" id="startup-enabled" onclick="toggle_startup(this)"/> Set preferences when the tray applet starts.</label>
+            <label id="str-enable-startup" class="pref-label"><input type="checkbox" id="startup-enabled" onclick="toggle_startup(this)"/> </label>
           </td>
         </tr>
       </table>
       <table id="startup-options" style="display:none">
         <tr>
           <td id="start-effect">
-            <label class="pref-label">Start Effect:
+            <label class="pref-label"><span id="str-start-effect"></span>
               <select id="start-effect-dropdown">
-                <option value="disabled">No Change</option>
-                <option value="spectrum">Spectrum</option>
-                <option value="wave">Wave</option>
-                <option value="reactive">Reactive</option>
-                <option value="breath_r">Breath (Random)</option>
-                <option value="breath_s">Breath (Single Colour)</option>
-                <option value="breath_d">Breath (Dual Colour)</option>
-                <option value="static">Static</option>
-                <option value="none">No Effect</option>
-                <option value="profile">Activate a Profile</option>
+                <option id="str-disabled" value="disabled"></option>
+                <option id="str-spectrum" value="spectrum"></option>
+                <option id="str-wave" value="wave"></option>
+                <option id="str-reactive" value="reactive"></option>
+                <option id="str-breath-r" value="breath_r"></option>
+                <option id="str-breath-s" value="breath_s"></option>
+                <option id="str-breath-d" value="breath_d"></option>
+                <option id="str-static" value="static"></option>
+                <option id="str-none" value="none"></option>
+                <option id="str-profile-mode" value="profile"></option>
               </select>
             </label>
           </td>
         </tr>
         <tr>
           <td id="start-profile" style="display:none">
-            <label class="pref-label">Profile:
+            <label class="pref-label"><span id="str-profile"></span>
               <select id="profiles-list">
                 <!-- Generated by Python -->
               </select>
@@ -154,7 +153,7 @@
         </tr>
         <tr>
           <td>
-            <label class="pref-label">Start Brightness:
+            <label class="pref-label"><span id="str-start-bright"></span>
               <input type="range" id="start-brightness" min="0" max="255" value="0"/>
             </label>
             <td><span id="start-brightness-text">--%</span></td>
@@ -162,22 +161,22 @@
         </tr>
         <tr>
           <td>
-            <label class="pref-label"><input type="checkbox" id="start-macro" onclick="set_pref_chkstate('startup', 'start_macro', this)"/> Automatically enable the macro keys.</label>
+            <label id="str-auto-macro" class="pref-label"><input type="checkbox" id="start-macro" onclick="set_pref_chkstate('startup', 'start_macro', this)"/> </label>
           </td>
         </tr>
       </table>
 
-    <h3>Advanced</h3>
-    <a class="btn" onclick="cmd('pref-reset-conf')"><span class="fa fa-delete"></span> Reset Preferences</a>
-    <a class="btn btn-serious" onclick="reset_all_prompt()"><span class="fa fa-delete"></span> Reset Everything</a>
+    <h3 id="str-advanced"></h3>
+    <a id="str-reset-pref" class="btn" onclick="cmd('pref-reset-conf')"><span class="fa fa-delete"></span> </a>
+    <a id="str-reset-all" class="btn btn-serious" onclick="reset_all_prompt()"><span class="fa fa-delete"></span> </a>
     </div>
   </div>
 
   <div class="footer">
     <div class="left"></div>
     <div class="right">
-      <a class="btn" id="pref-revert" onclick="cmd('pref-revert')"><span class="fa fa-repeat"></span> Revert</a>
-      <a class="btn" id="pref-save" onclick="cmd('pref-save')"><span class="fa fa-check"></span> Save</a>
+      <a class="btn" id="pref-revert" onclick="cmd('pref-revert')"><span class="fa fa-repeat"></span> </a>
+      <a class="btn" id="pref-save" onclick="cmd('pref-save')"><span class="fa fa-check"></span> </a>
     </div>
   </div>
 

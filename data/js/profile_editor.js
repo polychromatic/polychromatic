@@ -339,18 +339,32 @@ function key(elem, row, col)
  * @param id {string} Mode ID
  */
 var mode;
+var str_set;
+var str_set_help;
+var str_picker;
+var str_picker_help;
+var str_clear;
+var str_clear_help;
 function set_mode(id) {
+    // Expects these variables for strings:
+    //      str_set
+    //      str_set_help
+    //      str_picker
+    //      str_picker_help
+    //      str_clear
+    //      str_clear_help
+
     if (id == 'set') {
         mode = 'set';
-        $('#current_mode').html("<b class='mode-text'>Set</b> - Click on a key to assign a colour here.");
+        $('#current_mode').html("<b class='mode-text'>" + str_set + "</b> - " + str_set_help);
         set_cursor('#keyboard-div','mode-set')
     } else if (id == 'picker') {
         mode = 'picker';
-        $('#current_mode').html("<b class='mode-text'>Picker</b> - Click on a key to grab its colour.");
+        $('#current_mode').html("<b class='mode-text'>" + str_picker + "</b> - " + str_picker_help);
         set_cursor('#keyboard-div','mode-picker')
     } else if (id == 'clear') {
         mode = 'clear';
-        $('#current_mode').html("<b class='mode-text'>Clear</b> - Click on a key to clear.");
+        $('#current_mode').html("<b class='mode-text'>" + str_clear + "</b> - " + str_clear_help);
         set_cursor('#keyboard-div','mode-clear')
     }
 }

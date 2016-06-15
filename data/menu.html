@@ -22,12 +22,12 @@
 </head>
 <body>
   <div class="header">
-    <h3 id="page-header">Configure Your Keyboard</h3>
+    <h3 id="page-header"></h3>
   </div>
   <div class="header-options">
-    <a class="btn right" alt="Preferences" onclick="cmd('pref-open')"><span class="fa fa-wrench"></span></a>
-    <a class="btn right" alt="Polychromatic Repository" onclick="cmd('web?https://github.com/lah7/polychromatic')"><span class="fa fa-github"></span></a>
-    <a class="btn right" alt="Open Configuration Folder" onclick="cmd('open-config-folder')"><span class="fa fa-folder"></span></a>
+    <a class="btn right" onclick="cmd('pref-open')"><span class="fa fa-wrench"></span></a>
+    <a class="btn right" onclick="cmd('web?https://github.com/lah7/polychromatic')"><span class="fa fa-github"></span></a>
+    <a class="btn right" onclick="cmd('open-config-folder')"><span class="fa fa-folder"></span></a>
     <a class="btn right" id="multi-device-switcher" alt="Change Device" onclick="change-device" style="display:none"><span class="fa fa-keyboard-o"></span></a>
   </div>
 
@@ -35,7 +35,7 @@
     <!-- Main Menu Screen -->
     <div class="menu_area">
       <div class="left">
-        <h4>Brightness</h4>
+        <h4 id="str-brightness"></h4>
         <table>
           <tr>
             <td>
@@ -46,27 +46,26 @@
           </tr>
         </table>
 
-        <h4>Effects</h4>
+        <h4 id="str-effects"></h4>
         <table>
-          <tr><td><label class="disabled"><input type="radio" name="effect" value="custom" checked disabled /> <span id="custom">Custom</span></label></td></tr>
-          <tr><td><label><input type="radio" name="effect" value="none" onclick="cmd('effect-none')"/> None</label></td></tr>
-          <tr><td><label><input type="radio" name="effect" value="spectrum" onclick="cmd('effect-spectrum')"/> Spectrum</label></td></tr>
-          <tr><td><label><input type="radio" name="effect" value="wave" onclick="cmd('effect-wave?1');$('#wave-right').prop('checked',true);"/> Wave</label></td></tr>
-          <tr><td><label><input type="radio" name="effect" value="reactive" onclick="cmd('effect-reactive?2'); $('#reactive-normal').prop('checked',true);"/> Reactive</label></td></tr>
+          <tr><td><label class="str-none"><input type="radio" name="effect" value="none" onclick="cmd('effect-none')"/> </label></td></tr>
+          <tr><td><label id="str-spectrum"><input type="radio" name="effect" value="spectrum" onclick="cmd('effect-spectrum')"/> </label></td></tr>
+          <tr><td><label id="str-wave"><input type="radio" name="effect" value="wave" onclick="cmd('effect-wave?1');$('#wave-right').prop('checked',true);"/> </label></td></tr>
+          <tr><td><label id="str-reactive"><input type="radio" name="effect" value="reactive" onclick="cmd('effect-reactive?2'); $('#reactive-normal').prop('checked',true);"/> </label></td></tr>
           <tr><td>
-            <label><input type="radio" name="effect" value="breath" onclick="cmd('effect-breath?0')"/> Breath</label>
-            <small><a id="breath-random" class="small-text" onclick="cmd('effect-breath?1')" hidden>- Switch to Random</a></small>
-            <small><a id="breath-select" class="small-text" onclick="cmd('effect-breath?0')" hidden>- Choose Colours</a></small>
+            <label id="str-breath"><input type="radio" name="effect" value="breath" onclick="cmd('effect-breath?0')"/> </label>
+            <small><a id="breath-random" class="small-text" onclick="cmd('effect-breath?1')" hidden>- </a></small>
+            <small><a id="breath-select" class="small-text" onclick="cmd('effect-breath?0')" hidden>- </a></small>
           </td></tr>
-          <tr><td><label><input type="radio" name="effect" value="static" onclick="cmd('effect-static')"/> Static</label></td></tr>
+          <tr><td><label id="str-static"><input type="radio" name="effect" value="static" onclick="cmd('effect-static')"/> </label></td></tr>
         </table>
         <hr>
         <div id="rgb_primary" hidden>
           <table>
             <tr>
-              <td>Colour: </td>
+              <td id="color"></td>
               <td><div id="rgb_primary_preview" class="color-preview" style="background-color:rgba(0,255,0,1)"></div></td>
-              <td><a class="btn" onclick="cmd('ask-color?rgb_primary')">Custom...</a></td>
+              <td><a class="btn str-custom" onclick="cmd('ask-color?rgb_primary')"></a></td>
             </tr>
             <tr>
               <td></td>
@@ -87,9 +86,9 @@
         <div id="rgb_secondary" hidden>
           <table>
             <tr>
-              <td>Colour 2:</td>
+              <td></td>
               <td><div id="rgb_secondary_preview" class="color-preview" style="background-color:rgba(0,0,255,1)"></div></td>
-              <td><a class="btn" onclick="cmd('ask-color?rgb_secondary')">Custom...</a></td>
+              <td><a class="btn str-custom" onclick="cmd('ask-color?rgb_secondary')"></a></td>
             </tr>
             <tr>
               <td></td>
@@ -109,52 +108,52 @@
         </div>
         <table>
           <tr id="waves" hidden>
-            <td>Direction:</td>
-            <td><label><input id="wave-none"  type="radio" name="direction" value="none"  onclick="cmd('effect-wave?0')" checked> None</label></td>
-            <td><label><input id="wave-left"  type="radio" name="direction" value="left"  onclick="cmd('effect-wave?2')"> Left</label></td>
-            <td><label><input id="wave-right" type="radio" name="direction" value="right" onclick="cmd('effect-wave?1')"> Right</label></td>
+            <td id="str-direction"></td>
+            <td><label class="str-none"><input id="wave-none"  type="radio" name="direction" value="none"  onclick="cmd('effect-wave?0')" checked> </label></td>
+            <td><label id="str-left"><input id="wave-left"  type="radio" name="direction" value="left"  onclick="cmd('effect-wave?2')"> </label></td>
+            <td><label id="str-right"><input id="wave-right" type="radio" name="direction" value="right" onclick="cmd('effect-wave?1')"> </label></td>
           </tr>
         </table>
         <table>
-          <tr id="reactive" hidden>
-            <td>Speed:</td>
-            <td><label><input id="reactive-slow"  type="radio" name="speed" value="slow"  onclick="cmd('effect-reactive?3')"> Slow</label></td>
-            <td><label><input id="reactive-medium" type="radio" name="speed" value="medium" onclick="cmd('effect-reactive?2')" checked> Medium</label></td>
-            <td><label><input id="reactive-fast" type="radio" name="speed" value="fast" onclick="cmd('effect-reactive?1')"> Fast</label></td>
+          <tr id="reactive-options" hidden>
+            <td id="str-speed"></td>
+            <td><label id="str-slow"><input id="reactive-slow"  type="radio" name="speed" value="slow"  onclick="cmd('effect-reactive?3')"> </label></td>
+            <td><label id="str-med"><input id="reactive-medium" type="radio" name="speed" value="medium" onclick="cmd('effect-reactive?2')" checked> </label></td>
+            <td><label id="str-fast"><input id="reactive-fast" type="radio" name="speed" value="fast" onclick="cmd('effect-reactive?1')"> </label></td>
           </tr>
         </table>
       </div>
       <div class="right">
-        <h4>Keys</h4>
+        <h4 id="str-modes"></h4>
         <table>
           <tr>
             <td><img src="img/game-mode.svg" width="24px" height="24px"/></td>
-            <td>Gaming Mode</td>
+            <td id="str-game-mode"></td>
             <td>
-              <a id="game-mode-disable" class="btn" onclick="cmd('gamemode-disable')" style="display: none">Disable</a>
-              <a id="game-mode-enable" class="btn" onclick="cmd('gamemode-enable')">Enable</a>
+              <a id="game-mode-disable" class="btn" onclick="cmd('gamemode-disable')" style="display: none"></a>
+              <a id="game-mode-enable" class="btn" onclick="cmd('gamemode-enable')"></a>
             </td>
-            <td><p>- Disables ALT+F4 and Super key.</p></td>
+            <td><p id="game-mode-tip"></p></td>
           </tr>
           <tr>
             <td><img src="img/marco-keys.svg" width="24px" height="24px"/></td>
-            <td>Marco Keys</td>
-            <td><a id="marco-keys-enable" class="btn" onclick="cmd('enable-marco-keys')">Activate</a></td>
-            <td><p>- Allows usage of the M1-M5 keys.</p></td>
+            <td id="str-macro-keys"></td>
+            <td><a id="macro-keys-enable" class="btn" onclick="cmd('enable-marco-keys')"></a></td>
+            <td><p id="macro-tip"></p></td>
           </tr>
         </table>
 
-        <h4>Profiles</h4>
+        <h4 id="str-profiles"></h4>
         <select id="profiles-list" name="profiles" size="3" style="width: 100%; height:140px" onclick="profile_list_change()">
             <!-- Generated list from config folder -->
         </select>
         <div class="left" style="width:auto">
-            <a id="profiles-activate" class="btn btn-disabled" onclick="profile_activate()"><span class="fa fa-check"></span> Activate</a>
+            <a id="profiles-activate" class="btn btn-disabled" onclick="profile_activate()"><span class="fa fa-check"></span> </a>
         </div>
         <div class="right" style="width:auto;text-align:right">
-            <a id="profiles-new" class="btn" onclick="profile_new()"><span class="fa fa-plus"></span> New</a>
-            <a id="profiles-edit" class="btn btn-dim btn-disabled" onclick="profile_edit()"><span class="fa fa-pencil"></span> Edit</a>
-            <a id="profiles-delete" class="btn btn-dim btn-disabled" onclick="profile_del()"><span class="fa fa-trash"></span> Delete</a>
+            <a id="profiles-new" class="btn" onclick="profile_new()"><span class="fa fa-plus"></span> </a>
+            <a id="profiles-edit" class="btn btn-dim btn-disabled" onclick="profile_edit()"><span class="fa fa-pencil"></span> </a>
+            <a id="profiles-delete" class="btn btn-dim btn-disabled" onclick="profile_del()"><span class="fa fa-trash"></span> </a>
         </div>
       </div>
     </div>
@@ -165,7 +164,7 @@
       <!-- <p>Status: <span id="status" class="status-detected">Connected</span></p> -->
     </div>
     <div class="right">
-      <a class="btn" id="close-window" onclick="cmd('quit')">Close</a>
+      <a class="btn" id="close-window" onclick="cmd('quit')"></a>
     </div>
   </div>
 

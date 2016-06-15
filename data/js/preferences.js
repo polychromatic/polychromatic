@@ -19,7 +19,8 @@
  */
 
 function reset_all_prompt() {
-    if ( confirm('Are you sure you wish to erase all configuration and profiles?') == true ) {
+    // Expects string variable pushed: del_all_text
+    if ( confirm(del_all_text) == true ) {
       cmd('pref-reset-all');
     }
 }
@@ -50,12 +51,13 @@ $('#profiles-list').change(function() {
 });
 
 $(document).ready(function () {
+    // Expects string variable pushed: no_change
     $("#start-brightness").change(function () {
         var brightnessRaw = ($(this).val() / 255.0) * 100;
         var brightnessRnd = Math.round(brightnessRaw).toString();
         $('#start-brightness-text').text(brightnessRnd + "%");
         if (brightnessRnd == 0) {
-            $("#start-brightness-text").text("No Change");
+            $("#start-brightness-text").text(no_change);
         }
         set_pref_str('startup','start_brightness', $(this).val());
     });
