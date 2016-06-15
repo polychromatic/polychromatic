@@ -27,10 +27,28 @@ import os
 import sys
 import signal
 import json
+import gettext
 import razer.daemon_dbus
 import razer.keyboard
 import polychromatic.preferences
 import polychromatic.profiles
+
+
+class Translations(object):
+    def __init__(self):
+        # Use relative translations if available.
+        data_path = Controller.whereami()
+        if os.path.exists(os.path.join(data_path, '../locale/')):
+            print('Using relative path for translations.')
+            self.locale_path = os.path.join(data_path, '../locale/')
+        else:
+            print('Using "/usr/share/locale/" or falling back to "en_US" for translations.')
+            self.locale_path = '/usr/share/locale/'
+
+        # Initialise i18n translations
+        global _
+        t = gettext.translation('polychromatic-controller', localedir=self.locale_path, fallback=True)
+        _ = t.gettext
 
 
 class AppView(WebKit2.WebView):
@@ -793,6 +811,7 @@ class Terminal(object):
 
 
 if __name__ == "__main__":
+    trans = Translations()
     pref = polychromatic.preferences.Preferences()
     stdout = Terminal()
     app = Controller()

@@ -23,14 +23,37 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 from gi.repository import Gtk, Gdk, AppIndicator3 as appindicator
-import collections, os
+import collections
+import os
 import sys
 import signal
+import gettext
 
 import razer.daemon_dbus
 import razer.keyboard
 import polychromatic.preferences
 import polychromatic.profiles
+
+
+class Translations():
+    def __init__(self):
+        # Use relative translations if available.
+        whereami = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+        if os.path.exists(os.path.join(whereami, 'locale/')):
+            locale_path = os.path.join(whereami, 'locale/')
+            print('Using relative path for translations.')
+        else:
+            locale_path = '/usr/share/locale/'
+            print('Using "/usr/share/locale/" or falling back to "en_US" for translations.')
+
+        # Initialise i18n translations
+        global _
+        t = gettext.translation('polychromatic-tray-applet', localedir=locale_path, fallback=True)
+        _ = t.gettext
+
+    """ Where are the locales? """
+    def get_locale_path(self):
+        return path
 
 
 class AppIndicator:
@@ -440,16 +463,15 @@ class AppIndicator:
         else:
             return
 
-def main():
+if __name__ == "__main__":
     """
     Main function
     """
     # Kill the process when CTRL+C'd.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+    trans = Translations()
+    indicator = AppIndicator()
+
     Gtk.main()
     sys.exit(0)
-
-if __name__ == "__main__":
-    indicator = AppIndicator()
-    main()
