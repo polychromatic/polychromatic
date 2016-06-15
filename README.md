@@ -90,3 +90,7 @@ To update your installation at a later date:
 * [python3-gi](https://packages.debian.org/sid/python3-gi)
 * [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1)
 
+
+### Translations
+Welcome Translators! If you'd like to translate this application
+into other languages, take a look [at this wiki page](https://github.com/lah7/polychromatic/wiki/How-to-translate-the-application.).
