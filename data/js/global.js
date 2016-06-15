@@ -19,18 +19,6 @@
  ** Functions here are persistent on all pages.
  */
 
-// Show an error dialog when JavaScript errors occur.
-$(window).on("error", function(evt) {
-    // Get JavaScript Event
-    var e = evt.originalEvent;
-    friendly_txt = "There was a problem displaying this page.";
-    if (e.message) {
-        alert(friendly_txt + "\n\nError:\n\t" + e.message + "\nLine:\n\t" + e.lineno + "\nFile:\n\t" + e.filename);
-    } else {
-        alert(friendly_txt + "\n\nError:\n\t" + e.type + "\nElement:\n\t" + (e.srcElement || e.target));
-    }
-});
-
 /**
  *  Sends commands to Python
  */

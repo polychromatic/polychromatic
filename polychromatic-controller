@@ -79,6 +79,9 @@ class AppView(WebKit2.WebView):
         # Allows Keyboard SVGs to load.
         self.get_settings().set_property('allow-file-access-from-file-urls', 1)
 
+        # Print console log errors to stdout
+        self.get_settings().set_property('enable_write_console_messages_to_stdout', 1)
+
         # Load the starting page
         default_page = 'menu'
         data_path = Controller.whereami()
