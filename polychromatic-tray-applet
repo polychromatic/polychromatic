@@ -128,7 +128,7 @@ class AppIndicator:
         self.menu = Gtk.Menu()
 
         # Create effects sub-menu
-        effect_item = Gtk.MenuItem("Effects")
+        effect_item = Gtk.MenuItem(_("Effects"))
         effect_item.show()
         self.effect_menu = Gtk.Menu()
         self.effect_menu.show()
@@ -136,14 +136,14 @@ class AppIndicator:
         self.menu.append(effect_item)
 
         self.effect_menu_items = collections.OrderedDict()
-        self.effect_menu_items["spectrum"] = Gtk.RadioMenuItem(group=None, label="Spectrum Effect")
-        self.effect_menu_items["wave"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label="Wave Effect")
-        self.effect_menu_items["reactive"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label="Reactive Effect")
-        self.effect_menu_items["breath_r"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label="Breath Effect (Random)")
-        self.effect_menu_items["breath_s"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label="Breath Effect (Single Colour)")
-        self.effect_menu_items["breath_d"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label="Breath Effect (Dual Colour)")
-        self.effect_menu_items["static"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label="Static Effect")
-        self.effect_menu_items["none"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label="No Effect (Off)")
+        self.effect_menu_items["spectrum"] = Gtk.RadioMenuItem(group=None, label=_("Spectrum Effect"))
+        self.effect_menu_items["wave"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Wave Effect"))
+        self.effect_menu_items["reactive"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Reactive Effect"))
+        self.effect_menu_items["breath_r"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath Effect (Random)"))
+        self.effect_menu_items["breath_s"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath Effect (Single Colour)"))
+        self.effect_menu_items["breath_d"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath Effect (Dual Colour)"))
+        self.effect_menu_items["static"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Static Effect"))
+        self.effect_menu_items["none"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("No Effect (Off)"))
 
         for button_key, button in self.effect_menu_items.items():
             button.connect("activate", self.menuitem_keyboard_effect_response, button_key)
@@ -151,7 +151,7 @@ class AppIndicator:
             self.effect_menu.append(button)
 
         # Create brightness sub-menu
-        brightness_item = Gtk.MenuItem("Brightness")
+        brightness_item = Gtk.MenuItem(_("Brightness"))
         brightness_item.show()
         self.brightness_menu = Gtk.Menu()
         self.brightness_menu.show()
@@ -159,11 +159,11 @@ class AppIndicator:
         self.menu.append(brightness_item)
 
         self.brightness_menu_items = collections.OrderedDict()
-        self.brightness_menu_items[255] = Gtk.RadioMenuItem(group=None, label="Brightness 100%")
-        self.brightness_menu_items[192] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label="Brightness 75%")
-        self.brightness_menu_items[128] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label="Brightness 50%")
-        self.brightness_menu_items[64] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label="Brightness 25%")
-        self.brightness_menu_items[0] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label="Brightness 0%")
+        self.brightness_menu_items[255] = Gtk.RadioMenuItem(group=None, label=_("Brightness 100%"))
+        self.brightness_menu_items[192] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label=_("Brightness 75%"))
+        self.brightness_menu_items[128] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label=_("Brightness 50%"))
+        self.brightness_menu_items[64] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label=_("Brightness 25%"))
+        self.brightness_menu_items[0] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label=_("Brightness 0%"))
 
         for button_key, button in self.brightness_menu_items.items():
             button.connect("activate", self.menuitem_brightness_response, button_key)
@@ -171,25 +171,25 @@ class AppIndicator:
             self.brightness_menu.append(button)
 
         # Create game mode sub-menu.
-        game_mode_item = Gtk.MenuItem("Game Mode")
+        game_mode_item = Gtk.MenuItem(_("Game Mode"))
         game_mode_item.show()
         self.game_mode_menu = Gtk.Menu()
         self.game_mode_menu.show()
         game_mode_item.set_submenu(self.game_mode_menu)
         self.menu.append(game_mode_item)
 
-        enable_game_mode_button = Gtk.MenuItem("Enable Game Mode")
+        enable_game_mode_button = Gtk.MenuItem(_("Enable Game Mode"))
         enable_game_mode_button.connect("activate", self.menuitem_enable_game_mode, True)
         enable_game_mode_button.show()
         self.game_mode_menu.append(enable_game_mode_button)
 
-        disable_game_mode_button = Gtk.MenuItem("Disable Game Mode")
+        disable_game_mode_button = Gtk.MenuItem(_("Disable Game Mode"))
         disable_game_mode_button.connect("activate", self.menuitem_enable_game_mode, False)
         disable_game_mode_button.show()
         self.game_mode_menu.append(disable_game_mode_button)
 
         # Create profiles sub-menu.
-        self.profiles_button = Gtk.MenuItem("Profiles")
+        self.profiles_button = Gtk.MenuItem(_("Profiles"))
         self.profiles_button.show()
         self.profiles_menu = Gtk.Menu()
         self.profiles_menu.show()
@@ -201,7 +201,7 @@ class AppIndicator:
         sep1.show()
         self.menu.append(sep1)
 
-        macro_button = Gtk.MenuItem("Enable Macro Keys")
+        macro_button = Gtk.MenuItem(_("Enable Macro Keys"))
         macro_button.connect("activate", self.menuitem_enable_macro_buttons_response, "macros")
         macro_button.show()
         self.menu.append(macro_button)
@@ -210,9 +210,9 @@ class AppIndicator:
         sep2.show()
         self.menu.append(sep2)
 
-        self.primary_colour_button = Gtk.MenuItem("Change Primary Colour... ({0})".format(AppIndicator.colour_to_hex(self.colour)))
+        self.primary_colour_button = Gtk.MenuItem(_("Change Primary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.colour)))
         self.primary_colour_button.connect("activate", self.set_static_colour, 1)
-        self.secondary_colour_button = Gtk.MenuItem("Change Secondary Colour... ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
+        self.secondary_colour_button = Gtk.MenuItem(_("Change Secondary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
         self.secondary_colour_button.connect("activate", self.set_static_colour, 2)
         self.menu.append(self.primary_colour_button)
         self.menu.append(self.secondary_colour_button)
@@ -224,7 +224,7 @@ class AppIndicator:
         self.menu.append(sep3)
 
         if os.path.exists('/usr/bin/polychromatic-controller'):
-            open_config_button = Gtk.MenuItem("Open Configuration Utility")
+            open_config_button = Gtk.MenuItem(_("Open Configuration Utility"))
             open_config_button.connect("activate", self.menuitem_open_config)
             open_config_button.show()
             self.menu.append(open_config_button)
@@ -235,7 +235,7 @@ class AppIndicator:
         else:
             print('Polychromatic Controller not present. Not integrating to menu.')
 
-        quit_button = Gtk.MenuItem("Quit")
+        quit_button = Gtk.MenuItem(_("Quit"))
         quit_button.connect("activate", self.quit, "quit")
         quit_button.show()
         self.menu.append(quit_button)
@@ -342,7 +342,7 @@ class AppIndicator:
 
         # Create a colour selection dialog
         #colorsel = gtk.ColorSelection()
-        color_selection_dlg = Gtk.ColorSelectionDialog('Change Static Colour')
+        color_selection_dlg = Gtk.ColorSelectionDialog(_('Change Static Colour'))
         color_selection_result = color_selection_dlg.run()
 
         # If new colour is chosen.
@@ -352,11 +352,11 @@ class AppIndicator:
 
             if colour_index == 1:
                 self.colour = razer.keyboard.KeyboardColour.gdk_colour_to_rgb(color_rgb)
-                self.primary_colour_button.set_label("Change Primary Colour... ({0})".format(AppIndicator.colour_to_hex(self.colour)))
+                self.primary_colour_button.set_label(_("Change Primary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.colour)))
                 print("[Change Primary Colour] New: {0}".format(AppIndicator.colour_to_hex(self.colour)))
             else:
                 self.secondary_colour = razer.keyboard.KeyboardColour.gdk_colour_to_rgb(color_rgb)
-                self.secondary_colour_button.set_label("Change Secondary Colour... ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
+                self.secondary_colour_button.set_label(_("Change Secondary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
                 print("[Change Secondary Colour] New: {0}".format(AppIndicator.colour_to_hex(self.secondary_colour)))
 
             # If 'static', 'reactive' or 'breath' mode is set, refresh the effect.
@@ -396,7 +396,7 @@ class AppIndicator:
 
         # No profiles found.
         if not profile_list:
-            self.profiles_status = Gtk.MenuItem("No profiles found.")
+            self.profiles_status = Gtk.MenuItem(_("No profiles found."))
             self.profiles_status.show()
             self.profiles_menu.append(self.profiles_status)
             self.profiles_status.set_sensitive(False)
@@ -404,7 +404,7 @@ class AppIndicator:
 
         ## Display current profile in use.
         self.profile_items = collections.OrderedDict()
-        self.profile_items['status'] = Gtk.RadioMenuItem(group=None, label="None Selected")
+        self.profile_items['status'] = Gtk.RadioMenuItem(group=None, label=_("None Selected"))
         self.profile_items['status'].show()
         self.profiles_menu.append(self.profile_items['status'])
         self.profile_items['status'].set_sensitive(False)
@@ -440,10 +440,10 @@ class AppIndicator:
             self.colour = (start_col1_r, start_col1_g, start_col1_b)
             self.secondary_colour = (start_col2_r, start_col2_g, start_col2_b)
 
-            self.primary_colour_button.set_label("Change Primary Colour... ({0})".format(AppIndicator.colour_to_hex(self.colour)))
+            self.primary_colour_button.set_label(_("Change Primary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.colour)))
             print("[Change Primary Colour] New: {0}".format(AppIndicator.colour_to_hex(self.colour)))
 
-            self.secondary_colour_button.set_label("Change Secondary Colour... ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
+            self.secondary_colour_button.set_label(_("Change Secondary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
             print("[Change Secondary Colour] New: {0}".format(AppIndicator.colour_to_hex(self.secondary_colour)))
 
             if not start_effect == 'disabled':
