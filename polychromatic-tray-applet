@@ -140,8 +140,8 @@ class AppIndicator:
         self.effect_menu_items["wave"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Wave Effect"))
         self.effect_menu_items["reactive"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Reactive Effect"))
         self.effect_menu_items["breath_r"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath Effect (Random)"))
-        self.effect_menu_items["breath_s"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath Effect (Single Colour)"))
-        self.effect_menu_items["breath_d"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath Effect (Dual Colour)"))
+        self.effect_menu_items["breath_s"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath Effect (Single Color)"))
+        self.effect_menu_items["breath_d"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath Effect (Dual Color)"))
         self.effect_menu_items["static"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Static Effect"))
         self.effect_menu_items["none"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("No Effect (Off)"))
 
@@ -210,9 +210,9 @@ class AppIndicator:
         sep2.show()
         self.menu.append(sep2)
 
-        self.primary_colour_button = Gtk.MenuItem(_("Change Primary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.colour)))
+        self.primary_colour_button = Gtk.MenuItem(_("Change Primary Color...") + " ({0})".format(AppIndicator.colour_to_hex(self.colour)))
         self.primary_colour_button.connect("activate", self.set_static_colour, 1)
-        self.secondary_colour_button = Gtk.MenuItem(_("Change Secondary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
+        self.secondary_colour_button = Gtk.MenuItem(_("Change Secondary Color...") + " ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
         self.secondary_colour_button.connect("activate", self.set_static_colour, 2)
         self.menu.append(self.primary_colour_button)
         self.menu.append(self.secondary_colour_button)
@@ -342,7 +342,7 @@ class AppIndicator:
 
         # Create a colour selection dialog
         #colorsel = gtk.ColorSelection()
-        color_selection_dlg = Gtk.ColorSelectionDialog(_('Change Static Colour'))
+        color_selection_dlg = Gtk.ColorSelectionDialog(_('Change Static Color'))
         color_selection_result = color_selection_dlg.run()
 
         # If new colour is chosen.
@@ -352,11 +352,11 @@ class AppIndicator:
 
             if colour_index == 1:
                 self.colour = razer.keyboard.KeyboardColour.gdk_colour_to_rgb(color_rgb)
-                self.primary_colour_button.set_label(_("Change Primary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.colour)))
+                self.primary_colour_button.set_label(_("Change Primary Color...") + " ({0})".format(AppIndicator.colour_to_hex(self.colour)))
                 print("[Change Primary Colour] New: {0}".format(AppIndicator.colour_to_hex(self.colour)))
             else:
                 self.secondary_colour = razer.keyboard.KeyboardColour.gdk_colour_to_rgb(color_rgb)
-                self.secondary_colour_button.set_label(_("Change Secondary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
+                self.secondary_colour_button.set_label(_("Change Secondary Color...") + " ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
                 print("[Change Secondary Colour] New: {0}".format(AppIndicator.colour_to_hex(self.secondary_colour)))
 
             # If 'static', 'reactive' or 'breath' mode is set, refresh the effect.
@@ -440,10 +440,10 @@ class AppIndicator:
             self.colour = (start_col1_r, start_col1_g, start_col1_b)
             self.secondary_colour = (start_col2_r, start_col2_g, start_col2_b)
 
-            self.primary_colour_button.set_label(_("Change Primary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.colour)))
+            self.primary_colour_button.set_label(_("Change Primary Color...") + " ({0})".format(AppIndicator.colour_to_hex(self.colour)))
             print("[Change Primary Colour] New: {0}".format(AppIndicator.colour_to_hex(self.colour)))
 
-            self.secondary_colour_button.set_label(_("Change Secondary Colour...") + " ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
+            self.secondary_colour_button.set_label(_("Change Secondary Color...") + " ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
             print("[Change Secondary Colour] New: {0}".format(AppIndicator.colour_to_hex(self.secondary_colour)))
 
             if not start_effect == 'disabled':
