@@ -28,6 +28,7 @@ import os
 import sys
 import signal
 import gettext
+from ctypes import cdll, byref, create_string_buffer
 
 import razer.daemon_dbus
 import razer.keyboard
@@ -54,6 +55,22 @@ class Translations():
     """ Where are the locales? """
     def get_locale_path(self):
         return path
+
+
+""" Appear as its own process then a Python script to ps """
+def set_process_title():
+
+    name = os.path.basename(sys.argv[0])
+
+    libc = cdll.LoadLibrary('libc.so.6')
+    buff = create_string_buffer(len(name)+1)
+    buff.value = name.encode("UTF-8")
+    ret = libc.prctl(15, byref(buff), 0, 0, 0)
+
+    if ret != 0:
+        print("Failed to set process title")
+
+    return ret
 
 
 class AppIndicator:
@@ -470,6 +487,7 @@ if __name__ == "__main__":
     # Kill the process when CTRL+C'd.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+    set_process_title()
     trans = Translations()
     indicator = AppIndicator()
 
