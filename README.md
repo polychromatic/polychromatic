@@ -47,10 +47,17 @@ Polychromatic is avaliable from the PPA, which also keeps the application up-to-
     sudo apt update
     sudo apt install polychromatic
 
-* Requires the **razer-chroma-drivers** package to be installed first.
+* Requires **razer-chroma-drivers** to be installed first.
+* Supports 14.04, 15.10 and 16.04.
 * **Optionally**, you may wish to add the `polychromatic-tray-applet` program to your start-up programs.
-* Packages for Ubuntu 16.04 depend on `gir1.2-webkit2-4.0`.
-* Packages for Ubuntu 14.04 and 15.10 depend on the older `gir1.2-webkit2-3.0`.
+
+
+#### Notes for Ubuntu 15.10 / Linux Mint 17 and prior.
+
+Polychromatic depends on a newer version of WebKit2 which are not available in these versions. Instead, packages built for Ubuntu 14.04 and 15.10 will depend on `gir1.2-webkit2-3.0` instead.
+
+If you intend to run or manually install from `master`, you must change `gi.require_version('WebKit2', '4.0')` to `3.0` first.
+
 
 
 ### Debian
@@ -91,12 +98,8 @@ To update your installation at a later date:
 * [python3-gi](https://packages.debian.org/sid/python3-gi)
 * [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1)
 
-**Ubuntu 14.04 and 15.10:**
-* [gir1.2-webkit2-3.0](https://packages.debian.org/sid/gir1.2-webkit2-3.0)
-* [python3-gi](https://packages.debian.org/sid/python3-gi)
-* [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1)
-
 
 ### Translations
 Welcome Translators! If you'd like to translate this application
 into other languages, take a look [at this wiki page](https://github.com/lah7/polychromatic/wiki/How-to-translate-the-application.).
+
