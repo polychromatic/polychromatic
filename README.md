@@ -39,7 +39,7 @@ For Ubuntu and Debian users, here are the drivers pre-packaged for your convenie
 These packages are provided **as-is**!
 
 
-### Ubuntu 16.04
+### Ubuntu / Linux Mint
 
 Polychromatic is avaliable from the PPA, which also keeps the application up-to-date.
 
@@ -49,7 +49,8 @@ Polychromatic is avaliable from the PPA, which also keeps the application up-to-
 
 * Requires the **razer-chroma-drivers** package to be installed first.
 * **Optionally**, you may wish to add the `polychromatic-tray-applet` program to your start-up programs.
-* The program is not available for Ubuntu 15.10 or below due to `gir1.2-webkit2-4.0`.
+* Packages for Ubuntu 16.04 depend on `gir1.2-webkit2-4.0`.
+* Packages for Ubuntu 14.04 and 15.10 depend on the older `gir1.2-webkit2-3.0`.
 
 
 ### Debian
@@ -85,8 +86,13 @@ To update your installation at a later date:
 * [python-gobject](https://www.archlinux.org/packages/extra/x86_64/python-gobject/)
 * [libappindicator](https://aur.archlinux.org/pkgbase/libappindicator/?comments=all)
 
-**Debian:**
+**Debian and Ubuntu 16.04:**
 * [gir1.2-webkit2-4.0](https://packages.debian.org/sid/gir1.2-webkit2-4.0)
+* [python3-gi](https://packages.debian.org/sid/python3-gi)
+* [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1)
+
+**Ubuntu 14.04 and 15.10:**
+* [gir1.2-webkit2-3.0](https://packages.debian.org/sid/gir1.2-webkit2-3.0)
 * [python3-gi](https://packages.debian.org/sid/python3-gi)
 * [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1)
 
