@@ -48,16 +48,16 @@ Polychromatic is avaliable from the PPA, which also keeps the application up-to-
     sudo apt install polychromatic
 
 * Requires **razer-chroma-drivers** to be installed first.
-* Supports 14.04, 15.10 and 16.04.
 * **Optionally**, you may wish to add the `polychromatic-tray-applet` program to your start-up programs.
 
 
-#### Notes for Ubuntu 15.10 / Linux Mint 17 and prior.
+#### Ubuntu 14.04, 15.10, Linux Mint 17 (and earlier)
 
-Polychromatic depends on a newer version of WebKit2 which are not available in these versions. Instead, packages built for Ubuntu 14.04 and 15.10 will depend on `gir1.2-webkit2-3.0` instead.
+Polychromatic depends on a newer version of WebKit2 which is not available in earlier releases.
 
-If you intend to run or manually install from `master`, you must change `gi.require_version('WebKit2', '4.0')` to `3.0` first.
-
+Instead, packages built for previous Ubuntu releases are
+[based on WebKit 1](https://github.com/lah7/polychromatic/tree/legacy)
+(v0.1.0 => 0.2.0.1) and are unlikely to receive further updates.
 
 
 ### Debian
