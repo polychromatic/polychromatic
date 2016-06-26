@@ -90,9 +90,10 @@ class AppView(WebKit2.WebView):
     """ Callback: Title changed """
     def title_changed_cb(self, view, frame):
         title = self.get_title()
-        if title:
+        if title != 'null':
             stdout.vvprint('** Command: ' + title)
             app.process_command(title)
+            self.run_javascript('cmd("null")')
 
     """ Callback: Page changed """
     def load_changed_cb(self, view, frame):
