@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import os, json, shutil
-import razer.daemon_dbus
-import razer.keyboard
+import os
+import json
+import shutil
 
 module_config_version = 2
 
