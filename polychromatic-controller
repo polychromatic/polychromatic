@@ -22,12 +22,12 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('WebKit2', '4.0')
 from gi.repository import Gtk, Gdk, WebKit2
-from ctypes import cdll, byref, create_string_buffer
 import os
 import sys
 import signal
 import json
 import gettext
+import setproctitle
 import razer.daemon_dbus
 import razer.keyboard
 import polychromatic.preferences
@@ -166,7 +166,7 @@ class Controller(object):
         self.data_path = self.whereami()
 
         # Set up the application
-        self.set_process_title()
+        setproctitle.setproctitle('polychromatic-controller')
         self.webkit = AppView()
         self.build_app()
 
@@ -181,23 +181,6 @@ class Controller(object):
             print("Data directory is missing. Exiting...")
             FatalError(_("Data directory is missing: /usr/share/polychromatic/"), True)
         return path
-
-    """ Appear as its own process then a Python script to ps """
-    @staticmethod
-    def set_process_title():
-
-        name = os.path.basename(sys.argv[0])
-
-        libc = cdll.LoadLibrary('libc.so.6')
-        buff = create_string_buffer(len(name)+1)
-        buff.value = name.encode("UTF-8")
-        ret = libc.prctl(15, byref(buff), 0, 0, 0)
-
-        if ret != 0:
-            print("Failed to set process title")
-
-        stdout.vvprint('Process title set to "' + name + '".')
-        return ret
 
     """ Assemble the application """
     def build_app(self):
