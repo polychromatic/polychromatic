@@ -9,7 +9,7 @@ Homepage: https://github.com/lah7/polychromatic
 
 Package: polychromatic
 Architecture: all
-Depends: python3,
+Depends: python3 (>= 3.4.0),
          python3-gi,
          python3-setproctitle,
          gir1.2-webkit2-4.0,
