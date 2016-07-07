@@ -30,7 +30,8 @@ polyc_modules="$python_path/polychromatic"
 razer_modules="$python_path/razer/"
 locale_dir="/usr/share/locale/"
 source=$(dirname "$0")/..
-dependencies_apt="gir1.2-webkit2-4.0 python3-gi gir1.2-appindicator3-0.1"
+dependencies_apt="gir1.2-webkit2-4.0 python3-gi python3-setproctitle gir1.2-appindicator3-0.1"
+dependencies_pacman="webkitgtk python-gobject python-setproctitle libappindicator"
 
 # Pretty colours!
 function printg() {
@@ -70,9 +71,20 @@ function get_distro() {
 
 distro=`get_distro`
 if [ "$distro" == "debian" ] || [ "$distro" == "ubuntu" ]; then
+    printy "Dependencies: $dependencies_apt"
     printg "Installing dependencies...\n"
     sudo apt install $dependencies_apt
     echo -e ''
+
+elif [ "$distro" == "arch" ] || [ "$distro" == "manjaro" ]; then
+    printy "Dependencies: $dependencies_pacman"
+    read -p "Install dependencies with pacman? [y/n] | " choice
+    if [ "$choice" == "y" ]; then
+        printg "Installing dependencies...\n"
+        sudo pacman -S $dependencies_pacman
+    fi
+    echo -e ''
+
 else
     echo "**************************************************"
     printy "Dependencies cannot be automatically installed on this distro."
