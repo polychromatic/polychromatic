@@ -20,12 +20,14 @@
    Global
 *************************/
 /* Fonts */
-html, body {
+html, body, input {
     font-family: 'Play', 'Ubuntu', 'DejaVu Sans', sans-serif;
-    background-color: #222222;
+}
 
-    /* Behave more like an application.
-     * (Some elements may need selection activating manually) */
+/* Behave more like an application.
+ * (Some elements may need selection activating manually) */
+html, body {
+    background-color: #222222;
     -webkit-user-select: none;
 }
 
