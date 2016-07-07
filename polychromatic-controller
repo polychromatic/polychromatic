@@ -352,13 +352,21 @@ class Controller(object):
             trans.push('#macro-keys-enable', _("Activate"))
             trans.push('#macro-tip', _("Allows usage of the M1-M5 keys."))
             trans.push('#profiles-activate', _("Activate"), True)
-            trans.push('#str-profiles', _("Profiles"), True)
+            trans.push('#str-profiles', _("Application Profiles"), True)
             trans.push('#profiles-new', _("New"), True)
             trans.push('#profiles-edit', _("Edit"), True)
             trans.push('#profiles-delete', _("Delete"), True)
 
-            trans.push_var('new_text', _("Please name your new profile."))
-            trans.push_var('del_text', _("Are you sure you wish to delete this?"))
+            trans.push('#dialog-new-title', _("Create New Application Profile"))
+            trans.push('#dialog-new-hint', _("What's the name of this new profile?"))
+            trans.push('#dialog-new-cancel', _("Cancel"))
+            trans.push('#dialog-new-ok', _("Create"))
+
+            trans.push('#dialog-del-title', _("Delete"))
+            trans.push('#dialog-del-hint', _("Are you sure you want to delete this?"))
+            trans.push('#dialog-del-no', _("Keep"))
+            trans.push('#dialog-del-yes', _("Delete"))
+
 
             # Page actions
             self.webkit.run_javascript('instantProfileSwitch = false;')
@@ -860,7 +868,7 @@ class Controller(object):
             os.system('xdg-open "' + pref.SAVE_ROOT + '"')
 
         else:
-            print("Unimplemented command.")
+            print("Unimplemented command: " + command)
 
 
 class FatalError(object):

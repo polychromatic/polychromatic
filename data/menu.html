@@ -151,11 +151,34 @@
             <a id="profiles-activate" class="btn btn-disabled" onclick="profile_activate()"><span class="fa fa-check"></span> </a>
         </div>
         <div class="right" style="width:auto;text-align:right">
-            <a id="profiles-new" class="btn" onclick="profile_new()"><span class="fa fa-plus"></span> </a>
+            <a id="profiles-new" class="btn" onclick="new_profile_dialog_open()"><span class="fa fa-plus"></span> </a>
             <a id="profiles-edit" class="btn btn-dim btn-disabled" onclick="profile_edit()"><span class="fa fa-pencil"></span> </a>
-            <a id="profiles-delete" class="btn btn-dim btn-disabled" onclick="profile_del()"><span class="fa fa-trash"></span> </a>
+            <a id="profiles-delete" class="btn btn-dim btn-disabled" onclick="del_profile_dialog_open()"><span class="fa fa-trash"></span> </a>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id="overlay" hidden></div>
+
+  <div id="dialog-new" class="dialog" hidden>
+    <h3 id="dialog-new-title"></h3>
+    <p id="dialog-new-hint"></p>
+    <input id="dialog-new-input" type="text" class="pref-input">
+    <div class="dialog-buttons">
+      <hr>
+      <a id="dialog-new-cancel" class="btn" onclick="new_profile_dialog_cancel()"></a>
+      <a id="dialog-new-ok" class="btn btn-disabled" onclick="new_profile_dialog_ok()"></a>
+    </div>
+  </div>
+
+  <div id="dialog-del" class="dialog" hidden>
+    <h3><span id="dialog-del-title"></span> "<span id="dialog-del-item"></span>"</h3>
+    <p id="dialog-del-hint"></p>
+    <div class="dialog-buttons">
+      <hr>
+      <a id="dialog-del-no" class="btn" onclick="del_profile_dialog_close()"></a>
+      <a id="dialog-del-yes" class="btn btn-serious" onclick="del_profile_dialog_confirm()"></a>
     </div>
   </div>
 

@@ -27,16 +27,75 @@ function profile_list_change() {
     $('#profiles-activate, #profiles-edit, #profiles-delete').removeClass('btn-disabled');
 }
 
+
 /**
- * Get the name for a new profile.
+ * Dialogue box for creating profiles
  */
-function profile_new() {
-    // Expects string variable pushed: new_text
-    var dialog_response = window.prompt(new_text);
-    if (dialog_response != null && dialog_response.length > 0) {
-        cmd('profile-new?' + dialog_response);
-    }
+function new_profile_dialog_open() {
+    $('#dialog-new-input').val('')
+    $('#dialog-new').addClass('in')
+    $('#dialog-new').show()
+    $('#dialog-new-ok').addClass('btn-disabled');
+    $('#overlay').fadeIn('fast')
+    $('#content').addClass('blur')
 }
+
+function new_profile_dialog_close() {
+    $('#dialog-new').addClass('out')
+    setTimeout(function(){ $('#dialog-new').removeClass('out').removeClass('in').hide() }, 250);
+    $('#overlay').fadeOut('fast')
+    $('#content').removeClass('blur')
+}
+
+// Enable / disable "Create" button if valid data is entered.
+$(document).ready(function() {
+    $('#dialog-new-input').keyup(function() {
+    length = $("#dialog-new-input").val().length;
+    if ( length > 0 ) {
+        $('#dialog-new-ok').removeClass('btn-disabled');
+    } else {
+        $('#dialog-new-ok').addClass('btn-disabled');
+    }
+    });
+});
+
+function new_profile_dialog_cancel() {
+    new_profile_dialog_close();
+}
+
+function new_profile_dialog_ok() {
+    new_profile_dialog_close();
+    input = $("#dialog-new-input").val();
+    cmd('profile-new?' + input);
+}
+
+
+/**
+ * Dialogue box for deleting a profile
+ */
+function del_profile_dialog_open() {
+    $('#dialog-del').addClass('in')
+    $('#dialog-del').show()
+    $('#overlay').fadeIn('fast')
+    $('#content').addClass('blur')
+
+    var selected_profile = $("#profiles-list option:selected").text();
+    $("#dialog-del-item").html(selected_profile);
+}
+
+function del_profile_dialog_close() {
+    $('#dialog-del').addClass('out')
+    setTimeout(function(){ $('#dialog-del').removeClass('out').removeClass('in').hide() }, 250);
+    $('#overlay').fadeOut('fast')
+    $('#content').removeClass('blur')
+}
+
+function del_profile_dialog_confirm() {
+    del_profile_dialog_close();
+    var selected_profile = $("#profiles-list option:selected").text();
+    cmd('profile-del?' + selected_profile);
+}
+
 
 /**
  * Edit profile.
@@ -46,18 +105,6 @@ function profile_edit() {
     cmd('profile-edit?' + selected_profile);
 }
 
-/**
- * Delete a profile confirmation box
- */
-function profile_del() {
-    var selected_profile = $("#profiles-list option:selected").text();
-
-    // Expects string variable pushed: del_text
-    var dialog_response = window.confirm(del_text + ' \n' + '"' + selected_profile + '"');
-    if (dialog_response == true) {
-        cmd('profile-del?' + selected_profile);
-    }
-}
 
 /**
  * Activate profile.
@@ -66,6 +113,7 @@ function profile_activate() {
     var selected_profile = $("#profiles-list option:selected").text();
     cmd('profile-activate?'+selected_profile);
 }
+
 
 /**
  * Run once document has loaded
