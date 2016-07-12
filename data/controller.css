@@ -29,6 +29,8 @@ html, body, input {
 html, body {
     background-color: #222222;
     -webkit-user-select: none;
+    overflow: hidden;
+
 }
 
 h1, h2, h3, h4, h5 {
@@ -108,10 +110,14 @@ hr {
    Content
 *************************/
 .content {
-    padding-top: 64px;
-    padding-bottom: 64px;
-    padding-left: 16px;
-    padding-right: 16px;
+    position: fixed;
+    width: auto;
+    padding: 4px;
+    top: 64px;
+    bottom: 64px;
+    left: 16px;
+    right: 16px;
+    overflow-y: scroll;
 }
 
 .content p {
@@ -167,19 +173,29 @@ a {
 }
 
 .mode-text {
-  color: #06FF00;
-  font-weight: bold;
+    color: #06FF00;
+    font-weight: bold;
 }
 
 .pref-input {
-  background: black;
-  border: 1px solid grey;
-  color: white;
-  width: 400px;
+    background: black;
+    border: 1px solid grey;
+    color: white;
+    width: 400px;
 }
 
 .pref-label {
-  color: #06FF00;
+    color: #06FF00;
+}
+
+input[type="checkbox"], input[type="radio"] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+}
+
+input[type="radio"] {
+    bottom: 3px;
 }
 
 /************************
@@ -380,6 +396,75 @@ a {
     /** Stops text selection and text cursor */
     -webkit-user-select: none;
     cursor: default;
+}
+
+/************************
+   Control Overrides
+*************************/
+/* Scroll Bar */
+::-webkit-scrollbar {
+  width: 18px;
+  height: 18px;
+  z-index: 100;
+}
+
+::-webkit-scrollbar-thumb {
+  height: 6px;
+  border: 4px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  -webkit-border-radius: 7px;
+  background-color: rgba(255, 255, 255, 0.5);
+  -webkit-box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05), inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  display: none;
+  z-index: 100;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+  z-index: 100;
+}
+
+/* Input Ranges */
+input[type='range'] {
+    -webkit-appearance: none;
+    background: gray;
+}
+
+input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background: lime;
+    height: 12px;
+    width: 12px;
+    border-radius: 4px;
+}
+
+/* Checkbox and radio buttons */
+input[type='radio'],
+input[type='checkbox'] {
+    -webkit-appearance: none;
+    float: left;
+    margin-right: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    background-color: grey;
+}
+
+input[type='radio']:hover,
+input[type='checkbox']:hover,
+label:hover {
+    opacity: 0.8;
+}
+
+input[type='radio']:checked,
+input[type='checkbox']:checked {
+    background-color: lime !important;
 }
 
 /************************
