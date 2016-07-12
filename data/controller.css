@@ -381,3 +381,46 @@ a {
     -webkit-user-select: none;
     cursor: default;
 }
+
+/************************
+   Profile List
+*************************/
+#app-profiles {
+    height: 270px;
+    width: 100%;
+    overflow-x: none;
+    overflow-y: scroll;
+    border: 0px;
+}
+
+.app-profile-item {
+    width: auto;
+    height: 22px;
+    margin: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 1px solid transparent;
+    color: #888;
+    cursor: default;
+    vertical-align: middle;
+}
+
+.app-profile-item:hover {
+    opacity: 0.8;
+    background-color: #888;
+    color: white;
+}
+
+.app-profile-item.selected {
+    border: 1px solid lime;
+    background-color: green;
+    color: white;
+}
+
+.app-profile-item > img {
+    width: 22px;
+    height: 22px;
+    margin-left: 4px;
+    margin-right: 4px;
+    float: left;
+}

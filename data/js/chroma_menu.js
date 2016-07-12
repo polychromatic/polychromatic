@@ -23,8 +23,17 @@
 /**
  * Enable buttons when a profile is clicked
  */
-function profile_list_change() {
+var selected_profile = "null";
+function profile_list_change(profile_id, profile_name) {
+    selected_profile = profile_name;
     $('#profiles-activate, #profiles-edit, #profiles-delete').removeClass('btn-disabled');
+    $('.app-profile-item').removeClass('selected');
+    $('#'+profile_id).addClass('selected');
+
+    // Instant profile activation (if 'live_switch' is enabled in preferences)
+    if ( live_switch == true ) {
+        profile_activate()
+    }
 }
 
 
@@ -78,8 +87,6 @@ function del_profile_dialog_open() {
     $('#dialog-del').show()
     $('#overlay').fadeIn('fast')
     $('#content').addClass('blur')
-
-    var selected_profile = $("#profiles-list option:selected").text();
     $("#dialog-del-item").html(selected_profile);
 }
 
@@ -92,7 +99,6 @@ function del_profile_dialog_close() {
 
 function del_profile_dialog_confirm() {
     del_profile_dialog_close();
-    var selected_profile = $("#profiles-list option:selected").text();
     cmd('profile-del?' + selected_profile);
 }
 
@@ -101,7 +107,6 @@ function del_profile_dialog_confirm() {
  * Edit profile.
  */
 function profile_edit() {
-    var selected_profile = $("#profiles-list option:selected").text();
     cmd('profile-edit?' + selected_profile);
 }
 
@@ -110,7 +115,6 @@ function profile_edit() {
  * Activate profile.
  */
 function profile_activate() {
-    var selected_profile = $("#profiles-list option:selected").text();
     cmd('profile-activate?'+selected_profile);
 }
 
@@ -118,7 +122,7 @@ function profile_activate() {
 /**
  * Run once document has loaded
  */
-$(document).ready(function () {
+$(document).ready(function() {
 
     // Change brightness control
     $("[type=range]").change(function () {
@@ -128,13 +132,6 @@ $(document).ready(function () {
             $(this).next().text("Off")
         }
         cmd('brightness?' + Math.round($(this).val()));
-    });
-
-    // Instant profile activation (if 'live_switch' is enabled in preferences)
-    $('#profiles-list').change(function() {
-        if ( live_switch == true ) {
-            profile_activate()
-        }
     });
 
 });

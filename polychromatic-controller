@@ -562,11 +562,16 @@ class Controller(object):
     """ Reloads the profile list """
     def refresh_profiles_list(self):
         stdout.vvprint('Refreshing profile list...')
-        self.update_page('#profiles-list', 'html' , ' ')
+        self.update_page('#app-profiles', 'html' , ' ')
         profiles = list(self.profiles.get_profiles())
         profiles.sort()
+        item_id = 0
         for profile in profiles:
-            self.update_page('#profiles-list', 'append', '<option value="'+profile+'">'+profile+'</option>')
+            item_id += 1
+            css_id = "app-" + str(item_id)
+            title = profile
+            icon_path = app.data_path + "/img/profile_default.svg"
+            self.update_page('#app-profiles', 'append', "<div class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{2}\")'><img src='{1}'>{2}</div>".format(css_id, icon_path, title))
 
     """ Process a command """
     def process_command(self, command):
