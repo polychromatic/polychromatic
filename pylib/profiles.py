@@ -4,7 +4,7 @@
     Module for managing, manipulating and submitting
     application profiles to the keyboard.
 """
-# Licensed under the GPLv2.
+# Polychromatic is licensed under the GPLv2.
 # Copyright (C) 2015-2016 Luke Horwell <lukehorwell37+code@gmail.com>
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 

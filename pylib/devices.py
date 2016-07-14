@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
-""" Bindings between the UI controls and the actual driver """
+"""
+    Bindings between the UI controls and the actual driver.
+"""
+# Polychromatic is licensed under the GPLv2.
+# Copyright (C) 2015-2016 Luke Horwell <lukehorwell37+code@gmail.com>
+
 class Drivers(object):
     class Razer():
         import razer.daemon_dbus
