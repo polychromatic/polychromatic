@@ -22,14 +22,17 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('WebKit2', '4.0')
 from gi.repository import Gtk, Gdk, WebKit2
+
 import os
 import sys
 import signal
 import json
 import gettext
 import setproctitle
+
 import razer.daemon_dbus
 import razer.keyboard
+
 import polychromatic.preferences
 import polychromatic.profiles
 
@@ -489,8 +492,7 @@ class Controller(object):
             trans.push('#str-advanced', _("Advanced"))
             trans.push('#str-reset-pref', _("Reset Preferences"), True)
             trans.push('#str-reset-all', _("Reset Everything"))
-            trans.push('#pref-revert', _("Revert"), True)
-            trans.push('#pref-save', _("Save"), True)
+            trans.push('#pref-save', _("OK"), True)
 
             trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
             trans.push_var('no_change', _("No Change"))
@@ -500,7 +502,7 @@ class Controller(object):
 
             # Set checkboxes
             for setting in ['live_switch','live_preview','activate_on_save']:
-                if (pref.pref_data['chroma_editor'][setting] == 'true'):
+                if pref.get('chroma_editor', setting, 'false') == 'true':
                     self.update_page('#'+setting, 'prop', 'checked', 'true')
 
             # Fetch settings for tray/start-up settings.
@@ -748,13 +750,8 @@ class Controller(object):
             value = command.split('?')[3]
             pref.set(group, setting, value)
 
-        elif command == 'pref-revert':
-            print('Reverted preferences.')
-            pref.load_pref()
-            self.show_menu('menu')
-
-        elif command == 'pref-save':
-            # Saves initial colours.
+        elif command == 'pref-close':
+            # Saves data still in memory.
             pref.set('primary_colors', 'red', self.start_p_red)
             pref.set('primary_colors', 'green', self.start_p_green)
             pref.set('primary_colors', 'blue', self.start_p_blue)
@@ -762,9 +759,6 @@ class Controller(object):
             pref.set('secondary_colors', 'red', self.start_s_red)
             pref.set('secondary_colors', 'green', self.start_s_green)
             pref.set('secondary_colors', 'blue', self.start_s_blue)
-
-            # Commits preferences from memory to disk.
-            pref.save_pref()
 
             self.show_menu('menu')
 
@@ -865,7 +859,7 @@ class Controller(object):
 
         ## Miscellaneous
         elif command == 'open-config-folder':
-            os.system('xdg-open "' + pref.SAVE_ROOT + '"')
+            os.system('xdg-open "' + path.root + '"')
 
         else:
             print("Unimplemented command: " + command)
@@ -942,6 +936,7 @@ class Terminal(object):
 if __name__ == "__main__":
     trans = Translations()
     pref = polychromatic.preferences.Preferences()
+    path = polychromatic.preferences.Paths()
     stdout = Terminal()
     app = Controller()
     app.run_app()

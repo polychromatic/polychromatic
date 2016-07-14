@@ -1,176 +1,168 @@
 #!/usr/bin/env python3
 
+"""
+    Module for interfacing preferences stored by
+    Polychromatic's applications.
+"""
+# Licensed under the GPLv2.
+# Copyright (C) 2015-2016 Luke Horwell <lukehorwell37+code@gmail.com>
+
 import os
 import json
 import shutil
 
-module_config_version = 2
+version = 2
+
+# For default preferences, please see:
+#   https://github.com/lah7/polychromatic/wiki/Preferences-JSON-Structure
+
+class Paths(object):
+    """ Directories """
+    root = os.path.join(os.path.expanduser('~'), '.config', 'polychromatic')
+    profile_folder = os.path.join(root, 'profiles')
+    profile_backups = os.path.join(root, 'backups')
+
+    """ Files """
+    preferences = os.path.join(root, 'preferences.json')
+    profiles = os.path.join(root, 'profiles.json')
+
+path = Paths()
 
 class Preferences(object):
-    ''' Retrieves and set persistant options. '''
-    #
-    # Default JSON Settings
-    #   See "data/defaults/preferences.json"
-    #
-    # Settings Descriptions
-    #
-    # [group]           [setting]           [type]      [description]
-    # editor            live_switch         boolean     Send profiles to keyboard as soon as they are selected.
-    # editor            activate_on_save    boolean     Send profile to keyboard as soon as it is saved.
-    # editor            live_preview        boolean     Update keyboard lights while editing a profile.
-
-    # tray_applet       icon_type           string      "system", "logo" or "custom".
-    # tray_applet       icon_path           string      ID or pathname for a custom applet icon.
-
-    # startup           enabled             boolean     Automatically set preferences when tray applet starts?
-    # startup           start_effect        string      Automatically set effect to X. ( 'spectrum', 'reactive', etc] or 'disabled' for no change.
-    # startup           start_profile       string      Automatically set to profile X. ('start_effect' must be set to 'profile')
-    # startup           start_brightness    integer     Automatically set brightness to X. Set to '0' for no change.
-    # startup           start_macro         boolean     Automatically activate macro keys.
-    # primary_colors    red                 integer     Default primary RED colour.
-    # primary_colors    green               integer     Default primary GREEN colour.
-    # primary_colors    blue                integer     Default primary BLUE colour.
-    # secondary_colors  red                 integer     Default secondary RED colour.
-    # secondary_colors  green               integer     Default secondary GREEN colour.
-    # secondary_colors  blue                integer     Default secondary BLUE colour.
-    #
-
+    """ Initialise module """
     def __init__(self):
-        """ Initialises the preferences module. """
-        # Determine locations for storing data.
-        self.SAVE_ROOT = os.path.expanduser('~') + '/.config/polychromatic'
-        self.SAVE_PROFILES = self.SAVE_ROOT + '/profiles'
-        self.SAVE_BACKUPS = self.SAVE_ROOT + '/backups'
+        # Create folders if they do not exist.
+        if not os.path.exists(path.root):
+            print('Configuration folder does not exist. Creating: ', path.root)
+            for folder in [path.root, path.profiles, path.backups]:
+                os.makedirs(path)
 
-        # Check we have a folder to save data (eg. profiles)
-        if not os.path.exists(self.SAVE_ROOT):
-            print('Configuration folder does not exist. Creating', self.SAVE_ROOT)
-            os.makedirs(self.SAVE_ROOT)
-            os.makedirs(self.SAVE_PROFILES)
-            os.makedirs(self.SAVE_BACKUPS)
-
-        # Load preferences shared between GUI applications.
-        self.pref_path = os.path.join(self.SAVE_ROOT, 'preferences.json')
-        self.load_pref();
-
-    def load_pref(self):
-        """ Loads the preferences file from disk. """
-        print('Loading preferences from "' + self.pref_path + "'...")
+    """ Loads a save file from disk. """
+    def load_file(self, filepath):
         # Does it exist?
-        if not os.path.exists(self.pref_path):
-            self.create_default_config()
+        if not os.path.exists(filepath):
+            self.init_config(filepath)
 
         # Load data into memory.
         try:
-            with open(self.pref_path) as pref_file:
-                self.pref_data = json.load(pref_file)
-            print('Successfully loaded preferences.')
-        except:
-            self.create_default_config();
+            with open(filepath) as stream:
+                data = json.load(stream)
+        except Exception as e:
+            print("Failed to load '{0}'.\nException: {1}".format(filepath, str(e)))
+            self.init_config(filepath)
 
-        # Check the configuration version and warn if opening an older configuration.
+        # Check configuration version if reading the preferences.
+        if filepath == path.preferences:
+            try:
+                config_version = int(data['config_version'])
+            except KeyError:
+                data['config_version'] = version
+                config_version = version
+
+            # Is the software newer and the configuration old?
+            if version > config_version:
+                print('Your Polychromatic configuration will be updated.')
+                print("Save format v.{0} => v.{1}".format(config_version, version))
+                upgrade_old_pref(config_version)
+
+            # Is the config newer then the software? Wicked time travelling!
+            if config_version > version:
+                print('\n******** WARNING: Your preferences file is newer then the module! ********')
+                print('This could cause undesired glitches in applications. Consider updating the Python modules.')
+                print('    Your Config Version:     v.' + str(config_version))
+                print('    Software Config Version: v.' + str(version))
+                print(' ')
+
+        # Passes data back to the variable
+        return(data)
+
+    """ Commit the save file to disk. """
+    def save_file(self, filepath, newdata):
+
+        # Write configuration version if the preferences.
+        if filepath == path.preferences:
+            newdata['config_version'] = version
+
+        # Write new data to specified file.
+        if os.access(filepath, os.W_OK):
+            f = open(filepath, "w+")
+            f.write(json.dumps(newdata))
+            f.close()
+        else:
+            print(" ** Cannot write to file: " + filepath)
+
+    """ Write new data. """
+    def set(self, group, setting, value, filepath=None):
+        # Example: (self, "editor", "live_preview", True)
+        #          (self, "24", "name", "Test Program", "profiles.json")
+
+        # If haven't explicitly stated which file, assume preferences.
+        if filepath == None:
+            filepath = path.preferences
+
+        data = self.load_file(filepath)
+
+        # Create group if non-existent.
         try:
-            config_version = int(self.pref_data['config_version'])
+            data[group]
         except:
-            config_version = 0
+            data[group] = {}
 
-        if config_version > module_config_version:
-            print('\nWARNING: The preferences file is newer then the module in use. This could cause undesired glitches in applications. Consider updating the Python modules.')
-            print('    Config Version: ' + str(config_version))
-            print('    Module Version: ' + str(module_config_version))
-            print(' ')
-
-        if module_config_version > config_version:
-            config_version = module_config_version
-            print('\nWARNING: This is an older configuration. Some preferences may have been deprecated or changed. Saving will expect future instances to use the new format.\n')
-
-
-    def save_pref(self):
-        """ Commit the preferences stored in memory to disk. """
-        print('Saving preferences to "' + self.pref_path + "'...")
-        self.pref_data['config_version'] = module_config_version
-        pref_file = open(self.pref_path, "w+")
-        pref_file.write(json.dumps(self.pref_data))
-        pref_file.close()
-
-    def set(self, group, setting, value):
-        """ Write an option. """
-        # Strings with spaces may have HTML codes, eg. %20 for a space.
-        if type(value) is str:
-            value = value.replace('%20', ' ')
-
-        print('Set preference: "' + str(value) + '" to "' + str(setting) + '" in "' + group + '"')
-        # Check the group exists.
+        # Write new setting and save.
         try:
-            self.pref_data[group]
+            data[group][setting] = value
+            self.save_file(filepath, data)
         except:
-            print('Failed to write group: ' + group)
-            self.pref_data[group] = {}
+            print(" ** Failed to write '{0}' for item '{1}' in group '{2}'!".format(value, setting, group))
 
-        # Write value to group/setting.
-        try:
-            self.pref_data[group][setting] = value;
-        except:
-            print('Failed to write setting "' + str(value) + '" for "' + str(setting) + '" in "' + group + '".')
+    """ Read data from memory. """
+    def get(self, group, setting, default_value="", filepath=None):
+        # Example: (self, "editor", "live_preview")
+        # Example: (self, "editor", "live_preview", "True")
+        #          (self, "12", "name", "Unknown", "profiles.json")
 
-    def get(self, group, setting, default_value='false'):
-        """ Read an option, optionally specifying a default value if none exists. """
+        # If haven't explicitly stated which file, assume preferences.
+        if filepath == None:
+            filepath = path.preferences
+
+        data = self.load_file(filepath)
+
+        # Read data from preferences.
         try:
-            # Read data from preferences, if it exists.
-            value = self.pref_data[group][setting]
+            value = data[group][setting]
             return value
-            print('Read preference: "' + str(value) + '" from "' + str(setting) + '"')
         except:
             # Should it be non-existent, return a fallback option.
-            print("Preference '" + str(setting) + "' in '" + str(group) + "' doesn't exist.")
+            print(" ** Preference '{0}' in '{1}' non-existent. Using default '{2}' instead.".format(group, setting, default_value))
             self.set(group, setting, default_value)
-            self.save_pref()
             return default_value
 
-    def create_default_config(self):
-        """ Generates a default configuration if none exists. """
+    """ Prepares configuration for first time usage. """
+    def init_config(self, filepath):
         try:
-            # Create the groups, then write the default values.
-            default_buffer = {}
-            default_buffer['config_version'] = module_config_version
-            for group in ['chroma_editor', 'tray_applet', 'startup', 'primary_colors', 'secondary_colors']:
-                default_buffer[group] = {}
-            default_buffer['chroma_editor']['live_switch'] = 'true'
-            default_buffer['chroma_editor']['activate_on_save'] = 'true'
-            default_buffer['chroma_editor']['live_preview'] = 'true'
-            default_buffer['tray_applet']['icon_type'] = 'system'
-            default_buffer['tray_applet']['icon_path'] = ''
-            default_buffer['startup']['enabled'] = 'false'
-            default_buffer['startup']['start_effect'] = 'disabled'
-            default_buffer['startup']['start_profile'] = ''
-            default_buffer['startup']['start_brightness'] = 0
-            default_buffer['startup']['start_macro'] = 'false'
-            default_buffer['primary_colors']['red'] = 0
-            default_buffer['primary_colors']['green'] = 255
-            default_buffer['primary_colors']['blue'] = 0
-            default_buffer['secondary_colors']['red'] = 255
-            default_buffer['secondary_colors']['green'] = 0
-            default_buffer['secondary_colors']['blue'] = 0
-            default_settings = json.dumps(default_buffer)
+            newdata = json.dumps("{}")
+            print(' ** Creating new data file...')
+            if os.path.exists(filepath):
+                print(' ** Existing preferences file is corrupt or being forced overwritten.')
+                os.rename(filepath, filepath+'.bak')
+                print(' ** Successfully backed up previous preferences JSON file.')
 
-            print('Creating new preferences file...')
-            if os.path.exists(self.pref_path):
-                print('Existing preferences file is corrupt or being forced overwritten.')
-                os.rename(self.pref_path, self.pref_path+'.bak')
-                print('Successfully backed up previous preferences JSON file.')
+            self.save_file(filepath, newdata)
+            print(' ** New configuration ready: ' + filepath)
 
-            pref_file = open(self.pref_path, "w")
-            pref_file.write(default_settings)
-            pref_file.close()
-            print('Successfully written default preferences.')
         except Exception as e:
             # Couldn't create the default configuration.
-            print('Failed to write default preferences.')
-            print('Exception: ', e)
+            print(' ** Failed to write default preferences.')
+            print(' ** Exception: ', str(e))
 
+    """ Erases the configuration stored on disk. """
     def clear_config(self):
-        """ Erases the configuration stored on disk. """
-        print('Deleting configuration folder "' + self.SAVE_ROOT + '"...')
-        shutil.rmtree(self.SAVE_ROOT)
-        print('Successfully deleted configuration.')
+        print(' ** Deleting configuration folder "' + path.root + '"...')
+        shutil.rmtree(path.root)
+        print(' ** Successfully deleted configuration.')
+
+    """ Updates the configuration from previous versions. """
+    def upgrade_old_pref(self, config_version):
+        return
+
 

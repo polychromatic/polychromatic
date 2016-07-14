@@ -32,9 +32,10 @@ import setproctitle
 
 import razer.daemon_dbus
 import razer.keyboard
-import polychromatic.preferences
-import polychromatic.profiles
 
+import polychromatic.preferences
+pref = polychromatic.preferences.Preferences()
+import polychromatic.profiles
 
 class Translations():
     def __init__(self):
@@ -85,11 +86,10 @@ class AppIndicator:
         self.active_effect = None
 
         # Read preferences and profiles.
-        self.preferences = polychromatic.preferences.Preferences()
         self.profiles = polychromatic.profiles.Profiles(self.daemon)
 
         # Determine which icon to display.
-        icon_type = self.preferences.get('tray_applet','icon_type','system')
+        icon_type = pref.get('tray_applet','icon_type','system')
         icon_fallback = 'ibus-keyboard'
         if icon_type == 'system' or icon_type == '' or icon_type == None:
             icon = icon_fallback
@@ -110,7 +110,7 @@ class AppIndicator:
                 icon = icon_fallback
 
         if icon_type == 'custom':
-            icon_path = self.preferences.get('tray_applet','icon_path')
+            icon_path = pref.get('tray_applet','icon_path')
             if not os.path.exists(icon_path):
                 print('Custom icon "' + icon_path + '" could not be found. Using fallback.')
                 icon = icon_fallback
@@ -382,16 +382,6 @@ class AppIndicator:
     def menuitem_set_profile(self, widget, profile_name):
         self.set_profile(profile_name)
 
-        # FIXME: Something isn't right here, as it tries to load profile 'status'...
-        # FIXME: Console text doesn't update until quit, previous error holding it up?
-        #
-        #~ Traceback (most recent call last):
-          #~ File "../tray_applet/razer_tray_applet.py", line 343, in menuitem_set_profile
-            #~ self.profiles.activate_profile_from_file(profile_name)
-          #~ File "/usr/lib/python3/dist-packages/razer/profiles.py", line 136, in activate_profile_from_file
-            #~ with open(os.path.join(self.preferences.SAVE_PROFILES, profile_name), 'rb') as profile_file:
-        #~ FileNotFoundError: [Errno 2] No such file or directory: '/home/<user>/.config/razer_chroma/profiles/status'
-
     def refresh_profiles_menu(self):
         profile_list = self.profiles.get_profiles()
 
@@ -424,17 +414,17 @@ class AppIndicator:
             self.profiles_menu.append(button)
 
     def apply_startup_settings(self):
-        if self.preferences.get('startup', 'enabled', 'false') == 'true':
-            start_effect = self.preferences.get('startup', 'start_effect', 'disabled')
-            start_profile = self.preferences.get('startup', 'start_profile', None)
-            start_brightness = int(self.preferences.get('startup', 'start_brightness', 0))
-            start_macro = self.preferences.get('startup', 'start_macro', 'false')
-            start_col1_r = self.preferences.get('primary_colors', 'red', 0)
-            start_col1_g = self.preferences.get('primary_colors', 'green', 255)
-            start_col1_b = self.preferences.get('primary_colors', 'blue', 0)
-            start_col2_r = self.preferences.get('secondary_colors', 'red', 255)
-            start_col2_g = self.preferences.get('secondary_colors', 'green', 0)
-            start_col2_b = self.preferences.get('secondary_colors', 'blue', 0)
+        if pref.get('startup', 'enabled', 'false') == 'true':
+            start_effect = pref.get('startup', 'start_effect', 'disabled')
+            start_profile = pref.get('startup', 'start_profile', None)
+            start_brightness = int(pref.get('startup', 'start_brightness', 0))
+            start_macro = pref.get('startup', 'start_macro', 'false')
+            start_col1_r = pref.get('primary_colors', 'red', 0)
+            start_col1_g = pref.get('primary_colors', 'green', 255)
+            start_col1_b = pref.get('primary_colors', 'blue', 0)
+            start_col2_r = pref.get('secondary_colors', 'red', 255)
+            start_col2_g = pref.get('secondary_colors', 'green', 0)
+            start_col2_b = pref.get('secondary_colors', 'blue', 0)
 
             print('-- Applying start-up settings...')
 

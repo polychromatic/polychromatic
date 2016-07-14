@@ -1,22 +1,33 @@
 #!/usr/bin/env python3
 
+"""
+    Module for managing, manipulating and submitting
+    application profiles to the keyboard.
+"""
+# Licensed under the GPLv2.
+# Copyright (C) 2015-2016 Luke Horwell <lukehorwell37+code@gmail.com>
+#               2015-2016 Terry Cain <terry@terrys-home.co.uk>
+
 import os
+import polychromatic.preferences
+pref = polychromatic.preferences.Preferences
+path = polychromatic.preferences.Paths
+
 import razer.daemon_dbus
 import razer.keyboard
-import polychromatic.preferences
+
 
 class Profiles(object):
     ''' Create, edit, delete and submit profiles to the keyboard. '''
 
     def __init__(self, dbus_object):
-        self.preferences = polychromatic.preferences.Preferences()
         self.profiles = {}
         self.active_profile = None
         self.daemon = dbus_object
 
         # If for some reason the profiles directory is missing, attempt to create it.
-        if not os.path.exists(self.preferences.SAVE_PROFILES):
-            os.makedirs(self.preferences.SAVE_PROFILES)
+        if not os.path.exists(path.profile_folder):
+            os.makedirs(path.profile_folder)
 
         self.load_profiles()
 
@@ -24,7 +35,7 @@ class Profiles(object):
         """
         Load profiles
         """
-        profiles = os.listdir(self.preferences.SAVE_PROFILES)
+        profiles = os.listdir(path.profile_folder)
 
         for profile in profiles:
             keyboard = self.get_profile_from_file(profile)
@@ -41,8 +52,8 @@ class Profiles(object):
         :type del_from_fs: bool
         """
         if del_from_fs:
-            current_profile_path = os.path.join(self.preferences.SAVE_PROFILES, profile_name)
-            current_profile_path_backup = os.path.join(self.preferences.SAVE_BACKUPS, profile_name)
+            current_profile_path = os.path.join(path.profile_folder, profile_name)
+            current_profile_path_backup = os.path.join(path.profile_backups, profile_name)
             os.remove(current_profile_path)
             # print('Deleted profile: {0}'.format(current_profile_path))
             if os.path.exists(current_profile_path_backup):
@@ -121,19 +132,19 @@ class Profiles(object):
 
     def save_profile(self, profile_name):
 
-        profile_path = os.path.join(self.preferences.SAVE_PROFILES, profile_name)
+        profile_path = os.path.join(path.profile_folder, profile_name)
 
         # Backup if it's an existing copy, then erase original copy.
         if os.path.exists(profile_path):
-            os.rename(profile_path, os.path.join(self.preferences.SAVE_BACKUPS, profile_name))
+            os.rename(profile_path, os.path.join(path.profile_backups, profile_name))
 
-        with open(os.path.join(self.preferences.SAVE_PROFILES, profile_name), 'wb') as profile_file:
+        with open(os.path.join(path.profile_folder, profile_name), 'wb') as profile_file:
             payload = self.profiles[profile_name].get_total_binary()
             profile_file.write(payload)
 
     def activate_profile_from_file(self, profile_name):
-        print("Applying profile '{0}' ... ".format(profile_name), end='')
-        with open(os.path.join(self.preferences.SAVE_PROFILES, profile_name), 'rb') as profile_file:
+        print("Applying profile '{0}' ... ".format(profile_name))
+        with open(os.path.join(path.profile_folder, profile_name), 'rb') as profile_file:
             payload = profile_file.read()
             keyboard = razer.keyboard.KeyboardColour()
             keyboard.get_from_total_binary(payload)
@@ -147,7 +158,7 @@ class Profiles(object):
 
     def get_profile_from_file(self, profile_name):
         keyboard = razer.keyboard.KeyboardColour()
-        with open(os.path.join(self.preferences.SAVE_PROFILES, profile_name), 'rb') as profile_file:
+        with open(os.path.join(path.profile_folder, profile_name), 'rb') as profile_file:
             payload = profile_file.read()
             keyboard.get_from_total_binary(payload)
 
