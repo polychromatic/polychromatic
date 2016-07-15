@@ -9,27 +9,64 @@
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
 import os
-import polychromatic.preferences
-pref = polychromatic.preferences.Preferences
-path = polychromatic.preferences.Paths
+import time
 
 import razer.daemon_dbus
 import razer.keyboard
+import polychromatic.preferences as pref
+path = pref.Paths()
 
 
 class Profiles(object):
-    ''' Create, edit, delete and submit profiles to the keyboard. '''
-
+    """ Profiles require the driver daemon. """
     def __init__(self, dbus_object):
         self.profiles = {}
         self.active_profile = None
         self.daemon = dbus_object
-
-        # If for some reason the profiles directory is missing, attempt to create it.
-        if not os.path.exists(path.profile_folder):
-            os.makedirs(path.profile_folder)
-
         self.load_profiles()
+
+    """ Delete profile from file system """
+    def remove_profile(self, uuid):
+        # Determine where the files are.
+        file_profile = os.path.join(path.profile_folder, uuid)
+        file_backup  = os.path.join(path.profile_backups, uuid)
+
+        # Delete them, if they exist.
+        if os.path.exists(file_profile):
+            os.remove(file_profile)
+        if os.path.exists(file_backup):
+            os.remove(file_backup)
+
+        # Update profile index
+        index = pref.load_file(path.profiles)
+        index.pop(uuid)
+        pref.save_file(path.profiles, index)
+
+    """ Create profile on the file system """
+    # Returns a UUID for application to use.
+    def new_profile(self):
+        uuid = str(int(time.time() * 1000000))
+        self.active_uuid = uuid
+        self.profiles[uuid] = razer.keyboard.KeyboardColour()
+
+        index = pref.load_file(path.profiles)
+        index[str(uuid)] = {}
+        pref.save_file(path.profiles, index)
+        return str(uuid)
+
+    """ Set metadata for a profile in the index """
+    def set_metadata(self, uuid, key, value):
+        # uuid  = string of UUID filename
+        # key   = group, e.g. "name"
+        # value = what to set, e.g. "Test Application"
+        index = pref.load_file(path.profiles)
+        try:
+            index[uuid]
+        except KeyError:
+            # Create group if it doesn't exist.
+            index[uuid] = {}
+        index[uuid][key] = value
+        pref.save_file(path.profiles, index)
 
     def load_profiles(self):
         """
@@ -40,38 +77,6 @@ class Profiles(object):
         for profile in profiles:
             keyboard = self.get_profile_from_file(profile)
             self.profiles[profile] = keyboard
-
-    def remove_profile(self, profile_name, del_from_fs=True):
-        """
-        Delete profile, from memory and optionally the system.
-
-        :param profile_name: Profile name
-        :type profile_name: str
-
-        :param del_from_fs: Delete from the file system
-        :type del_from_fs: bool
-        """
-        if del_from_fs:
-            current_profile_path = os.path.join(path.profile_folder, profile_name)
-            current_profile_path_backup = os.path.join(path.profile_backups, profile_name)
-            os.remove(current_profile_path)
-            # print('Deleted profile: {0}'.format(current_profile_path))
-            if os.path.exists(current_profile_path_backup):
-                os.remove(current_profile_path_backup)
-                # print('Deleted backup copy: ' + current_profile_path_backup)
-
-        if profile_name in self.profiles:
-            del self.profiles[profile_name]
-
-    def new_profile(self, profile_name):
-        """
-        Create new profile
-
-        :param profile_name: Profile name
-        :type profile_name: str
-        """
-        self.active_profile = profile_name
-        self.profiles[profile_name] = razer.keyboard.KeyboardColour()
 
     def set_active_profile(self, profile_name):
         """

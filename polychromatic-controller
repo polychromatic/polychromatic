@@ -33,17 +33,17 @@ import setproctitle
 import razer.daemon_dbus
 import razer.keyboard
 
-import polychromatic.preferences
+import polychromatic.preferences as pref
+path = pref.Paths()
 import polychromatic.profiles
 
 
 class Translations(object):
     def __init__(self):
         # Use relative translations if available.
-        data_path = Controller.whereami()
-        if os.path.exists(os.path.join(data_path, '../locale/')):
+        if os.path.exists(os.path.join(data_source, '../locale/')):
             print('Using relative path for translations.')
-            self.locale_path = os.path.join(data_path, '../locale/')
+            self.locale_path = os.path.join(data_source, '../locale/')
         else:
             print('Using "/usr/share/locale/" or falling back to "en_US" for translations.')
             self.locale_path = '/usr/share/locale/'
@@ -87,8 +87,7 @@ class AppView(WebKit2.WebView):
 
         # Load the starting page
         default_page = 'menu'
-        data_path = Controller.whereami()
-        self.load_uri('file://' + os.path.join(data_path, 'menu.html'))
+        self.load_uri('file://' + os.path.join(data_source, 'menu.html'))
 
     """ Callback: Title changed """
     def title_changed_cb(self, view, frame):
@@ -164,26 +163,11 @@ class AppView(WebKit2.WebView):
 class Controller(object):
     """ Initialise the application """
     def __init__(self):
-        # Variables
-        self.current_page = 'menu'
-        self.data_path = self.whereami()
-
         # Set up the application
         setproctitle.setproctitle('polychromatic-controller')
         self.webkit = AppView()
         self.build_app()
-
-    """ Where are the data files? """
-    @staticmethod
-    def whereami():
-        if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/'))):
-            path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/'))
-        elif os.path.exists('/usr/share/polychromatic/'):
-            path = '/usr/share/polychromatic/'
-        else:
-            print("Data directory is missing. Exiting...")
-            Dialogues.fatal_error("Data directory is missing: /usr/share/polychromatic/", True)
-        return path
+        self.current_page = 'menu'
 
     """ Assemble the application """
     def build_app(self):
@@ -193,7 +177,7 @@ class Controller(object):
         w.set_position(Gtk.WindowPosition.CENTER)
         w.set_resizable(False)
         try:
-            w.set_icon_from_file(os.path.join(self.data_path, '../install/hicolor/scalable/apps/polychromatic.svg'))
+            w.set_icon_from_file(os.path.join(data_source, '../install/hicolor/scalable/apps/polychromatic.svg'))
             stdout.vvprint('Window icon set from relative path.')
         except:
             w.set_icon_from_file('/usr/share/icons/hicolor/scalable/apps/polychromatic.svg')
@@ -205,7 +189,7 @@ class Controller(object):
         sw.add(self.webkit)
 
         # Scale the application so it looks good on large displays.
-        scale = float(pref.get('chroma_editor', 'scaling', 1))
+        scale = float(pref.get('editor', 'scaling', 1))
         if scale == 1.5:
             self.webkit.set_zoom_level(1.5)
             w.set_size_request(1500, 900)
@@ -306,16 +290,16 @@ class Controller(object):
             self.update_page('#'+element, 'hide')
 
         if page == 'menu':
-            self.webkit.load_uri('file://' + os.path.join(app.data_path, 'menu.html'))
+            self.webkit.load_uri('file://' + os.path.join(data_source, 'menu.html'))
 
         elif page == 'profile_editor':
-            self.webkit.load_uri('file://' + os.path.join(app.data_path, 'profile_editor.html'))
+            self.webkit.load_uri('file://' + os.path.join(data_source, 'profile_editor.html'))
 
         elif page == 'preferences':
-            self.webkit.load_uri('file://' + os.path.join(app.data_path, 'preferences.html'))
+            self.webkit.load_uri('file://' + os.path.join(data_source, 'preferences.html'))
 
         elif page == 'devices':
-            self.webkit.load_uri('file://' + os.path.join(app.data_path, 'devices.html'))
+            self.webkit.load_uri('file://' + os.path.join(data_source, 'devices.html'))
         else:
             print("Unknown menu '" + page + "'!")
 
@@ -377,7 +361,7 @@ class Controller(object):
             self.refresh_profiles_list()
 
             # Tell JavaScript whether live profile switching is enabled.
-            if pref.get('chroma_editor', 'live_switch') == 'true':
+            if pref.get('editor', 'live_switch', 'true') == 'true':
                 self.webkit.run_javascript('live_switch = true;')
                 self.update_page('#profiles-activate', 'hide')
             else:
@@ -424,7 +408,7 @@ class Controller(object):
             # Load profile into keyboard.
             profile_name = self.open_this_profile
             self.profiles.set_active_profile(profile_name)
-            if pref.get('chroma_editor', 'live_preview') == 'true':
+            if pref.get('editor', 'live_preview', 'true') == 'true':
                 self.profiles.activate_profile_from_memory()
             self.profiles.get_active_profile().backup_configuration()
 
@@ -439,7 +423,7 @@ class Controller(object):
             kb_callback << "keyboard_obj.disable_key(5,7)"
             kb_callback << "keyboard_obj.disable_key(5,12)"
             # Hide preview button if live previewing is enabled.
-            if pref.get('chroma_editor', 'live_preview') == 'true':
+            if pref.get('editor', 'live_preview', 'true') == 'true':
                 kb_callback << '$("#edit-preview").hide();'
 
 
@@ -502,7 +486,7 @@ class Controller(object):
 
             # Set checkboxes
             for setting in ['live_switch','live_preview','activate_on_save']:
-                if pref.get('chroma_editor', setting, 'false') == 'true':
+                if pref.get('editor', setting, 'true') == 'true':
                     self.update_page('#'+setting, 'prop', 'checked', 'true')
 
             # Fetch settings for tray/start-up settings.
@@ -515,7 +499,7 @@ class Controller(object):
             start_macro = pref.get('startup', 'start_macro', 'false')
 
             # Set value for slider
-            scaling = pref.get('chroma_editor', 'scaling', 1)
+            scaling = pref.get('editor', 'scaling', 1)
             self.update_page('#scaling', 'val', str(scaling))
 
             # Set 'values' for textboxes and dropdowns.
@@ -565,15 +549,25 @@ class Controller(object):
     def refresh_profiles_list(self):
         stdout.vvprint('Refreshing profile list...')
         self.update_page('#app-profiles', 'html' , ' ')
-        profiles = list(self.profiles.get_profiles())
-        profiles.sort()
-        item_id = 0
-        for profile in profiles:
-            item_id += 1
-            css_id = "app-" + str(item_id)
-            title = profile
-            icon_path = app.data_path + "/img/profile_default.svg"
-            self.update_page('#app-profiles', 'append', "<div class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{2}\")'><img src='{1}'>{2}</div>".format(css_id, icon_path, title))
+        index = pref.load_file(path.profiles)
+
+        # Function to append to page.
+        def append_item(uuid):
+            css_id = "app-" + uuid
+            title = index[uuid]["name"]
+            icon_path = data_source + "/img/profile_default.svg"
+            self.update_page('#app-profiles', 'append', "<div class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\")'><img src='{1}'>{2}</div>".format(css_id, icon_path, title, uuid))
+
+        # Sort the profiles A-Z.
+        sorted_names = {}
+        for uuid in index:
+            human_name = index[uuid]['name']
+            sorted_names[human_name] = int(uuid)
+        item_no = 0
+        for program in sorted(sorted_names):
+            uuid = sorted_names[program]
+            item_no += 1
+            append_item(str(uuid))
 
     """ Process a command """
     def process_command(self, command):
@@ -717,18 +711,19 @@ class Controller(object):
                 elif self.current_effect == 'reactive':
                     self.process_command('effect-reactive?auto')
 
-        ## Opening different pages
+        ## Cancel to main menu.
+        ## '?xxxx' may specify changes to also make when leaving application profile editor.
         elif command.startswith('cancel-changes'):
             if command.find('?') > -1:
                 command, cancel_type, cancel_args = command.split('?')
 
                 if cancel_type == "new-profile":
-                    self.profiles.remove_profile(cancel_args, del_from_fs=False)
-                    if pref.get('chroma_editor', 'live_switch') == 'true' or pref.get('chroma_editor', 'live_preview') == 'true':
+                    if pref.get('editor', 'live_switch', 'true') == 'true' or pref.get('editor', 'live_preview', 'true') == 'true':
+                        self.profiles.remove_profile()
                         self.daemon.set_custom_colour(self.old_profile)
                 elif cancel_type == "edit-profile":
                     self.profiles.get_active_profile().restore_configuration()
-                    if pref.get('chroma_editor', 'live_switch') == 'true' or pref.get('chroma_editor', 'live_preview') == 'true':
+                    if pref.get('editor', 'live_switch', 'true') == 'true' or pref.get('editor', 'live_preview', 'true') == 'true':
                         self.daemon.set_custom_colour(self.old_profile)
 
                 self.update_page('#cancel', 'attr', '{onclick: \"cmd(\'cancel-changes\')\"}')
@@ -801,7 +796,7 @@ class Controller(object):
             self.profiles.get_active_profile().set_key_colour(row, col, rgb)
 
             # Live preview (if 'live_preview' is enabled in preferences)
-            if pref.get('chroma_editor', 'live_preview') == 'true':
+            if pref.get('editor', 'live_preview', 'true') == 'true':
                 self.profiles.activate_profile_from_memory()
 
         elif command.startswith('clear-key'):
@@ -812,15 +807,15 @@ class Controller(object):
             self.profiles.get_active_profile().reset_key(row, col)
 
             # Live preview (if 'live_preview' is enabled in preferences)
-            if pref.get('chroma_editor', 'live_preview') == 'true':
+            if pref.get('editor', 'live_preview', 'true') == 'true':
                 self.profiles.activate_profile_from_memory()
 
         elif command.startswith('profile-activate'):
             command = command.replace('%20',' ')
-            profile_name = command.split('profile-activate?')[1]
+            uuid = command.split('profile-activate?')[1]
             self.webkit.run_javascript('set_cursor("html","wait")')
-            self.profiles.activate_profile_from_file(profile_name)
-            self.update_page('#custom', 'html', 'Profile - ' + profile_name)
+            self.profiles.activate_profile_from_file(uuid)
+            self.update_page('#custom', 'html', 'Profile - ' + uuid)
             self.update_page('#custom', 'prop', 'checked', 'true')
             self.webkit.run_javascript('set_cursor("html","normal")')
 
@@ -828,7 +823,6 @@ class Controller(object):
             self.profiles.activate_profile_from_memory()
 
         elif command.startswith('profile-del'):
-            # TODO: Instead of JS-based prompt, use PyGtk or within web page interface?
             profile_name = command.split('?')[1].replace('%20', ' ')
 
             if len(profile_name) > 0:
@@ -838,7 +832,6 @@ class Controller(object):
                 self.refresh_profiles_list()
 
         elif command.startswith('profile-new'):
-            # TODO: Instead of JS-based prompt, use PyGtk or within web page interface?
             profile_name = command.split('?')[1].replace('%20', ' ')
 
             self.cancel_changes = 'new-profile'
@@ -854,7 +847,7 @@ class Controller(object):
             print('Saved "{0}".'.format(profile_name))
             self.show_menu('menu')
 
-            if pref.get('chroma_editor', 'activate_on_save') == 'true':
+            if pref.get('editor', 'activate_on_save', 'true') == 'true':
                 self.profiles.activate_profile_from_file(self.profiles.get_active_profile_name())
 
         ## Miscellaneous
@@ -934,9 +927,8 @@ class Terminal(object):
 
 
 if __name__ == "__main__":
+    data_source = path.get_data_source(__file__)
     trans = Translations()
-    pref = polychromatic.preferences.Preferences()
-    path = polychromatic.preferences.Paths()
     stdout = Terminal()
     app = Controller()
     app.run_app()

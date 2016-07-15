@@ -33,8 +33,7 @@ import setproctitle
 import razer.daemon_dbus
 import razer.keyboard
 
-import polychromatic.preferences
-pref = polychromatic.preferences.Preferences()
+import polychromatic.preferences as pref
 import polychromatic.profiles
 
 class Translations():

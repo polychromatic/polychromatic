@@ -33,18 +33,18 @@
       <h3 id="str-app-settings"></h3>
       <table>
         <tr>
-          <td><label id="str-live-switch" class="pref-label"><input type="checkbox" id="live_switch" onclick="set_pref_chkstate('chroma_editor','live_switch',this)"/> </label></td>
+          <td><label id="str-live-switch" class="pref-label"><input type="checkbox" id="live_switch" onclick="set_pref_chkstate('editor','live_switch',this)"/> </label></td>
           <td><p id="str-live-switch-help"></p></td>
         </tr>
         <tr>
-          <td><label id="str-live-preview" class="pref-label"><input type="checkbox" id="live_preview" onclick="set_pref_chkstate('chroma_editor','live_preview',this)"/> </label></td>
+          <td><label id="str-live-preview" class="pref-label"><input type="checkbox" id="live_preview" onclick="set_pref_chkstate('editor','live_preview',this)"/> </label></td>
           <td><p id="str-live-preview-help"></p></td>
         </tr>
         <tr>
-          <td><label id="str-activate-on-save" class="pref-label"><input type="checkbox" id="activate_on_save" onclick="set_pref_chkstate('chroma_editor','activate_on_save',this)"/> </label></td>
+          <td><label id="str-activate-on-save" class="pref-label"><input type="checkbox" id="activate_on_save" onclick="set_pref_chkstate('editor','activate_on_save',this)"/> </label></td>
         </tr>
         <tr>
-          <td><label class="pref-label"><span id="str-scaling"></span> <input type="range" id="scaling" onmouseout="set_pref_str('chroma_editor','scaling',$(this).val())" min="1" max="2.5" value="1" step="0.5"/></label></td>
+          <td><label class="pref-label"><span id="str-scaling"></span> <input type="range" id="scaling" onmouseout="set_pref_str('editor','scaling',$(this).val())" min="1" max="2.5" value="1" step="0.5"/></label></td>
           <td><p id="str-scaling-help"></p></td>
         </tr>
       </table>
