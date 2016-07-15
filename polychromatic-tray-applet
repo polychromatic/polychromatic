@@ -411,7 +411,10 @@ class AppIndicator:
         def append_item(uuid):
             title = index[uuid]["name"]
             icon_path = path.get_data_source(__file__) + "/img/profile_default.svg"
-            self.profile_items[uuid] = Gtk.RadioMenuItem(group=self.profile_items['status'], label=title)
+            img = Gtk.Image()
+            img.set_from_file(icon_path)
+            self.profile_items[uuid] = Gtk.ImageMenuItem(Gtk.STOCK_NEW, label=title)
+            self.profile_items[uuid].set_image(img)
 
         # Sort the profiles A-Z.
         sorted_names = {}
