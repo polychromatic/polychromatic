@@ -34,6 +34,7 @@ import razer.daemon_dbus
 import razer.keyboard
 
 import polychromatic.preferences as pref
+path = pref.Paths()
 import polychromatic.profiles
 
 class Translations():
@@ -247,10 +248,13 @@ class AppIndicator:
         self.apply_startup_settings()
 
     # Shared functions for manipulating the device.
-    def set_profile(self, profile_name):
+    def set_profile(self, widget, uuid):
         """ Shared function to send the profile to the keyboard """
-        self.profiles.activate_profile_from_file(profile_name)
-        self.profile_items['status'].set_label(profile_name)
+        # Workaround some strange bug trying to set "status" (group name)?
+        if not uuid == 'status':
+            name = pref.get(uuid, "name", "", path.profiles)
+            self.profiles.activate_profile_from_file(uuid)
+            self.profile_items['status'].set_label(name)
 
     def set_effect(self, effect_type):
         """ Shared function to set an effect on the device """
@@ -378,9 +382,6 @@ class AppIndicator:
         """
         os.system('/usr/bin/polychromatic-controller')
 
-    def menuitem_set_profile(self, widget, profile_name):
-        self.set_profile(profile_name)
-
     def refresh_profiles_menu(self):
         profile_list = self.profiles.get_profiles()
 
@@ -404,11 +405,30 @@ class AppIndicator:
         self.profiles_menu.append(sep)
 
         # Populate the profiles list.
+        index = pref.load_file(path.profiles)
+
+        # Function to append to menu.
+        def append_item(uuid):
+            title = index[uuid]["name"]
+            icon_path = path.get_data_source(__file__) + "/img/profile_default.svg"
+            self.profile_items[uuid] = Gtk.RadioMenuItem(group=self.profile_items['status'], label=title)
+
+        # Sort the profiles A-Z.
+        sorted_names = {}
+        for uuid in index:
+            human_name = index[uuid]['name']
+            sorted_names[human_name] = int(uuid)
+        item_no = 0
+        for program in sorted(sorted_names):
+            uuid = sorted_names[program]
+            item_no += 1
+            append_item(str(uuid))
+
         for profile_name in self.profiles.get_profiles():
-            self.profile_items[profile_name] = Gtk.RadioMenuItem(group=self.profile_items['status'], label=profile_name)
+            append_item(profile_name)
 
         for profile_name, button in self.profile_items.items():
-            button.connect("activate", self.menuitem_set_profile, profile_name)
+            button.connect("activate", self.set_profile, profile_name)
             button.show()
             self.profiles_menu.append(button)
 
@@ -438,7 +458,7 @@ class AppIndicator:
 
             if not start_effect == 'disabled':
                 if start_effect == 'profile':
-                    self.set_profile(start_profile)
+                    self.set_profile(None, start_profile)
                 else:
                     self.set_effect(start_effect)
 
