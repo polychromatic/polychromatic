@@ -410,7 +410,10 @@ class AppIndicator:
         # Function to append to menu.
         def append_item(uuid):
             title = index[uuid]["name"]
-            icon_path = path.get_data_source(__file__) + "/img/profile_default.svg"
+            try:
+                icon_path = index[uuid]["icon"]
+            except:
+                icon_path = path.get_data_source(__file__) + "/img/profile_default.svg"
             img = Gtk.Image()
             img.set_from_file(icon_path)
             self.profile_items[uuid] = Gtk.ImageMenuItem(Gtk.STOCK_NEW, label=title)
