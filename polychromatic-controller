@@ -400,7 +400,10 @@ class Controller(object):
             kb_callback = self.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
 
             # Set page title
-            js_exec << 'change_header("Edit ' + self.open_this_profile + '")'
+            uuid = self.open_this_profile
+            profile_name = pref.get(uuid, "name", "", path.profiles)
+            app.update_page("#page-header", "html", _("Edit") + ' ' + profile_name)
+            app.update_page("#page-header", "fadeIn")
 
             # Set keyboard layout
             kb_callback << "keyboard_obj.set_layout(\"kb-" + self.kb_layout + "\")"
@@ -555,9 +558,10 @@ class Controller(object):
         def append_item(uuid):
             css_id = "app-" + uuid
             title = index[uuid]["name"]
+            title = title.replace("'", '&#39;').replace('"', '&#39;')
             icon_path = data_source + "/img/profile_default.svg"
             if app.current_page == "menu":
-                self.update_page('#app-profiles', 'append', "<div class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\")'><img src='{1}'>{2}</div>".format(css_id, icon_path, title, uuid))
+                self.update_page('#app-profiles', 'append', "<div class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\", \"{2}\")'><img src='{1}'>{2}</div>".format(css_id, icon_path, title, uuid))
             elif app.current_page == "preferences":
                 self.update_page('#profiles-list', 'append', "<option value='{1}'>{0}</option>".format(title, uuid))
 
@@ -826,21 +830,18 @@ class Controller(object):
             self.profiles.activate_profile_from_memory()
 
         elif command.startswith('profile-del'):
-            profile_name = command.split('?')[1].replace('%20', ' ')
-
-            if len(profile_name) > 0:
-                self.profiles.remove_profile(profile_name)
-
-                print('Forcing refresh of profiles list...')
-                self.refresh_profiles_list()
+            uuid = command.split('?')[1]
+            self.profiles.remove_profile(uuid)
+            self.refresh_profiles_list()
 
         elif command.startswith('profile-new'):
             profile_name = command.split('?')[1].replace('%20', ' ')
+            uuid = self.profiles.new_profile()
 
             self.cancel_changes = 'new-profile'
             self.old_profile = self.profiles.get_active_profile()
-            self.open_this_profile = profile_name
-            self.profiles.new_profile(profile_name)
+            self.open_this_profile = uuid
+            self.profiles.set_metadata(uuid, "name", profile_name)
             self.show_menu('profile_editor')
 
         elif command == 'profile-save':

@@ -24,11 +24,12 @@
  * Enable buttons when a profile is clicked
  */
 var selected_profile = "null";
-function profile_list_change(profile_id, profile_name) {
-    selected_profile = profile_name;
+function profile_list_change(css_id, uuid, human_name) {
+    selected_profile = uuid;
+    selected_name = human_name;
     $('#profiles-activate, #profiles-edit, #profiles-delete').removeClass('btn-disabled');
     $('.app-profile-item').removeClass('selected');
-    $('#'+profile_id).addClass('selected');
+    $('#'+css_id).addClass('selected');
 
     // Instant profile activation (if 'live_switch' is enabled in preferences)
     if ( live_switch == true ) {
@@ -87,7 +88,7 @@ function del_profile_dialog_open() {
     $('#dialog-del').show()
     $('#overlay').fadeIn('fast')
     $('#content').addClass('blur')
-    $("#dialog-del-item").html(selected_profile);
+    $("#dialog-del-item").html(selected_name);
 }
 
 function del_profile_dialog_close() {
