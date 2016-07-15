@@ -556,7 +556,10 @@ class Controller(object):
             css_id = "app-" + uuid
             title = index[uuid]["name"]
             icon_path = data_source + "/img/profile_default.svg"
-            self.update_page('#app-profiles', 'append', "<div class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\")'><img src='{1}'>{2}</div>".format(css_id, icon_path, title, uuid))
+            if app.current_page == "menu":
+                self.update_page('#app-profiles', 'append', "<div class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\")'><img src='{1}'>{2}</div>".format(css_id, icon_path, title, uuid))
+            elif app.current_page == "preferences":
+                self.update_page('#profiles-list', 'append', "<option value='{1}'>{0}</option>".format(title, uuid))
 
         # Sort the profiles A-Z.
         sorted_names = {}
