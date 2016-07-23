@@ -734,7 +734,7 @@ class Controller(object):
 
                 if cancel_type == "new-profile":
                     if pref.get('editor', 'live_switch', 'true') == 'true' or pref.get('editor', 'live_preview', 'true') == 'true':
-                        self.profiles.remove_profile()
+                        self.profiles.remove_profile(self.open_this_profile)
                         self.daemon.set_custom_colour(self.old_profile)
                 elif cancel_type == "edit-profile":
                     self.profiles.get_active_profile().restore_configuration()
