@@ -42,7 +42,8 @@ function profile_list_change(css_id, uuid, human_name) {
  * Dialogue box for creating profiles
  */
 function new_profile_dialog_open() {
-    $('#dialog-new-input').val('')
+    $('#dialog-new-name').val('')
+    $('#dialog-new-icon').val('')
     $('#dialog-new').addClass('in')
     $('#dialog-new').show()
     $('#dialog-new-ok').addClass('btn-disabled');
@@ -59,8 +60,8 @@ function new_profile_dialog_close() {
 
 // Enable / disable "Create" button if valid data is entered.
 $(document).ready(function() {
-    $('#dialog-new-input').keyup(function() {
-    length = $("#dialog-new-input").val().length;
+    $('#dialog-new-name').keyup(function() {
+    length = $("#dialog-new-name").val().length;
     if ( length > 0 ) {
         $('#dialog-new-ok').removeClass('btn-disabled');
     } else {
@@ -75,8 +76,10 @@ function new_profile_dialog_cancel() {
 
 function new_profile_dialog_ok() {
     new_profile_dialog_close();
-    input = $("#dialog-new-input").val();
-    cmd('profile-new?' + input);
+    newname = $("#dialog-new-name").val();
+    newicon = $("#dialog-new-icon").val();
+    // Uses colons instead of "?" in case user names a problem with "?" mark.
+    cmd('profile-new;' + newname + ';' + newicon);
 }
 
 

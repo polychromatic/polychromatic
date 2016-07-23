@@ -184,6 +184,10 @@ a {
     width: 400px;
 }
 
+.pref-input.path {
+    font-family: "Ubuntu Mono", "Droid Sans Mono", "FreeMono", "Courier New", Courier, monospace;
+}
+
 .pref-label {
     color: #06FF00;
 }
@@ -321,6 +325,21 @@ input[type="radio"] {
         -webkit-transform: scale3d(0.8, 0.8, 0.8);
     }
 }
+
+/* Dialog Multiple Fields */
+.dialog > table {
+    width: 100%;
+}
+
+.dialog > table > tbody > tr > th {
+    text-align: left;
+}
+
+.dialog > table > tbody > tr > td {
+    text-align: right;
+}
+
+
 /************************
    Elements
 *************************/

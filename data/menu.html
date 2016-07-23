@@ -164,7 +164,18 @@
   <div id="dialog-new" class="dialog" hidden>
     <h3 id="dialog-new-title"></h3>
     <p id="dialog-new-hint"></p>
-    <input id="dialog-new-input" type="text" class="pref-input">
+    <table>
+      <tr>
+        <th><span id="str-new-name"></span></th>
+        <td>
+          <input id="dialog-new-name" type="text" class="pref-input">
+        </td>
+      </tr>
+      <tr>
+        <th><span id="str-new-icon"></span></th>
+        <td><input id="dialog-new-icon" type="text" class="pref-input path"></td>
+      </tr>
+    </table>
     <div class="dialog-buttons">
       <hr>
       <a id="dialog-new-cancel" class="btn" onclick="new_profile_dialog_cancel()"></a>

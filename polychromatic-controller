@@ -345,7 +345,9 @@ class Controller(object):
             trans.push('#profiles-delete', _("Delete"), True)
 
             trans.push('#dialog-new-title', _("Create New Application Profile"))
-            trans.push('#dialog-new-hint', _("What's the name of this new profile?"))
+            trans.push('#dialog-new-hint', _("Please enter a name for the new profile, and optionally an icon."))
+            trans.push('#str-new-name', _("Application:"))
+            trans.push('#str-new-icon', _("Icon Path:"))
             trans.push('#dialog-new-cancel', _("Cancel"))
             trans.push('#dialog-new-ok', _("Create"))
 
@@ -353,7 +355,6 @@ class Controller(object):
             trans.push('#dialog-del-hint', _("Are you sure you want to delete this?"))
             trans.push('#dialog-del-no', _("Keep"))
             trans.push('#dialog-del-yes', _("Delete"))
-
 
             # Page actions
             self.webkit.run_javascript('instantProfileSwitch = false;')
@@ -838,13 +839,15 @@ class Controller(object):
             self.refresh_profiles_list()
 
         elif command.startswith('profile-new'):
-            profile_name = command.split('?')[1].replace('%20', ' ')
+            profile_name = command.split(';')[1].replace('%20', ' ')
+            profile_icon = command.split(';')[2].replace('%20', ' ')
             uuid = self.profiles.new_profile()
 
             self.cancel_changes = 'new-profile'
             self.old_profile = self.profiles.get_active_profile()
             self.open_this_profile = uuid
             self.profiles.set_metadata(uuid, "name", profile_name)
+            self.profiles.set_metadata(uuid, "icon", profile_icon)
             self.show_menu('profile_editor')
 
         elif command == 'profile-save':
