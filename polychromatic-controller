@@ -256,6 +256,9 @@ class Controller(object):
             "\n" + _("Please check the driver is properly installed and the service is running.") + \
             "\n\n" + _("Exception:") + ' ' + str(e), True)
 
+        # Store as class variables for use later.
+        self.window = w
+
         stdout.vprint('Application Ready.\n')
 
     """ Run the application """
@@ -348,6 +351,7 @@ class Controller(object):
             trans.push('#dialog-new-hint', _("Please enter a name for the new profile, and optionally an icon."))
             trans.push('#str-new-name', _("Application:"))
             trans.push('#str-new-icon', _("Icon Path:"))
+            trans.push('#str-browse', _("Browse"))
             trans.push('#dialog-new-cancel', _("Cancel"))
             trans.push('#dialog-new-ok', _("Create"))
 
@@ -860,6 +864,15 @@ class Controller(object):
             if pref.get('editor', 'activate_on_save', 'true') == 'true':
                 self.profiles.activate_profile_from_file(self.profiles.get_active_profile_name())
 
+        ## Open the file browser and return a successful path to that div.
+        elif command.startswith("browse-file"):
+            div_id = command.split('?')[1]
+            path = Dialogues.file_picker(_("Choose an icon to represent this application."), 'image')
+            if path != None:
+                app.update_page('#'+div_id, 'val', path)
+            else:
+                return
+
         ## Miscellaneous
         elif command == 'open-config-folder':
             os.system('xdg-open "' + path.root + '"')
@@ -880,7 +893,7 @@ class Dialogues(object):
 
     def color_picker():
         # TODO: Ability to track and set last colour in GTK dialog.
-        colorseldlg = Gtk.ColorSelectionDialog(_("Choose a colour"))
+        colorseldlg = Gtk.ColorSelectionDialog(_("Choose a Colour"))
         colorsel = colorseldlg.get_color_selection()
 
         if colorseldlg.run() == Gtk.ResponseType.OK:
@@ -892,6 +905,47 @@ class Dialogues(object):
             return "{0},{1},{2}".format(str(red),str(green),str(blue))
         else:
             colorseldlg.destroy()
+            return None
+
+    def file_picker(help_text, filter_mode):
+        #   help_text   =   String displayed in dialog title.
+        #   filters     =   Predefined filters (e.g. 'image')
+
+        win = Gtk.Window(title=_("Polychromatic Controller"))
+        dialog = Gtk.FileChooserDialog(help_text, app.window, Gtk.FileChooserAction.OPEN, \
+                                       (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, \
+                                        Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+                                      )
+        # Setup filters
+        if filter_mode == 'image':
+            a = Gtk.FileFilter()
+            a.set_name("JPEG " + _("Image"))
+            a.add_mime_type("image/jpeg")
+            dialog.add_filter(a)
+
+            b = Gtk.FileFilter()
+            b.set_name("PNG " + _("Image"))
+            b.add_mime_type("image/png")
+            dialog.add_filter(b)
+
+            c = Gtk.FileFilter()
+            c.set_name("GIF " + _("Image"))
+            c.add_mime_type("image/gif")
+            dialog.add_filter(c)
+
+            d = Gtk.FileFilter()
+            d.set_name("SVG " + _("Image"))
+            d.add_mime_type("image/svg+xml")
+            dialog.add_filter(d)
+
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            path = dialog.get_filename()
+            dialog.destroy()
+            return path
+        else:
+            dialog.destroy()
             return None
 
 
