@@ -9,7 +9,7 @@ Powered by the [Chroma Linux Drivers](http://pez2001.github.io/razer_chroma_driv
 
 ### Controller
 
-![Screenshot of Controller](source/screenshots/controller.jpg)
+![Screenshot of Controller](.readme/controller.jpg)
 
 An application that allows you to configure your Razer peripheral.
 
@@ -25,7 +25,7 @@ Also includes application profile support and customisation options:
 
 ### Tray Applet
 
-![Screenshot of Tray Applet](source/screenshots/tray.jpg)
+![Screenshot of Tray Applet](.readme/tray.jpg)
 
 Quickly set effects, brightness, keyboard features or load saved profiles
 from your desktop indicators / notification area.
@@ -33,8 +33,9 @@ from your desktop indicators / notification area.
 
 ## Installation
 
-### Razer Chroma Drivers
-This application complements the [razer-chroma-drivers](http://pez2001.github.io/razer_chroma_drivers/) project, which currently need to be compiled, built and installed first.
+### ![Chroma Drivers](.readme/chroma-drivers.png) Razer Chroma Drivers
+This application complements the [razer-chroma-drivers](http://pez2001.github.io/razer_chroma_drivers/) project,
+which will need to compiled, built and installed first.
 
 Ubuntu and Debian users can use these pre-compiled packages for convenience:
 
@@ -43,9 +44,12 @@ Ubuntu and Debian users can use these pre-compiled packages for convenience:
 
 These packages are provided **as-is**!
 
+Please see the [project page](http://pez2001.github.io/razer_chroma_drivers/#download) for installation instructions.
+
+
 ### Packages
 
-#### Ubuntu / Linux Mint
+#### ![Ubuntu](.readme/ubuntu.png) Ubuntu / Linux Mint
 
 Polychromatic can be installed from this PPA, which also keeps the application up-to-date.
 
@@ -57,7 +61,7 @@ Polychromatic can be installed from this PPA, which also keeps the application u
 * **Optionally**, you may wish to add the `polychromatic-tray-applet` program to your start-up programs.
 
 
-#### Ubuntu 14.04, 15.10, Linux Mint 17 (and earlier)
+#### ![Ubuntu](.readme/ubuntu.png) Ubuntu 14.04, 15.10, Linux Mint 17 (and earlier)
 
 Polychromatic depends on a newer version of WebKit2 which is not available in earlier releases.
 
@@ -65,7 +69,7 @@ Instead, [the legacy branch](https://github.com/lah7/polychromatic/tree/legacy) 
 a much earlier version (v0.1.0 / v0.2.0.1) and will not receive any further updates.
 
 
-#### Debian
+#### ![Debian](.readme/debian.png) Debian
 
 Add this line to your `/etc/apt/sources.list`:
 
@@ -86,7 +90,7 @@ is compatible with Debian 8.
 Otherwise, standalone packages are available from the [releases page](https://github.com/lah7/polychromatic/releases/latest/).
 
 
-### Manual Installation / Other Distributions
+### ![Other Distributions](.readme/linux.png) Manual Installation / Other Distributions
 
 See further below for which dependencies you will require to install first.
 
