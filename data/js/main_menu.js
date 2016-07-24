@@ -103,7 +103,10 @@ function del_profile_dialog_close() {
 
 function del_profile_dialog_confirm() {
     del_profile_dialog_close();
-    cmd('profile-del?' + selected_profile);
+    $('#app-'+selected_profile).slideUp('slow');
+    setTimeout(function(){
+        cmd('profile-del?' + selected_profile);
+    }, 500);
 }
 
 
