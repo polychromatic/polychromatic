@@ -29,9 +29,9 @@ function toggle_startup(element) {
     set_pref_chkstate('startup', 'enabled', element);
     state = $(element).is(':checked');
     if ( state == true ) {
-        $('#startup-options').fadeIn()
+        $('#startup-options').fadeIn();
     } else {
-        $('#startup-options').fadeOut()
+        $('#startup-options').fadeOut();
     }
 }
 

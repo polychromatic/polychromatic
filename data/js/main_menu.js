@@ -42,13 +42,13 @@ function profile_list_change(css_id, uuid, human_name) {
  * Dialogue box for creating profiles
  */
 function new_profile_dialog_open() {
-    $('#dialog-new-name').val('')
-    $('#dialog-new-icon').val('')
-    $('#dialog-new').addClass('in')
-    $('#dialog-new').show()
+    $('#dialog-new-name').val('');
+    $('#dialog-new-icon').val('');
+    $('#dialog-new').addClass('in');
+    $('#dialog-new').show();
     $('#dialog-new-ok').addClass('btn-disabled');
-    $('#overlay').fadeIn('fast')
-    $('#content').addClass('blur')
+    $('#overlay').fadeIn('fast');
+    $('#content').addClass('blur');
 }
 
 function new_profile_dialog_close() {
@@ -87,18 +87,18 @@ function new_profile_dialog_ok() {
  * Dialogue box for deleting a profile
  */
 function del_profile_dialog_open() {
-    $('#dialog-del').addClass('in')
-    $('#dialog-del').show()
-    $('#overlay').fadeIn('fast')
-    $('#content').addClass('blur')
+    $('#dialog-del').addClass('in');
+    $('#dialog-del').show();
+    $('#overlay').fadeIn('fast');
+    $('#content').addClass('blur');
     $("#dialog-del-item").html(selected_name);
 }
 
 function del_profile_dialog_close() {
-    $('#dialog-del').addClass('out')
+    $('#dialog-del').addClass('out');
     setTimeout(function(){ $('#dialog-del').removeClass('out').removeClass('in').hide() }, 250);
-    $('#overlay').fadeOut('fast')
-    $('#content').removeClass('blur')
+    $('#overlay').fadeOut('fast');
+    $('#content').removeClass('blur');
 }
 
 function del_profile_dialog_confirm() {
@@ -164,7 +164,7 @@ $(document).ready(function() {
         var brightnessRaw = ($(this).val() / 255.0) * 100;
         $('#brightnessValue').text(Math.round(brightnessRaw) + "%");
         if (brightnessRaw == 0) {
-            $(this).next().text("Off")
+            $(this).next().text("Off");
         }
         cmd('brightness?' + Math.round($(this).val()));
     });

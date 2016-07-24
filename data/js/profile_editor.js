@@ -56,7 +56,7 @@ function Keyboard(keyboard_element_id, keyboard_svg_path) {
         }
 
         if (active_layout == null) {
-            console.error("No active layout found")
+            console.error("No active layout found");
         }
     };
 

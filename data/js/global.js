@@ -93,11 +93,11 @@ function set_cursor(element, type) {
  */
 function set_pref_chkstate(group, setting, element) {
     state = $(element).is(':checked');
-    cmd('pref-set?' + group + '?' + setting + '?' + state)
+    cmd('pref-set?' + group + '?' + setting + '?' + state);
 }
 
 function set_pref_str(group, setting, string) {
-    cmd('pref-set?' + group + '?' + setting + '?' + string)
+    cmd('pref-set?' + group + '?' + setting + '?' + string);
 }
 
 /**

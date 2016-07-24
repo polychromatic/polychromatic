@@ -353,7 +353,6 @@ class Controller(object):
             trans.push('#str-new-name', _("Application:"))
             trans.push('#str-new-icon', _("Icon Path:"))
             trans.push('#str-fetch-launcher', _("Select Installed Application"))
-            trans.push('#str-browse', _("Browse Icon"))
             trans.push('#dialog-new-cancel', _("Cancel"))
             trans.push('#dialog-new-ok', _("Create"))
 
@@ -366,6 +365,9 @@ class Controller(object):
             trans.push('#dialog-applauncher-hint', _("The information from the chosen program will be used as the profile's base."))
             trans.push('#dialog-applauncher-revert', _("Cancel"))
             trans.push('#dialog-applauncher-ok', _("Select"))
+
+
+            trans.push('#str-browse-icon', _("Browse Icon"))
 
             # Page actions
             self.webkit.run_javascript('instantProfileSwitch = false;')
