@@ -574,7 +574,7 @@ class Controller(object):
             try:
                 icon_path = index[uuid]["icon"]
             except:
-                icon_path = path.get_data_source(__file__) + "/img/profile_default.svg"
+                icon_path = path.get_data_source(__file__) + "/img/profile-default.svg"
             if app.current_page == "menu":
                 self.update_page('#app-profiles', 'append', "<div class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\", \"{2}\")'><img src='{1}'>{2}</div>".format(css_id, icon_path, title, uuid))
             elif app.current_page == "preferences":

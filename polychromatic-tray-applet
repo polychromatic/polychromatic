@@ -96,11 +96,11 @@ class AppIndicator:
 
         if icon_type == 'logo':
             # TODO: Retrieve icon relative to the program.
-            logo_path = '/usr/share/polychromatic/img/tray_icon.png'
+            logo_path = '/usr/share/polychromatic/img/tray-icon.png'
 
         if icon_type == 'animated':
             # TODO: Retrieve icon relative to the program.
-            logo_path = '/usr/share/polychromatic/img/tray_icon_animated.gif'
+            logo_path = '/usr/share/polychromatic/img/tray-icon-animated.gif'
 
         if icon_type == 'logo' or icon_type == 'animated':
             if os.path.exists(logo_path):
@@ -413,7 +413,7 @@ class AppIndicator:
             try:
                 icon_path = index[uuid]["icon"]
             except:
-                icon_path = path.get_data_source(__file__) + "/img/profile_default.svg"
+                icon_path = path.get_data_source(__file__) + "/img/profile-default.svg"
             img = Gtk.Image()
             img.set_from_file(icon_path)
             self.profile_items[uuid] = Gtk.ImageMenuItem(Gtk.STOCK_NEW, label=title)
