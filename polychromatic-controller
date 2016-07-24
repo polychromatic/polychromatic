@@ -858,7 +858,11 @@ class Controller(object):
             self.old_profile = self.profiles.get_active_profile()
             self.open_this_profile = uuid
             self.profiles.set_metadata(uuid, "name", profile_name)
-            self.profiles.set_metadata(uuid, "icon", profile_icon)
+            if os.path.exists(profile_icon):
+                self.profiles.set_metadata(uuid, "icon", profile_icon)
+            else:
+                profile_icon = pref.path.get_data_source(__file__) + "/img/profile-default.svg"
+                self.profiles.set_metadata(uuid, "icon", profile_icon)
             self.show_menu('profile_editor')
 
         elif command == 'profile-save':
