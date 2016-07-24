@@ -108,6 +108,34 @@ function del_profile_dialog_confirm() {
 
 
 /**
+ * Dialogue box for choosing an application launcher.
+ */
+function prefill_launcher(selected_div, name, icon) {
+    $("#dialog-new-name").val(name);
+    $("#dialog-new-icon").val(icon);
+    $(".app-launcher-item").removeClass('selected');
+    $('#'+selected_div).addClass('selected');
+    $('#dialog-applauncher-ok').show();
+    $('#dialog-applauncher-revert').hide();
+    $('#dialog-new-ok').removeClass('btn-disabled');
+}
+
+function choose_app_launcher_open() {
+    $('#dialog-applauncher').addClass('in');
+    $('#dialog-applauncher').show();
+    $('#dialog-new').addClass('blur');
+    $('#dialog-applauncher-ok').hide();
+    $('#dialog-applauncher-revert').show();
+}
+
+function choose_app_launcher_close() {
+    $('#dialog-applauncher').addClass('out');
+    $('#dialog-new').removeClass('blur');
+    setTimeout(function(){ $('#dialog-applauncher').removeClass('out').removeClass('in').hide() }, 250);
+}
+
+
+/**
  * Edit profile.
  */
 function profile_edit() {

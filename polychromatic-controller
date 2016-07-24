@@ -25,6 +25,7 @@ from gi.repository import Gtk, Gdk, WebKit2
 
 import os
 import sys
+import glob
 import signal
 import json
 import gettext
@@ -352,6 +353,7 @@ class Controller(object):
             trans.push('#str-new-name', _("Application:"))
             trans.push('#str-new-icon', _("Icon Path:"))
             trans.push('#str-browse', _("Browse"))
+            trans.push('#str-fetch-launcher', _("Select Installed Application"))
             trans.push('#dialog-new-cancel', _("Cancel"))
             trans.push('#dialog-new-ok', _("Create"))
 
@@ -359,6 +361,11 @@ class Controller(object):
             trans.push('#dialog-del-hint', _("Are you sure you want to delete this?"))
             trans.push('#dialog-del-no', _("Keep"))
             trans.push('#dialog-del-yes', _("Delete"))
+
+            trans.push('#dialog-applauncher-title', _("Choose an Application"))
+            trans.push('#dialog-applauncher-hint', _("The information from the chosen program will be used as the profile's base."))
+            trans.push('#dialog-applauncher-revert', _("Cancel"))
+            trans.push('#dialog-applauncher-ok', _("Select"))
 
             # Page actions
             self.webkit.run_javascript('instantProfileSwitch = false;')
@@ -863,6 +870,85 @@ class Controller(object):
 
             if pref.get('editor', 'activate_on_save', 'true') == 'true':
                 self.profiles.activate_profile_from_file(self.profiles.get_active_profile_name())
+
+        ## List application launchers to create profiles for.
+        elif command == 'fetch-app-launchers':
+            unknown_icon_path = pref.path.get_data_source(__file__) + "/img/generic-application.svg"
+
+            # Functions for this feature.
+            def append_item(uid, name, icon_path):
+                css_id = "launcher-" + uid
+                if not os.path.exists(icon_path):
+                    icon_path = unknown_icon_path
+                self.update_page('#app-launchers', 'append', "<div class='app-launcher-item' id='{0}' onclick='prefill_launcher(\"{0}\", \"{1}\", \"{2}\")'><img src='{2}'>{1}</div>".format(uid, name, icon_path))
+
+            def read_launcher(path):
+                contents = ''
+                with open(path) as stream:
+                    contents = stream.readlines()
+                return contents
+
+            def read_line(data, item):
+                for line in data:
+                    if line.startswith(item):
+                        findings = line.split(item)[1].replace('\n','')
+                        return findings
+                return 'null'
+
+            def icon_name_to_path(icon_name):
+                theme = Gtk.IconTheme.get_default()
+                info = theme.lookup_icon(icon_name, 22, 0)
+                path = info.get_filename()
+                if path:
+                    return path
+                else:
+                    return 'null'
+
+            # Clear the list, if previously opened.
+            self.update_page('#app-launchers', 'html', ' ')
+            unique_id = 0
+
+            # Gather a list of launchers from A-Z.
+            system_apps = '/usr/share/applications/*.desktop'
+            user_apps = os.path.join(os.path.expanduser('~'), '.local', 'share', 'applications/')
+
+            if os.path.isdir(user_apps):
+                user_launchers = glob.glob(user_apps + '*.desktop')
+                user_launchers.sort()
+            else:
+                user_launchers = []
+
+            sys_launchers = glob.glob(system_apps)
+            sys_launchers.sort()
+
+            launchers = []
+            launchers.extend(user_launchers)
+            launchers.extend(sys_launchers)
+
+            for path in launchers:
+                unique_id += 1
+                try:
+                    contents = read_launcher(path)
+                    app_name = read_line(contents, 'Name=')
+                    app_icon = read_line(contents, 'Icon=')
+                except:
+                    # Skip any invalid launchers.
+                    continue
+
+                if os.path.exists(app_icon):
+                    # Icon is already an abs. path.
+                    icon_path = app_icon
+                else:
+                    # Use GTK to determine theme icon.
+                    try:
+                        icon_path = icon_name_to_path(app_icon)
+                        if not os.path.exists(icon_path):
+                            # Icon path couldn't be determined.
+                            icon_path = unknown_icon_path
+                    except:
+                        icon_path = unknown_icon_path
+
+                append_item(str(unique_id), app_name, icon_path)
 
         ## Open the file browser and return a successful path to that div.
         elif command.startswith("browse-file"):

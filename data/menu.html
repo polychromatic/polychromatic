@@ -178,6 +178,7 @@
     </table>
     <div class="dialog-buttons">
       <a class="btn" onclick="cmd('browse-file?dialog-new-icon');"><span class="fa fa-folder-open"></span> <span id="str-browse"></span></a>
+      <a class="btn" onclick="cmd('fetch-app-launchers'); choose_app_launcher_open();"><span class="fa fa-search"></span> <span id="str-fetch-launcher"></span></a>
       <hr>
       <a id="dialog-new-cancel" class="btn" onclick="new_profile_dialog_cancel()"></a>
       <a id="dialog-new-ok" class="btn btn-disabled" onclick="new_profile_dialog_ok()"></a>
@@ -191,6 +192,17 @@
       <hr>
       <a id="dialog-del-no" class="btn" onclick="del_profile_dialog_close()"></a>
       <a id="dialog-del-yes" class="btn btn-serious" onclick="del_profile_dialog_confirm()"></a>
+    </div>
+  </div>
+
+  <div id="dialog-applauncher" class="dialog" hidden>
+    <h3><span id="dialog-applauncher-title"></span></h3>
+    <p id="dialog-applauncher-hint"></p>
+    <div id="app-launchers"></div>
+    <div class="dialog-buttons">
+      <hr>
+      <a id="dialog-applauncher-revert" class="btn" onclick="choose_app_launcher_close()"></a>
+      <a id="dialog-applauncher-ok" class="btn" onclick="choose_app_launcher_close()"></a>
     </div>
   </div>
 
