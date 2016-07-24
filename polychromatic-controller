@@ -352,8 +352,8 @@ class Controller(object):
             trans.push('#dialog-new-hint', _("Please enter a name for the new profile, and optionally an icon."))
             trans.push('#str-new-name', _("Application:"))
             trans.push('#str-new-icon', _("Icon Path:"))
-            trans.push('#str-browse', _("Browse"))
             trans.push('#str-fetch-launcher', _("Select Installed Application"))
+            trans.push('#str-browse', _("Browse Icon"))
             trans.push('#dialog-new-cancel', _("Cancel"))
             trans.push('#dialog-new-ok', _("Create"))
 
