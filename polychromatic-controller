@@ -1030,7 +1030,7 @@ class Dialogues(object):
 
     def color_picker():
         # TODO: Ability to track and set last colour in GTK dialog.
-        colorseldlg = Gtk.ColorSelectionDialog(_("Choose a Colour"))
+        colorseldlg = Gtk.ColorSelectionDialog(_("Choose a Color"))
         colorsel = colorseldlg.get_color_selection()
 
         if colorseldlg.run() == Gtk.ResponseType.OK:
