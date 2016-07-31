@@ -489,6 +489,7 @@ class AppIndicator:
         else:
             return
 
+
 if __name__ == "__main__":
     """
     Main function
@@ -514,5 +515,6 @@ if __name__ == "__main__":
     Gtk.main()
 
     # Application Closed
-    os.remove(tray_pid_file)
+    if os.path.exists(tray_pid_file):
+        os.remove(tray_pid_file)
     sys.exit(0)
