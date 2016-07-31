@@ -374,7 +374,34 @@ function set_mode(id) {
  * Run once document has loaded
  */
 $(document).ready(function () {
-
     // Set initial key mode
     set_mode('set');
 });
+
+
+/**
+ * Dialogue box for renaming ("editing metadata") of a profile
+ */
+function rename_profile_dialog_open() {
+    $('#dialog-rename').addClass('in');
+    $('#dialog-rename').show();
+    $('#overlay').fadeIn('fast');
+    $('#content').addClass('blur');
+}
+
+function rename_profile_dialog_save() {
+    newname = $("#dialog-rename-name").val();
+    newicon = $("#dialog-rename-icon").val();
+    // Uses colons instead of "?" in case user uses a name containing a "?".
+    cmd('profile-set-metadata;' + newname + ';' + newicon);
+    rename_profile_dialog_close();
+    $("#profile-name").html(newname);
+    $("#profile-icon").attr("src", newicon);
+}
+
+function rename_profile_dialog_close() {
+    $('#dialog-rename').addClass('out');
+    setTimeout(function(){ $('#dialog-rename').removeClass('out').removeClass('in').hide() }, 250);
+    $('#overlay').fadeOut('fast');
+    $('#content').removeClass('blur');
+}

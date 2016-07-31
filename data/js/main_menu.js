@@ -78,7 +78,7 @@ function new_profile_dialog_ok() {
     new_profile_dialog_close();
     newname = $("#dialog-new-name").val();
     newicon = $("#dialog-new-icon").val();
-    // Uses colons instead of "?" in case user names a problem with "?" mark.
+    // Uses colons instead of "?" in case user uses a name containing a "?".
     cmd('profile-new;' + newname + ';' + newicon);
 }
 

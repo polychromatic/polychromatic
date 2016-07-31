@@ -366,7 +366,6 @@ class Controller(object):
             trans.push('#dialog-applauncher-revert', _("Cancel"))
             trans.push('#dialog-applauncher-ok', _("Select"))
 
-
             trans.push('#str-browse-icon', _("Browse Icon"))
 
             # Page actions
@@ -409,12 +408,22 @@ class Controller(object):
             trans.push_var('str_clear_help', _("Click on a key to clear."))
             app.webkit.run_javascript("set_mode('set')")
 
+            trans.push('#str-edit-profile', _("Edit"), True)
+            trans.push('#dialog-rename-title', _("Edit Profile Details"))
+            trans.push('#dialog-rename-hint', _("Change the name and icon for this profile."))
+            trans.push('#str-rename-name', _("Name:"))
+            trans.push('#str-rename-icon', _("Icon Path:"))
+            trans.push('#dialog-rename-cancel', _("Discard"))
+            trans.push('#dialog-rename-ok', _("Save Changes"))
+            trans.push('#str-browse-icon', _("Browse Icon"))
+
             # Initialise keyboard layout
             js_exec = self.webkit.JavaScriptExecutor(self.webkit)
             kb_callback = self.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
 
             # Collect profile details.
             uuid = self.open_this_profile
+            app.webkit.run_javascript("var selected_profile = '{0}'".format(uuid))
             profile_name = pref.get(uuid, "name", "", path.profiles)
             profile_icon = pref.get(uuid, "icon", "", path.profiles)
 
@@ -874,6 +883,18 @@ class Controller(object):
                 self.profiles.set_metadata(uuid, "icon", profile_icon)
             self.show_menu('profile_editor')
 
+        elif command.startswith('profile-set-metadata'):
+            new_name = command.split(';')[1].replace('%20', ' ')
+            new_icon = command.split(';')[2].replace('%20', ' ')
+            uuid = self.open_this_profile
+
+            self.profiles.set_metadata(uuid, "name", new_name)
+            if os.path.exists(new_icon):
+                self.profiles.set_metadata(uuid, "icon", new_icon)
+            else:
+                new_icon = pref.path.get_data_source(__file__) + "/img/profile-default.svg"
+                self.profiles.set_metadata(uuid, "icon", new_icon)
+
         elif command == 'profile-save':
             profile_name = self.profiles.get_active_profile_name()
             print('Saving profile "{0}" ...'.format(profile_name))
@@ -883,6 +904,18 @@ class Controller(object):
 
             if pref.get('editor', 'activate_on_save', 'true') == 'true':
                 self.profiles.activate_profile_from_file(self.profiles.get_active_profile_name())
+
+        elif command.startswith('profile-rename'):
+            uuid = command.split('?')[1]
+            uuid_css = 'app-' + uuid
+
+            index = pref.load_file(pref.path.profiles)
+            name = pref.get(uuid, 'name', 'Unknown', pref.path.profiles)
+            icon = pref.get(uuid, 'icon', 'Unknown', pref.path.profiles)
+
+            app.update_page('#dialog-rename-name', 'val', name)
+            app.update_page('#dialog-rename-icon', 'val', icon)
+            app.webkit.run_javascript("rename_profile_dialog_open()")
 
         ## List application launchers to create profiles for.
         elif command == 'fetch-app-launchers':
