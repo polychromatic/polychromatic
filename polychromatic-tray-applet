@@ -29,6 +29,7 @@ import sys
 import signal
 import gettext
 import setproctitle
+from subprocess import Popen as background_process
 
 import razer.daemon_dbus
 import razer.keyboard
@@ -380,7 +381,7 @@ class AppIndicator:
         """
         Opens the Chroma Configuration Tool.
         """
-        os.system('/usr/bin/polychromatic-controller')
+        background_process('/usr/bin/polychromatic-controller')
 
     def refresh_profiles_menu(self):
         profile_list = self.profiles.get_profiles()
