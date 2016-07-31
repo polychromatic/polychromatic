@@ -81,9 +81,17 @@ class AppIndicator:
         # Initialize the DBUS Daemon
         self.daemon = razer.daemon_dbus.DaemonInterface()
 
+        # Load primary/secondary colours
+        primary_r = int(pref.get("primary_colors", "red", 0))
+        primary_g = int(pref.get("primary_colors", "green", 255))
+        primary_b = int(pref.get("primary_colors", "blue", 0))
+        secondary_r = int(pref.get("secondary_colors", "red", 255))
+        secondary_g = int(pref.get("secondary_colors", "green", 0))
+        secondary_b = int(pref.get("secondary_colors", "blue", 0))
+
         # Store Colour and active effect
-        self.colour = (255, 255, 255)
-        self.secondary_colour = (0, 0, 0)
+        self.colour = (primary_r, primary_g, primary_b)
+        self.secondary_colour = (secondary_r, secondary_g, secondary_b)
         self.active_effect = None
 
         # Read preferences and profiles.
