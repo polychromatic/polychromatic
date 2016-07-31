@@ -441,6 +441,15 @@ class AppIndicator:
 
     def apply_startup_settings(self):
         if pref.get('startup', 'enabled', 'false') == 'true':
+
+            # Only run the tray applet start-up options once.
+            if not os.path.exists(tray_startup_file):
+                open(tray_startup_file, 'a').close()
+            else:
+                print("Skipping start-up options - They have already been ran this user session.")
+                return
+
+            # Load options
             start_effect = pref.get('startup', 'start_effect', 'disabled')
             start_profile = pref.get('startup', 'start_profile', None)
             start_brightness = int(pref.get('startup', 'start_brightness', 0))
@@ -489,6 +498,9 @@ if __name__ == "__main__":
 
     # Appear as its own process.
     setproctitle.setproctitle('polychromatic-tray-applet')
+
+    # Run start-up options once.
+    tray_startup_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet-run-once")
 
     # Write a PID file for restarting later.
     tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
