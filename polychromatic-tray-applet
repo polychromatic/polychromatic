@@ -490,8 +490,17 @@ if __name__ == "__main__":
     # Appear as its own process.
     setproctitle.setproctitle('polychromatic-tray-applet')
 
+    # Write a PID file for restarting later.
+    tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
+    f = open(tray_pid_file,'w')
+    f.write(str(os.getpid()))
+    f.close()
+
     trans = Translations()
     indicator = AppIndicator()
 
     Gtk.main()
+
+    # Application Closed
+    os.remove(tray_pid_file)
     sys.exit(0)

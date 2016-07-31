@@ -55,7 +55,7 @@
         <tr>
           <td>
             <label id="str-system-logo" class="pref-label">
-              <input type="radio" name="tray-icon" id="tray-system" onclick="set_pref_str('tray_applet','icon_type','system')"/>
+              <input type="radio" name="tray-icon" id="tray-system" onclick="set_pref_str('tray_applet','icon_type','system'); cmd('restart-tray')"/>
               <img id="tray-system-logo" class="pref-tray-preview" src=""/>
             </label>
             <br>
@@ -64,7 +64,7 @@
         <tr>
           <td>
             <label id="str-static-logo" class="pref-label">
-              <input type="radio" name="tray-icon" id="tray-logo" onclick="set_pref_str('tray_applet','icon_type','logo')"/>
+              <input type="radio" name="tray-icon" id="tray-logo" onclick="set_pref_str('tray_applet','icon_type','logo'); cmd('restart-tray')"/>
               <img id="tray-static-logo" class="pref-tray-preview" src="img/tray-icon.png"/>
             </label>
             <br>
@@ -73,7 +73,7 @@
         <tr>
           <td>
             <label id="str-animated-logo" class="pref-label">
-              <input type="radio" name="tray-icon" id="tray-animated" onclick="set_pref_str('tray_applet','icon_type','animated')"/>
+              <input type="radio" name="tray-icon" id="tray-animated" onclick="set_pref_str('tray_applet','icon_type','animated'); cmd('restart-tray')"/>
               <img id="tray-animated-logo" class="pref-tray-preview" src="img/tray-icon-animated.gif"/>
             </label>
             <br>
@@ -82,17 +82,16 @@
         <tr>
           <td>
             <label id="str-custom-logo" class="pref-label">
-              <input id="tray-custom-logo" id="tray-custom" type="radio" name="tray-icon" value="custom" onclick="set_pref_str('tray_applet','icon_type','custom')"/>
+              <input id="tray-custom-logo" id="tray-custom" type="radio" name="tray-icon" value="custom" onclick="set_pref_str('tray_applet','icon_type','custom'); cmd('restart-tray')"/>
               <img id="tray-icon-path-preview" class="pref-tray-preview" style="width:22px; height:22px">
             </label>
           </td>
           <td>
             <input id="tray-icon-path" class="pref-input" type="text"/>
-            <a class="btn" onclick="cmd('browse-file-icon?tray-icon-path');"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></a>
+            <a class="btn" onclick="cmd('browse-file-icon?tray-icon-path');" onmouseout="set_pref_str('tray_applet','icon_path', $('#tray-icon-path').val());"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></a>
           </td>
         </tr>
       </table>
-      <p id="str-restart-tray"></p>
       <hr>
 
     <h3 id="str-preferred-cols"></h3>
@@ -120,6 +119,7 @@
         </td>
       </tr>
     </table>
+    <hr>
 
     <h3 id="str-startup"></h3>
     <p id="str-startup-hint"></p>
@@ -172,6 +172,7 @@
           </td>
         </tr>
       </table>
+      <hr>
 
     <h3 id="str-advanced"></h3>
     <a id="str-reset-pref" class="btn" onclick="cmd('pref-reset-conf')"><span class="fa fa-delete"></span> </a>

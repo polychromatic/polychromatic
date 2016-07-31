@@ -30,6 +30,7 @@ import signal
 import json
 import gettext
 import setproctitle
+from subprocess import Popen as background_process
 
 import razer.daemon_dbus
 import razer.keyboard
@@ -483,7 +484,6 @@ class Controller(object):
             trans.push('#str-animated-logo', _("Animated Chroma Logo"), True)
             trans.push('#str-custom-logo', _("Custom Image"), True)
             trans.push('#tray-custom', _("Custom Icon:"), True)
-            trans.push('#str-restart-tray', _("For changes to take effect, please restart the Tray Applet."))
             trans.push('#str-preferred-cols', _("Preferred Colors"), True)
             trans.push('#str-primary', _("Primary Color:"))
             trans.push('#str-secondary', _("Secondary Color:"))
@@ -871,6 +871,7 @@ class Controller(object):
             uuid = command.split('?')[1]
             self.profiles.remove_profile(uuid)
             self.refresh_profiles_list()
+            restart_tray_applet()
 
         elif command.startswith('profile-new'):
             profile_name = command.split(';')[1].replace('%20', ' ')
@@ -887,6 +888,7 @@ class Controller(object):
                 profile_icon = pref.path.get_data_source(__file__) + "/img/profile-default.svg"
                 self.profiles.set_metadata(uuid, "icon", profile_icon)
             self.show_menu('profile_editor')
+            restart_tray_applet()
 
         elif command.startswith('profile-set-metadata'):
             new_name = command.split(';')[1].replace('%20', ' ')
@@ -899,6 +901,7 @@ class Controller(object):
             else:
                 new_icon = pref.path.get_data_source(__file__) + "/img/profile-default.svg"
                 self.profiles.set_metadata(uuid, "icon", new_icon)
+            restart_tray_applet()
 
         elif command == 'profile-save':
             profile_name = self.profiles.get_active_profile_name()
@@ -1007,6 +1010,9 @@ class Controller(object):
         ## Miscellaneous
         elif command == 'open-config-folder':
             os.system('xdg-open "' + path.root + '"')
+
+        elif command == 'restart-tray':
+            restart_tray_applet()
 
         else:
             print("Unimplemented command: " + command)
@@ -1138,6 +1144,35 @@ def icon_name_to_path(icon_name):
         return path
     else:
         return 'null'
+
+""" For restarting the tray applet (only when running) """
+tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
+
+def restart_tray_applet():
+    print("Tray applet restarting...")
+    # Get the PID written in memory.
+    try:
+        with open(tray_pid_file) as stream:
+            tray_pid = int(stream.readline())
+        print(tray_pid)
+    except IOError:
+        print("Tray applet is not running.")
+        return
+
+    # Where is the tray applet?
+    if __file__.startswith("/usr"):
+        tray_bin_path = "/usr/bin/polychromatic-tray-applet"
+    else:
+        tray_bin_path = os.path.join(path.get_data_source(__file__) + "/../polychromatic-tray-applet")
+
+    # Attempt to gracefully stop the process, then launch again.
+    try:
+        os.kill(tray_pid, 15)
+        background_process(tray_bin_path)
+    except OSError:
+        print("Tray applet is not running or couldn't be relaunched.")
+        return
+    print("Tray Applet Reloaded.")
 
 
 if __name__ == "__main__":
