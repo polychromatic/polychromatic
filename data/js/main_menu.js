@@ -44,6 +44,8 @@ function profile_list_change(css_id, uuid, human_name) {
 function new_profile_dialog_open() {
     $('#dialog-new-name').val('');
     $('#dialog-new-icon').val('');
+    $("#dialog-new-icon-preview").attr("src", "img/profile-default.svg");
+    $("#dialog-new-name-preview").html(" ");
     $('#dialog-new').addClass('in');
     $('#dialog-new').show();
     $('#dialog-new-ok').addClass('btn-disabled');
@@ -169,4 +171,11 @@ $(document).ready(function() {
         cmd('brightness?' + Math.round($(this).val()));
     });
 
+    // In dialogues, keep preview boxes updated with text box contents.
+    $('#dialog-new-name').bind('input', function() {
+        dialog_text_preview('dialog-new-name')
+    });
+    $('#dialog-new-icon').bind('input', function() {
+        dialog_icon_preview('dialog-new-icon')
+    });
 });

@@ -89,7 +89,6 @@ function set_cursor(element, type) {
 
 /**
  * Set/update a preference
- *
  */
 function set_pref_chkstate(group, setting, element) {
     state = $(element).is(':checked');
@@ -105,3 +104,16 @@ function set_pref_str(group, setting, string) {
  */
 // Always fade in the page.
 $('.content').fadeIn('slow');
+
+
+/**
+ * Update the "preview" name/icon shown in the dialogue box.
+ */
+function dialog_text_preview(input_box_element) {
+    text = $("#" + input_box_element).val();
+    $("#" + input_box_element + "-preview").html(text);
+}
+function dialog_icon_preview(input_box_element) {
+    icon_path = $("#" + input_box_element).val();
+    $("#" + input_box_element + "-preview").attr("src", icon_path);
+}

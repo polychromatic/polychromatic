@@ -915,6 +915,8 @@ class Controller(object):
 
             app.update_page('#dialog-rename-name', 'val', name)
             app.update_page('#dialog-rename-icon', 'val', icon)
+            app.update_page('#dialog-rename-name-preview', 'html', name)
+            app.update_page('#dialog-rename-icon-preview', 'attr', 'src', icon)
             app.webkit.run_javascript("rename_profile_dialog_open()")
 
         ## List application launchers to create profiles for.
@@ -997,11 +999,12 @@ class Controller(object):
                 append_item(str(unique_id), app_name, icon_path)
 
         ## Open the file browser and return a successful path to that div.
-        elif command.startswith("browse-file"):
+        elif command.startswith("browse-file-icon"):
             div_id = command.split('?')[1]
-            path = Dialogues.file_picker(_("Choose an icon to represent this application."), 'image')
+            path = Dialogues.file_picker(_("Choose Application Profile Icon"), 'image')
             if path != None:
                 app.update_page('#'+div_id, 'val', path)
+                app.update_page('#'+div_id+'-preview', 'attr', 'src', path)
             else:
                 return
 

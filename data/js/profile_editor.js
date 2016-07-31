@@ -376,6 +376,14 @@ function set_mode(id) {
 $(document).ready(function () {
     // Set initial key mode
     set_mode('set');
+
+    // In dialogues, keep preview boxes updated with text box contents.
+    $('#dialog-rename-name').bind('input', function() {
+        dialog_text_preview('dialog-rename-name')
+    });
+    $('#dialog-rename-icon').bind('input', function() {
+        dialog_icon_preview('dialog-rename-icon')
+    });
 });
 
 

@@ -90,16 +90,22 @@
       <tr>
         <th><span id="str-rename-name"></span></th>
         <td>
-          <input id="dialog-rename-name" type="text" class="pref-input">
+          <input id="dialog-rename-name" type="text" class="pref-input"/>
         </td>
       </tr>
       <tr>
         <th><span id="str-rename-icon"></span></th>
-        <td><input id="dialog-rename-icon" type="text" class="pref-input path"></td>
+        <td>
+          <input id="dialog-rename-icon" type="text" class="pref-input path"/>
+        </td>
       </tr>
     </table>
+    <div class="preview-area">
+      <img id="dialog-rename-icon-preview" src="img/profile-default.svg"/> <p><span id="dialog-rename-name-preview"></span></p>
+    </div>
     <div class="dialog-buttons">
-      <a class="btn" onclick="cmd('browse-file?dialog-rename-icon');"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></a>
+      <img id="dialog-rename-icon-preview" class="icon-preview"/>
+      <a class="btn" onclick="cmd('browse-file-icon?dialog-rename-icon');"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></a>
       <hr>
       <a id="dialog-rename-cancel" class="btn" onclick="rename_profile_dialog_close()"></a>
       <a id="dialog-rename-ok" class="btn" onclick="rename_profile_dialog_save()"></a>

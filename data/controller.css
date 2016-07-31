@@ -290,12 +290,12 @@ input[type="radio"] {
 /* Dialog Sizes */
 #dialog-new {
     width: 50%;
-    height: 35%;
+    height: 43%;
 }
 
 #dialog-rename {
     width: 50%;
-    height: 35%;
+    height: 42%;
 }
 
 #dialog-del {
@@ -355,6 +355,30 @@ input[type="radio"] {
     text-align: right;
 }
 
+/* Dialog Elements */
+.preview-area {
+    width: 95%;
+    height: 28px;
+    margin: 4px;
+    padding: 4px;
+    background-color: rgba(128,128,128,0.4);
+}
+
+.preview-area > p {
+    margin-top: 6px;
+    margin-left: 4px;
+    float: left;
+    font-size: 14px;
+    color: lime;
+}
+
+.preview-area > img {
+    float: left;
+    padding: 2px;
+    margin-left: 4px;
+    width: 24px;
+    height: 24px;
+}
 
 /************************
    Elements
@@ -434,7 +458,7 @@ input[type="radio"] {
 }
 
 /************************
-   Profile List
+   Profile Editor
 *************************/
 #profile-icon {
     width: 24px;

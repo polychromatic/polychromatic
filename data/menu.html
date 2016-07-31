@@ -168,16 +168,22 @@
       <tr>
         <th><span id="str-new-name"></span></th>
         <td>
-          <input id="dialog-new-name" type="text" class="pref-input">
+          <input id="dialog-new-name" type="text" class="pref-input"/>
         </td>
       </tr>
       <tr>
         <th><span id="str-new-icon"></span></th>
-        <td><input id="dialog-new-icon" type="text" class="pref-input path"></td>
+        <td>
+          <input id="dialog-new-icon" type="text" class="pref-input path"/>
+        </td>
       </tr>
     </table>
+    <div class="preview-area">
+      <img id="dialog-new-icon-preview" src="img/profile-default.svg"/> <p><span id="dialog-new-name-preview"></span></p>
+    </div>
     <div class="dialog-buttons">
-      <a class="btn" onclick="cmd('browse-file?dialog-new-icon');"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></a>
+      <img id="dialog-new-icon-preview" class="icon-preview"/>
+      <a class="btn" onclick="cmd('browse-file-icon?dialog-new-icon');"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></a>
       <a class="btn" onclick="cmd('fetch-app-launchers'); choose_app_launcher_open();"><span class="fa fa-search"></span> <span id="str-fetch-launcher"></span></a>
       <hr>
       <a id="dialog-new-cancel" class="btn" onclick="new_profile_dialog_cancel()"></a>
