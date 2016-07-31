@@ -483,7 +483,6 @@ class Controller(object):
             trans.push('#str-animated-logo', _("Animated Chroma Logo"), True)
             trans.push('#str-custom-logo', _("Custom Image"), True)
             trans.push('#tray-custom', _("Custom Icon:"), True)
-            trans.push('#str-custom-tip', _("Copy and paste the path to the image you'd like to use. You may need to resize your icon smaller."), True)
             trans.push('#str-restart-tray', _("For changes to take effect, please restart the Tray Applet."))
             trans.push('#str-preferred-cols', _("Preferred Colors"), True)
             trans.push('#str-primary', _("Primary Color:"))
@@ -538,6 +537,7 @@ class Controller(object):
             # Set 'values' for textboxes and dropdowns.
             self.update_page('#tray-'+tray_icon_type, 'prop', 'checked', 'true')
             self.update_page('#tray-icon-path', 'val', tray_icon_path)
+            self.update_page('#tray-icon-path-preview', 'attr', 'src', tray_icon_path)
             self.update_page('#start-effect-dropdown', 'val', start_effect)
             self.update_page('#profiles-list', 'val', start_profile)
             self.update_page('#start-brightness', 'val', str(start_brightness))
@@ -571,6 +571,11 @@ class Controller(object):
 
             self.update_page('#rgb_start_primary_preview', 'css', 'background-color', 'rgba(' + str(self.start_p_red) + ',' + str(self.start_p_green) + ',' + str(self.start_p_blue) + ',1.0)')
             self.update_page('#rgb_start_secondary_preview', 'css', 'background-color', 'rgba(' + str(self.start_s_red) + ',' + str(self.start_s_green) + ',' + str(self.start_s_blue) + ',1.0)')
+
+            # Get the system icon path for the tray applet.
+            default_tray_icon = icon_name_to_path("ibus-keyboard")
+            self.update_page("#tray-system-logo", "attr", "src", default_tray_icon)
+            self.update_page("#tray-system-logo", "attr", "src", default_tray_icon)
 
         elif self.current_page == 'controller_devices':
             self.detect_devices()
@@ -943,15 +948,6 @@ class Controller(object):
                         return findings
                 return 'null'
 
-            def icon_name_to_path(icon_name):
-                theme = Gtk.IconTheme.get_default()
-                info = theme.lookup_icon(icon_name, 22, 0)
-                path = info.get_filename()
-                if path:
-                    return path
-                else:
-                    return 'null'
-
             # Clear the list, if previously opened.
             self.update_page('#app-launchers', 'html', ' ')
             unique_id = 0
@@ -1131,6 +1127,17 @@ class Terminal(object):
     def vvprint(self, text):
         if self.be_very_verbose:
             print(text)
+
+
+""" Shared function to get an image path using Gtk """
+def icon_name_to_path(icon_name):
+    theme = Gtk.IconTheme.get_default()
+    info = theme.lookup_icon(icon_name, 22, 0)
+    path = info.get_filename()
+    if path:
+        return path
+    else:
+        return 'null'
 
 
 if __name__ == "__main__":

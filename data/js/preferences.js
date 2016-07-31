@@ -61,4 +61,10 @@ $(document).ready(function () {
         }
         set_pref_str('startup','start_brightness', $(this).val());
     });
+
+    // Update the icon preview / save when text box changes.
+    $('#tray-icon-path').bind('input', function() {
+        dialog_icon_preview('tray-icon-path');
+        set_pref_str('tray_applet','icon_path', $("#tray-icon-path").val());
+    });
 });
