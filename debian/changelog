@@ -1,3 +1,19 @@
+polychromatic (0.2.2) xenial; urgency=low
+
+  * New application logo.
+  * Upgraded profile format.
+  * New application profiles list, with support for icons and renaming.
+  * Add option to choose an existing application for new profiles.
+  * Amendments to user interface.
+  * Uses custom WebKit controls.
+  * Automatically reload the tray applet on changes.
+  * Refreshed translations.
+  * Tray applet loads preferred colours.
+  * Internal code clean-up.
+  * Create packages for Yakkety.
+
+ -- Luke Horwell <lukehorwell37+code@gmail.com>  Sun, 31 Jul 2016 20:49:00 +0100
+
 polychromatic (0.2.1) xenial; urgency=low
 
   * New dialogue prompts for profile creation/deletion.
