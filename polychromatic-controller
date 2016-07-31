@@ -413,11 +413,18 @@ class Controller(object):
             js_exec = self.webkit.JavaScriptExecutor(self.webkit)
             kb_callback = self.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
 
-            # Set page title
+            # Collect profile details.
             uuid = self.open_this_profile
             profile_name = pref.get(uuid, "name", "", path.profiles)
-            app.update_page("#page-header", "html", _("Edit") + ' ' + profile_name)
-            app.update_page("#page-header", "fadeIn")
+            profile_icon = pref.get(uuid, "icon", "", path.profiles)
+
+            # Set profile title on page
+            app.update_page("#profile-name", "html", profile_name)
+            app.update_page("#profile-name", "fadeIn")
+
+            # Set profile icon on page
+            app.update_page("#profile-icon", "attr", "src", profile_icon)
+            app.update_page("#profile-icon", "fadeIn")
 
             # Set keyboard layout
             kb_callback << "keyboard_obj.set_layout(\"kb-" + self.kb_layout + "\")"
