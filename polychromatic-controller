@@ -1054,24 +1054,32 @@ class Dialogues(object):
         # Setup filters
         if filter_mode == 'image':
             a = Gtk.FileFilter()
-            a.set_name("JPEG " + _("Image"))
+            a.set_name(_("All Images"))
             a.add_mime_type("image/jpeg")
+            a.add_mime_type("image/png")
+            a.add_mime_type("image/gif")
+            a.add_mime_type("image/svg+xml")
             dialog.add_filter(a)
 
-            b = Gtk.FileFilter()
-            b.set_name("PNG " + _("Image"))
-            b.add_mime_type("image/png")
-            dialog.add_filter(b)
+            j = Gtk.FileFilter()
+            j.set_name("JPEG " + _("Image"))
+            j.add_mime_type("image/jpeg")
+            dialog.add_filter(j)
 
-            c = Gtk.FileFilter()
-            c.set_name("GIF " + _("Image"))
-            c.add_mime_type("image/gif")
-            dialog.add_filter(c)
+            p = Gtk.FileFilter()
+            p.set_name("PNG " + _("Image"))
+            p.add_mime_type("image/png")
+            dialog.add_filter(p)
 
-            d = Gtk.FileFilter()
-            d.set_name("SVG " + _("Image"))
-            d.add_mime_type("image/svg+xml")
-            dialog.add_filter(d)
+            g = Gtk.FileFilter()
+            g.set_name("GIF " + _("Image"))
+            g.add_mime_type("image/gif")
+            dialog.add_filter(g)
+
+            s = Gtk.FileFilter()
+            s.set_name("SVG " + _("Image"))
+            s.add_mime_type("image/svg+xml")
+            dialog.add_filter(s)
 
         response = dialog.run()
 
