@@ -143,6 +143,10 @@ cp "$source/install/polychromatic-tray.desktop" "$target_apps/"
 # Keep a copy of the uninstall script for manual removal later.
 cp "$source/install/uninstall.sh" "$target_data/uninstall-polychromatic.sh"
 
+# Create an autostart entry for tray applet.
+printg "Creating start-up entry in /etc/xdg/autostart/ ..."
+cp "$source/install/polychromatic-tray-applet.desktop" /etc/xdg/autostart/
+
 # Post installation
 printg "Updating icon cache..."
 update-icon-caches /usr/share/icons/hicolor/

@@ -58,7 +58,6 @@ Polychromatic can be installed from this PPA, which also keeps the application u
     sudo apt install polychromatic
 
 * **razer-chroma-drivers** must be installed first.
-* **Optionally**, you may wish to add the `polychromatic-tray-applet` program to your start-up programs.
 
 
 #### ![Ubuntu](.readme/ubuntu.png) Ubuntu 14.04, 15.10, Linux Mint 17 (and earlier)
