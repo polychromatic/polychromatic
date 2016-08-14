@@ -60,12 +60,13 @@ Polychromatic can be installed from this PPA, which also keeps the application u
 * **razer-chroma-drivers** must be installed first.
 
 
-#### ![Ubuntu](.readme/ubuntu.png) Ubuntu 14.04, 15.10, Linux Mint 17 (and earlier)
+**Running Ubuntu 14.04, 15.10, Linux Mint 17 or earlier?**
 
 Polychromatic depends on a newer version of WebKit2 which is not available in earlier releases.
-
 Instead, [the legacy branch](https://github.com/lah7/polychromatic/tree/legacy) contains
-a much earlier version (v0.1.0 / v0.2.0.1) and will not receive any further updates.
+an earlier version (v0.1.0 / v0.2.0.1) but will not receive further updates.
+
+Packages are also available via the PPA.
 
 
 #### ![Debian](.readme/debian.png) Debian
