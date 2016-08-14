@@ -145,7 +145,7 @@ cp "$source/install/uninstall.sh" "$target_data/uninstall-polychromatic.sh"
 
 # Create an autostart entry for tray applet.
 printg "Creating start-up entry in /etc/xdg/autostart/ ..."
-cp "$source/install/polychromatic-tray-applet.desktop" /etc/xdg/autostart/
+cp "$source/install/polychromatic-tray.desktop" /etc/xdg/autostart/
 
 # Post installation
 printg "Updating icon cache..."
