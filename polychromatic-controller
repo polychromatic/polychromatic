@@ -1175,11 +1175,6 @@ def restart_tray_applet():
     print("Tray Applet Reloaded.")
 
 
-""" Warn if Daemon V2 is used by this version of the program. """
-if os.path.exists("/usr/lib/python3/dist-packages/razer/inteface/device.py"):
-    Dialogues.fatal_error("Sorry, this version of Polychromatic does not yet support the new daemon currently installed on your system. \n\nTo use this version of the program, please install the older daemon from here:\n\nhttp://pez2001.github.io/razer_chroma_drivers/", True)
-
-
 if __name__ == "__main__":
     data_source = path.get_data_source(__file__)
     trans = Translations()
