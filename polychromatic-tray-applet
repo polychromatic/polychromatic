@@ -31,8 +31,7 @@ import gettext
 import setproctitle
 from subprocess import Popen as background_process
 
-import razer.daemon_dbus
-import razer.keyboard
+import razer.client as rclient
 
 import polychromatic.preferences as pref
 path = pref.Paths()
@@ -78,9 +77,6 @@ class AppIndicator:
         return "#{0:02X}{1:02X}{2:02X}".format(*colour)
 
     def __init__(self):
-        # Initialize the DBUS Daemon
-        self.daemon = razer.daemon_dbus.DaemonInterface()
-
         # Load primary/secondary colours
         primary_r = int(pref.get("primary_colors", "red", 0))
         primary_g = int(pref.get("primary_colors", "green", 255))
@@ -93,9 +89,10 @@ class AppIndicator:
         self.colour = (primary_r, primary_g, primary_b)
         self.secondary_colour = (secondary_r, secondary_g, secondary_b)
         self.active_effect = None
+        self.active_device = None
 
         # Read preferences and profiles.
-        self.profiles = polychromatic.profiles.Profiles(self.daemon)
+        self.profiles = polychromatic.profiles.Profiles(rclient)
 
         # Determine which icon to display.
         icon_type = pref.get('tray_applet','icon_type','system')
@@ -130,12 +127,37 @@ class AppIndicator:
             print('Malformed icon type: "' + icon_type + '"')
             icon = icon_fallback
 
-        # Create the indicator
-        self.ind = appindicator.Indicator.new("razer-keyboard-indicator", icon, appindicator.IndicatorCategory.APPLICATION_STATUS)
-        self.ind.set_status (appindicator.IndicatorStatus.ACTIVE)
+        # Create the indicator.
+        self.ind = appindicator.Indicator.new("polychromatic-tray-applet", icon, appindicator.IndicatorCategory.APPLICATION_STATUS)
+        self.ind.set_status(appindicator.IndicatorStatus.ACTIVE)
 
-        # Create a menu
+        # Create the menu.
         self.menu = Gtk.Menu()
+
+        # Create the devices menu.
+        device_item = Gtk.MenuItem(_("Devices"))
+        device_item.show()
+        self.device_menu = Gtk.Menu()
+        self.device_menu.show()
+        device_item.set_submenu(self.device_menu)
+        self.menu.append(device_item)
+        self.device_menu_items = collections.OrderedDict()
+
+        # Populate the devices menu.
+        devman = rclient.DeviceManager()
+        devlist = []
+        for device in devman.devices:
+            devlist.append(device)
+            name = str(device.name)
+            formfactor = str(device.type)
+            serial = str(device.serial)
+            self.device_menu_items[device] = Gtk.RadioMenuItem(group=None, label=name)
+        self.active_device = devlist[0]
+
+        for button_key, button in self.device_menu_items.items():
+            button.connect("activate", self.menuitem_select_device, button_key)
+            button.show()
+            self.device_menu.append(button)
 
         # Create effects sub-menu
         effect_item = Gtk.MenuItem(_("Effects"))
@@ -169,11 +191,11 @@ class AppIndicator:
         self.menu.append(brightness_item)
 
         self.brightness_menu_items = collections.OrderedDict()
-        self.brightness_menu_items[255] = Gtk.RadioMenuItem(group=None, label=_("Brightness 100%"))
-        self.brightness_menu_items[192] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label=_("Brightness 75%"))
-        self.brightness_menu_items[128] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label=_("Brightness 50%"))
-        self.brightness_menu_items[64] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label=_("Brightness 25%"))
-        self.brightness_menu_items[0] = Gtk.RadioMenuItem(group=self.brightness_menu_items[255], label=_("Brightness 0%"))
+        self.brightness_menu_items[100] = Gtk.RadioMenuItem(group=None, label=_("Full (100%)"))
+        self.brightness_menu_items[75] = Gtk.RadioMenuItem(group=self.brightness_menu_items[100], label=_("Bright (75%)"))
+        self.brightness_menu_items[50] = Gtk.RadioMenuItem(group=self.brightness_menu_items[100], label=_("Mid (50%)"))
+        self.brightness_menu_items[25] = Gtk.RadioMenuItem(group=self.brightness_menu_items[100], label=_("Dim (25%)"))
+        self.brightness_menu_items[0] = Gtk.RadioMenuItem(group=self.brightness_menu_items[100], label=_("Off (0%)"))
 
         for button_key, button in self.brightness_menu_items.items():
             button.connect("activate", self.menuitem_brightness_response, button_key)
@@ -268,21 +290,21 @@ class AppIndicator:
     def set_effect(self, effect_type):
         """ Shared function to set an effect on the device """
         if effect_type == "breath_r":
-            self.daemon.set_effect('breath', 1)
+            self.active_device.fx.breath_random()
         elif effect_type == "breath_s":
-            self.daemon.set_effect('breath', *self.colour)
+            self.active_device.fx.breath_single(*self.colour)
         elif effect_type == "breath_d":
-            self.daemon.set_effect('breath', self.colour[0], self.colour[1], self.colour[2], self.secondary_colour[0], self.secondary_colour[1], self.secondary_colour[2])
+            self.active_device.fx.breath_dual(*self.colour, *self.secondary_colour)
         elif effect_type == "none":
-            self.daemon.set_effect('none', 1)
+            self.active_device.fx.none()
         elif effect_type == "reactive":
-            self.daemon.set_effect('reactive', 1, *self.colour)
+            self.active_device.fx.reactive(*self.colour, 2)
         elif effect_type == "spectrum":
-            self.daemon.set_effect('spectrum')
+            self.active_device.fx.spectrum()
         elif effect_type == "static":
-            self.daemon.set_effect('static', *self.colour)
+            self.active_device.fx.static(*self.colour)
         elif effect_type == "wave":
-            self.daemon.set_effect('wave', 1)
+            self.active_device.fx.wave(1)
 
     # Tray Applet Responses
     def quit(self, widget, data=None):
@@ -290,6 +312,10 @@ class AppIndicator:
         Quits the application
         """
         Gtk.main_quit()
+
+    def menuitem_select_device(self, widget, device_object):
+        self.active_device = device_object
+        print("Device Changed: " + device_object.name)
 
     def menuitem_keyboard_effect_response(self, widget, effect_type):
         """
@@ -315,7 +341,7 @@ class AppIndicator:
         :param brightness: Brightness value (scaled between 0-255)
         :type brightness: int
         """
-        self.daemon.set_brightness(brightness)
+        self.active_device.brightness = brightness
 
     def menuitem_enable_macro_buttons_response(self, widget, string):
         """
@@ -327,9 +353,9 @@ class AppIndicator:
         :param string: Unused
         :type string: str
         """
-        self.daemon.marco_keys(True)
+        self.active_device.macro.enable_macros()
 
-    def menuitem_enable_game_mode(self, widget, enable):
+    def menuitem_enable_game_mode(self, widget, state):
         """
         Enables or disabled Game mode
 
@@ -339,7 +365,7 @@ class AppIndicator:
         :param enable: Boolean
         :type enable: bool
         """
-        self.daemon.game_mode(enable)
+        self.active_device.game_mode_led = state
 
     def set_static_colour(self, widget, colour_index):
         """
@@ -387,7 +413,7 @@ class AppIndicator:
 
     def menuitem_open_config(self, widget):
         """
-        Opens the Chroma Configuration Tool.
+        Opens the Polychromatic Controller.
         """
         background_process('/usr/bin/polychromatic-controller')
 
@@ -487,10 +513,10 @@ class AppIndicator:
                     self.set_effect(start_effect)
 
             if not start_brightness == 0:
-                self.daemon.set_brightness(start_brightness)
+                self.active_device.brightness = start_brightness
 
             if start_macro == 'true':
-                self.daemon.marco_keys(True)
+                self.active_device.macro.enable_macros()
 
             print('-- Start-up settings applied.')
             return
