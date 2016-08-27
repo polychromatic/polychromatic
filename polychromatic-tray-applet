@@ -185,12 +185,12 @@ class AppIndicator:
             self.effect_menu.append(button)
 
         # Create brightness sub-menu
-        brightness_item = Gtk.MenuItem(_("Brightness"))
-        brightness_item.show()
+        self.brightness_item = Gtk.MenuItem(_("Brightness"))
+        self.brightness_item.show()
         self.brightness_menu = Gtk.Menu()
         self.brightness_menu.show()
-        brightness_item.set_submenu(self.brightness_menu)
-        self.menu.append(brightness_item)
+        self.brightness_item.set_submenu(self.brightness_menu)
+        self.menu.append(self.brightness_item)
 
         self.brightness_menu_items = collections.OrderedDict()
         self.brightness_menu_items[100] = Gtk.RadioMenuItem(group=None, label=_("Full (100%)"))
@@ -205,19 +205,19 @@ class AppIndicator:
             self.brightness_menu.append(button)
 
         # Create game mode sub-menu.
-        game_mode_item = Gtk.MenuItem(_("Game Mode"))
-        game_mode_item.show()
+        self.game_mode_item = Gtk.MenuItem(_("Game Mode"))
+        self.game_mode_item.show()
         self.game_mode_menu = Gtk.Menu()
         self.game_mode_menu.show()
-        game_mode_item.set_submenu(self.game_mode_menu)
-        self.menu.append(game_mode_item)
+        self.game_mode_item.set_submenu(self.game_mode_menu)
+        self.menu.append(self.game_mode_item)
 
-        enable_game_mode_button = Gtk.MenuItem(_("Enable Game Mode"))
+        enable_game_mode_button = Gtk.MenuItem(_("Enable"))
         enable_game_mode_button.connect("activate", self.menuitem_enable_game_mode, True)
         enable_game_mode_button.show()
         self.game_mode_menu.append(enable_game_mode_button)
 
-        disable_game_mode_button = Gtk.MenuItem(_("Disable Game Mode"))
+        disable_game_mode_button = Gtk.MenuItem(_("Disable"))
         disable_game_mode_button.connect("activate", self.menuitem_enable_game_mode, False)
         disable_game_mode_button.show()
         self.game_mode_menu.append(disable_game_mode_button)
@@ -235,10 +235,10 @@ class AppIndicator:
         sep1.show()
         self.menu.append(sep1)
 
-        macro_button = Gtk.MenuItem(_("Enable Macro Keys"))
-        macro_button.connect("activate", self.menuitem_enable_macro_buttons_response, "macros")
-        macro_button.show()
-        self.menu.append(macro_button)
+        self.macro_button = Gtk.MenuItem(_("Enable Macro Keys"))
+        self.macro_button.connect("activate", self.menuitem_enable_macro_buttons_response, "macros")
+        self.macro_button.show()
+        self.menu.append(self.macro_button)
 
         sep2 = Gtk.SeparatorMenuItem()
         sep2.show()
@@ -279,6 +279,9 @@ class AppIndicator:
 
         # If the user has preferences, set them.
         self.apply_startup_settings()
+
+        # Disable any options that are not supported by the current device.
+        self.refresh_device_support()
 
     # Shared functions for manipulating the device.
     def set_profile(self, widget, uuid):
@@ -321,6 +324,7 @@ class AppIndicator:
 
     def menuitem_select_device(self, widget, device_object):
         self.active_device = device_object
+        self.refresh_device_support()
         print("Device Changed: " + device_object.name)
 
     def menuitem_keyboard_effect_response(self, widget, effect_type):
@@ -528,6 +532,42 @@ class AppIndicator:
             return
         else:
             return
+
+    def refresh_device_support(self):
+        capabilities = self.active_device.capabilities
+        device_type = self.active_device.type
+
+        def set_state(attr, menu_obj, item=None):
+            state = capabilities[attr]
+            if item:
+                menu_obj[item].set_sensitive(state)
+            else:
+                menu_obj.set_sensitive(state)
+
+        set_state("lighting_spectrum", self.effect_menu_items, "spectrum")
+        set_state("lighting_wave", self.effect_menu_items, "wave")
+        set_state("lighting_reactive", self.effect_menu_items, "reactive")
+        set_state("lighting_breath_random", self.effect_menu_items, "breath_r")
+        set_state("lighting_breath_single", self.effect_menu_items, "breath_s")
+        set_state("lighting_breath_dual", self.effect_menu_items, "breath_d")
+        set_state("lighting_ripple", self.effect_menu_items, "ripple")
+        set_state("lighting_ripple", self.effect_menu_items, "ripple_random")
+        set_state("lighting_static", self.effect_menu_items, "static")
+        set_state("lighting_none", self.effect_menu_items, "none")
+
+        set_state("brightness", self.brightness_item)
+        set_state("game_mode_led", self.game_mode_item)
+        set_state("macro_mode_led", self.macro_button)
+
+        # Profiles are only available on keyboards.
+        if device_type == 'keyboard':
+            self.profiles_button.set_sensitive(True)
+        else:
+            self.profiles_button.set_sensitive(False)
+
+        # Colours can be picked on multi-coloured keyboards.
+        set_state("lighting_led_matrix", self.primary_colour_button)
+        set_state("lighting_led_matrix", self.secondary_colour_button)
 
 
 if __name__ == "__main__":
