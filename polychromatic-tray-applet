@@ -174,6 +174,8 @@ class AppIndicator:
         self.effect_menu_items["breath_r"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath Effect (Random)"))
         self.effect_menu_items["breath_s"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath Effect (Single Color)"))
         self.effect_menu_items["breath_d"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath Effect (Dual Color)"))
+        self.effect_menu_items["ripple"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Ripple (Single Color)"))
+        self.effect_menu_items["ripple_random"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Ripple (Random)"))
         self.effect_menu_items["static"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Static Effect"))
         self.effect_menu_items["none"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("No Effect (Off)"))
 
@@ -305,6 +307,10 @@ class AppIndicator:
             self.active_device.fx.static(*self.colour)
         elif effect_type == "wave":
             self.active_device.fx.wave(1)
+        elif effect_type == "ripple":
+            self.active_device.fx.ripple(*self.colour)
+        elif effect_type == "ripple_random":
+            self.active_device.fx.ripple_random()
 
     # Tray Applet Responses
     def quit(self, widget, data=None):
