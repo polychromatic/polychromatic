@@ -1,8 +1,8 @@
 # Polychromatic
 
-A graphical front end to manage your Razer perihperals on GNU/Linux.
+A graphical front end to manage your Razer peripherals on GNU/Linux.
 
-Powered by the [Chroma Linux Drivers](http://pez2001.github.io/razer_chroma_drivers/) daemon.
+Powered by the [Chroma Linux Drivers](http://terrycain.github.io/razer-drivers/) daemon.
 
 
 ## Features
@@ -19,8 +19,7 @@ Also includes application profile support and customisation options:
 
 * Changing the indicator icon.
 * Specifying preferred colours.
-* Setting effects or profiles at log-in.
- * _Currently requires Tray Applet to run on start-up._
+* Setting effects or profiles at log-in (via Tray Applet)
 
 
 ### Tray Applet
@@ -34,7 +33,7 @@ from your desktop indicators / notification area.
 ## Installation
 
 ### ![Chroma Drivers](.readme/chroma-drivers.png) Razer Chroma Drivers
-This application complements the [razer-chroma-drivers](http://pez2001.github.io/razer_chroma_drivers/) project,
+This application complements the [razer-chroma-drivers](http://terrycain.github.io/razer-drivers/) project,
 which will need to compiled, built and installed first.
 
 Ubuntu and Debian users can use these pre-compiled packages for convenience:
@@ -44,7 +43,7 @@ Ubuntu and Debian users can use these pre-compiled packages for convenience:
 
 These packages are provided **as-is**!
 
-Please see the [project page](http://pez2001.github.io/razer_chroma_drivers/#download) for installation instructions.
+Please see the [project page](http://terrycain.github.io/razer-drivers/#download) for installation instructions.
 
 
 ### Packages
@@ -109,7 +108,7 @@ To update your installation at a later date:
 ### Dependencies
 
 **All:**
-* [Razer Python Modules](https://github.com/pez2001/razer_chroma_drivers)
+* [Razer Python Modules](https://github.com/terrycain/razer-drivers)
 
 **Arch:**
 * [webkitgtk](https://www.archlinux.org/packages/extra/x86_64/webkitgtk/)
