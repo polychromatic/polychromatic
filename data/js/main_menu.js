@@ -163,12 +163,12 @@ $(document).ready(function() {
 
     // Change brightness control
     $("[type=range]").change(function () {
-        var brightnessRaw = ($(this).val() / 255.0) * 100;
-        $('#brightnessValue').text(Math.round(brightnessRaw) + "%");
-        if (brightnessRaw == 0) {
+        var value = $(this).val();
+        $('#brightnessValue').text(value + "%");
+        if (value == 0) {
             $(this).next().text("Off");
         }
-        cmd('brightness?' + Math.round($(this).val()));
+        cmd('brightness?' + value);
     });
 
     // In dialogues, keep preview boxes updated with text box contents.
