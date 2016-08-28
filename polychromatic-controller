@@ -89,7 +89,7 @@ class AppView(WebKit2.WebView):
 
         # Load the starting page
         default_page = 'menu'
-        self.load_uri('file://' + os.path.join(data_source, 'menu.html'))
+        self.load_uri('file://' + os.path.join(data_source, 'pages/menu.html'))
 
     """ Callback: Title changed """
     def title_changed_cb(self, view, frame):
@@ -293,7 +293,7 @@ class Controller(object):
         for element in ['retry', 'edit-save', 'edit-preview', 'cancel', 'close-window', 'pref-open', 'pref-save']:
             self.update_page('#'+element, 'hide')
 
-        page_path = os.path.join(data_source, page + '.html')
+        page_path = os.path.join(data_source, 'pages', page + '.html')
         if os.path.exists(page_path):
             self.webkit.load_uri('file://' + page_path)
         else:
