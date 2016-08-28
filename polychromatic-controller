@@ -293,19 +293,11 @@ class Controller(object):
         for element in ['retry', 'edit-save', 'edit-preview', 'cancel', 'close-window', 'pref-open', 'pref-save']:
             self.update_page('#'+element, 'hide')
 
-        if page == 'menu':
-            self.webkit.load_uri('file://' + os.path.join(data_source, 'menu.html'))
-
-        elif page == 'profile_editor':
-            self.webkit.load_uri('file://' + os.path.join(data_source, 'profile_editor.html'))
-
-        elif page == 'preferences':
-            self.webkit.load_uri('file://' + os.path.join(data_source, 'preferences.html'))
-
-        elif page == 'devices':
-            self.webkit.load_uri('file://' + os.path.join(data_source, 'devices.html'))
+        page_path = os.path.join(data_source, page + '.html')
+        if os.path.exists(page_path):
+            self.webkit.load_uri('file://' + page_path)
         else:
-            print("Unknown menu '" + page + "'!")
+            print("Unknown menu: " + page)
 
     """ Page Initialisation """
     def page_loaded(self):
@@ -458,7 +450,6 @@ class Controller(object):
             # Hide preview button if live previewing is enabled.
             if pref.get('editor', 'live_preview', 'true') == 'true':
                 kb_callback << '$("#edit-preview").hide();'
-
 
             kb_callback << "$(\"#cancel\").attr({onclick: \"cmd('cancel-changes?"+ self.cancel_changes + "?" + profile_name + "')\"})"
 
