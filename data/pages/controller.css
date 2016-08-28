@@ -20,6 +20,11 @@
    Global
 *************************/
 /* Fonts */
+@font-face {
+    font-family: Play;
+    src: url('lib/Play-Regular.ttf');
+}
+
 html, body, input {
     font-family: 'Play', 'Ubuntu', 'DejaVu Sans', sans-serif;
 }
