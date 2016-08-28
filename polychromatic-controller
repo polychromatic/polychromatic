@@ -995,7 +995,7 @@ class Controller(object):
 
         ## Miscellaneous
         elif command == 'open-config-folder':
-            os.system('xdg-open "' + path.root + '"')
+            os.system('xdg-open "' + pref.path.root + '"')
 
         elif command == 'restart-tray':
             restart_tray_applet()
