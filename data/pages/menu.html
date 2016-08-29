@@ -49,18 +49,26 @@
         </table>
 
         <h4 id="str-effects"></h4>
-        <table>
-          <tr><td><label class="str-none"><input type="radio" name="effect" value="none" onclick="cmd('effect-none')"/> </label></td></tr>
-          <tr><td><label id="str-spectrum"><input type="radio" name="effect" value="spectrum" onclick="cmd('effect-spectrum')"/> </label></td></tr>
-          <tr><td><label id="str-wave"><input type="radio" name="effect" value="wave" onclick="cmd('effect-wave?1');$('#wave-right').prop('checked',true);"/> </label></td></tr>
-          <tr><td><label id="str-reactive"><input type="radio" name="effect" value="reactive" onclick="cmd('effect-reactive?2'); $('#reactive-normal').prop('checked',true);"/> </label></td></tr>
-          <tr><td>
-            <label id="str-breath"><input type="radio" name="effect" value="breath" onclick="cmd('effect-breath?0')"/> </label>
-            <small><a id="breath-random" class="small-text" onclick="cmd('effect-breath?1')" hidden>- </a></small>
-            <small><a id="breath-select" class="small-text" onclick="cmd('effect-breath?0')" hidden>- </a></small>
-          </td></tr>
-          <tr><td><label id="str-static"><input type="radio" name="effect" value="static" onclick="cmd('effect-static')"/> </label></td></tr>
-        </table>
+        <div id="effect-list">
+          <div id="fx-none" class="effect-item" onclick="setfx(this, 'none', '')">
+            <img src="../img/effects/none.svg"/> <label class="str-none"></label>
+          </div>
+          <div id="fx-spectrum" class="effect-item" onclick="setfx(this, 'spectrum', '')">
+            <img src="../img/effects/spectrum.svg"/> <label id="str-spectrum"></label>
+          </div>
+          <div id="fx-wave" class="effect-item" onclick="setfx(this, 'wave', '1'); $('#wave-right').prop('checked',true);">
+            <img src="../img/effects/wave.svg"/> <label id="str-wave"></label>
+          </div>
+          <div id="fx-reactive" class="effect-item" onclick="setfx(this, 'reactive', '2'); $('#reactive-normal').prop('checked',true);">
+            <img src="../img/effects/reactive.svg"/> <label id="str-reactive"></label>
+          </div>
+          <div id="fx-breath" class="effect-item" onclick="setfx(this, 'breath', 'random'); $('#breath-random').prop('checked',true);">
+            <img src="../img/effects/breath.svg"/> <label id="str-breath"></label>
+          </div>
+          <div id="fx-static" class="effect-item" onclick="setfx(this, 'static', '')">
+            <img src="../img/effects/static.svg"/> <label id="str-static"></label>
+          </div>
+        </div>
         <hr>
         <div id="rgb_primary" hidden>
           <table>
@@ -111,17 +119,24 @@
         <table>
           <tr id="waves" hidden>
             <td id="str-direction"></td>
-            <td><label class="str-none"><input id="wave-none"  type="radio" name="direction" value="none"  onclick="cmd('effect-wave?0')" checked> </label></td>
-            <td><label id="str-left"><input id="wave-left"  type="radio" name="direction" value="left"  onclick="cmd('effect-wave?2')"> </label></td>
-            <td><label id="str-right"><input id="wave-right" type="radio" name="direction" value="right" onclick="cmd('effect-wave?1')"> </label></td>
+            <td><label id="str-left"><input id="wave-left" type="radio" name="direction" value="left"  onclick="setfx(this, 'wave', '2')"> </label></td>
+            <td><label id="str-right"><input id="wave-right" type="radio" name="direction" value="right" onclick="setfx(this, 'wave', '1')"> </label></td>
           </tr>
         </table>
         <table>
           <tr id="reactive-options" hidden>
             <td id="str-speed"></td>
-            <td><label id="str-slow"><input id="reactive-slow"  type="radio" name="speed" value="slow"  onclick="cmd('effect-reactive?3')"> </label></td>
-            <td><label id="str-med"><input id="reactive-medium" type="radio" name="speed" value="medium" onclick="cmd('effect-reactive?2')" checked> </label></td>
-            <td><label id="str-fast"><input id="reactive-fast" type="radio" name="speed" value="fast" onclick="cmd('effect-reactive?1')"> </label></td>
+            <td><label id="str-slow"><input id="reactive-slow" type="radio" name="speed" value="slow"  onclick="setfx(this, 'reactive', '3')"> </label></td>
+            <td><label id="str-med"><input id="reactive-medium" type="radio" name="speed" value="medium" onclick="setfx(this, 'reactive', '2')" checked> </label></td>
+            <td><label id="str-fast"><input id="reactive-fast" type="radio" name="speed" value="fast" onclick="setfx(this, 'reactive', '1')"> </label></td>
+          </tr>
+        </table>
+        <table>
+          <tr id="breath-options" hidden>
+            <td id="str-cycles"></td>
+            <td><label id="str-random"><input id="breath-random" type="radio" name="cycle" value="random" onclick="setfx(this, 'breath', 'random')"> </label></td>
+            <td><label id="str-single-col"><input id="breath-single" type="radio" name="cycle" value="single" onclick="setfx(this, 'breath', 'single')"> </label></td>
+            <td><label id="str-dual-col"><input id="breath-dual" type="radio" name="cycle" value="dual" onclick="setfx(this, 'breath', 'dual')"> </label></td>
           </tr>
         </table>
       </div>

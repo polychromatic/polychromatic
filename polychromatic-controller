@@ -311,13 +311,14 @@ class Controller(object):
             trans.push('#page-header', _("Configure your Device"))
             trans.push('#str-brightness', _("Brightness"))
             trans.push('#str-effects', _("Effects"))
-            trans.push('#str-spectrum', _("Spectrum"), True)
-            trans.push('#str-wave', _("Wave"), True)
-            trans.push('#str-reactive', _("Reactive"), True)
-            trans.push('#str-breath', _("Breath"), True)
-            trans.push('#breath-random', _("Switch to Random"), True)
-            trans.push('#breath-select', _("Choose Colors"), True)
-            trans.push('#str-static', _("Static"), True)
+            trans.push('#str-spectrum', _("Spectrum"))
+            trans.push('#str-wave', _("Wave"))
+            trans.push('#str-reactive', _("Reactive"))
+            trans.push('#str-breath', _("Breath"))
+            trans.push('#str-random', _("Random"), True)
+            trans.push('#str-single-col', _("Single Color"), True)
+            trans.push('#str-dual-col', _("Dual Colors"), True)
+            trans.push('#str-static', _("Static"))
             trans.push('#str-color', _("Color:"), True)
             trans.push('.str-custom', _("Custom..."))
             trans.push('.str-none', _("None"), True)
@@ -325,6 +326,7 @@ class Controller(object):
             trans.push('#str-left', _("Left"), True)
             trans.push('#str-right', _("Right"), True)
             trans.push('#str-speed', _("Speed:"), True)
+            trans.push('#str-cycles', _("Cycle:"), True)
             trans.push('#str-slow', _("Slow"), True)
             trans.push('#str-med', _("Medium"), True)
             trans.push('#str-fast', _("Fast"), True)
@@ -616,44 +618,51 @@ class Controller(object):
 
         elif command.startswith('effect'):
             enabled_options = []
+            effect = command.split('?')[1]
 
-            if command == 'effect-none':
+            if effect == 'none':
                 self.current_effect = "none"
                 self.active_device.fx.none()
 
-            elif command == 'effect-spectrum':
+            elif effect == 'spectrum':
                 self.current_effect = "spectrum"
                 self.active_device.fx.spectrum()
 
-            elif command.startswith('effect-wave'):
+            elif effect == 'wave':
                 self.current_effect = "wave"
-                direction = int(command.split('?')[1]) # '?1' or '?2' for direction
+                direction = int(command.split('?')[2]) # '?1' or '?2' for direction
                 self.active_device.fx.wave(direction)
                 enabled_options = ['waves']
 
-            elif command.startswith('effect-reactive'):
+            elif effect == 'reactive':
                 self.current_effect = "reactive"
-                if command.split('?')[1] == 'auto':
+                if command.split('?')[2] == 'auto':
                     # Use the previous effect
                     self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
                 else:
-                    self.reactive_speed = int(command.split('?')[1])
+                    self.reactive_speed = int(command.split('?')[2])
                     self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
                 enabled_options = ['rgb_primary', 'reactive-options']
 
-            elif command.startswith('effect-breath'):
-                breath_random = int(command.split('?')[1])
-                if breath_random == 1:  # Random mode
+            elif effect == 'breath':
+                breath_type = command.split('?')[2]
+                if breath_type == 'random':
                     self.current_effect = "breath?random"
                     self.active_device.fx.breath_random()
-                    enabled_options = ['breath-select']
-                else:
-                    self.current_effect = "breath?colours"
+                    enabled_options = ['breath-options']
+
+                elif breath_type == 'single':
+                    self.current_effect = "breath?single"
+                    self.active_device.fx.breath_single(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                    enabled_options = ['breath-options', 'rgb_primary']
+
+                elif breath_type == 'dual':
+                    self.current_effect = "breath?dual"
                     self.active_device.fx.breath_dual(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
                                            self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
-                    enabled_options = ['breath-random', 'rgb_primary', 'rgb_secondary']
+                    enabled_options = ['breath-options', 'rgb_primary', 'rgb_secondary']
 
-            elif command == 'effect-static':
+            elif effect == 'static':
                 self.current_effect = "static"
                 self.active_device.fx.static(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
                 enabled_options = ['rgb_primary']
@@ -661,7 +670,7 @@ class Controller(object):
             # Fade between options for that effect, should it have been changed.
             if not self.current_effect == self.last_effect:
                 # Effect changed, fade out all previous options.
-                for element in ['rgb_primary', 'rgb_secondary', 'waves', 'reactive-options', 'breath-random', 'breath-select']:
+                for element in ['rgb_primary', 'rgb_secondary', 'waves', 'reactive-options', 'breath-options']:
                     self.update_page('#'+element, 'fadeOut', 'fast')
 
                 # Fade in desired options for this effect.
@@ -739,11 +748,13 @@ class Controller(object):
             # Update static colour effects if currently in use.
             if update_effects:
                 if self.current_effect == 'static':
-                    self.process_command('effect-static')
-                elif self.current_effect == 'breath?colours':
-                    self.process_command('effect-breath?0')
+                    self.process_command('effect?static')
+                elif self.current_effect == 'breath?single':
+                    self.process_command('effect?breath?single')
+                elif self.current_effect == 'breath?dual':
+                    self.process_command('effect?breath?dual')
                 elif self.current_effect == 'reactive':
-                    self.process_command('effect-reactive?auto')
+                    self.process_command('effect?reactive?auto')
 
         ## Cancel to main menu.
         ## '?xxxx' may specify changes to also make when leaving application profile editor.

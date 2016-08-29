@@ -179,3 +179,16 @@ $(document).ready(function() {
         dialog_icon_preview('dialog-new-icon')
     });
 });
+
+/**
+ * Activate an effect
+ *    obj:   Pass 'self' (this)
+ *    type:  Name of effect, e.g. "reactive"
+ *    parms: Parameters to pass to Python, separated by '?'
+ */
+function setfx(obj, type, parms) {
+    command = "effect?" + type + "?" + parms;
+    $("#effect-list *").removeClass("selected");
+    $(obj).addClass("selected");
+    cmd(command);
+}
