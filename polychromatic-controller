@@ -640,12 +640,8 @@ class Controller(object):
 
             elif effect == 'reactive':
                 self.current_effect = "reactive"
-                if command.split('?')[2] == 'auto':
-                    # Use the previous effect
-                    self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
-                else:
-                    self.reactive_speed = int(command.split('?')[2])
-                    self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
+                self.reactive_speed = int(command.split('?')[2])
+                self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
                 enabled_options = ['rgb_primary', 'reactive-options']
 
             elif effect == 'breath':
@@ -686,7 +682,7 @@ class Controller(object):
             # Fade between options for that effect, should it have been changed.
             if not self.current_effect == self.last_effect:
                 # Effect changed, fade out all previous options.
-                for element in ['rgb_primary', 'rgb_secondary', 'waves', 'reactive-options', 'breath-options']:
+                for element in ['rgb_primary', 'rgb_secondary', 'waves', 'reactive-options', 'breath-options', 'ripple-options']:
                     self.update_page('#'+element, 'fadeOut', 'fast')
 
                 # Fade in desired options for this effect.
@@ -764,17 +760,16 @@ class Controller(object):
             # Update static colour effects if currently in use.
             if update_effects:
                 if self.current_effect == 'static':
-                    self.process_command('effect?static')
+                    self.active_device.fx.static(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
                 elif self.current_effect == 'breath?single':
-                    self.process_command('effect?breath?single')
+                    self.active_device.fx.breath_single(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
                 elif self.current_effect == 'breath?dual':
-                    self.process_command('effect?breath?dual')
+                    self.active_device.fx.breath_dual(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
+                                           self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
                 elif self.current_effect == 'reactive':
-                    self.process_command('effect?reactive?auto')
-                elif self.current_effect == 'ripple?random':
-                    self.process_command('effect?ripple?random')
+                    self.active_device.fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
                 elif self.current_effect == 'ripple?single':
-                    self.process_command('effect?ripple?single')
+                    self.active_device.fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
 
         ## Cancel to main menu.
         ## '?xxxx' may specify changes to also make when leaving application profile editor.
