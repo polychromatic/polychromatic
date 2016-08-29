@@ -32,7 +32,7 @@ import gettext
 import setproctitle
 from subprocess import Popen as background_process
 
-import razer.daemon_dbus
+import razer.client as rclient
 import razer.keyboard
 
 import polychromatic.preferences as pref
@@ -89,7 +89,7 @@ class AppView(WebKit2.WebView):
 
         # Load the starting page
         default_page = 'menu'
-        self.load_uri('file://' + os.path.join(data_source, 'menu.html'))
+        self.load_uri('file://' + os.path.join(data_source, 'pages/menu.html'))
 
     """ Callback: Title changed """
     def title_changed_cb(self, view, frame):
@@ -214,49 +214,48 @@ class Controller(object):
         w.show_all()
         stdout.vvprint('Initialised Window.')
 
-        # Set up Razer daemon
+        # Initialise Profiles
+        stdout.vprint('Initialising Polychromatic Profiles...')
+        self.profiles = polychromatic.profiles.Profiles(rclient)
+
+        # Set up variables
+        self.current_page = 'menu'
+        self.kb_layout = razer.keyboard.get_keyboard_layout()
+        self.reactive_speed = 1
+        self.primary_rgb = razer.keyboard.RGB(0, 255, 0)
+        self.secondary_rgb = razer.keyboard.RGB(0, 0, 255)
+        self.current_effect = 'custom'
+        self.last_effect = 'unknown'
+        self.open_this_profile = None
+
+        # Set preferred colours
+        p_red = pref.get('primary_colors', 'red', 0)
+        p_green = pref.get('primary_colors', 'green', 255)
+        p_blue = pref.get('primary_colors', 'blue', 0)
+        s_red = pref.get('secondary_colors', 'red', 255)
+        s_green = pref.get('secondary_colors', 'green', 0)
+        s_blue = pref.get('secondary_colors', 'blue', 0)
+
+        self.primary_rgb_values = [p_red, p_green, p_blue]
+        self.primary_rgb = razer.keyboard.RGB(p_red, p_green, p_blue)
+
+        self.secondary_rgb_values = [s_red, s_green, s_blue]
+        self.secondary_rgb = razer.keyboard.RGB(s_red, s_green, s_blue)
+
+        # Set up the daemon
         try:
-            # Connect to the DBUS
-            stdout.vprint('Initialising Razer DBUS...')
-            self.daemon = razer.daemon_dbus.DaemonInterface()
-
-            # Initialise Profiles
-            stdout.vprint('Initialising Polychromatic Profiles...')
-            self.profiles = polychromatic.profiles.Profiles(self.daemon)
-
-            # Starting page
-            self.current_page = 'menu'
-
-            # "Globals"
-            self.kb_layout = razer.keyboard.get_keyboard_layout()
-            self.reactive_speed = 1
-            self.primary_rgb = razer.keyboard.RGB(0, 255, 0)
-            self.secondary_rgb = razer.keyboard.RGB(0, 0, 255)
-            self.current_effect = 'custom'
-            self.last_effect = 'unknown'
-            self.open_this_profile = None
-
-            # Set preferred colours
-            p_red = pref.get('primary_colors', 'red', 0)
-            p_green = pref.get('primary_colors', 'green', 255)
-            p_blue = pref.get('primary_colors', 'blue', 0)
-            s_red = pref.get('secondary_colors', 'red', 255)
-            s_green = pref.get('secondary_colors', 'green', 0)
-            s_blue = pref.get('secondary_colors', 'blue', 0)
-
-            self.primary_rgb_values = [p_red, p_green, p_blue]
-            self.primary_rgb = razer.keyboard.RGB(p_red, p_green, p_blue)
-
-            self.secondary_rgb_values = [s_red, s_green, s_blue]
-            self.secondary_rgb = razer.keyboard.RGB(s_red, s_green, s_blue)
-        except Exception as e:
-            # Load an error page instead.
+            self.devman = rclient.DeviceManager()
+        except rclient.DaemonNotFound:
             w.hide()
-            print('There was a problem initializing the Razer Driver.')
-            print('Exception: ' + str(e))
-            Dialogues.fatal_error( _("Unable to connect to the Razer driver service.") + \
-            "\n" + _("Please check the driver is properly installed and the service is running.") + \
-            "\n\n" + _("Exception:") + ' ' + str(e), True)
+            print("\n\nThe daemon doesn't seem to be running!\n\n")
+            Dialogues.fatal_error( _("The Razer daemon could not be found. Please start it up from the terminal and try again:") + "\n\n$ razer-service", True)
+
+        # Prepare multiple device support
+        self.devices = self.get_devices()
+        if len(self.devices) == 0:
+            self.active_device = None
+        else:
+            self.active_device = self.devices[0]
 
         # Store as class variables for use later.
         self.window = w
@@ -294,19 +293,11 @@ class Controller(object):
         for element in ['retry', 'edit-save', 'edit-preview', 'cancel', 'close-window', 'pref-open', 'pref-save']:
             self.update_page('#'+element, 'hide')
 
-        if page == 'menu':
-            self.webkit.load_uri('file://' + os.path.join(data_source, 'menu.html'))
-
-        elif page == 'profile_editor':
-            self.webkit.load_uri('file://' + os.path.join(data_source, 'profile_editor.html'))
-
-        elif page == 'preferences':
-            self.webkit.load_uri('file://' + os.path.join(data_source, 'preferences.html'))
-
-        elif page == 'devices':
-            self.webkit.load_uri('file://' + os.path.join(data_source, 'devices.html'))
+        page_path = os.path.join(data_source, 'pages', page + '.html')
+        if os.path.exists(page_path):
+            self.webkit.load_uri('file://' + page_path)
         else:
-            print("Unknown menu '" + page + "'!")
+            print("Unknown menu: " + page)
 
     """ Page Initialisation """
     def page_loaded(self):
@@ -460,7 +451,6 @@ class Controller(object):
             if pref.get('editor', 'live_preview', 'true') == 'true':
                 kb_callback << '$("#edit-preview").hide();'
 
-
             kb_callback << "$(\"#cancel\").attr({onclick: \"cmd('cancel-changes?"+ self.cancel_changes + "?" + profile_name + "')\"})"
 
             js_exec << kb_callback
@@ -575,10 +565,7 @@ class Controller(object):
             # Get the system icon path for the tray applet.
             default_tray_icon = icon_name_to_path("ibus-keyboard")
             self.update_page("#tray-system-logo", "attr", "src", default_tray_icon)
-            self.update_page("#tray-system-logo", "attr", "src", default_tray_icon)
 
-        elif self.current_page == 'controller_devices':
-            self.detect_devices()
 
         else:
             stdout.vvprint('No post-actions for this page.')
@@ -622,51 +609,50 @@ class Controller(object):
         ## Effects & Keyboard Controls
         elif command.startswith('brightness'):
             value = int(command[11:])
-            self.daemon.set_brightness(value)
+            self.active_device.brightness = value
 
         elif command.startswith('effect'):
             enabled_options = []
 
             if command == 'effect-none':
                 self.current_effect = "none"
-                self.daemon.set_effect('none')
+                self.active_device.fx.none()
 
             elif command == 'effect-spectrum':
                 self.current_effect = "spectrum"
-                self.daemon.set_effect('spectrum')
+                self.active_device.fx.spectrum()
 
             elif command.startswith('effect-wave'):
                 self.current_effect = "wave"
-                wave_direction = int(command.split('?')[1])
-                self.daemon.set_effect('wave', wave_direction) # ?1 or ?2 for direction
+                direction = int(command.split('?')[1]) # '?1' or '?2' for direction
+                self.active_device.fx.wave(direction)
                 enabled_options = ['waves']
 
             elif command.startswith('effect-reactive'):
                 self.current_effect = "reactive"
                 if command.split('?')[1] == 'auto':
                     # Use the previous effect
-                    self.daemon.set_effect('reactive', self.reactive_speed, self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                    self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
                 else:
                     self.reactive_speed = int(command.split('?')[1])
-                    self.daemon.set_effect('reactive', self.reactive_speed, self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                    self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
                 enabled_options = ['rgb_primary', 'reactive-options']
 
             elif command.startswith('effect-breath'):
                 breath_random = int(command.split('?')[1])
                 if breath_random == 1:  # Random mode
                     self.current_effect = "breath?random"
-                    self.daemon.set_effect('breath', 1)
+                    self.active_device.fx.breath_random()
                     enabled_options = ['breath-select']
                 else:
                     self.current_effect = "breath?colours"
-                    self.daemon.set_effect('breath',
-                                           self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
+                    self.active_device.fx.breath_dual(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
                                            self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
                     enabled_options = ['breath-random', 'rgb_primary', 'rgb_secondary']
 
             elif command == 'effect-static':
                 self.current_effect = "static"
-                self.daemon.set_effect('static', self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                self.active_device.fx.static(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
                 enabled_options = ['rgb_primary']
 
             # Fade between options for that effect, should it have been changed.
@@ -681,19 +667,19 @@ class Controller(object):
             self.last_effect = self.current_effect
 
         elif command == 'enable-marco-keys':
-            self.daemon.marco_keys(True)
+            self.active_device.macro.enable_macros()
             self.update_page('#macro-keys-enable', 'addClass', 'btn-disabled')
             self.update_page('#macro-keys-enable', 'html', "In Use")
 
         elif command == 'gamemode-enable':
-            self.daemon.game_mode(True)
+            self.active_device.game_mode_led = True
             self.update_page('#game-mode-status', 'html', 'Enabled')
             self.update_page('#game-mode-enable', 'hide')
             self.update_page('#game-mode-disable', 'show')
 
         elif command == 'gamemode-disable':
-            self.daemon.game_mode(False)
-            self.update_page('#game-mode-status', 'html' 'Disabled')
+            self.active_device.game_mode_led = False
+            self.update_page('#game-mode-status', 'html', 'Disabled')
             self.update_page('#game-mode-enable', 'show')
             self.update_page('#game-mode-disable', 'hide')
 
@@ -1009,7 +995,7 @@ class Controller(object):
 
         ## Miscellaneous
         elif command == 'open-config-folder':
-            os.system('xdg-open "' + path.root + '"')
+            os.system('xdg-open "' + pref.path.root + '"')
 
         elif command == 'restart-tray':
             restart_tray_applet()
@@ -1017,6 +1003,12 @@ class Controller(object):
         else:
             print("Unimplemented command: " + command)
 
+    """ Refresh device list """
+    def get_devices(self):
+        found_devices = []
+        for device in self.devman.devices:
+            found_devices.append(device)
+        return(found_devices)
 
 class Dialogues(object):
     def fatal_error(message, do_quit=False):
@@ -1173,11 +1165,6 @@ def restart_tray_applet():
         print("Tray applet is not running or couldn't be relaunched.")
         return
     print("Tray Applet Reloaded.")
-
-
-""" Warn if Daemon V2 is used by this version of the program. """
-if os.path.exists("/usr/lib/python3/dist-packages/razer/inteface/device.py"):
-    Dialogues.fatal_error("Sorry, this version of Polychromatic does not yet support the new daemon currently installed on your system. \n\nTo use this version of the program, please install the older daemon from here:\n\nhttp://pez2001.github.io/razer_chroma_drivers/", True)
 
 
 if __name__ == "__main__":

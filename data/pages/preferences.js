@@ -53,13 +53,12 @@ $('#profiles-list').change(function() {
 $(document).ready(function () {
     // Expects string variable pushed: no_change
     $("#start-brightness").change(function () {
-        var brightnessRaw = ($(this).val() / 255.0) * 100;
-        var brightnessRnd = Math.round(brightnessRaw).toString();
-        $('#start-brightness-text').text(brightnessRnd + "%");
-        if (brightnessRnd == 0) {
+        var value = $(this).val();
+        $('#start-brightness-text').text(value + "%");
+        if (value == 0) {
             $("#start-brightness-text").text(no_change);
         }
-        set_pref_str('startup','start_brightness', $(this).val());
+        set_pref_str('startup','start_brightness', value);
     });
 
     // Update the icon preview / save when text box changes.

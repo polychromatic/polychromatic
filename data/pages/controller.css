@@ -20,6 +20,11 @@
    Global
 *************************/
 /* Fonts */
+@font-face {
+    font-family: Play;
+    src: url('lib/Play-Regular.ttf');
+}
+
 html, body, input {
     font-family: 'Play', 'Ubuntu', 'DejaVu Sans', sans-serif;
 }
@@ -63,15 +68,15 @@ hr {
 }
 
 .cursor-mode-set {
-    cursor: url("img/cursors/mode-set.gif"), crosshair;
+    cursor: url("../cursors/mode-set.gif"), crosshair;
 }
 
 .cursor-mode-picker {
-    cursor: url("img/cursors/mode-picker.gif"), copy;
+    cursor: url("../cursors/mode-picker.gif"), copy;
 }
 
 .cursor-mode-clear {
-    cursor: url("img/cursors/mode-clear.gif"), not-allowed;
+    cursor: url("../cursors/mode-clear.gif"), not-allowed;
 }
 
 /************************
@@ -85,7 +90,7 @@ hr {
     height: 40px;
     padding: 8px;
     background-color: #121212;
-    background-image: url('img/header.jpg');
+    background-image: url('../img/header.jpg');
     background-repeat: no-repeat;
     background-position: middle right;
     font-weight: bold;
