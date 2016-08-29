@@ -65,6 +65,9 @@
           <div id="fx-breath" class="effect-item" onclick="setfx(this, 'breath', 'random'); $('#breath-random').prop('checked',true);">
             <img src="../img/effects/breath.svg"/> <label id="str-breath"></label>
           </div>
+          <div id="fx-ripple" class="effect-item" onclick="setfx(this, 'ripple', 'single'); $('#ripple-single').prop('checked',true);">
+            <img src="../img/effects/ripple.svg"/> <label id="str-ripple"></label>
+          </div>
           <div id="fx-static" class="effect-item" onclick="setfx(this, 'static', '')">
             <img src="../img/effects/static.svg"/> <label id="str-static"></label>
           </div>
@@ -134,9 +137,16 @@
         <table>
           <tr id="breath-options" hidden>
             <td id="str-cycles"></td>
-            <td><label id="str-random"><input id="breath-random" type="radio" name="cycle" value="random" onclick="setfx(this, 'breath', 'random')"> </label></td>
-            <td><label id="str-single-col"><input id="breath-single" type="radio" name="cycle" value="single" onclick="setfx(this, 'breath', 'single')"> </label></td>
+            <td><label class="str-random"><input id="breath-random" type="radio" name="cycle" value="random" onclick="setfx(this, 'breath', 'random')"> </label></td>
+            <td><label class="str-single-col"><input id="breath-single" type="radio" name="cycle" value="single" onclick="setfx(this, 'breath', 'single')"> </label></td>
             <td><label id="str-dual-col"><input id="breath-dual" type="radio" name="cycle" value="dual" onclick="setfx(this, 'breath', 'dual')"> </label></td>
+          </tr>
+        </table>
+        <table>
+          <tr id="ripple-options" hidden>
+            <td id="str-colors"></td>
+            <td><label class="str-random"><input id="breath-random" type="radio" name="rippling" value="random" onclick="setfx(this, 'ripple', 'random')"> </label></td>
+            <td><label class="str-single-col"><input id="breath-single" type="radio" name="rippling" value="single" onclick="setfx(this, 'ripple', 'single')" checked> </label></td>
           </tr>
         </table>
       </div>

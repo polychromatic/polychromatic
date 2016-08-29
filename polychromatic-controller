@@ -315,10 +315,9 @@ class Controller(object):
             trans.push('#str-wave', _("Wave"))
             trans.push('#str-reactive', _("Reactive"))
             trans.push('#str-breath', _("Breath"))
-            trans.push('#str-random', _("Random"), True)
-            trans.push('#str-single-col', _("Single Color"), True)
-            trans.push('#str-dual-col', _("Dual Colors"), True)
+            trans.push('#str-ripple', _("Ripple"))
             trans.push('#str-static', _("Static"))
+
             trans.push('#str-color', _("Color:"), True)
             trans.push('.str-custom', _("Custom..."))
             trans.push('.str-none', _("None"), True)
@@ -326,10 +325,15 @@ class Controller(object):
             trans.push('#str-left', _("Left"), True)
             trans.push('#str-right', _("Right"), True)
             trans.push('#str-speed', _("Speed:"), True)
+            trans.push('.str-random', _("Random"), True)
+            trans.push('.str-single-col', _("Single Color"), True)
+            trans.push('#str-dual-col', _("Dual Colors"), True)
             trans.push('#str-cycles', _("Cycle:"), True)
+            trans.push('#str-colors', _("Colors:"), True)
             trans.push('#str-slow', _("Slow"), True)
             trans.push('#str-med', _("Medium"), True)
             trans.push('#str-fast', _("Fast"), True)
+
             trans.push('#str-modes', _("Key Modes"))
             trans.push('#str-game-mode', _("Gaming Mode"))
             trans.push('#game-mode-disable', _("Disable"))
@@ -662,6 +666,18 @@ class Controller(object):
                                            self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
                     enabled_options = ['breath-options', 'rgb_primary', 'rgb_secondary']
 
+            elif effect == 'ripple':
+                ripple_type = command.split('?')[2]
+                if ripple_type == 'single':
+                    self.current_effect = "ripple?single"
+                    self.active_device.fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                    enabled_options = ['ripple-options', 'rgb_primary']
+
+                elif ripple_type == 'random':
+                    self.current_effect = "ripple?random"
+                    self.active_device.fx.ripple_random()
+                    enabled_options = ['ripple-options']
+
             elif effect == 'static':
                 self.current_effect = "static"
                 self.active_device.fx.static(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
@@ -755,6 +771,10 @@ class Controller(object):
                     self.process_command('effect?breath?dual')
                 elif self.current_effect == 'reactive':
                     self.process_command('effect?reactive?auto')
+                elif self.current_effect == 'ripple?random':
+                    self.process_command('effect?ripple?random')
+                elif self.current_effect == 'ripple?single':
+                    self.process_command('effect?ripple?single')
 
         ## Cancel to main menu.
         ## '?xxxx' may specify changes to also make when leaving application profile editor.
