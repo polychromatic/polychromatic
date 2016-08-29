@@ -11,14 +11,13 @@ Powered by the [Chroma Linux Drivers](http://terrycain.github.io/razer-drivers/)
 
 ![Screenshot of Controller](.readme/controller.jpg)
 
-An application that allows you to configure your Razer peripheral.
-
-(Currently designed for one device at a time, but [this will change eventually](https://github.com/lah7/polychromatic/issues/3)).
+An application that allows you to configure Razer peripherals supported by the
+[Razer drivers for Linux](http://terrycain.github.io/razer-drivers/) project.
 
 Also includes application profile support and customisation options:
 
 * Changing the indicator icon.
-* Specifying preferred colours.
+* Specifying default colours.
 * Setting effects or profiles at log-in (via Tray Applet)
 
 
@@ -27,48 +26,50 @@ Also includes application profile support and customisation options:
 ![Screenshot of Tray Applet](.readme/tray.jpg)
 
 Quickly set effects, brightness, keyboard features or load saved profiles
-from your desktop indicators / notification area.
+from your desktop's indicator or notification area.
 
 
-## Installation
+## Driver Installation
 
-### ![Chroma Drivers](.readme/chroma-drivers.png) Razer Chroma Drivers
-This application complements the [razer-chroma-drivers](http://terrycain.github.io/razer-drivers/) project,
-which will need to compiled, built and installed first.
+### ![Chroma Drivers](.readme/chroma-drivers.png) Razer Drivers for Linux
+This application complements the [razer-drivers](http://terrycain.github.io/razer-drivers/) project.
 
-Ubuntu and Debian users can use these pre-compiled packages for convenience:
+Please see the [project page](http://terrycain.github.io/razer-drivers/#download) for installation for your distribution.
 
- * [razer-chroma-driver_20160612_ubuntu_amd64.deb](https://github.com/lah7/polychromatic/releases/download/v0.2.0/razer-chroma-driver_20160612_ubuntu_amd64.deb)
- * [razer-chroma-driver_20160612_debian_amd64.deb](https://github.com/lah7/polychromatic/releases/download/v0.2.0/razer-chroma-driver_20160612_debian_amd64.deb)
+Ubuntu and Linux Mint users can install the drivers and daemon via this PPA:
 
-These packages are provided **as-is**!
-
-Please see the [project page](http://terrycain.github.io/razer-drivers/#download) for installation instructions.
+    sudo add-apt-repository ppa:terrz/razerutils
+    sudo apt update
+    sudo apt install python3-razer razer-kernel-modules-dkms razer-daemon razer-doc
 
 
-### Packages
+## Polychromatic Installation
 
-#### ![Ubuntu](.readme/ubuntu.png) Ubuntu / Linux Mint
+#### ![Ubuntu](.readme/ubuntu.png) Ubuntu 16.04+ / Linux Mint 18+
 
-Polychromatic can be installed from this PPA, which also keeps the application up-to-date.
+Polychromatic can be installed via the PPA, which keeps the application up-to-date.
 
     sudo add-apt-repository ppa:lah7/polychromatic
     sudo apt update
     sudo apt install polychromatic
 
-* **razer-chroma-drivers** must be installed first.
 
+#### ![Ubuntu](.readme/ubuntu.png) Ubuntu 14.04 / Linux Mint 17
 
-**Running Ubuntu 14.04, 15.10, Linux Mint 17 or earlier?**
+Earlier distributions will not be able to use the latest version of this software as it
+depends on a newer version of WebKit2 which is not available in earlier releases.
 
-Polychromatic depends on a newer version of WebKit2 which is not available in earlier releases.
 Instead, [the legacy branch](https://github.com/lah7/polychromatic/tree/legacy) contains
-an earlier version (v0.1.0 / v0.2.0.1) but will not receive further updates.
+an older version (v0.1.0 / v0.2.0.1) that will not receive further updates as it requires
+the original driver/daemon:
 
-Packages are also available via the PPA.
+* [razer-chroma-driver_20160612_ubuntu_amd64.deb](https://github.com/lah7/polychromatic/releases/download/v0.2.0/razer-chroma-driver_20160612_ubuntu_amd64.deb)
+* [polychromatic_0.1.0_all.deb](https://github.com/lah7/polychromatic/releases/download/v0.2.0/polychromatic_0.1.0_all.deb)
 
 
 #### ![Debian](.readme/debian.png) Debian
+
+Packages built for Ubuntu are also compatible with Debian.
 
 Add this line to your `/etc/apt/sources.list`:
 
@@ -83,13 +84,10 @@ Followed by updating your Apt sources:
 
     sudo apt-get update
 
-The packages are built against Ubuntu, but the [the legacy branch](https://github.com/lah7/polychromatic/tree/legacy)
-is compatible with Debian 8.
-
 Otherwise, standalone packages are available from the [releases page](https://github.com/lah7/polychromatic/releases/latest/).
 
 
-### ![Other Distributions](.readme/linux.png) Manual Installation / Other Distributions
+#### ![Other Distributions](.readme/linux.png) Other Distributions / Manual Installation
 
 See further below for which dependencies you will require to install first.
 
@@ -124,6 +122,6 @@ To update your installation at a later date:
 
 
 ### Translations
-If you'd like to translate this application into other languages, take a look
+If you'd like to translate this application, take a look
 [at this wiki page](https://github.com/lah7/polychromatic/wiki/How-to-translate-the-application.).
 
