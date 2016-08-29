@@ -186,9 +186,9 @@ $(document).ready(function() {
  *    type:  Name of effect, e.g. "reactive"
  *    parms: Parameters to pass to Python, separated by '?'
  */
-function setfx(obj, type, parms) {
+function setfx(type, parms) {
     command = "effect?" + type + "?" + parms;
     $("#effect-list *").removeClass("selected");
-    $(obj).addClass("selected");
+    $("#fx-" + type).addClass("selected");
     cmd(command);
 }
