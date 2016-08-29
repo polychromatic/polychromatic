@@ -28,10 +28,12 @@
     <a class="btn right" onclick="cmd('pref-open')"><span class="fa fa-wrench"></span></a>
     <a class="btn right" onclick="cmd('web?https://github.com/lah7/polychromatic')"><span class="fa fa-github"></span></a>
     <a class="btn right" onclick="cmd('open-config-folder')"><span class="fa fa-folder"></span></a>
-    <a class="btn right" id="multi-device-switcher" alt="Change Device" onclick="change-device" style="display:none"><span class="fa fa-keyboard-o"></span></a>
+  </div>
+  <div id="device-tabs">
+    <a id="refresh-list" class="btn" onclick="cmd('device-refresh')"><span class="fa fa-refresh"></span></a>
   </div>
 
-  <div class="content" hidden>
+  <div class="content with-tabs" hidden>
     <!-- Main Menu Screen -->
     <div class="menu_area">
       <div class="left">

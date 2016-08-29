@@ -254,8 +254,10 @@ class Controller(object):
         self.devices = self.get_devices()
         if len(self.devices) == 0:
             self.active_device = None
+            self.active_ui_device = None
         else:
             self.active_device = self.devices[0]
+            self.active_ui_device = self.devices[0].serial
 
         # Store as class variables for use later.
         self.window = w
@@ -306,7 +308,7 @@ class Controller(object):
 
         if self.current_page == 'menu':
             # Push strings
-            trans.push('#page-header', _("Configure your Keyboard"))
+            trans.push('#page-header', _("Configure your Device"))
             trans.push('#str-brightness', _("Brightness"))
             trans.push('#str-effects', _("Effects"))
             trans.push('#str-spectrum', _("Spectrum"), True)
@@ -363,6 +365,7 @@ class Controller(object):
             # Page actions
             self.webkit.run_javascript('instantProfileSwitch = false;')
             self.update_page('#profiles-activate', 'show')
+            self.refresh_device_list()
             self.refresh_profiles_list()
 
             # Tell JavaScript whether live profile switching is enabled.
@@ -1000,6 +1003,38 @@ class Controller(object):
         elif command == 'restart-tray':
             restart_tray_applet()
 
+        ## Multi Device Support
+        elif command.startswith('device-select?'):
+            selected_serial = command.split('?')[1]
+            selected_device = None
+            # Loop through each device object until we find the device.
+            for device in self.devices:
+                if device.serial == selected_serial:
+                    selected_device = device
+
+            if selected_device:
+                self.active_device = selected_device
+                self.active_ui_device = selected_device.serial
+            else:
+                print("Could not locate device with serial: " + selected_serial)
+                return
+
+            app.update_page(".device", "removeClass", "active")
+            app.update_page("#" + selected_serial, "addClass", "active")
+            stdout.vprint("Selected: {0} [{1}]".format(selected_device.name, selected_serial))
+
+        elif command == 'device-refresh':
+            print("Refreshing device list...")
+            self.devices = self.get_devices()
+            self.refresh_device_list()
+            if len(self.devices) == 0:
+                self.active_device = None
+            else:
+                self.active_device = self.devices[0]
+
+            for device in self.devices:
+                stdout.vprint("Found: {0} [{1}]".format(device.name, device.serial))
+
         else:
             print("Unimplemented command: " + command)
 
@@ -1009,6 +1044,27 @@ class Controller(object):
         for device in self.devman.devices:
             found_devices.append(device)
         return(found_devices)
+
+    def refresh_device_list(self):
+        try:
+            selected = self.active_device.serial
+        except:
+            # No device was present before.
+            selected = "0"
+        selected_ui = self.active_ui_device
+        if self.current_page == "menu":
+            app.update_page(".device", "remove")
+            for device in self.devices:
+                name = str(device.name)
+                formfactor = str(device.type)
+                if formfactor == "firefly":
+                    formfactor = "mousemat"
+                serial = str(device.serial)
+                state = "normal"
+                htmlbuffer = "<a id='{0}' class='device' onclick='cmd(\"device-select?{0}\")'><div><img src='../img/states/{1}/{2}.svg'> <span>{3}</span></div></a>".format(serial, state, formfactor, name)
+                app.update_page("#device-tabs", "append", htmlbuffer)
+        app.update_page('#' + selected_ui, "addClass", "active")
+
 
 class Dialogues(object):
     def fatal_error(message, do_quit=False):
