@@ -37,9 +37,20 @@ import polychromatic.preferences as pref
 path = pref.Paths()
 import polychromatic.profiles
 
+
+def get_data_source():
+    # Use relative translations if available.
+    whereami = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+    if os.path.exists(os.path.join(whereami, 'data/')):
+        path = os.path.join(whereami, 'data/')
+    else:
+        path = '/usr/share/polychromatic/'
+    return path
+
+
 class Translations():
     def __init__(self):
-        # Use relative translations if available.
+        # Determine the locale path
         whereami = os.path.abspath(os.path.join(os.path.dirname(__file__)))
         if os.path.exists(os.path.join(whereami, 'locale/')):
             locale_path = os.path.join(whereami, 'locale/')
@@ -55,7 +66,7 @@ class Translations():
 
     """ Where are the locales? """
     def get_locale_path(self):
-        return path
+        return self.locale_path
 
 
 class AppIndicator:
