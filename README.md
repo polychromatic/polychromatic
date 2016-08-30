@@ -28,6 +28,12 @@ Also includes application profile support and customisation options:
 Quickly set effects, brightness, keyboard features or load saved profiles
 from your desktop's indicator or notification area.
 
+## Warning!
+Polychromatic is currently in the progress of migrating to the new daemon.
+If you desire stability, please see the [stable branch](https://github.com/lah7/polychromatic/tree/stable) and use the old daemon and driver for now.
+
+PPAs and packages still depend on the **old version** of the daemon. Please manually install this application if you're willing to use the new daemon as described below.
+
 
 ## Driver Installation
 
