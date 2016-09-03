@@ -32,6 +32,7 @@ import setproctitle
 from subprocess import Popen as background_process
 
 import razer.client as rclient
+from razer_daemon.keyboard import KeyboardColour
 
 import polychromatic.preferences as pref
 path = pref.Paths()
@@ -403,11 +404,11 @@ class AppIndicator:
             # Returns value between 0.0 - 1.0 * 255 = 8-bit RGB Value
 
             if colour_index == 1:
-                self.colour = razer.keyboard.KeyboardColour.gdk_colour_to_rgb(color_rgb)
+                self.colour = KeyboardColour.gdk_colour_to_rgb(color_rgb)
                 self.primary_colour_button.set_label(_("Change Primary Color...") + " ({0})".format(AppIndicator.colour_to_hex(self.colour)))
                 print("[Change Primary Colour] New: {0}".format(AppIndicator.colour_to_hex(self.colour)))
             else:
-                self.secondary_colour = razer.keyboard.KeyboardColour.gdk_colour_to_rgb(color_rgb)
+                self.secondary_colour = KeyboardColour.gdk_colour_to_rgb(color_rgb)
                 self.secondary_colour_button.set_label(_("Change Secondary Color...") + " ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
                 print("[Change Secondary Colour] New: {0}".format(AppIndicator.colour_to_hex(self.secondary_colour)))
 

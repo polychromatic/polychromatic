@@ -33,7 +33,8 @@ import setproctitle
 from subprocess import Popen as background_process
 
 import razer.client as rclient
-import razer.keyboard
+from razer_daemon.keyboard import get_keyboard_layout
+from razer_daemon.keyboard import RGB
 
 import polychromatic.preferences as pref
 path = pref.Paths()
@@ -220,10 +221,10 @@ class Controller(object):
 
         # Set up variables
         self.current_page = 'menu'
-        self.kb_layout = razer.keyboard.get_keyboard_layout()
+        self.kb_layout = get_keyboard_layout()
         self.reactive_speed = 1
-        self.primary_rgb = razer.keyboard.RGB(0, 255, 0)
-        self.secondary_rgb = razer.keyboard.RGB(0, 0, 255)
+        self.primary_rgb = RGB(0, 255, 0)
+        self.secondary_rgb = RGB(0, 0, 255)
         self.current_effect = 'custom'
         self.last_effect = 'unknown'
         self.open_this_profile = None
@@ -237,10 +238,10 @@ class Controller(object):
         s_blue = pref.get('secondary_colors', 'blue', 0)
 
         self.primary_rgb_values = [p_red, p_green, p_blue]
-        self.primary_rgb = razer.keyboard.RGB(p_red, p_green, p_blue)
+        self.primary_rgb = RGB(p_red, p_green, p_blue)
 
         self.secondary_rgb_values = [s_red, s_green, s_blue]
-        self.secondary_rgb = razer.keyboard.RGB(s_red, s_green, s_blue)
+        self.secondary_rgb = RGB(s_red, s_green, s_blue)
 
         # Set up the daemon
         try:

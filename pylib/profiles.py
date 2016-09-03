@@ -11,18 +11,19 @@
 import os
 import time
 
-import razer.daemon_dbus
-import razer.keyboard
 import polychromatic.preferences as pref
 path = pref.Paths()
+
+from razer_daemon.keyboard import get_keyboard_layout
+from razer_daemon.keyboard import KeyboardColour
 
 
 class Profiles(object):
     """ Profiles require the driver daemon. """
-    def __init__(self, dbus_object):
+    def __init__(self, rclient):  # => rclient
         self.profiles = {}
         self.active_profile = None
-        self.daemon = dbus_object
+        self.rclient = rclient
         self.load_profiles()
 
     """ Delete profile from file system """
@@ -47,7 +48,7 @@ class Profiles(object):
     def new_profile(self):
         uuid = str(int(time.time() * 1000000))
         self.active_uuid = uuid
-        self.profiles[uuid] = razer.keyboard.KeyboardColour()
+        self.profiles[uuid] = KeyboardColour()
 
         index = pref.load_file(path.profiles)
         index[str(uuid)] = {}
@@ -94,10 +95,10 @@ class Profiles(object):
         profiles are loaded then an empty profile is returned
 
         :return: Keyboard object
-        :rtype: razer.keyboard.KeyboardColour
+        :rtype: razer_daemon.keyboard.KeyboardColour
         """
 
-        profile = razer.keyboard.KeyboardColour()
+        profile = KeyboardColour()
         try:
             profile = self.profiles[self.active_profile]
         except KeyError:
@@ -131,7 +132,7 @@ class Profiles(object):
         :type profile_name: str
 
         :return: Keyboard object
-        :rtype: razer.keyboard.KeyboardColour
+        :rtype: razer_daemon.keyboard.KeyboardColour
         """
         return self.profiles[profile_name]
 
@@ -151,7 +152,7 @@ class Profiles(object):
         print("Applying profile '{0}' ... ".format(profile_name))
         with open(os.path.join(path.profile_folder, profile_name), 'rb') as profile_file:
             payload = profile_file.read()
-            keyboard = razer.keyboard.KeyboardColour()
+            keyboard = KeyboardColour()
             keyboard.get_from_total_binary(payload)
             self.daemon.set_custom_colour(keyboard)
 
@@ -162,7 +163,7 @@ class Profiles(object):
         print("Applying profile '{0}' from memory...".format(profile_name))
 
     def get_profile_from_file(self, profile_name):
-        keyboard = razer.keyboard.KeyboardColour()
+        keyboard = KeyboardColour()
         with open(os.path.join(path.profile_folder, profile_name), 'rb') as profile_file:
             payload = profile_file.read()
             keyboard.get_from_total_binary(payload)
