@@ -542,7 +542,12 @@ class AppIndicator:
         device_type = self.active_device.type
 
         def set_state(attr, menu_obj, item=None):
-            state = capabilities[attr]
+            try:
+                state = capabilities[attr]
+            except:
+                # Unsupported feature (e.g. "ripple" on Mamba)
+                state = False
+
             if item:
                 menu_obj[item].set_sensitive(state)
             else:
