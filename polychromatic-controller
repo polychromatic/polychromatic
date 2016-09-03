@@ -478,10 +478,10 @@ class Controller(object):
             trans.push('#str-scaling', _("Interface Scale:"))
             trans.push('#str-scaling-help', _("Scale the application so it looks good on large displays."))
             trans.push('#str-tray-applet', _("Tray Applet"))
-            trans.push('#str-system-logo', _("System Keyboard"), True)
-            trans.push('#str-static-logo', _("Static Green Logo"), True)
-            trans.push('#str-animated-logo', _("Animated Chroma Logo"), True)
-            trans.push('#str-custom-logo', _("Custom Image"), True)
+            trans.push('#str-tray-light', _("Light Keyboard"), True)
+            trans.push('#str-tray-dark', _("Dark Keyboard"), True)
+            trans.push('#str-tray-animated', _("Chroma Keyboard"), True)
+            trans.push('#str-tray-custom', _("Use Custom Image"), True)
             trans.push('#tray-custom', _("Custom Icon:"), True)
             trans.push('#str-preferred-cols', _("Preferred Colors"), True)
             trans.push('#str-primary', _("Primary Color:"))
@@ -521,7 +521,7 @@ class Controller(object):
                     self.update_page('#'+setting, 'prop', 'checked', 'true')
 
             # Fetch settings for tray/start-up settings.
-            tray_icon_type = pref.get('tray_applet', 'icon_type', 'system')
+            tray_icon_type = pref.get('tray_applet', 'icon_type', 'light')
             tray_icon_path = pref.get('tray_applet', 'icon_path', '')
             start_enabled = pref.get('startup', 'enabled', 'false')
             start_effect = pref.get('startup', 'start_effect', None)
@@ -570,11 +570,6 @@ class Controller(object):
 
             self.update_page('#rgb_start_primary_preview', 'css', 'background-color', 'rgba(' + str(self.start_p_red) + ',' + str(self.start_p_green) + ',' + str(self.start_p_blue) + ',1.0)')
             self.update_page('#rgb_start_secondary_preview', 'css', 'background-color', 'rgba(' + str(self.start_s_red) + ',' + str(self.start_s_green) + ',' + str(self.start_s_blue) + ',1.0)')
-
-            # Get the system icon path for the tray applet.
-            default_tray_icon = icon_name_to_path("ibus-keyboard")
-            self.update_page("#tray-system-logo", "attr", "src", default_tray_icon)
-
 
         else:
             stdout.vvprint('No post-actions for this page.')

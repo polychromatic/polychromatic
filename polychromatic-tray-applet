@@ -106,40 +106,32 @@ class AppIndicator:
         self.profiles = polychromatic.profiles.Profiles(rclient)
 
         # Determine which icon to display.
-        icon_type = pref.get('tray_applet','icon_type','system')
-        icon_fallback = 'ibus-keyboard'
-        if icon_type == 'system' or icon_type == '' or icon_type == None:
-            icon = icon_fallback
+        icon_type = pref.get('tray_applet','icon_type','light')
+        icon_fallback = get_data_source() + '/tray/humanity-light.svg'
 
-        if icon_type == 'logo':
-            # TODO: Retrieve icon relative to the program.
-            logo_path = '/usr/share/polychromatic/tray/driver-green.png'
-
-        if icon_type == 'animated':
-            # TODO: Retrieve icon relative to the program.
-            logo_path = '/usr/share/polychromatic/tray/driver-chroma.gif'
-
-        if icon_type == 'logo' or icon_type == 'animated':
-            if os.path.exists(logo_path):
-                icon = logo_path
-            else:
-                print('Default tray icon is missing at "' + logo_path + '". Using fallback.')
-                icon = icon_fallback
-
-        if icon_type == 'custom':
+        if icon_type == 'light':
+            icon_path = get_data_source() + '/tray/humanity-light.svg'
+        elif icon_type == 'dark':
+            icon_path = get_data_source() + '/tray/humanity-dark.svg'
+        elif icon_type == 'gtk':
+            icon_path = pref.get('tray_applet','icon_path','ibus-keyboard')
+        elif icon_type == 'animated':
+            icon_path = get_data_source() + '/tray/chroma.gif'
+        elif icon_type == 'custom':
             icon_path = pref.get('tray_applet','icon_path')
-            if not os.path.exists(icon_path):
-                print('Custom icon "' + icon_path + '" could not be found. Using fallback.')
-                icon = icon_fallback
-            else:
-                icon = icon_path
+        else:
+            print("Unknown icon type! Rewriting to default.")
+            pref.set("tray_applet", "icon_type", "light")
+            pref.set("tray_applet", "icon_path", "")
+            icon_type = "light"
+            icon_path =  icon_fallback
 
-        if not icon:
-            print('Malformed icon type: "' + icon_type + '"')
-            icon = icon_fallback
+        if not os.path.exists(icon_path) and not icon_type == 'gtk':
+            icon_path = icon_fallback
+            print("Tray icon missing! Using default")
 
         # Create the indicator.
-        self.ind = appindicator.Indicator.new("polychromatic-tray-applet", icon, appindicator.IndicatorCategory.APPLICATION_STATUS)
+        self.ind = appindicator.Indicator.new("polychromatic-tray-applet", icon_path, appindicator.IndicatorCategory.APPLICATION_STATUS)
         self.ind.set_status(appindicator.IndicatorStatus.ACTIVE)
 
         # Create the menu.
