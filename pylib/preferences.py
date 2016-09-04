@@ -11,7 +11,7 @@ import os
 import json
 import shutil
 
-version = 3
+version = 4
 
 # For default preferences, please see:
 #   https://github.com/lah7/polychromatic/wiki/Preferences-JSON-Structure
@@ -26,6 +26,8 @@ class Paths(object):
 
     """ Files """
     preferences = os.path.join(root, 'preferences.json')
+
+    """ Deprecated """
     profiles = os.path.join(root, 'profiles.json')
 
     """ Data Source """
@@ -191,7 +193,7 @@ def clear_config():
 """ Updates the configuration from previous versions. """
 def upgrade_old_pref(config_version):
     print(" ** Upgrading configuration from v{0} to v{1}...".format(config_version, version))
-    if config_version <= 3:
+    if config_version < 3:
         # *** "chroma_editor" group now "editor" ***
         data = load_file(path.preferences, True)
         data["editor"] = data["chroma_editor"]
@@ -214,6 +216,52 @@ def upgrade_old_pref(config_version):
         shutil.rmtree(path.profile_backups)
         os.mkdir(path.profile_backups)
 
+    if config_version < 4:
+        # *** Convert old serialised profile binary to JSON ***
+        # Thanks to @terrycain for providing the conversion code.
+
+        # Backup the old serialised versions, although they're useless now.
+        if not os.path.exists(path.profile_backups):
+            os.mkdir(path.profile_backups)
+
+        # Load profiles and old index (meta data will now be part of that file)
+        profiles = os.listdir(path.profile_folder)
+        index = load_file(path.profiles, True)
+
+        # Import daemon class required for conversion.
+        from razer_daemon.keyboard import KeyboardColour
+
+        for filename in profiles:
+            # Get paths and backup.
+            backup_path = os.path.join(path.profile_backups, filename)
+            old_path = os.path.join(path.profile_folder, filename)
+            new_path = os.path.join(path.profile_folder, filename + '.json')
+            os.rename(old_path, backup_path)
+
+            # Open the serialised format and export to JSON instead.
+            blob = open(backup_path, 'rb').read()
+            rgb_profile_object = KeyboardColour()
+            rgb_profile_object.get_from_total_binary(blob)
+
+            json_structure = {'rows':{}}
+            for row_id, row in enumerate(rgb_profile_object.rows):
+                row_id = str(row_id) # JSON doesn't like numbered keys
+                json_structure['rows'][row_id] = [rgb.get() for rgb in row]
+
+            # Migrate index meta data, and save.
+            uuid = os.path.basename(old_path)
+            json_structure["name"] = index[uuid]["name"]
+            json_structure["icon"] = index[uuid]["icon"]
+            save_file(new_path, json_structure)
+
+        # Delete index file as no longer needed.
+        os.remove(path.profiles)
+
+    # Ensure that new version number is written.
+    pref_data = load_file(path.preferences, True)
+    pref_data["config_version"] = version
+    save_file(path.preferences, pref_data)
+
     print(" ** Configuration successfully upgraded.")
 
 """ Initialisation """
@@ -224,6 +272,6 @@ for folder in [path.root, path.profile_folder, path.profile_backups]:
         os.makedirs(folder)
 
 # Create preferences if non-existent.
-for json_path in [path.preferences, path.profiles]:
+for json_path in [path.preferences]:
     if not os.path.exists(json_path):
         init_config(json_path)
