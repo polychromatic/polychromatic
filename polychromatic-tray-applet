@@ -155,24 +155,32 @@ class AppIndicator:
         self.device_menu.show()
         device_item.set_submenu(self.device_menu)
         self.menu.append(device_item)
-        self.device_menu_items = collections.OrderedDict()
 
         # Populate the devices menu.
         devman = rclient.DeviceManager()
         devlist = []
         for device in devman.devices:
             devlist.append(device)
+
+            # Collect device data
             name = str(device.name)
             formfactor = str(device.type)
+            if formfactor == "firefly":
+                formfactor = "mousemat"
             serial = str(device.serial)
-            self.device_menu_items[device] = Gtk.RadioMenuItem(group=None, label=name)
+
+            # Create button
+            button = Gtk.ImageMenuItem(Gtk.STOCK_NEW, label=name)
+            button.show()
+            button.connect("activate", self.menuitem_select_device, device)
+            img = Gtk.Image()
+            icon_path = os.path.join(path.get_data_source(__file__) + "/img/states/normal/", formfactor + ".svg")
+            img.set_from_file(icon_path)
+            button.set_image(img)
+            self.device_menu.append(button)
+
         self.active_device = devlist[0]
         self.active_device_status.set_label(devlist[0].name)
-
-        for button_key, button in self.device_menu_items.items():
-            button.connect("activate", self.menuitem_select_device, button_key)
-            button.show()
-            self.device_menu.append(button)
 
         # Create effects sub-menu
         effect_item = Gtk.MenuItem(_("Effects"))
