@@ -104,7 +104,7 @@ class AppIndicator:
         self.active_device = None
 
         # Read preferences and profiles.
-        self.profiles = polychromatic.profiles.Profiles(rclient)
+        self.profiles = polychromatic.profiles.AppProfiles(rclient)
 
         # Determine which icon to display.
         icon_type = pref.get('tray_applet','icon_type','light')
@@ -293,7 +293,7 @@ class AppIndicator:
         # Workaround some strange bug trying to set "status" (group name)?
         if not uuid == 'status':
             name = pref.get(uuid, "name", "", path.profiles)
-            self.profiles.activate_profile_from_file(uuid)
+            self.profiles.send_profile_from_file(self.active_device, uuid)
             self.profile_items['status'].set_label(name)
 
     def set_effect(self, effect_type):
@@ -432,10 +432,10 @@ class AppIndicator:
         background_process('/usr/bin/polychromatic-controller')
 
     def refresh_profiles_menu(self):
-        profile_list = self.profiles.get_profiles()
+        profile_list = self.profiles.list_profiles()
 
         # No profiles found.
-        if not profile_list:
+        if len(profile_list) == 0:
             self.profiles_status = Gtk.MenuItem(_("No profiles found."))
             self.profiles_status.show()
             self.profiles_menu.append(self.profiles_status)
@@ -453,15 +453,17 @@ class AppIndicator:
         sep.show()
         self.profiles_menu.append(sep)
 
-        # Populate the profiles list.
-        index = pref.load_file(path.profiles)
-
         # Function to append to menu.
         def append_item(uuid):
-            title = index[uuid]["name"]
+            uuid_path = os.path.join(path.profile_folder, uuid + ".json")
+            profile_data = pref.load_file(uuid_path)
             try:
-                icon_path = index[uuid]["icon"]
-            except:
+                title = profile_data["name"]
+            except KeyError:
+                title = _("Unknown")
+            try:
+                icon_path = profile_data["icon"]
+            except KeyError:
                 icon_path = path.get_data_source(__file__) + "/img/profile-default.svg"
             img = Gtk.Image()
             img.set_from_file(icon_path)
@@ -469,18 +471,20 @@ class AppIndicator:
             self.profile_items[uuid].set_image(img)
 
         # Sort the profiles A-Z.
-        sorted_names = {}
-        for uuid in index:
-            human_name = index[uuid]['name']
-            sorted_names[human_name] = int(uuid)
-        item_no = 0
-        for program in sorted(sorted_names):
-            uuid = sorted_names[program]
-            item_no += 1
-            append_item(str(uuid))
+        collected_names = {}
+        for uuid_json in profile_list:
+            try:
+                uuid = uuid_json.replace(".json", "")
+                uuid_path = os.path.join(path.profile_folder, uuid_json)
+                profile_data = pref.load_file(uuid_path)
+                title = profile_data["name"]
+                collected_names[title] = int(uuid)
+            except Exception as e:
+                print("Failed to load profile: {0} (Exception: {1})".format(uuid_json, str(e)))
 
-        for profile_name in self.profiles.get_profiles():
-            append_item(profile_name)
+        for name in sorted(collected_names):
+            uuid = collected_names[name]
+            append_item(str(uuid))
 
         for profile_name, button in self.profile_items.items():
             button.connect("activate", self.set_profile, profile_name)
