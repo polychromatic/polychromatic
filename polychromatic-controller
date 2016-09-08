@@ -217,7 +217,7 @@ class Controller(object):
 
         # Initialise Profiles
         stdout.vprint('Initialising Polychromatic Profiles...')
-        self.profiles = polychromatic.profiles.Profiles(rclient)
+        self.profiles = polychromatic.profiles.AppProfiles(rclient)
 
         # Set up variables
         self.current_page = 'menu'
@@ -579,15 +579,14 @@ class Controller(object):
     def refresh_profiles_list(self):
         stdout.vvprint('Refreshing profile list...')
         self.update_page('#app-profiles', 'html' , ' ')
-        index = pref.load_file(path.profiles)
 
         # Function to append to page.
-        def append_item(uuid):
+        def append_item(uuid, data):
             css_id = "app-" + uuid
-            title = index[uuid]["name"]
+            title = data["name"]
             title = title.replace("'", '&#39;').replace('"', '&#39;')
             try:
-                icon_path = index[uuid]["icon"]
+                icon_path = data["icon"]
             except:
                 icon_path = path.get_data_source(__file__) + "/img/profile-default.svg"
             if app.current_page == "menu":
@@ -597,14 +596,20 @@ class Controller(object):
 
         # Sort the profiles A-Z.
         sorted_names = {}
-        for uuid in index:
-            human_name = index[uuid]['name']
+        for uuid_json in self.profiles.list_profiles():
+            uuid = uuid_json.split(".json")[0]
+            profile_path = os.path.join(path.profile_folder, uuid + ".json")
+            data = pref.load_file(profile_path)
+            human_name = data["name"]
             sorted_names[human_name] = int(uuid)
+
         item_no = 0
         for program in sorted(sorted_names):
             uuid = sorted_names[program]
+            profile_path = os.path.join(path.profile_folder, str(uuid) + ".json")
+            data = pref.load_file(profile_path)
             item_no += 1
-            append_item(str(uuid))
+            append_item(str(uuid), data)
 
     """ Process a command """
     def process_command(self, command):
@@ -870,7 +875,7 @@ class Controller(object):
             command = command.replace('%20',' ')
             uuid = command.split('profile-activate?')[1]
             self.webkit.run_javascript('set_cursor("html","wait")')
-            self.profiles.activate_profile_from_file(uuid)
+            self.profiles.send_profile_from_file(self.active_device, uuid)
             self.update_page('#custom', 'html', 'Profile - ' + uuid)
             self.update_page('#custom', 'prop', 'checked', 'true')
             self.webkit.run_javascript('set_cursor("html","normal")')

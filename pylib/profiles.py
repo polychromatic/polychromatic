@@ -69,7 +69,6 @@ class AppProfiles(object):
 
     """ Load a profile and keyboard. """
     def send_profile_to_keyboard(self, kbd_obj, data):
-        print(data["name"])
         for row in range(0, 6):
             for col in range(0, 22):
                 kbd_obj.fx.advanced.matrix[row, col] = data["rows"][str(row)][col]
