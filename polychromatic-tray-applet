@@ -172,7 +172,7 @@ class AppIndicator:
         self.menu.append(effect_item)
 
         self.effect_menu_items = collections.OrderedDict()
-        self.effect_menu_items["spectrum"] = Gtk.RadioMenuItem(group=None, label=_("Spectrum Effect"))
+        self.effect_menu_items["spectrum"] = Gtk.RadioMenuItem(group=None, label=_("Spectrum"))
         self.effect_menu_items["wave"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Wave"))
         self.effect_menu_items["reactive"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Reactive"))
         self.effect_menu_items["breath_r"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Breath (Random)"))
@@ -181,7 +181,7 @@ class AppIndicator:
         self.effect_menu_items["ripple"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Ripple (Single Color)"))
         self.effect_menu_items["ripple_random"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Ripple (Random)"))
         self.effect_menu_items["static"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("Static"))
-        self.effect_menu_items["none"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("No Effect (Off)"))
+        self.effect_menu_items["none"] = Gtk.RadioMenuItem(group=self.effect_menu_items["spectrum"], label=_("None"))
 
         for button_key, button in self.effect_menu_items.items():
             button.connect("activate", self.menuitem_keyboard_effect_response, button_key)
