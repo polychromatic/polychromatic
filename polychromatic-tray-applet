@@ -311,8 +311,9 @@ class AppIndicator:
         """ Shared function to send the profile to the keyboard """
         # Workaround some strange bug trying to set "status" (group name)?
         if not uuid == 'status':
-            name = pref.get(uuid, "name", "", path.profiles)
-            self.profiles.send_profile_from_file(self.active_device, uuid)
+            data = self.profiles.load_profile(uuid)
+            name = data["name"]
+            self.profiles.send_profile_to_keyboard(self.active_device, data)
             self.profile_items['status'].set_label(name)
 
     def set_effect(self, effect_type):
