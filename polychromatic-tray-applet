@@ -476,8 +476,7 @@ class AppIndicator:
 
         # Function to append to menu.
         def append_item(uuid):
-            uuid_path = os.path.join(path.profile_folder, uuid + ".json")
-            profile_data = pref.load_file(uuid_path)
+            profile_data = self.profiles.load_profile(uuid)
             try:
                 title = profile_data["name"]
             except KeyError:
@@ -493,15 +492,13 @@ class AppIndicator:
 
         # Sort the profiles A-Z.
         collected_names = {}
-        for uuid_json in profile_list:
+        for uuid in profile_list:
             try:
-                uuid = uuid_json.replace(".json", "")
-                uuid_path = os.path.join(path.profile_folder, uuid_json)
-                profile_data = pref.load_file(uuid_path)
+                profile_data = self.profiles.load_profile(uuid)
                 title = profile_data["name"]
                 collected_names[title] = int(uuid)
             except Exception as e:
-                print("Failed to load profile: {0} (Exception: {1})".format(uuid_json, str(e)))
+                print("Failed to load profile: {0} (Exception: {1})".format(uuid, str(e)))
 
         for name in sorted(collected_names):
             uuid = collected_names[name]

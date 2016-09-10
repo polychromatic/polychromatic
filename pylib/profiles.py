@@ -17,13 +17,19 @@ path = pref.Paths()
 class AppProfiles(object):
     """ Profiles require the driver daemon. """
     def __init__(self, rclient):
-        self.selected_uuid = None
+        # Expects "razer.client" to be passed.
         self.rclient = rclient
+
+        # For tracking which UUID is loaded in memory.
+        self.selected_uuid = None
+
+        # For temporarily storing file changes in memory.
+        self.memory = {}
 
     """ Delete profile from file system """
     def remove_profile(self, uuid):
-        file_profile = os.path.join(path.profile_folder, uuid)
-        file_backup  = os.path.join(path.profile_backups, uuid)
+        file_profile = os.path.join(path.profile_folder, uuid + '.json')
+        file_backup  = os.path.join(path.profile_backups, uuid + '.json')
 
         if os.path.exists(file_profile):
             os.remove(file_profile)
@@ -35,20 +41,33 @@ class AppProfiles(object):
     def new_profile(self):
         uuid = str(int(time.time() * 1000000))
         self.selected_uuid = uuid
-        filepath = os.path.join(path.profiles, uuid + ".json")
+        filepath = os.path.join(path.profile_folder, uuid + '.json')
 
         template = {
             "name": "",
             "icon": "",
             "rows": {}
         }
-        for row_no in range(0, 5):
-            template["row"] = str(row_no)
-            for col_no in range(0, 22):
-                template["row"][col_no].append([0,0,0])
+
+        for row in range(0, 5):
+            template["rows"][str(row)] = []
+            for col in range(0, 22):
+                template["rows"][str(row)].append([0, 0, 0])
 
         pref.save_file(filepath, template)
         return str(uuid)
+
+    """ Load profile from file system and return its data and store in module's memory """
+    def load_profile(self, uuid):
+        profile_path = os.path.join(path.profile_folder, uuid + ".json")
+        self.memory = pref.load_file(profile_path)
+        return(self.memory)
+
+    """ Commit profile from module memory to file system """
+    def save_profile_from_memory(self, uuid):
+        profile_path = os.path.join(path.profile_folder, uuid + '.json')
+        data = pref.load_file(profile_path)
+        pref.save_file(profile_path, data)
 
     """ Set meta data for a particular profile, then save immediately. """
     # If the value should be written to memory, then do not use this function.
@@ -64,7 +83,10 @@ class AppProfiles(object):
     """ Returns the list of profiles in the folder. """
     def list_profiles(self):
         # Including the JSON extension.
-        profiles = os.listdir(path.profile_folder)
+        dir_listing = os.listdir(path.profile_folder)
+        profiles = []
+        for filename in dir_listing:
+            profiles.append(filename.split('.json')[0])
         return(profiles)
 
     """ Load a profile and keyboard. """
@@ -76,7 +98,6 @@ class AppProfiles(object):
 
     """ Load a profile and send it to the keyboard. """
     def send_profile_from_file(self, kbd_obj, uuid):
-        # kbd_obj = Should be the
         profile_path = os.path.join(path.profile_folder, uuid + '.json')
         data = pref.load_file(profile_path)
         self.send_profile_to_keyboard(kbd_obj, data)
