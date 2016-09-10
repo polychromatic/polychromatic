@@ -10,6 +10,7 @@
 
 import os
 import time
+from shutil import copyfile
 
 import polychromatic.preferences as pref
 path = pref.Paths()
@@ -25,6 +26,15 @@ class AppProfiles(object):
 
         # For temporarily storing file changes in memory.
         self.memory = {}
+
+    """ Retain a copy of the profile on file system when making changes """
+    def backup_profile(self, uuid):
+        file_profile = os.path.join(path.profile_folder, uuid + '.json')
+        file_backup  = os.path.join(path.profile_backups, uuid + '.json')
+
+        if os.path.exists(file_backup):
+            os.remove(file_backup)
+        copyfile(file_profile, file_backup)
 
     """ Delete profile from file system """
     def remove_profile(self, uuid):
@@ -65,6 +75,7 @@ class AppProfiles(object):
 
     """ Commit profile from module memory to file system """
     def save_profile_from_memory(self, uuid):
+        self.backup_profile(uuid)
         profile_path = os.path.join(path.profile_folder, uuid + '.json')
         data = pref.load_file(profile_path)
         pref.save_file(profile_path, data)
@@ -75,6 +86,7 @@ class AppProfiles(object):
         # uuid  = string of UUID filename
         # key   = group, e.g. "name"
         # value = what to set, e.g. "Test Application"
+        self.backup_profile(uuid)
         profile_path = os.path.join(path.profile_folder, uuid + '.json')
         newdata = pref.load_file(profile_path)
         newdata[key] = value
