@@ -602,18 +602,19 @@ class Controller(object):
 
         # Sort the profiles A-Z.
         sorted_names = {}
-        for uuid_json in self.profiles.list_profiles():
-            uuid = uuid_json.split(".json")[0]
-            profile_path = os.path.join(path.profile_folder, uuid + ".json")
-            data = pref.load_file(profile_path)
-            human_name = data["name"]
+        for uuid in self.profiles.list_profiles():
+            data = self.profiles.load_profile(str(uuid))
+            try:
+                human_name = data["name"]
+            except:
+                print("Profile UUID corrupt: " + str(uuid))
+                continue
             sorted_names[human_name] = int(uuid)
 
         item_no = 0
         for program in sorted(sorted_names):
             uuid = sorted_names[program]
-            profile_path = os.path.join(path.profile_folder, str(uuid) + ".json")
-            data = pref.load_file(profile_path)
+            data = self.profiles.load_profile(str(uuid))
             item_no += 1
             append_item(str(uuid), data)
 
