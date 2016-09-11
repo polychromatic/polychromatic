@@ -227,7 +227,8 @@ class Controller(object):
         self.secondary_rgb = RGB(0, 0, 255)
         self.current_effect = 'custom'
         self.last_effect = 'unknown'
-        self.open_this_profile = None
+        self.profiles.selected_uuid = None
+        self.profiles.previous_uuid = None
 
         # Set preferred colours
         p_red = pref.get('primary_colors', 'red', 0)
@@ -424,10 +425,13 @@ class Controller(object):
             kb_callback = self.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
 
             # Collect profile details.
-            uuid = self.open_this_profile
+            uuid = self.profiles.selected_uuid
             app.webkit.run_javascript("var selected_profile = '{0}'".format(uuid))
-            profile_name = pref.get(uuid, "name", "", path.profiles)
-            profile_icon = pref.get(uuid, "icon", "", path.profiles)
+            profile_path = os.path.join(path.profile_folder, str(uuid) + ".json")
+            self.profiles.memory = pref.load_file(profile_path)
+            profile_data = self.profiles.memory
+            profile_name = profile_data["name"]
+            profile_icon = profile_data["icon"]
 
             # Set profile title on page
             app.update_page("#profile-name", "html", profile_name)
@@ -441,15 +445,16 @@ class Controller(object):
             kb_callback << "keyboard_obj.set_layout(\"kb-" + self.kb_layout + "\")"
 
             # Load profile into keyboard.
-            profile_name = self.open_this_profile
-            self.profiles.set_active_profile(profile_name)
+            self.profiles.selected_uuid = uuid
             if pref.get('editor', 'live_preview', 'true') == 'true':
-                self.profiles.activate_profile_from_memory()
-            self.profiles.get_active_profile().backup_configuration()
+                self.profiles.send_profile_to_keyboard(self.active_device, profile_data)
 
-            for pos_y, row in enumerate(self.profiles.get_profile(profile_name).get_rows_raw()):
-                for pos_x, rgb in enumerate(row):
-                    js_string = "keyboard_obj.set_key_colour({0},{1},\"#{2:02X}{3:02X}{4:02X}\")".format(pos_y, pos_x, rgb.red, rgb.green, rgb.blue)
+            for row in range(0, 6):
+                for col in range(0, 22):
+                    red = profile_data["rows"][str(row)][col][0]
+                    green = profile_data["rows"][str(row)][col][1]
+                    blue = profile_data["rows"][str(row)][col][2]
+                    js_string = "keyboard_obj.set_key_colour({0},{1},\"#{2:02X}{3:02X}{4:02X}\")".format(row, col, red, green, blue)
                     kb_callback << js_string
 
             # IF BLACKWIDOW ULTIMATE < 2016
@@ -457,11 +462,12 @@ class Controller(object):
             # disable space key and FN
             kb_callback << "keyboard_obj.disable_key(5,7)"
             kb_callback << "keyboard_obj.disable_key(5,12)"
+
             # Hide preview button if live previewing is enabled.
             if pref.get('editor', 'live_preview', 'true') == 'true':
                 kb_callback << '$("#edit-preview").hide();'
 
-            kb_callback << "$(\"#cancel\").attr({onclick: \"cmd('cancel-changes?"+ self.cancel_changes + "?" + profile_name + "')\"})"
+            kb_callback << "$(\"#cancel\").attr({onclick: \"cmd('cancel-changes?"+ self.cancel_changes + "?" + uuid + "')\"})"
 
             js_exec << kb_callback
             js_exec.exec()
@@ -777,15 +783,15 @@ class Controller(object):
         elif command.startswith('cancel-changes'):
             if command.find('?') > -1:
                 command, cancel_type, cancel_args = command.split('?')
-
                 if cancel_type == "new-profile":
                     if pref.get('editor', 'live_switch', 'true') == 'true' or pref.get('editor', 'live_preview', 'true') == 'true':
-                        self.profiles.remove_profile(self.open_this_profile)
-                        self.daemon.set_custom_colour(self.old_profile)
+                        self.profiles.remove_profile(self.profiles.selected_uuid)
+                        if self.profiles.previous_uuid:
+                            self.profiles.send_profile_from_file(self.active_device, self.profiles.previous_uuid)
                 elif cancel_type == "edit-profile":
-                    self.profiles.get_active_profile().restore_configuration()
                     if pref.get('editor', 'live_switch', 'true') == 'true' or pref.get('editor', 'live_preview', 'true') == 'true':
-                        self.daemon.set_custom_colour(self.old_profile)
+                        if self.profiles.previous_uuid:
+                            self.profiles.send_profile_from_file(self.active_device, self.profiles.previous_uuid)
 
                 self.update_page('#cancel', 'attr', '{onclick: \"cmd(\'cancel-changes\')\"}')
             self.show_menu('menu')
@@ -833,13 +839,13 @@ class Controller(object):
 
         ## Profile Editor / Management
         elif command.startswith('profile-edit'):
-            self.open_this_profile = command.split('profile-edit?')[1].replace('%20', ' ')
-            self.old_profile = self.profiles.get_active_profile()
+            self.profiles.selected_uuid = command.split('profile-edit?')[1].replace('%20', ' ')
+            self.profiles.previous_uuid = self.profiles.selected_uuid
             self.cancel_changes = 'edit-profile'
-            if self.open_this_profile is not None:
+            if self.profiles.selected_uuid is not None:
                 self.show_menu('profile_editor')
             else:
-                print('Refusing to open empty filename profile.')
+                print('No profile UUID specified. Nothing to open.')
 
         elif command.startswith('set-key'):
             # Parse position/colour information
@@ -847,29 +853,24 @@ class Controller(object):
             row = int(command.split('?')[1])
             col = int(command.split('?')[2])
             color = command.split('?')[3]
-
             red = int(color.strip('rgb()').split(',')[0])
             green = int(color.strip('rgb()').split(',')[1])
             blue = int(color.strip('rgb()').split(',')[2])
-            rgb = (red, green, blue)
-
-            # Write to memory
-            self.profiles.get_active_profile().set_key_colour(row, col, rgb)
+            self.profiles.memory["rows"][str(row)][col] = (red, green, blue)
 
             # Live preview (if 'live_preview' is enabled in preferences)
             if pref.get('editor', 'live_preview', 'true') == 'true':
-                self.profiles.activate_profile_from_memory()
+                self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
 
         elif command.startswith('clear-key'):
             command = command.replace('%20',' ')
             row = int(command.split('?')[1])
             col = int(command.split('?')[2])
-
-            self.profiles.get_active_profile().reset_key(row, col)
+            self.profiles.memory["rows"][str(row)][col] = (0, 0, 0)
 
             # Live preview (if 'live_preview' is enabled in preferences)
             if pref.get('editor', 'live_preview', 'true') == 'true':
-                self.profiles.activate_profile_from_memory()
+                self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
 
         elif command.startswith('profile-activate'):
             command = command.replace('%20',' ')
@@ -881,7 +882,7 @@ class Controller(object):
             self.webkit.run_javascript('set_cursor("html","normal")')
 
         elif command == 'profile-preview':
-            self.profiles.activate_profile_from_memory()
+            self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
 
         elif command.startswith('profile-del'):
             uuid = command.split('?')[1]
@@ -892,11 +893,10 @@ class Controller(object):
         elif command.startswith('profile-new'):
             profile_name = command.split(';')[1].replace('%20', ' ')
             profile_icon = command.split(';')[2].replace('%20', ' ')
+            self.profiles.previous_uuid = self.profiles.selected_uuid
             uuid = self.profiles.new_profile()
-
+            self.profiles.selected_uuid = uuid
             self.cancel_changes = 'new-profile'
-            self.old_profile = self.profiles.get_active_profile()
-            self.open_this_profile = uuid
             self.profiles.set_metadata(uuid, "name", profile_name)
             if os.path.exists(profile_icon):
                 self.profiles.set_metadata(uuid, "icon", profile_icon)
@@ -909,33 +909,33 @@ class Controller(object):
         elif command.startswith('profile-set-metadata'):
             new_name = command.split(';')[1].replace('%20', ' ')
             new_icon = command.split(';')[2].replace('%20', ' ')
-            uuid = self.open_this_profile
 
-            self.profiles.set_metadata(uuid, "name", new_name)
+            # Determine if icon really exists and fallback if not.
             if os.path.exists(new_icon):
-                self.profiles.set_metadata(uuid, "icon", new_icon)
+                self.profiles.memory["icon"] = new_icon
             else:
                 new_icon = pref.path.get_data_source(__file__) + "/img/profile-default.svg"
-                self.profiles.set_metadata(uuid, "icon", new_icon)
-            restart_tray_applet()
+
+            # New values are saved to profile stored in memory.
+            self.profiles.memory["name"] = new_name
+            self.profiles.memory["icon"] = new_icon
 
         elif command == 'profile-save':
-            profile_name = self.profiles.get_active_profile_name()
-            print('Saving profile "{0}" ...'.format(profile_name))
-            self.profiles.save_profile(profile_name)
-            print('Saved "{0}".'.format(profile_name))
+            uuid = self.profiles.selected_uuid
+            print("Saving profile UUID: " + str(uuid))
+            self.profiles.save_profile_from_memory(uuid)
             self.show_menu('menu')
 
             if pref.get('editor', 'activate_on_save', 'true') == 'true':
-                self.profiles.activate_profile_from_file(self.profiles.get_active_profile_name())
+                self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
 
         elif command.startswith('profile-rename'):
             uuid = command.split('?')[1]
             uuid_css = 'app-' + uuid
 
-            index = pref.load_file(pref.path.profiles)
-            name = pref.get(uuid, 'name', 'Unknown', pref.path.profiles)
-            icon = pref.get(uuid, 'icon', 'Unknown', pref.path.profiles)
+            data = self.profiles.memory
+            name = data["name"]
+            icon = data["icon"]
 
             app.update_page('#dialog-rename-name', 'val', name)
             app.update_page('#dialog-rename-icon', 'val', icon)

@@ -59,7 +59,7 @@ class AppProfiles(object):
             "rows": {}
         }
 
-        for row in range(0, 5):
+        for row in range(0, 6):
             template["rows"][str(row)] = []
             for col in range(0, 22):
                 template["rows"][str(row)].append([0, 0, 0])
@@ -77,7 +77,7 @@ class AppProfiles(object):
     def save_profile_from_memory(self, uuid):
         self.backup_profile(uuid)
         profile_path = os.path.join(path.profile_folder, uuid + '.json')
-        data = pref.load_file(profile_path)
+        data = self.memory
         pref.save_file(profile_path, data)
 
     """ Set meta data for a particular profile, then save immediately. """
