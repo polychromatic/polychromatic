@@ -65,14 +65,14 @@
           <div id="fx-breath" class="effect-item" onclick="setfx('breath', 'random'); $('#breath-random').prop('checked',true);">
             <img src="../img/effects/breath.svg"/> <label id="str-breath"></label>
           </div>
-          <div id="fx-ripple" class="effect-item" onclick="setfx('ripple', 'single'); $('#ripple-single').prop('checked',true);">
+          <div id="fx-ripple" class="effect-item keyboard-only" onclick="setfx('ripple', 'single'); $('#ripple-single').prop('checked',true);">
             <img src="../img/effects/ripple.svg"/> <label id="str-ripple"></label>
           </div>
           <div id="fx-static" class="effect-item" onclick="setfx('static', '')">
             <img src="../img/effects/static.svg"/> <label id="str-static"></label>
           </div>
         </div>
-        <hr>
+        <br>
         <div id="rgb_primary" hidden>
           <table>
             <tr>
@@ -151,8 +151,8 @@
         </table>
       </div>
       <div class="right">
-        <h4 id="str-modes"></h4>
-        <table>
+        <h4 id="str-modes" class="keyboard-only" hidden></h4>
+        <table class="keyboard-only" hidden>
           <tr>
             <td><img src="../img/states/game-mode.svg" width="24px" height="24px"/></td>
             <td id="str-game-mode"></td>
@@ -170,17 +170,19 @@
           </tr>
         </table>
 
-        <h4 id="str-profiles"></h4>
-        <div id="app-profiles">
-            <!-- Generated list via Python -->
-        </div>
-        <div class="left" style="width:auto">
-            <a id="profiles-activate" class="btn btn-disabled" onclick="profile_activate()"><span class="fa fa-check"></span> </a>
-        </div>
-        <div class="right" style="width:auto;text-align:right">
-            <a id="profiles-new" class="btn" onclick="new_profile_dialog_open()"><span class="fa fa-plus"></span>&nbsp;</a>
-            <a id="profiles-edit" class="btn btn-dim btn-disabled" onclick="profile_edit()"><span class="fa fa-pencil"></span>&nbsp;</a>
-            <a id="profiles-delete" class="btn btn-dim btn-serious btn-disabled" onclick="del_profile_dialog_open()"><span class="fa fa-trash"></span>&nbsp;</a>
+        <div class="keyboard-only" hidden>
+          <h4 id="str-profiles"></h4>
+          <div id="app-profiles">
+              <!-- Generated list via Python -->
+          </div>
+          <div class="left" style="width:auto">
+              <a id="profiles-activate" class="btn btn-disabled" onclick="profile_activate()"><span class="fa fa-check"></span> </a>
+          </div>
+          <div class="right" style="width:auto;text-align:right">
+              <a id="profiles-new" class="btn" onclick="new_profile_dialog_open()"><span class="fa fa-plus"></span>&nbsp;</a>
+              <a id="profiles-edit" class="btn btn-dim btn-disabled" onclick="profile_edit()"><span class="fa fa-pencil"></span>&nbsp;</a>
+              <a id="profiles-delete" class="btn btn-dim btn-serious btn-disabled" onclick="del_profile_dialog_open()"><span class="fa fa-trash"></span>&nbsp;</a>
+          </div>
         </div>
       </div>
     </div>

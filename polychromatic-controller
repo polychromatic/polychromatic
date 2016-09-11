@@ -395,6 +395,9 @@ class Controller(object):
             self.update_page('#rgb_primary_preview', 'css', 'background-color', 'rgba(' + str(p_red) + ',' + str(p_green) + ',' + str(p_blue) + ',1.0)')
             self.update_page('#rgb_secondary_preview', 'css', 'background-color', 'rgba(' + str(s_red) + ',' + str(s_green) + ',' + str(s_blue) + ',1.0)')
 
+            # Hide unsupported options for active device.
+            self.update_device_supported_features()
+
         elif self.current_page == 'profile_editor':
             # Push strings
             trans.push('#str-color', _("Color:"))
@@ -1051,14 +1054,17 @@ class Controller(object):
             app.update_page("#" + selected_serial, "addClass", "active")
             stdout.vprint("Selected: {0} [{1}]".format(selected_device.name, selected_serial))
 
+            self.update_device_supported_features()
+
         elif command == 'device-refresh':
-            print("Refreshing device list...")
+            stdout.vprint("Refreshing device list...")
             self.devices = self.get_devices()
             self.refresh_device_list()
             if len(self.devices) == 0:
                 self.active_device = None
             else:
                 self.active_device = self.devices[0]
+            self.update_device_supported_features()
 
             for device in self.devices:
                 stdout.vprint("Found: {0} [{1}]".format(device.name, device.serial))
@@ -1092,6 +1098,17 @@ class Controller(object):
                 htmlbuffer = "<a id='{0}' class='device' onclick='cmd(\"device-select?{0}\")'><div><img src='../img/states/{1}/{2}.svg'> <span>{3}</span></div></a>".format(serial, state, formfactor, name)
                 app.update_page("#device-tabs", "append", htmlbuffer)
         app.update_page('#' + selected_ui, "addClass", "active")
+
+    def update_device_supported_features(self):
+        # Hide features not supported by this type of device
+        device_type = self.active_device.type
+        if device_type == "firefly":
+            device_type = "mousemat"
+
+        if device_type == "keyboard":
+            self.update_page(".keyboard-only", "fadeIn", "fast")
+        else:
+            self.update_page(".keyboard-only", "fadeOut", "fast")
 
 
 class Dialogues(object):
