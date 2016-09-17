@@ -580,6 +580,13 @@ class Controller(object):
             self.update_page('#rgb_start_primary_preview', 'css', 'background-color', 'rgba(' + str(self.start_p_red) + ',' + str(self.start_p_green) + ',' + str(self.start_p_blue) + ',1.0)')
             self.update_page('#rgb_start_secondary_preview', 'css', 'background-color', 'rgba(' + str(self.start_s_red) + ',' + str(self.start_s_green) + ',' + str(self.start_s_blue) + ',1.0)')
 
+        elif self.current_page == 'error':
+            self.update_page("#close-window", "html", _("Quit"))
+            self.update_page("#restart-app", "html", _("Restart Application"))
+            self.update_page("#error-icon", "attr", "src", "../img/error/" + self.error_icon + ".png")
+            self.update_page("#error-title", "html", self.error_title)
+            self.update_page("#error-details", "html", self.error_message)
+
         else:
             stdout.vvprint('No post-actions for this page.')
 
@@ -1033,6 +1040,9 @@ class Controller(object):
         elif command == 'restart-tray':
             restart_tray_applet()
 
+        elif command == 'reset-app':
+            os.execv(__file__, sys.argv)
+
         ## Multi Device Support
         elif command.startswith('device-select?'):
             selected_serial = command.split('?')[1]
@@ -1116,6 +1126,16 @@ class Controller(object):
             self.update_page(".keyboard-only", "fadeOut", "fast")
 
         app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "lime"))
+
+    """ When things go horribly wrong. """
+    def show_error_page(self, severity, icon, title, message):
+        # severity  =   'normal', 'warning', 'serious'
+        # icon      =   Filename as seen in ../img/error/
+        # title / message = Strings to display.
+        self.error_title = title
+        self.error_icon = icon
+        self.error_message = message
+        self.show_menu("error")
 
 
 class Dialogues(object):

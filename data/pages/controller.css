@@ -741,3 +741,38 @@ input[type='checkbox']:checked {
 .content.with-tabs {
     margin-top: 28px;
 }
+
+/************************
+   Error Page
+*************************/
+#error-page > img {
+    position: absolute;
+    left: 0; right: 0;
+    margin: auto;
+    width: 150px;
+    height: 150px;
+}
+
+#error-page > h2 {
+    position: absolute;
+    left: 0; right: 0;
+    margin: auto;
+    text-align: center;
+    top: 170px;
+}
+
+#error-page > h2.serious {
+    color: red;
+}
+
+#error-page > h2.warning {
+    color: yellow;
+}
+
+#error-page > p {
+    position: absolute;
+    left: 0; right: 0;
+    margin: auto;
+    text-align: center;
+    top: 220px;
+}
