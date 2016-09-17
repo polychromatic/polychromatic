@@ -71,7 +71,7 @@ class Translations(object):
 
 class AppView(WebKit2.WebView):
     """ Initialise WebKit2 """
-    def __init__(self):
+    def __init__(self, startpage):
         # Create WebKit Container
         webkit = WebKit2
         webkit.WebView.__init__(self)
@@ -90,7 +90,7 @@ class AppView(WebKit2.WebView):
 
         # Load the starting page
         default_page = 'menu'
-        self.load_uri('file://' + os.path.join(data_source, 'pages/menu.html'))
+        self.load_uri('file://' + os.path.join(data_source, 'pages/' + startpage + '.html'))
 
     """ Callback: Title changed """
     def title_changed_cb(self, view, frame):
@@ -166,11 +166,19 @@ class AppView(WebKit2.WebView):
 class Controller(object):
     """ Initialise the application """
     def __init__(self):
+        # Set up variables
+        self.current_page = 'menu'
+        self.kb_layout = get_keyboard_layout()
+        self.reactive_speed = 1
+        self.primary_rgb = RGB(0, 255, 0)
+        self.secondary_rgb = RGB(0, 0, 255)
+        self.current_effect = 'custom'
+        self.last_effect = 'unknown'
+
         # Set up the application
         setproctitle.setproctitle('polychromatic-controller')
-        self.webkit = AppView()
+        self.webkit = AppView(self.current_page)
         self.build_app()
-        self.current_page = 'menu'
 
     """ Assemble the application """
     def build_app(self):
@@ -218,15 +226,6 @@ class Controller(object):
         # Initialise Profiles
         stdout.vprint('Initialising Polychromatic Profiles...')
         self.profiles = polychromatic.profiles.AppProfiles(rclient)
-
-        # Set up variables
-        self.current_page = 'menu'
-        self.kb_layout = get_keyboard_layout()
-        self.reactive_speed = 1
-        self.primary_rgb = RGB(0, 255, 0)
-        self.secondary_rgb = RGB(0, 0, 255)
-        self.current_effect = 'custom'
-        self.last_effect = 'unknown'
         self.profiles.selected_uuid = None
         self.profiles.previous_uuid = None
 
