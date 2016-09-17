@@ -183,6 +183,16 @@ class Controller(object):
         self.webkit = AppView(self.current_page)
         self.build_app()
 
+        # Display an upgrade message if using the old daemon.
+        if os.path.exists("/usr/lib/python3/dist-packages/razer/inteface/keyboard.py") or os.path.exists(os.path.join(sys.path[-1], "/razer/inteface/keyboard.py")):
+            self.show_error_page(
+                "normal", "upgrade", _("Daemon Upgrade Required"),
+                _("The Razer 'Chroma' driver and daemon currently installed on your system is no longer supported by Polychromatic.") + "<br><br>" +
+                _("Please remove the current Razer driver/daemon from your system, then install the new one from: ") +
+                '<a onclick="cmd(\'web?http://terrycain.github.io/razer-drivers/\')">http://terrycain.github.io/razer-drivers/</a>' +
+                '<br><br><a onclick="cmd(\'web?https://github.com/lah7/polychromatic/releases/tag/v0.3.0\')">' +
+                _("For more information, see the Release Notes for v0.3.0.") + '</a>')
+
     """ Assemble the application """
     def build_app(self):
         # Create window
