@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Polychromatic. If not, see <http://www.gnu.org/licenses/>.
 #
-# Copyright (C) 2016 Luke Horwell <lukehorwell37+code@gmail.com>
+# Copyright (C) 2016 Luke Horwell <luke@ubuntu-mate.org>
 #
 ############################################################################
 # This script manually installs the Polychromatic and Python

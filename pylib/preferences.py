@@ -5,7 +5,7 @@
     Polychromatic's applications.
 """
 # Polychromatic is licensed under the GPLv2.
-# Copyright (C) 2015-2016 Luke Horwell <lukehorwell37+code@gmail.com>
+# Copyright (C) 2015-2016 Luke Horwell <luke@ubuntu-mate.org>
 
 import os
 import json
