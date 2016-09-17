@@ -295,10 +295,6 @@ class Controller(object):
     def show_menu(self, page):
         self.current_page = page
 
-        # Hide all footer buttons
-        for element in ['retry', 'edit-save', 'edit-preview', 'cancel', 'close-window', 'pref-open', 'pref-save']:
-            self.update_page('#'+element, 'hide')
-
         page_path = os.path.join(data_source, 'pages', page + '.html')
         if os.path.exists(page_path):
             self.webkit.load_uri('file://' + page_path)
@@ -814,7 +810,6 @@ class Controller(object):
             self.show_menu('preferences')
 
         elif command.startswith('web'):
-            print('web')
             target = command.split('web?')[1]
             os.system('xdg-open "' + target + '"')
 
