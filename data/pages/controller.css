@@ -89,12 +89,38 @@ hr {
     width: 100%;
     height: 40px;
     padding: 8px;
-    background-color: #121212;
-    background-image: url('../img/header.jpg');
+    background-image: url('../img/header/generic.jpg');
     background-repeat: no-repeat;
-    background-position: middle right;
+    background-position: top left;
     font-weight: bold;
     border-bottom: 2px solid #404040;
+}
+
+.header.is-dynamic {
+    background-image: none;
+    border-bottom: 0;
+}
+
+.header > #dynamic {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    background-position: left -2px;
+    z-index: -10;
+    transition: all 0.5s ease-in-out;
+}
+
+.header > #dynamic.keyboard {
+    background-image: url('../img/header/keyboard.png');
+}
+
+.header > #dynamic.mouse {
+    background-image: url('../img/header/mouse.png');
+}
+
+.header > #dynamic.mousemat {
+    background-image: url('../img/header/mousemat.png');
 }
 
 .header h3 {
@@ -659,7 +685,7 @@ input[type='checkbox']:checked {
     left: 0;
     width: 100%;
     height: 32px;
-    background-color: #121212;
+    background-color: rgba(18,18,18,0.8);
     border-bottom: 2px solid #404040;
     margin-left: 4px;
     margin-right: 4px;
@@ -686,7 +712,6 @@ input[type='checkbox']:checked {
 }
 
 #device-tabs > a.active > div {
-    background-color: #222222;
     color: lime;
     border-bottom: 2px solid lime;
     -webkit-filter: grayscale(0);

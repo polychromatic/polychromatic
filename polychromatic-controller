@@ -1046,6 +1046,7 @@ class Controller(object):
             if selected_device:
                 self.active_device = selected_device
                 self.active_ui_device = selected_device.serial
+                formfactor = selected_device.type
             else:
                 print("Could not locate device with serial: " + selected_serial)
                 return
@@ -1055,6 +1056,11 @@ class Controller(object):
             stdout.vprint("Selected: {0} [{1}]".format(selected_device.name, selected_serial))
 
             self.update_device_supported_features()
+
+            # Change the header image
+            if formfactor == "firefly":
+                formfactor = "mousemat"
+            app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(formfactor, "lime"))
 
         elif command == 'device-refresh':
             stdout.vprint("Refreshing device list...")
@@ -1109,6 +1115,8 @@ class Controller(object):
             self.update_page(".keyboard-only", "fadeIn", "fast")
         else:
             self.update_page(".keyboard-only", "fadeOut", "fast")
+
+        app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "lime"))
 
 
 class Dialogues(object):

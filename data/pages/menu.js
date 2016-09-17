@@ -192,3 +192,15 @@ function setfx(type, parms) {
     $("#fx-" + type).addClass("selected");
     cmd(command);
 }
+
+/* Fade the background of the header when switching devices */
+function changeHeaderImg(image, color) {
+    $("#dynamic").css("background-color", "black");
+    setTimeout(function(){
+        $("#dynamic").removeClass();
+        $("#dynamic").addClass(image);
+    }, 250);
+    setTimeout(function(){
+        $("#dynamic").css("background-color", color);
+    }, 500);
+}
