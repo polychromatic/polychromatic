@@ -174,8 +174,10 @@ $(document).ready(function() {
     // In dialogues, keep preview boxes updated with text box contents.
     $('#dialog-new-name').bind('input', function() {
         dialog_text_preview('dialog-new-name')
+        dialog_icon_preview('dialog-new-icon')
     });
     $('#dialog-new-icon').bind('input', function() {
+        dialog_text_preview('dialog-new-name')
         dialog_icon_preview('dialog-new-icon')
     });
 });
