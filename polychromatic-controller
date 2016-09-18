@@ -179,6 +179,12 @@ class Controller(object):
         self.current_effect = 'custom'
         self.last_effect = 'unknown'
 
+        # Is this application installed in /usr/share or ran from repository?
+        if os.path.exists(os.path.join(path.get_data_source(__file__) + "/../install/update.sh")):
+            self.app_installed = False
+        else:
+            self.app_installed = True
+
         # Prepare devices
         try:
             self.devman = rclient.DeviceManager()
@@ -496,9 +502,10 @@ class Controller(object):
             # Push strings
             trans.push('#page-header', _("Preferences"))
             trans.push('#str-about', _("About"))
-            trans.push('#str-version', _("Version:"))
-            trans.push('#str-version-string', version)
-            trans.push('#str-check-updates', _("Check for Updates"))
+            trans.push('#str-version-app', _("Application Version:"))
+            trans.push('#str-version-config', _("Configuration Version:"))
+            trans.push('#update-button', _("Check for Updates"))
+            trans.push('#changelog-button', _("View Change Log"))
             trans.push('#str-app-profiles', _("Application Profiles"))
             trans.push('#str-live-switch', _("Enable live switching"), True)
             trans.push('#str-live-switch-help', _("Activate profiles instantly as soon as you click on them."))
@@ -542,9 +549,15 @@ class Controller(object):
             trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
             trans.push_var('no_change', _("No Change"))
 
-            # Hide the update button if installed outside of repository (e.g. packages)
-            if not os.path.exists(os.path.join(path.get_data_source(__file__) + "/../install/update.sh")):
+            # Append version information
+            if self.app_installed:
+                # Hide the option to update if the app is running globally.
+                self.update_page('#str-version-app-string', "html", version)
                 self.update_page("#update-button", "hide")
+            else:
+                self.update_page('#str-version-app-string', "html", version + "-dev")
+
+            self.update_page('#str-version-config-string', "html", str(pref.version))
 
             # Populate start-up profiles list.
             self.refresh_profiles_list()
