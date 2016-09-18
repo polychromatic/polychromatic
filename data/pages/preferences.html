@@ -28,9 +28,26 @@
   <div class="content" hidden>
     <!-- Preferences Menu -->
     <div class="menu_area">
-      <p id="str-intro"></p>
+      <h3 id="str-about"></h3>
+      <table>
+        <tr>
+          <td><img src="../img/about.svg"/></td>
+        </tr>
+        <tr>
+          <td>
+            <span id="str-version"></span> <code id="str-version-string"></code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a id="update-button" class="btn" onclick="cmd('update-check')"></a>
+            <a class="btn" onclick="cmd('web?https://github.com/lah7/polychromatic/releases')"></a>
+          </td>
+        </tr>
+      </table>
       <br>
-      <h3 id="str-app-settings"></h3>
+
+      <h3 id="str-app-profiles"></h3>
       <table>
         <tr>
           <td><label id="str-live-switch" class="pref-label"><input type="checkbox" id="live_switch" onclick="set_pref_chkstate('editor','live_switch',this)"/> </label></td>
@@ -48,7 +65,7 @@
           <td><p id="str-scaling-help"></p></td>
         </tr>
       </table>
-      <hr>
+      <br>
 
       <h3 id="str-tray-applet"></h3>
       <table>
@@ -92,7 +109,7 @@
           </td>
         </tr>
       </table>
-      <hr>
+      <br>
 
     <h3 id="str-preferred-cols"></h3>
     <table>
@@ -119,7 +136,7 @@
         </td>
       </tr>
     </table>
-    <hr>
+    <br>
 
     <h3 id="str-startup"></h3>
     <p id="str-startup-hint"></p>
@@ -172,7 +189,7 @@
           </td>
         </tr>
       </table>
-      <hr>
+      <br>
 
     <h3 id="str-advanced"></h3>
     <a id="str-reset-pref" class="btn" onclick="cmd('pref-reset-conf')"><span class="fa fa-delete"></span> </a>

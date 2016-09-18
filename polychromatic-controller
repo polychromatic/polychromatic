@@ -40,6 +40,7 @@ import polychromatic.preferences as pref
 path = pref.Paths()
 import polychromatic.profiles
 
+version = "0.3.0"
 
 class Translations(object):
     def __init__(self):
@@ -494,8 +495,11 @@ class Controller(object):
         elif self.current_page == 'preferences':
             # Push strings
             trans.push('#page-header', _("Preferences"))
-            trans.push('#str-intro', _("Change the application preferences for managing your Razer devices."))
-            trans.push('#str-app-settings', _("Application Settings"))
+            trans.push('#str-about', _("About"))
+            trans.push('#str-version', _("Version:"))
+            trans.push('#str-version-string', version)
+            trans.push('#str-check-updates', _("Check for Updates"))
+            trans.push('#str-app-profiles', _("Application Profiles"))
             trans.push('#str-live-switch', _("Enable live switching"), True)
             trans.push('#str-live-switch-help', _("Activate profiles instantly as soon as you click on them."))
             trans.push('#str-live-preview', _("Enable live preview"), True)
@@ -537,6 +541,10 @@ class Controller(object):
 
             trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
             trans.push_var('no_change', _("No Change"))
+
+            # Hide the update button if installed outside of repository (e.g. packages)
+            if not os.path.exists(os.path.join(path.get_data_source(__file__) + "/../install/update.sh")):
+                self.update_page("#update-button", "hide")
 
             # Populate start-up profiles list.
             self.refresh_profiles_list()
@@ -1059,6 +1067,10 @@ class Controller(object):
 
         elif command == 'reset-app':
             os.execv(__file__, sys.argv)
+
+        elif command == 'update-check':
+            update_script = os.path.join(pref.Paths.get_data_source(__file__) + "/../install/update.sh")
+            background_process('x-terminal-emulator -e "{0}"'.format(update_script), shell=True)
 
         ## Multi Device Support
         elif command.startswith('device-select?'):
