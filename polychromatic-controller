@@ -594,6 +594,7 @@ class Controller(object):
             self.update_page("#restart-app", "html", _("Restart Application"))
             self.update_page("#error-icon", "attr", "src", "../img/error/" + self.error_icon + ".png")
             self.update_page("#error-title", "html", self.error_title)
+            self.update_page("#error-title", "addClass", self.error_class)
             self.update_page("#error-details", "html", self.error_message)
 
         else:
@@ -1143,6 +1144,7 @@ class Controller(object):
         self.error_title = title
         self.error_icon = icon
         self.error_message = message
+        self.error_class = severity
         self.show_menu("error")
 
 
