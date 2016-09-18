@@ -1101,6 +1101,14 @@ class Controller(object):
         found_devices = []
         for device in self.devman.devices:
             found_devices.append(device)
+
+        # Show an error if no devices were returned by the daemon.
+        if len(found_devices) == 0:
+            self.show_error_page(
+                "warning", "nodevice", _("No Devices Found"),
+                _("Please check your Razer device is connected and that the daemon supports your device, then try again.") +
+                '<br><br><a onclick="cmd(\'web?https://github.com/terrycain/razer-drivers#device-support\')>"' + _("Check Device Support") + '</a>')
+
         return(found_devices)
 
     def refresh_device_list(self):
