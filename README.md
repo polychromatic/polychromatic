@@ -2,17 +2,14 @@
 
 A graphical front end to manage your Razer peripherals on GNU/Linux.
 
-Powered by the [Chroma Linux Drivers](http://terrycain.github.io/razer-drivers/) daemon.
-
-
 ## Features
 
 ### Controller
 
 ![Screenshot of Controller](.readme/controller.jpg)
 
-An application that allows you to configure Razer peripherals supported by the
-[Razer drivers for Linux](http://terrycain.github.io/razer-drivers/) project.
+An application that allows you to configure Razer peripherals that uses the
+[Razer Drivers for Linux](http://terrycain.github.io/razer-drivers/) daemon.
 
 Also includes application profile support and customisation options:
 
@@ -28,17 +25,11 @@ Also includes application profile support and customisation options:
 Quickly set effects, brightness, keyboard features or load saved profiles
 from your desktop's indicator or notification area.
 
-## Warning!
-Polychromatic is currently in the progress of migrating to the new daemon.
-If you desire stability, please see the [stable branch](https://github.com/lah7/polychromatic/tree/stable) and use the old daemon and driver for now.
-
-PPAs and packages still depend on the **old version** of the daemon. Please manually install this application if you're willing to use the new daemon as described below.
-
 
 ## Driver Installation
 
 ### ![Chroma Drivers](.readme/chroma-drivers.png) Razer Drivers for Linux
-This application complements the [razer-drivers](http://terrycain.github.io/razer-drivers/) project.
+This application requires the [razer-drivers](http://terrycain.github.io/razer-drivers/) driver and daemon.
 
 Please see the [project page](http://terrycain.github.io/razer-drivers/#download) for installation for your distribution.
 
@@ -112,7 +103,8 @@ To update your installation at a later date:
 ### Dependencies
 
 **All:**
-* [Razer Python Modules](https://github.com/terrycain/razer-drivers)
+* [python3-razer](https://github.com/terrycain/razer-drivers)
+* [razer-daemon](https://github.com/terrycain/razer-drivers)
 
 **Arch:**
 * [webkitgtk](https://www.archlinux.org/packages/extra/x86_64/webkitgtk/)
@@ -127,7 +119,16 @@ To update your installation at a later date:
 * [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1)
 
 
+### Something not working?
+
+* Check that the driver and daemon are [properly installed](https://github.com/terrycain/razer-drivers#installation) for your distribution.
+* Check that your [device has daemon support](https://github.com/terrycain/razer-drivers#device-support).
+
+If it's a problem with Polychromatic, [please raise an issue](https://github.com/lah7/polychromatic/issues/new).
+
+
 ### Translations
+
 If you'd like to translate this application, take a look
-[at this wiki page](https://github.com/lah7/polychromatic/wiki/How-to-translate-the-application.).
+[at this wiki page](https://github.com/lah7/polychromatic/wiki/How-to-translate-the-application).
 
