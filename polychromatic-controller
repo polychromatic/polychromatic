@@ -744,7 +744,9 @@ class Controller(object):
                 # Fade in desired options for this effect.
                 for element in enabled_options:
                     self.webkit.run_javascript("setTimeout(function(){ $('#" + element + "').fadeIn('fast');}, 200)")
+
             self.last_effect = self.current_effect
+            self.update_background_header()
 
         elif command == 'enable-marco-keys':
             self.active_device.macro.enable_macros()
@@ -930,6 +932,8 @@ class Controller(object):
             self.update_page('#custom', 'html', 'Profile - ' + uuid)
             self.update_page('#custom', 'prop', 'checked', 'true')
             self.webkit.run_javascript('set_cursor("html","normal")')
+            self.current_effect = 'custom'
+            self.update_background_header()
 
         elif command == 'profile-preview':
             self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
