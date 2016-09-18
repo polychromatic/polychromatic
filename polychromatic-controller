@@ -1181,6 +1181,8 @@ class Controller(object):
 
         if self.current_effect == "spectrum":
             app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "spectrum"))
+        elif self.current_effect == "wave":
+            app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "wave"))
         else:
             rgba = "rgba({0},{1},{2},1)".format(str(self.primary_rgb_values[0]), str(self.primary_rgb_values[1]), str(self.primary_rgb_values[2]))
             app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, rgba))
