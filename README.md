@@ -119,15 +119,16 @@ To update your installation at a later date:
 * [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1)
 
 
-### Something not working?
+## Something not working?
 
 * Check that the driver and daemon are [properly installed](https://github.com/terrycain/razer-drivers#installation) for your distribution.
 * Check that your [device has daemon support](https://github.com/terrycain/razer-drivers#device-support).
+* For DBUS, daemon or driver bugs, [see if an issue](https://github.com/terrycain/razer-drivers/issues) has been raised on the [razer-drivers repository](https://github.com/terrycain/razer-drivers), otherwise [please create a new issue there](https://github.com/terrycain/razer-drivers/issues/new).
 
-If it's a problem with Polychromatic, [please raise an issue](https://github.com/lah7/polychromatic/issues/new).
+For visual or functional problems with Polychromatic, [please raise an issue here instead](https://github.com/lah7/polychromatic/issues/new).
 
 
-### Translations
+## Translations
 
 If you'd like to translate this application, take a look
 [at this wiki page](https://github.com/lah7/polychromatic/wiki/How-to-translate-the-application).
