@@ -141,6 +141,24 @@ function choose_app_launcher_close() {
 
 
 /**
+ * Dialogue box for quick help documentation.
+ */
+function help_dialog_open() {
+    $('#dialog-help').addClass('in');
+    $('#dialog-help').show();
+    $('#overlay').fadeIn('fast');
+    $('#content').addClass('blur');
+}
+
+function help_dialog_close() {
+    $('#dialog-help').addClass('out');
+    setTimeout(function(){ $('#dialog-help').removeClass('out').removeClass('in').hide() }, 250);
+    $('#overlay').fadeOut('fast');
+    $('#content').removeClass('blur');
+}
+
+
+/**
  * Edit profile.
  */
 function profile_edit() {

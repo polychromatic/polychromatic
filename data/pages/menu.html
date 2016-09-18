@@ -166,7 +166,7 @@
             <td><img src="../img/states/macro-keys.svg" width="24px" height="24px"/></td>
             <td id="str-macro-keys"></td>
             <td><a id="macro-keys-enable" class="btn" onclick="cmd('enable-marco-keys')"></a></td>
-            <td><p id="macro-tip"></p></td>
+            <td><a class="btn str-help" onclick="help_dialog_open()"></a></td>
           </tr>
         </table>
 
@@ -238,6 +238,16 @@
       <hr>
       <a id="dialog-applauncher-revert" class="btn" onclick="choose_app_launcher_close()"></a>
       <a id="dialog-applauncher-ok" class="btn" onclick="choose_app_launcher_close(); dialog_text_preview('dialog-new-name'); dialog_icon_preview('dialog-new-icon')"></a>
+    </div>
+  </div>
+
+  <div id="dialog-help" class="dialog" hidden>
+    <h3 id="dialog-help-title"></h3>
+    <h5 id="dialog-help-subtitle"></h5>
+    <p id="dialog-help-body"></p>
+    <div class="dialog-buttons">
+      <hr>
+      <a id="dialog-help-close" class="btn" onclick="help_dialog_close()"></a>
     </div>
   </div>
 

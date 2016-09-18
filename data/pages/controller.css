@@ -408,6 +408,11 @@ input[type="radio"] {
     z-index: 11;
 }
 
+#dialog-help {
+    width: 60%;
+    height: 45%;
+}
+
 /* Dialog Animations */
 .dialog.in {
     -webkit-animation-name: dialog-in;
@@ -840,4 +845,29 @@ input[type='checkbox']:checked {
 
 #error-page > p > code {
     color: lime;
+}
+
+/************************
+   In-line Help Icons
+*************************/
+.macro-key {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-image: url('../img/states/macro-keys.svg');
+    background-repeat: none;
+    background-position: center;
+    -webkit-filter: grayscale(1);
+    vertical-align: middle;
+}
+
+.game-mode {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-image: url('../img/states/game-mode.svg');
+    background-repeat: none;
+    background-position: center;
+    -webkit-filter: grayscale(1);
+    vertical-align: middle;
 }
