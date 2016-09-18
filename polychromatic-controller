@@ -814,6 +814,8 @@ class Controller(object):
                 elif self.current_effect == 'ripple?single':
                     self.active_device.fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
 
+            self.update_background_header()
+
         ## Cancel to main menu.
         ## '?xxxx' may specify changes to also make when leaving application profile editor.
         elif command.startswith('cancel-changes'):
@@ -1093,12 +1095,8 @@ class Controller(object):
             app.update_page("#" + selected_serial, "addClass", "active")
             stdout.vprint("Selected: {0} [{1}]".format(selected_device.name, selected_serial))
 
-            self.update_device_supported_features()
-
             # Change the header image
-            if formfactor == "firefly":
-                formfactor = "mousemat"
-            app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(formfactor, "lime"))
+            self.update_device_supported_features()
 
         elif command == 'device-refresh':
             stdout.vprint("Refreshing device list...")
@@ -1154,15 +1152,22 @@ class Controller(object):
     def update_device_supported_features(self):
         # Hide features not supported by this type of device
         device_type = self.active_device.type
-        if device_type == "firefly":
-            device_type = "mousemat"
-
         if device_type == "keyboard":
             self.update_page(".keyboard-only", "fadeIn", "fast")
         else:
             self.update_page(".keyboard-only", "fadeOut", "fast")
+        self.update_background_header()
 
-        app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "lime"))
+    def update_background_header(self):
+        if not self.current_page == "menu":
+            return
+
+        device_type = self.active_device.type
+        if device_type == "firefly":
+            device_type = "mousemat"
+
+        rgba = "rgba({0},{1},{2},1)".format(str(self.primary_rgb_values[0]), str(self.primary_rgb_values[1]), str(self.primary_rgb_values[2]))
+        app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, rgba))
 
     """ When things go horribly wrong. """
     def show_error_page(self, severity, icon, title, message):
