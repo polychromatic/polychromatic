@@ -776,3 +776,7 @@ input[type='checkbox']:checked {
     text-align: center;
     top: 220px;
 }
+
+#error-page > p > code {
+    color: lime;
+}

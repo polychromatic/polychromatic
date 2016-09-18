@@ -178,6 +178,12 @@ class Controller(object):
         self.current_effect = 'custom'
         self.last_effect = 'unknown'
 
+        # Prepare devices
+        try:
+            self.devman = rclient.DeviceManager()
+        except rclient.DaemonNotFound:
+            self.devman = None
+
         # Set up the application
         setproctitle.setproctitle('polychromatic-controller')
         self.webkit = AppView(self.current_page)
@@ -192,6 +198,15 @@ class Controller(object):
                 '<a onclick="cmd(\'web?http://terrycain.github.io/razer-drivers/\')">http://terrycain.github.io/razer-drivers/</a>' +
                 '<br><br><a onclick="cmd(\'web?https://github.com/lah7/polychromatic/releases/tag/v0.3.0\')">' +
                 _("For more information, see the Release Notes for v0.3.0.") + '</a>')
+
+        # Display an error message if the daemon is not present on the system.
+        if not self.devman:
+            print("Could not connect to the daemon's device manager!")
+            self.show_error_page(
+                "serious", "generic", _("Daemon Not Running"),
+                _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running.") + "<br><br>" +
+                _("Try starting the daemon from the terminal:") +
+                '<br><code>razer-service</code>')
 
     """ Assemble the application """
     def build_app(self):
@@ -256,22 +271,15 @@ class Controller(object):
         self.secondary_rgb_values = [s_red, s_green, s_blue]
         self.secondary_rgb = RGB(s_red, s_green, s_blue)
 
-        # Set up the daemon
-        try:
-            self.devman = rclient.DeviceManager()
-        except rclient.DaemonNotFound:
-            w.hide()
-            print("\n\nThe daemon doesn't seem to be running!\n\n")
-            Dialogues.fatal_error( _("The Razer daemon could not be found. Please start it up from the terminal and try again:") + "\n\n$ razer-service", True)
-
         # Prepare multiple device support
-        self.devices = self.get_devices()
-        if len(self.devices) == 0:
-            self.active_device = None
-            self.active_ui_device = None
-        else:
-            self.active_device = self.devices[0]
-            self.active_ui_device = self.devices[0].serial
+        if self.devman:
+            self.devices = self.get_devices()
+            if len(self.devices) == 0:
+                self.active_device = None
+                self.active_ui_device = None
+            else:
+                self.active_device = self.devices[0]
+                self.active_ui_device = self.devices[0].serial
 
         # Store as class variables for use later.
         self.window = w
