@@ -1,3 +1,21 @@
+polychromatic (0.3.0-xenial) xenial; urgency=low
+
+  * Migrate to the new daemon.
+  * Implement multi-device support.
+  * Add ripple effects.
+  * Hide features unsupported to selected device.
+  * Upgrade configuration to version 4.
+    * Switches to JSON profile format.
+    * Drops centralised index method.
+  * Show graphical error messages.
+  * Fix broken open folder button.
+  * Add icons to effects list.
+  * New "dynamic" headings.
+  * New tray applet icons and string updates.
+  * Internal code tweaks and improvements.
+
+ -- Luke Horwell <luke@ubuntu-mate.org>  Sun, 18 Sep 2016 09:51:32 +0100
+
 polychromatic (0.2.3-xenial) xenial; urgency=low
 
   * Add autostart entry.
