@@ -198,11 +198,16 @@ function setfx(type, parms) {
 /* Fade the background of the header when switching devices */
 function changeHeaderImg(image, color) {
     $("#dynamic").css("background-color", "black");
+    $("#dynamic").removeClass("spectrum");
     setTimeout(function(){
         $("#dynamic").removeClass();
         $("#dynamic").addClass(image);
     }, 250);
     setTimeout(function(){
-        $("#dynamic").css("background-color", color);
+        if  ( color == "spectrum" ) {
+            $("#dynamic").addClass("spectrum");
+        } else {
+            $("#dynamic").css("background-color", color);
+        }
     }, 500);
 }
