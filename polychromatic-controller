@@ -30,6 +30,7 @@ import signal
 import json
 import gettext
 import setproctitle
+setproctitle.setproctitle('polychromatic-controller')
 from subprocess import Popen as background_process
 
 import razer.client as rclient
@@ -192,7 +193,6 @@ class Controller(object):
             self.devman = None
 
         # Set up the application
-        setproctitle.setproctitle('polychromatic-controller')
         self.webkit = AppView(self.current_page)
         self.build_app()
 
