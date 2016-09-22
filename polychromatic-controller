@@ -189,7 +189,7 @@ class Controller(object):
         # Prepare devices
         try:
             self.devman = rclient.DeviceManager()
-        except rclient.DaemonNotFound:
+        except: # E.g. rclient.DaemonNotFound
             self.devman = None
 
         # Set up the application
