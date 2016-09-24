@@ -189,8 +189,13 @@ class Controller(object):
         # Prepare devices
         try:
             self.devman = rclient.DeviceManager()
-        except: # E.g. rclient.DaemonNotFound
+        except rclient.DaemonNotFound:
             self.devman = None
+            self.devman_error = "not-running"
+        except Exception as e:
+            self.devman = None
+            self.devman_error = "presume-crashed"
+            self.devman_reason = str(e)
 
         # Set up the application
         self.webkit = AppView(self.current_page)
@@ -206,14 +211,22 @@ class Controller(object):
                 '<br><br><a onclick="cmd(\'web?https://github.com/lah7/polychromatic/releases/tag/v0.3.0\')">' +
                 _("For more information, see the Release Notes for v0.3.0.") + '</a>')
 
-        # Display an error message if the daemon is not present on the system.
+        # Display an error message if the daemon is having problems on the system.
         if not self.devman:
             print("Could not connect to the daemon's device manager!")
-            self.show_error_page(
-                "serious", "generic", _("Daemon Not Running"),
-                _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running.") + "<br><br>" +
-                _("Try starting the daemon from the terminal:") +
-                '<br><code>razer-service</code>')
+
+            if self.devman_error == "not-running":
+                 self.show_error_page(
+                     "serious", "generic", _("Daemon Not Running"),
+                     _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running.") + "<br><br>" +
+                     _("Try starting the daemon from the terminal:") +
+                     '<br><code>razer-service</code>')
+
+            if self.devman_error == "presume-crashed":
+                 self.show_error_page(
+                     "serious", "generic", _("Daemon Not Responding"),
+                     _("Polychromatic could not initialise the daemon. This could be caused by a bug with the daemon process.") + "<br><br>" +
+                     _("Exception:") + ' <code>' + self.devman_reason + '</code>')
 
     """ Assemble the application """
     def build_app(self):
