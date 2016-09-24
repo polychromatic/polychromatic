@@ -210,23 +210,26 @@ class Controller(object):
                 '<a onclick="cmd(\'web?http://terrycain.github.io/razer-drivers/\')">http://terrycain.github.io/razer-drivers/</a>' +
                 '<br><br><a onclick="cmd(\'web?https://github.com/lah7/polychromatic/releases/tag/v0.3.0\')">' +
                 _("For more information, see the Release Notes for v0.3.0.") + '</a>')
+            return
 
         # Display an error message if the daemon is having problems on the system.
         if not self.devman:
             print("Could not connect to the daemon's device manager!")
 
             if self.devman_error == "not-running":
-                 self.show_error_page(
+                self.show_error_page(
                      "serious", "generic", _("Daemon Not Running"),
                      _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running.") + "<br><br>" +
                      _("Try starting the daemon from the terminal:") +
                      '<br><code>razer-service</code>')
+                return
 
             if self.devman_error == "presume-crashed":
-                 self.show_error_page(
+                self.show_error_page(
                      "serious", "generic", _("Daemon Not Responding"),
                      _("Polychromatic could not initialise the daemon. This could be caused by a bug with the daemon process.") + "<br><br>" +
                      _("Exception:") + ' <code>' + self.devman_reason + '</code>')
+                return
 
     """ Assemble the application """
     def build_app(self):
@@ -530,6 +533,8 @@ class Controller(object):
             trans.push('#str-about', _("About"))
             trans.push('#str-version-app', _("Application Version:"))
             trans.push('#str-version-config', _("Configuration Version:"))
+            trans.push('#str-version-lib', _("Razer Python Library:"))
+            trans.push('#str-version-daemon', _("Daemon:"))
             trans.push('#update-button', _("Check for Updates"))
             trans.push('#changelog-button', _("View Change Log"))
             trans.push('#str-app-profiles', _("Application Profiles"))
@@ -584,6 +589,8 @@ class Controller(object):
                 self.update_page('#str-version-app-string', "html", version + "-dev")
 
             self.update_page('#str-version-config-string', "html", str(pref.version))
+            self.update_page('#str-version-lib-string', "html", str(self.devman.version))
+            self.update_page('#str-version-daemon-string', "html", str(self.devman.daemon_version))
 
             # Populate start-up profiles list.
             self.refresh_profiles_list()
