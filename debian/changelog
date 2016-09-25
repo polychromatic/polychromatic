@@ -1,3 +1,14 @@
+polychromatic (0.3.1-xenial) xenial; urgency=low
+
+  * Display error message on daemon initialisation failures.
+  * Set process title earlier to prevent muddled process name.
+  * Add daemon/library version information to About.
+  * Ensure only supported features are shown.
+  * Add support for pulsate effect on Razer BW2013.
+  * Add support for logo lighting on Razer Abyssus.
+
+ -- Luke Horwell <luke@ubuntu-mate.org>  Sun, 25 Sep 2016 17:34:26 +0100
+
 polychromatic (0.3.0-xenial) xenial; urgency=low
 
   * Migrate to the new daemon.
