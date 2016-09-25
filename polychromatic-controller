@@ -356,6 +356,7 @@ class Controller(object):
             trans.push('#str-wave', _("Wave"))
             trans.push('#str-reactive', _("Reactive"))
             trans.push('#str-breath', _("Breath"))
+            trans.push('#str-pulsate', _("Pulsate"))
             trans.push('#str-ripple', _("Ripple"))
             trans.push('#str-static', _("Static"))
 
@@ -750,6 +751,10 @@ class Controller(object):
                     self.active_device.fx.breath_dual(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
                                            self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
                     enabled_options = ['breath-options', 'rgb_primary', 'rgb_secondary']
+
+            elif effect == 'pulsate':
+                self.current_effect = "pulsate"
+                self.active_device.fx.pulsate(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
 
             elif effect == 'ripple':
                 ripple_type = command.split('?')[2]
@@ -1201,7 +1206,7 @@ class Controller(object):
 
     def update_device_supported_features(self):
         # Reset all elements
-        elements =  ["fx-none", "fx-spectrum", "fx-wave", "fx-reactive", "fx-breath", "fx-ripple", "fx-static", "brightness-slider"
+        elements =  ["fx-none", "fx-spectrum", "fx-wave", "fx-reactive", "fx-breath", "fx-pulsate", "fx-ripple", "fx-static", "brightness-slider"
                      "rgb_primary", "rgb_secondary", "waves", "reactive-options", "breath-options", "ripple-options"
                     ]
         for element in elements:
@@ -1229,6 +1234,7 @@ class Controller(object):
         check_ability("lighting_reactive", "fx-reactive")
         check_ability("lighting_breath_single", "fx-breath")
         check_ability("lighting_ripple", "fx-ripple")
+        check_ability("lighting_pulsate", "fx-pulsate")
 
         # Effect Options
         check_ability("lighting_breath_random", "fx-breath-random")
