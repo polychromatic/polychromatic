@@ -549,6 +549,49 @@ input[type="radio"] {
     border: 1px #888 solid;
 }
 
+/* Switch Sliders */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: gray;
+  -webkit-transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 4px;
+  bottom: 4px;
+  background-color: lightgray;
+  -webkit-transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: green;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #00FF00;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(20px);
+  background-color: lime;
+}
+
 /************************
    Keyboard
 *************************/
