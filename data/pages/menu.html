@@ -37,16 +37,18 @@
     <!-- Main Menu Screen -->
     <div class="menu_area">
       <div class="left">
+        <div id="brightness-slider">
         <h4 id="str-brightness"></h4>
-        <table>
-          <tr>
-            <td>
-              <span class="fa fa-lightbulb-o fa-2x"></span>&nbsp;&nbsp;&nbsp;
-              <input type="range" id="brightness" min="0" max="100" value="50"/>
-            </td>
-            <td><p><span id="brightnessValue">50%</span></p></td>
-          </tr>
-        </table>
+          <table>
+            <tr>
+              <td>
+                <span class="fa fa-lightbulb-o fa-2x"></span>&nbsp;&nbsp;&nbsp;
+                <input type="range" id="brightness" min="0" max="100" value="50"/>
+              </td>
+              <td><p><span id="brightnessValue">50%</span></p></td>
+            </tr>
+          </table>
+        </div>
 
         <h4 id="str-effects"></h4>
         <div id="effect-list">
@@ -65,7 +67,7 @@
           <div id="fx-breath" class="effect-item" onclick="setfx('breath', 'random'); $('#breath-random').prop('checked',true);">
             <img src="../img/effects/breath.svg"/> <label id="str-breath"></label>
           </div>
-          <div id="fx-ripple" class="effect-item keyboard-only" onclick="setfx('ripple', 'single'); $('#ripple-single').prop('checked',true);">
+          <div id="fx-ripple" class="effect-item" onclick="setfx('ripple', 'single'); $('#ripple-single').prop('checked',true);">
             <img src="../img/effects/ripple.svg"/> <label id="str-ripple"></label>
           </div>
           <div id="fx-static" class="effect-item" onclick="setfx('static', '')">
@@ -137,16 +139,16 @@
         <table>
           <tr id="breath-options" hidden>
             <td id="str-cycles"></td>
-            <td><label class="str-random"><input id="breath-random" type="radio" name="cycle" value="random" onclick="setfx('breath', 'random')"> </label></td>
-            <td><label class="str-single-col"><input id="breath-single" type="radio" name="cycle" value="single" onclick="setfx('breath', 'single')"> </label></td>
-            <td><label id="str-dual-col"><input id="breath-dual" type="radio" name="cycle" value="dual" onclick="setfx('breath', 'dual')"> </label></td>
+            <td id="fx-breath-random"><label class="str-random"><input id="breath-random" type="radio" name="cycle" value="random" onclick="setfx('breath', 'random')"> </label></td>
+            <td id="fx-breath-single"><label class="str-single-col"><input id="breath-single" type="radio" name="cycle" value="single" onclick="setfx('breath', 'single')"> </label></td>
+            <td id="fx-breath-dual"><label id="str-dual-col"><input id="breath-dual" type="radio" name="cycle" value="dual" onclick="setfx('breath', 'dual')"> </label></td>
           </tr>
         </table>
         <table>
           <tr id="ripple-options" hidden>
             <td id="str-colors"></td>
-            <td><label class="str-random"><input id="breath-random" type="radio" name="rippling" value="random" onclick="setfx('ripple', 'random')"> </label></td>
-            <td><label class="str-single-col"><input id="breath-single" type="radio" name="rippling" value="single" onclick="setfx('ripple', 'single')" checked> </label></td>
+            <td id="fx-ripple-random"><label class="str-random"><input id="breath-random" type="radio" name="rippling" value="random" onclick="setfx('ripple', 'random')"> </label></td>
+            <td id="fx-ripple-single"><label class="str-single-col"><input id="breath-single" type="radio" name="rippling" value="single" onclick="setfx('ripple', 'single')" checked> </label></td>
           </tr>
         </table>
       </div>

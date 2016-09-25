@@ -1200,6 +1200,13 @@ class Controller(object):
         app.update_page('#' + selected_ui, "addClass", "active")
 
     def update_device_supported_features(self):
+        # Reset all elements
+        elements =  ["fx-none", "fx-spectrum", "fx-wave", "fx-reactive", "fx-breath", "fx-ripple", "fx-static", "brightness-slider"
+                     "rgb_primary", "rgb_secondary", "waves", "reactive-options", "breath-options", "ripple-options"
+                    ]
+        for element in elements:
+            self.update_page("#"+element, "slideUp", "fast")
+
         # Hide features not supported by this type of device
         device_type = self.active_device.type
         if device_type == "keyboard":
@@ -1207,6 +1214,31 @@ class Controller(object):
         else:
             self.update_page(".keyboard-only", "fadeOut", "fast")
         self.update_background_header()
+
+        # Hide options according to the daemon.
+        def check_ability(capability, ui_element):
+            supported = self.active_device.has(capability)
+            if supported:
+                self.update_page("#"+ui_element, "slideDown", "fast")
+
+        # Effects List
+        check_ability("lighting_none", "fx-none")
+        check_ability("lighting_static", "fx-static")
+        check_ability("lighting_spectrum", "fx-spectrum")
+        check_ability("lighting_wave", "fx-wave")
+        check_ability("lighting_reactive", "fx-reactive")
+        check_ability("lighting_breath_single", "fx-breath")
+        check_ability("lighting_ripple", "fx-ripple")
+
+        # Effect Options
+        check_ability("lighting_breath_random", "fx-breath-random")
+        check_ability("lighting_breath_single", "fx-breath-single")
+        check_ability("lighting_breath_dual", "fx-breath-dual")
+        check_ability("lighting_ripple", "fx-ripple-single")
+        check_ability("lighting_ripple_random", "fx-ripple-random")
+
+        # Brightness
+        check_ability("brightness", "brightness-slider")
 
     def update_background_header(self):
         if not self.current_page == "menu":
