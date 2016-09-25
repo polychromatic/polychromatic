@@ -1213,11 +1213,12 @@ class Controller(object):
 
     def update_device_supported_features(self):
         # Reset all elements
-        elements = ["fx-none", "fx-spectrum", "fx-wave", "fx-reactive", "fx-breath", "fx-pulsate", "fx-ripple", "fx-static", "brightness-slider", "logo-toggle",
+        elements =  ["str-effects", "fx-none", "fx-spectrum", "fx-wave", "fx-reactive", "fx-breath", "fx-pulsate", "fx-ripple", "fx-static", "brightness-slider", "logo-toggle",
                      "rgb_primary", "rgb_secondary", "waves", "reactive-options", "breath-options", "ripple-options"
+                     "fx-breath-random", "fx-breath-single", "fx-breath-dual", "fx-ripple-single", "fx-ripple-random"
                     ]
         for element in elements:
-            self.update_page("#"+element, "slideUp", "fast")
+            self.update_page("#"+element, "hide", "fast")
 
         # Hide features not supported by this type of device
         device_name = str(self.active_device.name)
@@ -1232,11 +1233,12 @@ class Controller(object):
         def check_ability(capability, ui_element):
             supported = self.active_device.has(capability)
             if supported:
-                self.update_page("#"+ui_element, "slideDown", "fast")
+                self.update_page("#"+ui_element, "show", "fast")
 
         # Effects List
         check_ability("lighting_none", "fx-none")
         check_ability("lighting_static", "fx-static")
+        check_ability("lighting_static", "str-effects")
         check_ability("lighting_spectrum", "fx-spectrum")
         check_ability("lighting_wave", "fx-wave")
         check_ability("lighting_reactive", "fx-reactive")
