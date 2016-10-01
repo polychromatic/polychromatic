@@ -85,10 +85,10 @@ class AppView(WebKit2.WebView):
         stdout.vvprint('Initialised WebKit2.')
 
         # Allows Keyboard SVGs to load.
-        self.get_settings().set_property('allow-file-access-from-file-urls', 1)
+        self.get_settings().set_allow_file_access_from_file_urls(True)
 
         # Print console log errors to stdout
-        self.get_settings().set_property('enable_write_console_messages_to_stdout', 1)
+        self.get_settings().set_enable_write_console_messages_to_stdout(True)
 
         # Basic accessibility - keyboard navigation
         self.get_settings().set_enable_spatial_navigation(True)
