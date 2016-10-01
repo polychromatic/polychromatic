@@ -56,8 +56,8 @@
         <tr>
           <td>
             <br>
-            <a id="update-button" class="btn" onclick="cmd('update-check')"></a>
-            <a id="changelog-button" class="btn" onclick="cmd('web?https://github.com/lah7/polychromatic/releases')"></a>
+            <button id="update-button" class="btn" onclick="cmd('update-check')"></button>
+            <button id="changelog-button" class="btn" onclick="cmd('web?https://github.com/lah7/polychromatic/releases')"></button>
           </td>
         </tr>
       </table>
@@ -121,7 +121,7 @@
           </td>
           <td>
             <input id="tray-icon-path" class="pref-input" type="text"/>
-            <a class="btn" onclick="cmd('browse-file-icon?tray-icon-path');" onmouseout="set_pref_str('tray_applet','icon_path', $('#tray-icon-path').val());"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></a>
+            <button class="btn" onclick="cmd('browse-file-icon?tray-icon-path');" onmouseout="set_pref_str('tray_applet','icon_path', $('#tray-icon-path').val());"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></button>
           </td>
         </tr>
       </table>
@@ -136,7 +136,7 @@
               <tr>
                 <td id="str-primary"></td>
                 <td><div id="rgb_start_primary_preview" class="color-preview" style="background-color:rgba(0,0,0,1)"></div></td>
-                <td><a class="btn str-set" onclick="cmd('ask-color?rgb_start_primary')"></a></td>
+                <td><button class="btn str-set" onclick="cmd('ask-color?rgb_start_primary')"></button></td>
               </tr>
             </table>
           </div>
@@ -145,7 +145,7 @@
               <tr>
                 <td id="str-secondary"></td>
                 <td><div id="rgb_start_secondary_preview" class="color-preview" style="background-color:rgba(0,0,0,1)"></div></td>
-                <td><a class="btn str-set" onclick="cmd('ask-color?rgb_start_secondary')"></a></td>
+                <td><button class="btn str-set" onclick="cmd('ask-color?rgb_start_secondary')"></button></td>
               </tr>
             </table>
           </div>
@@ -156,6 +156,7 @@
 
     <h3 id="str-startup"></h3>
     <p id="str-startup-hint"></p>
+    <br>
       <table>
         <tr>
           <td>
@@ -207,16 +208,17 @@
       </table>
       <br>
 
-    <h3 id="str-advanced"></h3>
-    <a id="str-reset-pref" class="btn" onclick="cmd('pref-reset-conf')"><span class="fa fa-delete"></span> </a>
-    <a id="str-reset-all" class="btn btn-serious" onclick="reset_all_prompt()"><span class="fa fa-delete"></span> </a>
+      <h3 id="str-advanced"></h3>
+      <button id="str-reset-pref" class="btn" onclick="cmd('pref-reset-conf')"><span class="fa fa-delete"></span> </button>
+      <button id="str-reset-all" class="btn btn-serious" onclick="reset_all_prompt()"><span class="fa fa-delete"></span> </button>
+      <br><br>
     </div>
   </div>
 
   <div class="footer">
     <div class="left"></div>
     <div class="right">
-      <a class="btn" id="pref-save" onclick="cmd('pref-close')"><span class="fa fa-check"></span> </a>
+      <button class="btn" id="pref-save" onclick="cmd('pref-close')"><span class="fa fa-check"></span> </button>
     </div>
   </div>
 

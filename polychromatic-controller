@@ -90,6 +90,10 @@ class AppView(WebKit2.WebView):
         # Print console log errors to stdout
         self.get_settings().set_property('enable_write_console_messages_to_stdout', 1)
 
+        # Basic accessibility - keyboard navigation
+        self.get_settings().set_enable_spatial_navigation(True)
+        self.get_settings().set_enable_caret_browsing(True)
+
         # Load the starting page
         default_page = 'menu'
         self.load_uri('file://' + os.path.join(data_source, 'pages/' + startpage + '.html'))
@@ -678,7 +682,7 @@ class Controller(object):
             except:
                 icon_path = path.get_data_source(__file__) + "/img/profile-default.svg"
             if app.current_page == "menu":
-                self.update_page('#app-profiles', 'append', "<div class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\", \"{2}\")'><img src='{1}'>{2}</div>".format(css_id, icon_path, title, uuid))
+                self.update_page('#app-profiles', 'append', "<button class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\", \"{2}\")'><img src='{1}'>{2}</button>".format(css_id, icon_path, title, uuid))
             elif app.current_page == "preferences":
                 self.update_page('#profiles-list', 'append', "<option value='{1}'>{0}</option>".format(title, uuid))
 
@@ -1051,7 +1055,7 @@ class Controller(object):
                 css_id = "launcher-" + uid
                 if not os.path.exists(icon_path):
                     icon_path = unknown_icon_path
-                self.update_page('#app-launchers', 'append', "<div class='app-launcher-item' id='{0}' onclick='prefill_launcher(\"{0}\", \"{1}\", \"{2}\")'><img src='{2}'>{1}</div>".format(uid, name, icon_path))
+                self.update_page('#app-launchers', 'append', "<button class='app-launcher-item' id='{0}' onclick='prefill_launcher(\"{0}\", \"{1}\", \"{2}\")'><img src='{2}'><span>{1}</span></button>".format(uid, name, icon_path))
 
             def read_launcher(path):
                 contents = ''
@@ -1207,7 +1211,7 @@ class Controller(object):
                     formfactor = "mousemat"
                 serial = str(device.serial)
                 state = "normal"
-                htmlbuffer = "<a id='{0}' class='device' onclick='cmd(\"device-select?{0}\")'><div><img src='../img/states/{1}/{2}.svg'> <span>{3}</span></div></a>".format(serial, state, formfactor, name)
+                htmlbuffer = "<button id='{0}' class='device' onclick='cmd(\"device-select?{0}\")'><img src='../img/states/{1}/{2}.svg'> <span>{3}</span></button>".format(serial, state, formfactor, name)
                 app.update_page("#device-tabs", "append", htmlbuffer)
         app.update_page('#' + selected_ui, "addClass", "active")
 

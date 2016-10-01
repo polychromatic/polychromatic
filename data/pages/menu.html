@@ -26,10 +26,10 @@
     <h3 id="page-header"></h3>
   </div>
   <div class="header-options">
-    <a class="btn right" onclick="cmd('pref-open')"><span class="fa fa-wrench"></span></a>
-    <a class="btn right" onclick="cmd('web?https://github.com/lah7/polychromatic')"><span class="fa fa-github"></span></a>
-    <a class="btn right" onclick="cmd('open-config-folder')"><span class="fa fa-folder"></span></a>
-    <a id="refresh-list" class="btn" onclick="cmd('device-refresh')"><span class="fa fa-refresh"></span></a>
+    <button class="btn right" onclick="cmd('pref-open')"><span class="fa fa-wrench"></span></button>
+    <button class="btn right" onclick="cmd('web?https://github.com/lah7/polychromatic')"><span class="fa fa-github"></span></button>
+    <button class="btn right" onclick="cmd('open-config-folder')"><span class="fa fa-folder"></span></button>
+    <button id="refresh-list" class="btn" onclick="cmd('device-refresh')"><span class="fa fa-refresh"></span></button>
   </div>
   <div id="device-tabs"></div>
 
@@ -66,30 +66,30 @@
 
         <h4 id="str-effects"></h4>
         <div id="effect-list">
-          <div id="fx-none" class="effect-item" onclick="setfx('none', '')">
+          <button id="fx-none" class="effect-item" onclick="setfx('none', '')">
             <img src="../img/effects/none.svg"/> <label class="str-none"></label>
-          </div>
-          <div id="fx-spectrum" class="effect-item" onclick="setfx('spectrum', '')">
+          </button>
+          <button id="fx-spectrum" class="effect-item" onclick="setfx('spectrum', '')">
             <img src="../img/effects/spectrum.svg"/> <label id="str-spectrum"></label>
-          </div>
-          <div id="fx-wave" class="effect-item" onclick="setfx('wave', '1'); $('#wave-right').prop('checked',true);">
+          </button>
+          <button id="fx-wave" class="effect-item" onclick="setfx('wave', '1'); $('#wave-right').prop('checked',true);">
             <img src="../img/effects/wave.svg"/> <label id="str-wave"></label>
-          </div>
-          <div id="fx-reactive" class="effect-item" onclick="setfx('reactive', '2'); $('#reactive-normal').prop('checked',true);">
+          </button>
+          <button id="fx-reactive" class="effect-item" onclick="setfx('reactive', '2'); $('#reactive-normal').prop('checked',true);">
             <img src="../img/effects/reactive.svg"/> <label id="str-reactive"></label>
-          </div>
-          <div id="fx-breath" class="effect-item" onclick="setfx('breath', 'random'); $('#breath-random').prop('checked',true);">
+          </button>
+          <button id="fx-breath" class="effect-item" onclick="setfx('breath', 'random'); $('#breath-random').prop('checked',true);">
             <img src="../img/effects/breath.svg"/> <label id="str-breath"></label>
-          </div>
-          <div id="fx-pulsate" class="effect-item" onclick="setfx('pulsate', '');">
+          </button>
+          <button id="fx-pulsate" class="effect-item" onclick="setfx('pulsate', '');">
             <img src="../img/effects/breath.svg"/> <label id="str-pulsate"></label>
-          </div>
-          <div id="fx-ripple" class="effect-item" onclick="setfx('ripple', 'single'); $('#ripple-single').prop('checked',true);">
+          </button>
+          <button id="fx-ripple" class="effect-item" onclick="setfx('ripple', 'single'); $('#ripple-single').prop('checked',true);">
             <img src="../img/effects/ripple.svg"/> <label id="str-ripple"></label>
-          </div>
-          <div id="fx-static" class="effect-item" onclick="setfx('static', '')">
+          </button>
+          <button id="fx-static" class="effect-item" onclick="setfx('static', '')">
             <img src="../img/effects/static.svg"/> <label id="str-static"></label>
-          </div>
+          </button>
         </div>
         <br>
         <div id="rgb_primary" hidden>
@@ -97,20 +97,20 @@
             <tr>
               <td id="color"></td>
               <td><div id="rgb_primary_preview" class="color-preview" style="background-color:rgba(0,255,0,1)"></div></td>
-              <td><a class="btn str-custom" onclick="cmd('ask-color?rgb_primary')"></a></td>
+              <td><button class="btn str-custom" onclick="cmd('ask-color?rgb_primary')"></button></td>
             </tr>
             <tr>
               <td></td>
               <td colspan="2">
-                <a class="color-icon" onclick="cmd('set-color?rgb_primary?255?255?255')" style="background-color:#FFFFFF"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_primary?255?0?0')" style="background-color:#FF0000"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_primary?255?165?0')" style="background-color:#FFA500"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_primary?255?255?0')" style="background-color:#FFFF00"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_primary?0?255?0')" style="background-color:#00FF00"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_primary?0?255?255')" style="background-color:#00FFFF"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_primary?0?0?255')" style="background-color:#0000FF"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_primary?128?0?128')" style="background-color:#800080"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_primary?255?0?255')" style="background-color:#FF00FF"></a>
+                <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?255?255')" style="background-color:#FFFFFF"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?0?0')" style="background-color:#FF0000"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?165?0')" style="background-color:#FFA500"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?255?0')" style="background-color:#FFFF00"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_primary?0?255?0')" style="background-color:#00FF00"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_primary?0?255?255')" style="background-color:#00FFFF"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_primary?0?0?255')" style="background-color:#0000FF"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_primary?128?0?128')" style="background-color:#800080"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?0?255')" style="background-color:#FF00FF"></button>
               </td>
             </tr>
           </table>
@@ -120,20 +120,20 @@
             <tr>
               <td></td>
               <td><div id="rgb_secondary_preview" class="color-preview" style="background-color:rgba(0,0,255,1)"></div></td>
-              <td><a class="btn str-custom" onclick="cmd('ask-color?rgb_secondary')"></a></td>
+              <td><button class="btn str-custom" onclick="cmd('ask-color?rgb_secondary')"></button></td>
             </tr>
             <tr>
               <td></td>
               <td colspan="2">
-                <a class="color-icon" onclick="cmd('set-color?rgb_secondary?255?255?255')" style="background-color:#FFFFFF"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_secondary?255?0?0')" style="background-color:#FF0000"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_secondary?255?165?0')" style="background-color:#FFA500"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_secondary?255?255?0')" style="background-color:#FFFF00"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_secondary?0?255?0')" style="background-color:#00FF00"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_secondary?0?255?255')" style="background-color:#00FFFF"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_secondary?0?0?255')" style="background-color:#0000FF"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_secondary?128?0?128')" style="background-color:#800080"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_secondary?255?0?255')" style="background-color:#FF00FF"></a>
+                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?255?255')" style="background-color:#FFFFFF"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?0?0')" style="background-color:#FF0000"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?165?0')" style="background-color:#FFA500"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?255?0')" style="background-color:#FFFF00"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?0?255?0')" style="background-color:#00FF00"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?0?255?255')" style="background-color:#00FFFF"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?0?0?255')" style="background-color:#0000FF"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?128?0?128')" style="background-color:#800080"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?0?255')" style="background-color:#FF00FF"></button>
               </td>
             </tr>
           </table>
@@ -176,16 +176,16 @@
             <td><img src="../img/states/game-mode.svg" width="24px" height="24px"/></td>
             <td id="str-game-mode"></td>
             <td>
-              <a id="game-mode-disable" class="btn" onclick="cmd('gamemode-disable')" style="display: none"></a>
-              <a id="game-mode-enable" class="btn" onclick="cmd('gamemode-enable')"></a>
+              <button id="game-mode-disable" class="btn" onclick="cmd('gamemode-disable')" style="display: none"></button>
+              <button id="game-mode-enable" class="btn" onclick="cmd('gamemode-enable')"></button>
             </td>
             <td><p id="game-mode-tip"></p></td>
           </tr>
           <tr>
             <td><img src="../img/states/macro-keys.svg" width="24px" height="24px"/></td>
             <td id="str-macro-keys"></td>
-            <td><a id="macro-keys-enable" class="btn" onclick="cmd('enable-marco-keys')"></a></td>
-            <td><a class="btn str-help" onclick="help_dialog_open()"></a></td>
+            <td><button id="macro-keys-enable" class="btn" onclick="cmd('enable-marco-keys')"></button></td>
+            <td><button class="btn str-help" onclick="help_dialog_open()"></button></td>
           </tr>
         </table>
 
@@ -195,12 +195,12 @@
               <!-- Generated list via Python -->
           </div>
           <div class="left" style="width:auto">
-              <a id="profiles-activate" class="btn btn-disabled" onclick="profile_activate()"><span class="fa fa-check"></span> </a>
+              <button id="profiles-activate" class="btn btn-disabled" onclick="profile_activate()"><span class="fa fa-check"></span> </button>
           </div>
           <div class="right" style="width:auto;text-align:right">
-              <a id="profiles-new" class="btn" onclick="new_profile_dialog_open()"><span class="fa fa-plus"></span>&nbsp;</a>
-              <a id="profiles-edit" class="btn btn-dim btn-disabled" onclick="profile_edit()"><span class="fa fa-pencil"></span>&nbsp;</a>
-              <a id="profiles-delete" class="btn btn-dim btn-serious btn-disabled" onclick="del_profile_dialog_open()"><span class="fa fa-trash"></span>&nbsp;</a>
+              <button id="profiles-new" class="btn" onclick="new_profile_dialog_open()"><span class="fa fa-plus"></span>&nbsp;</button>
+              <button id="profiles-edit" class="btn btn-dim btn-disabled" onclick="profile_edit()"><span class="fa fa-pencil"></span>&nbsp;</button>
+              <button id="profiles-delete" class="btn btn-dim btn-serious btn-disabled" onclick="del_profile_dialog_open()"><span class="fa fa-trash"></span>&nbsp;</button>
           </div>
         </div>
       </div>
@@ -231,11 +231,11 @@
     </div>
     <div class="dialog-buttons">
       <img id="dialog-new-icon-preview" class="icon-preview"/>
-      <a class="btn" onclick="cmd('browse-file-icon?dialog-new-icon');"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></a>
-      <a class="btn" onclick="cmd('fetch-app-launchers'); choose_app_launcher_open();"><span class="fa fa-search"></span> <span id="str-fetch-launcher"></span></a>
+      <button class="btn" onclick="cmd('browse-file-icon?dialog-new-icon');"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></button>
+      <button class="btn" onclick="cmd('fetch-app-launchers'); choose_app_launcher_open();"><span class="fa fa-search"></span> <span id="str-fetch-launcher"></span></button>
       <hr>
-      <a id="dialog-new-cancel" class="btn" onclick="new_profile_dialog_cancel()"></a>
-      <a id="dialog-new-ok" class="btn btn-disabled" onclick="new_profile_dialog_ok()"></a>
+      <button id="dialog-new-cancel" class="btn" onclick="new_profile_dialog_cancel()"></button>
+      <button id="dialog-new-ok" class="btn btn-disabled" onclick="new_profile_dialog_ok()"></button>
     </div>
   </div>
 
@@ -244,8 +244,8 @@
     <p id="dialog-del-hint"></p>
     <div class="dialog-buttons">
       <hr>
-      <a id="dialog-del-no" class="btn" onclick="del_profile_dialog_close()"></a>
-      <a id="dialog-del-yes" class="btn btn-serious" onclick="del_profile_dialog_confirm()"></a>
+      <button id="dialog-del-no" class="btn" onclick="del_profile_dialog_close()"></button>
+      <button id="dialog-del-yes" class="btn btn-serious" onclick="del_profile_dialog_confirm()"></button>
     </div>
   </div>
 
@@ -255,8 +255,8 @@
     <div id="app-launchers"></div>
     <div class="dialog-buttons">
       <hr>
-      <a id="dialog-applauncher-revert" class="btn" onclick="choose_app_launcher_close()"></a>
-      <a id="dialog-applauncher-ok" class="btn" onclick="choose_app_launcher_close(); dialog_text_preview('dialog-new-name'); dialog_icon_preview('dialog-new-icon')"></a>
+      <button id="dialog-applauncher-revert" class="btn" onclick="choose_app_launcher_close()"></button>
+      <button id="dialog-applauncher-ok" class="btn" onclick="choose_app_launcher_close(); dialog_text_preview('dialog-new-name'); dialog_icon_preview('dialog-new-icon')"></button>
     </div>
   </div>
 
@@ -266,13 +266,13 @@
     <p id="dialog-help-body"></p>
     <div class="dialog-buttons">
       <hr>
-      <a id="dialog-help-close" class="btn" onclick="help_dialog_close()"></a>
+      <button id="dialog-help-close" class="btn" onclick="help_dialog_close()"></button>
     </div>
   </div>
 
   <div class="footer">
     <div class="right">
-      <a class="btn" id="close-window" onclick="cmd('quit')"></a>
+      <button class="btn" id="close-window" onclick="cmd('quit')"></button>
     </div>
   </div>
 

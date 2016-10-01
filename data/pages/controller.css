@@ -25,7 +25,7 @@
     src: url('lib/Play-Regular.ttf');
 }
 
-html, body, input {
+html, body, input, button {
     font-family: 'Play', 'Ubuntu', 'DejaVu Sans', sans-serif;
 }
 
@@ -46,7 +46,7 @@ h1, h2, h3, h4, h5 {
     margin-bottom: 16px;
 }
 
-p, a, table, td, tr {
+p, a, button, table, td, tr {
     font-family: 'Play', 'Ubuntu', 'DejaVu Sans', sans-serif;
     color: #888;
     font-size: small;
@@ -58,6 +58,26 @@ hr {
 
 .disabled {
     color: #484848;
+    border-color: black;
+}
+
+button {
+    -webkit-appearance: none;
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    align-items: flex-start;
+    display: block;
+}
+
+button .link:hover {
+    cursor: pointer;
+}
+
+button > label {
+    top: 2px;
+    position: relative;
 }
 
 /************************
@@ -206,7 +226,7 @@ hr {
     width: auto;
     padding: 4px;
     top: 64px;
-    bottom: 64px;
+    bottom: 50px;
     left: 16px;
     right: 16px;
     overflow-y: scroll;
@@ -389,12 +409,12 @@ input[type="radio"] {
 /* Dialog Sizes */
 #dialog-new {
     width: 50%;
-    height: 43%;
+    height: 44%;
 }
 
 #dialog-rename {
     width: 50%;
-    height: 42%;
+    height: 44%;
 }
 
 #dialog-del {
@@ -489,7 +509,7 @@ input[type="radio"] {
 *************************/
 .btn {
     width: auto;
-    height: 18px;
+    height: 30px;
     background-color: #323232;
     color: #DED9CB;
     display: inline-block;
@@ -500,7 +520,9 @@ input[type="radio"] {
     cursor: pointer;
     text-decoration: none;
     text-align: center;
+    border: 2px solid #2D2D2D;
     -webkit-user-select: none;
+    -webkit-appearance: none;
 }
 
 .btn:hover {
@@ -555,6 +577,7 @@ input[type="radio"] {
   display: inline-block;
   width: 40px;
   height: 20px;
+  border: 2px solid transparent;
 }
 
 .slider {
@@ -571,10 +594,10 @@ input[type="radio"] {
 .slider:before {
   position: absolute;
   content: "";
-  height: 12px;
   width: 12px;
+  height: 12px;
   left: 4px;
-  bottom: 4px;
+  bottom: 2px;
   background-color: lightgray;
   -webkit-transition: .4s;
 }
@@ -588,8 +611,17 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(20px);
+  -webkit-transform: translateX(18px);
   background-color: lime;
+}
+
+/* Keyboard navigation - focused elements */
+input, a, button, div {
+  border: 2px solid transparent;
+}
+
+input:focus, a:focus, button:focus, div:focus {
+  border: 2px solid green !important;
 }
 
 /************************
@@ -687,7 +719,7 @@ input[type='checkbox']:checked {
    Profile and Effect Lists
 *************************/
 #app-profiles {
-    height: 240px;
+    height: 230px;
     width: 100%;
     overflow-x: none;
     overflow-y: scroll;
@@ -703,8 +735,8 @@ input[type='checkbox']:checked {
 
 .app-profile-item,
 .effect-item {
-    width: auto;
-    height: 22px;
+    width: 97%;
+    height: 28px;
     margin: 4px;
     padding-top: 2px;
     padding-bottom: 2px;
@@ -712,6 +744,11 @@ input[type='checkbox']:checked {
     color: #888;
     cursor: default;
     vertical-align: middle;
+    font-size: 16px;
+}
+
+.app-profile-item {
+    height: 28px;
 }
 
 .app-profile-item:hover,
@@ -733,8 +770,14 @@ input[type='checkbox']:checked {
     width: 22px;
     height: 22px;
     margin-left: 4px;
-    margin-right: 4px;
+    margin-right: 6px;
     float: left;
+}
+
+.app-profile-item > span,
+.effect-item > span {
+    position: relative;
+    top: 2px;
 }
 
 
@@ -751,11 +794,12 @@ input[type='checkbox']:checked {
 .app-launcher-item {
     position: relative;
     width: 220px;
-    height: 22px;
+    height: 30px;
     margin: 4px;
     padding: 2px;
     border: 1px solid transparent;
     color: #888;
+    font-size: 16px;
     cursor: default;
     vertical-align: middle;
     float: left;
@@ -800,7 +844,7 @@ input[type='checkbox']:checked {
     margin-right: 4px;
 }
 
-#device-tabs > a > div {
+#device-tabs > button {
     display: inline-block;
     height: 96%;
     padding: 4px;
@@ -809,36 +853,38 @@ input[type='checkbox']:checked {
     padding: 0px;
     padding-right: 24px;
     vertical-align: bottom;
-    border-bottom: 2px solid #222222;
+    border: 2px solid transparent !important;
+    border-bottom: 2px solid #222222 !important;
     color: white;
     -webkit-filter: grayscale(1);
+    vertical-align: top;
 }
 
-#device-tabs > a:hover > div,
-#device-tabs > a:focus > div {
+#device-tabs > button:hover,
+#device-tabs > button:focus {
     opacity: 0.8;
-    border-bottom: 2px solid green;
+    border-bottom: 2px solid green !important;
 }
 
-#device-tabs > a.active > div {
+#device-tabs > button.active {
     color: lime;
-    border-bottom: 2px solid lime;
+    border-bottom: 2px solid lime !important;
     -webkit-filter: grayscale(0);
 }
 
-#device-tabs > a > div > img {
+#device-tabs > button > img {
     float: left;
-    top: 6px;
+    top: 0px;
     left: 8px;
     height: 20px;
     width: 20px;
     position: relative;
 }
 
-#device-tabs > a > div > span {
+#device-tabs > button > span {
     float: left;
     position: relative;
-    top: 8px;
+    top: 2px;
     left: 16px;
 }
 
@@ -897,6 +943,7 @@ input[type='checkbox']:checked {
     display: inline-block;
     width: 15px;
     height: 15px;
+    border: 0;
     background-image: url('../img/states/macro-keys.svg');
     background-repeat: none;
     background-position: center;
@@ -908,6 +955,7 @@ input[type='checkbox']:checked {
     display: inline-block;
     width: 15px;
     height: 15px;
+    border: 0;
     background-image: url('../img/states/game-mode.svg');
     background-repeat: none;
     background-position: center;

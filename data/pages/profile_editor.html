@@ -29,7 +29,7 @@
     </h3>
   </div>
   <div class="header-options">
-    <a id="str-edit-profile" class="btn" onclick="cmd('profile-rename?'+selected_profile)"><span class="fa fa-tag"></span> </a>
+    <button id="str-edit-profile" class="btn" onclick="cmd('profile-rename?'+selected_profile)"><span class="fa fa-tag"></span> </button>
   </div>
 
   <div id="overlay" hidden></div>
@@ -45,20 +45,20 @@
                 <td>
                     <div id="rgb_tmp_preview" class="color-preview" style="background-color:rgba(0,255,0,1)"></div>
                 </td>
-                <td><a id="str-custom" class="btn" onclick="cmd('ask-color?rgb_tmp')"></a></td>
+                <td><button id="str-custom" class="btn" onclick="cmd('ask-color?rgb_tmp')"></button></td>
             </tr>
             <tr>
               <td></td>
               <td colspan="2">
-                <a class="color-icon" onclick="cmd('set-color?rgb_tmp?255?255?255')" style="background-color:#FFFFFF"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_tmp?255?0?0')" style="background-color:#FF0000"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_tmp?255?165?0')" style="background-color:#FFA500"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_tmp?255?255?0')" style="background-color:#FFFF00"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_tmp?0?255?0')" style="background-color:#00FF00"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_tmp?0?255?255')" style="background-color:#00FFFF"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_tmp?0?0?255')" style="background-color:#0000FF"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_tmp?128?0?128')" style="background-color:#800080"></a>
-                <a class="color-icon" onclick="cmd('set-color?rgb_tmp?255?0?255')" style="background-color:#FF00FF"></a>
+                <button class="color-icon" onclick="cmd('set-color?rgb_tmp?255?255?255')" style="background-color:#FFFFFF"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_tmp?255?0?0')" style="background-color:#FF0000"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_tmp?255?165?0')" style="background-color:#FFA500"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_tmp?255?255?0')" style="background-color:#FFFF00"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_tmp?0?255?0')" style="background-color:#00FF00"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_tmp?0?255?255')" style="background-color:#00FFFF"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_tmp?0?0?255')" style="background-color:#0000FF"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_tmp?128?0?128')" style="background-color:#800080"></button>
+                <button class="color-icon" onclick="cmd('set-color?rgb_tmp?255?0?255')" style="background-color:#FF00FF"></button>
               </td>
             </tr>
           </table>
@@ -70,9 +70,9 @@
           </div>
           <div class="right">
             <span class="right" style="text-align:right">
-              <a class="btn" onclick="set_mode('set')"><span class="fa fa-hand-pointer-o"></span></a>
-              <a class="btn" onclick="set_mode('picker')"><span class="fa fa-eyedropper"></span></a>
-              <a class="btn" onclick="set_mode('clear')"><span class="fa fa-eraser"></span></a>
+              <button class="btn" onclick="set_mode('set')"><span class="fa fa-hand-pointer-o"></span></button>
+              <button class="btn" onclick="set_mode('picker')"><span class="fa fa-eyedropper"></span></button>
+              <button class="btn" onclick="set_mode('clear')"><span class="fa fa-eraser"></span></button>
             </span>
           </div>
         </div>
@@ -105,19 +105,19 @@
     </div>
     <div class="dialog-buttons">
       <img id="dialog-rename-icon-preview" class="icon-preview"/>
-      <a class="btn" onclick="cmd('browse-file-icon?dialog-rename-icon');"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></a>
+      <button class="btn" onclick="cmd('browse-file-icon?dialog-rename-icon');"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></button>
       <hr>
-      <a id="dialog-rename-cancel" class="btn" onclick="rename_profile_dialog_close()"></a>
-      <a id="dialog-rename-ok" class="btn" onclick="rename_profile_dialog_save()"></a>
+      <button id="dialog-rename-cancel" class="btn" onclick="rename_profile_dialog_close()"></button>
+      <button id="dialog-rename-ok" class="btn" onclick="rename_profile_dialog_save()"></button>
     </div>
   </div>
 
   <div class="footer">
     <div class="left"></div>
     <div class="right">
-      <a class="btn" id="cancel" onclick="cmd('cancel-changes')"></a>
-      <a class="btn" id="edit-preview" onclick="cmd('profile-preview')"></a>
-      <a class="btn" id="edit-save" onclick="cmd('profile-save')"><span class="fa fa-check"></span> </a>
+      <button class="btn" id="cancel" onclick="cmd('cancel-changes')"></button>
+      <button class="btn" id="edit-preview" onclick="cmd('profile-preview')"></button>
+      <button class="btn" id="edit-save" onclick="cmd('profile-save')"><span class="fa fa-check"></span> </button>
     </div>
   </div>
 
