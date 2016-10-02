@@ -71,7 +71,7 @@ button {
     display: block;
 }
 
-button .link:hover {
+.link:hover {
     cursor: pointer;
 }
 
@@ -266,10 +266,6 @@ button > label {
 .right {
     float: right;
     width: 49%;
-}
-
-a {
-    cursor: pointer;
 }
 
 .small-text {
@@ -509,7 +505,6 @@ input[type="radio"] {
     font-size: 14px;
     line-height: 20px;
     vertical-align: middle;
-    cursor: pointer;
     text-decoration: none;
     text-align: center;
     border: 2px solid #2D2D2D;
