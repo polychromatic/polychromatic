@@ -29,9 +29,9 @@ function toggle_startup(element) {
     set_pref_chkstate('startup', 'enabled', element);
     state = $(element).is(':checked');
     if ( state == true ) {
-        $('#startup-options').fadeIn();
+        $('.startup-options').fadeIn('fast');
     } else {
-        $('#startup-options').fadeOut();
+        $('.startup-options').fadeOut('fast');
     }
 }
 
@@ -39,9 +39,9 @@ $('#start-effect-dropdown').change(function() {
     selected = $("#start-effect-dropdown option:selected").val();
     set_pref_str('startup', 'start_effect', selected);
     if ( selected == 'profile' ) {
-        $('#start-profile').show();
+        $('#profiles-list').fadeIn('fast');
     } else {
-        $('#start-profile').hide();
+        $('#profiles-list').fadeOut('fast');
     }
 });
 

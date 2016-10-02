@@ -631,7 +631,7 @@ class Controller(object):
             # Hide/Show UI elements
             if start_enabled == 'true':
                 self.update_page('#startup-enabled', 'prop', 'checked', 'true')
-                self.update_page('#startup-options', 'show')
+                self.update_page('.startup-options', 'show')
 
             if start_effect == 'profile':
                 self.update_page('#profiles-list', 'show')
