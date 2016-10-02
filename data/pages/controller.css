@@ -549,6 +549,10 @@ input[type="radio"] {
     background-color: #FF0000;
 }
 
+.btn.selected {
+    background-color: green;
+}
+
 .color-preview {
     display: inline-block;
     width: 150px;
