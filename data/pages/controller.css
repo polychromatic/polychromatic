@@ -268,14 +268,6 @@ button > label {
     width: 49%;
 }
 
-.content select {
-    background-color: #222222;
-    color: white;
-    width: 100%;
-    color: #888;
-    font-size: small;
-}
-
 a {
     cursor: pointer;
 }
@@ -615,12 +607,28 @@ input:checked + .slider:before {
   background-color: lime;
 }
 
+/* Drop-down controls */
+select {
+    height: 28px;
+    width: auto;
+    padding: 4px;
+    background-color: #323232;
+    border: 2px solid #2D2D2D;
+    color: lightgray;
+    -webkit-appearance: none;
+    background-image: url('../img/ui/dropdown.png');
+    background-position: right;
+    background-repeat: no-repeat;
+    color: #888;
+    font-size: small;
+}
+
 /* Keyboard navigation - focused elements */
-input, a, button, div {
+input, a, button, div, select {
   border: 2px solid transparent;
 }
 
-input:focus, a:focus, button:focus, div:focus {
+input:focus, a:focus, button:focus, div:focus, select:focus {
   border: 2px solid green !important;
 }
 

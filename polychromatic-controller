@@ -574,7 +574,6 @@ class Controller(object):
             trans.push('#str-static', _("Static"))
             trans.push('#str-none', _("None"))
             trans.push('#str-profile-mode', _("Activate a Profile"))
-            trans.push('#str-profile', _("Profile:"))
             trans.push('#str-start-bright', _("Start Brightness:"))
             trans.push('#str-auto-macro', _("Automatically enable the macro keys."), True)
             trans.push('#str-advanced', _("Advanced"))
@@ -635,9 +634,9 @@ class Controller(object):
                 self.update_page('#startup-options', 'show')
 
             if start_effect == 'profile':
-                self.update_page('#start-profile', 'show')
+                self.update_page('#profiles-list', 'show')
             else:
-                self.update_page('#start-profile', 'hide')
+                self.update_page('#profiles-list', 'hide')
 
             if start_brightness == 0:
                 self.update_page('#start-brightness-text', 'html', _("No Change"))
