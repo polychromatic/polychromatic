@@ -15,10 +15,22 @@
  Copyright (C) 2015-2016 Luke Horwell <luke@ubuntu-mate.org>
                2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
+ /* Functions for editing profiles and interactions with keyboard SVG. */
 
- ** Functions for editing profiles and interactions with keyboard SVG.
- */
+empty_key_fill = "#000"
+empty_key_border = "#404040"
+used_key_border = "#808080"
 
+function getTextColour(hex) {
+    oldRGB = Snap.getRGB(hex)
+    l = 0.299 * oldRGB.r + 0.587 * oldRGB.g + 0.114 * oldRGB.b;
+    if (l < 128)
+       x = 255;
+    else
+       x = 0;
+    newRGB = Snap.rgb(x,x,x)
+    return newRGB
+}
 
 /**
  * Keyboard class
@@ -81,7 +93,7 @@ function Keyboard(keyboard_element_id, keyboard_svg_path) {
         var key = snap_object.select("#" + active_layout).select(key_id);
 
         if(key) {
-            return key.selectAll("path, rect, ellipse")[0].attr("stroke");
+            return key.selectAll("path, rect, ellipse")[0].attr("fill");
         }
         return null;
     };
@@ -96,9 +108,16 @@ function Keyboard(keyboard_element_id, keyboard_svg_path) {
         var key_id = '#key' + row + '-' + col;
         var key = snap_object.select("#" + active_layout).select(key_id);
 
-        if(key) {
-            key.selectAll("text").attr({fill: hex_colour});
-            key.selectAll("path, rect, ellipse").attr({stroke: hex_colour});
+        if (key) {
+            if ( hex_colour == "#000" || hex_colour == "#000000" ) {
+                key.selectAll("text").attr({stroke: empty_key_border});
+                key.selectAll("path, rect, ellipse").attr({stroke: empty_key_border});
+                key.selectAll("path, rect, ellipse").attr({fill: empty_key_fill});
+            } else {
+                key.selectAll("text").attr({stroke: getTextColour(hex_colour)});
+                key.selectAll("path, rect, ellipse").attr({stroke: used_key_border});
+                key.selectAll("path, rect, ellipse").attr({fill: hex_colour});
+            }
         }
     };
     /**
@@ -110,8 +129,15 @@ function Keyboard(keyboard_element_id, keyboard_svg_path) {
     this.set_key_colour_by_id = function (key_id, hex_colour) {
         var key = snap_object.select("#" + active_layout).select('#' + key_id);
 
-        key.selectAll("text").attr({fill: hex_colour});
-        key.selectAll("path, rect, ellipse").attr({stroke: hex_colour});
+        if ( hex_colour == "#000" || hex_colour == "#000000" ) {
+            key.selectAll("text").attr({stroke: empty_key_border});
+            key.selectAll("path, rect, ellipse").attr({stroke: empty_key_border});
+            key.selectAll("path, rect, ellipse").attr({fill: empty_key_fill});
+        } else {
+            key.selectAll("text").attr({stroke: getTextColour(hex_colour)});
+            key.selectAll("path, rect, ellipse").attr({stroke: used_key_border});
+            key.selectAll("path, rect, ellipse").attr({fill: hex_colour});
+        }
     };
     /**
      * Clear the colour of a specified key
@@ -121,8 +147,9 @@ function Keyboard(keyboard_element_id, keyboard_svg_path) {
     this.clear_key_colour_by_id = function (key_id) {
         var key = snap_object.select("#" + active_layout).select('#' + key_id);
 
-        key.selectAll("text").attr({fill: "#777777"});
-        key.selectAll("path, rect, ellipse").attr({stroke: "#777777"});
+        key.selectAll("text").attr({stroke: empty_key_border});
+        key.selectAll("path, rect, ellipse").attr({fill: empty_key_fill});
+        key.selectAll("path, rect, ellipse").attr({stroke: empty_key_border});
     };
 
 
@@ -137,7 +164,8 @@ function Keyboard(keyboard_element_id, keyboard_svg_path) {
         if (mode == "none") {
             var node = snap_object.select("#effect-layer").node;
 
-            snap_object.select("#effect-layer").selectAll('rect').attr({fill: "#222222"});
+            snap_object.select("#effect-layer").selectAll('rect').attr({fill: empty_key_fill});
+            snap_object.select("#effect-layer").selectAll('rect').attr({stroke: empty_key_border});
         }
     };
 
@@ -225,8 +253,9 @@ function Keyboard(keyboard_element_id, keyboard_svg_path) {
      * @private
      */
     this.clear_all_keys = function () {
-        snap_object.select("#" + active_layout).selectAll(".key text").attr({fill: "#777777"});
-        snap_object.select("#" + active_layout).selectAll(".key path, rect, ellipse").attr({stroke: "#777777"});
+        snap_object.select("#" + active_layout).selectAll(".key text").attr({fill: empty_key_border});
+        snap_object.select("#" + active_layout).selectAll(".key path, rect, ellipse").attr({fill: empty_key_fill});
+        snap_object.select("#" + active_layout).selectAll(".key path, rect, ellipse").attr({stroke: empty_key_border});
     };
 
     /**
