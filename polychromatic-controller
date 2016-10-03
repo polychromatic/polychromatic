@@ -229,10 +229,13 @@ class Controller(object):
                 return
 
             if self.devman_error == "presume-crashed":
+                exception = ""
+                for line in self.devman_reason.split('\n'):
+                    exception += '<code>' + line + '</code><br>'
                 self.show_error_page(
                      "serious", "generic", _("Daemon Not Responding"),
                      _("Polychromatic could not initialise the daemon. This could be caused by a bug with the daemon process.") + "<br><br>" +
-                     _("Exception:") + ' <code>' + self.devman_reason + '</code>')
+                     _("Exception:") + ' <code>' + exception + '</code>')
                 return
 
     """ Assemble the application """
