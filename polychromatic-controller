@@ -520,11 +520,13 @@ class Controller(object):
                     js_string = "keyboard_obj.set_key_colour({0},{1},\"#{2:02X}{3:02X}{4:02X}\")".format(row, col, red, green, blue)
                     kb_callback << js_string
 
-            # IF BLACKWIDOW ULTIMATE < 2016
-            # OR BLACKWIDOW CHROMA
-            # disable space key and FN
-            kb_callback << "keyboard_obj.disable_key(5,7)"
-            kb_callback << "keyboard_obj.disable_key(5,12)"
+            # Disable space key and FN for keyboards that don't support them.
+            device_name = str(self.active_device.name)
+            if device_name in "Razer BlackWidow Chroma" "Razer BlackWidow Ultimate":
+                # Except that BW Ultimate 2016 does support the keys.
+                if not device_name == "Razer BlackWidow Ultimate 2016":
+                    kb_callback << "keyboard_obj.disable_key(5,7)"
+                    kb_callback << "keyboard_obj.disable_key(5,12)"
 
             # Hide preview button if live previewing is enabled.
             if pref.get('editor', 'live_preview', 'true') == 'true':
