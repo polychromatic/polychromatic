@@ -807,7 +807,7 @@ class Controller(object):
 
         elif command == 'enable-marco-keys':
             self.active_device.macro.enable_macros()
-            self.update_page('#macro-keys-enable', 'addClass', 'btn-disabled')
+            self.update_page('#macro-keys-enable', 'addClass', 'disabled')
             self.update_page('#macro-keys-enable', 'html', "In Use")
 
         elif command == 'gamemode-enable':

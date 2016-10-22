@@ -27,7 +27,7 @@ var selected_profile = "null";
 function profile_list_change(css_id, uuid, human_name) {
     selected_profile = uuid;
     selected_name = human_name;
-    $('#profiles-activate, #profiles-edit, #profiles-delete').removeClass('btn-disabled');
+    $('#profiles-activate, #profiles-edit, #profiles-delete').removeClass('disabled');
     $('.app-profile-item').removeClass('selected');
     $('#'+css_id).addClass('selected');
 
@@ -48,7 +48,7 @@ function new_profile_dialog_open() {
     $("#dialog-new-name-preview").html(" ");
     $('#dialog-new').addClass('in');
     $('#dialog-new').show();
-    $('#dialog-new-ok').addClass('btn-disabled');
+    $('#dialog-new-ok').addClass('disabled');
     $('#overlay').fadeIn('fast');
     $('#content').addClass('blur');
 }
@@ -65,9 +65,9 @@ $(document).ready(function() {
     $('#dialog-new-name').keyup(function() {
     length = $("#dialog-new-name").val().length;
     if ( length > 0 ) {
-        $('#dialog-new-ok').removeClass('btn-disabled');
+        $('#dialog-new-ok').removeClass('disabled');
     } else {
-        $('#dialog-new-ok').addClass('btn-disabled');
+        $('#dialog-new-ok').addClass('disabled');
     }
     });
 });
@@ -122,7 +122,7 @@ function prefill_launcher(selected_div, name, icon) {
     $('#'+selected_div).addClass('selected');
     $('#dialog-applauncher-ok').show();
     $('#dialog-applauncher-revert').hide();
-    $('#dialog-new-ok').removeClass('btn-disabled');
+    $('#dialog-new-ok').removeClass('disabled');
 }
 
 function choose_app_launcher_open() {
