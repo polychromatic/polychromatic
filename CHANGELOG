@@ -1,0 +1,69 @@
+# 0.3.2
+
+  * Add keyboard navigation support.
+  * Dropdown menus are themed.
+  * Minor UI changes.
+    * Consistent use of normal cursor.
+    * Profile editor tools relocated and shows selected tool.
+
+# 0.3.1
+
+  * Display error message on daemon initialisation failures.
+  * Set process title earlier to prevent muddled process name.
+  * Add daemon/library version information to About.
+  * Ensure only supported features are shown.
+  * Add support for pulsate effect on Razer BW2013.
+  * Add support for logo lighting on Razer Abyssus.
+
+# 0.3.0
+
+  * Migrate to the new daemon.
+  * Implement multi-device support.
+  * Add ripple effects.
+  * Hide features unsupported to selected device.
+  * Upgrade configuration to version 4.
+    * Switches to JSON profile format.
+    * Drops centralised index method.
+  * Show graphical error messages.
+  * Fix broken open folder button.
+  * Add icons to effects list.
+  * New "dynamic" headings.
+  * New tray applet icons and string updates.
+  * Internal code tweaks and improvements.
+
+# 0.2.3
+
+  * Add autostart entry.
+  * Show warning when ran under DaemonV2.
+
+# 0.2.2
+
+  * New application logo.
+  * Upgraded profile format.
+  * New application profiles list, with support for icons and renaming.
+  * Add option to choose an existing application for new profiles.
+  * Amendments to user interface.
+  * Uses custom WebKit controls.
+  * Automatically reload the tray applet on changes.
+  * Refreshed translations.
+  * Tray applet loads preferred colours.
+  * Internal code clean-up.
+  * Create packages for Yakkety.
+
+# 0.2.1
+
+  * New dialogue prompts for profile creation/deletion.
+  * Add translation support.
+  * Use a Python module for setting process title.
+  * Internal code clean-up.
+
+# 0.2.0
+
+  * Migrated to WebKit2.
+  * Internal project restructure.
+  * Prepared packaging for Ubuntu.
+
+# 0.1.0
+
+  * Initial Release
+
