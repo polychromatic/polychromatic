@@ -17,6 +17,8 @@
 # Copyright (C) 2015-2016 Luke Horwell <luke@ubuntu-mate.org>
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
+version = "0.3.2"
+
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
@@ -41,7 +43,8 @@ import polychromatic.preferences as pref
 path = pref.Paths()
 import polychromatic.profiles
 
-version = "0.3.2"
+# Imported on-demand:
+#   * requests
 
 class Translations(object):
     def __init__(self):

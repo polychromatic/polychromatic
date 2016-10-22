@@ -12,6 +12,7 @@ Architecture: all
 Depends: python3 (>= 3.4.0),
          python3-gi,
          python3-setproctitle,
+         python3-requests,
          gir1.2-webkit2-4.0,
          gir1.2-appindicator3-0.1,
          python3-razer,
