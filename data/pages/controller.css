@@ -837,9 +837,9 @@ input[type='checkbox']:checked {
 }
 
 /************************
-   Device Tabs
+   Tabs
 *************************/
-#device-tabs {
+.tabs {
     position: fixed;
     top: 56px;
     left: 0;
@@ -851,7 +851,7 @@ input[type='checkbox']:checked {
     margin-right: 4px;
 }
 
-#device-tabs > button {
+.tabs > button {
     display: inline-block;
     height: 96%;
     padding: 4px;
@@ -867,19 +867,19 @@ input[type='checkbox']:checked {
     vertical-align: top;
 }
 
-#device-tabs > button:hover,
-#device-tabs > button:focus {
+.tabs > button:hover,
+.tabs > button:focus {
     opacity: 0.8;
     border-bottom: 2px solid green !important;
 }
 
-#device-tabs > button.active {
+.tabs > button.active {
     color: lime;
     border-bottom: 2px solid lime !important;
     -webkit-filter: grayscale(0);
 }
 
-#device-tabs > button > img {
+.tabs > button > img {
     float: left;
     top: 0px;
     left: 8px;
@@ -888,7 +888,7 @@ input[type='checkbox']:checked {
     position: relative;
 }
 
-#device-tabs > button > span {
+.tabs > button > span {
     float: left;
     position: relative;
     top: 2px;
