@@ -24,192 +24,213 @@
   <div class="header">
     <h3 id="page-header"></h3>
   </div>
+  <div class="tabs">
+    <button id='tab-about' class="tab active" onclick="switchTab('#tab-about')"><img src="../img/logo.svg"/><span id="str-about"></span></button>
+    <button id='tab-app' class="tab" onclick="switchTab('#tab-app')"><img src="../img/generic-application.svg"/><span id="str-app-settings"></span></button>
+    <button id='tab-tray' class="tab" onclick="switchTab('#tab-tray')"><img src="../img/profile-default.svg"/><span id="str-tray"></span></button>
+    <button id='tab-col' class="tab" onclick="switchTab('#tab-col')"><img src="../img/effects/static.svg"/><span id="str-colors"></span></button>
+  </div>
 
-  <div class="content" hidden>
+  <div class="content with-tabs" hidden>
     <!-- Preferences Menu -->
     <div class="menu_area">
-      <h3 id="str-about"></h3>
-      <table>
-        <tr>
-          <td><img style="float: left" src="../img/logo.svg"/> <h1 style="float: left; margin: 6px;">polychromatic</h1></td>
-        </tr>
-        <tr>
-          <td>
-            <span id="str-version-app"></span> <code id="str-version-app-string"></code>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span id="str-version-config"></span> <code id="str-version-config-string"></code>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span id="str-version-lib"></span> <code id="str-version-lib-string"></code>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span id="str-version-daemon"></span> <code id="str-version-daemon-string"></code>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <br>
-            <button id="update-button" class="btn" onclick="cmd('update-check')"></button>
-            <button id="changelog-button" class="btn" onclick="cmd('web?https://github.com/lah7/polychromatic/releases')"></button>
-          </td>
-        </tr>
-      </table>
-      <br>
+      <div id="tab-about-page" class="tab-content">
+        <br><br>
+        <table>
+          <tr>
+            <td><img style="float: left" src="../img/logo.svg"/> <h1 style="float: left; margin: 6px;">polychromatic</h1></td>
+          </tr>
+          <tr><td><br></td></tr>
+          <tr>
+            <td>
+              <span id="str-version-app"></span> <code id="str-version-app-string"></code>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span id="str-version-config"></span> <code id="str-version-config-string"></code>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span id="str-version-lib"></span> <code id="str-version-lib-string"></code>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span id="str-version-daemon"></span> <code id="str-version-daemon-string"></code>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <br>
+              <button id="update-button" class="btn" onclick="cmd('update-check')"></button>
+              <button id="changelog-button" class="btn" onclick="cmd('web?https://github.com/lah7/polychromatic/releases')"></button>
+            </td>
+          </tr>
+        </table>
+        <br>
+      </div>
 
-      <h3 id="str-app-profiles"></h3>
-      <table>
-        <tr>
-          <td><label id="str-live-switch" class="pref-label"><input type="checkbox" id="live_switch" onclick="set_pref_chkstate('editor','live_switch',this)"/> </label></td>
-          <td><p id="str-live-switch-help"></p></td>
-        </tr>
-        <tr>
-          <td><label id="str-live-preview" class="pref-label"><input type="checkbox" id="live_preview" onclick="set_pref_chkstate('editor','live_preview',this)"/> </label></td>
-          <td><p id="str-live-preview-help"></p></td>
-        </tr>
-        <tr>
-          <td><label id="str-activate-on-save" class="pref-label"><input type="checkbox" id="activate_on_save" onclick="set_pref_chkstate('editor','activate_on_save',this)"/> </label></td>
-        </tr>
-        <tr>
-          <td><label class="pref-label"><span id="str-scaling"></span> <input type="range" id="scaling" onmouseout="set_pref_str('editor','scaling',$(this).val())" min="1" max="2.5" value="1" step="0.5"/></label></td>
-          <td><p id="str-scaling-help"></p></td>
-        </tr>
-      </table>
-      <br>
+      <div id="tab-app-page" class="tab-content" hidden>
+        <h3 id="str-app-profiles"></h3>
+        <table>
+          <tr>
+            <td><label id="str-live-switch" class="pref-label"><input type="checkbox" id="live_switch" onclick="set_pref_chkstate('editor','live_switch',this)"/> </label></td>
+            <td><p id="str-live-switch-help"></p></td>
+          </tr>
+          <tr>
+            <td><label id="str-live-preview" class="pref-label"><input type="checkbox" id="live_preview" onclick="set_pref_chkstate('editor','live_preview',this)"/> </label></td>
+            <td><p id="str-live-preview-help"></p></td>
+          </tr>
+          <tr>
+            <td><label id="str-activate-on-save" class="pref-label"><input type="checkbox" id="activate_on_save" onclick="set_pref_chkstate('editor','activate_on_save',this)"/> </label></td>
+          </tr>
+        </table>
+        <br>
 
-      <h3 id="str-tray-applet"></h3>
-      <table>
-        <tr>
-          <td>
-            <label id="str-tray-light" class="pref-label">
-              <input type="radio" name="tray-icon" id="tray-light" onclick="set_pref_str('tray_applet','icon_type','light'); cmd('restart-tray')"/>
-              <img id="tray-light" class="pref-tray-preview" src="../tray/humanity-light.svg"/>
-            </label>
-            <br>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label id="str-tray-dark" class="pref-label">
-              <input type="radio" name="tray-icon" id="tray-dark" onclick="set_pref_str('tray_applet','icon_type','dark'); cmd('restart-tray')"/>
-              <img id="tray-dark" class="pref-tray-preview" src="../tray/humanity-dark.svg"/>
-            </label>
-            <br>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label id="str-tray-animated" class="pref-label">
-              <input type="radio" name="tray-icon" id="tray-animated" onclick="set_pref_str('tray_applet','icon_type','animated'); cmd('restart-tray')"/>
-              <img id="tray-animated" class="pref-tray-preview" src="../tray/chroma.gif"/>
-            </label>
-            <br>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label id="str-tray-custom" class="pref-label">
-              <input id="tray-custom-logo" id="tray-custom" type="radio" name="tray-icon" value="custom" onclick="set_pref_str('tray_applet','icon_type','custom'); cmd('restart-tray')"/>
-              <img id="tray-icon-path-preview" class="pref-tray-preview" style="width:22px; height:22px">
-            </label>
-          </td>
-          <td>
-            <input id="tray-icon-path" class="pref-input" type="text"/>
-            <button class="btn" onclick="cmd('browse-file-icon?tray-icon-path');" onmouseout="set_pref_str('tray_applet','icon_path', $('#tray-icon-path').val());"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></button>
-          </td>
-        </tr>
-      </table>
-      <br>
+        <h3 id="str-interface"></h3>
+        <table>
+          <tr>
+            <td><label class="pref-label"><span id="str-scaling"></span> <input type="range" id="scaling" onmouseout="set_pref_str('editor','scaling',$(this).val())" min="1" max="2.5" value="1" step="0.5"/></label></td>
+            <td><p id="str-scaling-help"></p></td>
+          </tr>
+        </table>
+        <br>
 
-    <h3 id="str-preferred-cols"></h3>
-    <table>
-      <tr>
-        <td>
-          <div id="rgb_primary">
-            <table>
-              <tr>
-                <td id="str-primary"></td>
-                <td><div id="rgb_start_primary_preview" class="color-preview" style="background-color:rgba(0,0,0,1)"></div></td>
-                <td><button class="btn str-set" onclick="cmd('ask-color?rgb_start_primary')"></button></td>
-              </tr>
-            </table>
-          </div>
-          <div id="rgb_primary">
-            <table>
-              <tr>
-                <td id="str-secondary"></td>
-                <td><div id="rgb_start_secondary_preview" class="color-preview" style="background-color:rgba(0,0,0,1)"></div></td>
-                <td><button class="btn str-set" onclick="cmd('ask-color?rgb_start_secondary')"></button></td>
-              </tr>
-            </table>
-          </div>
-        </td>
-      </tr>
-    </table>
-    <br>
+        <h3 id="str-advanced"></h3>
+        <button id="str-reset-pref" class="btn" onclick="cmd('pref-reset-conf')"><span class="fa fa-delete"></span> </button>
+        <button id="str-reset-all" class="btn btn-serious" onclick="reset_all_prompt()"><span class="fa fa-delete"></span> </button>
+        <br><br>
+      </div>
 
-    <h3 id="str-startup"></h3>
-    <p id="str-startup-hint"></p>
-    <br>
-      <table>
-        <tr>
-          <td>
-            <label id="str-enable-startup" class="pref-label"><input type="checkbox" id="startup-enabled" onclick="toggle_startup(this)"/> </label>
-          </td>
-        </tr>
-      </table>
-      <table class="startup-options" style="display:none">
-        <tr id="start-effect">
-          <td>
-            <label class="pref-label"><span id="str-start-effect"></span></label>
-          </td>
-          <td>
-            <select id="start-effect-dropdown" style="width:200px">
-              <option id="str-disabled" value="disabled"></option>
-              <option id="str-spectrum" value="spectrum"></option>
-              <option id="str-wave" value="wave"></option>
-              <option id="str-reactive" value="reactive"></option>
-              <option id="str-breath-r" value="breath_r"></option>
-              <option id="str-breath-s" value="breath_s"></option>
-              <option id="str-breath-d" value="breath_d"></option>
-              <option id="str-static" value="static"></option>
-              <option id="str-none" value="none"></option>
-              <option id="str-profile-mode" value="profile"></option>
-            </select>
-            <select id="profiles-list" style="width:300px" hidden>
-              <!-- Generated by Python -->
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label class="pref-label"><span id="str-start-bright"></span></label>
-          </td>
-          <td>
-            <input type="range" id="start-brightness" min="0" max="100" value="0"/>
-            <span id="start-brightness-text">--%</span>
-          </td>
-        </tr>
-      </table>
-      <table class="startup-options" hidden>
-        <tr>
-          <td>
-            <label id="str-auto-macro" class="pref-label"><input type="checkbox" id="start-macro" onclick="set_pref_chkstate('startup', 'start_macro', this)"/> </label>
-          </td>
-        </tr>
-      </table>
-      <br>
+      <div id="tab-tray-page" class="tab-content" hidden>
+        <h3 id="str-tray-applet"></h3>
+        <table>
+          <tr>
+            <td>
+              <label id="str-tray-light" class="pref-label">
+                <input type="radio" name="tray-icon" id="tray-light" onclick="set_pref_str('tray_applet','icon_type','light'); cmd('restart-tray')"/>
+                <img id="tray-light" class="pref-tray-preview" src="../tray/humanity-light.svg"/>
+              </label>
+              <br>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label id="str-tray-dark" class="pref-label">
+                <input type="radio" name="tray-icon" id="tray-dark" onclick="set_pref_str('tray_applet','icon_type','dark'); cmd('restart-tray')"/>
+                <img id="tray-dark" class="pref-tray-preview" src="../tray/humanity-dark.svg"/>
+              </label>
+              <br>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label id="str-tray-animated" class="pref-label">
+                <input type="radio" name="tray-icon" id="tray-animated" onclick="set_pref_str('tray_applet','icon_type','animated'); cmd('restart-tray')"/>
+                <img id="tray-animated" class="pref-tray-preview" src="../tray/chroma.gif"/>
+              </label>
+              <br>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label id="str-tray-custom" class="pref-label">
+                <input id="tray-custom-logo" id="tray-custom" type="radio" name="tray-icon" value="custom" onclick="set_pref_str('tray_applet','icon_type','custom'); cmd('restart-tray')"/>
+                <img id="tray-icon-path-preview" class="pref-tray-preview" style="width:22px; height:22px">
+              </label>
+            </td>
+            <td>
+              <input id="tray-icon-path" class="pref-input" type="text"/>
+              <button class="btn" onclick="cmd('browse-file-icon?tray-icon-path');" onmouseout="set_pref_str('tray_applet','icon_path', $('#tray-icon-path').val());"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></button>
+            </td>
+          </tr>
+        </table>
+        <br>
 
-      <h3 id="str-advanced"></h3>
-      <button id="str-reset-pref" class="btn" onclick="cmd('pref-reset-conf')"><span class="fa fa-delete"></span> </button>
-      <button id="str-reset-all" class="btn btn-serious" onclick="reset_all_prompt()"><span class="fa fa-delete"></span> </button>
-      <br><br>
+        <h3 id="str-startup"></h3>
+        <p id="str-startup-hint"></p>
+        <br>
+        <table>
+          <tr>
+            <td>
+              <label id="str-enable-startup" class="pref-label"><input type="checkbox" id="startup-enabled" onclick="toggle_startup(this)"/> </label>
+            </td>
+          </tr>
+        </table>
+        <table class="startup-options" style="display:none">
+          <tr id="start-effect">
+            <td>
+              <label class="pref-label"><span id="str-start-effect"></span></label>
+            </td>
+            <td>
+              <select id="start-effect-dropdown" style="width:200px">
+                <option id="str-disabled" value="disabled"></option>
+                <option id="str-spectrum" value="spectrum"></option>
+                <option id="str-wave" value="wave"></option>
+                <option id="str-reactive" value="reactive"></option>
+                <option id="str-breath-r" value="breath_r"></option>
+                <option id="str-breath-s" value="breath_s"></option>
+                <option id="str-breath-d" value="breath_d"></option>
+                <option id="str-static" value="static"></option>
+                <option id="str-none" value="none"></option>
+                <option id="str-profile-mode" value="profile"></option>
+              </select>
+              <select id="profiles-list" style="width:300px" hidden>
+                <!-- Generated by Python -->
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label class="pref-label"><span id="str-start-bright"></span></label>
+            </td>
+            <td>
+              <input type="range" id="start-brightness" min="0" max="100" value="0"/>
+              <span id="start-brightness-text">--%</span>
+            </td>
+          </tr>
+        </table>
+        <table class="startup-options" hidden>
+          <tr>
+            <td>
+              <label id="str-auto-macro" class="pref-label"><input type="checkbox" id="start-macro" onclick="set_pref_chkstate('startup', 'start_macro', this)"/> </label>
+            </td>
+          </tr>
+        </table>
+        <br>
+      </div>
+
+      <div id="tab-col-page" class="tab-content" hidden>
+        <h3 id="str-preferred-cols"></h3>
+        <table>
+          <tr>
+            <td>
+              <div id="rgb_primary">
+                <table>
+                  <tr>
+                    <td id="str-primary"></td>
+                    <td><div id="rgb_start_primary_preview" class="color-preview" style="background-color:rgba(0,0,0,1)"></div></td>
+                    <td><button class="btn str-set" onclick="cmd('ask-color?rgb_start_primary')"></button></td>
+                  </tr>
+                </table>
+              </div>
+              <div id="rgb_primary">
+                <table>
+                  <tr>
+                    <td id="str-secondary"></td>
+                    <td><div id="rgb_start_secondary_preview" class="color-preview" style="background-color:rgba(0,0,0,1)"></div></td>
+                    <td><button class="btn str-set" onclick="cmd('ask-color?rgb_start_secondary')"></button></td>
+                  </tr>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <br>
+      </div>
+
     </div>
   </div>
 

@@ -67,3 +67,12 @@ $(document).ready(function () {
         set_pref_str('tray_applet','icon_path', $("#tray-icon-path").val());
     });
 });
+
+function switchTab(id) {
+    $(".tab").removeClass("active");
+    $(".tab-content").fadeOut("fast");
+    $(id).addClass("active");
+    setTimeout(function(){
+        $(id+"-page").fadeIn("fast");
+    }, 210);
+}
