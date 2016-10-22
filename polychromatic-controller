@@ -214,8 +214,8 @@ class Controller(object):
                 "normal", "upgrade", _("Daemon Upgrade Required"),
                 _("The Razer 'Chroma' driver and daemon currently installed on your system is no longer supported by Polychromatic.") + "<br><br>" +
                 _("Please remove the current Razer driver/daemon from your system, then install the new one from: ") +
-                '<a onclick="cmd(\'web?http://terrycain.github.io/razer-drivers/\')">http://terrycain.github.io/razer-drivers/</a>' +
-                '<br><br><a onclick="cmd(\'web?https://github.com/lah7/polychromatic/releases/tag/v0.3.0\')">' +
+                '<a onclick="cmd(\'open?http://terrycain.github.io/razer-drivers/\')">http://terrycain.github.io/razer-drivers/</a>' +
+                '<br><br><a onclick="cmd(\'open?https://github.com/lah7/polychromatic/releases/tag/v0.3.0\')">' +
                 _("For more information, see the Release Notes for v0.3.0.") + '</a>')
             return
 
@@ -918,8 +918,8 @@ class Controller(object):
         elif command == 'pref-open':
             self.show_menu('preferences')
 
-        elif command.startswith('web'):
-            target = command.split('web?')[1]
+        elif command.startswith('open'):
+            target = command.split('open?')[1]
             os.system('xdg-open "' + target + '"')
 
         elif command.startswith('pref-set?'):
@@ -1243,7 +1243,7 @@ class Controller(object):
             self.show_error_page(
                 "warning", "nodevice", _("No Devices Found"),
                 _("Please check your Razer device is connected and that the daemon supports your device, then try again.") +
-                '<br><br><a onclick="cmd(\'web?https://github.com/terrycain/razer-drivers#device-support\')>"' + _("Check Device Support") + '</a>')
+                '<br><br><a onclick="cmd(\'open?https://github.com/terrycain/razer-drivers#device-support\')>"' + _("Check Device Support") + '</a>')
 
         return(found_devices)
 

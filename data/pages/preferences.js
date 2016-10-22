@@ -95,5 +95,5 @@ function changelog_dialog_close() {
 }
 
 function open_release_note(version) {
-    cmd("web?https://github.com/lah7/polychromatic/releases/tag/v" + version);
+    cmd("open?https://github.com/lah7/polychromatic/releases/tag/v" + version);
 }
