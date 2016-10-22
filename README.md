@@ -1,4 +1,4 @@
-# Polychromatic
+![Polychromatic](.readme/logo.png)
 
 A graphical front end to manage your Razer peripherals on GNU/Linux.
 
