@@ -65,7 +65,8 @@
             <td>
               <br>
               <button id="update-button" class="btn" onclick="cmd('update-check')"></button>
-              <button id="changelog-button" class="btn" onclick="cmd('web?https://github.com/lah7/polychromatic/releases')"></button>
+              <button id="changelog-button" class="btn" onclick="cmd('fetch-changelog')"></button>
+              <button id="releases-button" class="btn" onclick="cmd('web?https://github.com/lah7/polychromatic/releases')"></button>
             </td>
           </tr>
         </table>
@@ -231,6 +232,18 @@
         <br>
       </div>
 
+    </div>
+  </div>
+
+  <div id="overlay" hidden></div>
+
+  <div id="dialog-changelog" class="dialog" hidden>
+    <h3 id="dialog-changelog-title"></h3>
+    <h5 id="dialog-changelog-subtitle"></h5>
+    <p id="dialog-changelog-body" style="overflow:scroll; height:75%;"></p>
+    <div class="dialog-buttons">
+      <hr>
+      <button id="dialog-close" class="btn" onclick="changelog_dialog_close()"></button>
     </div>
   </div>
 

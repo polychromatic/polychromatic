@@ -76,3 +76,24 @@ function switchTab(id) {
         $(id+"-page").fadeIn("fast");
     }, 210);
 }
+
+/**
+ * Dialogue box for viewing change logs.
+ */
+function changelog_dialog_open() {
+    $('#dialog-changelog').addClass('in');
+    $('#dialog-changelog').show();
+    $('#overlay').fadeIn('fast');
+    $('#content').addClass('blur');
+}
+
+function changelog_dialog_close() {
+    $('#dialog-changelog').addClass('out');
+    setTimeout(function(){ $('#dialog-changelog').removeClass('out').removeClass('in').hide() }, 250);
+    $('#overlay').fadeOut('fast');
+    $('#content').removeClass('blur');
+}
+
+function open_release_note(version) {
+    cmd("web?https://github.com/lah7/polychromatic/releases/tag/v" + version);
+}
