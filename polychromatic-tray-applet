@@ -245,7 +245,7 @@ class AppIndicator:
         self.game_mode_menu.append(disable_game_mode_button)
 
         # Create profiles sub-menu.
-        self.profiles_button = Gtk.MenuItem(_("Profiles"))
+        self.profiles_button = Gtk.MenuItem(_("Application Profiles"))
         self.profiles_button.show()
         self.profiles_menu = Gtk.Menu()
         self.profiles_menu.show()
