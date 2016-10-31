@@ -615,6 +615,7 @@ class Controller(object):
             trans.push('#str-watch', _("Watch"), True)
 
             trans.push('#str-daemon-options', _("Daemon Options"))
+            trans.push('#str-daemon-restart', _("Restart Daemon Process"))
             trans.push('#str-options-missing', _("Could not read the daemon's configuration file."))
             trans.push('#str-options-restart', _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect."))
 
@@ -1254,6 +1255,24 @@ class Controller(object):
             self.daemon_config[group][item] = value
             with open (self.config_path, 'w') as f:
                 self.daemon_config.write(f)
+
+        elif command == 'daemon-restart':
+            import time
+            print("Restarting razer-service...")
+            self.update_page("#str-daemon-restart", "addClass", "disabled")
+            self.update_page("#str-daemon-restart", "html", _("Restarting..."))
+            self.window.hide()
+            from subprocess import check_output
+            daemon_pid = int(check_output(["pidof", "razer-service"]))
+            os.kill(daemon_pid, signal.SIGTERM)
+            # Wait for daemon to start again
+            time.sleep(1)
+            background_process("razer-service", shell=True)
+            time.sleep(5)
+            # Relaunch Controller / Tray Applet
+            restart_tray_applet()
+            background_process(__file__)
+            exit(0)
 
         ## Multi Device Support
         elif command.startswith('device-select?'):
