@@ -546,16 +546,19 @@ class Controller(object):
             trans.push('#page-header', _("Preferences"))
             trans.push('#str-about', _("About"))
             trans.push('#str-tray', _("Tray Applet"))
-            trans.push('#str-app-settings', _("Application Settings"))
+            trans.push('#str-app-settings', _("General"))
             trans.push('#str-colors', _("Colors"))
-            trans.push('#str-version-app', _("Application Version:"))
-            trans.push('#str-version-config', _("Configuration Version:"))
             trans.push('#str-daemon', _("Daemon"))
+
+            trans.push('#str-version-app', _("Version:"))
+            trans.push('#str-version-config', _("Configuration:"))
             trans.push('#str-version-daemon', _("Daemon Version:"))
             trans.push('#str-version-lib', _("Razer Python Library:"))
+
             trans.push('#update-button', _("Check for Updates"))
             trans.push('#changelog-button', _("View Change Log"))
             trans.push('#releases-button', _("View Releases"))
+
             trans.push('#str-app-profiles', _("Application Profiles"))
             trans.push('#str-live-switch', _("Enable live switching"), True)
             trans.push('#str-live-switch-help', _("Activate profiles instantly as soon as you click on them."))
@@ -564,7 +567,8 @@ class Controller(object):
             trans.push('#str-activate-on-save', _("Always activate profiles after saving."), True)
             trans.push('#str-interface', _("Interface"))
             trans.push('#str-scaling', _("Scale:"))
-            trans.push('#str-scaling-help', _("Scale the application so it looks good on large displays."))
+            trans.push('#str-scaling-help', _("Scale the application so it looks good on large displays. Requires restart."))
+
             trans.push('#str-tray-applet', _("Tray Applet"))
             trans.push('#str-tray-light', _("Light Keyboard"), True)
             trans.push('#str-tray-dark', _("Dark Keyboard"), True)
@@ -600,7 +604,7 @@ class Controller(object):
             trans.push_var('no_change', _("No Change"))
 
             trans.push('#dialog-changelog-title', _("Update History"), True)
-            trans.push('#dialog-changelog-subtitle', _("A human-readable list of changes made to the Polychromatic."))
+            trans.push('#dialog-changelog-subtitle', _("A human-readable list of changes made to Polychromatic."))
             trans.push('#dialog-close', _("Close"), True)
 
             trans.push('#str-daemon-title', _("About the Daemon"))
