@@ -138,23 +138,22 @@ class AppIndicator:
         # Create the menu.
         self.menu = Gtk.Menu()
 
-        # Show the active device's name.
+        # Create the devices section
         self.active_device_status = Gtk.MenuItem(_("Unknown Device"))
         self.active_device_status.set_sensitive(False)
         self.active_device_status.show()
         self.menu.append(self.active_device_status)
 
-        sep0 = Gtk.SeparatorMenuItem()
-        sep0.show()
-        self.menu.append(sep0)
-
-        # Create the devices menu.
         device_item = Gtk.MenuItem(_("Change Device"))
         device_item.show()
         self.device_menu = Gtk.Menu()
         self.device_menu.show()
         device_item.set_submenu(self.device_menu)
         self.menu.append(device_item)
+
+        sep0 = Gtk.SeparatorMenuItem()
+        sep0.show()
+        self.menu.append(sep0)
 
         # Populate the devices menu.
         devman = rclient.DeviceManager()
