@@ -311,10 +311,15 @@ class AppIndicator:
         """ Shared function to send the profile to the keyboard """
         # Workaround some strange bug trying to set "status" (group name)?
         if not uuid == 'status':
-            data = self.profiles.load_profile(uuid)
-            name = data["name"]
-            self.profiles.send_profile_to_keyboard(self.active_device, data)
-            self.profile_items['status'].set_label(name)
+            try:
+                data = self.profiles.load_profile(uuid)
+                name = data["name"]
+                self.profiles.send_profile_to_keyboard(self.active_device, data)
+                self.profile_items['status'].set_label(name)
+            except TypeError:
+                print("Unable to load profile '{0}'. It may no longer exist.".format(str(uuid)))
+            except:
+                print("There was a problem applying the profile: '{0}'".format(str(uuid)))
 
     def set_effect(self, effect_type):
         """ Shared function to set an effect on the device """
