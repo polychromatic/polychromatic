@@ -97,3 +97,15 @@ function changelog_dialog_close() {
 function open_release_note(version) {
     cmd("open?https://github.com/lah7/polychromatic/releases/tag/v" + version);
 }
+
+/* Set a value in the daemon's razer.conf file */
+function set_daemon_conf(group, item, element) {
+    command = 'daemon-set-config?' + group + '?' + item;
+    state = $(element).is(':checked');
+    if ( state == true ) {
+        cmd(command + '?True')
+    } else {
+        cmd(command + '?False')
+    }
+    $("#daemon-options-restart").fadeIn('fast');
+}

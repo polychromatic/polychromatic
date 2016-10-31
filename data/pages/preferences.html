@@ -29,13 +29,14 @@
     <button id='tab-app' class="tab" onclick="switchTab('#tab-app')"><img src="../img/generic-application.svg"/><span id="str-app-settings"></span></button>
     <button id='tab-tray' class="tab" onclick="switchTab('#tab-tray')"><img src="../img/profile-default.svg"/><span id="str-tray"></span></button>
     <button id='tab-col' class="tab" onclick="switchTab('#tab-col')"><img src="../img/effects/static.svg"/><span id="str-colors"></span></button>
+    <button id='tab-daemon' class="tab" onclick="switchTab('#tab-daemon')"><img src="../img/error/upgrade.png"/><span id="str-daemon"></span></button>
   </div>
 
   <div class="content with-tabs" hidden>
     <!-- Preferences Menu -->
     <div class="menu_area">
       <div id="tab-about-page" class="tab-content">
-        <br><br>
+        <br>
         <table>
           <tr>
             <td><img style="float: left" src="../img/logo.svg"/> <h1 style="float: left; margin: 6px;">polychromatic</h1></td>
@@ -53,16 +54,6 @@
           </tr>
           <tr>
             <td>
-              <span id="str-version-lib"></span> <code id="str-version-lib-string"></code>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <span id="str-version-daemon"></span> <code id="str-version-daemon-string"></code>
-            </td>
-          </tr>
-          <tr>
-            <td>
               <br>
               <button id="update-button" class="btn" onclick="cmd('update-check')"></button>
               <button id="changelog-button" class="btn" onclick="cmd('fetch-changelog')"></button>
@@ -70,7 +61,6 @@
             </td>
           </tr>
         </table>
-        <br>
       </div>
 
       <div id="tab-app-page" class="tab-content" hidden>
@@ -102,7 +92,6 @@
         <h3 id="str-advanced"></h3>
         <button id="str-reset-pref" class="btn" onclick="cmd('pref-reset-conf')"><span class="fa fa-delete"></span> </button>
         <button id="str-reset-all" class="btn btn-serious" onclick="reset_all_prompt()"><span class="fa fa-delete"></span> </button>
-        <br><br>
       </div>
 
       <div id="tab-tray-page" class="tab-content" hidden>
@@ -232,6 +221,84 @@
         <br>
       </div>
 
+      <div id="tab-daemon-page" class="tab-content" hidden>
+        <h3 id="str-daemon-title"></h3>
+        <p id="str-daemon-info"></p>
+        <br>
+        <table>
+          <tr>
+            <td>
+              <span id="str-version-daemon"></span> <code id="str-version-daemon-string"></code>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span id="str-version-lib"></span> <code id="str-version-lib-string"></code>
+            </td>
+          </tr>
+        </table>
+        <br>
+        <button id="str-website" class="btn" onclick="cmd('open?https://terrycain.github.io/razer-drivers')"><span class="fa fa-globe"></span>&nbsp;</button>
+        <button id="str-project" class="btn" onclick="cmd('open?https://github.com/terrycain/razer-drivers')"><span class="fa fa-github"></span>&nbsp;</button>
+        <br><br>
+        <button id="str-issues" class="btn" onclick="cmd('open?https://github.com/terrycain/razer-drivers/issues')"></button>
+        <button id="str-troubleshooting" class="btn" onclick="cmd('open?https://github.com/terrycain/razer-drivers/wiki/Troubleshooting')"></button>
+        <button id="str-device-support" class="btn" onclick="cmd('open?https://github.com/terrycain/razer-drivers#device-support')"></button>
+        <br><br>
+
+        <h3 id="str-logs"></h3>
+        <p id="str-logs-help"></p>
+        <br>
+        <table>
+          <tr>
+            <td>
+              <button class="btn" onclick="cmd('open?/home/$USER/.razer-service/logs/razer.log')">razer.log</button>
+            </td>
+            <td>
+              <button class="btn" onclick="cmd('run?xdg-open /home/$USER/.razer-service/')"><span class="fa fa-folder-open"></span></button>
+              <button class="btn" onclick="cmd('run?x-terminal-emulator -e tail -f /home/$USER/.razer-service/logs/razer.log')" id="str-watch"><span class="fa fa-search"></span>&nbsp;</button>
+            </td>
+            <td><code>~/.razer-service/logs/razer.log</code></td>
+          </tr>
+          <tr>
+            <td>
+              <button class="btn" onclick="cmd('open?/tmp/razer_udev.log')">razer_udev.log</button>
+            </td>
+            <td>
+              <button class="btn" onclick="cmd('run?xdg-open /tmp/')"><span class="fa fa-folder-open"></span></button>
+            </td>
+            <td><code>/tmp/razer_udev.log</code></td>
+          </tr>
+        </table>
+        <br>
+
+        <h3 id="str-daemon-options"></h3>
+        <div id="daemon-options-missing" class="alert" hidden>
+          <span class="fa fa-warning"></span> <span id="str-options-missing"></span>
+        </div>
+        <div id="daemon-options-restart" class="alert" hidden>
+          <span class="fa fa-warning"></span> <span id="str-options-restart"></span>
+          <br>
+        </div>
+        <table>
+          <tr>
+            <td><label id="str-verbose-logging" class="pref-label"><input type="checkbox" id="daemon-verbose-logging" onclick="set_daemon_conf('General', 'verbose_logging', this)"/> </label></td>
+            <td><p id="str-verbose-logging-help"></p></td>
+          </tr>
+          <tr>
+            <td><label id="str-sync-effects" class="pref-label"><input type="checkbox" id="daemon-sync-effects" onclick="set_daemon_conf('Startup', 'sync_effects_enabled', this)"/> </label></td>
+            <td><p id="str-sync-effects-help"></p></td>
+          </tr>
+          <tr>
+            <td><label id="str-screensaver" class="pref-label"><input type="checkbox" id="daemon-screensaver" onclick="set_daemon_conf('Startup', 'devices_off_on_screensaver', this)"/> </label></td>
+            <td><p id="str-screensaver-help"></p></td>
+          </tr>
+          <tr>
+            <td><label id="str-key-statistics" class="pref-label"><input type="checkbox" id="daemon-key-statistics" onclick="set_daemon_conf('Statistics', 'key_statistics', this)"/> </label></td>
+            <td><p id="str-key-statistics-help"></p></td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 

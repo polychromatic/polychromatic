@@ -35,7 +35,8 @@ html, body {
     background-color: #222222;
     -webkit-user-select: none;
     overflow: hidden;
-
+    -webkit-user-select: none;
+    cursor: default;
 }
 
 h1, h2, h3, h4, h5 {
@@ -46,7 +47,7 @@ h1, h2, h3, h4, h5 {
     margin-bottom: 16px;
 }
 
-p, a, button, table, td, tr {
+p, a, button, table, td, tr, .alert {
     font-family: 'Play', 'Ubuntu', 'DejaVu Sans', sans-serif;
     color: #888;
     font-size: small;
@@ -56,7 +57,7 @@ hr {
     border-color: #565656;
 }
 
-.disabled {
+.btn.disabled {
     color: #484848;
     border-color: black;
 }
@@ -78,6 +79,11 @@ button {
 button > label {
     top: 2px;
     position: relative;
+}
+
+.alert {
+    color: white;
+    margin-bottom: 16px;
 }
 
 /************************
@@ -725,6 +731,16 @@ label:hover {
 input[type='radio']:checked,
 input[type='checkbox']:checked {
     background-color: lime !important;
+}
+
+input.disabled {
+    background-color: #333333 !important;
+    pointer-events: none;
+}
+
+label.disabled {
+    color: #333333 !important;
+    pointer-events: none;
 }
 
 /************************

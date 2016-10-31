@@ -45,6 +45,7 @@ import polychromatic.profiles
 
 # Imported on-demand:
 #   * requests
+#   * configparser
 
 class Translations(object):
     def __init__(self):
@@ -549,8 +550,9 @@ class Controller(object):
             trans.push('#str-colors', _("Colors"))
             trans.push('#str-version-app', _("Application Version:"))
             trans.push('#str-version-config', _("Configuration Version:"))
+            trans.push('#str-daemon', _("Daemon"))
+            trans.push('#str-version-daemon', _("Daemon Version:"))
             trans.push('#str-version-lib', _("Razer Python Library:"))
-            trans.push('#str-version-daemon', _("Daemon:"))
             trans.push('#update-button', _("Check for Updates"))
             trans.push('#changelog-button', _("View Change Log"))
             trans.push('#releases-button', _("View Releases"))
@@ -600,6 +602,21 @@ class Controller(object):
             trans.push('#dialog-changelog-title', _("Update History"), True)
             trans.push('#dialog-changelog-subtitle', _("A human-readable list of changes made to the Polychromatic."))
             trans.push('#dialog-close', _("Close"), True)
+
+            trans.push('#str-daemon-title', _("About the Daemon"))
+            trans.push('#str-daemon-info', _("The daemon is the software that communicates between the front-end applications and the driver."))
+            trans.push('#str-website', _("Website"), True)
+            trans.push('#str-project', _("Project"), True)
+            trans.push('#str-issues', _("Issues"))
+            trans.push('#str-troubleshooting', _("Troubleshooting"))
+            trans.push('#str-device-support', _("Device/Daemon Support"))
+            trans.push('#str-logs', _("Logs"))
+            trans.push('#str-logs-help', _("Useful for diagnosing issues and debugging daemon-related operations."))
+            trans.push('#str-watch', _("Watch"), True)
+
+            trans.push('#str-daemon-options', _("Daemon Options"))
+            trans.push('#str-options-missing', _("Could not read the daemon's configuration file."))
+            trans.push('#str-options-restart', _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect."))
 
             # Append version information
             if self.app_installed:
@@ -671,6 +688,39 @@ class Controller(object):
 
             self.update_page('#rgb_start_primary_preview', 'css', 'background-color', 'rgba(' + str(self.start_p_red) + ',' + str(self.start_p_green) + ',' + str(self.start_p_blue) + ',1.0)')
             self.update_page('#rgb_start_secondary_preview', 'css', 'background-color', 'rgba(' + str(self.start_s_red) + ',' + str(self.start_s_green) + ',' + str(self.start_s_blue) + ',1.0)')
+
+            # Reads and sets configuration set in razer.conf
+            self.config_path = os.path.join(os.path.expanduser('~'), ".razer-service", "razer.conf")
+            import configparser
+            self.daemon_config = configparser.ConfigParser()
+
+            if os.path.exists(self.config_path):
+                self.daemon_config.read(self.config_path)
+            else:
+                app.update_page("#daemon-options-missing", "show")
+                for element in ["verbose-logging", "sync-effects", "screensaver", "key-statistics"]:
+                    app.update_page("#daemon-"+element, "addClass", "disabled")
+                    app.update_page("#str-"+element, "addClass", "disabled")
+
+            """ Sets the initial checkbox state for razer.conf daemon settings """
+            def read_daemon_config(group, item, element, label, description):
+                element_checkbox = "#daemon-" + element
+                element_label = "#str-" + element
+                element_help = "#str-" + element + "-help"
+                app.update_page(element_label, "append", label)
+                app.update_page(element_help, "html", description)
+                if not self.daemon_config.has_option(group, item):
+                    app.update_page(element_checkbox, "addClass", "disabled")
+                    app.update_page(element_label, "addClass", "disabled")
+                    return
+
+                if self.daemon_config.get(group, item) == 'True':
+                    app.update_page(element_checkbox, "prop", "checked", "true")
+
+            read_daemon_config("General", "verbose_logging", "verbose-logging", _("Verbose Logging"), _("Show lots of debug messages."))
+            read_daemon_config("Startup", "sync_effects_enabled", "sync-effects", _("Sync Effects to All Devices"), _("When setting an effect, apply this to all other connected devices (where supported)."))
+            read_daemon_config("Startup", "devices_off_on_screensaver", "screensaver", _("Turn off devices when screensaver is running"), _("Not all desktop environments support this feature."))
+            read_daemon_config("Statistics", "key_statistics", "key-statistics", _("Generate Key Statistics"), _("Collects number of key presses per hour for generating heatmaps."))
 
         elif self.current_page == 'error':
             self.update_page("#close-window", "html", _("Quit"))
@@ -917,6 +967,10 @@ class Controller(object):
         ## Preferences
         elif command == 'pref-open':
             self.show_menu('preferences')
+
+        elif command.startswith('run'):
+            command = command.split('run?')[1]
+            background_process(command, shell=True)
 
         elif command.startswith('open'):
             target = command.split('open?')[1]
@@ -1191,6 +1245,15 @@ class Controller(object):
             else:
                 fetch_failed()
                 return
+
+        elif command.startswith('daemon-set-config?'):
+            group = command.split('?')[1]
+            item = command.split('?')[2]
+            value = command.split('?')[3]
+            stdout.vprint("Writing to razer.conf: [{0}] -> {1} = {2}".format(group, item, value))
+            self.daemon_config[group][item] = value
+            with open (self.config_path, 'w') as f:
+                self.daemon_config.write(f)
 
         ## Multi Device Support
         elif command.startswith('device-select?'):
