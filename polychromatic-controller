@@ -33,6 +33,8 @@ import json
 import gettext
 import setproctitle
 setproctitle.setproctitle('polychromatic-controller')
+import time
+import threading
 from subprocess import Popen as background_process
 
 import razer.client as rclient
@@ -99,7 +101,7 @@ class AppView(WebKit2.WebView):
         self.get_settings().set_enable_caret_browsing(True)
 
         # Load the starting page
-        default_page = 'menu'
+        default_page = 'loading'
         self.load_uri('file://' + os.path.join(data_source, 'pages/' + startpage + '.html'))
 
     """ Callback: Title changed """
@@ -179,8 +181,9 @@ class AppView(WebKit2.WebView):
 class Controller(object):
     """ Initialise the application """
     def __init__(self):
+
         # Set up variables
-        self.current_page = 'menu'
+        self.current_page = 'loading'
         self.kb_layout = get_keyboard_layout()
         self.reactive_speed = 1
         self.primary_rgb = RGB(0, 255, 0)
@@ -194,61 +197,17 @@ class Controller(object):
         else:
             self.app_installed = True
 
-        # Prepare devices
-        try:
-            self.devman = rclient.DeviceManager()
-        except rclient.DaemonNotFound:
-            self.devman = None
-            self.devman_error = "not-running"
-        except Exception as e:
-            self.devman = None
-            self.devman_error = "presume-crashed"
-            self.devman_reason = str(e)
-
-        # Set up the application
+    """ Assemble and run the application """
+    def start(self):
+        # Initalise WebKit
         self.webkit = AppView(self.current_page)
-        self.build_app()
 
-        # Display an upgrade message if using the old daemon.
-        if os.path.exists("/usr/lib/python3/dist-packages/razer/inteface/keyboard.py") or os.path.exists(os.path.join(sys.path[-1], "/razer/inteface/keyboard.py")):
-            self.show_error_page(
-                "normal", "upgrade", _("Daemon Upgrade Required"),
-                _("The Razer 'Chroma' driver and daemon currently installed on your system is no longer supported by Polychromatic.") + "<br><br>" +
-                _("Please remove the current Razer driver/daemon from your system, then install the new one from: ") +
-                '<a onclick="cmd(\'open?http://terrycain.github.io/razer-drivers/\')">http://terrycain.github.io/razer-drivers/</a>' +
-                '<br><br><a onclick="cmd(\'open?https://github.com/lah7/polychromatic/releases/tag/v0.3.0\')">' +
-                _("For more information, see the Release Notes for v0.3.0.") + '</a>')
-            return
-
-        # Display an error message if the daemon is having problems on the system.
-        if not self.devman:
-            print("Could not connect to the daemon's device manager!")
-
-            if self.devman_error == "not-running":
-                self.show_error_page(
-                     "serious", "generic", _("Daemon Not Running"),
-                     _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running.") + "<br><br>" +
-                     _("Try starting the daemon from the terminal:") +
-                     '<br><code>razer-service</code>')
-                return
-
-            if self.devman_error == "presume-crashed":
-                exception = ""
-                for line in self.devman_reason.split('\n'):
-                    exception += '<code>' + line + '</code><br>'
-                self.show_error_page(
-                     "serious", "generic", _("Daemon Not Responding"),
-                     _("Polychromatic could not initialise the daemon. This could be caused by a bug with the daemon process.") + "<br><br>" +
-                     _("Exception:") + ' <code>' + exception + '</code>')
-                return
-
-    """ Assemble the application """
-    def build_app(self):
         # Create window
         w = Gtk.Window(title="Polychromatic Controller")
         w.set_wmclass('polychromatic-controller', 'polychromatic-controller')
         w.set_position(Gtk.WindowPosition.CENTER)
         w.set_resizable(False)
+        self.window = w
         try:
             w.set_icon_from_file(os.path.join(data_source, '../install/hicolor/scalable/apps/polychromatic.svg'))
             stdout.vvprint('Window icon set from relative path.')
@@ -285,6 +244,60 @@ class Controller(object):
         w.show_all()
         stdout.vvprint('Initialised Window.')
 
+        # Kills process when CTRL+C'd.
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+        thread = threading.Thread(target=app.run_app, args=())
+        thread.daemon = True
+        thread.start()
+        Gtk.main()
+
+    """ Initalise and run the application """
+    def run_app(self):
+        # Prepare devices
+        try:
+            self.devman = rclient.DeviceManager()
+        except rclient.DaemonNotFound:
+            self.devman = None
+            self.devman_error = "not-running"
+        except Exception as e:
+            self.devman = None
+            self.devman_error = "presume-crashed"
+            self.devman_reason = str(e)
+
+        # Display an upgrade message if using the old daemon.
+        if os.path.exists("/usr/lib/python3/dist-packages/razer/inteface/keyboard.py") or os.path.exists(os.path.join(sys.path[-1], "/razer/inteface/keyboard.py")):
+            self.show_error_page(
+                "normal", "upgrade", _("Daemon Upgrade Required"),
+                _("The Razer 'Chroma' driver and daemon currently installed on your system is no longer supported by Polychromatic.") + "<br><br>" +
+                _("Please remove the current Razer driver/daemon from your system, then install the new one from: ") +
+                '<a onclick="cmd(\'open?http://terrycain.github.io/razer-drivers/\')">http://terrycain.github.io/razer-drivers/</a>' +
+                '<br><br><a onclick="cmd(\'open?https://github.com/lah7/polychromatic/releases/tag/v0.3.0\')">' +
+                _("For more information, see the Release Notes for v0.3.0.") + '</a>')
+            return
+
+        # Display an error message if the daemon is having problems on the system.
+        if not self.devman:
+            print("Could not connect to the daemon's device manager!")
+
+            if self.devman_error == "not-running":
+                self.show_error_page(
+                     "serious", "generic", _("Daemon Not Running"),
+                     _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running.") + "<br><br>" +
+                     _("Try starting the daemon from the terminal:") +
+                     '<br><code>razer-service</code>')
+                return
+
+            if self.devman_error == "presume-crashed":
+                exception = ""
+                for line in self.devman_reason.split('\n'):
+                    exception += '<code>' + line + '</code><br>'
+                self.show_error_page(
+                     "serious", "generic", _("Daemon Not Responding"),
+                     _("Polychromatic could not initialise the daemon. This could be caused by a bug with the daemon process.") + "<br><br>" +
+                     _("Exception:") + ' <code>' + exception + '</code>')
+                return
+
         # Initialise Profiles
         stdout.vprint('Initialising Polychromatic Profiles...')
         self.profiles = polychromatic.profiles.AppProfiles()
@@ -315,16 +328,8 @@ class Controller(object):
                 self.active_device = self.devices[0]
                 self.active_ui_device = self.devices[0].serial
 
-        # Store as class variables for use later.
-        self.window = w
-
         stdout.vprint('Application Ready.\n')
-
-    """ Run the application """
-    def run_app(self):
-        # Kills process when CTRL+C'd.
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
-        Gtk.main()
+        self.show_menu('menu')
 
     """ Send jQuery code to page """
     def update_page(self, element, function, parm1=None, parm2=None):
@@ -346,8 +351,8 @@ class Controller(object):
     """ Requests to change the page """
     def show_menu(self, page):
         self.current_page = page
-
         page_path = os.path.join(data_source, 'pages', page + '.html')
+
         if os.path.exists(page_path):
             self.webkit.load_uri('file://' + page_path)
         else:
@@ -1261,7 +1266,6 @@ class Controller(object):
                 self.daemon_config.write(f)
 
         elif command == 'daemon-restart':
-            import time
             print("Restarting razer-service...")
             self.update_page("#str-daemon-restart", "addClass", "disabled")
             self.update_page("#str-daemon-restart", "html", _("Restarting..."))
@@ -1423,6 +1427,7 @@ class Controller(object):
         # severity  =   'normal', 'warning', 'serious'
         # icon      =   Filename as seen in ../img/error/
         # title / message = Strings to display.
+        time.sleep(1) # Gives enough time to show window
         self.error_title = title
         self.error_icon = icon
         self.error_message = message
@@ -1592,4 +1597,4 @@ if __name__ == "__main__":
     trans = Translations()
     stdout = Terminal()
     app = Controller()
-    app.run_app()
+    app.start()
