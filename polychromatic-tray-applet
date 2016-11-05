@@ -49,6 +49,71 @@ def get_data_source():
     return path
 
 
+class ErrorRetry(object):
+    def __init__(self, restart_callback, menuitem_object, timeout):
+        self.restart = restart_callback
+        self.menuitem = menuitem_object
+        self.seconds = timeout
+
+        import threading
+        thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True
+        thread.start()
+
+    def run(self):
+        import time
+        left = self.seconds
+        while True:
+            self.menuitem.set_label(_("Retry") + ' (' + str(left) + ')')
+            left = left - 1
+            time.sleep(1)
+            if left <= 0:
+                self.restart(None)
+
+
+def startup_failed(self, error_no):
+    # error_no      Reason
+    # ============  =====================
+    # 1             Daemon not found
+    # 2             No devices present
+
+    icon_path = path.get_data_source(__file__) + "/tray/error.svg"
+    if error_no == 1:
+        string = _("Unable to connect to daemon.")
+        timeout = 10
+    elif error_no == 2:
+        string = _("No devices found.")
+        timeout = 60
+
+    print("\nTray applet couldn't be initalised!\nReason: " + string)
+    print("Reloading in " + str(timeout) + " seconds.")
+    fallback_menu = Gtk.Menu()
+
+    item1 = Gtk.MenuItem(string)
+    item1.show()
+    item1.set_sensitive(False)
+    fallback_menu.append(item1)
+
+    item2 = Gtk.SeparatorMenuItem()
+    item2.show()
+    fallback_menu.append(item2)
+
+    item3 = Gtk.MenuItem(_("Retry"))
+    item3.show()
+    item3.connect("activate", self.relaunch)
+    fallback_menu.append(item3)
+
+    item4 = Gtk.MenuItem(_("Quit"))
+    item4.show()
+    item4.connect("activate", self.quit, "quit")
+    fallback_menu.append(item4)
+
+    self.ind = appindicator.Indicator.new("polychromatic-tray-applet", icon_path, appindicator.IndicatorCategory.APPLICATION_STATUS)
+    self.ind.set_status(appindicator.IndicatorStatus.ACTIVE)
+    self.ind.set_menu(fallback_menu)
+
+    e = ErrorRetry(self.relaunch, item3, timeout)
+
 class Translations():
     def __init__(self):
         # Determine the locale path
@@ -106,6 +171,7 @@ class AppIndicator:
         # Read preferences and profiles.
         self.profiles = polychromatic.profiles.AppProfiles(rclient)
 
+    def setup(self):
         # Determine which icon to display.
         icon_type = pref.get('tray_applet','icon_type','light')
         icon_fallback = get_data_source() + '/tray/humanity-light.svg'
@@ -156,7 +222,15 @@ class AppIndicator:
         self.menu.append(sep0)
 
         # Populate the devices menu.
-        devman = rclient.DeviceManager()
+        try:
+            devman = rclient.DeviceManager()
+        except:
+            startup_failed(self, 1)
+            return
+
+        if len(devman.devices) == 0:
+            startup_failed(self, 2)
+
         devlist = []
         for device in devman.devices:
             devlist.append(device)
@@ -345,10 +419,14 @@ class AppIndicator:
 
     # Tray Applet Responses
     def quit(self, widget, data=None):
-        """
-        Quits the application
-        """
+        """ Quits the application """
         Gtk.main_quit()
+
+    def relaunch(self, widget, data=None):
+        """ Relaunches the tray applet. Usually if failed to initalise. """
+        Gtk.main_quit()
+        background_process(__file__)
+        exit(0)
 
     def menuitem_select_device(self, widget, device_object):
         self.active_device = device_object
@@ -627,6 +705,7 @@ if __name__ == "__main__":
 
     trans = Translations()
     indicator = AppIndicator()
+    indicator.setup()
 
     Gtk.main()
 
