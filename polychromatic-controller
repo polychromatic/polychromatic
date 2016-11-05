@@ -287,7 +287,7 @@ class Controller(object):
 
         # Initialise Profiles
         stdout.vprint('Initialising Polychromatic Profiles...')
-        self.profiles = polychromatic.profiles.AppProfiles(rclient)
+        self.profiles = polychromatic.profiles.AppProfiles()
         self.profiles.selected_uuid = None
         self.profiles.previous_uuid = None
 

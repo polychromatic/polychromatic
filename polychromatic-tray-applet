@@ -169,7 +169,7 @@ class AppIndicator:
         self.active_device = None
 
         # Read preferences and profiles.
-        self.profiles = polychromatic.profiles.AppProfiles(rclient)
+        self.profiles = polychromatic.profiles.AppProfiles()
 
     def setup(self):
         # Determine which icon to display.

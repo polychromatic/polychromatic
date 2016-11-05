@@ -17,10 +17,7 @@ path = pref.Paths()
 
 class AppProfiles(object):
     """ Profiles require the driver daemon. """
-    def __init__(self, rclient):
-        # Expects "razer.client" to be passed.
-        self.rclient = rclient
-
+    def __init__(self):
         # For tracking which UUID is loaded in memory.
         self.selected_uuid = None
 
