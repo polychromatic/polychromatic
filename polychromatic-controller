@@ -283,9 +283,7 @@ class Controller(object):
             if self.devman_error == "not-running":
                 self.show_error_page(
                      "serious", "generic", _("Daemon Not Running"),
-                     _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running.") + "<br><br>" +
-                     _("Try starting the daemon from the terminal:") +
-                     '<br><code>razer-service</code>')
+                     _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running."))
                 return
 
             if self.devman_error == "presume-crashed":
@@ -740,7 +738,8 @@ class Controller(object):
 
         elif self.current_page == 'error':
             self.update_page("#close-window", "html", _("Quit"))
-            self.update_page("#restart-app", "html", _("Restart Application"))
+            self.update_page("#restart-app", "html", _("Retry"))
+            self.update_page("#restart-daemon", "html", _("Restart Daemon"))
             self.update_page("#error-icon", "attr", "src", "../img/error/" + self.error_icon + ".png")
             self.update_page("#error-title", "html", self.error_title)
             self.update_page("#error-title", "addClass", self.error_class)
