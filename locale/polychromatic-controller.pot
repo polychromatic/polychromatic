@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2016-09-25 17:31+BST\n"
+"POT-Creation-Date: 2016-11-06 22:32+GMT\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,543 +15,676 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: polychromatic-controller:207
+#: polychromatic-controller:271
 msgid "Daemon Upgrade Required"
 msgstr ""
 
-#: polychromatic-controller:208
+#: polychromatic-controller:272
 msgid "The Razer 'Chroma' driver and daemon currently installed on your system is no longer supported by Polychromatic."
 msgstr ""
 
-#: polychromatic-controller:209
+#: polychromatic-controller:273
 msgid "Please remove the current Razer driver/daemon from your system, then install the new one from: "
 msgstr ""
 
-#: polychromatic-controller:212
+#: polychromatic-controller:276
 msgid "For more information, see the Release Notes for v0.3.0."
 msgstr ""
 
-#: polychromatic-controller:221
+#: polychromatic-controller:285
 msgid "Daemon Not Running"
 msgstr ""
 
-#: polychromatic-controller:222
+#: polychromatic-controller:286
 msgid "Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running."
 msgstr ""
 
-#: polychromatic-controller:223
-msgid "Try starting the daemon from the terminal:"
-msgstr ""
-
-#: polychromatic-controller:229
+#: polychromatic-controller:294
 msgid "Daemon Not Responding"
 msgstr ""
 
-#: polychromatic-controller:230
+#: polychromatic-controller:295
 msgid "Polychromatic could not initialise the daemon. This could be caused by a bug with the daemon process."
 msgstr ""
 
-#: polychromatic-controller:231
+#: polychromatic-controller:296
 msgid "Exception:"
 msgstr ""
 
-#: polychromatic-controller:348 polychromatic-controller:422
+#: polychromatic-controller:362 polychromatic-controller:436
+#: polychromatic-controller:616
 msgid "Close"
 msgstr ""
 
-#: polychromatic-controller:352
+#: polychromatic-controller:366
 msgid "Configure your Device"
 msgstr ""
 
-#: polychromatic-controller:353
+#: polychromatic-controller:367
 msgid "Brightness"
 msgstr ""
 
-#: polychromatic-controller:354
+#: polychromatic-controller:368
 msgid "Effects"
 msgstr ""
 
-#: polychromatic-controller:355 polychromatic-controller:564
+#: polychromatic-controller:369 polychromatic-controller:595
 msgid "Spectrum"
 msgstr ""
 
-#: polychromatic-controller:356 polychromatic-controller:565
+#: polychromatic-controller:370 polychromatic-controller:596
 msgid "Wave"
 msgstr ""
 
-#: polychromatic-controller:357 polychromatic-controller:566
+#: polychromatic-controller:371 polychromatic-controller:597
 msgid "Reactive"
 msgstr ""
 
-#: polychromatic-controller:358
+#: polychromatic-controller:372
 msgid "Breath"
 msgstr ""
 
-#: polychromatic-controller:359
+#: polychromatic-controller:373
 msgid "Pulsate"
 msgstr ""
 
-#: polychromatic-controller:360
+#: polychromatic-controller:374
 msgid "Ripple"
 msgstr ""
 
-#: polychromatic-controller:361 polychromatic-controller:570
+#: polychromatic-controller:375 polychromatic-controller:601
 msgid "Static"
 msgstr ""
 
-#: polychromatic-controller:363 polychromatic-controller:456
+#: polychromatic-controller:377 polychromatic-controller:470
 msgid "Color:"
 msgstr ""
 
-#: polychromatic-controller:364 polychromatic-controller:457
+#: polychromatic-controller:378 polychromatic-controller:471
 msgid "Custom..."
 msgstr ""
 
-#: polychromatic-controller:365 polychromatic-controller:571
+#: polychromatic-controller:379 polychromatic-controller:602
 msgid "None"
 msgstr ""
 
-#: polychromatic-controller:366
+#: polychromatic-controller:380
 msgid "Direction:"
 msgstr ""
 
-#: polychromatic-controller:367
+#: polychromatic-controller:381
 msgid "Left"
 msgstr ""
 
-#: polychromatic-controller:368
+#: polychromatic-controller:382
 msgid "Right"
 msgstr ""
 
-#: polychromatic-controller:369
+#: polychromatic-controller:383
 msgid "Speed:"
 msgstr ""
 
-#: polychromatic-controller:370
+#: polychromatic-controller:384
 msgid "Random"
 msgstr ""
 
-#: polychromatic-controller:371
+#: polychromatic-controller:385
 msgid "Single Color"
 msgstr ""
 
-#: polychromatic-controller:372
+#: polychromatic-controller:386
 msgid "Dual Colors"
 msgstr ""
 
-#: polychromatic-controller:373
+#: polychromatic-controller:387
 msgid "Cycle:"
 msgstr ""
 
-#: polychromatic-controller:374
+#: polychromatic-controller:388
 msgid "Colors:"
 msgstr ""
 
-#: polychromatic-controller:375
+#: polychromatic-controller:389
 msgid "Slow"
 msgstr ""
 
-#: polychromatic-controller:376
+#: polychromatic-controller:390
 msgid "Medium"
 msgstr ""
 
-#: polychromatic-controller:377
+#: polychromatic-controller:391
 msgid "Fast"
 msgstr ""
 
-#: polychromatic-controller:379
+#: polychromatic-controller:393
 msgid "Key Modes"
 msgstr ""
 
-#: polychromatic-controller:380
+#: polychromatic-controller:394
 msgid "Gaming Mode"
 msgstr ""
 
-#: polychromatic-controller:381
+#: polychromatic-controller:395
 msgid "Disable"
 msgstr ""
 
-#: polychromatic-controller:382
+#: polychromatic-controller:396
 msgid "Enable"
 msgstr ""
 
-#: polychromatic-controller:383
+#: polychromatic-controller:397
 msgid "Disables ALT+F4 and Super key."
 msgstr ""
 
-#: polychromatic-controller:384
+#: polychromatic-controller:398
 msgid "Macro Keys"
 msgstr ""
 
-#: polychromatic-controller:385 polychromatic-controller:386
+#: polychromatic-controller:399 polychromatic-controller:400
 msgid "Activate"
 msgstr ""
 
-#: polychromatic-controller:387
+#: polychromatic-controller:401
 msgid "Help"
 msgstr ""
 
-#: polychromatic-controller:389 polychromatic-controller:541
+#: polychromatic-controller:403 polychromatic-controller:570
 msgid "Application Profiles"
 msgstr ""
 
-#: polychromatic-controller:390
+#: polychromatic-controller:404
 msgid "New"
 msgstr ""
 
-#: polychromatic-controller:391 polychromatic-controller:470
+#: polychromatic-controller:405 polychromatic-controller:484
 msgid "Edit"
 msgstr ""
 
-#: polychromatic-controller:392 polychromatic-controller:402
-#: polychromatic-controller:405
+#: polychromatic-controller:406 polychromatic-controller:416
+#: polychromatic-controller:419
 msgid "Delete"
 msgstr ""
 
-#: polychromatic-controller:394
+#: polychromatic-controller:408
 msgid "Create New Application Profile"
 msgstr ""
 
-#: polychromatic-controller:395
+#: polychromatic-controller:409
 msgid "Please enter a name for the new profile, and optionally an icon."
 msgstr ""
 
-#: polychromatic-controller:396
+#: polychromatic-controller:410
 msgid "Application:"
 msgstr ""
 
-#: polychromatic-controller:397 polychromatic-controller:474
+#: polychromatic-controller:411 polychromatic-controller:488
 msgid "Icon Path:"
 msgstr ""
 
-#: polychromatic-controller:398
+#: polychromatic-controller:412
 msgid "Select Installed Application"
 msgstr ""
 
-#: polychromatic-controller:399 polychromatic-controller:409
-#: polychromatic-controller:458
+#: polychromatic-controller:413 polychromatic-controller:423
+#: polychromatic-controller:472
 msgid "Cancel"
 msgstr ""
 
-#: polychromatic-controller:400
+#: polychromatic-controller:414
 msgid "Create"
 msgstr ""
 
-#: polychromatic-controller:403
+#: polychromatic-controller:417
 msgid "Are you sure you want to delete this?"
 msgstr ""
 
-#: polychromatic-controller:404
+#: polychromatic-controller:418
 msgid "Keep"
 msgstr ""
 
-#: polychromatic-controller:407
+#: polychromatic-controller:421
 msgid "Choose an Application"
 msgstr ""
 
-#: polychromatic-controller:408
+#: polychromatic-controller:422
 msgid "The information from the chosen program will be used as the profile's base."
 msgstr ""
 
-#: polychromatic-controller:410
+#: polychromatic-controller:424
 msgid "Select"
 msgstr ""
 
-#: polychromatic-controller:412
+#: polychromatic-controller:426
 msgid "Quick Help"
 msgstr ""
 
-#: polychromatic-controller:414
+#: polychromatic-controller:428
 msgid "Macro Keys Usage"
 msgstr ""
 
-#: polychromatic-controller:415
+#: polychromatic-controller:429
 msgid "When macro keys are enabled, the keyboard's M1-M5 keys will be accessible by other programs."
 msgstr ""
 
-#: polychromatic-controller:417
+#: polychromatic-controller:431
 msgid "You can also use on-the-fly macro recording (provided by the daemon) by following these steps:"
 msgstr ""
 
-#: polychromatic-controller:418
+#: polychromatic-controller:432
 msgid "to enter macro mode."
 msgstr ""
 
-#: polychromatic-controller:419
+#: polychromatic-controller:433
 msgid "Press the macro key to assign to. E.g. M1"
 msgstr ""
 
-#: polychromatic-controller:420
+#: polychromatic-controller:434
 msgid "Typing in your key combination."
 msgstr ""
 
-#: polychromatic-controller:421
+#: polychromatic-controller:435
 msgid "Exiting macro mode with "
 msgstr ""
 
-#: polychromatic-controller:424 polychromatic-controller:477
+#: polychromatic-controller:438 polychromatic-controller:491
 msgid "Browse Icon"
 msgstr ""
 
-#: polychromatic-controller:459
+#: polychromatic-controller:473
 msgid "Preview"
 msgstr ""
 
-#: polychromatic-controller:460
+#: polychromatic-controller:474
 msgid "Save"
 msgstr ""
 
-#: polychromatic-controller:462
+#: polychromatic-controller:476
 msgid "Set"
 msgstr ""
 
-#: polychromatic-controller:463
+#: polychromatic-controller:477
 msgid "Click on a key to assign a color here."
 msgstr ""
 
-#: polychromatic-controller:464
+#: polychromatic-controller:478
 msgid "Picker"
 msgstr ""
 
-#: polychromatic-controller:465
+#: polychromatic-controller:479
 msgid "Click on a key to grab its color."
 msgstr ""
 
-#: polychromatic-controller:466
+#: polychromatic-controller:480
 msgid "Clear"
 msgstr ""
 
-#: polychromatic-controller:467
+#: polychromatic-controller:481
 msgid "Click on a key to clear."
 msgstr ""
 
-#: polychromatic-controller:471
+#: polychromatic-controller:485
 msgid "Edit Profile Details"
 msgstr ""
 
-#: polychromatic-controller:472
+#: polychromatic-controller:486
 msgid "Change the name and icon for this profile."
 msgstr ""
 
-#: polychromatic-controller:473
+#: polychromatic-controller:487
 msgid "Name:"
 msgstr ""
 
-#: polychromatic-controller:475
+#: polychromatic-controller:489
 msgid "Discard"
 msgstr ""
 
-#: polychromatic-controller:476
+#: polychromatic-controller:490
 msgid "Save Changes"
 msgstr ""
 
-#: polychromatic-controller:533
+#: polychromatic-controller:549
 msgid "Preferences"
 msgstr ""
 
-#: polychromatic-controller:534
+#: polychromatic-controller:550
 msgid "About"
 msgstr ""
 
-#: polychromatic-controller:535
-msgid "Application Version:"
-msgstr ""
-
-#: polychromatic-controller:536
-msgid "Configuration Version:"
-msgstr ""
-
-#: polychromatic-controller:537
-msgid "Razer Python Library:"
-msgstr ""
-
-#: polychromatic-controller:538
-msgid "Daemon:"
-msgstr ""
-
-#: polychromatic-controller:539
-msgid "Check for Updates"
-msgstr ""
-
-#: polychromatic-controller:540
-msgid "View Change Log"
-msgstr ""
-
-#: polychromatic-controller:542
-msgid "Enable live switching"
-msgstr ""
-
-#: polychromatic-controller:543
-msgid "Activate profiles instantly as soon as you click on them."
-msgstr ""
-
-#: polychromatic-controller:544
-msgid "Enable live preview"
-msgstr ""
-
-#: polychromatic-controller:545
-msgid "While editing, show your changes on the actual keyboard."
-msgstr ""
-
-#: polychromatic-controller:546
-msgid "Always activate profiles after saving."
-msgstr ""
-
-#: polychromatic-controller:547
-msgid "Interface Scale:"
-msgstr ""
-
-#: polychromatic-controller:548
-msgid "Scale the application so it looks good on large displays."
-msgstr ""
-
-#: polychromatic-controller:549
+#: polychromatic-controller:551 polychromatic-controller:580
 msgid "Tray Applet"
 msgstr ""
 
-#: polychromatic-controller:550
-msgid "Light Keyboard"
-msgstr ""
-
-#: polychromatic-controller:551
-msgid "Dark Keyboard"
-msgstr ""
-
 #: polychromatic-controller:552
-msgid "Chroma Keyboard"
+msgid "General"
 msgstr ""
 
 #: polychromatic-controller:553
-msgid "Use Custom Image"
+msgid "Colors"
 msgstr ""
 
 #: polychromatic-controller:554
-msgid "Custom Icon:"
-msgstr ""
-
-#: polychromatic-controller:555
-msgid "Preferred Colors"
+msgid "Daemon"
 msgstr ""
 
 #: polychromatic-controller:556
-msgid "Primary Color:"
+msgid "Version:"
 msgstr ""
 
 #: polychromatic-controller:557
-msgid "Secondary Color:"
+msgid "Configuration:"
 msgstr ""
 
 #: polychromatic-controller:558
-msgid "Set..."
+msgid "Daemon Version:"
 msgstr ""
 
 #: polychromatic-controller:559
-msgid "Start-up Settings"
-msgstr ""
-
-#: polychromatic-controller:560
-msgid "These settings are applied when the Tray Applet is started. Ensure the tray applet automatically starts when you login."
+msgid "Razer Python Library:"
 msgstr ""
 
 #: polychromatic-controller:561
-msgid "Set preferences when the tray applet starts."
+msgid "Check for Updates"
 msgstr ""
 
 #: polychromatic-controller:562
-msgid "Start Effect:"
+msgid "View Change Log"
 msgstr ""
 
-#: polychromatic-controller:563 polychromatic-controller:582
-#: polychromatic-controller:639
-msgid "No Change"
-msgstr ""
-
-#: polychromatic-controller:567
-msgid "Breath (Random)"
+#: polychromatic-controller:563
+msgid "View Releases"
 msgstr ""
 
 #: polychromatic-controller:568
-msgid "Breath (Single Color)"
+msgid "Play Demo - Razer BlackWidow Chroma Advert"
 msgstr ""
 
-#: polychromatic-controller:569
-msgid "Breath (Dual Color)"
+#: polychromatic-controller:571
+msgid "Enable live switching"
 msgstr ""
 
 #: polychromatic-controller:572
-msgid "Activate a Profile"
+msgid "Activate profiles instantly as soon as you click on them."
 msgstr ""
 
 #: polychromatic-controller:573
-msgid "Profile:"
+msgid "Enable live preview"
 msgstr ""
 
 #: polychromatic-controller:574
-msgid "Start Brightness:"
+msgid "While editing, show your changes on the actual keyboard."
 msgstr ""
 
 #: polychromatic-controller:575
-msgid "Automatically enable the macro keys."
+msgid "Always activate profiles after saving."
 msgstr ""
 
 #: polychromatic-controller:576
-msgid "Advanced"
+msgid "Interface"
 msgstr ""
 
 #: polychromatic-controller:577
-msgid "Reset Preferences"
+msgid "Scale:"
 msgstr ""
 
 #: polychromatic-controller:578
-msgid "Reset Everything"
-msgstr ""
-
-#: polychromatic-controller:579
-msgid "OK"
+msgid "Scale the application so it looks good on large displays. Requires restart."
 msgstr ""
 
 #: polychromatic-controller:581
+msgid "Light Keyboard"
+msgstr ""
+
+#: polychromatic-controller:582
+msgid "Dark Keyboard"
+msgstr ""
+
+#: polychromatic-controller:583
+msgid "Chroma Keyboard"
+msgstr ""
+
+#: polychromatic-controller:584
+msgid "Use Custom Image"
+msgstr ""
+
+#: polychromatic-controller:585
+msgid "Custom Icon:"
+msgstr ""
+
+#: polychromatic-controller:586
+msgid "Preferred Colors"
+msgstr ""
+
+#: polychromatic-controller:587
+msgid "Primary Color:"
+msgstr ""
+
+#: polychromatic-controller:588
+msgid "Secondary Color:"
+msgstr ""
+
+#: polychromatic-controller:589
+msgid "Set..."
+msgstr ""
+
+#: polychromatic-controller:590
+msgid "Start-up Settings"
+msgstr ""
+
+#: polychromatic-controller:591
+msgid "These settings are applied when the Tray Applet is started. Ensure the tray applet automatically starts when you login."
+msgstr ""
+
+#: polychromatic-controller:592
+msgid "Set preferences when the tray applet starts."
+msgstr ""
+
+#: polychromatic-controller:593
+msgid "Start Effect:"
+msgstr ""
+
+#: polychromatic-controller:594 polychromatic-controller:612
+#: polychromatic-controller:690
+msgid "No Change"
+msgstr ""
+
+#: polychromatic-controller:598
+msgid "Breath (Random)"
+msgstr ""
+
+#: polychromatic-controller:599
+msgid "Breath (Single Color)"
+msgstr ""
+
+#: polychromatic-controller:600
+msgid "Breath (Dual Color)"
+msgstr ""
+
+#: polychromatic-controller:603
+msgid "Activate a Profile"
+msgstr ""
+
+#: polychromatic-controller:604
+msgid "Start Brightness:"
+msgstr ""
+
+#: polychromatic-controller:605
+msgid "Automatically enable the macro keys."
+msgstr ""
+
+#: polychromatic-controller:606
+msgid "Advanced"
+msgstr ""
+
+#: polychromatic-controller:607
+msgid "Reset Preferences"
+msgstr ""
+
+#: polychromatic-controller:608
+msgid "Reset Everything"
+msgstr ""
+
+#: polychromatic-controller:609
+msgid "OK"
+msgstr ""
+
+#: polychromatic-controller:611
 msgid "Are you sure you wish to erase all configuration and profiles?"
 msgstr ""
 
-#: polychromatic-controller:656
+#: polychromatic-controller:614
+msgid "Update History"
+msgstr ""
+
+#: polychromatic-controller:615
+msgid "A human-readable list of changes made to Polychromatic."
+msgstr ""
+
+#: polychromatic-controller:618
+msgid "About the Daemon"
+msgstr ""
+
+#: polychromatic-controller:619
+msgid "The daemon is the software that communicates between the front-end applications and the driver."
+msgstr ""
+
+#: polychromatic-controller:620
+msgid "Website"
+msgstr ""
+
+#: polychromatic-controller:621
+msgid "Project"
+msgstr ""
+
+#: polychromatic-controller:622
+msgid "Issues"
+msgstr ""
+
+#: polychromatic-controller:623
+msgid "Troubleshooting"
+msgstr ""
+
+#: polychromatic-controller:624
+msgid "Device/Daemon Support"
+msgstr ""
+
+#: polychromatic-controller:625
+msgid "Logs"
+msgstr ""
+
+#: polychromatic-controller:626
+msgid "Useful for diagnosing issues and debugging daemon-related operations."
+msgstr ""
+
+#: polychromatic-controller:627
+msgid "Watch"
+msgstr ""
+
+#: polychromatic-controller:629
+msgid "Daemon Options"
+msgstr ""
+
+#: polychromatic-controller:630
+msgid "Restart Daemon Service"
+msgstr ""
+
+#: polychromatic-controller:631
+msgid "If you have re-plugged devices, or are experiencing glitches, try restarting the daemon service."
+msgstr ""
+
+#: polychromatic-controller:632
+msgid "Could not read the daemon's configuration file."
+msgstr ""
+
+#: polychromatic-controller:633
+msgid "The daemon (and Polychromatic) needs to be restarted for the new settings to take effect."
+msgstr ""
+
+#: polychromatic-controller:734
+msgid "Show lots of debug messages."
+msgstr ""
+
+#: polychromatic-controller:734
+msgid "Verbose Logging"
+msgstr ""
+
+#: polychromatic-controller:735
+msgid "Sync Effects to All Devices"
+msgstr ""
+
+#: polychromatic-controller:735
+msgid "When setting an effect, apply this to all other connected devices (where supported)."
+msgstr ""
+
+#: polychromatic-controller:736
+msgid "Not all desktop environments support this feature."
+msgstr ""
+
+#: polychromatic-controller:736
+msgid "Turn off devices when screensaver is running"
+msgstr ""
+
+#: polychromatic-controller:737
+msgid "Collects number of key presses per hour for generating heatmaps."
+msgstr ""
+
+#: polychromatic-controller:737
+msgid "Generate Key Statistics"
+msgstr ""
+
+#: polychromatic-controller:740
 msgid "Quit"
 msgstr ""
 
-#: polychromatic-controller:657
-msgid "Restart Application"
+#: polychromatic-controller:741
+msgid "Retry"
 msgstr ""
 
-#: polychromatic-controller:1118
+#: polychromatic-controller:742
+msgid "Restart Daemon"
+msgstr ""
+
+#: polychromatic-controller:1207
 msgid "Choose Application Profile Icon"
 msgstr ""
 
-#: polychromatic-controller:1188
+#: polychromatic-controller:1251
+msgid "View Release Notes"
+msgstr ""
+
+#: polychromatic-controller:1281
+msgid "Something went wrong."
+msgstr ""
+
+#: polychromatic-controller:1282
+msgid "Polychromatic took too long to initialise the application or daemon. Please reload and try again."
+msgstr ""
+
+#: polychromatic-controller:1333
 msgid "No Devices Found"
 msgstr ""
 
-#: polychromatic-controller:1189
+#: polychromatic-controller:1334
 msgid "Please check your Razer device is connected and that the daemon supports your device, then try again."
 msgstr ""
 
-#: polychromatic-controller:1190
+#: polychromatic-controller:1335
 msgid "Check Device Support"
 msgstr ""
 
-#: polychromatic-controller:1303
+#: polychromatic-controller:1449
 msgid "Choose a Color"
 msgstr ""
 
-#: polychromatic-controller:1321
+#: polychromatic-controller:1467
 msgid "Polychromatic Controller"
 msgstr ""
 
-#: polychromatic-controller:1329
+#: polychromatic-controller:1475
 msgid "All Images"
 msgstr ""
 
-#: polychromatic-controller:1337 polychromatic-controller:1342
-#: polychromatic-controller:1347 polychromatic-controller:1352
+#: polychromatic-controller:1483 polychromatic-controller:1488
+#: polychromatic-controller:1493 polychromatic-controller:1498
 msgid "Image"
 msgstr ""
 

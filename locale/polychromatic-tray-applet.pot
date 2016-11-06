@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2016-09-25 17:31+BST\n"
+"POT-Creation-Date: 2016-11-06 22:32+GMT\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,133 +15,145 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: polychromatic-tray-applet:142
-msgid "Unknown Device"
+#: polychromatic-tray-applet:67 polychromatic-tray-applet:101
+msgid "Retry"
 msgstr ""
 
-#: polychromatic-tray-applet:152
-msgid "Change Device"
+#: polychromatic-tray-applet:82
+msgid "Unable to connect to daemon."
 msgstr ""
 
-#: polychromatic-tray-applet:186
-msgid "Effects"
+#: polychromatic-tray-applet:85
+msgid "No devices found."
 msgstr ""
 
-#: polychromatic-tray-applet:194
-msgid "Spectrum"
-msgstr ""
-
-#: polychromatic-tray-applet:195
-msgid "Wave"
-msgstr ""
-
-#: polychromatic-tray-applet:196
-msgid "Reactive"
-msgstr ""
-
-#: polychromatic-tray-applet:197
-msgid "Breath (Random)"
-msgstr ""
-
-#: polychromatic-tray-applet:198
-msgid "Breath (Single Color)"
-msgstr ""
-
-#: polychromatic-tray-applet:199
-msgid "Breath (Dual Color)"
-msgstr ""
-
-#: polychromatic-tray-applet:200
-msgid "Ripple (Single Color)"
-msgstr ""
-
-#: polychromatic-tray-applet:201
-msgid "Ripple (Random)"
-msgstr ""
-
-#: polychromatic-tray-applet:202
-msgid "Static"
-msgstr ""
-
-#: polychromatic-tray-applet:203
-msgid "None"
-msgstr ""
-
-#: polychromatic-tray-applet:211
-msgid "Brightness"
-msgstr ""
-
-#: polychromatic-tray-applet:219
-msgid "Full (100%)"
-msgstr ""
-
-#: polychromatic-tray-applet:220
-msgid "Bright (75%)"
-msgstr ""
-
-#: polychromatic-tray-applet:221
-msgid "Mid (50%)"
-msgstr ""
-
-#: polychromatic-tray-applet:222
-msgid "Dim (25%)"
-msgstr ""
-
-#: polychromatic-tray-applet:223
-msgid "Off (0%)"
-msgstr ""
-
-#: polychromatic-tray-applet:231
-msgid "Game Mode"
-msgstr ""
-
-#: polychromatic-tray-applet:238
-msgid "Enable"
-msgstr ""
-
-#: polychromatic-tray-applet:243
-msgid "Disable"
-msgstr ""
-
-#: polychromatic-tray-applet:249
-msgid "Profiles"
-msgstr ""
-
-#: polychromatic-tray-applet:261
-msgid "Enable Macro Keys"
-msgstr ""
-
-#: polychromatic-tray-applet:270 polychromatic-tray-applet:430
-#: polychromatic-tray-applet:540
-msgid "Change Primary Color..."
-msgstr ""
-
-#: polychromatic-tray-applet:272 polychromatic-tray-applet:434
-#: polychromatic-tray-applet:543
-msgid "Change Secondary Color..."
-msgstr ""
-
-#: polychromatic-tray-applet:284
-msgid "Open Configuration Utility"
-msgstr ""
-
-#: polychromatic-tray-applet:295
+#: polychromatic-tray-applet:106 polychromatic-tray-applet:368
 msgid "Quit"
 msgstr ""
 
-#: polychromatic-tray-applet:420
+#: polychromatic-tray-applet:208
+msgid "Unknown Device"
+msgstr ""
+
+#: polychromatic-tray-applet:213
+msgid "Change Device"
+msgstr ""
+
+#: polychromatic-tray-applet:259
+msgid "Effects"
+msgstr ""
+
+#: polychromatic-tray-applet:267
+msgid "Spectrum"
+msgstr ""
+
+#: polychromatic-tray-applet:268
+msgid "Wave"
+msgstr ""
+
+#: polychromatic-tray-applet:269
+msgid "Reactive"
+msgstr ""
+
+#: polychromatic-tray-applet:270
+msgid "Breath (Random)"
+msgstr ""
+
+#: polychromatic-tray-applet:271
+msgid "Breath (Single Color)"
+msgstr ""
+
+#: polychromatic-tray-applet:272
+msgid "Breath (Dual Color)"
+msgstr ""
+
+#: polychromatic-tray-applet:273
+msgid "Ripple (Single Color)"
+msgstr ""
+
+#: polychromatic-tray-applet:274
+msgid "Ripple (Random)"
+msgstr ""
+
+#: polychromatic-tray-applet:275
+msgid "Static"
+msgstr ""
+
+#: polychromatic-tray-applet:276
+msgid "None"
+msgstr ""
+
+#: polychromatic-tray-applet:284
+msgid "Brightness"
+msgstr ""
+
+#: polychromatic-tray-applet:292
+msgid "Full (100%)"
+msgstr ""
+
+#: polychromatic-tray-applet:293
+msgid "Bright (75%)"
+msgstr ""
+
+#: polychromatic-tray-applet:294
+msgid "Mid (50%)"
+msgstr ""
+
+#: polychromatic-tray-applet:295
+msgid "Dim (25%)"
+msgstr ""
+
+#: polychromatic-tray-applet:296
+msgid "Off (0%)"
+msgstr ""
+
+#: polychromatic-tray-applet:304
+msgid "Game Mode"
+msgstr ""
+
+#: polychromatic-tray-applet:311
+msgid "Enable"
+msgstr ""
+
+#: polychromatic-tray-applet:316
+msgid "Disable"
+msgstr ""
+
+#: polychromatic-tray-applet:322
+msgid "Application Profiles"
+msgstr ""
+
+#: polychromatic-tray-applet:334
+msgid "Enable Macro Keys"
+msgstr ""
+
+#: polychromatic-tray-applet:343 polychromatic-tray-applet:512
+#: polychromatic-tray-applet:622
+msgid "Change Primary Color..."
+msgstr ""
+
+#: polychromatic-tray-applet:345 polychromatic-tray-applet:516
+#: polychromatic-tray-applet:625
+msgid "Change Secondary Color..."
+msgstr ""
+
+#: polychromatic-tray-applet:357
+msgid "Open Configuration Utility"
+msgstr ""
+
+#: polychromatic-tray-applet:502
 msgid "Change Static Color"
 msgstr ""
 
-#: polychromatic-tray-applet:461
+#: polychromatic-tray-applet:543
 msgid "No profiles found."
 msgstr ""
 
-#: polychromatic-tray-applet:469
+#: polychromatic-tray-applet:551
 msgid "None Selected"
 msgstr ""
 
-#: polychromatic-tray-applet:484
+#: polychromatic-tray-applet:566
 msgid "Unknown"
 msgstr ""
 
