@@ -983,11 +983,11 @@ class Controller(object):
         elif command == 'pref-open':
             self.show_menu('preferences')
 
-        elif command.startswith('run'):
+        elif command.startswith('run?'):
             command = command.split('run?')[1]
             background_process(command, shell=True)
 
-        elif command.startswith('open'):
+        elif command.startswith('open?'):
             target = command.split('open?')[1]
             os.system('xdg-open "' + target + '"')
 
