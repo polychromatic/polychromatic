@@ -1276,6 +1276,11 @@ class Controller(object):
             thread.daemon = True
             thread.start()
 
+        elif command == 'timeout-error':
+            self.show_error_page(
+                "serious", "generic", _("Something went wrong."),
+                _("Polychromatic took too long to initialise the application or daemon. Please reload and try again."))
+
         elif command == 'demo-chroma':
             chroma = None
             for device in self.devices:
