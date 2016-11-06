@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2016-09-18 14:49+0100\n"
-"PO-Revision-Date: 2016-09-18 14:49+0100\n"
+"POT-Creation-Date: 2016-11-06 22:34+0000\n"
+"PO-Revision-Date: 2016-11-06 22:34+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_GB\n"
@@ -17,135 +17,150 @@ msgstr ""
 "X-Generator: Poedit 1.8.7.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: polychromatic-tray-applet:142
-msgid "Unknown Device"
-msgstr "Unknown Device"
+#: polychromatic-tray-applet:67 polychromatic-tray-applet:101
+msgid "Retry"
+msgstr "Retry"
 
-#: polychromatic-tray-applet:152
-msgid "Change Device"
-msgstr "Change Device"
+#: polychromatic-tray-applet:82
+msgid "Unable to connect to daemon."
+msgstr "Unable to connect to daemon."
 
-#: polychromatic-tray-applet:186
-msgid "Effects"
-msgstr "Effects"
+#: polychromatic-tray-applet:85
+msgid "No devices found."
+msgstr "No devices found."
 
-#: polychromatic-tray-applet:194
-msgid "Spectrum"
-msgstr "Spectrum"
-
-#: polychromatic-tray-applet:195
-msgid "Wave"
-msgstr "Wave"
-
-#: polychromatic-tray-applet:196
-msgid "Reactive"
-msgstr "Reactive"
-
-#: polychromatic-tray-applet:197
-msgid "Breath (Random)"
-msgstr "Breath (Random)"
-
-#: polychromatic-tray-applet:198
-msgid "Breath (Single Color)"
-msgstr "Breath (Single Colour)"
-
-#: polychromatic-tray-applet:199
-msgid "Breath (Dual Color)"
-msgstr "Breath (Dual Color)"
-
-#: polychromatic-tray-applet:200
-msgid "Ripple (Single Color)"
-msgstr "Ripple (Single Colour)"
-
-#: polychromatic-tray-applet:201
-msgid "Ripple (Random)"
-msgstr "Ripple (Random)"
-
-#: polychromatic-tray-applet:202
-msgid "Static"
-msgstr "Static"
-
-#: polychromatic-tray-applet:203
-msgid "None"
-msgstr "None"
-
-#: polychromatic-tray-applet:211
-msgid "Brightness"
-msgstr "Brightness"
-
-#: polychromatic-tray-applet:219
-msgid "Full (100%)"
-msgstr "Full (100%)"
-
-#: polychromatic-tray-applet:220
-msgid "Bright (75%)"
-msgstr "Bright (75%)"
-
-#: polychromatic-tray-applet:221
-msgid "Mid (50%)"
-msgstr "Mid (50%)"
-
-#: polychromatic-tray-applet:222
-msgid "Dim (25%)"
-msgstr "Dim (25%)"
-
-#: polychromatic-tray-applet:223
-msgid "Off (0%)"
-msgstr "Off (0%)"
-
-#: polychromatic-tray-applet:231
-msgid "Game Mode"
-msgstr "Game Mode"
-
-#: polychromatic-tray-applet:238
-msgid "Enable"
-msgstr "Enable"
-
-#: polychromatic-tray-applet:243
-msgid "Disable"
-msgstr "Disable"
-
-#: polychromatic-tray-applet:249
-msgid "Profiles"
-msgstr "Profiles"
-
-#: polychromatic-tray-applet:261
-msgid "Enable Macro Keys"
-msgstr "Enable Macro Keys"
-
-#: polychromatic-tray-applet:270 polychromatic-tray-applet:430
-#: polychromatic-tray-applet:540
-msgid "Change Primary Color..."
-msgstr "Change Primary Colour..."
-
-#: polychromatic-tray-applet:272 polychromatic-tray-applet:434
-#: polychromatic-tray-applet:543
-msgid "Change Secondary Color..."
-msgstr "Change Secondary Colour..."
-
-#: polychromatic-tray-applet:284
-msgid "Open Configuration Utility"
-msgstr "Open Configuration Utility"
-
-#: polychromatic-tray-applet:295
+#: polychromatic-tray-applet:106 polychromatic-tray-applet:368
 msgid "Quit"
 msgstr "Quit"
 
-#: polychromatic-tray-applet:420
+#: polychromatic-tray-applet:208
+msgid "Unknown Device"
+msgstr "Unknown Device"
+
+#: polychromatic-tray-applet:213
+msgid "Change Device"
+msgstr "Change Device"
+
+#: polychromatic-tray-applet:259
+msgid "Effects"
+msgstr "Effects"
+
+#: polychromatic-tray-applet:267
+msgid "Spectrum"
+msgstr "Spectrum"
+
+#: polychromatic-tray-applet:268
+msgid "Wave"
+msgstr "Wave"
+
+#: polychromatic-tray-applet:269
+msgid "Reactive"
+msgstr "Reactive"
+
+#: polychromatic-tray-applet:270
+msgid "Breath (Random)"
+msgstr "Breath (Random)"
+
+#: polychromatic-tray-applet:271
+msgid "Breath (Single Color)"
+msgstr "Breath (Single Colour)"
+
+#: polychromatic-tray-applet:272
+msgid "Breath (Dual Color)"
+msgstr "Breath (Dual Color)"
+
+#: polychromatic-tray-applet:273
+msgid "Ripple (Single Color)"
+msgstr "Ripple (Single Colour)"
+
+#: polychromatic-tray-applet:274
+msgid "Ripple (Random)"
+msgstr "Ripple (Random)"
+
+#: polychromatic-tray-applet:275
+msgid "Static"
+msgstr "Static"
+
+#: polychromatic-tray-applet:276
+msgid "None"
+msgstr "None"
+
+#: polychromatic-tray-applet:284
+msgid "Brightness"
+msgstr "Brightness"
+
+#: polychromatic-tray-applet:292
+msgid "Full (100%)"
+msgstr "Full (100%)"
+
+#: polychromatic-tray-applet:293
+msgid "Bright (75%)"
+msgstr "Bright (75%)"
+
+#: polychromatic-tray-applet:294
+msgid "Mid (50%)"
+msgstr "Mid (50%)"
+
+#: polychromatic-tray-applet:295
+msgid "Dim (25%)"
+msgstr "Dim (25%)"
+
+#: polychromatic-tray-applet:296
+msgid "Off (0%)"
+msgstr "Off (0%)"
+
+#: polychromatic-tray-applet:304
+msgid "Game Mode"
+msgstr "Game Mode"
+
+#: polychromatic-tray-applet:311
+msgid "Enable"
+msgstr "Enable"
+
+#: polychromatic-tray-applet:316
+msgid "Disable"
+msgstr "Disable"
+
+#: polychromatic-tray-applet:322
+msgid "Application Profiles"
+msgstr "Application Profiles"
+
+#: polychromatic-tray-applet:334
+msgid "Enable Macro Keys"
+msgstr "Enable Macro Keys"
+
+#: polychromatic-tray-applet:343 polychromatic-tray-applet:512
+#: polychromatic-tray-applet:622
+msgid "Change Primary Color..."
+msgstr "Change Primary Colour..."
+
+#: polychromatic-tray-applet:345 polychromatic-tray-applet:516
+#: polychromatic-tray-applet:625
+msgid "Change Secondary Color..."
+msgstr "Change Secondary Colour..."
+
+#: polychromatic-tray-applet:357
+msgid "Open Configuration Utility"
+msgstr "Open Configuration Utility"
+
+#: polychromatic-tray-applet:502
 msgid "Change Static Color"
 msgstr "Change Static Colour"
 
-#: polychromatic-tray-applet:461
+#: polychromatic-tray-applet:543
 msgid "No profiles found."
 msgstr "No profiles found."
 
-#: polychromatic-tray-applet:469
+#: polychromatic-tray-applet:551
 msgid "None Selected"
 msgstr "None Selected"
 
-#: polychromatic-tray-applet:484
+#: polychromatic-tray-applet:566
 msgid "Unknown"
 msgstr "Unknown"
+
+#~ msgid "Profiles"
+#~ msgstr "Profiles"
 
 #~ msgid "Spectrum Effect"
 #~ msgstr "Spectrum Effect"
