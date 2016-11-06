@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<!--
+ Polychromatic is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Polychromatic is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Polychromatic. If not, see <http://www.gnu.org/licenses/>.
+
+ Copyright (C) 2015-2016 Luke Horwell <luke@ubuntu-mate.org>
+-->
+<html>
+<head>
+  <link href="controller.css" rel="stylesheet" media="screen">
+  <link href="lib/font-awesome.min.css" rel="stylesheet" media="screen">
+</head>
+<body>
+  <div class="header"></div>
+
+  <div style="position:fixed; top:0; left:0; right:0; bottom:52px; width:100%; height:100%">
+    <iframe id="player" height="100%" width="100%" src="https://www.youtube.com/embed/0VRK_bsE6nw?rel=0&amp;controls=0&amp;showinfo=0&autoplay=1" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <div class="footer">
+    <div class="left"></div>
+    <div class="right">
+      <button class="btn" id="close-window" onclick="cmd('cancel-changes')"></button>
+    </div>
+  </div>
+
+  <script src="lib/jquery-2.1.4.min.js"></script>
+  <script src="global.js"></script>
+</body>
+</html>
