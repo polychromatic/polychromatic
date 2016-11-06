@@ -274,13 +274,19 @@
         <br>
 
         <h3 id="str-daemon-options"></h3>
+        <table>
+          <tr>
+            <td><button id="str-daemon-restart" class="btn" onclick="cmd('daemon-restart')"></button></td>
+            <td id="str-daemon-service"></td>
+          </tr>
+        </table>
+        <br>
+
         <div id="daemon-options-missing" class="alert" hidden>
           <span class="fa fa-warning"></span> <span id="str-options-missing"></span>
         </div>
         <div id="daemon-options-restart" class="alert" hidden>
           <span class="fa fa-warning"></span> <span id="str-options-restart"></span>
-          <br><br>
-          <button id="str-daemon-restart" class="btn" onclick="cmd('daemon-restart')"></button>
           <br>
         </div>
         <table>

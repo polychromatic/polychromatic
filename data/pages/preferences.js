@@ -107,5 +107,6 @@ function set_daemon_conf(group, item, element) {
     } else {
         cmd(command + '?False')
     }
-    $("#daemon-options-restart").fadeIn('fast');
+    $("#daemon-options-restart").fadeIn();
+    $("#str-daemon-restart").addClass('btn-serious');
 }

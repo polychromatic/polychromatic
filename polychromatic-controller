@@ -629,7 +629,8 @@ class Controller(object):
             trans.push('#str-watch', _("Watch"), True)
 
             trans.push('#str-daemon-options', _("Daemon Options"))
-            trans.push('#str-daemon-restart', _("Restart Daemon Process"))
+            trans.push('#str-daemon-restart', _("Restart Daemon Service"))
+            trans.push('#str-daemon-service', _("If you have re-plugged devices, or are experiencing glitches, try restarting the daemon service."))
             trans.push('#str-options-missing', _("Could not read the daemon's configuration file."))
             trans.push('#str-options-restart', _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect."))
 
