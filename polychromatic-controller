@@ -1272,21 +1272,10 @@ class Controller(object):
                 self.daemon_config.write(f)
 
         elif command == 'daemon-restart':
-            print("Restarting razer-service...")
-            self.update_page("#str-daemon-restart", "addClass", "disabled")
-            self.update_page("#str-daemon-restart", "html", _("Restarting..."))
             self.window.hide()
-            from subprocess import check_output
-            daemon_pid = int(check_output(["pidof", "razer-service"]))
-            os.kill(daemon_pid, signal.SIGTERM)
-            # Wait for daemon to start again
-            time.sleep(1)
-            background_process("razer-service", shell=True)
-            time.sleep(5)
-            # Relaunch Controller / Tray Applet
-            restart_tray_applet()
-            background_process(__file__)
-            exit(0)
+            thread = threading.Thread(target=restart_daemon_service, args=())
+            thread.daemon = True
+            thread.start()
 
         elif command == 'demo-chroma':
             chroma = None
@@ -1609,6 +1598,48 @@ def restart_tray_applet():
         print("Tray applet is not running or couldn't be relaunched.")
         return
     print("Tray Applet Reloaded.")
+
+def restart_daemon_service():
+    from subprocess import check_output
+
+    # Gracefully stop the daemon
+    print("Stopping razer-service.", end='')
+    try:
+        app.devman.stop_daemon()
+    except Exception as NoneType:
+        # Cannot stop gracefully. Skip this.
+        pass
+
+    # Wait for the daemon to stop.
+    stopped = False
+    for x in range(0,10):
+        print(".", end='')
+        try:
+            daemon_pid = int(check_output(["pidof", "razer-service"]))
+        except:
+            stopped = True
+            break
+        time.sleep(1)
+
+    # Kill the daemon if still not ended
+    if not stopped:
+        print("\nKilling razer-service...")
+        os.kill(daemon_pid, signal.SIGTERM)
+
+    # Wait for daemon to start again
+    time.sleep(1)
+    print("\nStarting razer-service...")
+    background_process("razer-service", shell=True)
+
+    print("Waiting for razer-service to start...")
+    time.sleep(5)
+
+    # Relaunch Controller / Tray Applet
+    print("Relaunching Polychromatic...")
+    restart_tray_applet()
+    background_process(__file__)
+    exit(0)
+
 
 """ Razer Chroma Keyboard Demo """
 # Based on advert: https://www.youtube.com/watch?v=0VRK_bsE6nw
