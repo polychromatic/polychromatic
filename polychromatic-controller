@@ -1318,19 +1318,6 @@ class Controller(object):
             # Change the header image
             self.update_device_supported_features()
 
-        elif command == 'device-refresh':
-            stdout.vprint("Refreshing device list...")
-            self.devices = self.get_devices()
-            self.refresh_device_list()
-            if len(self.devices) == 0:
-                self.active_device = None
-            else:
-                self.active_device = self.devices[0]
-            self.update_device_supported_features()
-
-            for device in self.devices:
-                stdout.vprint("Found: {0} [{1}]".format(device.name, device.serial))
-
         else:
             print("Unimplemented command: " + command)
 
