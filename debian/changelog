@@ -1,3 +1,19 @@
+polychromatic (0.3.3-xenial) xenial; urgency=low
+
+  * Ensure FN/Space keys are enabled for keyboards that support it.
+  * Add tabs to preferences.
+  * Depend on python3-requests.
+  * View change logs from within the application.
+  * Add daemon settings to preferences.
+  * Add ability to restart daemon service.
+  * Prevent tray applet crash when profile didn't exist.
+  * Prevent tray applet crash when daemon is not ready/present.
+  * Add loading screen while Controller initialises.
+  * Add demo option - Synchronised Razer BlackWidow Chroma Advert.
+  * Remove useless "device refresh" button.
+
+ -- Luke Horwell <luke@ubuntu-mate.org>  Sat, 02 Oct 2016 21:26:22 +0100
+
 polychromatic (0.3.2-xenial) xenial; urgency=low
 
   * Add keyboard navigation support.

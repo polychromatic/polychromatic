@@ -1,3 +1,17 @@
+# 0.3.3
+
+  * Ensure FN/Space keys are enabled for keyboards that support it.
+  * Add tabs to preferences.
+  * Depend on python3-requests.
+  * View change logs from within the application.
+  * Add daemon settings to preferences.
+  * Add ability to restart daemon service.
+  * Prevent tray applet crash when profile didn't exist.
+  * Prevent tray applet crash when daemon is not ready/present.
+  * Add loading screen while Controller initialises.
+  * Add demo option - Synchronised Razer BlackWidow Chroma Advert.
+  * Remove useless "device refresh" button.
+
 # 0.3.2
 
   * Add keyboard navigation support.
