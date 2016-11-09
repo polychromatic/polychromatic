@@ -252,7 +252,10 @@ class AppIndicator:
             button.set_image(img)
             self.device_menu.append(button)
 
-        self.active_device = devlist[0]
+        try:
+            self.active_device = devlist[0]
+        except IndexError:
+            startup_failed(self, 2)
         self.active_device_status.set_label(devlist[0].name)
 
         # Create effects sub-menu
