@@ -638,7 +638,9 @@ class Controller(object):
                 self.update_page('#str-version-app-string', "html", version)
                 self.update_page("#update-button", "hide")
             else:
-                self.update_page('#str-version-app-string', "html", version + "-dev")
+                # When running from 'master' directly.
+                version_master = version[:-1] + str(int(version[-1:]) + 1)
+                self.update_page('#str-version-app-string', "html", version_master + "-dev")
 
             self.update_page('#str-version-config-string', "html", str(pref.version))
             self.update_page('#str-version-lib-string', "html", str(self.devman.version))
