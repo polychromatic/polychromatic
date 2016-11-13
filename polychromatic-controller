@@ -321,10 +321,10 @@ class Controller(object):
             self.devices = self.get_devices()
             if len(self.devices) == 0:
                 self.active_device = None
-                self.active_ui_device = None
+                self.active_device_serial = None
             else:
                 self.active_device = self.devices[0]
-                self.active_ui_device = self.devices[0].serial
+                self.active_device_serial = self.devices[0].serial
 
         stdout.vprint('Application Ready.\n')
         self.show_menu('menu')
@@ -1307,7 +1307,7 @@ class Controller(object):
 
             if selected_device:
                 self.active_device = selected_device
-                self.active_ui_device = selected_device.serial
+                self.active_device_serial = selected_device.serial
                 formfactor = selected_device.type
             else:
                 print("Could not locate device with serial: " + selected_serial)
@@ -1353,7 +1353,7 @@ class Controller(object):
         except:
             # No device was present before.
             selected = "0"
-        selected_ui = self.active_ui_device
+        selected_ui = self.active_device_serial
         if self.current_page == "menu":
             app.update_page(".device", "remove")
             for device in self.devices:
