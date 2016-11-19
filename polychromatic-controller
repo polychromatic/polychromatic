@@ -1651,6 +1651,9 @@ def restart_daemon_service():
     from subprocess import check_output
 
     # Gracefully stop the daemon
+    background_process("zenity --progress --pulsate --auto-close --timeout=10 --no-cancel --width=400 --window-icon='" + \
+                        os.path.join(path.get_data_source(__file__), "img", "logo.svg") + "' --title='Polychromatic' " + \
+                        "--text='" + _("Restarting daemon service...") + "'", shell=True)
     print("Stopping razer-service.", end='')
     try:
         app.devman.stop_daemon()
