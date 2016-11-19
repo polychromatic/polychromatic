@@ -52,14 +52,14 @@ function new_profile_dialog_open() {
     $('#dialog-new').show();
     $('#dialog-new-ok').addClass('disabled');
     $('#overlay').fadeIn('fast');
-    $('#content').addClass('blur');
+    $('.blur-focus').addClass('blur');
 }
 
 function new_profile_dialog_close() {
     $('#dialog-new').addClass('out')
     setTimeout(function(){ $('#dialog-new').removeClass('out').removeClass('in').hide() }, 250);
     $('#overlay').fadeOut('fast')
-    $('#content').removeClass('blur')
+    $('.blur-focus').removeClass('blur')
 }
 
 // Enable / disable "Create" button if valid data is entered.
@@ -94,7 +94,7 @@ function del_profile_dialog_open() {
     $('#dialog-del').addClass('in');
     $('#dialog-del').show();
     $('#overlay').fadeIn('fast');
-    $('#content').addClass('blur');
+    $('.blur-focus').addClass('blur');
     $("#dialog-del-item").html(selected_name);
 }
 
@@ -102,7 +102,7 @@ function del_profile_dialog_close() {
     $('#dialog-del').addClass('out');
     setTimeout(function(){ $('#dialog-del').removeClass('out').removeClass('in').hide() }, 250);
     $('#overlay').fadeOut('fast');
-    $('#content').removeClass('blur');
+    $('.blur-focus').removeClass('blur');
 }
 
 function del_profile_dialog_confirm() {
@@ -149,14 +149,14 @@ function help_dialog_open() {
     $('#dialog-help').addClass('in');
     $('#dialog-help').show();
     $('#overlay').fadeIn('fast');
-    $('#content').addClass('blur');
+    $('.blur-focus').addClass('blur');
 }
 
 function help_dialog_close() {
     $('#dialog-help').addClass('out');
     setTimeout(function(){ $('#dialog-help').removeClass('out').removeClass('in').hide() }, 250);
     $('#overlay').fadeOut('fast');
-    $('#content').removeClass('blur');
+    $('.blur-focus').removeClass('blur');
 }
 
 

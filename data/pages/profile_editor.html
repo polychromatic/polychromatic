@@ -22,19 +22,19 @@
   <link href="lib/font-awesome.min.css" rel="stylesheet" media="screen">
 </head>
 <body>
-  <div class="header">
+  <div class="header blur-focus">
     <h3 id="page-header">
       <img id="profile-icon" hidden />
       <span id="profile-name" hidden></span>
     </h3>
   </div>
-  <div class="header-options">
+  <div class="header-options blur-focus">
     <button id="str-edit-profile" class="btn" onclick="cmd('profile-rename?'+selected_profile)"><span class="fa fa-tag"></span> </button>
   </div>
 
   <div id="overlay" hidden></div>
 
-  <div class="content" style="overflow:hidden" hidden>
+  <div class="content blur-focus" style="overflow:hidden" hidden>
     <!-- Edit Profile Menu -->
     <div class="menu_area">
       <div id="edit-panel">
@@ -109,7 +109,7 @@
     </div>
   </div>
 
-  <div class="footer">
+  <div class="footer blur-focus">
     <div class="left"></div>
     <div class="right">
       <button class="btn" id="cancel" onclick="cmd('cancel-changes')"></button>

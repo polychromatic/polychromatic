@@ -21,18 +21,18 @@
   <link href="lib/font-awesome.min.css" rel="stylesheet" media="screen">
 </head>
 <body>
-  <div class="header is-dynamic">
+  <div class="header is-dynamic blur-focus">
     <div id="dynamic" class=""></div>
     <h3 id="page-header"></h3>
   </div>
-  <div class="header-options">
+  <div class="header-options blur-focus">
     <button class="btn right" onclick="cmd('pref-open')"><span class="fa fa-wrench"></span></button>
     <button class="btn right" onclick="cmd('open?https://github.com/lah7/polychromatic')"><span class="fa fa-github"></span></button>
     <button class="btn right" onclick="cmd('open-config-folder')"><span class="fa fa-folder"></span></button>
   </div>
-  <div id="device-tabs" class="tabs"></div>
+  <div id="device-tabs" class="tabs blur-focus"></div>
 
-  <div class="content with-tabs" hidden>
+  <div class="content with-tabs blur-focus" hidden>
     <!-- Main Menu Screen -->
     <div class="menu_area">
       <div class="left">
@@ -269,7 +269,7 @@
     </div>
   </div>
 
-  <div class="footer">
+  <div class="footer blur-focus">
     <div class="right">
       <button class="btn" id="close-window" onclick="cmd('quit')"></button>
     </div>

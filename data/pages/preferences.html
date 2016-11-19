@@ -21,10 +21,10 @@
   <link href="lib/font-awesome.min.css" rel="stylesheet" media="screen">
 </head>
 <body>
-  <div class="header">
+  <div class="header blur-focus">
     <h3 id="page-header"></h3>
   </div>
-  <div class="tabs">
+  <div class="tabs blur-focus">
     &nbsp;&nbsp;
     <button id='tab-about' class="tab active" onclick="switchTab('#tab-about')"><img src="../img/logo.svg"/><span id="str-about"></span></button>
     <button id='tab-app' class="tab" onclick="switchTab('#tab-app')"><img src="../img/generic-application.svg"/><span id="str-app-settings"></span></button>
@@ -33,7 +33,7 @@
     <button id='tab-daemon' class="tab" onclick="switchTab('#tab-daemon')"><img src="../img/error/upgrade.png"/><span id="str-daemon"></span></button>
   </div>
 
-  <div class="content with-tabs" hidden>
+  <div class="content with-tabs blur-focus" hidden>
     <!-- Preferences Menu -->
     <div class="menu_area">
       <div id="tab-about-page" class="tab-content">
@@ -324,7 +324,7 @@
     </div>
   </div>
 
-  <div class="footer">
+  <div class="footer blur-focus">
     <div class="left"></div>
     <div class="right">
       <button class="btn" id="pref-save" onclick="cmd('pref-close')"><span class="fa fa-check"></span> </button>

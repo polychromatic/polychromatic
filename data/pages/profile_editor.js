@@ -426,7 +426,7 @@ function rename_profile_dialog_open() {
     $('#dialog-rename').addClass('in');
     $('#dialog-rename').show();
     $('#overlay').fadeIn('fast');
-    $('#content').addClass('blur');
+    $('.blur-focus').addClass('blur');
 }
 
 function rename_profile_dialog_save() {
@@ -443,5 +443,5 @@ function rename_profile_dialog_close() {
     $('#dialog-rename').addClass('out');
     setTimeout(function(){ $('#dialog-rename').removeClass('out').removeClass('in').hide() }, 250);
     $('#overlay').fadeOut('fast');
-    $('#content').removeClass('blur');
+    $('.blur-focus').removeClass('blur');
 }

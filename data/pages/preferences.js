@@ -84,14 +84,14 @@ function changelog_dialog_open() {
     $('#dialog-changelog').addClass('in');
     $('#dialog-changelog').show();
     $('#overlay').fadeIn('fast');
-    $('#content').addClass('blur');
+    $('.blur-focus').addClass('blur');
 }
 
 function changelog_dialog_close() {
     $('#dialog-changelog').addClass('out');
     setTimeout(function(){ $('#dialog-changelog').removeClass('out').removeClass('in').hide() }, 250);
     $('#overlay').fadeOut('fast');
-    $('#content').removeClass('blur');
+    $('.blur-focus').removeClass('blur');
 }
 
 function open_release_note(version) {
