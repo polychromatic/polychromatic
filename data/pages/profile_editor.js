@@ -383,8 +383,8 @@ function set_mode(id) {
     //      str_clear
     //      str_clear_help
 
-    $(".key-edit").removeClass("selected");
-    $("#edit-"+id).addClass("selected");
+    $(".key-edit").removeClass("active");
+    $("#edit-"+id).addClass("active");
 
     if (id == 'set') {
         mode = 'set';

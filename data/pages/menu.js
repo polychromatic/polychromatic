@@ -28,10 +28,10 @@ function profile_list_change(css_id, uuid, human_name) {
     selected_profile = uuid;
     selected_name = human_name;
     $('#profiles-activate, #profiles-edit, #profiles-delete').removeClass('disabled');
-    $('.app-profile-item').removeClass('selected');
-    $('.effect-item').removeClass('selected');
-    $('#'+css_id).addClass('selected');
-    $('#fx-none').addClass('selected');
+    $('.app-profile-item').removeClass("active");
+    $('.effect-item').removeClass("active");
+    $('#'+css_id).addClass("active");
+    $('#fx-none').addClass("active");
 
     // Instant profile activation (if 'live_switch' is enabled in preferences)
     if ( live_switch == true ) {
@@ -120,8 +120,8 @@ function del_profile_dialog_confirm() {
 function prefill_launcher(selected_div, name, icon) {
     $("#dialog-new-name").val(name);
     $("#dialog-new-icon").val(icon);
-    $(".app-launcher-item").removeClass('selected');
-    $('#'+selected_div).addClass('selected');
+    $(".app-launcher-item").removeClass("active");
+    $('#'+selected_div).addClass("active");
     $('#dialog-applauncher-ok').show();
     $('#dialog-applauncher-revert').hide();
     $('#dialog-new-ok').removeClass('disabled');
@@ -210,9 +210,9 @@ $(document).ready(function() {
  */
 function setfx(type, parms) {
     command = "effect?" + type + "?" + parms;
-    $(".app-profile-item").removeClass("selected");
-    $("#effect-list *").removeClass("selected");
-    $("#fx-" + type).addClass("selected");
+    $(".app-profile-item").removeClass("active");
+    $("#effect-list *").removeClass("active");
+    $("#fx-" + type).addClass("active");
     cmd(command);
 }
 

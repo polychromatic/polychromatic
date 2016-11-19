@@ -555,7 +555,7 @@ input[type="radio"] {
     background-color: #FF0000;
 }
 
-.btn.selected {
+.btn.active {
     background-color: green;
 }
 
@@ -786,8 +786,8 @@ label.disabled {
     color: white;
 }
 
-.app-profile-item.selected,
-.effect-item.selected {
+.app-profile-item.active,
+.effect-item.active {
     border: 1px solid lime;
     background-color: green;
     color: white;
@@ -843,7 +843,7 @@ label.disabled {
     color: white;
 }
 
-.app-launcher-item.selected {
+.app-launcher-item.active {
     border: 1px solid lime;
     background-color: green;
     color: white;

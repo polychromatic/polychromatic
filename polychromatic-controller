@@ -1453,12 +1453,12 @@ class Controller(object):
             effect = self.active_device_state.get_state("effect")
             if effect == "profile":
                 uuid = self.active_device_state.get_state("profile")
-                app.update_page(".effect-item", "removeClass", "selected")
-                app.update_page("#fx-none", "addClass", "selected")
-                app.update_page("#app-"+uuid, "addClass", "selected")
+                app.update_page(".effect-item", "removeClass", "active")
+                app.update_page("#fx-none", "addClass", "active")
+                app.update_page("#app-"+uuid, "addClass", "active")
             else:
-                app.update_page(".effect-item", "removeClass", "selected")
-                app.update_page("#fx-"+effect, "addClass", "selected")
+                app.update_page(".effect-item", "removeClass", "active")
+                app.update_page("#fx-"+effect, "addClass", "active")
         except:
             pass
 
