@@ -1035,7 +1035,7 @@ class Controller(object):
 
         elif command == 'pref-reset-conf':
             print('User requested to reset configuration.')
-            pref.create_default_config()
+            pref.clear_config()
             pref.load_pref()
             print('Configuration successfully reset.')
             self.show_menu('preferences')
