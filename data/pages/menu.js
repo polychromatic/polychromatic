@@ -29,7 +29,9 @@ function profile_list_change(css_id, uuid, human_name) {
     selected_name = human_name;
     $('#profiles-activate, #profiles-edit, #profiles-delete').removeClass('disabled');
     $('.app-profile-item').removeClass('selected');
+    $('.effect-item').removeClass('selected');
     $('#'+css_id).addClass('selected');
+    $('#fx-none').addClass('selected');
 
     // Instant profile activation (if 'live_switch' is enabled in preferences)
     if ( live_switch == true ) {
@@ -208,6 +210,7 @@ $(document).ready(function() {
  */
 function setfx(type, parms) {
     command = "effect?" + type + "?" + parms;
+    $(".app-profile-item").removeClass("selected");
     $("#effect-list *").removeClass("selected");
     $("#fx-" + type).addClass("selected");
     cmd(command);

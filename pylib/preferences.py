@@ -26,6 +26,7 @@ class Paths(object):
 
     """ Files """
     preferences = os.path.join(root, 'preferences.json')
+    devicestate = os.path.join(root, 'devicestate.json')
 
     """ Deprecated """
     profiles = os.path.join(root, 'profiles.json')
@@ -43,6 +44,41 @@ class Paths(object):
         return path
 
 path = Paths()
+
+################################################################################
+
+class DeviceState(object):
+    """ Track the last known properties of the device, e.g. brightness/effect """
+    def __init__(self, pref, serial):
+        self.uid = serial
+        self.pref = pref
+
+    def get_state(self, attribute):
+        try:
+            return self.pref.get(self.uid, attribute, None, path.devicestate)
+        except:
+            return None
+
+    def set_state(self, attribute, newdata):
+        # Read daemon config for "sync effects" option.
+        config_path = os.path.join(os.path.expanduser('~'), ".razer-service", "razer.conf")
+        import configparser
+        daemon_config = configparser.ConfigParser()
+        daemon_config.read(config_path)
+        try:
+            sync_enabled = daemon_config.get("Startup", "sync_effects_enabled")
+        except:
+            sync_enabled = False
+
+        # If "sync effects" is enabled, set this option for all devices.
+        if attribute in ["effect", "brightness"] and sync_enabled == 'True':
+            rawjson = self.pref.load_file(path.devicestate)
+            for uid in list(rawjson.keys()):
+                rawjson[uid][attribute] = newdata
+            self.pref.save_file(path.devicestate, rawjson)
+        else:
+            self.pref.set(self.uid, attribute, newdata, path.devicestate)
+
 
 ################################################################################
 

@@ -322,9 +322,11 @@ class Controller(object):
             if len(self.devices) == 0:
                 self.active_device = None
                 self.active_device_serial = None
+                self.active_device_state = None
             else:
                 self.active_device = self.devices[0]
                 self.active_device_serial = self.devices[0].serial
+                self.active_device_state = pref.DeviceState(pref, self.active_device_serial)
 
         stdout.vprint('Application Ready.\n')
         self.show_menu('menu')
@@ -464,6 +466,9 @@ class Controller(object):
 
             # Hide unsupported options for active device.
             self.update_device_supported_features()
+
+            # Display the last known options.
+            self.update_device_active_options()
 
         elif self.current_page == 'profile_editor':
             # Push strings
@@ -795,14 +800,17 @@ class Controller(object):
         ## Effects & Keyboard Controls
         elif command.startswith('brightness'):
             value = int(command[11:])
+            self.active_device_state.set_state("brightness", value)
             self.active_device.brightness = value
 
         elif command == 'logo-toggle':
             current_status = self.active_device.fx.misc.logo
             if current_status == True:
                 self.active_device.fx.misc.logo = False
+                self.active_device_state.set_state("logo", False)
             else:
                 self.active_device.fx.misc.logo = True
+                self.active_device_state.set_state("logo", True)
 
         elif command.startswith('effect'):
             enabled_options = []
@@ -821,15 +829,19 @@ class Controller(object):
                 direction = int(command.split('?')[2]) # '?1' or '?2' for direction
                 self.active_device.fx.wave(direction)
                 enabled_options = ['waves']
+                self.active_device_state.set_state("effect_parms", direction)
 
             elif effect == 'reactive':
                 self.current_effect = "reactive"
                 self.reactive_speed = int(command.split('?')[2])
                 self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
                 enabled_options = ['rgb_primary', 'reactive-options']
+                self.active_device_state.set_state("effect_parms", self.reactive_speed)
 
             elif effect == 'breath':
                 breath_type = command.split('?')[2]
+                self.active_device_state.set_state("effect_parms", breath_type)
+
                 if breath_type == 'random':
                     self.current_effect = "breath?random"
                     self.active_device.fx.breath_random()
@@ -879,6 +891,13 @@ class Controller(object):
 
             self.last_effect = self.current_effect
             self.update_background_header()
+            self.active_device_state.set_state("effect", effect)
+            self.active_device_state.set_state("colour1_red", self.primary_rgb.red)
+            self.active_device_state.set_state("colour1_green", self.primary_rgb.green)
+            self.active_device_state.set_state("colour1_blue", self.primary_rgb.blue)
+            self.active_device_state.set_state("colour2_red", self.secondary_rgb.red)
+            self.active_device_state.set_state("colour2_green", self.secondary_rgb.green)
+            self.active_device_state.set_state("colour2_blue", self.secondary_rgb.blue)
 
         elif command == 'enable-marco-keys':
             self.active_device.macro.enable_macros()
@@ -890,12 +909,14 @@ class Controller(object):
             self.update_page('#game-mode-status', 'html', 'Enabled')
             self.update_page('#game-mode-enable', 'hide')
             self.update_page('#game-mode-disable', 'show')
+            self.active_device_state.set_state("gamemode", True)
 
         elif command == 'gamemode-disable':
             self.active_device.game_mode_led = False
             self.update_page('#game-mode-status', 'html', 'Disabled')
             self.update_page('#game-mode-enable', 'show')
             self.update_page('#game-mode-disable', 'hide')
+            self.active_device_state.set_state("gamemode", False)
 
         ## Changing colours for this session.
         elif command.startswith('ask-color'):
@@ -1070,6 +1091,8 @@ class Controller(object):
             self.webkit.run_javascript('set_cursor("html","normal")')
             self.current_effect = 'custom'
             self.update_background_header()
+            self.active_device_state.set_state("effect", "profile")
+            self.active_device_state.set_state("profile", uuid)
 
         elif command == 'profile-preview':
             self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
@@ -1308,6 +1331,7 @@ class Controller(object):
             if selected_device:
                 self.active_device = selected_device
                 self.active_device_serial = selected_device.serial
+                self.active_device_state = pref.DeviceState(pref, self.active_device_serial)
                 formfactor = selected_device.type
             else:
                 print("Could not locate device with serial: " + selected_serial)
@@ -1319,6 +1343,7 @@ class Controller(object):
 
             # Change the header image
             self.update_device_supported_features()
+            self.update_device_active_options()
 
         else:
             print("Unimplemented command: " + command)
@@ -1415,6 +1440,27 @@ class Controller(object):
         # Logo light toggle - but exclude Mamba.
         if str(device_name).find("Mamba") == -1:
             check_ability("lighting_logo", "logo-toggle")
+
+    def update_device_active_options(self):
+        try:
+            brightness = int(self.active_device.brightness)
+            app.update_page("#brightness", "val", str(brightness))
+            app.update_page("#brightnessValue", "html", str(brightness) + "%")
+        except:
+            pass
+
+        try:
+            effect = self.active_device_state.get_state("effect")
+            if effect == "profile":
+                uuid = self.active_device_state.get_state("profile")
+                app.update_page(".effect-item", "removeClass", "selected")
+                app.update_page("#fx-none", "addClass", "selected")
+                app.update_page("#app-"+uuid, "addClass", "selected")
+            else:
+                app.update_page(".effect-item", "removeClass", "selected")
+                app.update_page("#fx-"+effect, "addClass", "selected")
+        except:
+            pass
 
     def update_background_header(self):
         if not self.current_page == "menu":

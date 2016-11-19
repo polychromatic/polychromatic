@@ -167,6 +167,8 @@ class AppIndicator:
         self.secondary_colour = (secondary_r, secondary_g, secondary_b)
         self.active_effect = None
         self.active_device = None
+        self.active_device_serial = None
+        self.active_device_state = None
 
         # Read preferences and profiles.
         self.profiles = polychromatic.profiles.AppProfiles()
@@ -257,6 +259,8 @@ class AppIndicator:
         except IndexError:
             startup_failed(self, 2)
         self.active_device_status.set_label(devlist[0].name)
+        self.active_device_serial = self.active_device.serial
+        self.active_device_state = pref.DeviceState(pref, self.active_device_serial)
 
         # Create effects sub-menu
         effect_item = Gtk.MenuItem(_("Effects"))
@@ -401,24 +405,41 @@ class AppIndicator:
         """ Shared function to set an effect on the device """
         if effect_type == "breath_r":
             self.active_device.fx.breath_random()
+            self.active_device_state.set_state("effect", "breath")
         elif effect_type == "breath_s":
             self.active_device.fx.breath_single(*self.colour)
+            self.active_device_state.set_state("effect", "breath")
         elif effect_type == "breath_d":
             self.active_device.fx.breath_dual(*self.colour, *self.secondary_colour)
+            self.active_device_state.set_state("effect", "breath")
         elif effect_type == "none":
             self.active_device.fx.none()
+            self.active_device_state.set_state("effect", "none")
         elif effect_type == "reactive":
             self.active_device.fx.reactive(*self.colour, 2)
+            self.active_device_state.set_state("effect", "reactive")
         elif effect_type == "spectrum":
             self.active_device.fx.spectrum()
+            self.active_device_state.set_state("effect", "spectrum")
         elif effect_type == "static":
             self.active_device.fx.static(*self.colour)
+            self.active_device_state.set_state("effect", "static")
         elif effect_type == "wave":
             self.active_device.fx.wave(1)
+            self.active_device_state.set_state("effect", "wave")
         elif effect_type == "ripple":
             self.active_device.fx.ripple(*self.colour)
+            self.active_device_state.set_state("effect", "ripple")
         elif effect_type == "ripple_random":
             self.active_device.fx.ripple_random()
+            self.active_device_state.set_state("effect", "ripple")
+
+        self.active_device_state.set_state("colour1_red", pref.get('primary_colors', 'red', 0))
+        self.active_device_state.set_state("colour1_green", pref.get('primary_colors', 'green', 255))
+        self.active_device_state.set_state("colour1_blue", pref.get('primary_colors', 'blue', 0))
+        self.active_device_state.set_state("colour2_red", pref.get('secondary_colors', 'red', 255))
+        self.active_device_state.set_state("colour2_green", pref.get('secondary_colors', 'green', 0))
+        self.active_device_state.set_state("colour2_blue", pref.get('secondary_colors', 'blue', 0))
 
     # Tray Applet Responses
     def quit(self, widget, data=None):
