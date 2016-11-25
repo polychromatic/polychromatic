@@ -84,6 +84,19 @@ Followed by updating your Apt sources:
 Otherwise, standalone packages are available from the [releases page](https://github.com/lah7/polychromatic/releases/latest/).
 
 
+#### ![Arch](.readme/arch.png) Arch Linux
+
+Packages for Arch are maintained by [z3ntu](https://github.com/z3ntu). You can install using an AUR wrapper, like as follows:
+
+    yaourt -S polychromatic
+    pacaur -S polychromatic
+
+There are two packages:
+
+* [`polychromatic`](https://aur.archlinux.org/packages/polychromatic/) - Latest stable version.
+* [`polychromatic-git`](https://aur.archlinux.org/packages/polychromatic-git/) - Latest development version.
+
+
 #### ![Other Distributions](.readme/linux.png) Other Distributions / Manual Installation
 
 See further below for which dependencies you will require to install first.
