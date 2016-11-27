@@ -1,3 +1,13 @@
+polychromatic (0.3.4-xenial) xenial; urgency=low
+
+  * Detect when a Razer product is connected.
+  * Track and retain device states.
+  * Show optional zenity dialog when restarting daemon.
+  * Fix "Reset Preferences" button.
+  * Miscellaneous UI fixes.
+
+ -- Luke Horwell <luke@ubuntu-mate.org>  Sat, 02 Oct 2016 21:26:22 +0100
+
 polychromatic (0.3.3-xenial) xenial; urgency=low
 
   * Ensure FN/Space keys are enabled for keyboards that support it.
