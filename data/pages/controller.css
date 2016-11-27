@@ -35,8 +35,12 @@ html, body {
     background-color: #222222;
     -webkit-user-select: none;
     overflow: hidden;
-    -webkit-user-select: none;
     cursor: default;
+}
+
+img {
+    -webkit-user-select: none;
+    pointer-events: none;
 }
 
 h1, h2, h3, h4, h5 {
