@@ -53,10 +53,10 @@ class Translations(object):
     def __init__(self):
         # Use relative translations if available.
         if os.path.exists(os.path.join(data_source, '../locale/')):
-            print('Using relative path for translations.')
+            stdout.vprint("Using relative path for translations.")
             self.locale_path = os.path.join(data_source, '../locale/')
         else:
-            print('Using "/usr/share/locale/" or falling back to "en_US" for translations.')
+            stdout.vprint("Using '/usr/share/locale/' or falling back to 'en_US' for translations.")
             self.locale_path = '/usr/share/locale/'
 
         # Initialise i18n translations
@@ -255,18 +255,22 @@ class Controller(object):
     """ Initalise and run the application """
     def run_app(self):
         # Prepare devices
+        stdout.vprint("Loading Daemon...")
         try:
             self.devman = rclient.DeviceManager()
         except rclient.DaemonNotFound:
+            print("ERROR: Daemon Not Found.")
             self.devman = None
             self.devman_error = "not-running"
         except Exception as e:
+            print("ERROR: Exception: " + str(e))
             self.devman = None
             self.devman_error = "presume-crashed"
             self.devman_reason = str(e)
 
         # Display an upgrade message if using the old daemon.
         if os.path.exists("/usr/lib/python3/dist-packages/razer/inteface/keyboard.py") or os.path.exists(os.path.join(sys.path[-1], "/razer/inteface/keyboard.py")):
+            print("ERROR: Daemon is incompatible with this version of the program.")
             self.show_error_page(
                 "normal", "upgrade", _("Daemon Upgrade Required"),
                 _("The Razer 'Chroma' driver and daemon currently installed on your system is no longer supported by Polychromatic.") + "<br><br>" +
@@ -278,7 +282,7 @@ class Controller(object):
 
         # Display an error message if the daemon is having problems on the system.
         if not self.devman:
-            print("Could not connect to the daemon's device manager!")
+            print("ERROR: Could not connect to the Daemon Device Manager!")
 
             if self.devman_error == "not-running":
                 self.show_error_page(
@@ -304,7 +308,7 @@ class Controller(object):
                 return
 
         # Initialise Profiles
-        stdout.vprint('Initialising Polychromatic Profiles...')
+        stdout.vprint("Loading Application Profiles...")
         self.profiles = polychromatic.profiles.AppProfiles()
         self.profiles.selected_uuid = None
         self.profiles.previous_uuid = None
@@ -1356,12 +1360,15 @@ class Controller(object):
 
     """ Refresh device list """
     def get_devices(self):
+        stdout.vprint("Gathering Devices...")
         found_devices = []
         for device in self.devman.devices:
+            stdout.vprint(" -- Found: " + str(device))
             found_devices.append(device)
 
         # Show an error if no devices were returned by the daemon.
         if len(found_devices) == 0:
+            stdout.vprint("WARN: Daemon did not return any devices.")
             # Scan 'lsusb' in case device is incompatible with daemon.
             import subprocess
             lsusb = str(subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0])
@@ -1596,14 +1603,13 @@ class Terminal(object):
                 print('Ignoring unrecognised parameters:' + arg)
 
     def show_help(self):
-      print('\nPolychromatic Controller Arguments\n')
-      print('\nUsage: polychromatic-controller [arguments]')
+      print("Usage: polychromatic-controller [parameters]\n")
       #     | Command                      | Help Text                                     |
-      print('  -h, --help                   Show this help text.')
-      print('  -v, --verbose                Be verbose to stdout.')
-      print('  -vv, --debug                 Be very verbose. For debugging only.')
+      print("  -h, --help                   Show this help text.")
+      print("  -v, --verbose                Be verbose to stdout.")
+      print("  -vv, --debug                 Be very verbose. For debugging only.")
       print('')
-      exit()
+      exit(0)
 
     def vprint(self, text):
         if self.be_verbose:
@@ -1806,7 +1812,7 @@ class RazerChromaKeyboardDemo(object):
 
 if __name__ == "__main__":
     data_source = path.get_data_source(__file__)
-    trans = Translations()
     stdout = Terminal()
+    trans = Translations()
     app = Controller()
     app.start()
