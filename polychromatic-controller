@@ -1370,8 +1370,8 @@ class Controller(object):
                 message = _("Please plug in your Razer device and reload the daemon/application.")
             else:
                 message = _("However, Polychromatic detected there is a Razer product connected to your computer.") + '<br><br>' + \
-                          _("Try reloading the daemon, otherwise") + ' <a onclick="cmd(\'open?https://github.com/terrycain/razer-drivers#device-support\')>"' + \
-                          _("check whether your device is supported by the daemon.") + '</a>'
+                          _("Try reloading the daemon, otherwise") + " <a onclick='cmd(\"open?https://github.com/terrycain/razer-drivers#device-support\")'>" + \
+                          _("check whether your device is supported by the daemon.") + "</a>"
 
             self.show_error_page("warning", "nodevice", _("No Devices Found"), message)
             return([])
