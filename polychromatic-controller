@@ -296,6 +296,13 @@ class Controller(object):
                      _("Exception:") + ' <code>' + exception + '</code>')
                 return
 
+        # Display "No Devices Found" screen if none can be found
+        if self.devman:
+            self.devices = self.get_devices()
+            if len(self.devices) == 0:
+                # get_devices() function shows "No Devices Found".
+                return
+
         # Initialise Profiles
         stdout.vprint('Initialising Polychromatic Profiles...')
         self.profiles = polychromatic.profiles.AppProfiles()
@@ -316,17 +323,16 @@ class Controller(object):
         self.secondary_rgb_values = [s_red, s_green, s_blue]
         self.secondary_rgb = RGB(s_red, s_green, s_blue)
 
-        # Prepare multiple device support
-        if self.devman:
-            self.devices = self.get_devices()
-            if len(self.devices) == 0:
-                self.active_device = None
-                self.active_device_serial = None
-                self.active_device_state = None
-            else:
-                self.active_device = self.devices[0]
-                self.active_device_serial = self.devices[0].serial
-                self.active_device_state = pref.DeviceState(pref, self.active_device_serial)
+        # Set active device.
+        if len(self.devices) == 0:
+            self.active_device = None
+            self.active_device_serial = None
+            self.active_device_state = None
+            return
+        else:
+            self.active_device = self.devices[0]
+            self.active_device_serial = self.devices[0].serial
+            self.active_device_state = pref.DeviceState(pref, self.active_device_serial)
 
         stdout.vprint('Application Ready.\n')
         self.show_menu('menu')
@@ -1367,8 +1373,8 @@ class Controller(object):
                           _("Try reloading the daemon, otherwise") + ' <a onclick="cmd(\'open?https://github.com/terrycain/razer-drivers#device-support\')>"' + \
                           _("check whether your device is supported by the daemon.") + '</a>'
 
-            self.show_error_page(
-                "warning", "nodevice", _("No Devices Found"), message)
+            self.show_error_page("warning", "nodevice", _("No Devices Found"), message)
+            return([])
 
         return(found_devices)
 
