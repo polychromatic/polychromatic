@@ -1373,12 +1373,12 @@ class Controller(object):
         return(found_devices)
 
     def refresh_device_list(self):
-        try:
-            selected = self.active_device.serial
-        except:
-            # No device was present before.
-            selected = "0"
-        selected_ui = self.active_device_serial
+        # If the daemon doesn't have any devices, there is nothing to show.
+        if len(self.devices) == 0:
+            return
+
+        selected_id = self.active_device.serial
+
         if self.current_page == "menu":
             app.update_page(".device", "remove")
             for device in self.devices:
@@ -1390,7 +1390,7 @@ class Controller(object):
                 state = "normal"
                 htmlbuffer = "<button id='{0}' class='device' onclick='cmd(\"device-select?{0}\")'><img src='../img/states/{1}/{2}.svg'> <span>{3}</span></button>".format(serial, state, formfactor, name)
                 app.update_page("#device-tabs", "append", htmlbuffer)
-        app.update_page('#' + selected_ui, "addClass", "active")
+            app.update_page('#' + selected_id, "addClass", "active")
 
     def update_device_supported_features(self):
         # Reset all elements
