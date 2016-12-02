@@ -988,7 +988,7 @@ class Controller(object):
                     self.active_device.fx.breath_dual(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
                                            self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
                 elif self.current_effect == 'reactive':
-                    self.active_device.fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
+                    self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
                 elif self.current_effect == 'ripple?single':
                     self.active_device.fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
 
