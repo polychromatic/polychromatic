@@ -100,7 +100,6 @@ class AppView(WebKit2.WebView):
             # Basic accessibility - keyboard navigation
             self.get_settings().set_enable_spatial_navigation(True)
             self.get_settings().set_enable_caret_browsing(True)
-            self.get_settings().set_enable_caret_browsindg(True)
         except AttributeError:
             print("WebKit2GTK failed to initialise. Please try upgrading this dependency.\n")
             print("Your distribution may be using an older version of this package.")
