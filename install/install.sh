@@ -96,8 +96,8 @@ fi
 printy "Checking if Razer modules are present..."
 if [ ! -d "$razer_modules" ]; then
     echo "**************************************************"
-    printr "The razer-chroma-drivers Python modules are missing!"
-    echo -e "Please install them from \033[93mhttp://pez2001.github.io/razer_chroma_drivers/\033[0m"
+    printr "The Razer Python modules are missing!"
+    echo -e "Please install them from \033[93mhttp://terrycain.github.io/razer-drivers/\033[0m"
     echo -e "They are expected to be installed here: \033[93m$razer_modules\033[0m"
     echo "**************************************************"
     read -p "Continue anyway? [y] " action
