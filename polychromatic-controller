@@ -90,15 +90,23 @@ class AppView(WebKit2.WebView):
         self.connect('context-menu', self.context_menu_cb)
         stdout.vvprint('Initialised WebKit2.')
 
-        # Allows Keyboard SVGs to load.
-        self.get_settings().set_allow_file_access_from_file_urls(True)
+        try:
+            # Allows Keyboard SVGs to load.
+            self.get_settings().set_allow_file_access_from_file_urls(True)
 
-        # Print console log errors to stdout
-        self.get_settings().set_enable_write_console_messages_to_stdout(True)
+            # Print console log errors to stdout
+            self.get_settings().set_enable_write_console_messages_to_stdout(True)
 
-        # Basic accessibility - keyboard navigation
-        self.get_settings().set_enable_spatial_navigation(True)
-        self.get_settings().set_enable_caret_browsing(True)
+            # Basic accessibility - keyboard navigation
+            self.get_settings().set_enable_spatial_navigation(True)
+            self.get_settings().set_enable_caret_browsing(True)
+            self.get_settings().set_enable_caret_browsindg(True)
+        except AttributeError:
+            print("WebKit2GTK failed to initialise. Please try upgrading this dependency.\n")
+            print("Your distribution may be using an older version of this package.")
+            print("In Debian/Ubuntu, this package is provided in 'gir1.2-webkit-4.0'\n")
+            print("At least v2.12 is required for this software to function.")
+            sys.exit(1)
 
         # Load the starting page
         default_page = 'loading'
