@@ -236,3 +236,15 @@ function changeHeaderImg(image, color) {
         }
     }, 500);
 }
+
+/* Switch to Device Overview mode */
+$("#device-overview").hide();
+function switchPaneOverview() {
+    $(".device").removeClass("active");
+    $("#device-overview-tab").addClass("active");
+    $("#device-individual").fadeOut('fast');
+    cmd("refresh-active-device");
+    setTimeout(function() {
+        $("#device-overview").fadeIn('fast');
+    }, 210);
+}

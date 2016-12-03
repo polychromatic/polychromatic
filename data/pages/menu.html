@@ -30,9 +30,9 @@
     <button class="btn right" onclick="cmd('open?https://github.com/lah7/polychromatic')"><span class="fa fa-github"></span></button>
     <button class="btn right" onclick="cmd('open-config-folder')"><span class="fa fa-folder"></span></button>
   </div>
-  <div id="device-tabs" class="tabs blur-focus"></div>
+  <div id="device-tabs" class="tabs blur-focus">&nbsp;&nbsp;</div>
 
-  <div class="content with-tabs blur-focus" hidden>
+  <div class="content with-tabs blur-focus" id="device-individual" hidden>
     <!-- Main Menu Screen -->
     <div class="menu_area">
       <div class="left">
@@ -204,6 +204,10 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="content with-tabs blur-focus" id="device-overview" hidden>
+    <h3 id="str-connected-devices"></h3>
   </div>
 
   <div id="overlay" hidden></div>

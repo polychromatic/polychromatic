@@ -1020,3 +1020,53 @@ label.disabled {
     -webkit-filter: grayscale(1);
     vertical-align: middle;
 }
+
+/************************
+   Overview Screens
+*************************/
+.device-card {
+    position: relative;
+    display: inline-block;
+    width: 420px;
+    height: 150px;
+    margin: 12px;
+    padding: 8px;
+    background-color: black;
+    box-shadow: 0px 0px 8px lime;
+    border-radius: 8px;
+    transition: 0.1s box-shadow ease-in-out;
+}
+
+.device-card:focus,
+.device-card:hover {
+    /*cursor: pointer;*/
+    box-shadow: 0px 0px 16px lime;
+}
+
+.device-card > img {
+    float: left;
+    width: 130px;
+    height: auto;
+    padding: 6px;
+    margin-right: 16px;
+}
+
+.device-card > p > img {
+    position: relative;
+    top: 6px;
+    width: 22px;
+    height: 22px;
+}
+
+.device-card .effect-status {
+    float: left;
+    top: 5px;
+    position: relative;
+    color: lime;
+}
+
+.device-card .brightness-status {
+    float: right;
+    top: 15px;
+    position: relative;
+}

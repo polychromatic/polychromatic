@@ -76,6 +76,29 @@ class Translations(object):
     def push_var(self, variable, string):
         app.webkit.run_javascript('var {0} = "{1}"'.format(variable, string))
 
+    """ Function to retrieve the current device effect
+    as a human-readable string. """
+    def get_effect_state_string(self, device_state_obj):
+        string = device_state_obj.get_state("effect")
+        if string == 'spectrum':
+            return _("Spectrum")
+        elif string == 'wave':
+            return _("Wave")
+        elif string == 'reactive':
+            return _("Reactive")
+        elif string == 'breath':
+            return _("Breath")
+        elif string == 'ripple':
+            return _("Ripple")
+        elif string == 'static':
+            return ("Static")
+        elif string == 'none':
+            return ("None")
+        elif string == 'profile':
+            return _("Profile")
+        else:
+            return string
+
 
 class AppView(WebKit2.WebView):
     """ Initialise WebKit2 """
@@ -455,6 +478,7 @@ class Controller(object):
             trans.push('#dialog-help-close', _("Close"))
 
             trans.push('#str-browse-icon', _("Browse Icon"))
+            trans.push('#str-connected-devices', _("Connected Devices"))
 
             # Page actions
             self.webkit.run_javascript('instantProfileSwitch = false;')
@@ -486,6 +510,13 @@ class Controller(object):
 
             # Display the last known options.
             self.update_device_active_options()
+
+            # If there are multiple devices connected, show the overview screen first.
+            if len(self.devices) > 1:
+                self.update_page(".device", "removeClass", "active")
+                self.update_page("#device-overview-tab", "addClass", "active")
+                self.update_page("#device-individual", "hide")
+                self.update_page("#device-overview", "fadeIn")
 
         elif self.current_page == 'profile_editor':
             # Push strings
@@ -819,6 +850,7 @@ class Controller(object):
             value = int(command[11:])
             self.active_device_state.set_state("brightness", value)
             self.active_device.brightness = value
+            self.update_device_active_options()
 
         elif command == 'logo-toggle':
             current_status = self.active_device.fx.misc.logo
@@ -828,6 +860,7 @@ class Controller(object):
             else:
                 self.active_device.fx.misc.logo = True
                 self.active_device_state.set_state("logo", True)
+            self.update_device_active_options()
 
         elif command.startswith('effect'):
             enabled_options = []
@@ -915,6 +948,7 @@ class Controller(object):
             self.active_device_state.set_state("colour2_red", self.secondary_rgb.red)
             self.active_device_state.set_state("colour2_green", self.secondary_rgb.green)
             self.active_device_state.set_state("colour2_blue", self.secondary_rgb.blue)
+            self.update_device_active_options()
 
         elif command == 'enable-marco-keys':
             self.active_device.macro.enable_macros()
@@ -1356,10 +1390,15 @@ class Controller(object):
 
             app.update_page(".device", "removeClass", "active")
             app.update_page("#" + selected_serial, "addClass", "active")
+            app.update_page("#device-overview", "fadeOut", "fast")
+            app.update_page("#device-individual", "fadeIn", "slow")
             stdout.vprint("Selected: {0} [{1}]".format(selected_device.name, selected_serial))
 
             # Change the header image
             self.update_device_supported_features()
+            self.update_device_active_options()
+
+        elif command == 'refresh-active-device':
             self.update_device_active_options()
 
         else:
@@ -1401,6 +1440,7 @@ class Controller(object):
 
         if self.current_page == "menu":
             app.update_page(".device", "remove")
+            app.update_page('#device-tabs', 'append', "<button id='device-overview-tab' class='device' onclick='switchPaneOverview()'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
             for device in self.devices:
                 name = str(device.name)
                 formfactor = str(device.type)
@@ -1408,8 +1448,38 @@ class Controller(object):
                     formfactor = "mousemat"
                 serial = str(device.serial)
                 state = "normal"
+                status = pref.DeviceState(pref, serial)
                 htmlbuffer = "<button id='{0}' class='device' onclick='cmd(\"device-select?{0}\")'><img src='../img/states/{1}/{2}.svg'> <span>{3}</span></button>".format(serial, state, formfactor, name)
                 app.update_page("#device-tabs", "append", htmlbuffer)
+
+                status_brightness = status.get_state("brightness")
+                status_effect = status.get_state("effect")
+
+                if not status_brightness:
+                    status_brightness = "--"
+
+                htmlbuffer = ""
+                htmlbuffer += '<div class="device-card" onclick="cmd(\'device-select?{0}\')">'.format(serial)
+                # TODO: Use images provided from daemon dictonary (once implemented)
+                htmlbuffer +=   '<img src="../img/states/{0}/{1}.svg" style="opacity:0.2;"/>'.format(state, formfactor)
+                htmlbuffer +=   '<h4>{0}</h4>'.format(name)
+                htmlbuffer +=   '<p><b>{0}:</b>&nbsp; {1}</p>'.format(_("Serial"), serial)
+
+                if status_effect == "profile" and formfactor == "keyboard":
+                    uuid = status.get_state("profile")
+                    profile_data = self.profiles.load_profile(uuid)
+                    profile_name = profile_data["name"]
+                    profile_icon = profile_data["icon"]
+                    htmlbuffer += '<p id="device-{0}-effect" class="effect-status"><img src="{1}"/> <span>{2}</span></p>'.format(serial, profile_icon, profile_name)
+                elif not status_effect:
+                    htmlbuffer += '<p id="device-{0}-effect" class="effect-status"><img src="../img/effects/{1}.svg"/> <span>{2}</span></p>'.format(serial, "notset", _("New Device Found."))
+                else:
+                    htmlbuffer += '<p id="device-{0}-effect" class="effect-status"><img src="../img/effects/{1}.svg"/> <span>{2}</span></p>'.format(serial, status_effect, trans.get_effect_state_string(status))
+
+                htmlbuffer +=   '<p class="brightness-status"><span class="fa fa-lightbulb-o"></span> <span id="device-{0}-brightness">{1}</span>%</p>'.format(serial, str(status_brightness))
+                htmlbuffer += '</div>'
+                app.update_page("#device-overview", "append", htmlbuffer)
+
             app.update_page('#' + selected_id, "addClass", "active")
 
     def update_device_supported_features(self):
@@ -1462,6 +1532,7 @@ class Controller(object):
             check_ability("lighting_logo", "logo-toggle")
 
     def update_device_active_options(self):
+        # Individual Screen
         try:
             brightness = int(self.active_device.brightness)
             app.update_page("#brightness", "val", str(brightness))
@@ -1481,6 +1552,21 @@ class Controller(object):
                 app.update_page("#fx-"+effect, "addClass", "active")
         except:
             pass
+
+        # Device screen
+        if brightness:
+            app.update_page("#device-"+self.active_device_serial+"-brightness", "html", str(brightness))
+        if effect:
+            if effect == "profile" and str(self.active_device.type) == "keyboard":
+                uuid = self.active_device_state.get_state("profile")
+                profile_data = self.profiles.load_profile(uuid)
+                profile_name = profile_data["name"]
+                profile_icon = profile_data["icon"]
+                app.update_page("#device-"+self.active_device_serial+"-effect > span", "html", profile_name)
+                app.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", profile_icon)
+            else:
+                app.update_page("#device-"+self.active_device_serial+"-effect > span", "html", trans.get_effect_state_string(self.active_device_state))
+                app.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", '../img/effects/' + effect + '.svg')
 
     def update_background_header(self):
         if not self.current_page == "menu":
