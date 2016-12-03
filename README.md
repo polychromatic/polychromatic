@@ -64,7 +64,12 @@ the original driver/daemon:
 * [polychromatic_0.1.0_all.deb](https://github.com/lah7/polychromatic/releases/download/v0.2.0/polychromatic_0.1.0_all.deb)
 
 
-#### ![Debian](.readme/debian.png) Debian
+#### ![Debian](.readme/debian.png) Debian 8+
+
+**WebKit2 Dependency**
+
+ * Debian 8 "Jessie" provides an old version of `gir1.2-webkit2-4.0` which is incompatible with Polychromatic.
+ * Please enable `jessie-backports` and update `gir1.2-webkit2-4.0` to at least v2.12.
 
 Packages built for Ubuntu are also compatible with Debian.
 
@@ -81,7 +86,8 @@ Followed by updating your Apt sources:
 
     sudo apt-get update
 
-Otherwise, standalone packages are available from the [releases page](https://github.com/lah7/polychromatic/releases/latest/).
+Otherwise, standalone packages are available from the [releases page](https://github.com/lah7/polychromatic/releases/latest/), or
+by following a manual installation below.
 
 
 #### ![Arch](.readme/arch.png) Arch Linux
@@ -127,7 +133,7 @@ To update your installation at a later date:
 * [libappindicator](https://aur.archlinux.org/pkgbase/libappindicator/?comments=all)
 
 **Debian and Ubuntu 16.04+:**
-* [gir1.2-webkit2-4.0](https://packages.debian.org/sid/gir1.2-webkit2-4.0)
+* [gir1.2-webkit2-4.0](https://packages.debian.org/sid/gir1.2-webkit2-4.0) (>= 2.12.0)
 * [python3-gi](https://packages.debian.org/sid/python3-gi)
 * [python3-setproctitle](https://packages.debian.org/sid/python3-setproctitle)
 * [python3-requests](https://packages.debian.org/sid/python3-requests)
