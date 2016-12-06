@@ -1780,7 +1780,7 @@ def restart_daemon_service():
     # Kill the daemon if still not ended
     if not stopped:
         print("\nKilling razer-service...")
-        os.kill(daemon_pid, signal.SIGTERM)
+        os.kill(daemon_pid, 9)
 
     # Wait for daemon to start again
     time.sleep(1)
