@@ -468,9 +468,7 @@ class Controller(object):
             trans.push('#dialog-help-title', _("Quick Help"))
             # Just the macro keys are present here.
             trans.push('#dialog-help-subtitle', _("Macro Keys Usage"))
-            trans.push('#dialog-help-body', _("When macro keys are enabled, the keyboard's M1-M5 keys will be accessible by other programs.") +
-            '<br><br>' +
-            _("You can also use on-the-fly macro recording (provided by the daemon) by following these steps:") +
+            trans.push('#dialog-help-body', _("You can also use on-the-fly macro recording (provided by the daemon) by following these steps:") +
             '<ol><li>FN + <div class="macro-key"></div> ' + _("to enter macro mode.") + '</li>' +
             '<li>' + _("Press the macro key to assign to. E.g. M1") +'</li>' +
             '<li>' + _("Typing in your key combination.") +'</li>' +

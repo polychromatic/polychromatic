@@ -338,15 +338,6 @@ class AppIndicator:
         sep1.show()
         self.menu.append(sep1)
 
-        self.macro_button = Gtk.MenuItem(_("Enable Macro Keys"))
-        self.macro_button.connect("activate", self.menuitem_enable_macro_buttons_response, "macros")
-        self.macro_button.show()
-        self.menu.append(self.macro_button)
-
-        sep2 = Gtk.SeparatorMenuItem()
-        sep2.show()
-        self.menu.append(sep2)
-
         self.primary_colour_button = Gtk.MenuItem(_("Change Primary Color...") + " ({0})".format(AppIndicator.colour_to_hex(self.colour)))
         self.primary_colour_button.connect("activate", self.set_static_colour, 1)
         self.secondary_colour_button = Gtk.MenuItem(_("Change Secondary Color...") + " ({0})".format(AppIndicator.colour_to_hex(self.secondary_colour)))
@@ -485,18 +476,6 @@ class AppIndicator:
         """
         self.active_device.brightness = brightness
 
-    def menuitem_enable_macro_buttons_response(self, widget, string):
-        """
-        Enable macro keys
-
-        :param widget: MenuItem object
-        :type widget: Gtk.MenuItem
-
-        :param string: Unused
-        :type string: str
-        """
-        self.active_device.macro.enable_macros()
-
     def menuitem_enable_game_mode(self, widget, state):
         """
         Enables or disabled Game mode
@@ -630,7 +609,6 @@ class AppIndicator:
             start_effect = pref.get('startup', 'start_effect', 'disabled')
             start_profile = pref.get('startup', 'start_profile', None)
             start_brightness = int(pref.get('startup', 'start_brightness', 0))
-            start_macro = pref.get('startup', 'start_macro', 'false')
             start_col1_r = pref.get('primary_colors', 'red', 0)
             start_col1_g = pref.get('primary_colors', 'green', 255)
             start_col1_b = pref.get('primary_colors', 'blue', 0)
@@ -657,9 +635,6 @@ class AppIndicator:
 
             if not start_brightness == 0:
                 self.active_device.brightness = start_brightness
-
-            if start_macro == 'true':
-                self.active_device.macro.enable_macros()
 
             print('-- Start-up settings applied.')
             return
@@ -695,7 +670,6 @@ class AppIndicator:
 
         set_state("brightness", self.brightness_item)
         set_state("game_mode_led", self.game_mode_item)
-        set_state("macro_mode_led", self.macro_button)
 
         # Profiles are only available on keyboards.
         if device_type == 'keyboard':
