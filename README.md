@@ -24,6 +24,16 @@ A front-end for customising the functionality of your Razer perpherials under GN
 
 See the [daemon's device support table](https://github.com/terrycain/razer-drivers#device-support) to check whether your device is supported by the daemon. Once it works with the daemon, it's likely to work in Polychromatic too.
 
+However, not all newly supported devices will work straight away. These devices have known issues:
+
+| Keyboard | Mouse | Mousemat | Keypad |
+|   :---:  | :---: |   :---:  | :---:  |
+| ![Keyboard OK](.readme/status/keyboard-ok.png) | ![Mouse Warning](.readme/status/mouse-warn.png) | ![Mousemat OK](.readme/status/mousemat-ok.png) | ![Keypad Warning](.readme/status/keypad-warn.png)
+| | [DeathAdder Chroma not yet supported](https://github.com/lah7/polychromatic/issues/41) | | [Tartarus Chroma partially supported](https://github.com/lah7/polychromatic/issues/36)
+
+Support for these devices are coming in a future update. Stay tuned!
+
+-------------
 
 ## Driver Installation
 
