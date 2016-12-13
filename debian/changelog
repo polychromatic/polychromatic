@@ -1,3 +1,14 @@
+polychromatic (0.3.5-xenial) xenial; urgency=low
+
+  * Prevent crash when device serial returned null.
+  * Correct logic for showing "No Devices Found" screen.
+  * Update verbose messages when running with "-v" flag.
+  * Fix wrong reactive colours being set.
+  * Add device overview screen.
+  * Drop obsolete "Enable Macro Keys" button.
+
+ -- Luke Horwell <luke@ubuntu-mate.org>  Wed, 13 Dec 2016 20:53:04 +0100
+
 polychromatic (0.3.4-xenial) xenial; urgency=low
 
   * Detect when a Razer product is connected.

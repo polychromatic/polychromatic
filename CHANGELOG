@@ -1,3 +1,12 @@
+# 0.3.5
+
+  * Prevent crash when device serial returned null.
+  * Correct logic for showing "No Devices Found" screen.
+  * Update verbose messages when running with "-v" flag.
+  * Fix wrong reactive colours being set.
+  * Add device overview screen.
+  * Drop obsolete "Enable Macro Keys" button.
+
 # 0.3.4
 
   * On device not found error, check for a connected Razer product.
