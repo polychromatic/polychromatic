@@ -1439,6 +1439,8 @@ class Controller(object):
         if self.current_page == "menu":
             app.update_page(".device", "remove")
             app.update_page('#device-tabs', 'append', "<button id='device-overview-tab' class='device' onclick='switchPaneOverview()'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
+            device_index = pref.load_file(data_source + "/img/device-images.json")
+
             for device in self.devices:
                 name = str(device.name)
                 formfactor = str(device.type)
@@ -1456,10 +1458,17 @@ class Controller(object):
                 if not status_brightness:
                     status_brightness = "--"
 
+                if name in device_index.keys():
+                    img_path = device_index[name]
+                    img_opacity = "1"
+                else:
+                    img_path = "../img/states/{0}/{1}.svg".format(state, formfactor)
+                    img_opacity = "0.2"
+
                 htmlbuffer = ""
                 htmlbuffer += '<div class="device-card" onclick="cmd(\'device-select?{0}\')">'.format(serial)
                 # TODO: Use images provided from daemon dictonary (once implemented)
-                htmlbuffer +=   '<img src="../img/states/{0}/{1}.svg" style="opacity:0.2;"/>'.format(state, formfactor)
+                htmlbuffer +=   '<img src="{0}" style="opacity:{1};"/>'.format(img_path, img_opacity)
                 htmlbuffer +=   '<h4>{0}</h4>'.format(name)
                 htmlbuffer +=   '<p><b>{0}:</b>&nbsp; {1}</p>'.format(_("Serial"), serial)
 
