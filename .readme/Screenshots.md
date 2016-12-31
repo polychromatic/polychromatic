@@ -3,7 +3,7 @@
 ## Controller
 
 #### Connected Devices
-![controller-overview](https://cloud.githubusercontent.com/assets/13032135/20988386/73fd874e-bcc8-11e6-8958-63dbf54a4db7.png)
+![controller-overview](https://cloud.githubusercontent.com/assets/13032135/21577999/c4f38994-cf67-11e6-928e-238e1903cdcd.png)
 
 #### Configuring Options for Keyboard
 ![controller-kbd-options](https://cloud.githubusercontent.com/assets/13032135/20988307/1d61f118-bcc8-11e6-8455-66473f62ab25.png)
