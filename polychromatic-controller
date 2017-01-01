@@ -1447,6 +1447,7 @@ class Controller(object):
             app.update_page(".device", "remove")
             app.update_page('#device-tabs', 'append', "<button id='device-overview-tab' class='device' onclick='switchPaneOverview()'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
             device_index = pref.load_file(data_source + "/img/device-images.json")
+            unknown_icon = "../img/states/normal/unknown.svg"
 
             for device in self.devices:
                 name = str(device.name)
@@ -1456,7 +1457,10 @@ class Controller(object):
                 serial = str(device.serial)
                 state = "normal"
                 status = pref.DeviceState(pref, serial)
-                htmlbuffer = "<button id='{0}' class='device' onclick='cmd(\"device-select?{0}\")'><img src='../img/states/{1}/{2}.svg'> <span>{3}</span></button>".format(serial, state, formfactor, name)
+                img = data_source + "/img/states/{0}/{1}.svg".format(state, formfactor)
+                if not os.path.exists(img):
+                    img = unknown_icon
+                htmlbuffer = "<button id='{0}' class='device' onclick='cmd(\"device-select?{0}\")'><img src='{1}'> <span>{2}</span></button>".format(serial, img, name)
                 app.update_page("#device-tabs", "append", htmlbuffer)
 
                 status_brightness = status.get_state("brightness")
@@ -1469,7 +1473,9 @@ class Controller(object):
                     img_path = device_index[name]
                     img_opacity = "1"
                 else:
-                    img_path = "../img/states/{0}/{1}.svg".format(state, formfactor)
+                    img_path = data_source + "/img/states/{0}/{1}.svg".format(state, formfactor)
+                    if not os.path.exists(img_path):
+                        img_path = unknown_icon
                     img_opacity = "0.2"
 
                 htmlbuffer = ""
