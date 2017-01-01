@@ -26,12 +26,21 @@ See the [daemon's device support table](https://github.com/terrycain/razer-drive
 
 However, not all newly supported devices will work straight away. These devices have known issues:
 
-| Keyboard | Mouse | Mousemat | Keypad |
-|   :---:  | :---: |   :---:  | :---:  |
-| ![Keyboard OK](.readme/status/keyboard-ok.png) | ![Mouse Warning](.readme/status/mouse-warn.png) | ![Mousemat OK](.readme/status/mousemat-ok.png) | ![Keypad Warning](.readme/status/keypad-warn.png)
-| | [DeathAdder Chroma not yet supported](https://github.com/lah7/polychromatic/issues/41) | | [Tartarus Chroma partially supported](https://github.com/lah7/polychromatic/issues/36)
+| Keyboard | Mouse | Mousemat | Keypad | Headset |
+|   :---:  | :---: |   :---:  | :---:  | :---:   |
+| ![Keyboard](.readme/status/keyboard-ok.png) | ![Mouse](.readme/status/mouse-warn.png) | ![Mousemat](.readme/status/mousemat-ok.png) | ![Keypad](.readme/status/keypad-warn.png) | ![Headset](.readme/status/headset-warn.png)
 
-Support for these devices are coming in a future update. Stay tuned!
+#### Known Issues
+* **Mice**
+  * No option for setting `scroll_wheel` or `logo` individually.
+    * Due to this, [DeathAdder Chroma](https://github.com/lah7/polychromatic/issues/41) cannot be configured yet.
+  * No option for reading/setting DPI.
+* **Keypad**
+  * Missing header.
+* **Headset**
+  * Missing header.
+
+Support for new devices are coming in a future update. Stay tuned!
 
 -------------
 
