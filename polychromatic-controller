@@ -677,8 +677,9 @@ class Controller(object):
             trans.push('#str-logs-help', _("Useful for diagnosing issues and debugging daemon-related operations."))
             trans.push('#str-watch', _("Watch"), True)
 
-            trans.push('#str-daemon-options', _("Daemon Options"))
-            trans.push('#str-daemon-restart', _("Restart Daemon Service"))
+            trans.push('#str-daemon-options', _("Daemon Service"))
+            trans.push('#str-daemon-stop', _("Stop"))
+            trans.push('#str-daemon-restart', _("Restart"))
             trans.push('#str-daemon-service', _("If you have re-plugged devices, or are experiencing glitches, try restarting the daemon service."))
             trans.push('#str-options-missing', _("Could not read the daemon's configuration file."))
             trans.push('#str-options-restart', _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect."))
@@ -1349,6 +1350,12 @@ class Controller(object):
             thread = threading.Thread(target=restart_daemon_service, args=())
             thread.daemon = True
             thread.start()
+
+        elif command == 'daemon-stop':
+            self.devman.stop_daemon()
+            self.show_error_page(
+                "serious", "generic", _("Daemon gracefully stopped."),
+                _("The daemon has been requested to shut down. To use Polychromatic again, restart the daemon."))
 
         elif command == 'timeout-error':
             self.show_error_page(
