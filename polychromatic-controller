@@ -1454,6 +1454,8 @@ class Controller(object):
                 formfactor = str(device.type)
                 if formfactor == "firefly":
                     formfactor = "mousemat"
+                elif formfactor == "tartarus":
+                    formfactor = "keypad"
                 serial = str(device.serial)
                 state = "normal"
                 status = pref.DeviceState(pref, serial)
