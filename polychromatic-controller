@@ -1503,6 +1503,8 @@ class Controller(object):
                 app.update_page("#device-overview", "append", htmlbuffer)
 
             app.update_page('#' + selected_id, "addClass", "active")
+            if len(self.devices) > 4:
+                app.update_page("#device-tabs", "addClass", "too-many")
 
     def update_device_supported_features(self):
         # Reset all elements

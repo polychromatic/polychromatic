@@ -875,6 +875,8 @@ label.disabled {
     border-bottom: 2px solid #404040;
     margin-left: 4px;
     margin-right: 4px;
+    overflow-y: none;
+    white-space: nowrap;
 }
 
 .tabs > button {
@@ -893,6 +895,17 @@ label.disabled {
     color: white;
     -webkit-filter: grayscale(1);
     vertical-align: top;
+}
+
+.tabs.too-many > button {
+    max-width: 110px;
+}
+
+.tabs.too-many > button > span {
+    max-width: 60px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tabs > button:hover,
