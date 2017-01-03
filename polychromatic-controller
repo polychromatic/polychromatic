@@ -1599,6 +1599,8 @@ class Controller(object):
         device_type = self.active_device.type
         if device_type == "firefly":
             device_type = "mousemat"
+        elif device_type == "tartarus":
+            device_type = "keypad"
 
         if self.current_effect == "spectrum":
             app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "spectrum"))
