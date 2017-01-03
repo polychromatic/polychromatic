@@ -1562,7 +1562,7 @@ class Controller(object):
             app.update_page("#brightness", "val", str(brightness))
             app.update_page("#brightnessValue", "html", str(brightness) + "%")
         except:
-            pass
+            brightness = None
 
         try:
             effect = self.active_device_state.get_state("effect")
@@ -1575,11 +1575,12 @@ class Controller(object):
                 app.update_page(".effect-item", "removeClass", "active")
                 app.update_page("#fx-"+effect, "addClass", "active")
         except:
-            pass
+            effect = None
 
         # Device screen
         if brightness:
             app.update_page("#device-"+self.active_device_serial+"-brightness", "html", str(brightness))
+
         if effect:
             if effect == "profile" and str(self.active_device.type) == "keyboard":
                 uuid = self.active_device_state.get_state("profile")
