@@ -32,15 +32,17 @@ However, not all newly supported devices will work straight away. These devices 
 
 #### Known Issues
 * **Mice**
-  * No option for setting `scroll_wheel` or `logo` individually.
-    * Due to this, [DeathAdder Chroma](https://github.com/lah7/polychromatic/issues/41) cannot be configured yet.
-  * No option for reading/setting DPI.
+  * No support for setting the `scroll_wheel` or `logo`. These devices cannot be configured yet:
+    * [DeathAdder Chroma](https://github.com/lah7/polychromatic/issues/41)
+    * [Razer Naga](https://github.com/terrycain/razer-drivers/issues/106)
+  * No option for reading/setting DPI for supported mice.
 * **Keypad**
-  * Missing header.
+  * Profile support is not possible as the daemon does not support the matrix yet (like keyboards do).
+  * Header may appear garbled.
 * **Headset**
-  * Missing header.
+  * Header may appear garbled.
 
-Support for new devices are coming in a future update. Stay tuned!
+When the daemon supports new devices, they may or may not work. Stay tuned for updates!
 
 -------------
 
