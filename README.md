@@ -148,18 +148,20 @@ You can update your installation by clicking "Check for Updates" in the preferen
 * [razer-daemon](https://github.com/terrycain/razer-drivers)
 
 **Arch:**
+* [gtk3](https://www.archlinux.org/packages/extra/x86_64/gtk3/)
+* [libappindicator](https://aur.archlinux.org/pkgbase/libappindicator/?comments=all)
 * [webkitgtk](https://www.archlinux.org/packages/extra/x86_64/webkitgtk/)
 * [python-gobject](https://www.archlinux.org/packages/extra/x86_64/python-gobject/)
 * [python-setproctitle](https://www.archlinux.org/packages/community/x86_64/python-setproctitle/)
 * [python-requests](https://www.archlinux.org/packages/extra/any/python-requests/)
-* [libappindicator](https://aur.archlinux.org/pkgbase/libappindicator/?comments=all)
 
 **Debian and Ubuntu 16.04+:**
+* [gir1.2-gtk-3.0](https://packages.debian.org/sid/gir1.2-gtk-3.0)
+* [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1)
 * [gir1.2-webkit2-4.0](https://packages.debian.org/sid/gir1.2-webkit2-4.0) (>= 2.12.0)
 * [python3-gi](https://packages.debian.org/sid/python3-gi)
 * [python3-setproctitle](https://packages.debian.org/sid/python3-setproctitle)
 * [python3-requests](https://packages.debian.org/sid/python3-requests)
-* [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1)
 
 
 ## Something not working?
