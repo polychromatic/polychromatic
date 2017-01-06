@@ -49,15 +49,15 @@ When the daemon supports new devices, they may or may not work. Stay tuned for u
 ## Driver Installation
 
 ### ![Chroma Drivers](.readme/chroma-drivers.png) Razer Drivers for Linux
-This application is powered by the [razer-drivers](http://terrycain.github.io/razer-drivers/) driver and daemon.
+If you haven't already, you will need to install the [razer-drivers](http://terrycain.github.io/razer-drivers/) driver and daemon.
 
-Ubuntu and Linux Mint users can install the drivers and daemon via this PPA:
+Ubuntu and Linux Mint users can install this via this PPA:
 
     sudo add-apt-repository ppa:terrz/razerutils
     sudo apt update
     sudo apt install python3-razer razer-kernel-modules-dkms razer-daemon razer-doc
 
-Please see the [project page](http://terrycain.github.io/razer-drivers/#download) for installation for your distribution.
+Please see the [project website](http://terrycain.github.io/razer-drivers/#download) for instructions for your distribution.
 
 
 ## Polychromatic Installation
@@ -136,32 +136,34 @@ See further below for which dependencies you will require to install first.
 
 **If you'd like to use the latest development version** (but potentially unstable), skip this line: `git checkout stable`.
 
-You can update your installation by clicking "Check for Updates" in the preferences, or by running:
+You can update your installation by clicking **"Check for Updates"** in the preferences, or by running:
 
     ./install/update.sh
 
 
 ### Dependencies
 
-**All:**
+Polychromatic interfaces with the daemon from the [razer-drivers project](https://terrycain.github.io). These packages are required for all distributions:
+
 * [python3-razer](https://github.com/terrycain/razer-drivers)
 * [razer-daemon](https://github.com/terrycain/razer-drivers)
 
-**Arch:**
-* [gtk3](https://www.archlinux.org/packages/extra/x86_64/gtk3/)
-* [libappindicator](https://aur.archlinux.org/pkgbase/libappindicator/?comments=all)
-* [webkitgtk](https://www.archlinux.org/packages/extra/x86_64/webkitgtk/)
-* [python-gobject](https://www.archlinux.org/packages/extra/x86_64/python-gobject/)
-* [python-setproctitle](https://www.archlinux.org/packages/community/x86_64/python-setproctitle/)
-* [python-requests](https://www.archlinux.org/packages/extra/any/python-requests/)
 
-**Debian and Ubuntu 16.04+:**
-* [gir1.2-gtk-3.0](https://packages.debian.org/sid/gir1.2-gtk-3.0)
-* [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1)
-* [gir1.2-webkit2-4.0](https://packages.debian.org/sid/gir1.2-webkit2-4.0) (>= 2.12.0)
-* [python3-gi](https://packages.debian.org/sid/python3-gi)
-* [python3-setproctitle](https://packages.debian.org/sid/python3-setproctitle)
-* [python3-requests](https://packages.debian.org/sid/python3-requests)
+| Debian/Ubuntu | Arch |
+| ------------- | ---- |
+| [gir1.2-gtk-3.0](https://packages.debian.org/sid/gir1.2-gtk-3.0) | [gtk3](https://www.archlinux.org/packages/extra/x86_64/gtk3/)
+| [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1) | [libappindicator](https://aur.archlinux.org/pkgbase/libappindicator/?comments=all)
+| [gir1.2-webkit2-4.0](https://packages.debian.org/sid/gir1.2-webkit2-4.0) (>= 2.12.0) | [webkitgtk](https://www.archlinux.org/packages/extra/x86_64/webkitgtk/) |
+| [python3-gi](https://packages.debian.org/sid/python3-gi) | [python-gobject](https://www.archlinux.org/packages/extra/x86_64/python-gobject/) |
+| [python3-setproctitle](https://packages.debian.org/sid/python3-setproctitle) | [python-setproctitle](https://www.archlinux.org/packages/community/x86_64/python-setproctitle/) |
+| [python3-requests](https://packages.debian.org/sid/python3-requests) | [python-requests](https://www.archlinux.org/packages/extra/any/python-requests/) |
+
+
+**WebKit 2.14+ Problems**
+
+Polychromatic may become unstable due to some known issues with WebKit 2.14 and newer versions.
+
+Ubuntu 16.04 is not affected. You could downgrade to the last known working version which is 2.12.
 
 
 ## Something not working?
