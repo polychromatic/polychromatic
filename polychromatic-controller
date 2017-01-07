@@ -847,86 +847,96 @@ class Controller(object):
         ## Effects & Keyboard Controls
         elif command.startswith('brightness'):
             value = int(command[11:])
-            self.active_device_state.set_state("brightness", value)
-            self.active_device.brightness = value
-            self.update_device_active_options()
+            try:
+                self.active_device_state.set_state("brightness", value)
+                self.active_device.brightness = value
+                self.update_device_active_options()
+            except Exception as exception:
+                self.print_error(exception, str(_("Failed to set/change brightness for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
 
         elif command == 'logo-toggle':
-            current_status = self.active_device.fx.misc.logo
-            if current_status == True:
-                self.active_device.fx.misc.logo = False
-                self.active_device_state.set_state("logo", False)
-            else:
-                self.active_device.fx.misc.logo = True
-                self.active_device_state.set_state("logo", True)
-            self.update_device_active_options()
+            try:
+                current_status = self.active_device.fx.misc.logo
+                if current_status == True:
+                    self.active_device.fx.misc.logo = False
+                    self.active_device_state.set_state("logo", False)
+                else:
+                    self.active_device.fx.misc.logo = True
+                    self.active_device_state.set_state("logo", True)
+                self.update_device_active_options()
+            except Exception as exception:
+                self.print_error(exception, str(_("Failed to toggle logo for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
 
         elif command.startswith('effect'):
             enabled_options = []
             effect = command.split('?')[1]
 
-            if effect == 'none':
-                self.current_effect = "none"
-                self.active_device.fx.none()
+            try:
+                if effect == 'none':
+                    self.current_effect = "none"
+                    self.active_device.fx.none()
 
-            elif effect == 'spectrum':
-                self.current_effect = "spectrum"
-                self.active_device.fx.spectrum()
+                elif effect == 'spectrum':
+                    self.current_effect = "spectrum"
+                    self.active_device.fx.spectrum()
 
-            elif effect == 'wave':
-                self.current_effect = "wave"
-                direction = int(command.split('?')[2]) # '?1' or '?2' for direction
-                self.active_device.fx.wave(direction)
-                enabled_options = ['waves']
-                self.active_device_state.set_state("effect_parms", direction)
+                elif effect == 'wave':
+                    self.current_effect = "wave"
+                    direction = int(command.split('?')[2]) # '?1' or '?2' for direction
+                    self.active_device.fx.wave(direction)
+                    enabled_options = ['waves']
+                    self.active_device_state.set_state("effect_parms", direction)
 
-            elif effect == 'reactive':
-                self.current_effect = "reactive"
-                self.reactive_speed = int(command.split('?')[2])
-                self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
-                enabled_options = ['rgb_primary', 'reactive-options']
-                self.active_device_state.set_state("effect_parms", self.reactive_speed)
+                elif effect == 'reactive':
+                    self.current_effect = "reactive"
+                    self.reactive_speed = int(command.split('?')[2])
+                    self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
+                    enabled_options = ['rgb_primary', 'reactive-options']
+                    self.active_device_state.set_state("effect_parms", self.reactive_speed)
 
-            elif effect == 'breath':
-                breath_type = command.split('?')[2]
-                self.active_device_state.set_state("effect_parms", breath_type)
+                elif effect == 'breath':
+                    breath_type = command.split('?')[2]
+                    self.active_device_state.set_state("effect_parms", breath_type)
 
-                if breath_type == 'random':
-                    self.current_effect = "breath?random"
-                    self.active_device.fx.breath_random()
-                    enabled_options = ['breath-options']
+                    if breath_type == 'random':
+                        self.current_effect = "breath?random"
+                        self.active_device.fx.breath_random()
+                        enabled_options = ['breath-options']
 
-                elif breath_type == 'single':
-                    self.current_effect = "breath?single"
-                    self.active_device.fx.breath_single(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
-                    enabled_options = ['breath-options', 'rgb_primary']
+                    elif breath_type == 'single':
+                        self.current_effect = "breath?single"
+                        self.active_device.fx.breath_single(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                        enabled_options = ['breath-options', 'rgb_primary']
 
-                elif breath_type == 'dual':
-                    self.current_effect = "breath?dual"
-                    self.active_device.fx.breath_dual(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
-                                           self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
-                    enabled_options = ['breath-options', 'rgb_primary', 'rgb_secondary']
+                    elif breath_type == 'dual':
+                        self.current_effect = "breath?dual"
+                        self.active_device.fx.breath_dual(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
+                                               self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
+                        enabled_options = ['breath-options', 'rgb_primary', 'rgb_secondary']
 
-            elif effect == 'pulsate':
-                self.current_effect = "pulsate"
-                self.active_device.fx.pulsate(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                elif effect == 'pulsate':
+                    self.current_effect = "pulsate"
+                    self.active_device.fx.pulsate(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
 
-            elif effect == 'ripple':
-                ripple_type = command.split('?')[2]
-                if ripple_type == 'single':
-                    self.current_effect = "ripple?single"
-                    self.active_device.fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
-                    enabled_options = ['ripple-options', 'rgb_primary']
+                elif effect == 'ripple':
+                    ripple_type = command.split('?')[2]
+                    if ripple_type == 'single':
+                        self.current_effect = "ripple?single"
+                        self.active_device.fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                        enabled_options = ['ripple-options', 'rgb_primary']
 
-                elif ripple_type == 'random':
-                    self.current_effect = "ripple?random"
-                    self.active_device.fx.ripple_random()
-                    enabled_options = ['ripple-options']
+                    elif ripple_type == 'random':
+                        self.current_effect = "ripple?random"
+                        self.active_device.fx.ripple_random()
+                        enabled_options = ['ripple-options']
 
-            elif effect == 'static':
-                self.current_effect = "static"
-                self.active_device.fx.static(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
-                enabled_options = ['rgb_primary']
+                elif effect == 'static':
+                    self.current_effect = "static"
+                    self.active_device.fx.static(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                    enabled_options = ['rgb_primary']
+
+            except Exception as exception:
+                self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
 
             # Fade between options for that effect, should it have been changed.
             if not self.current_effect == self.last_effect:
@@ -959,14 +969,20 @@ class Controller(object):
             self.update_page('#game-mode-status', 'html', 'Enabled')
             self.update_page('#game-mode-enable', 'hide')
             self.update_page('#game-mode-disable', 'show')
-            self.active_device_state.set_state("gamemode", True)
+            try:
+                self.active_device_state.set_state("gamemode", True)
+            except Exception as exception:
+                self.print_error(exception, str(_("Failed to change game mode for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
 
         elif command == 'gamemode-disable':
             self.active_device.game_mode_led = False
             self.update_page('#game-mode-status', 'html', 'Disabled')
             self.update_page('#game-mode-enable', 'show')
             self.update_page('#game-mode-disable', 'hide')
-            self.active_device_state.set_state("gamemode", False)
+            try:
+                self.active_device_state.set_state("gamemode", False)
+            except Exception as exception:
+                self.print_error(exception, str(_("Failed to change game mode for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
 
         ## Changing colours for this session.
         elif command.startswith('ask-color'):
@@ -1408,6 +1424,12 @@ class Controller(object):
 
         else:
             print("Unimplemented command: " + command)
+
+    """ Print an error """
+    def print_error(self, exception, human_text):
+        self.webkit.run_javascript("showWarning('" + human_text.replace("'", '"') + "')")
+        stdout.error(human_text)
+        stdout.error('Exception: ' + str(exception))
 
     """ Refresh device list """
     def get_devices(self):

@@ -248,3 +248,12 @@ function switchPaneOverview() {
         $("#device-overview").fadeIn('fast');
     }, 210);
 }
+
+/* Print warning to footer */
+function showWarning(details) {
+    $("#error-text").html(details);
+    $("#error").fadeIn("fast");
+    setTimeout(function(){
+        $("#error").fadeOut("slow");
+    }, 5000);
+}
