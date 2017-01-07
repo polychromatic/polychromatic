@@ -1731,13 +1731,25 @@ class Terminal(object):
       print('')
       exit(0)
 
+    def error(self, text):
+        if sys.stdout.isatty():
+            print('\033[91m' + text + '\033[0m')
+        else:
+            print(text)
+
     def vprint(self, text):
         if self.be_verbose:
-            print(text)
+            if sys.stdout.isatty():
+                print('\033[93m' + text + '\033[0m')
+            else:
+                print(text)
 
     def vvprint(self, text):
         if self.be_very_verbose:
-            print(text)
+            if sys.stdout.isatty():
+                print('\033[94m' + text + '\033[0m')
+            else:
+                print(text)
 
 
 """ Shared function to get an image path using Gtk """
