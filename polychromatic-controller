@@ -503,18 +503,15 @@ class Controller(object):
             self.update_page('#rgb_primary_preview', 'css', 'background-color', 'rgba(' + str(p_red) + ',' + str(p_green) + ',' + str(p_blue) + ',1.0)')
             self.update_page('#rgb_secondary_preview', 'css', 'background-color', 'rgba(' + str(s_red) + ',' + str(s_green) + ',' + str(s_blue) + ',1.0)')
 
-            # Hide unsupported options for active device.
-            self.update_device_supported_features()
-
-            # Display the last known options.
-            self.update_device_active_options()
-
             # If there are multiple devices connected, show the overview screen first.
             if len(self.devices) > 1:
                 self.update_page(".device", "removeClass", "active")
                 self.update_page("#device-overview-tab", "addClass", "active")
                 self.update_page("#device-individual", "hide")
                 self.update_page("#device-overview", "fadeIn")
+            else:
+                self.update_device_supported_features()
+                self.update_device_active_options()
 
         elif self.current_page == 'profile_editor':
             # Push strings
@@ -1467,7 +1464,7 @@ class Controller(object):
 
         if self.current_page == "menu":
             app.update_page(".device", "remove")
-            app.update_page('#device-tabs', 'append', "<button id='device-overview-tab' class='device' onclick='switchPaneOverview()'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
+            app.update_page('#device-tabs', 'append', "<button id='device-overview-tab' class='device' onclick='switchPaneOverview(); changeHeaderImg(\"overview\", \"black\")'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
             device_index = pref.load_file(data_source + "/img/device-images.json")
             unknown_icon = "../img/states/normal/unknown.svg"
 

@@ -143,6 +143,10 @@ button > label {
     transition: all 0.5s ease-in-out;
 }
 
+.header > #dynamic.overview {
+    background-image: url('../img/header/generic.jpg');
+}
+
 .header > #dynamic.keyboard {
     background-image: url('../img/header/keyboard.png');
 }
