@@ -1484,7 +1484,7 @@ class Controller(object):
                 img = data_source + "/img/states/{0}/{1}.svg".format(state, formfactor)
                 if not os.path.exists(img):
                     img = unknown_icon
-                htmlbuffer = "<button id='{0}' class='device' onclick='cmd(\"device-select?{0}\")'><img src='{1}'> <span>{2}</span></button>".format(serial, img, name)
+                htmlbuffer = "<button id='{0}' class='device' onclick='cmd(\"device-select?{0}\")' title=\"{2}\"><img src='{1}'> <span>{2}</span></button>".format(serial, img, name)
                 app.update_page("#device-tabs", "append", htmlbuffer)
 
                 status_brightness = status.get_state("brightness")
