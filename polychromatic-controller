@@ -1311,7 +1311,10 @@ class Controller(object):
 
         elif command == 'update-check':
             update_script = os.path.join(pref.Paths.get_data_source(__file__) + "/../install/update.sh")
-            background_process('x-terminal-emulator -e "{0}"'.format(update_script), shell=True)
+            if os.path.exists("/usr/bin/x-terminal-emulator"):
+                background_process('x-terminal-emulator -e "{0}"'.format(update_script), shell=True)
+            else:
+                background_process('xterm -e "{0}"'.format(update_script), shell=True)
 
         elif command == 'fetch-changelog':
             import requests
