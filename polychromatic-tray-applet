@@ -31,8 +31,12 @@ import gettext
 import setproctitle
 from subprocess import Popen as background_process
 
-import razer.client as rclient
-from razer_daemon.keyboard import KeyboardColour
+try:
+    import razer.client as rclient
+    from razer_daemon.keyboard import KeyboardColour
+except:
+    print("Failed to import Razer library. Is the daemon installed?")
+    exit(1)
 
 try:
     # Relative copy

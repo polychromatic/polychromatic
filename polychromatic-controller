@@ -37,9 +37,14 @@ import time
 import threading
 from subprocess import Popen as background_process
 
-import razer.client as rclient
-from razer_daemon.keyboard import get_keyboard_layout
-from razer_daemon.keyboard import RGB
+try:
+    import razer.client as rclient
+    from razer_daemon.keyboard import get_keyboard_layout
+    from razer_daemon.keyboard import RGB
+    daemon_missing = False
+except ImportError:
+    # We'll show a graphical error when loading up.
+    daemon_missing = True
 
 try:
     # Relative copy
@@ -223,14 +228,25 @@ class Controller(object):
     """ Initialise the application """
     def __init__(self):
 
-        # Set up variables
+        # Set up "memory" variables
         self.current_page = 'loading'
-        self.kb_layout = get_keyboard_layout()
         self.reactive_speed = 1
-        self.primary_rgb = RGB(0, 255, 0)
-        self.secondary_rgb = RGB(0, 0, 255)
         self.current_effect = 'custom'
         self.last_effect = 'unknown'
+
+        # Set up variables provided by daemon
+        try:
+            self.kb_layout = get_keyboard_layout()
+        except:
+            self.kb_layout = 'gb'
+
+        try:
+            self.primary_rgb = RGB(0, 255, 0)
+            self.secondary_rgb = RGB(0, 0, 255)
+        except:
+            # We're in trouble.
+            self.primary_rgb = None
+            self.secondary_rgb = None
 
         # Is this application installed in /usr/share or ran from repository?
         if os.path.exists(os.path.join(path.get_data_source(__file__) + "/../install/update.sh")):
@@ -297,6 +313,14 @@ class Controller(object):
     def run_app(self):
         # Prepare devices
         stdout.vprint("Loading Daemon...")
+
+        if daemon_missing:
+            self.show_error_page(
+                 "serious", "generic", _("Daemon Not Installed"),
+                 _("Polychromatic requires the daemon, but it could not be imported. Please check the Razer drivers, daemon and Python library are installed.") +
+                 '<br><br><a onclick="cmd(\'open?https://github.com/lah7/polychromatic\')">' + _("See the README for further information.") + '</a>')
+            return
+
         try:
             self.devman = rclient.DeviceManager()
         except rclient.DaemonNotFound:
