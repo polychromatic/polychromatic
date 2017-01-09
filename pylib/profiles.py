@@ -12,7 +12,16 @@ import os
 import time
 from shutil import copyfile
 
-import polychromatic.preferences as pref
+try:
+    # Relative copy
+    import pylib.preferences as pref
+except ImportError:
+    # Installed to system
+    import polychromatic.preferences as pref
+except:
+    print("Unable to import preferences module!")
+    exit(1)
+
 path = pref.Paths()
 
 class AppProfiles(object):

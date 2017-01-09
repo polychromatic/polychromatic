@@ -41,9 +41,20 @@ import razer.client as rclient
 from razer_daemon.keyboard import get_keyboard_layout
 from razer_daemon.keyboard import RGB
 
-import polychromatic.preferences as pref
+try:
+    # Relative copy
+    import pylib.preferences as pref
+    import pylib.profiles as prof
+except ImportError:
+    # Installed to system
+    import polychromatic.preferences as pref
+    import polychromatic.profiles as prof
+except:
+    print("One or more of Polychromatic's modules could not be imported!")
+    print("Try re-installing the application.")
+    exit(1)
+
 path = pref.Paths()
-import polychromatic.profiles
 
 # Imported on-demand:
 #   * requests
@@ -339,7 +350,7 @@ class Controller(object):
 
         # Initialise Profiles
         stdout.vprint("Loading Application Profiles...")
-        self.profiles = polychromatic.profiles.AppProfiles()
+        self.profiles = prof.AppProfiles()
         self.profiles.selected_uuid = None
         self.profiles.previous_uuid = None
 
