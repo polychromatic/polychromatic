@@ -277,7 +277,7 @@ class Controller(object):
         # Kills process when CTRL+C'd.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-        thread = threading.Thread(target=app.run_app, args=())
+        thread = threading.Thread(target=self.run_app, args=())
         thread.daemon = True
         thread.start()
         Gtk.main()
@@ -527,7 +527,7 @@ class Controller(object):
             trans.push_var('str_picker_help', _("Click on a key to grab its color."))
             trans.push_var('str_clear', _("Clear"))
             trans.push_var('str_clear_help', _("Click on a key to clear."))
-            app.webkit.run_javascript("set_mode('set')")
+            self.webkit.run_javascript("set_mode('set')")
 
             trans.push('#str-edit-profile', _("Edit"), True)
             trans.push('#dialog-rename-title', _("Edit Profile Details"))
@@ -544,7 +544,7 @@ class Controller(object):
 
             # Collect profile details.
             uuid = self.profiles.selected_uuid
-            app.webkit.run_javascript("var selected_profile = '{0}'".format(uuid))
+            self.webkit.run_javascript("var selected_profile = '{0}'".format(uuid))
             profile_path = os.path.join(path.profile_folder, str(uuid) + ".json")
             self.profiles.memory = pref.load_file(profile_path)
             profile_data = self.profiles.memory
@@ -552,12 +552,12 @@ class Controller(object):
             profile_icon = profile_data["icon"]
 
             # Set profile title on page
-            app.update_page("#profile-name", "html", profile_name)
-            app.update_page("#profile-name", "fadeIn")
+            self.update_page("#profile-name", "html", profile_name)
+            self.update_page("#profile-name", "fadeIn")
 
             # Set profile icon on page
-            app.update_page("#profile-icon", "attr", "src", profile_icon)
-            app.update_page("#profile-icon", "fadeIn")
+            self.update_page("#profile-icon", "attr", "src", profile_icon)
+            self.update_page("#profile-icon", "fadeIn")
 
             # Set keyboard layout
             kb_callback << "keyboard_obj.set_layout(\"kb-" + self.kb_layout + "\")"
@@ -762,25 +762,25 @@ class Controller(object):
             if os.path.exists(self.config_path):
                 self.daemon_config.read(self.config_path)
             else:
-                app.update_page("#daemon-options-missing", "show")
+                self.update_page("#daemon-options-missing", "show")
                 for element in ["verbose-logging", "sync-effects", "screensaver", "key-statistics"]:
-                    app.update_page("#daemon-"+element, "addClass", "disabled")
-                    app.update_page("#str-"+element, "addClass", "disabled")
+                    self.update_page("#daemon-"+element, "addClass", "disabled")
+                    self.update_page("#str-"+element, "addClass", "disabled")
 
             """ Sets the initial checkbox state for razer.conf daemon settings """
             def read_daemon_config(group, item, element, label, description):
                 element_checkbox = "#daemon-" + element
                 element_label = "#str-" + element
                 element_help = "#str-" + element + "-help"
-                app.update_page(element_label, "append", label)
-                app.update_page(element_help, "html", description)
+                self.update_page(element_label, "append", label)
+                self.update_page(element_help, "html", description)
                 if not self.daemon_config.has_option(group, item):
-                    app.update_page(element_checkbox, "addClass", "disabled")
-                    app.update_page(element_label, "addClass", "disabled")
+                    self.update_page(element_checkbox, "addClass", "disabled")
+                    self.update_page(element_label, "addClass", "disabled")
                     return
 
                 if self.daemon_config.get(group, item) == 'True':
-                    app.update_page(element_checkbox, "prop", "checked", "true")
+                    self.update_page(element_checkbox, "prop", "checked", "true")
 
             read_daemon_config("General", "verbose_logging", "verbose-logging", _("Verbose Logging"), _("Show lots of debug messages."))
             read_daemon_config("Startup", "sync_effects_enabled", "sync-effects", _("Sync Effects to All Devices"), _("When setting an effect, apply this to all other connected devices (where supported)."))
@@ -813,9 +813,9 @@ class Controller(object):
                 icon_path = data["icon"]
             except:
                 icon_path = path.get_data_source(__file__) + "/img/profile-default.svg"
-            if app.current_page == "menu":
+            if self.current_page == "menu":
                 self.update_page('#app-profiles', 'append', "<button class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\", \"{2}\")'><img src='{1}'>{2}</button>".format(css_id, icon_path, title, uuid))
-            elif app.current_page == "preferences":
+            elif self.current_page == "preferences":
                 self.update_page('#profiles-list', 'append', "<option value='{1}'>{0}</option>".format(title, uuid))
 
         # Sort the profiles A-Z.
@@ -1003,7 +1003,7 @@ class Controller(object):
             print("Set colour of '{0}' to RGB: {1}, {2}, {3}".format(element, red, green, blue))
 
             self.update_page('#'+element+'_preview', 'css', 'background-color', 'rgba(' + str(red) + ',' + str(green) + ',' + str(blue) + ',1.0)')
-            if app.current_page == 'profile_editor':
+            if self.current_page == 'profile_editor':
                 self.webkit.run_javascript('set_mode("set")')
 
             if element == 'rgb_primary':    # Primary effect colour
@@ -1213,11 +1213,11 @@ class Controller(object):
             name = data["name"]
             icon = data["icon"]
 
-            app.update_page('#dialog-rename-name', 'val', name)
-            app.update_page('#dialog-rename-icon', 'val', icon)
-            app.update_page('#dialog-rename-name-preview', 'html', name)
-            app.update_page('#dialog-rename-icon-preview', 'attr', 'src', icon)
-            app.webkit.run_javascript("rename_profile_dialog_open()")
+            self.update_page('#dialog-rename-name', 'val', name)
+            self.update_page('#dialog-rename-icon', 'val', icon)
+            self.update_page('#dialog-rename-name-preview', 'html', name)
+            self.update_page('#dialog-rename-icon-preview', 'attr', 'src', icon)
+            self.webkit.run_javascript("rename_profile_dialog_open()")
 
         ## List application launchers to create profiles for.
         elif command == 'fetch-app-launchers':
@@ -1294,8 +1294,8 @@ class Controller(object):
             div_id = command.split('?')[1]
             path = Dialogues.file_picker(_("Choose Application Profile Icon"), 'image')
             if path != None:
-                app.update_page('#'+div_id, 'val', path)
-                app.update_page('#'+div_id+'-preview', 'attr', 'src', path)
+                self.update_page('#'+div_id, 'val', path)
+                self.update_page('#'+div_id+'-preview', 'attr', 'src', path)
             else:
                 return
 
@@ -1320,8 +1320,8 @@ class Controller(object):
             import requests
 
             def fetch_failed():
-                app.update_page("#dialog-changelog-body", "html", ("Unable to fetch the changelog."))
-                app.webkit.run_javascript("changelog_dialog_open()")
+                self.update_page("#dialog-changelog-body", "html", ("Unable to fetch the changelog."))
+                self.webkit.run_javascript("changelog_dialog_open()")
 
             try:
                 r = requests.get('https://raw.githubusercontent.com/lah7/polychromatic/master/CHANGELOG')
@@ -1330,24 +1330,24 @@ class Controller(object):
                 return
 
             if r.status_code == 200:
-                app.update_page("#dialog-changelog-body", "html", " ")
+                self.update_page("#dialog-changelog-body", "html", " ")
                 ver = 0
                 for line in r.text.split('\n'):
                     if line.startswith("#"):
                         ver = line[1:].strip()
                         if ver == version:
-                            app.update_page("#dialog-changelog-body", "append", "<h3><span class='fa fa-arrow-right'></span> " + ver + "</h3>")
+                            self.update_page("#dialog-changelog-body", "append", "<h3><span class='fa fa-arrow-right'></span> " + ver + "</h3>")
                         else:
-                            app.update_page("#dialog-changelog-body", "append", "<h3>" + ver + "</h3>")
-                        app.update_page("#dialog-changelog-body", "append", "<p><a style='color:lime;text-decoration:underline' href='#' onclick='open_release_note(\"{0}\")'>".format(ver) + _("View Release Notes") + "</a></p>")
+                            self.update_page("#dialog-changelog-body", "append", "<h3>" + ver + "</h3>")
+                        self.update_page("#dialog-changelog-body", "append", "<p><a style='color:lime;text-decoration:underline' href='#' onclick='open_release_note(\"{0}\")'>".format(ver) + _("View Release Notes") + "</a></p>")
                     elif line == '':
                         continue
                     else:
                         if ver == version:
-                            app.update_page("#dialog-changelog-body", "append", "<li style='color:lime'>" + line.split('*')[1] + "</li>")
+                            self.update_page("#dialog-changelog-body", "append", "<li style='color:lime'>" + line.split('*')[1] + "</li>")
                         else:
-                            app.update_page("#dialog-changelog-body", "append", "<li>" + line.split('*')[1] + "</li>")
-                app.webkit.run_javascript("changelog_dialog_open()")
+                            self.update_page("#dialog-changelog-body", "append", "<li>" + line.split('*')[1] + "</li>")
+                self.webkit.run_javascript("changelog_dialog_open()")
             else:
                 fetch_failed()
                 return
@@ -1409,10 +1409,10 @@ class Controller(object):
                 print("Could not locate device with serial: " + selected_serial)
                 return
 
-            app.update_page(".device", "removeClass", "active")
-            app.update_page("#" + selected_serial, "addClass", "active")
-            app.update_page("#device-overview", "fadeOut", "fast")
-            app.update_page("#device-individual", "fadeIn", "slow")
+            self.update_page(".device", "removeClass", "active")
+            self.update_page("#" + selected_serial, "addClass", "active")
+            self.update_page("#device-overview", "fadeOut", "fast")
+            self.update_page("#device-individual", "fadeIn", "slow")
             stdout.vprint("Selected: {0} [{1}]".format(selected_device.name, selected_serial))
 
             # Change the header image
@@ -1466,8 +1466,8 @@ class Controller(object):
         selected_id = self.active_device.serial
 
         if self.current_page == "menu":
-            app.update_page(".device", "remove")
-            app.update_page('#device-tabs', 'append', "<button id='device-overview-tab' class='device' onclick='switchPaneOverview(); changeHeaderImg(\"overview\", \"black\")'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
+            self.update_page(".device", "remove")
+            self.update_page('#device-tabs', 'append', "<button id='device-overview-tab' class='device' onclick='switchPaneOverview(); changeHeaderImg(\"overview\", \"black\")'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
             device_index = pref.load_file(data_source + "/img/device-images.json")
             unknown_icon = "../img/states/normal/unknown.svg"
 
@@ -1485,7 +1485,7 @@ class Controller(object):
                 if not os.path.exists(img):
                     img = unknown_icon
                 htmlbuffer = "<button id='{0}' class='device' onclick='cmd(\"device-select?{0}\")' title=\"{2}\"><img src='{1}'> <span>{2}</span></button>".format(serial, img, name)
-                app.update_page("#device-tabs", "append", htmlbuffer)
+                self.update_page("#device-tabs", "append", htmlbuffer)
 
                 status_brightness = status.get_state("brightness")
                 status_effect = status.get_state("effect")
@@ -1522,11 +1522,11 @@ class Controller(object):
 
                 htmlbuffer +=   '<p class="brightness-status"><span class="fa fa-lightbulb-o"></span> <span id="device-{0}-brightness">{1}</span>%</p>'.format(serial, str(status_brightness))
                 htmlbuffer += '</div>'
-                app.update_page("#device-overview", "append", htmlbuffer)
+                self.update_page("#device-overview", "append", htmlbuffer)
 
-            app.update_page('#' + selected_id, "addClass", "active")
+            self.update_page('#' + selected_id, "addClass", "active")
             if len(self.devices) > 4:
-                app.update_page("#device-tabs", "addClass", "too-many")
+                self.update_page("#device-tabs", "addClass", "too-many")
 
     def update_device_supported_features(self):
         # Reset all elements
@@ -1581,8 +1581,8 @@ class Controller(object):
         # Individual Screen
         try:
             brightness = int(self.active_device.brightness)
-            app.update_page("#brightness", "val", str(brightness))
-            app.update_page("#brightnessValue", "html", str(brightness) + "%")
+            self.update_page("#brightness", "val", str(brightness))
+            self.update_page("#brightnessValue", "html", str(brightness) + "%")
         except:
             brightness = None
 
@@ -1590,18 +1590,18 @@ class Controller(object):
             effect = self.active_device_state.get_state("effect")
             if effect == "profile":
                 uuid = self.active_device_state.get_state("profile")
-                app.update_page(".effect-item", "removeClass", "active")
-                app.update_page("#fx-none", "addClass", "active")
-                app.update_page("#app-"+uuid, "addClass", "active")
+                self.update_page(".effect-item", "removeClass", "active")
+                self.update_page("#fx-none", "addClass", "active")
+                self.update_page("#app-"+uuid, "addClass", "active")
             else:
-                app.update_page(".effect-item", "removeClass", "active")
-                app.update_page("#fx-"+effect, "addClass", "active")
+                self.update_page(".effect-item", "removeClass", "active")
+                self.update_page("#fx-"+effect, "addClass", "active")
         except:
             effect = None
 
         # Device screen
         if brightness:
-            app.update_page("#device-"+self.active_device_serial+"-brightness", "html", str(brightness))
+            self.update_page("#device-"+self.active_device_serial+"-brightness", "html", str(brightness))
 
         if effect:
             if effect == "profile" and str(self.active_device.type) == "keyboard":
@@ -1609,11 +1609,11 @@ class Controller(object):
                 profile_data = self.profiles.load_profile(uuid)
                 profile_name = profile_data["name"]
                 profile_icon = profile_data["icon"]
-                app.update_page("#device-"+self.active_device_serial+"-effect > span", "html", profile_name)
-                app.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", profile_icon)
+                self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", profile_name)
+                self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", profile_icon)
             else:
-                app.update_page("#device-"+self.active_device_serial+"-effect > span", "html", trans.get_effect_state_string(self.active_device_state))
-                app.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", '../img/effects/' + effect + '.svg')
+                self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", trans.get_effect_state_string(self.active_device_state))
+                self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", '../img/effects/' + effect + '.svg')
 
     def update_background_header(self):
         if not self.current_page == "menu":
@@ -1626,12 +1626,12 @@ class Controller(object):
             device_type = "keypad"
 
         if self.current_effect == "spectrum":
-            app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "spectrum"))
+            self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "spectrum"))
         elif self.current_effect == "wave":
-            app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "wave"))
+            self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "wave"))
         else:
             rgba = "rgba({0},{1},{2},1)".format(str(self.primary_rgb_values[0]), str(self.primary_rgb_values[1]), str(self.primary_rgb_values[2]))
-            app.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, rgba))
+            self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, rgba))
 
     """ When things go horribly wrong. """
     def show_error_page(self, severity, icon, title, message):
