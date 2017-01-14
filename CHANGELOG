@@ -1,3 +1,12 @@
+# 0.3.6
+
+  * Add button to gracefully stop the daemon.
+  * Add images for headsets and keypads.
+  * Show device images on Overview screen.
+  * Show more friendly errors when things go wrong.
+  * Fix command loop (causing high CPU utilization)
+  * Miscellaneous fixes.
+
 # 0.3.5
 
   * Prevent crash when device serial returned null.

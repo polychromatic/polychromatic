@@ -1,3 +1,19 @@
+polychromatic (0.3.6-xenial) xenial; urgency=low
+
+  * Add button to gracefully stop the daemon.
+  * Add images for headsets and keypads.
+  * Show device images on Overview screen.
+  * When device features cannot be set, show an error in the footer.
+  * Colourise terminal colours.
+  * Show tooltip when hovering over device tabs.
+  * Show more friendly errors when things go wrong.
+  * File metadata fixes.
+  * Re-sync BlackWidow Chroma demo.
+  * Update en_GB locale.
+  * Stabilize the behaviour of processing signals with WebKit2.
+
+ -- Luke Horwell <luke@ubuntu-mate.org>  Sat, 14 Jan 2017 17:20:58 +0100
+
 polychromatic (0.3.5-xenial) xenial; urgency=low
 
   * Prevent crash when device serial returned null.
