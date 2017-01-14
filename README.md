@@ -28,7 +28,7 @@ However, not all newly supported devices will work straight away. These devices 
 
 | Keyboard | Mouse | Mousemat | Keypad | Headset |
 |   :---:  | :---: |   :---:  | :---:  | :---:   |
-| ![Keyboard](.readme/status/keyboard-ok.png) | ![Mouse](.readme/status/mouse-warn.png) | ![Mousemat](.readme/status/mousemat-ok.png) | ![Keypad](.readme/status/keypad-warn.png) | ![Headset](.readme/status/headset-warn.png)
+| ![Keyboard](.readme/status/keyboard-ok.png) | ![Mouse](.readme/status/mouse-warn.png) | ![Mousemat](.readme/status/mousemat-ok.png) | ![Keypad](.readme/status/keypad-warn.png) | ![Headset](.readme/status/headset-ok.png)
 
 #### Known Issues
 * **Mice**
@@ -36,13 +36,10 @@ However, not all newly supported devices will work straight away. These devices 
     * [DeathAdder Chroma](https://github.com/lah7/polychromatic/issues/41)
     * [Razer Naga](https://github.com/terrycain/razer-drivers/issues/106)
   * No option for reading/setting DPI for supported mice.
+  * Profile support may be possible, further investigation needed.
 * **Keypad**
   * Profile support is not possible as the daemon does not support the matrix yet (like keyboards do).
-  * Header may appear garbled.
-* **Headset**
-  * Header may appear garbled.
 
-When the daemon supports new devices, they may or may not work. Stay tuned for updates!
 
 -------------
 
