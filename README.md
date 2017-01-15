@@ -156,13 +156,6 @@ Polychromatic interfaces with the daemon from the [razer-drivers project](https:
 | [python3-requests](https://packages.debian.org/sid/python3-requests) | [python-requests](https://www.archlinux.org/packages/extra/any/python-requests/) |
 
 
-**WebKit 2.14+ Problems**
-
-Polychromatic may become unstable due to some known issues with WebKit 2.14 and newer versions.
-
-Ubuntu 16.04 is not affected. You could downgrade to the last known working version which is 2.12.
-
-
 ## Something not working?
 
 * Check that the driver and daemon are [properly installed](https://github.com/terrycain/razer-drivers#installation) for your distribution.
