@@ -250,8 +250,10 @@ class AppView(WebKit2.WebView):
 
 
 class Controller(object):
-    """ Initialise the application """
     def __init__(self):
+        """
+        Initialises the application.
+        """
 
         # Set up "memory" variables
         self.current_page = 'loading'
@@ -279,8 +281,10 @@ class Controller(object):
         else:
             self.app_installed = True
 
-    """ Assemble and run the application """
     def start(self):
+        """
+        Assembles and runs the application.
+        """
         # Initalise WebKit
         self.webkit = AppView(self.current_page)
 
@@ -334,8 +338,10 @@ class Controller(object):
         thread.start()
         Gtk.main()
 
-    """ Initalise and run the application """
     def run_app(self):
+        """
+        Starts the main application's operations.
+        """
         # Prepare devices
         stdout.vprint("Loading Daemon...")
 
@@ -431,10 +437,10 @@ class Controller(object):
         stdout.vprint('Application Ready.\n')
         self.show_menu('menu')
 
-    """ Send jQuery code to page """
     def update_page(self, element, function, parm1=None, parm2=None):
-        """ Runs a JavaScript jQuery function on the page,
-            ensuring correctly parsed quotes. """
+        """
+        Sends a jQuery function to the page, ensuring correctly parsed quotes.
+        """
         if parm1 and parm2:
             buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "', '" + parm2.replace("'", '\\\'') + "')"
             stdout.vvprint(' => Push JS: ' + buffer)
@@ -448,8 +454,10 @@ class Controller(object):
             stdout.vvprint(' => Push JS: ' + buffer)
             self.webkit.run_javascript(buffer)
 
-    """ Requests to change the page """
     def show_menu(self, page):
+        """
+        Changes the current page in use.
+        """
         self.current_page = page
         page_path = os.path.join(data_source, 'pages', page + '.html')
 
@@ -458,8 +466,10 @@ class Controller(object):
         else:
             print("Unknown menu: " + page)
 
-    """ Page Initialisation """
     def page_loaded(self):
+        """
+        Initialise the page when it has finished loading.
+        """
         stdout.vvprint(' ** Running post-actions for page: "' + self.current_page + '"...')
         trans.push('#close-window', _("Close"))
 
@@ -859,8 +869,10 @@ class Controller(object):
         else:
             stdout.vvprint('No post-actions for this page.')
 
-    """ Reloads the profile list """
     def refresh_profiles_list(self):
+        """
+        Reloads the key light profiles created by the user.
+        """
         stdout.vvprint('Refreshing profile list...')
         self.update_page('#app-profiles', 'html' , ' ')
 
@@ -896,8 +908,10 @@ class Controller(object):
             item_no += 1
             append_item(str(uuid), data)
 
-    """ Process a command """
     def process_command(self, command):
+        """
+        Processes a command passed from the page to Python.
+        """
         if command == None or command == '':
             return
 
@@ -1488,14 +1502,18 @@ class Controller(object):
         else:
             print("Unimplemented command: " + command)
 
-    """ Print an error """
     def print_error(self, exception, human_text):
+        """
+        Shows a graphical error message to the page.
+        """
         self.webkit.run_javascript("showWarning('" + human_text.replace("'", '"') + "')")
         stdout.error(human_text)
         stdout.error('Exception: ' + str(exception))
 
-    """ Refresh device list """
     def get_devices(self):
+        """
+        Refreshes the currently connected devices, retrieved via the daemon.
+        """
         stdout.vprint("Gathering Devices...")
         found_devices = []
         for device in self.devman.devices:
@@ -1522,6 +1540,9 @@ class Controller(object):
         return(found_devices)
 
     def refresh_device_list(self):
+        """
+        Refreshes the graphical interface by re-populating the device tabs.
+        """
         # If the daemon doesn't have any devices, there is nothing to show.
         if len(self.devices) == 0:
             return
@@ -1592,6 +1613,9 @@ class Controller(object):
                 self.update_page("#device-tabs", "addClass", "too-many")
 
     def update_device_supported_features(self):
+        """
+        Refreshes the page and only shows options that are supported by the current "active" device.
+        """
         # Reset all elements
         elements =  ["str-effects", "fx-none", "fx-spectrum", "fx-wave", "fx-reactive", "fx-breath", "fx-pulsate", "fx-ripple", "fx-static", "brightness-slider", "logo-toggle",
                      "rgb_primary", "rgb_secondary", "waves", "reactive-options", "breath-options", "ripple-options"
@@ -1641,6 +1665,9 @@ class Controller(object):
             check_ability("lighting_logo", "logo-toggle")
 
     def update_device_active_options(self):
+        """
+        Refreshes the page by showing the options selected for the active device.
+        """
         # Individual Screen
         try:
             brightness = int(self.active_device.brightness)
@@ -1679,6 +1706,9 @@ class Controller(object):
                 self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", '../img/effects/' + effect + '.svg')
 
     def update_background_header(self):
+        """
+        Refreshes the dynamic background header based on the current device.
+        """
         if not self.current_page == "menu":
             return
 
@@ -1696,8 +1726,10 @@ class Controller(object):
             rgba = "rgba({0},{1},{2},1)".format(str(self.primary_rgb_values[0]), str(self.primary_rgb_values[1]), str(self.primary_rgb_values[2]))
             self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, rgba))
 
-    """ When things go horribly wrong. """
     def show_error_page(self, severity, icon, title, message):
+        """
+        When things go horribly wrong and the application should abort or restart.
+        """
         # severity  =   'normal', 'warning', 'serious'
         # icon      =   Filename as seen in ../img/error/
         # title / message = Strings to display.
@@ -1786,8 +1818,13 @@ class Dialogues(object):
 
 
 class Terminal(object):
-    """ Process arguments passed via the terminal. """
+    """
+    Various functions for pretty printing to stdout for debugging.
+    """
     def __init__(self):
+        """
+        Process parameters (arguments) passed via the terminal.
+        """
         self.be_verbose = False
         self.be_very_verbose = False
 
@@ -1837,8 +1874,10 @@ class Terminal(object):
                 print(text)
 
 
-""" Shared function to get an image path using Gtk """
 def icon_name_to_path(icon_name):
+    """
+    This shared function gets an image path using Gtk.
+    """
     theme = Gtk.IconTheme.get_default()
     info = theme.lookup_icon(icon_name, 22, 0)
     path = info.get_filename()
@@ -1846,9 +1885,6 @@ def icon_name_to_path(icon_name):
         return path
     else:
         return 'null'
-
-""" For restarting the tray applet (only when running) """
-tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
 
 def restart_tray_applet():
     print("Tray applet restarting...")
@@ -1921,9 +1957,18 @@ def restart_daemon_service():
     exit(0)
 
 
-""" Razer Chroma Keyboard Demo """
-# Based on advert: https://www.youtube.com/watch?v=0VRK_bsE6nw
+# For restarting the tray applet (only when running)
+tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
+
+
 class RazerChromaKeyboardDemo(object):
+    """
+    Razer Chroma Keyboard Demo
+      -- Can be run by visiting the About page in Preferences.
+
+    A synchronised keylight show based on the advert:
+    https://www.youtube.com/watch?v=0VRK_bsE6nw
+    """
     def __init__(self, webkit, profiles, chroma, show_menu_callback):
         self.webkit = webkit
         self.profiles = profiles
