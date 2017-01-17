@@ -80,21 +80,26 @@ class Translations(object):
         t = gettext.translation('polychromatic-controller', localedir=self.locale_path, fallback=True)
         _ = t.gettext
 
-    """ Pushes a string to the page. """
     def push(self, element, string, append=False):
+        """
+        Pushes a translatible string to the page.
+        """
         # "append=True" is useful for elements that share contents.
         if append:
             app.update_page(element, 'append', "{0}".format(string))
         else:
             app.update_page(element, 'html', "{0}".format(string))
 
-    """ Pushes a string to a variable on the page. """
     def push_var(self, variable, string):
+        """
+        Pushes a translatable string to a JavaScript variable on the page.
+        """
         app.webkit.run_javascript('var {0} = "{1}"'.format(variable, string))
 
-    """ Function to retrieve the current device effect
-    as a human-readable string. """
     def get_effect_state_string(self, device_state_obj):
+        """
+        Function to retrieve the current device effect as a human-readable string.
+        """
         string = device_state_obj.get_state("effect")
         if string == 'spectrum':
             return _("Spectrum")
@@ -117,8 +122,10 @@ class Translations(object):
 
 
 class AppView(WebKit2.WebView):
-    """ Initialise WebKit2 """
     def __init__(self, startpage):
+        """
+        Initialise WebKit2
+        """
         # Create WebKit Container
         webkit = WebKit2
         webkit.WebView.__init__(self)
@@ -150,15 +157,19 @@ class AppView(WebKit2.WebView):
         default_page = 'loading'
         self.load_uri('file://' + os.path.join(data_source, 'pages/' + startpage + '.html'))
 
-    """ Callback: Title changed """
     def title_changed_cb(self, view, frame):
+        """
+        Callback: Title changed ('commands' used for communicating to Python)
+        """
         title = self.get_title()
         if title != 'null':
             stdout.vvprint('** Command: ' + title)
             app.process_command(title)
 
-    """ Callback: Page changed """
     def load_changed_cb(self, view, frame):
+        """
+        Callback: Page changed
+        """
         uri = str(self.get_uri())
         try:
             page = uri.rsplit('/', 1)[1].split('.html')[0]
@@ -169,13 +180,16 @@ class AppView(WebKit2.WebView):
             stdout.vvprint(' ** Page Changed: ' + page)
             app.page_loaded()
 
-    """ Callback: Disable context menu """
     def context_menu_cb(self, view, menu, event, htr, user_data=None):
+        """
+        Callback: Disables the context menu.
+        """
         return True
 
-    """ Collects JavaScript and send altogether """
     class JavaScriptExecutor(object):
-        """ Simple class to execute scripts """
+        """
+        Collects JavaScript and send altogether, used for profile editing.
+        """
         def __init__(self, webkit, script=None, wrapper=None):
             if wrapper is not None:
                 self.wrapper = wrapper
@@ -188,9 +202,9 @@ class AppView(WebKit2.WebView):
             if script is not None:
                 self.add(script)
 
-        """ Adds a line to the collection """
         def add(self, line):
             """
+            Adds a line to the collection.
             :param line: Line to execute
             :type line: str
 
@@ -207,8 +221,10 @@ class AppView(WebKit2.WebView):
 
             return self
 
-        """ Runs the collection """
         def exec(self):
+            """
+            Runs the collection of commands.
+            """
             payload = str(self)
             stdout.vvprint(' => JSExec: Pushed to page.')
             self.webkit.run_javascript(payload)
