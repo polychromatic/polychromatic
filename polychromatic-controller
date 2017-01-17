@@ -150,35 +150,12 @@ class AppView(WebKit2.WebView):
         default_page = 'loading'
         self.load_uri('file://' + os.path.join(data_source, 'pages/' + startpage + '.html'))
 
-        # WebKit Workarounds - do not run command until it repeats again.
-        self.cmd_buffer = []
-        self.cmd_set = False
-
     """ Callback: Title changed """
     def title_changed_cb(self, view, frame):
         title = self.get_title()
-
-        # Workaround for strange WebKit2 behaviour (>=2.14)
-        # https://bugs.webkit.org/show_bug.cgi?id=165073
-        # ==================================
-        # Ignore NULL
-        if len(title) == 0:
-            return
-        else:
-            self.cmd_buffer.append(title)
-
-        # Once the page is loaded, first command works fine.
-        # Subsequential clicks on anything else causes 2 callbacks.
-        if self.cmd_set:
-            if not len(self.cmd_buffer) >= 2:
-                return
-        self.cmd_buffer = []
-        self.cmd_set = True
-
-        # ==================================
-
-        stdout.vvprint('** Command: ' + title)
-        app.process_command(title)
+        if title != 'null':
+            stdout.vvprint('** Command: ' + title)
+            app.process_command(title)
 
     """ Callback: Page changed """
     def load_changed_cb(self, view, frame):
@@ -191,9 +168,6 @@ class AppView(WebKit2.WebView):
             app.current_page = page
             stdout.vvprint(' ** Page Changed: ' + page)
             app.page_loaded()
-
-        # WebKit Workaround - so we know the title has been changed already.
-        self.cmd_set = False
 
     """ Callback: Disable context menu """
     def context_menu_cb(self, view, menu, event, htr, user_data=None):
@@ -912,10 +886,7 @@ class Controller(object):
         """
         Processes a command passed from the page to Python.
         """
-        if command == None or command == '':
-            return
-
-        elif command == 'quit':
+        if command == 'quit':
             quit()
 
         ## Effects & Keyboard Controls
