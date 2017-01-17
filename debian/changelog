@@ -1,3 +1,9 @@
+polychromatic (0.3.6.1-xenial) xenial; urgency=low
+
+  * Revert WebKit2 workaround as regression is fixed in WebKitGTK 2.14.3.
+
+ -- Luke Horwell <luke@ubuntu-mate.org>  Tue, 17 Jan 2017 21:15:42 +0100
+
 polychromatic (0.3.6-xenial) xenial; urgency=low
 
   * Add button to gracefully stop the daemon.
