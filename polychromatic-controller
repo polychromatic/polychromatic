@@ -162,7 +162,7 @@ class AppView(WebKit2.WebView):
         Callback: Title changed ('commands' used for communicating to Python)
         """
         title = self.get_title()
-        if title != 'null':
+        if title not in ["null", None, "", " "]:
             stdout.vvprint('** Command: ' + title)
             app.process_command(title)
 
