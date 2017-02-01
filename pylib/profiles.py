@@ -32,8 +32,10 @@ class AppProfiles(object):
         # For temporarily storing file changes in memory.
         self.memory = {}
 
-    """ Retain a copy of the profile on file system when making changes """
     def backup_profile(self, uuid):
+        """
+        Retain a copy of the profile on file system when making changes.
+        """
         file_profile = os.path.join(path.profile_folder, uuid + '.json')
         file_backup  = os.path.join(path.profile_backups, uuid + '.json')
 
@@ -41,8 +43,10 @@ class AppProfiles(object):
             os.remove(file_backup)
         copyfile(file_profile, file_backup)
 
-    """ Delete profile from file system """
     def remove_profile(self, uuid):
+        """
+        Delete profile from file system.
+        """
         file_profile = os.path.join(path.profile_folder, uuid + '.json')
         file_backup  = os.path.join(path.profile_backups, uuid + '.json')
 
@@ -51,9 +55,11 @@ class AppProfiles(object):
         if os.path.exists(file_backup):
             os.remove(file_backup)
 
-    """ Create profile on the file system """
     # Returns a UUID for application to use.
     def new_profile(self):
+        """
+        Create profile on the file system.
+        """
         uuid = str(int(time.time() * 1000000))
         self.selected_uuid = uuid
         filepath = os.path.join(path.profile_folder, uuid + '.json')
@@ -72,22 +78,28 @@ class AppProfiles(object):
         pref.save_file(filepath, template)
         return str(uuid)
 
-    """ Load profile from file system and return its data and store in module's memory """
     def load_profile(self, uuid):
+        """
+        Load profile from file system and return its data and store in module's memory.
+        """
         profile_path = os.path.join(path.profile_folder, uuid + ".json")
         self.memory = pref.load_file(profile_path)
         return(self.memory)
 
-    """ Commit profile from module memory to file system """
     def save_profile_from_memory(self, uuid):
+        """
+        Commit profile from module memory to file system.
+        """
         self.backup_profile(uuid)
         profile_path = os.path.join(path.profile_folder, uuid + '.json')
         data = self.memory
         pref.save_file(profile_path, data)
 
-    """ Set meta data for a particular profile, then save immediately. """
     # If the value should be written to memory, then do not use this function.
     def set_metadata(self, uuid, key, value):
+        """
+        Set meta data for a particular profile, then save immediately.
+        """
         # uuid  = string of UUID filename
         # key   = group, e.g. "name"
         # value = what to set, e.g. "Test Application"
@@ -97,8 +109,10 @@ class AppProfiles(object):
         newdata[key] = value
         pref.save_file(profile_path, newdata)
 
-    """ Returns the list of profiles in the folder. """
     def list_profiles(self):
+        """
+        Returns the list of profiles in the folder.
+        """
         # Including the JSON extension.
         dir_listing = os.listdir(path.profile_folder)
         profiles = []
@@ -106,16 +120,20 @@ class AppProfiles(object):
             profiles.append(filename.split('.json')[0])
         return(profiles)
 
-    """ Load a profile and keyboard. """
     def send_profile_to_keyboard(self, kbd_obj, data):
+        """
+        Load a profile and keyboard.
+        """
         for row in range(0, 6):
             for col in range(0, 22):
                 kbd_obj.fx.advanced.matrix[row, col] = data["rows"][str(row)][col]
         kbd_obj.fx.advanced.draw()
 
-    """ Load a profile and send it to the keyboard. """
     def send_profile_from_file(self, kbd_obj, uuid):
-        profile_path = os.path.join(path.profile_folder, uuid + '.json')
+        """
+        Load a profile and send it to the keyboard.
+        """
+        profile_path = os.path.join(path.profile_folder, uuid + ".json")
         data = pref.load_file(profile_path)
         self.send_profile_to_keyboard(kbd_obj, data)
 

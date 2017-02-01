@@ -19,19 +19,19 @@ version = 4
 ################################################################################
 
 class Paths(object):
-    """ Directories """
+    # Directories
     root = os.path.join(os.path.expanduser('~'), '.config', 'polychromatic')
     profile_folder = os.path.join(root, 'profiles')
     profile_backups = os.path.join(root, 'backups')
 
-    """ Files """
+    # Files
     preferences = os.path.join(root, 'preferences.json')
     devicestate = os.path.join(root, 'devicestate.json')
 
-    """ Deprecated """
+    # Deprecated
     profiles = os.path.join(root, 'profiles.json')
 
-    """ Data Source """
+    # Data Source
     @staticmethod
     def get_data_source(program_path):
         if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(program_path), 'data/'))):
@@ -48,7 +48,9 @@ path = Paths()
 ################################################################################
 
 class DeviceState(object):
-    """ Track the last known properties of the device, e.g. brightness/effect """
+    """
+    Track the last known properties of the device, e.g. brightness/effect
+    """
     def __init__(self, pref, serial):
         self.uid = serial
         self.pref = pref
@@ -82,8 +84,10 @@ class DeviceState(object):
 
 ################################################################################
 
-""" Loads a save file from disk. """
 def load_file(filepath, no_version_check=False):
+    """
+    Loads a save file from disk.
+    """
     # Does it exist?
     if os.path.exists(filepath):
         # Load data into memory.
@@ -121,8 +125,10 @@ def load_file(filepath, no_version_check=False):
     # Passes data back to the variable
     return(data)
 
-""" Commit the save file to disk. """
 def save_file(filepath, newdata):
+    """
+    Commit the save file to disk.
+    """
 
     # Write configuration version if the preferences.
     if filepath == path.preferences:
@@ -142,6 +148,10 @@ def save_file(filepath, newdata):
 
 """ Write new data. """
 def set(group, setting, value, filepath=None):
+    """
+    Commits a new preference value, then saves it to disk.
+    A different file can be optionally specified.
+    """
     # Example: ("editor", "live_preview", True)
     #          ("24", "name", "Test Program", "/path/to/profiles.json")
 
@@ -164,8 +174,10 @@ def set(group, setting, value, filepath=None):
     except:
         print(" ** Failed to write '{0}' for item '{1}' in group '{2}'!".format(value, setting, group))
 
-""" Read data from memory. """
 def get(group, setting, default_value="", filepath=None):
+    """
+    Read data from memory.
+    """
     # Example: ("editor", "live_preview", "True")
     #          ("12", "name", "Unknown", "/path/to/profiles.json")
 
@@ -185,10 +197,11 @@ def get(group, setting, default_value="", filepath=None):
         set(group, setting, default_value, filepath)
         return default_value
 
-""" Read a group of data as a list. """
 def get_group(group, filepath):
+    """
+    Read a group of data as a list.
+    """
     # Must explictly state the file path, and the group (or "root")
-
     data = load_file(filepath)
 
     try:
@@ -202,8 +215,10 @@ def get_group(group, filepath):
 
     return listdata
 
-""" Prepares configuration for first time usage. """
 def init_config(filepath):
+    """
+    Prepares a configuration file for the first time.
+    """
     try:
         # Backup if the JSON was invalid.
         if os.path.exists(filepath):
@@ -220,14 +235,18 @@ def init_config(filepath):
         print(' ** Failed to write default preferences.')
         print(' **** Exception: ', str(e))
 
-""" Erases the configuration stored on disk. """
 def clear_config():
+    """
+    Erases the configuration stored on disk.
+    """
     print(' ** Deleting configuration folder "' + path.root + '"...')
     shutil.rmtree(path.root)
     print(' ** Successfully deleted configuration.')
 
-""" Updates the configuration from previous versions. """
 def upgrade_old_pref(config_version):
+    """
+    Updates the configuration from previous revisions.
+    """
     print(" ** Upgrading configuration from v{0} to v{1}...".format(config_version, version))
     if config_version < 3:
         # *** "chroma_editor" group now "editor" ***
@@ -300,7 +319,9 @@ def upgrade_old_pref(config_version):
 
     print(" ** Configuration successfully upgraded.")
 
-""" Initialisation """
+"""
+Module Initialisation
+"""
 # Create folders if they do not exist.
 for folder in [path.root, path.profile_folder, path.profile_backups]:
     if not os.path.exists(folder):
