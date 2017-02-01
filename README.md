@@ -122,6 +122,14 @@ There are two packages:
 * [`polychromatic-git`](https://aur.archlinux.org/packages/polychromatic-git/) - Latest development version.
 
 
+#### ![Gentoo](.readme/gentoo.png) Gentoo
+
+Rudimentary ebuilds for Gentoo are maintained by [vifino](https://github.com/vifino) in his personal overlay. These can be installed with these commands:
+
+    sudo layman -f -o https://github.com/vifino/vifino-overlay/raw/master/vifino-overlay.xml -a vifino-overlay
+    emerge polychromatic
+
+
 #### ![Other Distributions](.readme/linux.png) Other Distributions / Manual Installation
 
 See further below for which dependencies you will require to install first.
