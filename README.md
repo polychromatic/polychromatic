@@ -70,31 +70,18 @@ Polychromatic can be installed via this PPA:
 The PPA is recommended as it keeps the application up-to-date.
 
 
-#### ![Ubuntu](.readme/ubuntu.png) Ubuntu 14.04 / Linux Mint 17
-
-Earlier distributions will not be able to use the latest version of this software as it
-depends on a newer version of WebKit2 which is not available in earlier releases.
-
-Instead, [the legacy branch](https://github.com/lah7/polychromatic/tree/legacy) contains
-an older version (v0.1.0 / v0.2.0.1) that will not receive further updates as it requires
-the original driver/daemon:
-
-* [razer-chroma-driver_20160612_ubuntu_amd64.deb](https://github.com/lah7/polychromatic/releases/download/v0.2.0/razer-chroma-driver_20160612_ubuntu_amd64.deb)
-* [polychromatic_0.1.0_all.deb](https://github.com/lah7/polychromatic/releases/download/v0.2.0/polychromatic_0.1.0_all.deb)
-
-
 #### ![Debian](.readme/debian.png) Debian 8+
 
 **WebKit2 Dependency**
 
  * Debian 8 "Jessie" provides an old version of `gir1.2-webkit2-4.0` which is incompatible with Polychromatic.
- * Please enable `jessie-backports` and update `gir1.2-webkit2-4.0` to at least v2.12.
+ * Please enable `jessie-backports` and update `gir1.2-webkit2-4.0` and its dependencies.
 
 Packages built for Ubuntu are also compatible with Debian.
 
 Add this line to your `/etc/apt/sources.list`:
 
-    deb http://ppa.launchpad.net/lah7/polychromatic/ubuntu trusty main
+    deb http://ppa.launchpad.net/lah7/polychromatic/ubuntu xenial main
 
 Then add the public key to verify the packages:
 
