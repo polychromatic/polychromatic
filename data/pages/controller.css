@@ -1075,19 +1075,22 @@ label.disabled {
     left: 0; right: 0;
     margin: auto;
     -webkit-animation-name: spin;
-    -webkit-animation-duration: 1s;
+    -webkit-animation-duration: 1.25s;
     -webkit-animation-iteration-count: infinite;
-    -webkit-animation-timing-function: linear;
+    -webkit-animation-timing-function: cubic-bezier(0.54, 0.43, 0.43, 0.54);
 }
 
 @-webkit-keyframes spin {
     0% {
         transform: rotate(0deg);
+        filter: hue-rotate(0);
     }
     100% {
         transform: rotate(360deg);
+        filter: hue-rotate(360deg);
     }
 }
+
 
 /************************
    Error Page
