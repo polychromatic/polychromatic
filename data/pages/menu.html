@@ -36,138 +36,102 @@
     <!-- Main Menu Screen -->
     <div class="menu_area">
       <div class="left">
-        <div id="brightness-slider">
-        <h4 id="str-brightness"></h4>
-          <table>
-            <tr>
-              <td>
-                <span class="fa fa-lightbulb-o fa-2x"></span>&nbsp;&nbsp;&nbsp;
-                <input type="range" id="brightness" min="0" max="100" value="50"/>
-              </td>
-              <td><p><span id="brightnessValue">50%</span></p></td>
-            </tr>
-          </table>
-        </div>
-        <div id="logo-toggle" hidden>
-        <h4 id="str-logo"></h4>
-          <table>
-            <tr>
-              <td>
-                <span class="fa fa-lightbulb-o fa-2x"></span>&nbsp;&nbsp;&nbsp;
-                <label class="switch">
-                  <input id="fx-logo-check" type="checkbox" onclick="cmd('logo-toggle')">
-                  <div class="slider"></div>
-                </label>
-              </td>
-            </tr>
-          </table>
+        <img id="fx-image" src=""/>
+
+        <div id="fx-brightness" class="fx-overlay">
+          <h4 id="str-brightness"></h4>
+          <div id="brightness-normal" class="brightness-container" hidden>
+            <img src="../img/effects/brightness.svg"/> <input type="range" id="brightness-normal-input" onchange="cmd('brightness?main?'+$(this).val())" min="0" max="100" value="50"/><span id="brightness-normal-value">50%</span>
+          </div>
+          <div id="brightness-logo" class="brightness-container" hidden>
+            <img src="../img/effects/logo.svg"/> <input type="range" id="brightness-logo-input" onchange="cmd('brightness?logo?'+$(this).val())" min="0" max="100" value="50"/><span id="brightness-logo-value">50%</span>
+          </div>
+          <div id="brightness-scroll" class="brightness-container" hidden>
+            <img src="../img/effects/scroll.svg"/> <input type="range" id="brightness-scroll-input" onchange="cmd('brightness?scroll?'+$(this).val())" min="0" max="100" value="50"/><span id="brightness-scroll-value">50%</span>
+          </div>
+          <div id="brightness-logo-toggle" class="brightness-container" hidden>
+            <img src="../img/effects/logo.svg"/>
+            <label class="switch">
+              <input id="brightness-logo-switch" type="checkbox" onclick="cmd('brightness?logo?toggle')">
+              <div class="slider"></div>
+            </label>
+          </div>
         </div>
 
-        <h4 id="str-effects"></h4>
-        <div id="effect-list">
-          <button id="fx-none" class="effect-item" onclick="setfx('none', '')">
-            <img src="../img/effects/none.svg"/> <label class="str-none"></label>
-          </button>
-          <button id="fx-spectrum" class="effect-item" onclick="setfx('spectrum', '')">
-            <img src="../img/effects/spectrum.svg"/> <label id="str-spectrum"></label>
-          </button>
-          <button id="fx-wave" class="effect-item" onclick="setfx('wave', '1'); $('#wave-right').prop('checked',true);">
-            <img src="../img/effects/wave.svg"/> <label id="str-wave"></label>
-          </button>
-          <button id="fx-reactive" class="effect-item" onclick="setfx('reactive', '2'); $('#reactive-normal').prop('checked',true);">
-            <img src="../img/effects/reactive.svg"/> <label id="str-reactive"></label>
-          </button>
-          <button id="fx-breath" class="effect-item" onclick="setfx('breath', 'random'); $('#breath-random').prop('checked',true);">
-            <img src="../img/effects/breath.svg"/> <label id="str-breath"></label>
-          </button>
-          <button id="fx-pulsate" class="effect-item" onclick="setfx('pulsate', '');">
-            <img src="../img/effects/breath.svg"/> <label id="str-pulsate"></label>
-          </button>
-          <button id="fx-ripple" class="effect-item" onclick="setfx('ripple', 'single'); $('#ripple-single').prop('checked',true);">
-            <img src="../img/effects/ripple.svg"/> <label id="str-ripple"></label>
-          </button>
-          <button id="fx-static" class="effect-item" onclick="setfx('static', '')">
-            <img src="../img/effects/static.svg"/> <label id="str-static"></label>
-          </button>
+        <div id="fx-lighting" class="fx-overlay">
+          <h4 id="str-lighting"></h4>
+
+          <!-- Dropdown Controls -->
+          <div id="lighting-dropdown" class="dropdown" hidden>
+            <button id="active-effect" onclick="toggleDropdown('lighting-list')" class="dropdown-btn">???</button>
+            <div id="lighting-list" class="dropdown-content"></div>
+          </div>
+          <div id="fx-options-main" class="fx-options"></div>
+
+          <div id="lighting-logo-dropdown" class="dropdown" hidden>
+            <img src="../img/effects/logo.svg"/>
+            <button id="active-effect-logo" onclick="toggleDropdown('lighting-logo-list')" class="dropdown-btn">???</button>
+            <div id="lighting-logo-list" class="dropdown-content"></div>
+          </div>
+          <div id="fx-options-logo" class="fx-options"></div>
+
+          <div id="lighting-scroll-dropdown" class="dropdown" hidden>
+            <img src="../img/effects/scroll.svg"/>
+            <button id="active-effect-scroll" onclick="toggleDropdown('lighting-scroll-list')" class="dropdown-btn">???</button>
+            <div id="lighting-scroll-list" class="dropdown-content"></div>
+          </div>
+          <div id="fx-options-scroll" class="fx-options"></div>
+
+          <!-- Colour Selectors -->
+          <div id="fx-colour-primary" hidden>
+            <table>
+              <tr>
+                <td id="color"></td>
+                <td><div id="rgb_primary_preview" class="color-preview" style="background-color:rgba(0,255,0,1)"></div></td>
+                <td><button class="btn str-custom" onclick="cmd('ask-color?rgb_primary')"></button></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td colspan="2">
+                  <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?255?255')" style="background-color:#FFFFFF"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?0?0')" style="background-color:#FF0000"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?165?0')" style="background-color:#FFA500"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?255?0')" style="background-color:#FFFF00"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_primary?0?255?0')" style="background-color:#00FF00"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_primary?0?255?255')" style="background-color:#00FFFF"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_primary?0?0?255')" style="background-color:#0000FF"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_primary?128?0?128')" style="background-color:#800080"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?0?255')" style="background-color:#FF00FF"></button>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div id="fx-colour-secondary" hidden>
+            <table>
+              <tr>
+                <td></td>
+                <td><div id="rgb_secondary_preview" class="color-preview" style="background-color:rgba(0,0,255,1)"></div></td>
+                <td><button class="btn str-custom" onclick="cmd('ask-color?rgb_secondary')"></button></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td colspan="2">
+                  <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?255?255')" style="background-color:#FFFFFF"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?0?0')" style="background-color:#FF0000"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?165?0')" style="background-color:#FFA500"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?255?0')" style="background-color:#FFFF00"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_secondary?0?255?0')" style="background-color:#00FF00"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_secondary?0?255?255')" style="background-color:#00FFFF"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_secondary?0?0?255')" style="background-color:#0000FF"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_secondary?128?0?128')" style="background-color:#800080"></button>
+                  <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?0?255')" style="background-color:#FF00FF"></button>
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
-        <br>
-        <div id="rgb_primary" hidden>
-          <table>
-            <tr>
-              <td id="color"></td>
-              <td><div id="rgb_primary_preview" class="color-preview" style="background-color:rgba(0,255,0,1)"></div></td>
-              <td><button class="btn str-custom" onclick="cmd('ask-color?rgb_primary')"></button></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td colspan="2">
-                <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?255?255')" style="background-color:#FFFFFF"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?0?0')" style="background-color:#FF0000"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?165?0')" style="background-color:#FFA500"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?255?0')" style="background-color:#FFFF00"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_primary?0?255?0')" style="background-color:#00FF00"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_primary?0?255?255')" style="background-color:#00FFFF"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_primary?0?0?255')" style="background-color:#0000FF"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_primary?128?0?128')" style="background-color:#800080"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_primary?255?0?255')" style="background-color:#FF00FF"></button>
-              </td>
-            </tr>
-          </table>
-        </div>
-        <div id="rgb_secondary" hidden>
-          <table>
-            <tr>
-              <td></td>
-              <td><div id="rgb_secondary_preview" class="color-preview" style="background-color:rgba(0,0,255,1)"></div></td>
-              <td><button class="btn str-custom" onclick="cmd('ask-color?rgb_secondary')"></button></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td colspan="2">
-                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?255?255')" style="background-color:#FFFFFF"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?0?0')" style="background-color:#FF0000"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?165?0')" style="background-color:#FFA500"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?255?0')" style="background-color:#FFFF00"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?0?255?0')" style="background-color:#00FF00"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?0?255?255')" style="background-color:#00FFFF"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?0?0?255')" style="background-color:#0000FF"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?128?0?128')" style="background-color:#800080"></button>
-                <button class="color-icon" onclick="cmd('set-color?rgb_secondary?255?0?255')" style="background-color:#FF00FF"></button>
-              </td>
-            </tr>
-          </table>
-        </div>
-        <table>
-          <tr id="waves" hidden>
-            <td id="str-direction"></td>
-            <td><label id="str-left"><input id="wave-left" type="radio" name="direction" value="left"  onclick="setfx('wave', '2')"> </label></td>
-            <td><label id="str-right"><input id="wave-right" type="radio" name="direction" value="right" onclick="setfx('wave', '1')"> </label></td>
-          </tr>
-        </table>
-        <table>
-          <tr id="reactive-options" hidden>
-            <td id="str-speed"></td>
-            <td><label id="str-slow"><input id="reactive-slow" type="radio" name="speed" value="slow"  onclick="setfx('reactive', '3')"> </label></td>
-            <td><label id="str-med"><input id="reactive-medium" type="radio" name="speed" value="medium" onclick="setfx('reactive', '2')" checked> </label></td>
-            <td><label id="str-fast"><input id="reactive-fast" type="radio" name="speed" value="fast" onclick="setfx('reactive', '1')"> </label></td>
-          </tr>
-        </table>
-        <table>
-          <tr id="breath-options" hidden>
-            <td id="str-cycles"></td>
-            <td id="fx-breath-random"><label class="str-random"><input id="breath-random" type="radio" name="cycle" value="random" onclick="setfx('breath', 'random')"> </label></td>
-            <td id="fx-breath-single"><label class="str-single-col"><input id="breath-single" type="radio" name="cycle" value="single" onclick="setfx('breath', 'single')"> </label></td>
-            <td id="fx-breath-dual"><label id="str-dual-col"><input id="breath-dual" type="radio" name="cycle" value="dual" onclick="setfx('breath', 'dual')"> </label></td>
-          </tr>
-        </table>
-        <table>
-          <tr id="ripple-options" hidden>
-            <td id="str-colors"></td>
-            <td id="fx-ripple-random"><label class="str-random"><input id="ripple-random" type="radio" name="rippling" value="random" onclick="setfx('ripple', 'random')"> </label></td>
-            <td id="fx-ripple-single"><label class="str-single-col"><input id="ripple-single" type="radio" name="rippling" value="single" onclick="setfx('ripple', 'single')" checked> </label></td>
-          </tr>
-        </table>
       </div>
+
       <div class="right">
         <h4 id="str-modes" class="keyboard-only" hidden></h4>
         <table class="keyboard-only" hidden>

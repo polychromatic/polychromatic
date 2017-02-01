@@ -180,17 +180,6 @@ function profile_activate() {
  * Run once document has loaded
  */
 $(document).ready(function() {
-
-    // Change brightness control
-    $("[type=range]").change(function () {
-        var value = $(this).val();
-        $('#brightnessValue').text(value + "%");
-        if (value == 0) {
-            $(this).next().text("Off");
-        }
-        cmd('brightness?' + value);
-    });
-
     // In dialogues, keep preview boxes updated with text box contents.
     $('#dialog-new-name').bind('input', function() {
         dialog_text_preview('dialog-new-name')
@@ -208,8 +197,8 @@ $(document).ready(function() {
  *    type:  Name of effect, e.g. "reactive"
  *    parms: Parameters to pass to Python, separated by '?'
  */
-function setfx(type, parms) {
-    command = "effect?" + type + "?" + parms;
+function setfx(source, type, parms) {
+    command = "effect?" + source + "?" + type + "?" + parms;
     $(".app-profile-item").removeClass("active");
     $("#effect-list *").removeClass("active");
     $("#fx-" + type).addClass("active");
@@ -237,11 +226,25 @@ function changeHeaderImg(image, color) {
     }, 500);
 }
 
+/* Switch to another device tab */
+function switchPaneDevice(serial) {
+    $(".device").removeClass("active");
+    $("#" + serial).addClass("active");
+    $("#device-overview").fadeOut("fast");
+    $("#device-individual").fadeOut("fast");
+    setTimeout(function() {
+        $("#device-individual").fadeIn("slow");
+        cmd("device-select?" + serial);
+    }, 210);
+}
+
 /* Switch to Device Overview mode */
 $("#device-overview").hide();
+var str_overview = "";
 function switchPaneOverview() {
     $(".device").removeClass("active");
     $("#device-overview-tab").addClass("active");
+    change_header(str_overview);
     $("#device-individual").fadeOut('fast');
     cmd("refresh-active-device");
     setTimeout(function() {

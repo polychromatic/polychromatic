@@ -51,7 +51,7 @@ h1, h2, h3, h4, h5 {
     margin-bottom: 16px;
 }
 
-p, a, button, table, td, tr, .alert {
+p, a, button, table, td, tr, label, .alert {
     font-family: 'Play', 'Ubuntu', 'DejaVu Sans', sans-serif;
     color: #888;
     font-size: small;
@@ -718,7 +718,7 @@ input:focus, a:focus, button:focus, div:focus, select:focus {
 /* Input Ranges */
 input[type='range'] {
     -webkit-appearance: none;
-    background: gray;
+    background: #323232;
 }
 
 input[type='range']::-webkit-slider-thumb {
@@ -733,12 +733,15 @@ input[type='range']::-webkit-slider-thumb {
 input[type='radio'],
 input[type='checkbox'] {
     -webkit-appearance: none;
-    float: left;
-    margin-right: 6px;
+    margin: 0.5em;
     width: 16px;
     height: 16px;
     border-radius: 4px;
     background-color: grey;
+}
+
+label {
+    margin-right: 1em;
 }
 
 input[type='radio']:hover,
@@ -763,7 +766,122 @@ label.disabled {
 }
 
 /************************
-   Profile and Effect Lists
+   Dropdown Menus
+*************************/
+.dropdown-btn {
+    background-color: black;
+    color: white;
+    padding: 2px;
+    border: 2px solid #2D2D2D;
+    cursor: pointer;
+    min-width: 200px;
+    background-image: url("../img/ui/dropdown.png");
+    background-position: right;
+    background-repeat: no-repeat;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.dropdown-btn:hover,
+.dropdown-btn:focus {
+    color: green;
+}
+
+.dropdown-btn:focus {
+    background-image: url("../img/ui/dropdown-hover.png");
+}
+
+.dropdown-btn > img,
+.dropdown-content a img {
+    vertical-align: middle;
+    padding-right: 2px;
+    width: 24px;
+    height: 24px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #161616;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 6px 4px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #646464;
+}
+
+/************************
+   Lighting Effect Options
+*************************/
+#fx-image {
+    width: 350px;
+    height: auto;
+    max-height: 300px;
+    top: 4em; bottom: 0;
+    position: absolute;
+    margin: auto 3em;
+}
+
+.fx-overlay {
+    position: absolute;
+    border: 1px solid green;
+    background-color: rgba(0, 0, 0, 0.75);
+    width: 220px;
+    height: auto;
+    padding: 1em;
+}
+
+.fx-overlay h4 {
+    margin: 0 0 0.5em 0;
+}
+
+/* Brightness Overlay */
+#fx-brightness {
+    bottom: 1em;
+    left: 0;
+}
+
+#fx-brightness img {
+    width: 1.5em;
+    height: auto;
+    vertical-align: bottom;
+}
+
+#fx-brightness input[type="range"] {
+    width: 9.6em;
+}
+
+#fx-brightness span {
+    float: right;
+    color: lime;
+    font-size: 0.9em;
+    margin: 0.05em 0;
+}
+
+/* Lighting Overlay */
+#fx-lighting {
+    top: 1.5em;
+    left: 0;
+    width: 26em;
+}
+
+
+/************************
+   Profile List
 *************************/
 #app-profiles {
     height: 230px;
@@ -773,15 +891,7 @@ label.disabled {
     border: 0px;
 }
 
-#effect-list {
-    height: auto;
-    width: 100%;
-    overflow-x: none;
-    border: 0px;
-}
-
-.app-profile-item,
-.effect-item {
+.app-profile-item {
     width: 97%;
     height: 28px;
     margin: 4px;
@@ -798,22 +908,19 @@ label.disabled {
     height: 28px;
 }
 
-.app-profile-item:hover,
-.effect-item:hover {
+.app-profile-item:hover {
     opacity: 0.8;
     background-color: #888;
     color: white;
 }
 
-.app-profile-item.active,
-.effect-item.active {
+.app-profile-item.active {
     border: 1px solid lime;
     background-color: green;
     color: white;
 }
 
-.app-profile-item > img,
-.effect-item > img {
+.app-profile-item > img {
     width: 22px;
     height: 22px;
     margin-left: 4px;
@@ -821,8 +928,7 @@ label.disabled {
     float: left;
 }
 
-.app-profile-item > span,
-.effect-item > span {
+.app-profile-item > span {
     position: relative;
     top: 2px;
 }

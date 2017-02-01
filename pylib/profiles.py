@@ -118,3 +118,13 @@ class AppProfiles(object):
         profile_path = os.path.join(path.profile_folder, uuid + '.json')
         data = pref.load_file(profile_path)
         self.send_profile_to_keyboard(kbd_obj, data)
+
+    def get_metadata(self, uuid):
+        """
+        Returns a dictonary containing the metadata for a profile.
+        """
+        data = self.load_profile(uuid)
+        return {
+            "name": data.get("name", "Unknown"),
+            "icon": data.get("icon", "../img/generic-application.svg")
+        }

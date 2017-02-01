@@ -96,11 +96,10 @@ class Translations(object):
         """
         app.webkit.run_javascript('var {0} = "{1}"'.format(variable, string))
 
-    def get_effect_state_string(self, device_state_obj):
+    def get_effect_state_string(self, string):
         """
         Function to retrieve the current device effect as a human-readable string.
         """
-        string = device_state_obj.get_state("effect")
         if string == 'spectrum':
             return _("Spectrum")
         elif string == 'wave':
@@ -117,6 +116,12 @@ class Translations(object):
             return ("None")
         elif string == 'profile':
             return _("Profile")
+        elif string == 'blinking':
+            return _("Blinking")
+        elif string == 'pulsate':
+            return _("Pulsate")
+        elif string == 'unknown':
+            return _("Try one...")
         else:
             return string
 
@@ -247,9 +252,7 @@ class Controller(object):
 
         # Set up "memory" variables
         self.current_page = 'loading'
-        self.reactive_speed = 1
         self.current_effect = 'custom'
-        self.last_effect = 'unknown'
 
         # Set up variables provided by daemon
         try:
@@ -465,9 +468,10 @@ class Controller(object):
 
         if self.current_page == 'menu':
             # Push strings
-            trans.push('#page-header', _("Configure your Device"))
+            trans.push('#page-header', _("Overview"))
+            trans.push_var('str_overview', _("Overview"))
             trans.push('#str-brightness', _("Brightness"))
-            trans.push('#str-effects', _("Effects"))
+            trans.push('#str-lighting', _("Lighting Effects"))
             trans.push('#str-spectrum', _("Spectrum"))
             trans.push('#str-wave', _("Wave"))
             trans.push('#str-reactive', _("Reactive"))
@@ -480,8 +484,8 @@ class Controller(object):
             trans.push('.str-custom', _("Custom..."))
             trans.push('.str-none', _("None"), True)
             trans.push('#str-direction', _("Direction:"), True)
-            trans.push('#str-left', _("Left"), True)
-            trans.push('#str-right', _("Right"), True)
+            trans.push('#str-wave-left', _("Left"))
+            trans.push('#str-wave-right', _("Right"))
             trans.push('#str-speed', _("Speed:"), True)
             trans.push('.str-random', _("Random"), True)
             trans.push('.str-single-col', _("Single Color"), True)
@@ -907,111 +911,52 @@ class Controller(object):
 
         ## Effects & Keyboard Controls
         elif command.startswith('brightness'):
-            value = int(command[11:])
+            """
+            Expects:  brightness?<source>?<value>
+            """
+            source = command.split("?")[1]
+            value = command.split("?")[2]
             try:
-                self.active_device_state.set_state("brightness", value)
-                self.active_device.brightness = value
+                if source == "main":
+                    self.active_device.brightness = int(value)
+                elif source == "logo":
+                    if value == "toggle":
+                        if self.active_device.fx.misc.logo.active == True:
+                            self.active_device.fx.misc.logo.active = False
+                        else:
+                            self.active_device.fx.misc.logo.active = True
+                    else:
+                        self.active_device.fx.misc.logo.brightness = int(value)
+                elif source == "scroll":
+                    self.active_device.fx.misc.scroll_wheel.brightness = int(value)
+
+                if value != "toggle":
+                    self.active_device_state.set_state("brightness", int(value))
+
                 self.update_device_active_options()
+
             except Exception as exception:
                 self.print_error(exception, str(_("Failed to set/change brightness for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
 
-        elif command == 'logo-toggle':
-            try:
-                current_status = self.active_device.fx.misc.logo
-                if current_status == True:
-                    self.active_device.fx.misc.logo = False
-                    self.active_device_state.set_state("logo", False)
-                else:
-                    self.active_device.fx.misc.logo = True
-                    self.active_device_state.set_state("logo", True)
-                self.update_device_active_options()
-            except Exception as exception:
-                self.print_error(exception, str(_("Failed to toggle logo for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
-
         elif command.startswith('effect'):
-            enabled_options = []
-            effect = command.split('?')[1]
+            """
+            Expects:  effect?<source>?<value>?[params]
+            """
+            source = command.split("?")[1]
+            effect = command.split("?")[2]
+            try:
+                params = command.split("?")[3]
+            except Exception:
+                params = None
 
             try:
-                if effect == 'none':
-                    self.current_effect = "none"
-                    self.active_device.fx.none()
-
-                elif effect == 'spectrum':
-                    self.current_effect = "spectrum"
-                    self.active_device.fx.spectrum()
-
-                elif effect == 'wave':
-                    self.current_effect = "wave"
-                    direction = int(command.split('?')[2]) # '?1' or '?2' for direction
-                    self.active_device.fx.wave(direction)
-                    enabled_options = ['waves']
-                    self.active_device_state.set_state("effect_parms", direction)
-
-                elif effect == 'reactive':
-                    self.current_effect = "reactive"
-                    self.reactive_speed = int(command.split('?')[2])
-                    self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
-                    enabled_options = ['rgb_primary', 'reactive-options']
-                    self.active_device_state.set_state("effect_parms", self.reactive_speed)
-
-                elif effect == 'breath':
-                    breath_type = command.split('?')[2]
-                    self.active_device_state.set_state("effect_parms", breath_type)
-
-                    if breath_type == 'random':
-                        self.current_effect = "breath?random"
-                        self.active_device.fx.breath_random()
-                        enabled_options = ['breath-options']
-
-                    elif breath_type == 'single':
-                        self.current_effect = "breath?single"
-                        self.active_device.fx.breath_single(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
-                        enabled_options = ['breath-options', 'rgb_primary']
-
-                    elif breath_type == 'dual':
-                        self.current_effect = "breath?dual"
-                        self.active_device.fx.breath_dual(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
-                                               self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
-                        enabled_options = ['breath-options', 'rgb_primary', 'rgb_secondary']
-
-                elif effect == 'pulsate':
-                    self.current_effect = "pulsate"
-                    self.active_device.fx.pulsate(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
-
-                elif effect == 'ripple':
-                    ripple_type = command.split('?')[2]
-                    if ripple_type == 'single':
-                        self.current_effect = "ripple?single"
-                        self.active_device.fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
-                        enabled_options = ['ripple-options', 'rgb_primary']
-
-                    elif ripple_type == 'random':
-                        self.current_effect = "ripple?random"
-                        self.active_device.fx.ripple_random()
-                        enabled_options = ['ripple-options']
-
-                elif effect == 'static':
-                    self.current_effect = "static"
-                    self.active_device.fx.static(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
-                    enabled_options = ['rgb_primary']
-
+                self.set_lighting_effect(source, effect, params)
+                self.update_lighting_options(source, effect)
             except Exception as exception:
                 self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
 
-            # Fade between options for that effect, should it have been changed.
-            if not self.current_effect == self.last_effect:
-                # Effect changed, fade out all previous options.
-                for element in ['rgb_primary', 'rgb_secondary', 'waves', 'reactive-options', 'breath-options', 'ripple-options']:
-                    self.update_page('#'+element, 'fadeOut', 'fast')
-
-                # Fade in desired options for this effect.
-                for element in enabled_options:
-                    self.webkit.run_javascript("setTimeout(function(){ $('#" + element + "').fadeIn('fast');}, 200)")
-
-            self.last_effect = self.current_effect
             self.update_background_header()
-            self.active_device_state.set_state("effect", effect)
+            self.active_device_state.set_state("effect_" + source, effect)
             self.active_device_state.set_state("colour1_red", self.primary_rgb.red)
             self.active_device_state.set_state("colour1_green", self.primary_rgb.green)
             self.active_device_state.set_state("colour1_blue", self.primary_rgb.blue)
@@ -1096,20 +1041,12 @@ class Controller(object):
                 self.start_s_blue =  blue
 
             # Update static colour effects if currently in use.
-            if update_effects:
-                if self.current_effect == 'static':
-                    self.active_device.fx.static(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
-                elif self.current_effect == 'breath?single':
-                    self.active_device.fx.breath_single(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
-                elif self.current_effect == 'breath?dual':
-                    self.active_device.fx.breath_dual(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
-                                           self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
-                elif self.current_effect == 'reactive':
-                    self.active_device.fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, self.reactive_speed)
-                elif self.current_effect == 'ripple?single':
-                    self.active_device.fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
-
-            self.update_background_header()
+            for source in ["main", "logo", "scroll"]:
+                fx_effect = self.active_device_state.get_state("effect" + source)
+                fx_params = self.active_device_state.get_state("effect_" + source + "_params")
+                self.set_lighting_effect(source, fx_effect, fx_params)
+                self.update_lighting_options(source, fx_effect)
+                self.update_background_header()
 
         ## Cancel to main menu.
         ## '?xxxx' may specify changes to also make when leaving application profile editor.
@@ -1213,12 +1150,12 @@ class Controller(object):
             uuid = command.split('profile-activate?')[1]
             self.webkit.run_javascript('set_cursor("html","wait")')
             self.profiles.send_profile_from_file(self.active_device, uuid)
-            self.update_page('#custom', 'html', 'Profile - ' + uuid)
-            self.update_page('#custom', 'prop', 'checked', 'true')
+            data = self.profiles.get_metadata(uuid)
+            self.update_page("#active-effect", "html", "<img src='{1}'/> {0}".format(data.get("name"), data.get("icon")))
             self.webkit.run_javascript('set_cursor("html","normal")')
             self.current_effect = 'custom'
             self.update_background_header()
-            self.active_device_state.set_state("effect", "profile")
+            self.active_device_state.set_state("effect_main", "profile")
             self.active_device_state.set_state("profile", uuid)
 
         elif command == 'profile-preview':
@@ -1459,6 +1396,7 @@ class Controller(object):
         elif command.startswith('device-select?'):
             selected_serial = command.split('?')[1]
             selected_device = None
+
             # Loop through each device object until we find the device.
             for device in self.devices:
                 if device.serial == selected_serial:
@@ -1473,15 +1411,18 @@ class Controller(object):
                 print("Could not locate device with serial: " + selected_serial)
                 return
 
-            self.update_page(".device", "removeClass", "active")
-            self.update_page("#" + selected_serial, "addClass", "active")
-            self.update_page("#device-overview", "fadeOut", "fast")
-            self.update_page("#device-individual", "fadeIn", "slow")
             stdout.vprint("Selected: {0} [{1}]".format(selected_device.name, selected_serial))
 
-            # Change the header image
+            # Clear any options from previous devices
+            self.update_page(".fx-options", "html", " ")
+            self.update_page("#fx-colour-primary", "hide")
+            self.update_page("#fx-colour-secondary", "hide")
+
+            # Update options for device screen
             self.update_device_supported_features()
             self.update_device_active_options()
+            for source in ["main", "logo", "scroll"]:
+                self.update_lighting_options(source, self.active_device_state.get_state("effect_"+source))
 
         elif command == 'refresh-active-device':
             self.update_device_active_options()
@@ -1544,18 +1485,14 @@ class Controller(object):
 
             for device in self.devices:
                 name = str(device.name)
-                formfactor = str(device.type)
-                if formfactor == "firefly":
-                    formfactor = "mousemat"
-                elif formfactor == "tartarus":
-                    formfactor = "keypad"
+                formfactor = self.get_device_type(device.type)
                 serial = str(device.serial)
                 state = "normal"
                 status = pref.DeviceState(pref, serial)
                 img = data_source + "/img/states/{0}/{1}.svg".format(state, formfactor)
                 if not os.path.exists(img):
                     img = unknown_icon
-                htmlbuffer = "<button id='{0}' class='device' onclick='cmd(\"device-select?{0}\")' title=\"{2}\"><img src='{1}'> <span>{2}</span></button>".format(serial, img, name)
+                htmlbuffer = "<button id='{0}' class='device' onclick='switchPaneDevice(\"{0}\")' title=\"{2}\"><img src='{1}'> <span>{2}</span></button>".format(serial, img, name)
                 self.update_page("#device-tabs", "append", htmlbuffer)
 
                 status_brightness = status.get_state("brightness")
@@ -1574,7 +1511,7 @@ class Controller(object):
                     img_opacity = "0.2"
 
                 htmlbuffer = ""
-                htmlbuffer += '<div class="device-card" onclick="cmd(\'device-select?{0}\')">'.format(serial)
+                htmlbuffer += '<div class="device-card" onclick="switchPaneDevice(\'{0}\')">'.format(serial)
                 # TODO: Use images provided from daemon dictonary (once implemented)
                 htmlbuffer +=   '<img src="{0}" style="opacity:{1};"/>'.format(img_path, img_opacity)
                 htmlbuffer +=   '<h4>{0}</h4>'.format(name)
@@ -1589,9 +1526,9 @@ class Controller(object):
                 elif not status_effect:
                     htmlbuffer += '<p id="device-{0}-effect" class="effect-status"><img src="../img/effects/{1}.svg"/> <span>{2}</span></p>'.format(serial, "notset", _("New Device Found."))
                 else:
-                    htmlbuffer += '<p id="device-{0}-effect" class="effect-status"><img src="../img/effects/{1}.svg"/> <span>{2}</span></p>'.format(serial, status_effect, trans.get_effect_state_string(status))
+                    htmlbuffer += '<p id="device-{0}-effect" class="effect-status"><img src="../img/effects/{1}.svg"/> <span>{2}</span></p>'.format(serial, status_effect, trans.get_effect_state_string(status_effect))
 
-                htmlbuffer +=   '<p class="brightness-status"><span class="fa fa-lightbulb-o"></span> <span id="device-{0}-brightness">{1}</span>%</p>'.format(serial, str(status_brightness))
+                htmlbuffer +=   '<p class="brightness-status"><span class="fa fa-lightbulb-o"></span> <span id="device-{0}-brightness">{1}%</span></p>'.format(serial, str(status_brightness))
                 htmlbuffer += '</div>'
                 self.update_page("#device-overview", "append", htmlbuffer)
 
@@ -1603,94 +1540,436 @@ class Controller(object):
         """
         Refreshes the page and only shows options that are supported by the current "active" device.
         """
-        # Reset all elements
-        elements =  ["str-effects", "fx-none", "fx-spectrum", "fx-wave", "fx-reactive", "fx-breath", "fx-pulsate", "fx-ripple", "fx-static", "brightness-slider", "logo-toggle",
-                     "rgb_primary", "rgb_secondary", "waves", "reactive-options", "breath-options", "ripple-options"
-                     "fx-breath-random", "fx-breath-single", "fx-breath-dual", "fx-ripple-single", "fx-ripple-random"
-                    ]
-        for element in elements:
-            self.update_page("#"+element, "hide", "fast")
+        stdout.vprint("\nSet active device: " + self.active_device.name)
 
-        # Hide features not supported by this type of device
+        # Gather device information
         device_name = str(self.active_device.name)
         device_type = self.active_device.type
+        device_image = self.active_device.razer_urls.get("perspective_img")
+        effect_support = [self.active_device.has("lighting"), self.active_device.has("lighting_logo"), self.active_device.has("lighting_scroll")]
+        brightness_support = [self.active_device.has("brightness"), self.active_device.has("lighting_logo_brightness"), self.active_device.has("lighting_scroll_brightness")]
+
+        # Update GUI
+        self.webkit.run_javascript("change_header('{0}')".format(device_name))
+        self.update_background_header()
+        self.update_page("#fx-image", "attr", "src", device_image)
+
+        # Assume game mode / macro keys and profiles for keyboards for now.
         if device_type == "keyboard":
             self.update_page(".keyboard-only", "fadeIn", "fast")
         else:
             self.update_page(".keyboard-only", "fadeOut", "fast")
-        self.update_background_header()
 
-        # Hide options according to the daemon.
-        def check_ability(capability, ui_element):
-            supported = self.active_device.has(capability)
-            if supported:
-                self.update_page("#"+ui_element, "show", "fast")
+        ## Lighting Effects
+        def add_to_dropdown(target_element, internal_name, string, source):
+            # internal_name = Used for icon name and passed in command.
+            self.update_page(target_element, "append", "<a onclick='cmd(\"{0}\")'><img src='{1}'/> {2}</a>".format(
+                "effect?" + source + "?" + internal_name, "../img/effects/" + internal_name + ".svg", string))
 
-        # Effects List
-        check_ability("lighting_none", "fx-none")
-        check_ability("lighting_static", "fx-static")
-        check_ability("lighting_static", "str-effects")
-        check_ability("lighting_spectrum", "fx-spectrum")
-        check_ability("lighting_wave", "fx-wave")
-        check_ability("lighting_reactive", "fx-reactive")
-        check_ability("lighting_breath_single", "fx-breath")
-        check_ability("lighting_ripple", "fx-ripple")
-        check_ability("lighting_pulsate", "fx-pulsate")
+        if True in effect_support:
+            self.update_page("#fx-lighting", "show")
 
-        # Effect Options
-        check_ability("lighting_breath_random", "fx-breath-random")
-        check_ability("lighting_breath_single", "fx-breath-single")
-        check_ability("lighting_breath_dual", "fx-breath-dual")
-        check_ability("lighting_ripple", "fx-ripple-single")
-        check_ability("lighting_ripple_random", "fx-ripple-random")
+            if self.active_device.has("lighting"):
+                self.update_page("#lighting-dropdown", "show")
+                self.update_page("#lighting-list", "html", " ")
+                fx_list = [
+                    # [has() parameter, icon/command, human string]
+                    ["lighting_none", "none", _("None")],
+                    ["lighting_spectrum", "spectrum", _("Spectrum")],
+                    ["lighting_wave", "wave", _("Wave")],
+                    ["lighting_reactive", "reactive", _("Reactive")],
+                    ["lighting_breath_single", "breath", _("Breath")],
+                    ["lighting_pulsate", "pulsate", _("Pulsate")],
+                    ["lighting_ripple", "ripple", _("Ripple")],
+                    ["lighting_static", "static", _("Static")]
+                ]
 
-        # Brightness
-        check_ability("brightness", "brightness-slider")
+                for fx in fx_list:
+                    if self.active_device.has(fx[0]):
+                        add_to_dropdown("#lighting-list", fx[1], fx[2], "main")
+            else:
+                self.update_page("#lighting-dropdown", "hide")
 
-        # Logo light toggle - but exclude Mamba.
-        if str(device_name).find("Mamba") == -1:
-            check_ability("lighting_logo", "logo-toggle")
+            if self.active_device.has("lighting_logo"):
+                self.update_page("#lighting-logo-dropdown", "show")
+                self.update_page("#lighting-logo-list", "html", " ")
+                fx_list = [
+                    # [has() parameter, icon/command, human string]
+                    ["lighting_logo_none", "none", _("None")],
+                    ["lighting_logo_blinking", "blinking", _("Blinking")],
+                    ["lighting_logo_spectrum", "spectrum", _("Spectrum")],
+                    ["lighting_logo_wave", "wave", _("Wave")],
+                    ["lighting_logo_reactive", "reactive", _("Reactive")],
+                    ["lighting_logo_pulsate", "pulsate", _("Pulsate")],
+                    ["lighting_logo_static", "static", _("Static")]
+                ]
+
+                # Razer Abyssus has "lighting_logo" but no effects, so track if this happens.
+                has_effects = False
+
+                for fx in fx_list:
+                    if self.active_device.has(fx[0]):
+                        add_to_dropdown("#lighting-logo-list", fx[1], fx[2], "logo")
+                        has_effects = True
+
+                if not has_effects:
+                    self.update_page("#lighting-dropdown", "hide")
+                    self.update_page("#fx-lighting", "hide")
+
+            else:
+                self.update_page("#lighting-logo-dropdown", "hide")
+
+            if self.active_device.has("lighting_scroll"):
+                self.update_page("#lighting-scroll-dropdown", "show")
+                self.update_page("#lighting-scroll-list", "html", " ")
+                fx_list = [
+                    # [has() parameter, icon/command, human string]
+                    ["lighting_scroll_none", "none", _("None")],
+                    ["lighting_scroll_blinking", "blinking", _("Blinking")],
+                    ["lighting_scroll_spectrum", "spectrum", _("Spectrum")],
+                    ["lighting_scroll_wave", "wave", _("Wave")],
+                    ["lighting_scroll_reactive", "reactive", _("Reactive")],
+                    ["lighting_scroll_breath_single", "breath", _("Breath")],
+                    ["lighting_scroll_pulsate", "pulsate", _("Pulsate")],
+                    ["lighting_scroll_static", "static", _("Static")]
+                ]
+
+                for fx in fx_list:
+                    if self.active_device.has(fx[0]):
+                        add_to_dropdown("#lighting-scroll-list", fx[1], fx[2], "scroll")
+            else:
+                self.update_page("#lighting-scroll-dropdown", "hide")
+
+        else:
+            self.update_page("#fx-lighting", "hide")
+
+        ## Brightness
+        if True in brightness_support:
+            self.update_page("#fx-brightness", "show")
+            self.update_page(".brightness-container", "hide")
+
+            if self.active_device.has("brightness"):
+                stdout.vprint("Device supports 'brightness'")
+                self.update_page("#brightness-normal", "show")
+
+            if self.active_device.has("lighting_logo_brightness"):
+                stdout.vprint("Device supports 'lighting_logo_brightness'")
+                self.update_page("#brightness-logo", "show")
+
+            if self.active_device.has("lighting_scroll_brightness"):
+                stdout.vprint("Device supports 'lighting_scroll_brightness'")
+                self.update_page("#brightness-scroll", "show")
+        else:
+            self.update_page("#fx-brightness", "hide")
+
+        # Unless the device only supports on/off toggling
+        if not True in brightness_support and self.active_device.has("lighting_logo_active"):
+            stdout.vprint("Device supports 'lighting_logo_active'")
+            self.update_page("#fx-brightness", "show")
+            self.update_page(".brightness-container", "hide")
+            self.update_page("#brightness-logo-toggle", "show")
 
     def update_device_active_options(self):
         """
         Refreshes the page by showing the options selected for the active device.
         """
-        # Individual Screen
-        try:
-            brightness = int(self.active_device.brightness)
-            self.update_page("#brightness", "val", str(brightness))
-            self.update_page("#brightnessValue", "html", str(brightness) + "%")
-        except:
-            brightness = None
 
-        try:
-            effect = self.active_device_state.get_state("effect")
-            if effect == "profile":
-                uuid = self.active_device_state.get_state("profile")
-                self.update_page(".effect-item", "removeClass", "active")
-                self.update_page("#fx-none", "addClass", "active")
-                self.update_page("#app-"+uuid, "addClass", "active")
+        # Clear Overview Screen
+        self.update_page("#device-"+self.active_device_serial+"-brightness", "html", " ")
+
+        ## Brightness
+        def set_brightness_control(element, value):
+            ### Device Screen
+            self.update_page(element + "-input", "val", str(value))
+            if int(value) == 0:
+                self.update_page(element + "-value", "html", _("Off"))
             else:
-                self.update_page(".effect-item", "removeClass", "active")
-                self.update_page("#fx-"+effect, "addClass", "active")
-        except:
-            effect = None
+                self.update_page(element + "-value", "html", str(int(value)) + "%")
 
-        # Device screen
-        if brightness:
-            self.update_page("#device-"+self.active_device_serial+"-brightness", "html", str(brightness))
+            ### Overview Screen
+            self.update_page("#device-" + self.active_device_serial + "-brightness", "append", str(int(value)) + '%&nbsp;')
 
-        if effect:
-            if effect == "profile" and str(self.active_device.type) == "keyboard":
-                uuid = self.active_device_state.get_state("profile")
-                profile_data = self.profiles.load_profile(uuid)
-                profile_name = profile_data["name"]
-                profile_icon = profile_data["icon"]
-                self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", profile_name)
-                self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", profile_icon)
+        if self.active_device.has("lighting_logo_active"):
+            if self.active_device.fx.misc.logo.active == 1:
+                self.update_page("#brightness-logo-switch", "prop", "checked", "true")
             else:
-                self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", trans.get_effect_state_string(self.active_device_state))
-                self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", '../img/effects/' + effect + '.svg')
+                self.update_page("#brightness-logo-switch", "removeAttr", "checked")
+
+        if self.active_device.has("brightness"):
+            set_brightness_control("#brightness-normal", self.active_device.brightness)
+
+        if self.active_device.has("lighting_logo_brightness"):
+            set_brightness_control("#brightness-logo", self.active_device.fx.misc.logo.brightness)
+
+        if self.active_device.has("lighting_scroll_brightness"):
+            set_brightness_control("#brightness-scroll", self.active_device.fx.misc.scroll_wheel.brightness)
+
+        ## Lighting Effects
+        self.update_page("#fx-colour-primary", "hide")
+        self.update_page("#fx-colour-secondary", "hide")
+
+        def update_lighting_dropdown(element, effect):
+            self.update_page(element, "html", "<img src='{1}'/> {0}".format(trans.get_effect_state_string(effect), "../img/effects/" + effect + ".svg"))
+
+        if self.active_device.has("lighting"):
+            try:
+                effect = self.active_device_state.get_state("effect_main")
+
+                if effect == "profile":
+                    # Device Tab
+                    uuid = self.active_device_state.get_state("profile")
+                    data = self.profiles.get_metadata(uuid)
+                    self.update_page("#active-effect", "html", "<img src='{1}'/> {0}".format(data.get("name"), data.get("icon")))
+                    self.update_page("#app-" + uuid, "addClass", "active")
+
+                    # Overview Screen
+                    uuid = self.active_device_state.get_state("profile")
+                    data = self.profiles.get_metadata(uuid)
+                    self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", data.get("name"))
+                    self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", data.get("icon"))
+
+                else:
+                    # Device Tab
+                    update_lighting_dropdown("#active-effect", effect)
+                    self.update_lighting_options("main", effect)
+
+                    # Overview Screen
+                    self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", trans.get_effect_state_string(effect))
+                    self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", "../img/effects/" + effect + ".svg")
+
+            except TypeError:
+                update_lighting_dropdown("#active-effect", "unknown")
+
+        if self.active_device.has("lighting_logo"):
+            try:
+                effect = self.active_device_state.get_state("effect_logo")
+
+                # Device Tab
+                update_lighting_dropdown("#active-effect-logo", effect)
+
+                # Overview Screen
+                self.update_page("#device-"+self.active_device_serial+"-effect > span", "append", "&nbsp;" + trans.get_effect_state_string(effect))
+                self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", "../img/effects/" + effect + ".svg")
+
+            except TypeError:
+                update_lighting_dropdown("#active-effect-logo", "unknown")
+                self.update_lighting_options("logo", effect)
+
+        if self.active_device.has("lighting_scroll"):
+            try:
+                effect = self.active_device_state.get_state("effect_scroll")
+
+                # Device Tab
+                update_lighting_dropdown("#active-effect-scroll", effect)
+
+                # Overview Screen
+                self.update_page("#device-"+self.active_device_serial+"-effect > span", "append", "&nbsp;" + trans.get_effect_state_string(effect))
+                self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", "../img/effects/" + effect + ".svg")
+
+            except TypeError:
+                update_lighting_dropdown("#active-effect-scroll", "unknown")
+                self.update_lighting_options("scroll", effect)
+
+    def set_lighting_effect(self, source, effect, fx_params=None):
+        """
+        source = Lighting source
+                 e.g. main / scroll / wheel
+        effect = Internal effect name
+                 wave / spectrum / static
+        params = (Optional) Any parameters for the effect, seperated by '?'.
+                 e.g. 255?255?255?2
+        """
+        self.current_effect = "none"
+
+        # For remembering current device state
+        def remember_params(params):
+            self.active_device_state.set_state("effect_" + source + "_params", params)
+
+        self.active_device_state.set_state("source", source)
+        if fx_params:
+            params = fx_params.split('?')
+            remember_params(fx_params)
+        else:
+            params = None
+
+        # Determine source function
+        if source == "main":
+            fx = self.active_device.fx
+
+        elif source == "logo":
+            fx = self.active_device.fx.misc.logo
+
+        elif source == "scroll":
+            fx = self.active_device.fx.misc.scroll_wheel
+
+        # Execute function (only if source is known)
+        if fx:
+            if effect == "none":
+                fx.none()
+
+            elif effect == "spectrum":
+                fx.spectrum()
+
+            elif effect == "wave":
+                # Params:  <direction 1-2>
+                if params:
+                    fx.wave(int(params[0]))
+                else:
+                    fx.wave(1)
+                    remember_params(1)
+
+            elif effect == "reactive":
+                # Params:  <speed 1-4>
+                if params:
+                    fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, int(params[0]))
+                else:
+                    fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, 2)
+                    remember_params(2)
+
+            elif effect == "blinking":
+                if params:
+                    fx.blinking(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                else:
+                    fx.blinking(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+
+            elif effect == "breath":
+                if params:
+                    if params[0] == 'random':
+                        fx.breath_random()
+
+                    elif params[0] == 'single':
+                        fx.breath_single(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+
+                    elif params[0] == 'dual':
+                        fx.breath_dual(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
+                                               self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
+
+                    # TODO: Add triple breath support
+
+                else:
+                    fx.breath_random()
+                    remember_params('random')
+
+            elif effect == "pulsate":
+                fx.pulsate(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+
+            elif effect == "ripple":
+                if params:
+                    if params[0] == 'single':
+                        fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+
+                    elif params[0] == 'random':
+                        fx.ripple_random()
+
+                else:
+                    fx.ripple_random()
+                    remember_params('random')
+
+            elif effect == "static":
+                fx.static(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+
+        else:
+            stdout.vvprint("FX not applied, source not recognised.")
+
+    def update_lighting_options(self, source=None, effect=None):
+        """
+        Refreshes the UI for displaying the correct and supported options.
+
+        source = Which light source to process.
+                 e.g. main/logo/scroll
+
+        effect = Known effect name to process.
+                 e.g. reactive, wave, spectrum
+        """
+        # Hide/clear existing contents
+        self.update_page("#fx-options-" + source, "html", " ")
+
+        # If none specified, just clear the options.
+        if source == None or effect == None:
+            return
+
+        params = str(self.active_device_state.get_state("effect_" + source + "_params"))
+        target = "#fx-options-" + source
+
+        if source == "main":
+            source_has_string = "lighting_"
+        elif source == "logo":
+            source_has_string = "lighting_logo_"
+        elif source == "scroll":
+            source_has_string = "lighting_scroll_"
+
+        # Template for adding option controls to page
+        def add_radio_option(label, param):
+            if params == param:
+                checked = "checked"
+            else:
+                checked = ""
+
+            template = "<label><input type='radio' onclick='setfx(\"{4}\", \"{0}\", \"{1}\")' {3} /> {2}</label>".format(effect, param, label, checked, source)
+            self.update_page(target, "append", template)
+
+        # Show supported options for effect
+        def add_but_check_ability(has_effect, label, param):
+            has_string = source_has_string + has_effect
+            if self.active_device.has(has_string):
+                add_radio_option(label, param)
+
+        if effect == "wave":
+            # Customise wave direction string depending on form factor
+            device_type = self.active_device.type
+            if self.get_device_type(device_type) == "mouse":
+                left = _("Down")
+                right = _("Up")
+            elif self.get_device_type(device_type) == "mousemat":
+                left = _("Clockwise")
+                right = _("Anti-clockwise")
+            else:
+                left = _("Left")
+                right = _("Right")
+
+            add_radio_option(left, '2')
+            add_radio_option(right, '1')
+
+        elif effect == "reactive":
+            add_radio_option(_("Fast"), '1')
+            add_radio_option(_("Medium"), '2')
+            add_radio_option(_("Slow"), '3')
+            add_radio_option(_("Very Slow"), '4')
+
+        elif effect == "breath":
+            add_but_check_ability("breath_random", _("Random"), 'random')
+            add_but_check_ability("breath_single", _("Single Color"), 'single')
+            add_but_check_ability("breath_dual", _("Dual Colors"), 'dual')
+            # TODO: Add triple breath support
+            #~ add_but_check_ability("breath_triple", _("Triple Colors"), 'triple')
+
+        elif effect == "ripple":
+            add_but_check_ability("ripple_random", _("Random"), 'random')
+            add_but_check_ability("ripple", _("Single Color"), 'single')
+
+        # Show colour picker (for supported effects)
+        if effect in ["reactive", "ripple", "pulsate", "static"]:
+            self.update_page("#fx-colour-primary", "show")
+
+        if effect == "breath" and params == "single":
+            self.update_page("#fx-colour-primary", "show")
+
+        elif effect == "breath" and params == "dual":
+            self.update_page("#fx-colour-primary", "show")
+            self.update_page("#fx-colour-secondary", "show")
+
+    def get_device_type(self, device_type):
+        """
+        Convert the daemon's device type string to what Polychromatic identifies as "form factor".
+        This is used for determining icons.
+        """
+        if device_type == "firefly":
+            form_factor = "mousemat"
+        elif device_type == "tartarus":
+            form_factor = "keypad"
+        else:
+            form_factor = device_type
+        return(form_factor)
 
     def update_background_header(self):
         """
@@ -1699,11 +1978,7 @@ class Controller(object):
         if not self.current_page == "menu":
             return
 
-        device_type = self.active_device.type
-        if device_type == "firefly":
-            device_type = "mousemat"
-        elif device_type == "tartarus":
-            device_type = "keypad"
+        device_type = self.get_device_type(self.active_device.type)
 
         if self.current_effect == "spectrum":
             self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "spectrum"))

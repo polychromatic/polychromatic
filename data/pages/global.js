@@ -88,6 +88,28 @@ function set_cursor(element, type) {
 }
 
 /**
+ * Opens a dropdown control.
+ *
+ * @param type {string} Element ID for 'dropdown-content'.
+ */
+function toggleDropdown(dropdownID) {
+    var container = $("#"+dropdownID)
+    if ( ! container.is(":visible") ) {
+        container.fadeIn('fast');
+    } else  {
+        container.fadeOut('fast');
+    }
+}
+
+$(document).mouseup(function (e) {
+    var container = $('.dropdown-btn');
+    if ( ! container.is(e.target) && container.has(e.target).length === 0) {
+        $('.dropdown-btn + .dropdown-content').fadeOut('fast');
+    }
+});
+
+
+/**
  * Set/update a preference
  */
 function set_pref_chkstate(group, setting, element) {
