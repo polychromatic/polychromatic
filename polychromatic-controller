@@ -1459,8 +1459,16 @@ class Controller(object):
                 message = _("Please plug in your Razer device and reload the daemon/application.")
             else:
                 message = _("However, Polychromatic detected there is a Razer product connected to your computer.") + '<br><br>' + \
-                          _("Try reloading the daemon, otherwise") + " <a onclick='cmd(\"open?https://github.com/terrycain/razer-drivers#device-support\")'>" + \
-                          _("check whether your device is supported by the daemon.") + "</a>"
+                          _("This could mean your Razer product is not bound to the driver properly, the daemon doesn't recognise it or it's not yet supported.") + \
+                          '<br><br><u>' + _("Suggestions:") + '</u>' \
+                          '<br>• ' + _("Try reloading the daemon.") + \
+                          '<br>• ' + _("Use the 'modprobe' command to bind the driver to the device.") + \
+                          '<br>• <u><a onclick="cmd(\'open?https://github.com/terrycain/razer-drivers#device-support\')">' + \
+                                _("Check whether your device is fully supported.") + \
+                           '</u></a><br><br>' + \
+                           '<a onclick="cmd(\'open?https://github.com/terrycain/razer-drivers/wiki/Troubleshooting\')"><u>' + \
+                                _("Please refer troubleshooting guide on the driver/daemon repository for further assistance.") + \
+                           '</u></a>'
 
             self.show_error_page("warning", "nodevice", _("No Devices Found"), message)
             return([])
