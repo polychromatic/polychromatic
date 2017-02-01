@@ -182,7 +182,7 @@ def get(group, setting, default_value="", filepath=None):
     except:
         # Should it be non-existent, return a fallback option.
         print(" ** Preference '{0}' in '{1}' non-existent. Using default '{2}' instead.".format(setting, group, default_value))
-        set(group, setting, default_value)
+        set(group, setting, default_value, filepath)
         return default_value
 
 """ Read a group of data as a list. """
