@@ -1489,7 +1489,6 @@ class Controller(object):
         if self.current_page == "menu":
             self.update_page(".device", "remove")
             self.update_page('#device-tabs', 'append', "<button id='device-overview-tab' class='device' onclick='switchPaneOverview(); changeHeaderImg(\"overview\", \"black\")'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
-            device_index = pref.load_file(data_source + "/img/device-images.json")
             unknown_icon = "../img/states/normal/unknown.svg"
 
             for device in self.devices:
@@ -1510,10 +1509,13 @@ class Controller(object):
                 if not status_brightness:
                     status_brightness = "--"
 
-                if name in device_index.keys():
-                    img_path = device_index[name]
+                try:
+                    img_path = device.razer_urls.get("side_img")
                     img_opacity = "1"
-                else:
+                except Exception:
+                    img_path = None
+
+                if img_path == None:
                     img_path = data_source + "/img/states/{0}/{1}.svg".format(state, formfactor)
                     if not os.path.exists(img_path):
                         img_path = unknown_icon
