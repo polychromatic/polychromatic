@@ -24,7 +24,7 @@
   <div class="header"></div>
 
   <div class="content">
-    <div id="error-page">
+    <div id="error-page" hidden>
       <img id="error-icon" src=""/>
       <h2 id="error-title" class=""></h2>
       <p id="error-details"></p>
@@ -33,7 +33,7 @@
 
   <div class="footer">
     <div class="left"></div>
-    <div class="right">
+    <div class="right" hidden>
       <button class="btn" id="restart-app" onclick="cmd('reset-app')"></button>
       <button class="btn" id="restart-daemon" onclick="cmd('daemon-restart')"></button>
       <button class="btn" id="close-window" onclick="cmd('quit')"></button>
@@ -42,5 +42,9 @@
 
   <script src="lib/jquery-2.1.4.min.js"></script>
   <script src="global.js"></script>
+  <script>
+    $("#error-page").fadeIn();
+    $(".footer .right").fadeIn();
+  </script>
 </body>
 </html>
