@@ -64,6 +64,7 @@ path = pref.Paths()
 # Imported on-demand:
 #   * requests
 #   * configparser
+#   * shutil
 
 class Translations(object):
     def __init__(self):
@@ -2198,9 +2199,17 @@ def restart_tray_applet():
 
 def restart_daemon_service():
     from subprocess import check_output
+    from shutil import which
 
     # Enough time to load "loading" page
     time.sleep(0.5)
+
+    # Is the daemon actually installed?
+    if not which("razer-service"):
+        app.load_lock = False
+        app.show_error_page("serious", "generic", _("Daemon Not Installed."),
+            _("Could not find the executable for 'razer-service'. Please try re-installing the daemon."))
+        return
 
     # Gracefully stop the daemon
     print("Stopping razer-service.", end='')
@@ -2217,7 +2226,7 @@ def restart_daemon_service():
     app.update_page(".progress", "fadeIn", "fast")
     app.update_page(".progress-inner", "addClass", "increasing")
 
-    for x in range(0,10):
+    for x in range(0,5):
         print(".", end='')
         try:
             daemon_pid = int(check_output(["pidof", "razer-service"]))
@@ -2241,11 +2250,27 @@ def restart_daemon_service():
     app.update_page("#status-text", "html", _("Starting daemon..."))
     background_process("razer-service", shell=True)
 
+    # Check the process is running
     print("Waiting for razer-service to start...")
     app.update_page("#status-text", "html", _("Waiting for daemon to start..."))
     app.update_page(".progress", "fadeIn", "fast")
     app.update_page(".progress-inner", "addClass", "increasing")
-    time.sleep(5)
+    for x in range(0,5):
+        print(".", end='')
+        try:
+            daemon_pid = int(check_output(["pidof", "razer-service"]))
+            running = True
+            break
+        except:
+            running = False
+        time.sleep(1)
+
+    if not running:
+        app.load_lock = False
+        app.show_error_page("serious", "generic", _("Daemon cannot be relaunched."),
+            _("Failed to execute 'razer-service'. Please check the daemon log to troubleshoot the problem.") + \
+             '<br><code>~/.razer-service/logs/</code><br><br>' + _("Alternately, open a terminal and run:") + '<br><code>razer-service -F</code>')
+        return
 
     # Relaunch Controller / Tray Applet
     print("Relaunching Polychromatic...")
