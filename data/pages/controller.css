@@ -1095,6 +1095,48 @@ label.disabled {
     }
 }
 
+#status-text {
+    position: fixed;
+    bottom: 12em;
+    left: 0; right: 0;
+    margin: auto;
+    color: #888;
+    text-align: center;
+    width: 400px;
+    height: 1.3em;
+}
+
+/************************
+   Progress Bar
+*************************/
+.progress {
+    position: fixed;
+    background-color: #444;
+    bottom: 10em;
+    left: 0; right: 0;
+    margin: auto;
+    text-align: center;
+    width: 300px;
+    height: 5px;
+}
+
+.progress-inner {
+    position: relative;
+    background-color: rgba(0,255,0,0.5);
+    top: -2px;
+    left: -2px;
+    height: 4px;
+    width: 0%;
+}
+
+.progress-inner.increasing {
+    -webkit-animation: increasing 5s ease-in-out forwards;
+}
+
+@keyframes increasing {
+    from { width: 0%; }
+    to { width: 100%; }
+}
 
 /************************
    Error Page

@@ -253,6 +253,7 @@ class Controller(object):
         # Set up "memory" variables
         self.current_page = 'loading'
         self.current_effect = 'custom'
+        self.load_lock = False
 
         # Set up variables provided by daemon
         try:
@@ -1364,8 +1365,9 @@ class Controller(object):
                 self.daemon_config.write(f)
 
         elif command == 'daemon-restart':
-            self.window.hide()
-            thread = threading.Thread(target=restart_daemon_service, args=())
+            self.load_lock = True
+            self.show_menu("loading")
+            thread = threading.Thread(target=restart_daemon_service)
             thread.daemon = True
             thread.start()
 
@@ -2009,7 +2011,13 @@ class Controller(object):
         # severity  =   'normal', 'warning', 'serious'
         # icon      =   Filename as seen in ../img/error/
         # title / message = Strings to display.
-        time.sleep(1) # Gives enough time to show window
+
+        # For loading screens that should stay regardless of error.
+        if self.load_lock:
+            return
+
+        # Gives window enough time to open.
+        time.sleep(1)
         self.error_title = title
         self.error_icon = icon
         self.error_message = message
@@ -2191,11 +2199,12 @@ def restart_tray_applet():
 def restart_daemon_service():
     from subprocess import check_output
 
+    # Enough time to load "loading" page
+    time.sleep(0.5)
+
     # Gracefully stop the daemon
-    background_process("zenity --progress --pulsate --auto-close --timeout=10 --no-cancel --width=400 --window-icon='" + \
-                        os.path.join(path.get_data_source(__file__), "img", "logo.svg") + "' --title='Polychromatic' " + \
-                        "--text='" + _("Restarting daemon service...") + "'", shell=True)
     print("Stopping razer-service.", end='')
+    app.update_page("#status-text", "html", _("Stopping daemon..."))
     try:
         app.devman.stop_daemon()
     except Exception as NoneType:
@@ -2204,6 +2213,10 @@ def restart_daemon_service():
 
     # Wait for the daemon to stop.
     stopped = False
+    app.update_page("#status-text", "html", _("Waiting for the daemon to stop..."))
+    app.update_page(".progress", "fadeIn", "fast")
+    app.update_page(".progress-inner", "addClass", "increasing")
+
     for x in range(0,10):
         print(".", end='')
         try:
@@ -2213,24 +2226,34 @@ def restart_daemon_service():
             break
         time.sleep(1)
 
+    app.update_page(".progress", "fadeOut", "fast")
+    app.update_page(".progress-inner", "removeClass", "increasing")
+
     # Kill the daemon if still not ended
     if not stopped:
         print("\nKilling razer-service...")
+        app.update_page("#status-text", "html", _("Killing daemon process..."))
         os.kill(daemon_pid, 9)
 
     # Wait for daemon to start again
     time.sleep(1)
     print("\nStarting razer-service...")
+    app.update_page("#status-text", "html", _("Starting daemon..."))
     background_process("razer-service", shell=True)
 
     print("Waiting for razer-service to start...")
+    app.update_page("#status-text", "html", _("Waiting for daemon to start..."))
+    app.update_page(".progress", "fadeIn", "fast")
+    app.update_page(".progress-inner", "addClass", "increasing")
     time.sleep(5)
 
     # Relaunch Controller / Tray Applet
     print("Relaunching Polychromatic...")
+    app.update_page(".progress", "fadeOut", "fast")
+    app.update_page("#loading", "fadeOut", "fast")
+    app.update_page("#status-text", "fadeOut", "fast")
     restart_tray_applet()
-    background_process(__file__)
-    exit(0)
+    os.execv(__file__, sys.argv)
 
 
 # For restarting the tray applet (only when running)
