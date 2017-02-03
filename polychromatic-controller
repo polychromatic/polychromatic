@@ -1991,6 +1991,9 @@ class Controller(object):
 
         device_type = self.get_device_type(self.active_device.type)
 
+        if not os.path.exists(os.path.join(data_source, "img/header/" + device_type + ".png")):
+            device_type = "generic"
+
         if self.current_effect == "spectrum":
             self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "spectrum"))
         elif self.current_effect == "wave":
