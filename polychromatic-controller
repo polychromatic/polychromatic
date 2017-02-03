@@ -285,6 +285,7 @@ class Controller(object):
         w = Gtk.Window(title="Polychromatic Controller")
         w.set_wmclass('polychromatic-controller', 'polychromatic-controller')
         w.set_position(Gtk.WindowPosition.CENTER)
+        w.modify_bg(Gtk.StateType(0), Gdk.Color(34,34,34))
         w.set_resizable(False)
         self.window = w
         try:
