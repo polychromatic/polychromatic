@@ -779,6 +779,14 @@ class Controller(object):
             start_brightness = int(pref.get('startup', 'start_brightness', 0))
             start_macro = pref.get('startup', 'start_macro', 'false')
 
+            # Adapt icons for different desktop environments.
+            # MATE/Unity = "Humanity"
+            # KDE = "Breeze"
+            desktop_env = os.environ.get("XDG_CURRENT_DESKTOP")
+            if desktop_env == "KDE":
+                self.update_page("#tray-dark-preview", "attr", "src", "../tray/breeze-dark.svg")
+                self.update_page("#tray-light-preview", "attr", "src", "../tray/breeze-light.svg")
+
             # Set value for slider
             scaling = pref.get('editor', 'scaling', 1)
             self.update_page('#scaling', 'val', str(scaling))

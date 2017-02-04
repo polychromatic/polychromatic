@@ -193,10 +193,19 @@ class AppIndicator:
         icon_type = pref.get('tray_applet','icon_type','light')
         icon_fallback = get_data_source() + '/tray/humanity-light.svg'
 
+        # Adapt icons for different desktop environments.
+        # MATE/Unity = "Humanity"
+        # KDE = "Breeze"
+        desktop_env = os.environ.get("XDG_CURRENT_DESKTOP")
+        if desktop_env == "KDE":
+            icon_theme = "breeze"
+        else:
+            icon_theme = "humanity"
+
         if icon_type == 'light':
-            icon_path = get_data_source() + '/tray/humanity-light.svg'
+            icon_path = get_data_source() + '/tray/' + icon_theme + '-light.svg'
         elif icon_type == 'dark':
-            icon_path = get_data_source() + '/tray/humanity-dark.svg'
+            icon_path = get_data_source() + '/tray/' + icon_theme + '-dark.svg'
         elif icon_type == 'gtk':
             icon_path = pref.get('tray_applet','icon_path','ibus-keyboard')
         elif icon_type == 'animated':
