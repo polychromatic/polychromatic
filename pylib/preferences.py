@@ -43,7 +43,6 @@ class Paths(object):
             exit(1)
         return path
 
-path = Paths()
 
 ################################################################################
 
@@ -146,7 +145,6 @@ def save_file(filepath, newdata):
     else:
         print(" ** Cannot write to file: " + filepath)
 
-""" Write new data. """
 def set(group, setting, value, filepath=None):
     """
     Commits a new preference value, then saves it to disk.
@@ -319,16 +317,22 @@ def upgrade_old_pref(config_version):
 
     print(" ** Configuration successfully upgraded.")
 
-"""
-Module Initialisation
-"""
-# Create folders if they do not exist.
-for folder in [path.root, path.profile_folder, path.profile_backups]:
-    if not os.path.exists(folder):
-        print(' ** Configuration folder does not exist. Creating: ', folder)
-        os.makedirs(folder)
+def start_initalization():
+    """
+    Module Initialisation
+    """
+    # Create folders if they do not exist.
+    for folder in [path.root, path.profile_folder, path.profile_backups]:
+        if not os.path.exists(folder):
+            print(' ** Configuration folder does not exist. Creating: ', folder)
+            os.makedirs(folder)
 
-# Create preferences if non-existent.
-for json_path in [path.preferences]:
-    if not os.path.exists(json_path):
-        init_config(json_path)
+    # Create preferences if non-existent.
+    for json_path in [path.preferences]:
+        if not os.path.exists(json_path):
+            init_config(json_path)
+
+################################################################################
+
+path = Paths()
+start_initalization()
