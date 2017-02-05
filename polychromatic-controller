@@ -1585,7 +1585,7 @@ class Controller(object):
         ## Lighting Effects
         def add_to_dropdown(target_element, internal_name, string, source):
             # internal_name = Used for icon name and passed in command.
-            self.update_page(target_element, "append", "<a onclick='cmd(\"{0}\")'><img src='{1}'/> {2}</a>".format(
+            self.update_page(target_element, "append", "<button onclick='cmd(\"{0}\")'><img src='{1}'/> {2}</button>".format(
                 "effect?" + source + "?" + internal_name, "../img/effects/" + internal_name + ".svg", string))
 
         if True in effect_support:

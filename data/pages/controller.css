@@ -796,7 +796,7 @@ label.disabled {
 }
 
 .dropdown-btn > img,
-.dropdown-content a img {
+.dropdown-content button img {
     vertical-align: middle;
     padding-right: 2px;
     width: 24px;
@@ -817,14 +817,15 @@ label.disabled {
     z-index: 1;
 }
 
-.dropdown-content a {
+.dropdown-content button {
     color: white;
+    width: 100%;
     padding: 6px 4px;
     text-decoration: none;
     display: block;
 }
 
-.dropdown-content a:hover {
+.dropdown-content button:hover {
     background-color: #646464;
 }
 
