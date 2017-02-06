@@ -1878,10 +1878,10 @@ class Controller(object):
             elif effect == "ripple":
                 if params:
                     if params[0] == 'single':
-                        fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                        fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, 0.01)
 
                     elif params[0] == 'random':
-                        fx.ripple_random()
+                        fx.ripple_random(0.01)
 
                 else:
                     fx.ripple_random()
