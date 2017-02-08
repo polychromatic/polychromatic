@@ -24,6 +24,7 @@
 target_data="/usr/share/polychromatic"
 target_bin="/usr/bin"
 target_icon="/usr/share/icons"
+target_apps="/usr/share/applications"
 target_man="/usr/share/man/man1"
 modules="/usr/lib/python3/dist-packages/polychromatic"
 locale_dir="/usr/share/locale/"
@@ -50,8 +51,8 @@ rm -rf "$modules"
 rm     "$target_bin/polychromatic-controller"
 rm     "$target_bin/polychromatic-tray-applet"
 rm     "$target_icon/hicolor/scalable/apps/polychromatic.svg"
-rm -rf /usr/share/applications/polychromatic-controller.desktop
-rm -rf /usr/share/applications/polychromatic-tray-applet.desktop
+rm -rf "$target_apps/polychromatic-controller.desktop"
+rm -rf "$target_apps/polychromatic-tray-applet.desktop"
 rm     "$target_man/polychromatic-controller"*
 rm     "$target_man/polychromatic-tray-applet"*
 rm -rf /etc/xdg/autostart/polychromatic-tray-applet.desktop
