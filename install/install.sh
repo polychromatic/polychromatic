@@ -25,6 +25,7 @@ target_data="/usr/share/polychromatic"
 target_bin="/usr/bin"
 target_icon="/usr/share/icons"
 target_apps="/usr/share/applications"
+target_man="/usr/share/man/man1"
 python_path=$(python3 -c "import sys; print(sys.path[-1])")
 polyc_modules="$python_path/polychromatic"
 razer_modules="$python_path/razer/"
@@ -130,6 +131,11 @@ cp -r "$source/pylib/"* "$polyc_modules/"
 # Copy icons
 printg "Copying to $target_icon..."
 cp "$source/install/hicolor/scalable/apps/polychromatic.svg" "$target_icon/hicolor/scalable/apps/polychromatic.svg"
+
+# Copy man
+printg "Copying to $target_man..."
+cp "$source/man/polychromatic-controller.1" "$target_man/"
+cp "$source/man/polychromatic-tray-applet.1" "$target_man/"
 
 # Copy locales
 printg "Copying to $locale_dir..."
