@@ -27,6 +27,7 @@ class Paths(object):
     # Files
     preferences = os.path.join(root, 'preferences.json')
     devicestate = os.path.join(root, 'devicestate.json')
+    colours     = os.path.join(root, 'colours.json')
 
     # Deprecated
     profiles = os.path.join(root, 'profiles.json')
@@ -82,7 +83,6 @@ class DeviceState(object):
 
 
 ################################################################################
-
 def load_file(filepath, no_version_check=False):
     """
     Loads a save file from disk.
@@ -124,6 +124,7 @@ def load_file(filepath, no_version_check=False):
     # Passes data back to the variable
     return(data)
 
+
 def save_file(filepath, newdata):
     """
     Commit the save file to disk.
@@ -144,6 +145,7 @@ def save_file(filepath, newdata):
         f.close()
     else:
         print(" ** Cannot write to file: " + filepath)
+
 
 def set(group, setting, value, filepath=None):
     """
@@ -172,6 +174,7 @@ def set(group, setting, value, filepath=None):
     except:
         print(" ** Failed to write '{0}' for item '{1}' in group '{2}'!".format(value, setting, group))
 
+
 def get(group, setting, default_value="", filepath=None):
     """
     Read data from memory.
@@ -195,6 +198,7 @@ def get(group, setting, default_value="", filepath=None):
         set(group, setting, default_value, filepath)
         return default_value
 
+
 def get_group(group, filepath):
     """
     Read a group of data as a list.
@@ -212,6 +216,7 @@ def get_group(group, filepath):
         return []
 
     return listdata
+
 
 def init_config(filepath):
     """
@@ -233,6 +238,7 @@ def init_config(filepath):
         print(' ** Failed to write default preferences.')
         print(' **** Exception: ', str(e))
 
+
 def clear_config():
     """
     Erases the configuration stored on disk.
@@ -240,6 +246,7 @@ def clear_config():
     print(' ** Deleting configuration folder "' + path.root + '"...')
     shutil.rmtree(path.root)
     print(' ** Successfully deleted configuration.')
+
 
 def upgrade_old_pref(config_version):
     """
@@ -317,6 +324,49 @@ def upgrade_old_pref(config_version):
 
     print(" ** Configuration successfully upgraded.")
 
+
+def set_device_state(serial, source, state, value):
+    """
+    Checks the devicestate file for the status on a device.
+        serial  = Serial number or unique identifer of the device.
+        source  = Light source to check, e.g. "main", "logo", "scroll".
+        state   = Name of state, e.g. "brightness", "effect", "colour_primary", etc.
+    """
+    data = load_file(path.devicestate, True)
+
+    try:
+        data[serial]
+    except KeyError:
+        data[serial] = {}
+
+    try:
+        data[serial][source]
+    except KeyError:
+        data[serial][source] = {}
+
+    data[serial][source][state] = value
+    save_file(path.devicestate, data)
+    print(" ** Device state updated: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value))
+
+
+def get_device_state(serial, source, state):
+    """
+    Reads the device state file for a specific state.
+        serial  = Serial number or unique identifer of the device.
+        source  = Light source to check, e.g. "main", "logo", "scroll".
+        state   = Name of state, e.g. "brightness", "effect", "colour_primary", etc.
+    """
+    data = load_file(path.devicestate, True)
+
+    try:
+        value = data[serial][source][state]
+        return value
+        print(" ** Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value))
+    except KeyError:
+        print(" ** Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [No value]".format(serial, source, state))
+        return None
+
+
 def start_initalization():
     """
     Module Initialisation
@@ -331,6 +381,22 @@ def start_initalization():
     for json_path in [path.preferences]:
         if not os.path.exists(json_path):
             init_config(json_path)
+
+    # Populate with defaults if none exists.
+    ## Default Colours
+    data = load_file(path.colours, True)
+    if len(data) == 0:
+        uuid = 0
+        for name, red, green, blue in ["White", 255, 255, 255], ["Red", 255, 0, 0], ["Orange", 255, 165, 0], \
+                                      ["Yellow", 255, 255, 0], ["Signature Green", 0, 255, 0], ["Aqua", 0, 255, 255], \
+                                      ["Blue", 0, 0, 255], ["Purple", 128, 0, 128], ["Pink", 255, 0, 255], \
+                                      ["Ubuntu", 255, 63, 32], ["Arch", 23, 147, 209], ["Mint", 166, 227, 104], ["Fedora", 60, 110, 180]:
+            uuid += 1
+            data[str(uuid)] = {}
+            data[str(uuid)]["name"] = name
+            data[str(uuid)]["col"] = [red, green, blue]
+        save_file(path.colours, data)
+
 
 ################################################################################
 

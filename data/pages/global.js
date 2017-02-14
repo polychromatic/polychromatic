@@ -102,9 +102,9 @@ function toggleDropdown(dropdownID) {
 }
 
 $(document).mouseup(function (e) {
-    var container = $('.dropdown-btn');
+    var container = $('.dropdown-focus');
     if ( ! container.is(e.target) && container.has(e.target).length === 0) {
-        $('.dropdown-btn + .dropdown-content').fadeOut('fast');
+        $('.dropdown-content').fadeOut('fast');
     }
 });
 

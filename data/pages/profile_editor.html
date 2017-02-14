@@ -38,39 +38,14 @@
     <!-- Edit Profile Menu -->
     <div class="menu_area">
       <div id="edit-panel">
-        <div id="rgb_tmp">
-          <div class="left">
-            <table>
-              <tr>
-                  <td id="str-color"></td>
-                  <td>
-                      <div id="rgb_tmp_preview" class="color-preview" style="background-color:rgba(0,255,0,1)"></div>
-                  </td>
-                  <td><button id="str-custom" class="btn" onclick="cmd('ask-color?rgb_tmp')"></button></td>
-              </tr>
-              <tr>
-                <td></td>
-                <td colspan="2">
-                  <button class="color-icon" onclick="cmd('set-color?rgb_tmp?255?255?255')" style="background-color:#FFFFFF"></button>
-                  <button class="color-icon" onclick="cmd('set-color?rgb_tmp?255?0?0')" style="background-color:#FF0000"></button>
-                  <button class="color-icon" onclick="cmd('set-color?rgb_tmp?255?165?0')" style="background-color:#FFA500"></button>
-                  <button class="color-icon" onclick="cmd('set-color?rgb_tmp?255?255?0')" style="background-color:#FFFF00"></button>
-                  <button class="color-icon" onclick="cmd('set-color?rgb_tmp?0?255?0')" style="background-color:#00FF00"></button>
-                  <button class="color-icon" onclick="cmd('set-color?rgb_tmp?0?255?255')" style="background-color:#00FFFF"></button>
-                  <button class="color-icon" onclick="cmd('set-color?rgb_tmp?0?0?255')" style="background-color:#0000FF"></button>
-                  <button class="color-icon" onclick="cmd('set-color?rgb_tmp?128?0?128')" style="background-color:#800080"></button>
-                  <button class="color-icon" onclick="cmd('set-color?rgb_tmp?255?0?255')" style="background-color:#FF00FF"></button>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <div style="text-align: right">
-            <button id="edit-set" class="btn key-edit" onclick="set_mode('set')"><span class="fa fa-hand-pointer-o"></span></button>
-            <button id="edit-picker" class="btn key-edit" onclick="set_mode('picker')"><span class="fa fa-eyedropper"></span></button>
-            <button id="edit-clear" class="btn key-edit" onclick="set_mode('clear')"><span class="fa fa-eraser"></span></button>
-            <br><br>
-            <p><span id="current_mode"><!-- Changed in JS --></span></p>
-          </div>
+        <div id="colour-selection" class="left">
+        </div>
+        <div id="toolbar" style="text-align: right">
+          <button id="edit-set" class="btn key-edit" onclick="set_mode('set')"><span class="fa fa-hand-pointer-o"></span></button>
+          <button id="edit-picker" class="btn key-edit" onclick="set_mode('picker')"><span class="fa fa-eyedropper"></span></button>
+          <button id="edit-clear" class="btn key-edit" onclick="set_mode('clear')"><span class="fa fa-eraser"></span></button>
+          <br><br>
+          <p><span id="current_mode"><!-- Changed in JS --></span></p>
         </div>
       </div>
       <br>

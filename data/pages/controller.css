@@ -594,6 +594,15 @@ input[type="radio"] {
     height: 24px;
     cursor: pointer;
     border: 1px #888 solid;
+    margin: 2px;
+}
+
+.color-more-btn {
+    display: inline-block;
+    background-color: black;
+    background: url('../img/ui/more-options.svg') no-repeat center 100%;
+    width: 30px;
+    height: 24px;
 }
 
 /* Switch Sliders */
@@ -796,11 +805,20 @@ label.disabled {
 }
 
 .dropdown-btn > img,
-.dropdown-content button img {
+.dropdown-content button img,
+.dropdown-content button div {
     vertical-align: middle;
     padding-right: 2px;
     width: 24px;
     height: 24px;
+}
+
+.dropdown-content button .color-item {
+    vertical-align: middle;
+    margin-right: 4px;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
 }
 
 .dropdown {

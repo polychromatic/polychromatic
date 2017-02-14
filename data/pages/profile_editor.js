@@ -343,7 +343,7 @@ var keyboard_obj = new Keyboard("keyboard-div", "../mapping/blackwidow-chroma-ke
 function key(elem, row, col)
 {
     // Get colour box
-    var colour_box = $('#rgb_tmp_preview');
+    var colour_box = $('#editor-colour-profile-preview');
     var picker_color = colour_box.css("background-color");
 
     if(mode == 'set') {

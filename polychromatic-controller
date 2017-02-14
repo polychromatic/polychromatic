@@ -253,7 +253,6 @@ class Controller(object):
 
         # Set up "memory" variables
         self.current_page = 'loading'
-        self.current_effect = 'custom'
         self.load_lock = False
 
         # Set up variables provided by daemon
@@ -261,14 +260,6 @@ class Controller(object):
             self.kb_layout = get_keyboard_layout()
         except:
             self.kb_layout = 'gb'
-
-        try:
-            self.primary_rgb = RGB(0, 255, 0)
-            self.secondary_rgb = RGB(0, 0, 255)
-        except:
-            # We're in trouble.
-            self.primary_rgb = None
-            self.secondary_rgb = None
 
         # Is this application installed in /usr/share or ran from repository?
         if os.path.exists(os.path.join(path.get_data_source(__file__) + "/../install/update.sh")):
@@ -404,20 +395,6 @@ class Controller(object):
         self.profiles = prof.AppProfiles()
         self.profiles.selected_uuid = None
         self.profiles.previous_uuid = None
-
-        # Set preferred colours
-        p_red = pref.get('primary_colors', 'red', 0)
-        p_green = pref.get('primary_colors', 'green', 255)
-        p_blue = pref.get('primary_colors', 'blue', 0)
-        s_red = pref.get('secondary_colors', 'red', 255)
-        s_green = pref.get('secondary_colors', 'green', 0)
-        s_blue = pref.get('secondary_colors', 'blue', 0)
-
-        self.primary_rgb_values = [p_red, p_green, p_blue]
-        self.primary_rgb = RGB(p_red, p_green, p_blue)
-
-        self.secondary_rgb_values = [s_red, s_green, s_blue]
-        self.secondary_rgb = RGB(s_red, s_green, s_blue)
 
         # Set active device.
         if len(self.devices) == 0:
@@ -558,18 +535,6 @@ class Controller(object):
             else:
                 self.webkit.run_javascript('live_switch = false;')
 
-            # Set preview colours with ones from memory.
-            p_red = self.primary_rgb_values[0]
-            p_green = self.primary_rgb_values[1]
-            p_blue = self.primary_rgb_values[2]
-
-            s_red = self.secondary_rgb_values[0]
-            s_green = self.secondary_rgb_values[1]
-            s_blue = self.secondary_rgb_values[2]
-
-            self.update_page('#rgb_primary_preview', 'css', 'background-color', 'rgba(' + str(p_red) + ',' + str(p_green) + ',' + str(p_blue) + ',1.0)')
-            self.update_page('#rgb_secondary_preview', 'css', 'background-color', 'rgba(' + str(s_red) + ',' + str(s_green) + ',' + str(s_blue) + ',1.0)')
-
             # If there are multiple devices connected, show the overview screen first.
             if len(self.devices) > 1:
                 self.update_page(".device", "removeClass", "active")
@@ -582,8 +547,6 @@ class Controller(object):
 
         elif self.current_page == 'profile_editor':
             # Push strings
-            trans.push('#str-color', _("Color:"))
-            trans.push('#str-custom', _("Custom..."))
             trans.push('#cancel', _("Cancel"))
             trans.push('#edit-preview', _("Preview"))
             trans.push('#edit-save', _("Save"), True)
@@ -608,6 +571,9 @@ class Controller(object):
             # Initialise keyboard layout
             js_exec = self.webkit.JavaScriptExecutor(self.webkit)
             kb_callback = self.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
+
+            # Initalise colour picker
+            self.print_colour_options("editor-colour", "#colour-selection", [0, 255, 0], "profile")
 
             # Collect profile details.
             uuid = self.profiles.selected_uuid
@@ -817,17 +783,6 @@ class Controller(object):
             else:
                 self.update_page('#start-brightness-text', 'html', str(int((start_brightness * 100) / 255 )) + '%')
 
-            # Get default 'preferred' colours.
-            self.start_p_red =   pref.get('primary_colors', 'red', 0)
-            self.start_p_green = pref.get('primary_colors', 'green', 255)
-            self.start_p_blue =  pref.get('primary_colors', 'blue', 0)
-
-            self.start_s_red =   pref.get('secondary_colors', 'red', 255)
-            self.start_s_green = pref.get('secondary_colors', 'green', 0)
-            self.start_s_blue =  pref.get('secondary_colors', 'blue', 0)
-
-            self.update_page('#rgb_start_primary_preview', 'css', 'background-color', 'rgba(' + str(self.start_p_red) + ',' + str(self.start_p_green) + ',' + str(self.start_p_blue) + ',1.0)')
-            self.update_page('#rgb_start_secondary_preview', 'css', 'background-color', 'rgba(' + str(self.start_s_red) + ',' + str(self.start_s_green) + ',' + str(self.start_s_blue) + ',1.0)')
 
             # Reads and sets configuration set in razer.conf
             self.config_path = os.path.join(os.path.expanduser('~'), ".razer-service", "razer.conf")
@@ -942,39 +897,38 @@ class Controller(object):
                     self.active_device.fx.misc.scroll_wheel.brightness = int(value)
 
                 if value != "toggle":
-                    self.active_device_state.set_state("brightness", int(value))
+                    pref.set_device_state(self.active_device.serial, source, "brightness", int(value))
 
                 self.update_device_active_options()
 
             except Exception as exception:
-                self.print_error(exception, str(_("Failed to set/change brightness for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
+                self.print_error(exception, str(_("Failed to set/change brightness for {0}.")).replace("{0}",self.active_device.name))
 
         elif command.startswith('effect'):
             """
-            Expects:  effect?<source>?<value>?[params]
+            Expects:  effect?<source>?<effect>?[params]
             """
             source = command.split("?")[1]
             effect = command.split("?")[2]
+            colours = pref.get_device_state(self.active_device.serial, source, "colour_primary")
+
             try:
                 params = command.split("?")[3]
             except Exception:
                 params = None
 
+            if colours == None:
+                colours = [0, 255, 0]
+
             try:
                 self.set_lighting_effect(source, effect, params)
                 self.update_lighting_options(source, effect)
             except Exception as exception:
-                self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
+                self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}",effect).replace("{1}",self.active_device.name))
 
-            self.update_background_header()
-            self.active_device_state.set_state("effect_" + source, effect)
-            self.active_device_state.set_state("colour1_red", self.primary_rgb.red)
-            self.active_device_state.set_state("colour1_green", self.primary_rgb.green)
-            self.active_device_state.set_state("colour1_blue", self.primary_rgb.blue)
-            self.active_device_state.set_state("colour2_red", self.secondary_rgb.red)
-            self.active_device_state.set_state("colour2_green", self.secondary_rgb.green)
-            self.active_device_state.set_state("colour2_blue", self.secondary_rgb.blue)
+            pref.set_device_state(self.active_device.serial, source, "effect", effect)
             self.update_device_active_options()
+            self.update_background_header(colours)
 
         elif command == 'enable-marco-keys':
             self.active_device.macro.enable_macros()
@@ -987,9 +941,9 @@ class Controller(object):
             self.update_page('#game-mode-enable', 'hide')
             self.update_page('#game-mode-disable', 'show')
             try:
-                self.active_device_state.set_state("gamemode", True)
+                pref.set_device_state(self.active_device.serial, "main", "game_mode", True)
             except Exception as exception:
-                self.print_error(exception, str(_("Failed to change game mode for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
+                self.print_error(exception, str(_("Failed to change game mode for {0}.")).replace("{0}",self.active_device.name))
 
         elif command == 'gamemode-disable':
             self.active_device.game_mode_led = False
@@ -997,67 +951,51 @@ class Controller(object):
             self.update_page('#game-mode-enable', 'show')
             self.update_page('#game-mode-disable', 'hide')
             try:
-                self.active_device_state.set_state("gamemode", False)
+                pref.set_device_state(self.active_device.serial, "main", "game_mode", False)
             except Exception as exception:
-                self.print_error(exception, str(_("Failed to change game mode for {1}.")).replace("{0}",self.current_effect).replace("{1}",self.active_device.name))
+                self.print_error(exception, str(_("Failed to change game mode for {0}.")).replace("{0}",self.active_device.name))
 
         ## Changing colours for this session.
         elif command.startswith('ask-color'):
-            element = command.split('?')[1]
+            """
+            Expects:  ask-color?<colour_id>?<source>
+            """
+            colour_id = command.split('?')[1]
+            source = command.split('?')[2]
             picker = Dialogues.color_picker()
             if picker == None:
                 return
             else:
                 picker = picker.split(',')
-            command = "set-color?{0}?{1}?{2}?{3}".format(element, picker[0], picker[1], picker[2])
+            command = "set-color?{0}?{1}?{2}?{3}?{4}".format(colour_id, picker[0], picker[1], picker[2], source)
             self.process_command(command)
 
         elif command.startswith('set-color'):
-            """ Expects 4 parameters separated by '?' in order: element, red, green, blue (RGB = 0-255) """
-            update_effects = False
-            colors = command.split('set-color?')[1]
-            element = colors.split('?')[0]
-            red = int(colors.split('?')[1])
-            green = int(colors.split('?')[2])
-            blue = int(colors.split('?')[3])
-            print("Set colour of '{0}' to RGB: {1}, {2}, {3}".format(element, red, green, blue))
+            """
+            Expects these parameters separated by '?' in order:
+                colour_id   = Element name (also used for persistance/saving and setting preview element)
+                red         = 0-255 RGB
+                green       = 0-255 RGB
+                blue        = 0-255 RGB
+                source      = Which light source is assigned to this colour?
+            """
+            params = command.split('set-color?')[1].split('?')
+            colour_id = params[0]
+            red = int(params[1])
+            green = int(params[2])
+            blue = int(params[3])
+            source = params[4]
 
-            self.update_page('#'+element+'_preview', 'css', 'background-color', 'rgba(' + str(red) + ',' + str(green) + ',' + str(blue) + ',1.0)')
-            if self.current_page == 'profile_editor':
-                self.webkit.run_javascript('set_mode("set")')
+            colour_id_state = colour_id.replace("-", "_")
+            pref.set_device_state(self.active_device.serial, source, colour_id_state, [red, green, blue])
 
-            if element == 'rgb_primary':    # Primary effect colour
-                update_effects = True
-                self.primary_rgb.set((red, green, blue))
-                self.primary_rgb_values = [red, green, blue]
+            preview_element = "#{0}-{1}-preview".format(colour_id, source)
+            self.update_page(preview_element, "css", "background-color", "rgba({0},{1},{2},1)".format(str(red), str(green), str(blue)))
+            print("Set colour of '{0}' to {1}, {2}, {3}".format(colour_id, int(red), int(green), int(blue)))
 
-            elif element == 'rgb_secondary':   # Secondary effect colour (used for Breath mode)
-                update_effects = True
-                self.secondary_rgb.set((red, green, blue))
-                self.secondary_rgb_values = [red, green, blue]
-
-            elif element == 'rgb_tmp':      # Temporary colour while editing profiles.
-                rgb_edit_red = red
-                rgb_edit_green = green
-                rgb_edit_blue = blue
-
-            elif element == 'rgb_start_primary':  # Starting primary colour specified in Preferences.
-                self.start_p_red =   red
-                self.start_p_green = green
-                self.start_p_blue =  blue
-
-            elif element == 'rgb_start_secondary':  # Starting secondary colour specified in Preferences.
-                self.start_s_red =   red
-                self.start_s_green = green
-                self.start_s_blue =  blue
-
-            # Update static colour effects if currently in use.
-            for source in ["main", "logo", "scroll"]:
-                fx_effect = self.active_device_state.get_state("effect" + source)
-                fx_params = self.active_device_state.get_state("effect_" + source + "_params")
-                self.set_lighting_effect(source, fx_effect, fx_params)
-                self.update_lighting_options(source, fx_effect)
-                self.update_background_header()
+            # In profile editor, changing colour must 'reload' the tool.
+            if self.current_page == "profile_editor":
+                self.webkit.run_javascript("set_mode('set')")
 
         ## Cancel to main menu.
         ## '?xxxx' may specify changes to also make when leaving application profile editor.
@@ -1097,15 +1035,6 @@ class Controller(object):
             pref.set(group, setting, value)
 
         elif command == 'pref-close':
-            # Saves data still in memory.
-            pref.set('primary_colors', 'red', self.start_p_red)
-            pref.set('primary_colors', 'green', self.start_p_green)
-            pref.set('primary_colors', 'blue', self.start_p_blue)
-
-            pref.set('secondary_colors', 'red', self.start_s_red)
-            pref.set('secondary_colors', 'green', self.start_s_green)
-            pref.set('secondary_colors', 'blue', self.start_s_blue)
-
             self.show_menu('menu')
 
         elif command == 'pref-reset-conf':
@@ -1158,16 +1087,22 @@ class Controller(object):
 
         elif command.startswith('profile-activate'):
             command = command.replace('%20',' ')
+
+            # Send to keyboard
             uuid = command.split('profile-activate?')[1]
             self.webkit.run_javascript('set_cursor("html","wait")')
             self.profiles.send_profile_from_file(self.active_device, uuid)
-            data = self.profiles.get_metadata(uuid)
-            self.update_page("#active-effect", "html", "<img src='{1}'/> {0}".format(data.get("name"), data.get("icon")))
             self.webkit.run_javascript('set_cursor("html","normal")')
-            self.current_effect = 'custom'
-            self.update_background_header()
-            self.active_device_state.set_state("effect_main", "profile")
-            self.active_device_state.set_state("profile", uuid)
+
+            # Update UI
+            data = self.profiles.get_metadata(uuid)
+            self.update_page("#fx-options-main", "html", " ")
+            self.update_page("#active-effect", "html", "<img src='{1}'/> {0}".format(data.get("name"), data.get("icon")))
+            self.update_background_header([0, 255, 0])
+
+            # Update persistance file
+            pref.set_device_state(self.active_device.serial, "main", "effect", "profile")
+            pref.set_device_state(self.active_device.serial, "main", "profile", uuid)
 
         elif command == 'profile-preview':
             self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
@@ -1434,7 +1369,7 @@ class Controller(object):
             self.update_device_supported_features()
             self.update_device_active_options()
             for source in ["main", "logo", "scroll"]:
-                self.update_lighting_options(source, self.active_device_state.get_state("effect_"+source))
+                self.update_lighting_options(source, pref.get_device_state(self.active_device.serial, source, "effect"))
 
         elif command == 'refresh-active-device':
             self.update_device_active_options()
@@ -1507,15 +1442,15 @@ class Controller(object):
                 formfactor = self.get_device_type(device.type)
                 serial = str(device.serial)
                 state = "normal"
-                status = pref.DeviceState(pref, serial)
                 img = data_source + "/img/states/{0}/{1}.svg".format(state, formfactor)
                 if not os.path.exists(img):
                     img = unknown_icon
                 htmlbuffer = "<button id='{0}' class='device' onclick='switchPaneDevice(\"{0}\")' title=\"{2}\"><img src='{1}'> <span>{2}</span></button>".format(serial, img, name)
                 self.update_page("#device-tabs", "append", htmlbuffer)
 
-                status_brightness = status.get_state("brightness")
-                status_effect = status.get_state("effect")
+                source = "main"
+                status_brightness = pref.get_device_state(self.active_device.serial, source, "brightness")
+                status_effect = pref.get_device_state(self.active_device.serial, source, "effect")
 
                 if not status_brightness:
                     status_brightness = "--"
@@ -1540,7 +1475,7 @@ class Controller(object):
                 htmlbuffer +=   '<p><b>{0}:</b>&nbsp; {1}</p>'.format(_("Serial"), serial)
 
                 if status_effect == "profile" and formfactor == "keyboard":
-                    uuid = status.get_state("profile")
+                    uuid = pref.get_device_state(self.active_device.serial, source, "profile")
                     profile_data = self.profiles.load_profile(uuid)
                     profile_name = profile_data["name"]
                     profile_icon = profile_data["icon"]
@@ -1573,7 +1508,6 @@ class Controller(object):
 
         # Update GUI
         self.webkit.run_javascript("change_header('{0}')".format(device_name))
-        self.update_background_header()
         self.update_page("#fx-image", "attr", "src", device_image)
 
         # Assume game mode / macro keys and profiles for keyboards for now.
@@ -1594,6 +1528,7 @@ class Controller(object):
             if self.active_device.has("lighting"):
                 self.update_page("#lighting-dropdown", "show")
                 self.update_page("#lighting-list", "html", " ")
+                self.update_background_header(pref.get_device_state(self.active_device.serial, "main", "colour_primary"))
                 fx_list = [
                     # [has() parameter, icon/command, human string]
                     ["lighting_none", "none", _("None")],
@@ -1615,6 +1550,7 @@ class Controller(object):
             if self.active_device.has("lighting_logo"):
                 self.update_page("#lighting-logo-dropdown", "show")
                 self.update_page("#lighting-logo-list", "html", " ")
+                self.update_background_header(pref.get_device_state(self.active_device.serial, "logo", "colour_primary"))
                 fx_list = [
                     # [has() parameter, icon/command, human string]
                     ["lighting_logo_none", "none", _("None")],
@@ -1644,6 +1580,7 @@ class Controller(object):
             if self.active_device.has("lighting_scroll"):
                 self.update_page("#lighting-scroll-dropdown", "show")
                 self.update_page("#lighting-scroll-list", "html", " ")
+                self.update_background_header(pref.get_device_state(self.active_device.serial, "scroll", "colour_primary"))
                 fx_list = [
                     # [has() parameter, icon/command, human string]
                     ["lighting_scroll_none", "none", _("None")],
@@ -1729,23 +1666,24 @@ class Controller(object):
         ## Lighting Effects
         self.update_page("#fx-colour-primary", "hide")
         self.update_page("#fx-colour-secondary", "hide")
+        self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", " ")
 
         def update_lighting_dropdown(element, effect):
             self.update_page(element, "html", "<img src='{1}'/> {0}".format(trans.get_effect_state_string(effect), "../img/effects/" + effect + ".svg"))
 
         if self.active_device.has("lighting"):
             try:
-                effect = self.active_device_state.get_state("effect_main")
+                effect = pref.get_device_state(self.active_device.serial, "main", "effect")
 
                 if effect == "profile":
                     # Device Tab
-                    uuid = self.active_device_state.get_state("profile")
+                    uuid = pref.get_device_state(self.active_device.serial, "main", "profile")
                     data = self.profiles.get_metadata(uuid)
                     self.update_page("#active-effect", "html", "<img src='{1}'/> {0}".format(data.get("name"), data.get("icon")))
                     self.update_page("#app-" + uuid, "addClass", "active")
 
                     # Overview Screen
-                    uuid = self.active_device_state.get_state("profile")
+                    uuid = pref.get_device_state(self.active_device.serial, "main", "effect")
                     data = self.profiles.get_metadata(uuid)
                     self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", data.get("name"))
                     self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", data.get("icon"))
@@ -1764,7 +1702,7 @@ class Controller(object):
 
         if self.active_device.has("lighting_logo"):
             try:
-                effect = self.active_device_state.get_state("effect_logo")
+                effect = pref.get_device_state(self.active_device.serial, "logo", "effect")
 
                 # Device Tab
                 update_lighting_dropdown("#active-effect-logo", effect)
@@ -1779,7 +1717,7 @@ class Controller(object):
 
         if self.active_device.has("lighting_scroll"):
             try:
-                effect = self.active_device_state.get_state("effect_scroll")
+                effect = pref.get_device_state(self.active_device.serial, "scroll", "effect")
 
                 # Device Tab
                 update_lighting_dropdown("#active-effect-scroll", effect)
@@ -1801,13 +1739,11 @@ class Controller(object):
         params = (Optional) Any parameters for the effect, seperated by '?'.
                  e.g. 255?255?255?2
         """
-        self.current_effect = "none"
 
         # For remembering current device state
         def remember_params(params):
-            self.active_device_state.set_state("effect_" + source + "_params", params)
+            pref.set_device_state(self.active_device.serial, source, "effect_params", params)
 
-        self.active_device_state.set_state("source", source)
         if fx_params:
             params = fx_params.split('?')
             remember_params(fx_params)
@@ -1823,6 +1759,31 @@ class Controller(object):
 
         elif source == "scroll":
             fx = self.active_device.fx.misc.scroll_wheel
+
+        # Determine colours
+        primary_colours = pref.get_device_state(self.active_device.serial, source, "colour_primary")
+        secondary_colours = pref.get_device_state(self.active_device.serial, source, "colour_secondary")
+
+        if primary_colours != None:
+            primary_red = primary_colours[0]
+            primary_green = primary_colours[1]
+            primary_blue = primary_colours[2]
+        else:
+            primary_red = 0
+            primary_green = 255
+            primary_blue = 0
+
+        if secondary_colours != None:
+            secondary_red = secondary_colours[0]
+            secondary_green = secondary_colours[1]
+            secondary_blue = secondary_colours[2]
+        else:
+            secondary_red = 255
+            secondary_green = 0
+            secondary_blue = 0
+
+        stdout.vvprint("Using RGB for primary colour: {0}, {1}, {2}".format(str(primary_red), str(primary_green), str(primary_blue)))
+        stdout.vvprint("Using RGB for secondary colour: {0}, {1}, {2}".format(str(primary_red), str(primary_green), str(primary_blue)))
 
         # Execute function (only if source is known)
         if fx:
@@ -1843,16 +1804,16 @@ class Controller(object):
             elif effect == "reactive":
                 # Params:  <speed 1-4>
                 if params:
-                    fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, int(params[0]))
+                    fx.reactive(primary_red, primary_green, primary_blue, int(params[0]))
                 else:
-                    fx.reactive(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, 2)
+                    fx.reactive(primary_red, primary_green, primary_blue, 2)
                     remember_params(2)
 
             elif effect == "blinking":
                 if params:
-                    fx.blinking(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                    fx.blinking(primary_red, primary_green, primary_blue)
                 else:
-                    fx.blinking(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                    fx.blinking(primary_red, primary_green, primary_blue)
 
             elif effect == "breath":
                 if params:
@@ -1860,11 +1821,11 @@ class Controller(object):
                         fx.breath_random()
 
                     elif params[0] == 'single':
-                        fx.breath_single(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                        fx.breath_single(primary_red, primary_green, primary_blue)
 
                     elif params[0] == 'dual':
-                        fx.breath_dual(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue,
-                                               self.secondary_rgb.red, self.secondary_rgb.green, self.secondary_rgb.blue)
+                        fx.breath_dual(primary_red, primary_green, primary_blue,
+                                       secondary_red, secondary_green, secondary_blue)
 
                     # TODO: Add triple breath support
 
@@ -1873,12 +1834,12 @@ class Controller(object):
                     remember_params('random')
 
             elif effect == "pulsate":
-                fx.pulsate(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                fx.pulsate(primary_red, primary_green, primary_blue)
 
             elif effect == "ripple":
                 if params:
                     if params[0] == 'single':
-                        fx.ripple(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue, 0.01)
+                        fx.ripple(primary_red, primary_green, primary_blue, 0.01)
 
                     elif params[0] == 'random':
                         fx.ripple_random(0.01)
@@ -1888,7 +1849,7 @@ class Controller(object):
                     remember_params('random')
 
             elif effect == "static":
-                fx.static(self.primary_rgb.red, self.primary_rgb.green, self.primary_rgb.blue)
+                fx.static(primary_red, primary_green, primary_blue)
 
         else:
             stdout.vvprint("FX not applied, source not recognised.")
@@ -1905,12 +1866,13 @@ class Controller(object):
         """
         # Hide/clear existing contents
         self.update_page("#fx-options-" + source, "html", " ")
+        self.update_page(".app-profile-item", "removeClass", "active")
 
         # If none specified, just clear the options.
         if source == None or effect == None:
             return
 
-        params = str(self.active_device_state.get_state("effect_" + source + "_params"))
+        params = str(pref.get_device_state(self.active_device.serial, source, "effect_params"))
         target = "#fx-options-" + source
 
         if source == "main":
@@ -1970,15 +1932,38 @@ class Controller(object):
             add_but_check_ability("ripple", _("Single Color"), 'single')
 
         # Show colour picker (for supported effects)
+        show_primary = False
+        show_secondary = False
         if effect in ["reactive", "ripple", "pulsate", "static"]:
-            self.update_page("#fx-colour-primary", "show")
+            show_primary = True
+
+            if params == "random":
+                show_primary = False
 
         if effect == "breath" and params == "single":
-            self.update_page("#fx-colour-primary", "show")
+            show_primary = True
 
         elif effect == "breath" and params == "dual":
-            self.update_page("#fx-colour-primary", "show")
-            self.update_page("#fx-colour-secondary", "show")
+            show_primary = True
+            show_secondary = True
+
+        if show_primary:
+            self.print_colour_options(
+                "colour-primary",
+                "#fx-options-"+source,
+                pref.get_device_state(self.active_device.serial, source, "colour_primary"),
+                source,
+                [source, effect, pref.get_device_state(self.active_device.serial, source, "effect_params")]
+            )
+
+        if show_secondary:
+            self.print_colour_options(
+                "colour-secondary",
+                "#fx-options-"+source,
+                pref.get_device_state(self.active_device.serial, source, "colour_secondary"),
+                source,
+                [source, effect, pref.get_device_state(self.active_device.serial, source, "effect_params")]
+            )
 
     def get_device_type(self, device_type):
         """
@@ -1993,24 +1978,34 @@ class Controller(object):
             form_factor = device_type
         return(form_factor)
 
-    def update_background_header(self):
+    def update_background_header(self, colour_rgb):
         """
         Refreshes the dynamic background header based on the current device.
+            colour_rgb = [red, green, blue] - Colour to change the header to.
         """
         if not self.current_page == "menu":
             return
 
         device_type = self.get_device_type(self.active_device.type)
+        effect = pref.get_device_state(self.active_device.serial, "main", "effect")
+        if colour_rgb:
+            red = colour_rgb[0]
+            green = colour_rgb[1]
+            blue = colour_rgb[2]
+        else:
+            red = 0
+            green = 255
+            blue = 0
 
         if not os.path.exists(os.path.join(data_source, "img/header/" + device_type + ".png")):
             device_type = "generic"
 
-        if self.current_effect == "spectrum":
+        if effect == "spectrum":
             self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "spectrum"))
-        elif self.current_effect == "wave":
+        elif effect == "wave":
             self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "wave"))
         else:
-            rgba = "rgba({0},{1},{2},1)".format(str(self.primary_rgb_values[0]), str(self.primary_rgb_values[1]), str(self.primary_rgb_values[2]))
+            rgba = "rgba({0},{1},{2},1)".format(str(red), str(green), str(blue))
             self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, rgba))
 
     def show_error_page(self, severity, icon, title, message):
@@ -2032,6 +2027,71 @@ class Controller(object):
         self.error_message = message
         self.error_class = severity
         self.show_menu("error")
+
+    def print_colour_options(self, colour_id, target_append_element, start_rgb, source, effect_callback=None):
+        """
+        Creates a colour grid for choosing custom colours.
+            colour_id               = ID of colour (in devicestate) and container element.
+            target_append_element   = ID of element to append to.
+            start_rgb               = [red, green, blue] - list containing current colour.
+            source                  = Where the colour is located, e.g. "main", "logo", "scroll".
+            effect_callback         = [source, effect, params] - optional list for setting an effect based on effect.
+        """
+        colour_index = pref.load_file(path.colours, True)
+        uuids = list(colour_index)
+        uuids.sort(key=int)
+
+        if start_rgb == None:
+            start_rgb = [0, 255, 0]
+
+        preview_element = "{0}-{1}-preview".format(colour_id, source)
+        html_buffer =  "<div id='{0}' class='colour-picker'>".format(colour_id)
+        html_buffer += "<table><tr><td><div id='{0}' class='color-preview' style='background-color:rgba({1},{2},{3},1)'></div></td>".format(
+                            preview_element, str(start_rgb[0]), str(start_rgb[1]), str(start_rgb[2])) + \
+                        "<td><button class='btn' onclick='cmd(\"ask-color?{0}?{2}\")'>{1}</button></td></tr>".format(colour_id, _("Custom..."), source)
+        html_buffer += "<tr><td colspan='2'>"
+
+        item_no = 0
+        for uuid in uuids:
+            item_no += 1
+            name = colour_index[uuid].get("name")
+            red = colour_index[uuid].get("col")[0]
+            green = colour_index[uuid].get("col")[1]
+            blue = colour_index[uuid].get("col")[2]
+
+            if effect_callback:
+                if effect_callback[2]:
+                    onclick = "cmd(\"set-color?{0}?{1}?{2}?{3}?{4}\"); cmd(\"effect?{5}?{6}?{7}\")".format(colour_id, red, green, blue, source,
+                                                                                                    effect_callback[0], effect_callback[1], effect_callback[2])
+                else:
+                    onclick = "cmd(\"set-color?{0}?{1}?{2}?{3}?{4}\"); cmd(\"effect?{5}?{6}\")".format(colour_id, red, green, blue, source,
+                                                                                                    effect_callback[0], effect_callback[1])
+            else:
+                onclick = "cmd(\"set-color?{0}?{1}?{2}?{3}?{4}\")".format(colour_id, red, green, blue, source)
+
+            # Add "show more" button and prepare dropdown if we have many colours.
+            if item_no == 10:
+                html_buffer += "<button onclick='toggleDropdown(\"{0}\")' class='dropdown-focus color-item color-more-btn' title='{1}'></button>".format(colour_id+"-list", _("More Colors"))
+                html_buffer += "<div class='dropdown' hidden>"
+                html_buffer += "<div id='{0}' class='dropdown-content'>".format(colour_id+"-list")
+
+            # Show first 10 items as clickable boxes.
+            if item_no <= 9:
+                html_buffer += "<button class='color-icon' onclick='{0}' title='{1}' style='background-color:rgba({2},{3},{4},1)'></button>".format(
+                                onclick, name, red, green, blue)
+
+            # Add the rest to the "show more" menu.
+            else:
+                html_buffer += "<button onclick='{0}' title='{1}'><div class='color-item' style='background-color:rgba({2},{3},{4},1)'></div> {1}</button>".format(
+                                onclick, name, red, green, blue)
+
+        # Close container for dropdown (if applicable)
+        if item_no > 10:
+            html_buffer += "</div></div>"
+
+        # Close overall container and append to page
+        html_buffer += "</td></tr></table>"
+        self.update_page(target_append_element, "append", html_buffer)
 
 
 class Dialogues(object):
