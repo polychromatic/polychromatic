@@ -1468,6 +1468,7 @@ class Controller(object):
                         current_brightness = None
 
                     current_effect = pref.get_device_state(device.serial, source, "effect")
+                    current_colour = pref.get_device_state(device.serial, source, "colour_primary")
 
                     if current_brightness:
                         if len(buffer_brightness) == 0:
@@ -1476,10 +1477,22 @@ class Controller(object):
                             buffer_brightness += " / " + str(current_brightness) + "%"
 
                     if current_effect:
-                        if len(buffer_effect) == 0:
-                            buffer_effect = "<img src='../img/effects/{0}.svg'/> <span>{1}</span>".format(current_effect, trans.get_effect_state_string(current_effect))
+                        if len(buffer_effect) > 0:
+                            buffer_effect += "&nbsp;"
+
+                        if not current_colour:
+                            current_colour = [0, 255, 0]
+
+                        if current_effect in ["spectrum", "wave"]:
+                            class_effects = current_effect
                         else:
-                            buffer_effect += "&nbsp; <img src='../img/effects/{0}.svg'/> <span>{1}</span>".format(source, trans.get_effect_state_string(current_effect))
+                            class_effects = None
+
+                        buffer_effect += "<img {0}/> <span {1}>{2}</span>".format(
+                                            self.generate_css_colour_svg("../img/effects/{0}.svg".format(current_effect), current_colour, 22, 22, class_effects),
+                                            self.generate_css_colour_text(current_colour, class_effects),
+                                            trans.get_effect_state_string(current_effect)
+                                        )
 
                     if current_effect == "profile":
                         uuid = pref.get_device_state(self.active_device.serial, source, "profile")
@@ -2124,6 +2137,22 @@ class Controller(object):
         # Close overall container and append to page
         html_buffer += "</td></tr></table>"
         self.update_page(target_append_element, "append", html_buffer)
+
+    @staticmethod
+    def generate_css_colour_svg(svg_path, colours, width, height, optional_class=None):
+        inline_buffer = "style='background: rgba({0},{1},{2},1); -webkit-mask: url({3}) center / contain no-repeat; width: {4}px; height: {5}px;'".format(
+                            colours[0], colours[1], colours[2], svg_path, str(width), str(height)
+                        )
+        if optional_class:
+            inline_buffer += " class='{0}'".format(optional_class)
+        return(inline_buffer)
+
+    @staticmethod
+    def generate_css_colour_text(colours, optional_class=None):
+        inline_buffer = "style='color: rgba({0},{1},{2},1)'".format(colours[0], colours[1], colours[2])
+        if optional_class:
+            inline_buffer += " class='{0}'".format(optional_class)
+        return(inline_buffer)
 
 
 class Dialogues(object):

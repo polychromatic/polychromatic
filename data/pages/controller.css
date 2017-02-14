@@ -188,7 +188,8 @@ button > label {
 /************************
    Header - Spectrum
 *************************/
-#dynamic.spectrum {
+#dynamic.spectrum,
+img.spectrum {
     -webkit-animation-name: spectrum;
     -webkit-animation-duration: 10s;
     -webkit-animation-iteration-count: infinite;
@@ -222,10 +223,44 @@ button > label {
     }
 }
 
+span.spectrum {
+    -webkit-animation-name: spectrum-text;
+    -webkit-animation-duration: 10s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+}
+
+@-webkit-keyframes spectrum-text {
+    0% {
+        color: #C500FF;
+    }
+    14% {
+        color: #FF8900;
+    }
+    28% {
+        color: #FBFF00;
+    }
+    42% {
+        color: #7CFF00;
+    }
+    56% {
+        color: #00FFD9;
+    }
+    70% {
+        color: #005AFF;
+    }
+    84% {
+        color: #3D00FF;
+    }
+    100% {
+        color: #C500FF;
+    }
+}
+
 /************************
    Header - Wave
 *************************/
-.header.wave {
+#dynamic.wave {
     background-image: url('../img/header/wave.jpg') !important;
     background-repeat: repeat-x;
     -webkit-animation-name: wave;
@@ -242,6 +277,21 @@ button > label {
     100% {
         background-position: 1000px 0;
     }
+}
+
+span.wave,
+img.wave {
+    -webkit-animation-duration: 2s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+}
+
+span.wave {
+    -webkit-animation-name: spectrum-text;
+}
+
+img.wave {
+    -webkit-animation-name: spectrum;
 }
 
 /************************
