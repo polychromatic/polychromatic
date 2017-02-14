@@ -518,7 +518,6 @@ class Controller(object):
             trans.push('#dialog-help-close', _("Close"))
 
             trans.push('#str-browse-icon', _("Browse Icon"))
-            trans.push('#str-connected-devices', _("Connected Devices"))
 
             # Page actions
             self.webkit.run_javascript('instantProfileSwitch = false;')
@@ -953,6 +952,9 @@ class Controller(object):
             except Exception as exception:
                 self.print_error(exception, str(_("Failed to change game mode for {0}.")).replace("{0}",self.active_device.name))
 
+        elif command == 'refresh-overview-screen':
+            self.refresh_device_list()
+
         ## Changing colours for this session.
         elif command.startswith('ask-colour'):
             """
@@ -1368,9 +1370,6 @@ class Controller(object):
             for source in ["main", "logo", "scroll"]:
                 self.update_lighting_options(source, pref.get_device_state(self.active_device.serial, source, "effect"))
 
-        elif command == 'refresh-active-device':
-            self.update_device_active_options()
-
         else:
             print("Unimplemented command: " + command)
 
@@ -1431,8 +1430,9 @@ class Controller(object):
 
         if self.current_page == "menu":
             self.update_page(".device", "remove")
-            self.update_page('#device-tabs', 'append', "<button id='device-overview-tab' class='device' onclick='switchPaneOverview(); changeHeaderImg(\"overview\", \"black\")'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
+            self.update_page("#device-tabs", "append", "<button id='device-overview-tab' class='device' onclick='switchPaneOverview(); changeHeaderImg(\"overview\", \"black\")'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
             unknown_icon = "../img/states/normal/unknown.svg"
+            self.update_page("#device-overview", "html", "<h3>{0}</h3>".format(_("Connected Devices")))
 
             for device in self.devices:
                 name = str(device.name)
@@ -1445,13 +1445,57 @@ class Controller(object):
                 htmlbuffer = "<button id='{0}' class='device' onclick='switchPaneDevice(\"{0}\")' title=\"{2}\"><img src='{1}'> <span>{2}</span></button>".format(serial, img, name)
                 self.update_page("#device-tabs", "append", htmlbuffer)
 
-                source = "main"
-                status_brightness = pref.get_device_state(self.active_device.serial, source, "brightness")
-                status_effect = pref.get_device_state(self.active_device.serial, source, "effect")
+                # Compile status data together (for multiple light sources)
+                buffer_effect = ""
+                buffer_brightness = ""
+                for source in ["main", "logo", "scroll"]:
+                    if source == "main":
+                        capability = "lighting"
+                    else:
+                        capability = "lighting_" + source
 
-                if not status_brightness:
-                    status_brightness = "--"
+                    if not device.has(capability):
+                        continue
 
+                    try:
+                        if source == "main":
+                            current_brightness = int(device.brightness)
+                        elif source == "logo":
+                            current_brightness = int(device.fx.misc.logo.brightness)
+                        elif source == "scroll":
+                            current_brightness = int(device.fx.misc.scroll_wheel.brightness)
+                    except:
+                        current_brightness = None
+
+                    current_effect = pref.get_device_state(device.serial, source, "effect")
+
+                    if current_brightness:
+                        if len(buffer_brightness) == 0:
+                            buffer_brightness = str(current_brightness) + "%"
+                        else:
+                            buffer_brightness += " / " + str(current_brightness) + "%"
+
+                    if current_effect:
+                        if len(buffer_effect) == 0:
+                            buffer_effect = "<img src='../img/effects/{0}.svg'/> <span>{1}</span>".format(current_effect, trans.get_effect_state_string(current_effect))
+                        else:
+                            buffer_effect += "&nbsp; <img src='../img/effects/{0}.svg'/> <span>{1}</span>".format(source, trans.get_effect_state_string(current_effect))
+
+                    if current_effect == "profile":
+                        uuid = pref.get_device_state(self.active_device.serial, source, "profile")
+                        profile_data = self.profiles.load_profile(uuid)
+                        profile_name = profile_data["name"]
+                        profile_icon = profile_data["icon"]
+                        htmlbuffer += "<img src='{0}'/> <span>{1}</span>".format(profile_icon, profile_name)
+
+                # No brightness or effect set?
+                if buffer_brightness and len(buffer_brightness) == 0:
+                    buffer_brightness = None
+
+                if buffer_effect and len(buffer_effect) == 0:
+                    buffer_effect = None
+
+                # Determine device image
                 try:
                     img_path = device.razer_urls.get("side_img")
                     img_opacity = "1"
@@ -1464,29 +1508,20 @@ class Controller(object):
                         img_path = unknown_icon
                     img_opacity = "0.2"
 
+                # Piece device together
                 htmlbuffer = ""
-                htmlbuffer += '<div class="device-card" onclick="switchPaneDevice(\'{0}\')">'.format(serial)
-                # TODO: Use images provided from daemon dictonary (once implemented)
-                htmlbuffer +=   '<img src="{0}" style="opacity:{1};"/>'.format(img_path, img_opacity)
-                htmlbuffer +=   '<h4>{0}</h4>'.format(name)
-                htmlbuffer +=   '<p><b>{0}:</b>&nbsp; {1}</p>'.format(_("Serial"), serial)
-
-                if status_effect == "profile" and formfactor == "keyboard":
-                    uuid = pref.get_device_state(self.active_device.serial, source, "profile")
-                    profile_data = self.profiles.load_profile(uuid)
-                    profile_name = profile_data["name"]
-                    profile_icon = profile_data["icon"]
-                    htmlbuffer += '<p id="device-{0}-effect" class="effect-status"><img src="{1}"/> <span>{2}</span></p>'.format(serial, profile_icon, profile_name)
-                elif not status_effect:
-                    htmlbuffer += '<p id="device-{0}-effect" class="effect-status"><img src="../img/effects/{1}.svg"/> <span>{2}</span></p>'.format(serial, "notset", _("New Device Found."))
-                else:
-                    htmlbuffer += '<p id="device-{0}-effect" class="effect-status"><img src="../img/effects/{1}.svg"/> <span>{2}</span></p>'.format(serial, status_effect, trans.get_effect_state_string(status_effect))
-
-                htmlbuffer +=   '<p class="brightness-status"><span class="fa fa-lightbulb-o"></span> <span id="device-{0}-brightness">{1}%</span></p>'.format(serial, str(status_brightness))
-                htmlbuffer += '</div>'
+                htmlbuffer += "<div class='device-card' onclick='switchPaneDevice(\"{0}\")'>".format(serial)
+                htmlbuffer +=   "<img src='{0}' style='opacity:{1};'/>".format(img_path, img_opacity)
+                htmlbuffer +=   "<h4>{0}</h4>".format(name)
+                htmlbuffer +=   "<p><b>{0}:</b>&nbsp; {1}</p>".format(_("Serial"), serial)
+                if buffer_effect:
+                    htmlbuffer +=   "<p id='device-{0}-effect' class='effect-status'> {1}</p>".format(serial, buffer_effect)
+                if buffer_brightness:
+                    htmlbuffer +=   "<p class='brightness-status'><span class='fa fa-lightbulb-o'></span> <span id='device-{0}-brightness'>{1}</span></p>".format(serial, str(buffer_brightness))
+                htmlbuffer += "</div>"
                 self.update_page("#device-overview", "append", htmlbuffer)
 
-            self.update_page('#' + selected_id, "addClass", "active")
+            self.update_page("#" + selected_id, "addClass", "active")
             if len(self.devices) > 4:
                 self.update_page("#device-tabs", "addClass", "too-many")
 

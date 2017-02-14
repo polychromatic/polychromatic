@@ -246,7 +246,7 @@ function switchPaneOverview() {
     $("#device-overview-tab").addClass("active");
     change_header(str_overview);
     $("#device-individual").fadeOut('fast');
-    cmd("refresh-active-device");
+    cmd("refresh-overview-screen");
     setTimeout(function() {
         $("#device-overview").fadeIn('fast');
     }, 210);
