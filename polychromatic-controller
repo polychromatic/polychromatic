@@ -400,12 +400,10 @@ class Controller(object):
         if len(self.devices) == 0:
             self.active_device = None
             self.active_device_serial = None
-            self.active_device_state = None
             return
         else:
             self.active_device = self.devices[0]
             self.active_device_serial = self.devices[0].serial
-            self.active_device_state = pref.DeviceState(pref, self.active_device_serial)
 
         stdout.vprint('Application Ready.\n')
         self.show_menu('menu')
@@ -1352,7 +1350,6 @@ class Controller(object):
             if selected_device:
                 self.active_device = selected_device
                 self.active_device_serial = selected_device.serial
-                self.active_device_state = pref.DeviceState(pref, self.active_device_serial)
                 formfactor = selected_device.type
             else:
                 print("Could not locate device with serial: " + selected_serial)
