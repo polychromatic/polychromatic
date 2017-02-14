@@ -471,7 +471,7 @@ class Controller(object):
             trans.push('.str-single-col', _("Single Color"), True)
             trans.push('#str-dual-col', _("Dual Colors"), True)
             trans.push('#str-cycles', _("Cycle:"), True)
-            trans.push('#str-colors', _("Colors:"), True)
+            trans.push('#str-colours', _("Colors:"), True)
             trans.push('#str-slow', _("Slow"), True)
             trans.push('#str-med', _("Medium"), True)
             trans.push('#str-fast', _("Fast"), True)
@@ -631,7 +631,7 @@ class Controller(object):
             trans.push('#str-about', _("About"))
             trans.push('#str-tray', _("Tray Applet"))
             trans.push('#str-app-settings', _("General"))
-            trans.push('#str-colors', _("Colors"))
+            trans.push('#str-colours', _("Colors"))
             trans.push('#str-daemon', _("Daemon"))
 
             trans.push('#str-version-app', _("Version:"))
@@ -956,9 +956,9 @@ class Controller(object):
                 self.print_error(exception, str(_("Failed to change game mode for {0}.")).replace("{0}",self.active_device.name))
 
         ## Changing colours for this session.
-        elif command.startswith('ask-color'):
+        elif command.startswith('ask-colour'):
             """
-            Expects:  ask-color?<colour_id>?<source>
+            Expects:  ask-colour?<colour_id>?<source>
             """
             colour_id = command.split('?')[1]
             source = command.split('?')[2]
@@ -967,10 +967,10 @@ class Controller(object):
                 return
             else:
                 picker = picker.split(',')
-            command = "set-color?{0}?{1}?{2}?{3}?{4}".format(colour_id, picker[0], picker[1], picker[2], source)
+            command = "set-colour?{0}?{1}?{2}?{3}?{4}".format(colour_id, picker[0], picker[1], picker[2], source)
             self.process_command(command)
 
-        elif command.startswith('set-color'):
+        elif command.startswith('set-colour'):
             """
             Expects these parameters separated by '?' in order:
                 colour_id   = Element name (also used for persistance/saving and setting preview element)
@@ -979,7 +979,7 @@ class Controller(object):
                 blue        = 0-255 RGB
                 source      = Which light source is assigned to this colour?
             """
-            params = command.split('set-color?')[1].split('?')
+            params = command.split('set-colour?')[1].split('?')
             colour_id = params[0]
             red = int(params[1])
             green = int(params[2])
@@ -1065,10 +1065,10 @@ class Controller(object):
             command = command.replace('%20',' ')
             row = int(command.split('?')[1])
             col = int(command.split('?')[2])
-            color = command.split('?')[3]
-            red = int(color.strip('rgb()').split(',')[0])
-            green = int(color.strip('rgb()').split(',')[1])
-            blue = int(color.strip('rgb()').split(',')[2])
+            colour = command.split('?')[3]
+            red = int(colour.strip('rgb()').split(',')[0])
+            green = int(colour.strip('rgb()').split(',')[1])
+            blue = int(colour.strip('rgb()').split(',')[2])
             self.profiles.memory["rows"][str(row)][col] = (red, green, blue)
 
             # Live preview (if 'live_preview' is enabled in preferences)
@@ -2046,9 +2046,9 @@ class Controller(object):
 
         preview_element = "{0}-{1}-preview".format(colour_id, source)
         html_buffer =  "<div id='{0}' class='colour-picker'>".format(colour_id)
-        html_buffer += "<table><tr><td><div id='{0}' class='color-preview' style='background-color:rgba({1},{2},{3},1)'></div></td>".format(
+        html_buffer += "<table><tr><td><div id='{0}' class='colour-preview' style='background-color:rgba({1},{2},{3},1)'></div></td>".format(
                             preview_element, str(start_rgb[0]), str(start_rgb[1]), str(start_rgb[2])) + \
-                        "<td><button class='btn' onclick='cmd(\"ask-color?{0}?{2}\")'>{1}</button></td></tr>".format(colour_id, _("Custom..."), source)
+                        "<td><button class='btn' onclick='cmd(\"ask-colour?{0}?{2}\")'>{1}</button></td></tr>".format(colour_id, _("Custom..."), source)
         html_buffer += "<tr><td colspan='2'>"
 
         item_no = 0
@@ -2061,28 +2061,28 @@ class Controller(object):
 
             if effect_callback:
                 if effect_callback[2]:
-                    onclick = "cmd(\"set-color?{0}?{1}?{2}?{3}?{4}\"); cmd(\"effect?{5}?{6}?{7}\")".format(colour_id, red, green, blue, source,
+                    onclick = "cmd(\"set-colour?{0}?{1}?{2}?{3}?{4}\"); cmd(\"effect?{5}?{6}?{7}\")".format(colour_id, red, green, blue, source,
                                                                                                     effect_callback[0], effect_callback[1], effect_callback[2])
                 else:
-                    onclick = "cmd(\"set-color?{0}?{1}?{2}?{3}?{4}\"); cmd(\"effect?{5}?{6}\")".format(colour_id, red, green, blue, source,
+                    onclick = "cmd(\"set-colour?{0}?{1}?{2}?{3}?{4}\"); cmd(\"effect?{5}?{6}\")".format(colour_id, red, green, blue, source,
                                                                                                     effect_callback[0], effect_callback[1])
             else:
-                onclick = "cmd(\"set-color?{0}?{1}?{2}?{3}?{4}\")".format(colour_id, red, green, blue, source)
+                onclick = "cmd(\"set-colour?{0}?{1}?{2}?{3}?{4}\")".format(colour_id, red, green, blue, source)
 
             # Add "show more" button and prepare dropdown if we have many colours.
             if item_no == 10:
-                html_buffer += "<button onclick='toggleDropdown(\"{0}\")' class='dropdown-focus color-item color-more-btn' title='{1}'></button>".format(colour_id+"-list", _("More Colors"))
+                html_buffer += "<button onclick='toggleDropdown(\"{0}\")' class='dropdown-focus colour-item color-more-btn' title='{1}'></button>".format(colour_id+"-list", _("More Colors"))
                 html_buffer += "<div class='dropdown' hidden>"
                 html_buffer += "<div id='{0}' class='dropdown-content'>".format(colour_id+"-list")
 
             # Show first 10 items as clickable boxes.
             if item_no <= 9:
-                html_buffer += "<button class='color-icon' onclick='{0}' title='{1}' style='background-color:rgba({2},{3},{4},1)'></button>".format(
+                html_buffer += "<button class='colour-icon' onclick='{0}' title='{1}' style='background-color:rgba({2},{3},{4},1)'></button>".format(
                                 onclick, name, red, green, blue)
 
             # Add the rest to the "show more" menu.
             else:
-                html_buffer += "<button onclick='{0}' title='{1}'><div class='color-item' style='background-color:rgba({2},{3},{4},1)'></div> {1}</button>".format(
+                html_buffer += "<button onclick='{0}' title='{1}'><div class='colour-item' style='background-color:rgba({2},{3},{4},1)'></div> {1}</button>".format(
                                 onclick, name, red, green, blue)
 
         # Close container for dropdown (if applicable)
@@ -2110,10 +2110,10 @@ class Dialogues(object):
         colorsel = colorseldlg.get_color_selection()
 
         if colorseldlg.run() == Gtk.ResponseType.OK:
-            color = colorsel.get_current_color()
-            red = int(color.red / 256)
-            green = int(color.green / 256)
-            blue = int(color.blue / 256)
+            colour = colorsel.get_current_color()
+            red = int(colour.red / 256)
+            green = int(colour.green / 256)
+            blue = int(colour.blue / 256)
             colorseldlg.destroy()
             return "{0},{1},{2}".format(str(red),str(green),str(blue))
         else:

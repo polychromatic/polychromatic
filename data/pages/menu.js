@@ -206,7 +206,7 @@ function setfx(source, type, parms) {
 }
 
 /* Fade the background of the header when switching devices */
-function changeHeaderImg(image, color) {
+function changeHeaderImg(image, colour) {
     $("#dynamic").css("background-color", "black");
     $(".header").removeClass("wave");
     $("#dynamic").removeClass("spectrum");
@@ -215,13 +215,13 @@ function changeHeaderImg(image, color) {
         $("#dynamic").addClass(image);
     }, 250);
     setTimeout(function(){
-        if  ( color == "spectrum" ) {
+        if  ( colour == "spectrum" ) {
             $("#dynamic").addClass("spectrum");
-        } else if ( color == "wave" ) {
+        } else if ( colour == "wave" ) {
             $(".header").addClass("wave");
             $("#dynamic").css("background-color", "transparent");
         } else {
-            $("#dynamic").css("background-color", color);
+            $("#dynamic").css("background-color", colour);
         }
     }, 500);
 }

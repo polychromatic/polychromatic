@@ -344,12 +344,12 @@ function key(elem, row, col)
 {
     // Get colour box
     var colour_box = $('#editor-colour-profile-preview');
-    var picker_color = colour_box.css("background-color");
+    var picker_colour = colour_box.css("background-color");
 
     if(mode == 'set') {
         // Set key colour
-        keyboard_obj.set_key_colour_by_id(elem.id, picker_color);
-        cmd('set-key?' + row + '?' + col + '?' + picker_color);
+        keyboard_obj.set_key_colour_by_id(elem.id, picker_colour);
+        cmd('set-key?' + row + '?' + col + '?' + picker_colour);
     } else if(mode == 'clear') {
         // Clear key colour
         keyboard_obj.clear_key_colour_by_id(elem.id);
