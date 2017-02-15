@@ -1364,7 +1364,6 @@ class Controller(object):
             if selected_device:
                 self.active_device = selected_device
                 self.active_device_serial = selected_device.serial
-                formfactor = selected_device.type
             else:
                 print("Could not locate device with serial: " + selected_serial)
                 return
@@ -1442,17 +1441,12 @@ class Controller(object):
         if self.current_page == "menu":
             self.update_page(".device", "remove")
             self.update_page("#device-tabs", "append", "<button id='device-overview-tab' class='device' onclick='switchPaneOverview(); changeHeaderImg(\"overview\", \"black\")'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
-            unknown_icon = "../img/states/normal/unknown.svg"
             self.update_page("#device-overview", "html", "<h3>{0}</h3>".format(_("Connected Devices")))
 
             for device in self.devices:
                 name = str(device.name)
-                formfactor = self.get_device_type(device.type)
                 serial = str(device.serial)
-                state = "normal"
-                img = data_source + "/img/states/{0}/{1}.svg".format(state, formfactor)
-                if not os.path.exists(img):
-                    img = unknown_icon
+                img = self.get_device_image(device, "icon")
                 htmlbuffer = "<button id='{0}' class='device' onclick='switchPaneDevice(\"{0}\")' title=\"{2}\"><img src='{1}'> <span>{2}</span></button>".format(serial, img, name)
                 self.update_page("#device-tabs", "append", htmlbuffer)
 
@@ -1520,16 +1514,11 @@ class Controller(object):
                     buffer_effect = None
 
                 # Determine device image
-                try:
-                    img_path = device.razer_urls.get("side_img")
-                    img_opacity = "1"
-                except Exception:
-                    img_path = None
+                img_path = self.get_device_image(device, "actual", "side_img")
+                img_opacity = "1"
 
-                if img_path == None:
-                    img_path = data_source + "/img/states/{0}/{1}.svg".format(state, formfactor)
-                    if not os.path.exists(img_path):
-                        img_path = unknown_icon
+                ## If from filesystem, assume own generic icon is used instead
+                if img_path.startswith("../"):
                     img_opacity = "0.2"
 
                 # Piece device together
@@ -1558,7 +1547,7 @@ class Controller(object):
         # Gather device information
         device_name = str(self.active_device.name)
         device_type = self.active_device.type
-        device_image = self.active_device.razer_urls.get("perspective_img")
+        device_image = self.get_device_image(self.active_device, "actual", "perspective_img")
         effect_support = [self.active_device.has("lighting"), self.active_device.has("lighting_logo"), self.active_device.has("lighting_scroll")]
         brightness_support = [self.active_device.has("brightness"), self.active_device.has("lighting_logo_brightness"), self.active_device.has("lighting_scroll_brightness")]
 
@@ -2163,6 +2152,34 @@ class Controller(object):
         if optional_class:
             inline_buffer += " class='{0}'".format(optional_class)
         return(inline_buffer)
+
+    def get_device_image(self, device, image, direction=None):
+        """
+        Retrieves an image or icon of a device.
+            device      = Daemon device object
+            image       = "actual" = Use an actual image (provided by razer_urls)
+                          "icon" = Use an icon state
+            direction   = (Optional) Only if image = 'actual', specify which to grab from dictonary.
+        """
+        unknown_icon = "../img/states/normal/unknown.svg"
+
+        if image == "actual":
+            try:
+                img_path = device.razer_urls.get(direction)
+            except:
+                stdout.vprint("Daemon does not have a '{0}' image for '{1}'".format(direction, device.name))
+                image = "icon"
+
+        if image == "icon":
+            formfactor = self.get_device_type(device.type)
+            img_path = data_source + "/img/states/normal/{0}.svg".format(formfactor)
+            if not os.path.exists(img_path):
+                img_path = unknown_icon
+
+        if img_path:
+            return(img_path)
+        else:
+            return(unknown_icon)
 
 
 class Dialogues(object):
