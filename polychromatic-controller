@@ -1408,6 +1408,7 @@ class Controller(object):
                           _("This could mean your Razer product is not bound to the driver properly, the daemon doesn't recognise it or it's not yet supported.") + \
                           '<br><br><u>' + _("Suggestions:") + '</u>' \
                           '<br>• ' + _("Try reloading the daemon.") + \
+                          '<br>• ' + _("Ensure your user is added to the 'plugdev' group.") + \
                           '<br>• ' + _("Use the 'modprobe' command to bind the driver to the device.") + \
                           '<br>• <u><a onclick="cmd(\'open?https://github.com/terrycain/razer-drivers#device-support\')">' + \
                                 _("Check whether your device is fully supported.") + \
