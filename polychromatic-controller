@@ -835,6 +835,7 @@ class Controller(object):
         """
         stdout.vvprint('Refreshing profile list...')
         self.update_page('#app-profiles', 'html' , ' ')
+        uuid_in_use = pref.get_device_state(self.active_device.serial, "main", "profile")
 
         # Function to append to page.
         def append_item(uuid, data):
@@ -846,7 +847,15 @@ class Controller(object):
             except:
                 icon_path = path.get_data_source(__file__) + "/img/profile-default.svg"
             if self.current_page == "menu":
-                self.update_page('#app-profiles', 'append', "<button class='app-profile-item' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\", \"{2}\")'><img src='{1}'>{2}</button>".format(css_id, icon_path, title, uuid))
+
+                # Show highlight in UI if in use
+                extra_class = ""
+                if uuid_in_use:
+                    if uuid == uuid_in_use:
+                        extra_class = "active"
+
+                self.update_page('#app-profiles', 'append', "<button class='app-profile-item {4}' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\", \"{2}\")'><img src='{1}'>{2}</button>".format(css_id, icon_path, title, uuid, extra_class))
+
             elif self.current_page == "preferences":
                 self.update_page('#profiles-list', 'append', "<option value='{1}'>{0}</option>".format(title, uuid))
 
