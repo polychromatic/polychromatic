@@ -1370,8 +1370,6 @@ class Controller(object):
             # Update options for device screen
             self.update_device_supported_features()
             self.update_device_active_options()
-            for source in ["main", "logo", "scroll"]:
-                self.update_lighting_options(source, pref.get_device_state(self.active_device.serial, source, "effect"))
 
         else:
             print("Unimplemented command: " + command)
@@ -1503,7 +1501,7 @@ class Controller(object):
                         profile_data = self.profiles.load_profile(uuid)
                         profile_name = profile_data["name"]
                         profile_icon = profile_data["icon"]
-                        htmlbuffer += "<img src='{0}'/> <span>{1}</span>".format(profile_icon, profile_name)
+                        buffer_effect = "<img src='{0}'/> <span>{1}</span>".format(profile_icon, profile_name)
 
                 # No brightness or effect set?
                 if buffer_brightness and len(buffer_brightness) == 0:
@@ -1725,15 +1723,14 @@ class Controller(object):
                 effect = pref.get_device_state(self.active_device.serial, "main", "effect")
 
                 if effect == "profile":
-                    # Device Tab
                     uuid = pref.get_device_state(self.active_device.serial, "main", "profile")
                     data = self.profiles.get_metadata(uuid)
+
+                    # Device Tab
                     self.update_page("#active-effect", "html", "<img src='{1}'/> {0}".format(data.get("name"), data.get("icon")))
                     self.update_page("#app-" + uuid, "addClass", "active")
 
                     # Overview Screen
-                    uuid = pref.get_device_state(self.active_device.serial, "main", "effect")
-                    data = self.profiles.get_metadata(uuid)
                     self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", data.get("name"))
                     self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", data.get("icon"))
 
