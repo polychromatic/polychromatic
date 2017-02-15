@@ -42,8 +42,10 @@ try:
     from razer_daemon.keyboard import get_keyboard_layout
     from razer_daemon.keyboard import RGB
     daemon_missing = False
-except ImportError:
+except ImportError as e:
     # We'll show a graphical error when loading up.
+    print("Failed to import modules for daemon.")
+    print("Exception: " + str(e))
     daemon_missing = True
 
 try:
@@ -54,9 +56,10 @@ except ImportError:
     # Installed to system
     import polychromatic.preferences as pref
     import polychromatic.profiles as prof
-except:
+except Exception as e:
     print("One or more of Polychromatic's modules could not be imported!")
     print("Try re-installing the application.")
+    print("\nException:" + str(e))
     exit(1)
 
 path = pref.Paths()
