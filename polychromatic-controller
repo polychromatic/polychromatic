@@ -1526,7 +1526,10 @@ class Controller(object):
                 htmlbuffer += "<div class='device-card' onclick='switchPaneDevice(\"{0}\")'>".format(serial)
                 htmlbuffer +=   "<img src='{0}' style='opacity:{1};'/>".format(img_path, img_opacity)
                 htmlbuffer +=   "<h4>{0}</h4>".format(name)
-                htmlbuffer +=   "<p><b>{0}:</b>&nbsp; {1}</p>".format(_("Serial"), serial)
+                if device.has("serial"):
+                    htmlbuffer +=   "<p><b>{0}:</b>&nbsp; {1}</p>".format(_("Serial"), serial)
+                if device.has("firmware_version"):
+                    htmlbuffer +=   "<p><b>{0}:</b>&nbsp; {1}</p>".format(_("Firmware"), device.firmware_version)
                 if buffer_effect:
                     htmlbuffer +=   "<p id='device-{0}-effect' class='effect-status'> {1}</p>".format(serial, buffer_effect)
                 if buffer_brightness:
