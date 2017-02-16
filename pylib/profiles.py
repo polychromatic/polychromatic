@@ -144,5 +144,5 @@ class AppProfiles(object):
         data = self.load_profile(uuid)
         return {
             "name": data.get("name", "Unknown"),
-            "icon": data.get("icon", "../img/generic-application.svg")
+            "icon": data.get("icon", "../img/ui/generic-application.svg")
         }

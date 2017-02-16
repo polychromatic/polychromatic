@@ -1180,7 +1180,7 @@ class Controller(object):
 
         ## List application launchers to create profiles for.
         elif command == 'fetch-app-launchers':
-            unknown_icon_path = pref.path.get_data_source(__file__) + "/img/generic-application.svg"
+            unknown_icon_path = pref.path.get_data_source(__file__) + "/img/ui/generic-application.svg"
 
             # Functions for this feature.
             def append_item(uid, name, icon_path):
