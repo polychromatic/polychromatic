@@ -272,7 +272,7 @@ class AppIndicator:
             button.show()
             button.connect("activate", self.menuitem_select_device, device)
             img = Gtk.Image()
-            icon_path = os.path.join(path.get_data_source(__file__) + "/img/states/normal/", formfactor + ".svg")
+            icon_path = os.path.join(path.get_data_source(__file__) + "/img/states/", formfactor + ".svg")
             img.set_from_file(icon_path)
             button.set_image(img)
             self.device_menu.append(button)

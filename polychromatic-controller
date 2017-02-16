@@ -2161,7 +2161,7 @@ class Controller(object):
                           "icon" = Use an icon state
             direction   = (Optional) Only if image = 'actual', specify which to grab from dictonary.
         """
-        unknown_icon = "../img/states/normal/unknown.svg"
+        unknown_icon = "../img/states/unknown.svg"
 
         if image == "actual":
             try:
@@ -2172,7 +2172,7 @@ class Controller(object):
 
         if image == "icon":
             formfactor = self.get_device_type(device.type)
-            img_path = data_source + "/img/states/normal/{0}.svg".format(formfactor)
+            img_path = data_source + "/img/states/{0}.svg".format(formfactor)
             if not os.path.exists(img_path):
                 img_path = unknown_icon
 
