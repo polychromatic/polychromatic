@@ -138,6 +138,7 @@ class AppView(WebKit2.WebView):
         # Create WebKit Container
         webkit = WebKit2
         webkit.WebView.__init__(self)
+        self.set_background_color(Gdk.RGBA(0,0,0,1))
 
         # Post-actions after pages fully load.
         self.connect('load-changed', self.load_changed_cb)
@@ -281,7 +282,7 @@ class Controller(object):
         w = Gtk.Window(title="Polychromatic Controller")
         w.set_wmclass('polychromatic-controller', 'polychromatic-controller')
         w.set_position(Gtk.WindowPosition.CENTER)
-        w.modify_bg(Gtk.StateType(0), Gdk.Color(34,34,34))
+        w.modify_bg(Gtk.StateType(0), Gdk.Color(0,0,0))
         w.set_resizable(False)
         self.window = w
         try:
