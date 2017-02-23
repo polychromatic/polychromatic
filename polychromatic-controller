@@ -941,10 +941,13 @@ class Controller(object):
             self.update_background_header(colours)
 
         elif command.startswith('dpi'):
-            value = int(command.split("?")[1])
-            self.active_device.dpi = (value, value)
-            self.update_page("#dpi-value", "html", str(value))
-            pref.set_device_state(self.active_device.serial, "main", "dpi", value)
+            try:
+                value = int(command.split("?")[1])
+                self.active_device.dpi = (value, value)
+                self.update_page("#dpi-value", "html", str(value))
+                pref.set_device_state(self.active_device.serial, "main", "dpi", value)
+            except Exception as exception:
+                self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}",effect).replace("{1}",self.active_device.name))
 
         elif command == 'poll-dpi':
             dpi_value = str(self.active_device.dpi[0])
