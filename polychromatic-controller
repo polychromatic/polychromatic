@@ -939,6 +939,12 @@ class Controller(object):
             self.update_device_active_options()
             self.update_background_header(colours)
 
+        elif command.startswith('dpi'):
+            value = int(command.split("?")[1])
+            self.active_device.dpi = (value, value)
+            self.update_page("#dpi-value", "html", str(value))
+            pref.set_device_state(self.active_device.serial, "main", "dpi", value)
+
         elif command == 'enable-marco-keys':
             self.active_device.macro.enable_macros()
             self.update_page('#macro-keys-enable', 'addClass', 'disabled')
@@ -1676,6 +1682,12 @@ class Controller(object):
             self.update_page(".brightness-container", "hide")
             self.update_page("#brightness-logo-toggle", "show")
 
+        # Mouse DPI
+        if self.active_device.has("dpi"):
+            self.update_page("#fx-dpi", "show")
+        else:
+            self.update_page("#fx-dpi", "hide")
+
     def update_device_active_options(self):
         """
         Refreshes the page by showing the options selected for the active device.
@@ -1702,6 +1714,7 @@ class Controller(object):
             else:
                 self.update_page("#brightness-logo-switch", "removeAttr", "checked")
 
+        ## Brightness
         if self.active_device.has("brightness"):
             set_brightness_control("#brightness-normal", self.active_device.brightness)
 
@@ -1776,6 +1789,12 @@ class Controller(object):
             except TypeError:
                 update_lighting_dropdown("#active-effect-scroll", "unknown")
                 self.update_lighting_options("scroll", effect)
+
+        ## DPI Sensitivity
+        if self.active_device.has("dpi"):
+            dpi_value = str(self.active_device.dpi[0])
+            self.update_page("#dpi-input", "val", dpi_value)
+            self.update_page("#dpi-value", "html", dpi_value)
 
     def set_lighting_effect(self, source, effect, fx_params=None):
         """

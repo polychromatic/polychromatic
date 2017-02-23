@@ -945,6 +945,32 @@ label.disabled {
     margin: 0.05em 0;
 }
 
+/* DPI Overlay */
+#fx-dpi {
+    bottom: 1em;
+    left: 17em;
+    width: 16em;
+}
+
+#fx-dpi img {
+    width: 1.5em;
+    height: auto;
+    vertical-align: bottom;
+}
+
+#fx-dpi input[type="range"] {
+    width: 9.6em;
+}
+
+#fx-dpi span {
+    float: right;
+    color: lime;
+    font-size: 0.9em;
+    margin: 0.05em 0;
+    width: 3em;
+    text-align: right;
+}
+
 /* Lighting Overlay */
 #fx-lighting {
     top: 1.5em;

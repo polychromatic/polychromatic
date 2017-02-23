@@ -58,6 +58,14 @@
           </div>
         </div>
 
+        <div id="fx-dpi" class="fx-overlay">
+          <h4 id="str-dpi"></h4>
+          <img src="../img/effects/dpi-slow.svg" style="float:left"/>
+          <input type="range" id="dpi-input" onchange="cmd('dpi?'+$(this).val())" min="800" max="16000" value="800" step="800"/>
+          <span id="dpi-value" style="float:right">800</span>
+          <img src="../img/effects/dpi-fast.svg" style="float:right"/>
+        </div>
+
         <div id="fx-lighting" class="fx-overlay">
           <h4 id="str-lighting"></h4>
 
