@@ -260,3 +260,14 @@ function showWarning(details) {
         $("#error").fadeOut("slow");
     }, 5000);
 }
+
+/* Poll the DPI value so it is in sync with the hardware */
+var PollingDPI = null
+
+function startDPIPolling() {
+    PollingDPI = setInterval(pollDPI, 500);
+}
+
+function pollDPI() {
+    cmd("poll-dpi");
+}
