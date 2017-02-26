@@ -255,6 +255,7 @@ class AppIndicator:
 
         if len(devman.devices) == 0:
             startup_failed(self, 2)
+            return
 
         devlist = []
         for device in devman.devices:
@@ -279,10 +280,11 @@ class AppIndicator:
 
         try:
             self.active_device = devlist[0]
+            self.active_device_status.set_label(devlist[0].name)
+            self.active_device_serial = self.active_device.serial
         except IndexError:
             startup_failed(self, 2)
-        self.active_device_status.set_label(devlist[0].name)
-        self.active_device_serial = self.active_device.serial
+            return
 
         # Create effects sub-menu
         effect_item = Gtk.MenuItem(_("Effects"))
