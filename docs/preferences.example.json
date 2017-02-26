@@ -1,0 +1,26 @@
+{
+    "config_version": 4,                // Polychromatic's configuration revision. Do not change this!
+    "tray_applet": {
+        "icon_type": "light"            // light, dark, gtk, animated, custom
+        "icon_path": "",                // If 'gtk', specify the icon name here.
+                                        // If 'custom', specify the path here.
+    },
+    "startup": {                        // This will be replaced in a future release.
+        "enabled": "false",
+        "start_brightness": "0",
+        "start_profile": null,
+        "start_effect": "disabled",
+        "start_macro": "false"
+    },
+    "editor": {
+        "scaling": "1",                 // Program scale, for users with high DPI screens.
+        "activate_on_save": "true",     // Apply key profiles to keyboard after saving changes.
+        "live_switch": "true",          // Apply key profiles to keyboard after choosing one.
+        "live_preview": "true"          // Apply key profiles on keyboard while in editor.
+    }
+    "default_colour": {                 // Default colour to show by default.
+        "red": 0,
+        "green": 255,
+        "blue": 0
+    }
+}
