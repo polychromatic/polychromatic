@@ -32,12 +32,16 @@ However, not all newly supported devices will work straight away. These devices 
 
 #### Known Issues
 * **Mice**
-  * No option for reading/setting DPI for supported mice.
   * Profile support will come in a future release.
 * **Mousemat**
   * Profile support will come in a future release.
 * **Keypad**
   * Profile support is not possible as the daemon does not support matrixes.
+
+With developments being made to the daemon, it will eventually be possible to:
+
+* Manage macros for keyboards and keypads.
+* Create and run "custom effects".
 
 
 -------------
