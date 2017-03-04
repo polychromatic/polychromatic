@@ -59,6 +59,7 @@ def load_file(filepath, no_version_check=False):
         except Exception as e:
             print(" ** Failed to load '{0}'.\n **** Exception: {1}".format(filepath, str(e)))
             init_config(filepath)
+            data = {}
     else:
         init_config(filepath)
         data = {}
@@ -327,6 +328,11 @@ def get_device_state(serial, source, state):
         print(" ** Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value))
     except KeyError:
         print(" ** Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [No value]".format(serial, source, state))
+        return None
+    except TypeError:
+        print(" ** Device state corrupt:  [Serial: {0}] [Source: {1}] ... Will reset.".format(str(serial), str(source)))
+        data.pop(serial)
+        save_file(path.devicestate, data)
         return None
 
 
