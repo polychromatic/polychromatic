@@ -9,7 +9,6 @@
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
 import os
-import time
 from shutil import copyfile
 
 try:
@@ -60,7 +59,7 @@ class AppProfiles(object):
         """
         Create profile on the file system.
         """
-        uuid = str(int(time.time() * 1000000))
+        uuid = pref.generate_uuid()
         self.selected_uuid = uuid
         filepath = os.path.join(path.profile_folder, uuid + '.json')
 

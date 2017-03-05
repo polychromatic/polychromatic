@@ -336,6 +336,10 @@ def get_device_state(serial, source, state):
         return None
 
 
+def generate_uuid():
+    return(str(int(time.time() * 1000000)))
+
+
 def start_initalization():
     """
     Module Initialisation
