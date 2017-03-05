@@ -356,9 +356,14 @@ class Controller(object):
             self.devman_reason = str(e)
 
         # When the running daemon and installed library differ, request the user to restart the daemon.
-        running_version = self.devman._daemon_version
-        import razer_daemon.daemon
-        installed_version = razer_daemon.daemon.__version__
+        try:
+            running_version = self.devman._daemon_version
+            import razer_daemon.daemon
+            installed_version = razer_daemon.daemon.__version__
+        except Exception:
+            # Daemon may have crashed, skip this check.
+            running_version = 0
+            installed_version = 0
 
         if running_version != installed_version:
             print("ERROR: Currently running daemon is out of date. Please respawn.")
