@@ -1515,11 +1515,14 @@ class Controller(object):
                                         )
 
                     if current_effect == "profile":
-                        uuid = pref.get_device_state(self.active_device.serial, source, "profile")
-                        profile_data = self.profiles.load_profile(uuid)
-                        profile_name = profile_data["name"]
-                        profile_icon = profile_data["icon"]
-                        buffer_effect = "<img src='{0}'/> <span>{1}</span>".format(profile_icon, profile_name)
+                        uuid = pref.get_device_state(serial, "main", "profile")
+                        try:
+                            profile_data = self.profiles.load_profile(uuid)
+                            profile_name = profile_data["name"]
+                            profile_icon = profile_data["icon"]
+                            buffer_effect = "<img src='{0}'/> <span>{1}</span>".format(profile_icon, profile_name)
+                        except Exception:
+                            buffer_effect = "<img src='{0}'/> <span>{1}</span>".format("../img/effects/unknown.svg", _("Unknown Profile"))
 
                 # No brightness or effect set?
                 if buffer_brightness and len(buffer_brightness) == 0:
