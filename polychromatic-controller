@@ -2436,7 +2436,6 @@ def restart_daemon_service():
 
     # Wait for the daemon to stop.
     stopped = False
-    app.update_page("#status-text", "html", _("Waiting for the daemon to stop..."))
     app.update_page(".progress", "fadeIn", "fast")
     app.update_page(".progress-inner", "addClass", "increasing")
 
@@ -2466,7 +2465,6 @@ def restart_daemon_service():
 
     # Check the process is running
     print("Waiting for razer-service to start...")
-    app.update_page("#status-text", "html", _("Waiting for daemon to start..."))
     app.update_page(".progress", "fadeIn", "fast")
     app.update_page(".progress-inner", "addClass", "increasing")
     for x in range(0,5):
