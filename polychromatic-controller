@@ -594,7 +594,7 @@ class Controller(object):
             kb_callback = self.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
 
             # Initalise colour picker
-            self.print_colour_options("editor-colour", "#colour-selection", [0, 255, 0], "profile")
+            self.print_colour_options("editor-colour", "#colour-selection", [0, 255, 0], "null")
 
             # Collect profile details.
             uuid = self.profiles.selected_uuid
@@ -652,7 +652,7 @@ class Controller(object):
             trans.push('#str-about', _("About"))
             trans.push('#str-tray', _("Tray Applet"))
             trans.push('#str-app-settings', _("General"))
-            trans.push('#str-colours', _("Colors"))
+            trans.push('.str-colours', _("Colors"))
             trans.push('#str-daemon', _("Daemon"))
 
             trans.push('#str-version-app', _("Version:"))
@@ -727,6 +727,18 @@ class Controller(object):
             trans.push('#str-logs', _("Logs"))
             trans.push('#str-logs-help', _("Useful for diagnosing issues and debugging daemon-related operations."))
             trans.push('#str-watch', _("Watch"), True)
+
+            trans.push('#colour-choose', _("Choose..."))
+            trans.push('#colour-new', _("New"), True)
+            trans.push('#colour-reset', _("Restore Defaults"), True)
+            trans.push('#colour-save', _("Save"), True)
+            trans.push('#colour-revert', _("Revert"))
+            trans.push('#colour-delete', _("Delete"), True)
+
+            trans.push('#dialog-del-title', _("Reset Colours"))
+            trans.push('#dialog-del-hint', _("Are you sure you want to reset all colours to their defaults?"))
+            trans.push('#dialog-del-no', _("Cancel"))
+            trans.push('#dialog-del-yes', _("Reset Defaults"))
 
             trans.push('#str-daemon-options', _("Daemon Service"))
             trans.push('#str-daemon-stop', _("Stop"))
@@ -804,6 +816,8 @@ class Controller(object):
             else:
                 self.update_page('#start-brightness-text', 'html', str(int((start_brightness * 100) / 255 )) + '%')
 
+            # Populate colours table
+            self.populate_colours_table()
 
             # Reads and sets configuration set in razer.conf
             self.config_path = os.path.join(os.path.expanduser('~'), ".razer-service", "razer.conf")
@@ -899,6 +913,8 @@ class Controller(object):
             append_item(str(uuid), data)
 
     def process_command(self, command):
+        global path
+
         """
         Processes a command passed from the page to Python.
         """
@@ -1033,8 +1049,9 @@ class Controller(object):
             blue = int(params[3])
             source = params[4]
 
-            colour_id_state = colour_id.replace("-", "_")
-            pref.set_device_state(self.active_device.serial, source, colour_id_state, [red, green, blue])
+            if source != "null":
+                colour_id_state = colour_id.replace("-", "_")
+                pref.set_device_state(self.active_device.serial, source, colour_id_state, [red, green, blue])
 
             preview_element = "#{0}-{1}-preview".format(colour_id, source)
             self.update_page(preview_element, "css", "background-color", "rgba({0},{1},{2},1)".format(str(red), str(green), str(blue)))
@@ -1043,6 +1060,102 @@ class Controller(object):
             # In profile editor, changing colour must 'reload' the tool.
             if self.current_page == "profile_editor":
                 self.webkit.run_javascript("set_mode('set')")
+
+        ## Preferences for changing colours
+        elif command == 'pref-colour-new':
+            """
+            Creates a new colour in index for editing.
+            """
+            colour_index = pref.load_file(path.colours)
+            uuid = pref.generate_uuid()
+            colour_index[uuid] = {}
+            colour_index[uuid]["name"] = _("New Color")
+            colour_index[uuid]["col"] = [0, 255, 0]
+            pref.save_file(path.colours, colour_index)
+            self.populate_colours_table()
+            self.process_command('pref-colour-edit?' + uuid)
+
+        elif command.startswith('pref-colour-edit'):
+            """
+            Sets the UI for editing a colour.
+                colour_id   = UUID from index
+            """
+            uuid = command.split('?')[1]
+            colour_index = pref.load_file(path.colours)
+
+            try:
+                name = colour_index[uuid]["name"]
+                col = colour_index[uuid]["col"]
+                red = col[0]
+                green = col[1]
+                blue = col[2]
+            except:
+                name = _("Unknown Color")
+                red = 0
+                green = 255
+                blue = 0
+
+            self.update_page(".colour-table-item", "removeClass", "active")
+            self.update_page("#colour-item-" + uuid, "addClass", "active")
+            self.update_page("#colour-editor", "fadeIn", "fast")
+            self.update_page("#colour-edit-preview", "css", "background-color", "rgba({0},{1},{2},1)".format(red, green, blue))
+            self.update_page("#colour-edit-name", "val", name)
+            self.update_page("#colour-save", "attr", "onclick", "save_colour({0})".format(uuid))
+            self.update_page("#colour-delete", "attr", "onclick", "cmd('pref-colour-del?{0}')".format(uuid))
+
+        elif command.startswith('pref-colour-save'):
+            """
+            Takes the values and sets the new colour in the index.
+                colour_id   = UUID from index
+                name        = Name to describe to this colour
+                red         = New RGB value (0-255)
+                gree        = New RGB value (0-255)
+                blue        = New RGB value (0-255)
+            """
+            command = command.split('?')
+            uuid = command[1]
+            name = command[2]
+            red = int(command[3])
+            green = int(command[4])
+            blue = int(command[5])
+            self.update_page("#colour-editor", "fadeOut", "fast")
+            self.populate_colours_table()
+
+            stdout.vprint("Saving colour '{1}' (id: {0}) with RGB {2}, {3}, {4} ...".format(uuid, name, red, green, blue))
+            try:
+                colour_index = pref.load_file(path.colours)
+                colour_index[uuid] = {}
+                colour_index[uuid]["name"] = name
+                colour_index[uuid]["col"] = [red, green, blue]
+                pref.save_file(path.colours, colour_index)
+                self.update_page("#colour-editor", "fadeOut", "fast")
+                self.populate_colours_table()
+
+            except Exception as e:
+                print("Saving colour failed! Exception: " + str(e))
+
+        elif command.startswith('pref-colour-del'):
+            """
+            Expects these parameters separated by '?' in order:
+                colour_id   = UUID from index
+            """
+            uuid = command.split("?")[1]
+            stdout.vprint("Deleting colour ID: {0} ...".format(uuid))
+            try:
+                colour_index = pref.load_file(path.colours)
+                colour_index.pop(uuid)
+                pref.save_file(path.colours, colour_index)
+                self.update_page("#colour-editor", "fadeOut", "fast")
+                self.populate_colours_table()
+
+            except Exception as e:
+                print("Deleting colour failed! Exception: " + str(e))
+
+        elif command == 'pref-colour-reset':
+            stdout.vprint("Resetting colour configuration...")
+            pref.reset_config(path.colours)
+            self.populate_colours_table()
+            self.update_page("#colour-editor", "fadeOut", "fast")
 
         ## Cancel to main menu.
         ## '?xxxx' may specify changes to also make when leaving application profile editor.
@@ -2238,6 +2351,34 @@ class Controller(object):
             return(img_path)
         else:
             return(unknown_icon)
+
+    def populate_colours_table(self):
+        self.update_page ("#colour-table", "html", " ")
+        colour_index = pref.load_file(path.colours)
+        uuids = list(colour_index.keys())
+        uuids.sort(key=int)
+
+        html_buffer = ""
+        for uuid in uuids:
+            try:
+                name = colour_index[uuid]["name"]
+                red = colour_index[uuid]["col"][0]
+                green = colour_index[uuid]["col"][1]
+                blue = colour_index[uuid]["col"][2]
+                rgba = "rgba({0},{1},{2},1)".format(red, green, blue)
+
+                html_buffer += "<a onclick='cmd(\"pref-colour-edit?{0}\")'>".format(uuid)
+                html_buffer += "<div id='colour-item-{0}' class='colour-table-item'>".format(uuid)
+                html_buffer += "<div class='preview' style='background-color:rgba({0},{1},{2},1)'></div>".format(red, green, blue)
+                html_buffer += "<label class='name'>{0}</label>".format(name)
+                html_buffer += "<label class='value'>{0}, {1}, {2}</label>".format(red, green, blue)
+                html_buffer += "</div></a>"
+
+            except Exception:
+                stdout.error("Invalid colour entry: {0}".format(uuid))
+                continue
+
+        self.update_page("#colour-table", "html", html_buffer)
 
 
 class Dialogues(object):

@@ -110,3 +110,28 @@ function set_daemon_conf(group, item, element) {
     $("#daemon-options-restart").fadeIn();
     $("#str-daemon-restart").addClass('btn-serious');
 }
+
+/* Edit a colour */
+function save_colour(uuid) {
+    var new_name = $("#colour-edit-name").val();
+    var raw_rgba = $("#colour-edit-preview").css("background-color").split(",");
+    var red = $.trim(raw_rgba[0].split("(")[1]);
+    var green = $.trim(raw_rgba[1]);
+    var blue = $.trim(raw_rgba[2].split(")")[0]);
+    cmd("pref-colour-save?" + uuid + "?" + new_name + "?" + red + "?" + green + "?" + blue)
+}
+
+/* Reset all colours confirmation */
+function del_colours_dialog_open() {
+    $('#dialog-del').addClass('in');
+    $('#dialog-del').show();
+    $('#overlay').fadeIn('fast');
+    $('.blur-focus').addClass('blur');
+}
+
+function del_colours_dialog_close() {
+    $('#dialog-del').addClass('out');
+    setTimeout(function(){ $('#dialog-del').removeClass('out').removeClass('in').hide() }, 250);
+    $('#overlay').fadeOut('fast');
+    $('.blur-focus').removeClass('blur');
+}

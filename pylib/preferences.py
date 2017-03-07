@@ -10,6 +10,7 @@
 import os
 import json
 import shutil
+import time
 
 version = 4
 
@@ -205,11 +206,21 @@ def init_config(filepath):
 
 def clear_config():
     """
-    Erases the configuration stored on disk.
+    Erases all the configuration stored on disk.
     """
     print(' ** Deleting configuration folder "' + path.root + '"...')
     shutil.rmtree(path.root)
     print(' ** Successfully deleted configuration.')
+
+
+def reset_config(filepath):
+    """
+    Resets a specific configuration file stored on disk.
+    This will cause it to be re-generated when it is next called.
+    """
+    print(" ** Reset configuration: " + filepath)
+    os.remove(filepath)
+    start_initalization()
 
 
 def upgrade_old_pref(config_version):
@@ -362,8 +373,7 @@ def start_initalization():
         uuid = 0
         for name, red, green, blue in ["White", 255, 255, 255], ["Red", 255, 0, 0], ["Orange", 255, 165, 0], \
                                       ["Yellow", 255, 255, 0], ["Signature Green", 0, 255, 0], ["Aqua", 0, 255, 255], \
-                                      ["Blue", 0, 0, 255], ["Purple", 128, 0, 128], ["Pink", 255, 0, 255], \
-                                      ["Ubuntu", 255, 63, 32], ["Arch", 23, 147, 209], ["Mint", 166, 227, 104], ["Fedora", 60, 110, 180]:
+                                      ["Blue", 0, 0, 255], ["Purple", 128, 0, 128], ["Pink", 255, 0, 255]:
             uuid += 1
             data[str(uuid)] = {}
             data[str(uuid)]["name"] = name

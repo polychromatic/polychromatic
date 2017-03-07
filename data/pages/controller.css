@@ -1003,10 +1003,6 @@ label.disabled {
     font-size: 16px;
 }
 
-.app-profile-item {
-    height: 28px;
-}
-
 .app-profile-item:hover {
     opacity: 0.8;
     background-color: #888;
@@ -1347,4 +1343,74 @@ label.disabled {
     float: right;
     top: 15px;
     position: relative;
+}
+
+/************************
+   Preferences - Colour Table
+*************************/
+#colour-table a {
+    border: none;
+}
+
+.colour-table-item {
+    width: 75%;
+    margin: 0 1%;
+    height: 24px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 1px solid transparent;
+    color: #888;
+    cursor: default;
+    vertical-align: middle;
+    font-size: 16px;
+}
+
+.colour-table-item > .preview {
+    float: left;
+    width: 20px;
+    height: 20px;
+}
+
+.colour-table-item > .name {
+    position: relative;
+    top: 4px;
+    left: 8px;
+}
+
+.colour-table-item > .value {
+    float: right;
+    color: dimgray;
+    position: relative;
+    top: 8px;
+}
+
+.colour-table-item:hover {
+    opacity: 0.8;
+    background-color: #888;
+}
+
+.colour-table-item:hover > .name,
+.colour-table-item:hover > .value {
+    color: white;
+}
+
+.colour-table-item.active {
+    border: 1px solid lime;
+    background-color: green;
+    color: white;
+}
+
+.colour-table-item.active > .name,
+.colour-table-item.active > .value {
+    color: white;
+}
+
+#colour-editor {
+    position: fixed;
+    top: 10em;
+    right: 0em;
+}
+
+#colour-edit-preview {
+    float: left;
 }
