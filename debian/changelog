@@ -1,3 +1,22 @@
+polychromatic (0.3.7-xenial) xenial; urgency=low
+
+  * Add support for logo and scroll wheel.
+  * Add options for mouse DPI.
+  * Add ability to create/modify your own colours.
+  * Add "Breeze" tray icons for KDE desktops.
+  * New features on Overview Screen -- show firmware version and colour in use.
+  * Improvements to error, loading and restarting daemon screens.
+  * Use daemon for determining device images.
+  * Speed up the refresh rate when setting the ripple effect.
+  * Prevent missing images for device icons and header background.
+  * Update categories for desktop launcher.
+  * Add man pages.
+  * Internal fix when saving files in ~/.config/polychromatic
+  * Show warnings when daemon versions differ.
+  * Reshuffled data files and code clean ups.
+
+ -- Luke Horwell <luke@ubuntu-mate.org>  Tue, 07 Mar 2017 21:41:13 +0100
+
 polychromatic (0.3.6.1-xenial) xenial; urgency=low
 
   * Revert WebKit2 workaround as regression is fixed in WebKitGTK 2.14.3.
