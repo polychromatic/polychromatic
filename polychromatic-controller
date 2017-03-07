@@ -735,8 +735,8 @@ class Controller(object):
             trans.push('#colour-revert', _("Revert"))
             trans.push('#colour-delete', _("Delete"), True)
 
-            trans.push('#dialog-del-title', _("Reset Colours"))
-            trans.push('#dialog-del-hint', _("Are you sure you want to reset all colours to their defaults?"))
+            trans.push('#dialog-del-title', _("Reset Colors"))
+            trans.push('#dialog-del-hint', _("Are you sure you want to reset all colors to their defaults?"))
             trans.push('#dialog-del-no', _("Cancel"))
             trans.push('#dialog-del-yes', _("Reset Defaults"))
 
