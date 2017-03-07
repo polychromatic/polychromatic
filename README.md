@@ -88,8 +88,8 @@ Add this line to your `/etc/apt/sources.list`:
 
 Then add the public key to verify the packages:
 
-    gpg --keyserver hkp://keyserver.ubuntu.com:11371 --recv-keys A4BFC960
-    gpg --armor --export A4BFC960 | sudo apt-key add -
+    gpg --keyserver hkp://keyserver.ubuntu.com:11371 --recv-keys 6CFDA3EBE08FDDE9
+    gpg --armor --export 6CFDA3EBE08FDDE9 | sudo apt-key add -
 
 Followed by updating your Apt sources:
 
