@@ -365,11 +365,11 @@ class Controller(object):
             running_version = 0
             installed_version = 0
 
-        if running_version != installed_version:
-            print("ERROR: Currently running daemon is out of date. Please respawn.")
+        if running_version < installed_version:
+            print("ERROR: Currently running daemon is older than the installed version.")
             self.show_error_page(
-                "warning", "restart-required", _("Daemon is out of date"),
-                _("The daemon that is currently running is out of date with the installed version.") + "<br>" +
+                "warning", "restart-required", _("Daemon requires a restart"),
+                _("The daemon that is currently running is older than the installed version.") + "<br>" +
                 _("This can cause glitches. Please restart the daemon to continue.") + "<br><br>" +
                 _("This happens if the driver/daemon packages were updated, but you haven't restarted your session or computer.")
             )
