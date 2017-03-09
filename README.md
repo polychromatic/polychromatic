@@ -64,6 +64,8 @@ Please see the [project website](http://terrycain.github.io/razer-drivers/#downl
 
 #### ![Ubuntu](.readme/ubuntu.png) Ubuntu 16.04+ / Linux Mint 18+
 
+##### Stable Builds
+
 Polychromatic can be installed via this PPA:
 
     sudo add-apt-repository ppa:lah7/polychromatic
@@ -72,6 +74,21 @@ Polychromatic can be installed via this PPA:
 
 The PPA is recommended as it keeps the application up-to-date.
 
+##### Daily Builds
+
+These builds deliver the newest features and improvements quicker, but are not well tested and may be buggy at times.
+
+    sudo add-apt-repository ppa:lah7/polychromatic-daily
+    sudo apt update
+    sudo apt install polychromatic
+
+If you later decide to revert back to the stable builds:
+
+    sudo apt remove polychromatic
+    sudo rm /etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily.list*
+    sudo add-apt-repository ppa:lah7/polychromatic
+    sudo apt update
+    sudo apt install polychromatic
 
 #### ![Debian](.readme/debian.png) Debian 8+
 
@@ -85,6 +102,8 @@ Packages built for Ubuntu are also compatible with Debian.
 Add this line to your `/etc/apt/sources.list`:
 
     deb http://ppa.launchpad.net/lah7/polychromatic/ubuntu xenial main
+
+(Or `polychromatic-daily` for development builds)
 
 Then add the public key to verify the packages:
 
