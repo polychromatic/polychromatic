@@ -594,7 +594,7 @@ class Controller(object):
             kb_callback = self.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
 
             # Initalise colour picker
-            self.print_colour_options("editor-colour", "#colour-selection", [0, 255, 0], "null")
+            self.print_colour_options("editor-colour", "#colour-selection", [0, 255, 0], "profile")
 
             # Collect profile details.
             uuid = self.profiles.selected_uuid
