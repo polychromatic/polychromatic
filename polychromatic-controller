@@ -36,6 +36,7 @@ setproctitle.setproctitle('polychromatic-controller')
 import time
 import threading
 from subprocess import Popen as background_process
+from platform import linux_distribution
 
 try:
     import razer.client as rclient
@@ -748,18 +749,39 @@ class Controller(object):
             trans.push('#str-options-restart', _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect."))
 
             # Append version information
+            def make_dev_version():
+                version_master = version[:-1] + str(int(version[-1:]) + 1)
+                self.update_page('#str-version-app-string', "html", version_master + "-dev")
+
             if self.app_installed:
                 # Hide the option to update if the app is running globally.
                 self.update_page('#str-version-app-string', "html", version)
                 self.update_page("#update-button", "hide")
             else:
                 # When running from 'master' directly.
-                version_master = version[:-1] + str(int(version[-1:]) + 1)
-                self.update_page('#str-version-app-string', "html", version_master + "-dev")
+                make_dev_version()
 
             self.update_page('#str-version-config-string', "html", str(pref.version))
             self.update_page('#str-version-lib-string', "html", str(self.devman.version))
             self.update_page('#str-version-daemon-string', "html", str(self.devman.daemon_version))
+
+            # For Apt, check for the source file to determine builds.
+            distro = linux_distribution()[0]
+            if distro == "Ubuntu" or distro == "Debian":
+                codename = linux_distribution()[2]
+
+                source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list"
+                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
+                    self.update_page("#auto-update-info", "html", "<tr><td style='color:lime'><br><span class='fa fa-check-circle'></span> {0}</td></tr>".format(
+                                    _("You are set for automatic updates (via PPA)")))
+                    self.update_page("#auto-update-info", "show")
+
+                source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily-" + codename + ".list"
+                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
+                    self.update_page("#auto-update-info", "html", "<tr><td style='color:yellow'><br><span class='fa fa-check-circle'></span> {0}</td></tr>".format(
+                                    _("You have opted for development packages.")))
+                    self.update_page("#auto-update-info", "show")
+                    make_dev_version()
 
             # Populate start-up profiles list.
             self.refresh_profiles_list()
