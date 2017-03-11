@@ -130,7 +130,7 @@ cp -r "$source/pylib/"* "$polyc_modules/"
 
 # Copy icons
 printg "Copying to $target_icon..."
-cp "$source/install/hicolor/scalable/apps/polychromatic.svg" "$target_icon/hicolor/scalable/apps/polychromatic.svg"
+cp -r "$source/install/hicolor/"* "$target_icon/hicolor/"
 
 # Copy man
 printg "Copying to $target_man..."

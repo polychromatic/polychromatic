@@ -50,11 +50,11 @@ rm -rf "$target_data"
 rm -rf "$modules"
 rm     "$target_bin/polychromatic-controller"
 rm     "$target_bin/polychromatic-tray-applet"
-rm     "$target_icon/hicolor/scalable/apps/polychromatic.svg"
 rm -rf "$target_apps/polychromatic-controller.desktop"
 rm -rf "$target_apps/polychromatic-tray-applet.desktop"
 rm     "$target_man/polychromatic-controller"*
 rm     "$target_man/polychromatic-tray-applet"*
+find /usr/share/icons/hicolor -name "polychromatic"* -type f -delete
 rm -rf /etc/xdg/autostart/polychromatic-tray-applet.desktop
 
 # Delete locales

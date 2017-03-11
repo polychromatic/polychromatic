@@ -286,10 +286,10 @@ class Controller(object):
         w.set_resizable(False)
         self.window = w
         try:
-            w.set_icon_from_file(os.path.join(data_source, '../install/hicolor/scalable/apps/polychromatic.svg'))
+            w.set_icon_from_file(os.path.join(data_source, '../install/hicolor/16x16/apps/polychromatic-controller.svg'))
             stdout.vvprint('Window icon set from relative path.')
         except:
-            w.set_icon_from_file('/usr/share/icons/hicolor/scalable/apps/polychromatic.svg')
+            w.set_icon_from_file('/usr/share/icons/hicolor/16x16/apps/polychromatic-controller.svg')
             stdout.vvprint('Window icon set from /usr/share/ path.')
 
         # Add elements to window
