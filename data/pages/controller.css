@@ -260,11 +260,11 @@ span.spectrum {
 /************************
    Header - Wave
 *************************/
-#dynamic.wave {
+.header.wave {
     background-image: url('../img/header/wave.jpg') !important;
     background-repeat: repeat-x;
     -webkit-animation-name: wave;
-    -webkit-animation-duration: 2s;
+    -webkit-animation-duration: 1.5s;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-timing-function: linear;
     z-index: -1;
