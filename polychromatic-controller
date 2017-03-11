@@ -1737,6 +1737,7 @@ class Controller(object):
                     ["lighting_breath_single", "breath", _("Breath")],
                     ["lighting_pulsate", "pulsate", _("Pulsate")],
                     ["lighting_ripple", "ripple", _("Ripple")],
+                    ["lighting_starlight", "starlight", _("Starlight")],
                     ["lighting_static", "static", _("Static")]
                 ]
 
@@ -2062,6 +2063,9 @@ class Controller(object):
                 else:
                     fx.ripple_random()
                     remember_params('random')
+
+            elif effect == "starlight":
+                fx.starlight(primary_red, primary_green, primary_blue)
 
             elif effect == "static":
                 fx.static(primary_red, primary_green, primary_blue)
