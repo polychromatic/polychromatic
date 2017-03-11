@@ -3,13 +3,15 @@
 ## Controller
 
 #### Connected Devices
-![controller-overview](https://cloud.githubusercontent.com/assets/13032135/21577999/c4f38994-cf67-11e6-928e-238e1903cdcd.png)
+![Overview Screen](https://cloud.githubusercontent.com/assets/13032135/23827521/768c281a-06ad-11e7-80d1-5d1b9d82e313.png)
+
 
 #### Configuring Options for Keyboard
-![controller-kbd-options](https://cloud.githubusercontent.com/assets/13032135/20988307/1d61f118-bcc8-11e6-8455-66473f62ab25.png)
+![Configuring Keyboard Options](https://cloud.githubusercontent.com/assets/13032135/23827524/81aa49b6-06ad-11e7-91d8-2c9455225b50.gif)
+
 
 #### Application Profile Editor
-![controller-app-profile-editor](https://cloud.githubusercontent.com/assets/13032135/20988305/1d5dcb7e-bcc8-11e6-98d3-28e501ac8b08.png)
+![Editing Application Profile](https://cloud.githubusercontent.com/assets/13032135/23827527/97cbc850-06ad-11e7-984a-5aa45b2fe11a.gif)
 
 
 ## Tray Applet
