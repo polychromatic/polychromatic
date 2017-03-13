@@ -164,6 +164,25 @@ def get(group, setting, default_value="", filepath=None):
         return default_value
 
 
+def exists(group, setting, filepath=None):
+    """
+    Returns a boolean whether preference exists or not.
+    """
+
+    # If no file explicitly stated, assume preferences.
+    if filepath == None:
+        filepath = path.preferences
+
+    data = load_file(filepath)
+
+    # Read data from preferences.
+    try:
+        value = data[group][setting]
+        return True
+    except:
+        return False
+
+
 def get_group(group, filepath):
     """
     Read a group of data as a list.
