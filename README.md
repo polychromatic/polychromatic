@@ -7,7 +7,7 @@ A front-end for customising the functionality of your Razer perpherials under GN
 ### Controller
 | Screenshot | Features |
 | ---------- | -------- |
-| ![controller-kbd-options](https://cloud.githubusercontent.com/assets/13032135/20988307/1d61f118-bcc8-11e6-8455-66473f62ab25.png) | <ul><li>Set effects, brightness, colours and modes supported by the device.</li><li>Create application profiles.</li><li>Specify preferences - such as default colours.</li><li>View all connected devices and configure the daemon-specific settings.</li></ul>
+| ![controller-kbd-options](https://cloud.githubusercontent.com/assets/13032135/23827524/81aa49b6-06ad-11e7-91d8-2c9455225b50.gif) | <ul><li>Set effects, brightness, colours and modes supported by the device.</li><li>Create application profiles.</li><li>Specify preferences - such as default colours.</li><li>View all connected devices and configure the daemon-specific settings.</li></ul>
 |
 
 ### Tray Applet
