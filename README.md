@@ -135,7 +135,7 @@ There are two packages:
 
 Rudimentary ebuilds for Gentoo are maintained by [vifino](https://github.com/vifino) in his personal overlay. These can be installed with these commands:
 
-    sudo layman -f -o https://github.com/vifino/vifino-overlay/raw/master/vifino-overlay.xml -a vifino-overlay
+    sudo layman -a vifino-overlay
     emerge polychromatic
 
 
