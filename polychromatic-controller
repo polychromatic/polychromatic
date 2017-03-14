@@ -2507,6 +2507,9 @@ class Terminal(object):
                 self.be_very_verbose = True
                 self.vvprint('Debug verbose enabled.')
 
+            elif arg == '--print-device-info':
+                self.print_device_capability_info()
+
             else:
                 print('Ignoring unrecognised parameters:' + arg)
 
@@ -2516,7 +2519,9 @@ class Terminal(object):
       print("  -h, --help                   Show this help text.")
       print("  -v, --verbose                Be verbose to stdout.")
       print("  -vv, --debug                 Be very verbose. For debugging only.")
-      print('')
+      print("  --print-device-info          Output useful devices about the capabilities")
+      print("                               of a device.")
+      print("")
       exit(0)
 
     def error(self, text):
@@ -2539,6 +2544,55 @@ class Terminal(object):
             else:
                 print(text)
 
+    def print_device_capability_info(self):
+        #     |                                                                               |
+        print("===============================================================================")
+        print("Please include this data when reporting device-specific issues on GitHub.")
+        print("===============================================================================")
+        print("\nConnecting to the daemon...",end='')
+        try:
+            devman = rclient.DeviceManager()
+        except Exception as e:
+            print("\rUnable to connect to daemon!")
+            print("Exception: " + str(e))
+            print("\nPlease start Polychromatic normally to resolve this issue before proceeding.")
+            exit(1)
+
+        print("\rListing devices...          ",end='')
+        devices = devman.devices
+        if len(devices) == 0:
+            print("\rNo devices found.          ")
+            print("\nPlease start Polychromatic normally to resolve this issue before proceeding.")
+            exit(1)
+
+        print("\rConnected Devices:         ")
+        no = 0
+        for device in devices:
+            print("[{0}] - {1} (Serial: {2})".format(str(no), device.name, device.serial))
+            no += 1
+
+        print("\nEnter choice: ", end='')
+        no = int(sys.stdin.readline())
+        try:
+            print("\nSelected: " + devices[no].name)
+        except Exception:
+            print("Invalid choice, or device not found.")
+            exit(1)
+
+        device = devices[no]
+        print("\n-------------------------------------------------------------------------------")
+        print("```")
+        print("# Device Info")
+        print("Name: " + device.name)
+        print("Type: " + device.type)
+        print(" ")
+        print("# Device Capabilities")
+        print(device.capabilities)
+        print("```")
+        print("-------------------------------------------------------------------------------")
+        print("\nCopy and paste between these two lines into the GitHub issue.\n")
+
+        exit(0)
 
 def icon_name_to_path(icon_name):
     """
