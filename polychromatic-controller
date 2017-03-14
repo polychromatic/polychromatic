@@ -1007,11 +1007,6 @@ class Controller(object):
             except Exception as exception:
                 self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}",effect).replace("{1}",self.active_device.name))
 
-        elif command == 'poll-dpi':
-            dpi_value = str(self.active_device.dpi[0])
-            self.update_page("#dpi-input", "val", dpi_value)
-            self.update_page("#dpi-value", "html", dpi_value)
-
         elif command == 'enable-marco-keys':
             self.active_device.macro.enable_macros()
             self.update_page('#macro-keys-enable', 'addClass', 'disabled')
@@ -1864,9 +1859,6 @@ class Controller(object):
         # Clear Overview Screen
         self.update_page("#device-"+self.active_device_serial+"-brightness", "html", " ")
 
-        # Stop any polling (sync)
-        self.webkit.run_javascript("clearInterval(PollingDPI)")
-
         ## Brightness
         def set_brightness_control(element, value):
             ### Device Screen
@@ -1966,7 +1958,6 @@ class Controller(object):
             dpi_value = str(self.active_device.dpi[0])
             self.update_page("#dpi-input", "val", dpi_value)
             self.update_page("#dpi-value", "html", dpi_value)
-            self.webkit.run_javascript("startDPIPolling()")
 
     def set_lighting_effect(self, source, effect, fx_params=None):
         """
