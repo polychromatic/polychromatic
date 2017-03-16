@@ -1761,6 +1761,13 @@ class Controller(object):
                 for fx in fx_list:
                     if self.active_device.has(fx[0]):
                         add_to_dropdown("#lighting-list", fx[1], fx[2], "main")
+
+                # Only show icon for Naga Hex V2
+                if self.active_device.name == "Razer Naga Hex V2":
+                    self.update_page("#lighting-main-naga-hex", "show")
+                else:
+                    self.update_page("#lighting-main-naga-hex", "hide")
+
             else:
                 self.update_page("#lighting-dropdown", "hide")
 
