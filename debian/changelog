@@ -1,3 +1,15 @@
+polychromatic (0.3.7.1-xenial) xenial; urgency=low
+
+  * Fix regression when editing profiles.
+  * Fix regression with wave effect in header.
+  * Stop "syncing" mouse DPI with hardware.
+  * Add starlight FX for future daemon support.
+  * Add Naga Hex V2 ring in UI.
+  * Update application icons.
+  * Tweak message when restarting daemon.
+
+ -- Luke Horwell <luke@ubuntu-mate.org>  Thu, 16 Mar 2017 22:07:28 +0100
+
 polychromatic (0.3.7-1-xenial) xenial; urgency=low
 
   * Repackaged for Launchpad.
