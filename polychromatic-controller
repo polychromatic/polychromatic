@@ -2493,19 +2493,21 @@ class Terminal(object):
         self.be_very_verbose = False
 
         for arg in sys.argv[1:]:
-            if arg == '--help' or arg == '-h':
+            if arg in ["--help", "-h"]:
                 self.show_help()
 
-            elif arg == '--verbose' or arg == '-v':
+            elif arg in ["--verbose", "-v"]:
                 self.be_verbose = True
+                pref.verbose = True
                 self.vprint('Verbose enabled.')
 
-            elif arg == '-vv' or arg == '--debug':
+            elif arg in ["-vv", "--debug"]:
                 self.be_verbose = True
                 self.be_very_verbose = True
+                pref.verbose = True
                 self.vvprint('Debug verbose enabled.')
 
-            elif arg == '--print-device-info':
+            elif arg == "--print-device-info":
                 self.print_device_capability_info()
 
             else:
@@ -2591,6 +2593,7 @@ class Terminal(object):
         print("\nCopy and paste between these two lines into the GitHub issue.\n")
 
         exit(0)
+
 
 def icon_name_to_path(icon_name):
     """

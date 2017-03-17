@@ -13,6 +13,7 @@ import shutil
 import time
 
 version = 4
+verbose = False
 
 # For default preferences, please see:
 #   https://github.com/lah7/polychromatic/wiki/Preferences-JSON-Structure
@@ -159,7 +160,8 @@ def get(group, setting, default_value="", filepath=None):
         return value
     except:
         # Should it be non-existent, return a fallback option.
-        print(" ** Preference '{0}' in '{1}' non-existent. Using default '{2}' instead.".format(setting, group, default_value))
+        if verbose:
+            print(" ** Preference '{0}' in '{1}' non-existent. Using default '{2}' instead.".format(setting, group, default_value))
         set(group, setting, default_value, filepath)
         return default_value
 
@@ -209,13 +211,13 @@ def init_config(filepath):
     try:
         # Backup if the JSON was invalid.
         if os.path.exists(filepath):
-            print(' ** JSON File corrupt and will be discarded: ' + filepath)
+            print(' ** JSON File corrupt and will be backed up before discarding: ' + filepath)
             os.rename(filepath, filepath + '.bak')
-            print(' ** This faulty JSON file has been backed up.')
 
         # Touch new file
         save_file(filepath, {})
-        print(' ** New configuration ready: ' + filepath)
+        if verbose:
+            print(' ** New configuration ready: ' + filepath)
 
     except Exception as e:
         # Couldn't create the default configuration.
@@ -227,9 +229,9 @@ def clear_config():
     """
     Erases all the configuration stored on disk.
     """
-    print(' ** Deleting configuration folder "' + path.root + '"...')
+    if verbose:
+        print(' ** Deleting configuration folder "' + path.root + '"...')
     shutil.rmtree(path.root)
-    print(' ** Successfully deleted configuration.')
 
 
 def reset_config(filepath):
@@ -237,7 +239,8 @@ def reset_config(filepath):
     Resets a specific configuration file stored on disk.
     This will cause it to be re-generated when it is next called.
     """
-    print(" ** Reset configuration: " + filepath)
+    if verbose:
+        print(" ** Resetting configuration file: " + filepath)
     os.remove(filepath)
     start_initalization()
 
@@ -340,7 +343,8 @@ def set_device_state(serial, source, state, value):
 
     data[serial][source][state] = value
     save_file(path.devicestate, data)
-    print(" ** Device state updated: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value))
+    if verbose:
+        print(" ** Device state updated: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value))
 
 
 def get_device_state(serial, source, state):
@@ -355,9 +359,11 @@ def get_device_state(serial, source, state):
     try:
         value = data[serial][source][state]
         return value
-        print(" ** Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value))
+        if verbose:
+            print(" ** Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value))
     except KeyError:
-        print(" ** Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [No value]".format(serial, source, state))
+        if verbose:
+            print(" ** Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [No value]".format(serial, source, state))
         return None
     except TypeError:
         print(" ** Device state corrupt:  [Serial: {0}] [Source: {1}] ... Will reset.".format(str(serial), str(source)))
@@ -377,7 +383,8 @@ def start_initalization():
     # Create folders if they do not exist.
     for folder in [path.root, path.profile_folder, path.profile_backups]:
         if not os.path.exists(folder):
-            print(' ** Configuration folder does not exist. Creating: ', folder)
+            if verbose:
+                print(' ** Configuration folder does not exist. Creating: ', folder)
             os.makedirs(folder)
 
     # Create preferences if non-existent.
