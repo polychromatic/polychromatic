@@ -53,10 +53,12 @@ try:
     # Relative copy
     import pylib.preferences as pref
     import pylib.profiles as prof
+    import pylib.common as common
 except ImportError:
     # Installed to system
     import polychromatic.preferences as pref
     import polychromatic.profiles as prof
+    import polychromatic.common as common
 except Exception as e:
     print("One or more of Polychromatic's modules could not be imported!")
     print("Try re-installing the application.")
@@ -100,35 +102,6 @@ class Translations(object):
         Pushes a translatable string to a JavaScript variable on the page.
         """
         app.webkit.run_javascript('var {0} = "{1}"'.format(variable, string))
-
-    def get_effect_state_string(self, string):
-        """
-        Function to retrieve the current device effect as a human-readable string.
-        """
-        if string == 'spectrum':
-            return _("Spectrum")
-        elif string == 'wave':
-            return _("Wave")
-        elif string == 'reactive':
-            return _("Reactive")
-        elif string == 'breath':
-            return _("Breath")
-        elif string == 'ripple':
-            return _("Ripple")
-        elif string == 'static':
-            return ("Static")
-        elif string == 'none':
-            return ("None")
-        elif string == 'profile':
-            return _("Profile")
-        elif string == 'blinking':
-            return _("Blinking")
-        elif string == 'pulsate':
-            return _("Pulsate")
-        elif string == 'unknown':
-            return _("Try one...")
-        else:
-            return string
 
 
 class AppView(WebKit2.WebView):
@@ -1659,7 +1632,7 @@ class Controller(object):
                         buffer_effect += "<img {0}/> <span {1}>{2}</span>".format(
                                             self.generate_css_colour_svg("../img/effects/{0}.svg".format(current_effect), current_colour, 22, 22, class_effects),
                                             self.generate_css_colour_text(current_colour, class_effects),
-                                            trans.get_effect_state_string(current_effect)
+                                            common.get_effect_state_string(current_effect)
                                         )
 
                     if current_effect == "profile":
@@ -1898,7 +1871,7 @@ class Controller(object):
         self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", " ")
 
         def update_lighting_dropdown(element, effect):
-            self.update_page(element, "html", "<img src='{1}'/> {0}".format(trans.get_effect_state_string(effect), "../img/effects/" + effect + ".svg"))
+            self.update_page(element, "html", "<img src='{1}'/> {0}".format(common.get_effect_state_string(effect), "../img/effects/" + effect + ".svg"))
 
         if self.active_device.has("lighting"):
             try:
@@ -1922,7 +1895,7 @@ class Controller(object):
                     self.update_lighting_options("main", effect)
 
                     # Overview Screen
-                    self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", trans.get_effect_state_string(effect))
+                    self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", common.get_effect_state_string(effect))
                     self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", "../img/effects/" + effect + ".svg")
 
             except TypeError:
@@ -1936,7 +1909,7 @@ class Controller(object):
                 update_lighting_dropdown("#active-effect-logo", effect)
 
                 # Overview Screen
-                self.update_page("#device-"+self.active_device_serial+"-effect > span", "append", "&nbsp;" + trans.get_effect_state_string(effect))
+                self.update_page("#device-"+self.active_device_serial+"-effect > span", "append", "&nbsp;" + common.get_effect_state_string(effect))
                 self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", "../img/effects/" + effect + ".svg")
 
             except TypeError:
@@ -1951,7 +1924,7 @@ class Controller(object):
                 update_lighting_dropdown("#active-effect-scroll", effect)
 
                 # Overview Screen
-                self.update_page("#device-"+self.active_device_serial+"-effect > span", "append", "&nbsp;" + trans.get_effect_state_string(effect))
+                self.update_page("#device-"+self.active_device_serial+"-effect > span", "append", "&nbsp;" + common.get_effect_state_string(effect))
                 self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", "../img/effects/" + effect + ".svg")
 
             except TypeError:
@@ -2138,10 +2111,10 @@ class Controller(object):
         if effect == "wave":
             # Customise wave direction string depending on form factor
             device_type = self.active_device.type
-            if self.get_device_type(device_type) == "mouse":
+            if common.get_device_type(device_type) == "mouse":
                 left = _("Down")
                 right = _("Up")
-            elif self.get_device_type(device_type) == "mousemat":
+            elif common.get_device_type(device_type) == "mousemat":
                 left = _("Clockwise")
                 right = _("Anti-clockwise")
             else:
@@ -2202,19 +2175,6 @@ class Controller(object):
                 [source, effect, pref.get_device_state(self.active_device.serial, source, "effect_params")]
             )
 
-    def get_device_type(self, device_type):
-        """
-        Convert the daemon's device type string to what Polychromatic identifies as "form factor".
-        This is used for determining icons.
-        """
-        if device_type == "firefly":
-            form_factor = "mousemat"
-        elif device_type == "tartarus":
-            form_factor = "keypad"
-        else:
-            form_factor = device_type
-        return(form_factor)
-
     def update_background_header(self, colour_rgb):
         """
         Refreshes the dynamic background header based on the current device.
@@ -2223,7 +2183,7 @@ class Controller(object):
         if not self.current_page == "menu":
             return
 
-        device_type = self.get_device_type(self.active_device.type)
+        device_type = common.get_device_type(self.active_device.type)
         effect = pref.get_device_state(self.active_device.serial, "main", "effect")
         if colour_rgb:
             red = colour_rgb[0]
@@ -2364,7 +2324,7 @@ class Controller(object):
                 image = "icon"
 
         if image == "icon":
-            formfactor = self.get_device_type(device.type)
+            formfactor = common.get_device_type(device.type)
             img_path = data_source + "/img/states/{0}.svg".format(formfactor)
             if not os.path.exists(img_path):
                 img_path = unknown_icon
