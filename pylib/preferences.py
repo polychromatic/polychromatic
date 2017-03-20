@@ -32,7 +32,7 @@ class Paths(object):
     colours     = os.path.join(root, 'colours.json')
 
     # Deprecated
-    profiles = os.path.join(root, 'profiles.json')
+    old_profiles = os.path.join(root, 'profiles.json')
 
     # Data Source
     @staticmethod
@@ -267,7 +267,7 @@ def upgrade_old_pref(config_version):
             os.rename(old, new)
             index[str(uid)] = {}
             index[str(uid)]["name"] = profile
-        save_file(path.profiles, index)
+        save_file(path.old_profiles, index)
 
         # *** Clear backups ***
         shutil.rmtree(path.profile_backups)
@@ -283,7 +283,7 @@ def upgrade_old_pref(config_version):
 
         # Load profiles and old index (meta data will now be part of that file)
         profiles = os.listdir(path.profile_folder)
-        index = load_file(path.profiles, True)
+        index = load_file(path.old_profiles, True)
 
         # Import daemon class required for conversion.
         from razer_daemon.keyboard import KeyboardColour
@@ -312,7 +312,7 @@ def upgrade_old_pref(config_version):
             save_file(new_path, json_structure)
 
         # Delete index file as no longer needed.
-        os.remove(path.profiles)
+        os.remove(path.old_profiles)
 
     # Ensure that new version number is written.
     pref_data = load_file(path.preferences, True)
