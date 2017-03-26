@@ -93,10 +93,10 @@
         </div>
       </div>
 
-      <div class="right">
-        <h4 id="str-modes" class="keyboard-only" hidden></h4>
-        <table class="keyboard-only" hidden>
-          <tr>
+      <div id="keyboard-options-pane" class="right" hidden>
+        <h4 id="str-modes"></h4>
+        <table>
+          <tr id="game-mode-options" hidden>
             <td><img src="../img/ui/game-mode.svg" width="24px" height="24px"/></td>
             <td id="str-game-mode"></td>
             <td>
@@ -105,14 +105,14 @@
             </td>
             <td><p id="game-mode-tip"></p></td>
           </tr>
-          <tr>
+          <tr id="macro-options" hidden>
             <td><img src="../img/ui/macro-keys.svg" width="24px" height="24px"/></td>
             <td id="str-macro-keys"></td>
             <td><button class="btn str-help" onclick="help_dialog_open()"></button></td>
           </tr>
         </table>
 
-        <div class="keyboard-only" hidden>
+        <div id="matrix-options" hidden>
           <h4 id="str-profiles"></h4>
           <div id="app-profiles">
               <!-- Generated list via Python -->

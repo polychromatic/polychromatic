@@ -1697,11 +1697,27 @@ class Controller(object):
         self.webkit.run_javascript("change_header('{0}')".format(device_name))
         self.update_page("#fx-image", "attr", "src", device_image)
 
-        # Assume game mode / macro keys and profiles for keyboards for now.
-        if device_type == "keyboard":
-            self.update_page(".keyboard-only", "fadeIn", "fast")
+        # Show keyboard features if supported.
+        # TODO: Move items into their own sections.
+        self.update_page("#keyboard-options-pane", "hide")
+
+        if self.active_device.has("game_mode_led"):
+            self.update_page("#game-mode-options", "show")
+            self.update_page("#keyboard-options-pane", "show")
         else:
-            self.update_page(".keyboard-only", "fadeOut", "fast")
+            self.update_page("#game-mode-options", "hide")
+
+        if self.active_device.has("macro_mode_led"):
+            self.update_page("#macro-options", "show")
+            self.update_page("#keyboard-options-pane", "show")
+        else:
+            self.update_page("#macro-options", "hide")
+
+        if self.active_device.has("lighting_led_matrix") and self.active_device.type == "keyboard":
+            self.update_page("#matrix-options", "show")
+            self.update_page("#keyboard-options-pane", "show")
+        else:
+            self.update_page("#matrix-options", "hide")
 
         ## Lighting Effects
         def add_to_dropdown(target_element, internal_name, string, source):
