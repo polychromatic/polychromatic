@@ -110,14 +110,31 @@ class AppProfiles(object):
 
     def list_profiles(self):
         """
-        Returns the list of profiles in the folder.
+        Returns a sorted list of profiles in the folder.
         """
-        # Including the JSON extension.
+        # Includes the JSON extension.
         dir_listing = os.listdir(path.profile_folder)
         profiles = []
+
+        # Sort the profiles A-Z.
+        sorted_names = {}
         for filename in dir_listing:
-            profiles.append(filename.split('.json')[0])
-        return(profiles)
+            uuid = filename[:-5] # Strip .json
+            data = self.load_profile(os.path.join(path.profile_folder, uuid))
+            try:
+                human_name = data["name"]
+            except:
+                print("Profile UUID corrupt: " + str(uuid))
+                continue
+            sorted_names[human_name] = int(uuid)
+
+        sorted_list = []
+        for human_name in sorted(sorted_names):
+            uuid = str(sorted_names[human_name])
+            sorted_list.append(uuid)
+
+        return(sorted_list)
+
 
     def send_profile_to_keyboard(self, kbd_obj, data):
         """

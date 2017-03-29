@@ -922,22 +922,7 @@ class Controller(object):
             source = command.split("?")[1]
             value = command.split("?")[2]
             try:
-                if source == "main":
-                    self.active_device.brightness = int(value)
-                elif source == "logo":
-                    if value == "toggle":
-                        if self.active_device.fx.misc.logo.active == True:
-                            self.active_device.fx.misc.logo.active = False
-                        else:
-                            self.active_device.fx.misc.logo.active = True
-                    else:
-                        self.active_device.fx.misc.logo.brightness = int(value)
-                elif source == "scroll":
-                    self.active_device.fx.misc.scroll_wheel.brightness = int(value)
-
-                if value != "toggle":
-                    pref.set_device_state(self.active_device.serial, source, "brightness", int(value))
-
+                common.set_brightness(pref, self.active_device, source, value)
                 self.update_device_active_options()
 
             except Exception as exception:
@@ -960,12 +945,11 @@ class Controller(object):
                 colours = [0, 255, 0]
 
             try:
-                self.set_lighting_effect(source, effect, params)
+                common.set_lighting_effect(pref, self.active_device, source, effect, params)
                 self.update_lighting_options(source, effect)
             except Exception as exception:
                 self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}",effect).replace("{1}",self.active_device.name))
 
-            pref.set_device_state(self.active_device.serial, source, "effect", effect)
             self.update_device_active_options()
             self.update_background_header(colours)
 
@@ -1952,133 +1936,6 @@ class Controller(object):
             dpi_value = str(self.active_device.dpi[0])
             self.update_page("#dpi-input", "val", dpi_value)
             self.update_page("#dpi-value", "html", dpi_value)
-
-    def set_lighting_effect(self, source, effect, fx_params=None):
-        """
-        source = Lighting source
-                 e.g. main / scroll / wheel
-        effect = Internal effect name
-                 wave / spectrum / static
-        params = (Optional) Any parameters for the effect, seperated by '?'.
-                 e.g. 255?255?255?2
-        """
-
-        # For remembering current device state
-        def remember_params(params):
-            pref.set_device_state(self.active_device.serial, source, "effect_params", params)
-
-        if fx_params:
-            params = fx_params.split('?')
-            remember_params(fx_params)
-        else:
-            params = None
-
-        # Determine source function
-        if source == "main":
-            fx = self.active_device.fx
-
-        elif source == "logo":
-            fx = self.active_device.fx.misc.logo
-
-        elif source == "scroll":
-            fx = self.active_device.fx.misc.scroll_wheel
-
-        # Determine colours
-        primary_colours = pref.get_device_state(self.active_device.serial, source, "colour_primary")
-        secondary_colours = pref.get_device_state(self.active_device.serial, source, "colour_secondary")
-
-        if primary_colours != None:
-            primary_red = primary_colours[0]
-            primary_green = primary_colours[1]
-            primary_blue = primary_colours[2]
-        else:
-            primary_red = 0
-            primary_green = 255
-            primary_blue = 0
-
-        if secondary_colours != None:
-            secondary_red = secondary_colours[0]
-            secondary_green = secondary_colours[1]
-            secondary_blue = secondary_colours[2]
-        else:
-            secondary_red = 255
-            secondary_green = 0
-            secondary_blue = 0
-
-        stdout.vvprint("Using RGB for primary colour: {0}, {1}, {2}".format(str(primary_red), str(primary_green), str(primary_blue)))
-        stdout.vvprint("Using RGB for secondary colour: {0}, {1}, {2}".format(str(primary_red), str(primary_green), str(primary_blue)))
-
-        # Execute function (only if source is known)
-        if fx:
-            if effect == "none":
-                fx.none()
-
-            elif effect == "spectrum":
-                fx.spectrum()
-
-            elif effect == "wave":
-                # Params:  <direction 1-2>
-                if params:
-                    fx.wave(int(params[0]))
-                else:
-                    fx.wave(1)
-                    remember_params(1)
-
-            elif effect == "reactive":
-                # Params:  <speed 1-4>
-                if params:
-                    fx.reactive(primary_red, primary_green, primary_blue, int(params[0]))
-                else:
-                    fx.reactive(primary_red, primary_green, primary_blue, 2)
-                    remember_params(2)
-
-            elif effect == "blinking":
-                if params:
-                    fx.blinking(primary_red, primary_green, primary_blue)
-                else:
-                    fx.blinking(primary_red, primary_green, primary_blue)
-
-            elif effect == "breath":
-                if params:
-                    if params[0] == 'random':
-                        fx.breath_random()
-
-                    elif params[0] == 'single':
-                        fx.breath_single(primary_red, primary_green, primary_blue)
-
-                    elif params[0] == 'dual':
-                        fx.breath_dual(primary_red, primary_green, primary_blue,
-                                       secondary_red, secondary_green, secondary_blue)
-
-                    # TODO: Add triple breath support
-
-                else:
-                    fx.breath_random()
-                    remember_params('random')
-
-            elif effect == "pulsate":
-                fx.pulsate(primary_red, primary_green, primary_blue)
-
-            elif effect == "ripple":
-                if params:
-                    if params[0] == 'single':
-                        fx.ripple(primary_red, primary_green, primary_blue, 0.01)
-
-                    elif params[0] == 'random':
-                        fx.ripple_random(0.01)
-
-                else:
-                    fx.ripple_random()
-                    remember_params('random')
-
-            elif effect == "starlight":
-                fx.starlight(primary_red, primary_green, primary_blue)
-
-            elif effect == "static":
-                fx.static(primary_red, primary_green, primary_blue)
-
-        else:
-            stdout.vvprint("FX not applied, source not recognised.")
 
     def update_lighting_options(self, source=None, effect=None):
         """
