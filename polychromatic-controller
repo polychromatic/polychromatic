@@ -68,6 +68,7 @@ except Exception as e:
     exit(1)
 
 path = pref.Paths()
+path.data_source = path.get_data_source(__file__)
 
 # Imported on-demand:
 #   * requests
@@ -77,9 +78,9 @@ path = pref.Paths()
 class Translations(object):
     def __init__(self):
         # Use relative translations if available.
-        if os.path.exists(os.path.join(data_source, '../locale/')):
+        if os.path.exists(os.path.join(path.data_source, '../locale/')):
             stdout.vprint("Using relative path for translations.")
-            self.locale_path = os.path.join(data_source, '../locale/')
+            self.locale_path = os.path.join(path.data_source, '../locale/')
         else:
             stdout.vprint("Using '/usr/share/locale/' or falling back to 'en_US' for translations.")
             self.locale_path = '/usr/share/locale/'
@@ -141,7 +142,7 @@ class AppView(WebKit2.WebView):
 
         # Load the starting page
         default_page = 'loading'
-        self.load_uri('file://' + os.path.join(data_source, 'pages/' + startpage + '.html'))
+        self.load_uri('file://' + os.path.join(path.data_source, 'pages/' + startpage + '.html'))
 
     def title_changed_cb(self, view, frame):
         """
@@ -242,7 +243,7 @@ class Controller(object):
             self.kb_layout = 'gb'
 
         # Is this application installed in /usr/share or ran from repository?
-        if os.path.exists(os.path.join(path.get_data_source(__file__) + "/../install/update.sh")):
+        if os.path.exists(os.path.join(path.data_source + "/../install/update.sh")):
             self.app_installed = False
         else:
             self.app_installed = True
@@ -262,7 +263,7 @@ class Controller(object):
         w.set_resizable(False)
         self.window = w
         try:
-            w.set_icon_from_file(os.path.join(data_source, '../install/hicolor/16x16/apps/polychromatic-controller.svg'))
+            w.set_icon_from_file(os.path.join(path.data_source, '../install/hicolor/16x16/apps/polychromatic-controller.svg'))
             stdout.vvprint('Window icon set from relative path.')
         except:
             w.set_icon_from_file('/usr/share/icons/hicolor/16x16/apps/polychromatic-controller.svg')
@@ -430,7 +431,7 @@ class Controller(object):
         Changes the current page in use.
         """
         self.current_page = page
-        page_path = os.path.join(data_source, 'pages', page + '.html')
+        page_path = os.path.join(path.data_source, 'pages', page + '.html')
 
         if os.path.exists(page_path):
             self.webkit.load_uri('file://' + page_path)
@@ -877,7 +878,7 @@ class Controller(object):
             try:
                 icon_path = data["icon"]
             except:
-                icon_path = path.get_data_source(__file__) + "/img/profile-default.svg"
+                icon_path = path.data_source + "/img/profile-default.svg"
             if self.current_page == "menu":
 
                 # Show highlight in UI if in use
@@ -1258,7 +1259,7 @@ class Controller(object):
             if os.path.exists(profile_icon):
                 self.profiles.set_metadata(uuid, "icon", profile_icon)
             else:
-                profile_icon = pref.path.get_data_source(__file__) + "/img/profile-default.svg"
+                profile_icon = path.data_source + "/img/profile-default.svg"
                 self.profiles.set_metadata(uuid, "icon", profile_icon)
             self.show_menu('profile_editor')
             restart_tray_applet()
@@ -1271,7 +1272,7 @@ class Controller(object):
             if os.path.exists(new_icon):
                 self.profiles.memory["icon"] = new_icon
             else:
-                new_icon = pref.path.get_data_source(__file__) + "/img/profile-default.svg"
+                new_icon = path.data_source + "/img/profile-default.svg"
 
             # New values are saved to profile stored in memory.
             self.profiles.memory["name"] = new_name
@@ -1302,7 +1303,7 @@ class Controller(object):
 
         ## List application launchers to create profiles for.
         elif command == 'fetch-app-launchers':
-            unknown_icon_path = pref.path.get_data_source(__file__) + "/img/ui/generic-application.svg"
+            unknown_icon_path = path.data_source + "/img/ui/generic-application.svg"
 
             # Functions for this feature.
             def append_item(uid, name, icon_path):
@@ -1391,7 +1392,7 @@ class Controller(object):
             os.execv(__file__, sys.argv)
 
         elif command == 'update-check':
-            update_script = os.path.join(pref.Paths.get_data_source(__file__) + "/../install/update.sh")
+            update_script = os.path.join(path.data_source + "/../install/update.sh")
             if os.path.exists("/usr/bin/x-terminal-emulator"):
                 background_process('x-terminal-emulator -e "{0}"'.format(update_script), shell=True)
             else:
@@ -2069,7 +2070,7 @@ class Controller(object):
             green = 255
             blue = 0
 
-        if not os.path.exists(os.path.join(data_source, "img/header/" + device_type + ".png")):
+        if not os.path.exists(os.path.join(path.data_source, "img/header/" + device_type + ".png")):
             device_type = "generic"
 
         if effect == "spectrum":
@@ -2200,7 +2201,7 @@ class Controller(object):
 
         if image == "icon":
             formfactor = common.get_device_type(device.type)
-            img_path = data_source + "/img/states/{0}.svg".format(formfactor)
+            img_path = path.data_source + "/img/states/{0}.svg".format(formfactor)
             if not os.path.exists(img_path):
                 img_path = unknown_icon
 
@@ -2455,7 +2456,7 @@ def restart_tray_applet():
     if __file__.startswith("/usr"):
         tray_bin_path = "/usr/bin/polychromatic-tray-applet"
     else:
-        tray_bin_path = os.path.join(path.get_data_source(__file__), "/../polychromatic-tray-applet")
+        tray_bin_path = os.path.join(path.data_source, "/../polychromatic-tray-applet")
 
     # Attempt to gracefully stop the process, then launch again.
     try:
@@ -2552,7 +2553,6 @@ def restart_daemon_service():
 tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
 
 if __name__ == "__main__":
-    data_source = path.get_data_source(__file__)
     stdout = Terminal()
     trans = Translations()
     app = Controller()
