@@ -664,6 +664,10 @@ input[type="radio"] {
   border: 2px solid transparent;
 }
 
+.switch > input[type=checkbox] {
+  display: none;
+}
+
 .slider {
   position: absolute;
   cursor: pointer;
