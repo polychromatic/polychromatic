@@ -803,8 +803,11 @@ input[type='checkbox'] {
     margin: 0.5em;
     width: 16px;
     height: 16px;
-    border-radius: 4px;
     background-color: grey;
+}
+
+input[type='radio'] {
+    border-radius: 100%;
 }
 
 label {
@@ -817,9 +820,18 @@ label:hover {
     opacity: 0.8;
 }
 
-input[type='radio']:checked,
+input[type='radio']:checked {
+    background-color: lime !important;
+    background-image: url('../img/ui/radio.svg');
+    background-size: 16px;
+    background-position: center;
+}
+
 input[type='checkbox']:checked {
     background-color: lime !important;
+    background-image: url('../img/ui/checkbox.svg');
+    background-size: 16px;
+    background-position: center;
 }
 
 input.disabled {
