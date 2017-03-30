@@ -299,3 +299,21 @@ def save_colours_to_all_sources(pref, device_object, colour_name, colour_set):
     save_colour("main", "lighting")
     save_colour("logo", "lighting_logo")
     save_colour("scroll", "lighting_scroll")
+
+
+def get_green_shades():
+    """
+    Returns a custom colours.json for use with non-RGB keyboards,
+    like the Razer BlackWidow Ultimate.
+    """
+    return {
+    "1": {"name": "Green 1", "col": [0, 255, 0]},
+    "2": {"name": "Green 2", "col": [0, 225, 0]},
+    "3": {"name": "Green 3", "col": [0, 200, 0]},
+    "4": {"name": "Green 4", "col": [0, 175, 0]},
+    "5": {"name": "Green 5", "col": [0, 150, 0]},
+    "6": {"name": "Green 6", "col": [0, 125, 0]},
+    "7": {"name": "Green 7", "col": [0, 100, 0]},
+    "8": {"name": "Green 8", "col": [0, 75, 0]},
+    "9": {"name": "Green 9", "col": [0, 50, 0]},
+    }

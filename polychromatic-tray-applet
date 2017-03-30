@@ -643,6 +643,13 @@ class AppIndicator(object):
         colour_index = pref.load_file(path.colours)
         uuids = list(colour_index)
         uuids.sort(key=int)
+
+        # Show a range of green shades for Ultimate keyboards that are not RGB.
+        if self.active_device.name.find("Ultimate") != -1:
+            colour_index = common.get_green_shades()
+            uuids = list(colour_index.keys())
+            uuids.sort()
+
         if len(uuids) > 0:
             for uuid in uuids:
                 name = colour_index[uuid]["name"]

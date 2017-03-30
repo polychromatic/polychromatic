@@ -2136,6 +2136,12 @@ class Controller(object):
                         "<td><button class='btn' onclick='cmd(\"ask-colour?{0}?{2}\")'>{1}</button></td></tr>".format(colour_id, _("Custom..."), source)
         html_buffer += "<tr><td colspan='2'>"
 
+        # Show a range of green shades for Ultimate keyboards that are not RGB.
+        if self.active_device.name.find("Ultimate") != -1:
+            colour_index = common.get_green_shades()
+            uuids = list(colour_index.keys())
+            uuids.sort()
+
         item_no = 0
         for uuid in uuids:
             item_no += 1
