@@ -1826,6 +1826,12 @@ class Controller(object):
             self.update_page(".brightness-container", "hide")
             self.update_page("#brightness-logo-toggle", "show")
 
+        if not True in brightness_support and self.active_device.has("lighting_scroll_active"):
+            stdout.vprint("Device supports 'lighting_logo_active'")
+            self.update_page("#fx-brightness", "show")
+            self.update_page(".brightness-container", "hide")
+            self.update_page("#brightness-scroll-toggle", "show")
+
         # Mouse DPI
         if self.active_device.has("dpi"):
             self.update_page("#fx-dpi", "show")
@@ -1857,6 +1863,12 @@ class Controller(object):
                 self.update_page("#brightness-logo-switch", "prop", "checked", "true")
             else:
                 self.update_page("#brightness-logo-switch", "removeAttr", "checked")
+
+        if self.active_device.has("lighting_scroll_active"):
+            if self.active_device.fx.misc.scroll_wheel.active == 1:
+                self.update_page("#brightness-scroll-switch", "prop", "checked", "true")
+            else:
+                self.update_page("#brightness-scroll-switch", "removeAttr", "checked")
 
         ## Brightness
         if self.active_device.has("brightness"):

@@ -241,6 +241,27 @@ def set_brightness(pref, device_object, source, value):
         pref.set_device_state(device_object.serial, source, "brightness", int(value))
 
 
+def set_brightness_toggle(pref, device_object, source, state):
+    """
+    Function to turn on or off a specific area of the device (for supported devices)
+
+    state = True/False/"toggle"
+    """
+
+    if source == "logo":
+        source_obj = device_object.fx.misc.logo
+    elif source == "scroll":
+        source_obj = device_object.fx.misc.scroll_wheel
+
+    if str(state) == "toggle":
+        if source_obj.active == True:
+            source_obj.active = 0
+        else:
+            source_obj.active = 1
+    else:
+        source_obj.active = state
+
+
 def repeat_last_effect(pref, device_object):
     """
     Function to "replay" the last effect, for example, if the colour was changed.
@@ -258,6 +279,7 @@ def repeat_last_effect(pref, device_object):
     replay_source("main", "lighting")
     replay_source("logo", "lighting_logo")
     replay_source("scroll", "lighting_scroll")
+
 
 def save_colours_to_all_sources(pref, device_object, colour_name, colour_set):
     """
