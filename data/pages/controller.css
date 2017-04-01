@@ -1267,20 +1267,18 @@ label.disabled {
 /************************
    Error Page
 *************************/
-#error-page > img {
-    position: absolute;
-    left: 0; right: 0;
-    margin: auto;
-    width: 150px;
-    height: 150px;
+#error-page {
+    text-align: center;
+    -webkit-animation-name: error-page-entrance;
+    -webkit-animation-duration: 0.4s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-out;
 }
 
-#error-page > h2 {
-    position: absolute;
-    left: 0; right: 0;
-    margin: auto;
-    text-align: center;
-    top: 170px;
+#error-page > img {
+    margin-top: 3em;
+    width: 150px;
+    height: 150px;
 }
 
 #error-page > h2.serious {
@@ -1292,11 +1290,7 @@ label.disabled {
 }
 
 #error-page > p {
-    position: absolute;
-    left: 0; right: 0;
-    margin: auto;
     text-align: center;
-    top: 220px;
 }
 
 #error-page > p > code {
@@ -1306,6 +1300,18 @@ label.disabled {
 #error-page a:hover {
     cursor: pointer;
 }
+
+@-webkit-keyframes error-page-entrance {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 
 /************************
    In-line Help Icons

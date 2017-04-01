@@ -24,7 +24,7 @@
   <div class="header"></div>
 
   <div class="content">
-    <div id="error-page" hidden>
+    <div id="error-page">
       <img id="error-icon" src=""/>
       <h2 id="error-title" class=""></h2>
       <p id="error-details"></p>
@@ -43,8 +43,7 @@
   <script src="lib/jquery-2.1.4.min.js"></script>
   <script src="global.js"></script>
   <script>
-    $("#error-page").fadeIn();
-    $(".footer .right").fadeIn();
+    $(".footer .right").fadeIn('fast');
   </script>
 </body>
 </html>
