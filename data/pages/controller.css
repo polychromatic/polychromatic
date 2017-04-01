@@ -1180,25 +1180,39 @@ label.disabled {
 /************************
    Loading Page
 *************************/
-#loading {
+.loading {
     position: fixed;
     top: 0; bottom: 0;
     left: 0; right: 0;
     margin: auto;
     -webkit-animation-name: spin;
-    -webkit-animation-duration: 1.25s;
     -webkit-animation-iteration-count: infinite;
+    filter: blur(0.2em);
+    width: 10em;
+    height: auto;
+}
+
+#loading-1 {
     -webkit-animation-timing-function: cubic-bezier(0.54, 0.43, 0.43, 0.54);
+    -webkit-animation-duration: 1.5s;
+}
+
+#loading-2 {
+    -webkit-animation-timing-function: cubic-bezier(0.54, 0.43, 0.43, 0.54);
+    -webkit-animation-duration: 2s;
+}
+
+#loading-3 {
+    -webkit-animation-timing-function: cubic-bezier(0.54, 0.43, 0.43, 0.54);
+    -webkit-animation-duration: 1.25s;
 }
 
 @-webkit-keyframes spin {
     0% {
         transform: rotate(0deg);
-        filter: hue-rotate(0);
     }
     100% {
         transform: rotate(360deg);
-        filter: hue-rotate(360deg);
     }
 }
 
