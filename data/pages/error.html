@@ -21,7 +21,9 @@
   <link href="lib/font-awesome.min.css" rel="stylesheet" media="screen">
 </head>
 <body>
+<!--
   <div class="header"></div>
+-->
 
   <div class="content">
     <div id="error-page">
@@ -31,9 +33,9 @@
     </div>
   </div>
 
-  <div class="footer">
+  <div class="footer" hidden>
     <div class="left"></div>
-    <div class="right" hidden>
+    <div class="right">
       <button class="btn" id="restart-app" onclick="cmd('reset-app')"></button>
       <button class="btn" id="restart-daemon" onclick="cmd('daemon-restart')"></button>
       <button class="btn" id="close-window" onclick="cmd('quit')"></button>
@@ -43,7 +45,7 @@
   <script src="lib/jquery-2.1.4.min.js"></script>
   <script src="global.js"></script>
   <script>
-    $(".footer .right").fadeIn('fast');
+    $(".footer").fadeIn('fast');
   </script>
 </body>
 </html>

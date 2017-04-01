@@ -32,7 +32,9 @@ html, body, input, button {
 /* Behave more like an application.
  * (Some elements may need selection activating manually) */
 html, body {
-    background-color: #222222;
+    width: 100%;
+    height: 100%;
+    background: -webkit-linear-gradient(black, #323232);
     -webkit-user-select: none;
     overflow: hidden;
     cursor: default;
@@ -1010,7 +1012,7 @@ label.disabled {
     overflow-x: hidden;
     overflow-y: scroll;
     border: 0;
-    background-color: rgba(34, 34, 34, 0.75);
+    background-color: rgba(34, 34, 34, 0.5);
 }
 
 .app-profile-item {
