@@ -121,7 +121,8 @@ button > label {
     padding: 8px;
     background-image: url('../img/header/generic.jpg');
     background-repeat: no-repeat;
-    background-position: top left;
+    background-position: left -2px;
+    background-size: 100%;
     font-weight: bold;
     border-bottom: 2px solid #404040;
 }
@@ -138,6 +139,7 @@ button > label {
     width: 100%;
     height: 74px;
     padding: 8px;
+    background-size: 100%;
     background-position: left -2px;
     z-index: -10;
     transition: all 0.2s ease-in-out;
