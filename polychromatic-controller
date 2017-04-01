@@ -992,6 +992,8 @@ class Controller(object):
 
         elif command == 'refresh-overview-screen':
             self.refresh_device_list()
+            self.update_page("#device-tabs > .device", "removeClass", "active")
+            self.update_page("#device-overview-tab", "addClass", "active")
 
         ## Changing colours for this session.
         elif command.startswith('ask-colour'):
