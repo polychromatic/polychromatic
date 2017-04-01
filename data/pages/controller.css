@@ -917,12 +917,16 @@ label.disabled {
    Lighting Effect Options
 *************************/
 #fx-image {
-    width: 350px;
+    width: 35em;
     height: auto;
-    max-height: 300px;
-    top: 4em; bottom: 0;
-    position: absolute;
-    margin: auto 3em;
+    left: 0;
+    right: 0;
+    bottom: 5em;
+    position: fixed;
+    margin: auto;
+    filter: grayscale(1);
+    opacity: 0.25;
+    z-index: -10;
 }
 
 .fx-overlay {
@@ -1001,9 +1005,10 @@ label.disabled {
 #app-profiles {
     height: 230px;
     width: 100%;
-    overflow-x: none;
+    overflow-x: hidden;
     overflow-y: scroll;
-    border: 0px;
+    border: 0;
+    background-color: rgba(34, 34, 34, 0.75);
 }
 
 .app-profile-item {

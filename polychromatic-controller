@@ -1640,7 +1640,7 @@ class Controller(object):
                     buffer_effect = None
 
                 # Determine device image
-                img_path = self.get_device_image(device, "actual", "side_img")
+                img_path = self.get_device_image(device, "actual", "top_img")
                 img_opacity = "1"
 
                 ## If from filesystem, assume own generic icon is used instead
