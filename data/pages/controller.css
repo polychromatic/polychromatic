@@ -632,6 +632,10 @@ input[type="radio"] {
     background-color: #FF0000;
 }
 
+.btn-serious:focus {
+    border-color: #800000 !important;
+}
+
 .btn.active {
     background-color: green;
 }
