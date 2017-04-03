@@ -131,6 +131,14 @@ There are two packages:
 * [`polychromatic-git`](https://aur.archlinux.org/packages/polychromatic-git/) - Latest development version.
 
 
+#### ![Fedora](.readme/fedora.png) Fedora and ![openSUSE](.readme/opensuse.png) openSUSE
+
+You can add a repository and obtain packages for these distributions via OpenSUSE's Build System.
+Thank you to [z3ntu](https://github.com/z3ntu) for setting this up.
+
+* https://software.opensuse.org/download.html?project=hardware%3Arazer&package=polychromatic
+
+
 #### ![Gentoo](.readme/gentoo.png) Gentoo
 
 Rudimentary ebuilds for Gentoo are maintained by [vifino](https://github.com/vifino) in his personal overlay. These can be installed with these commands:
