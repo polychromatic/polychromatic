@@ -28,20 +28,20 @@ However, not all newly supported devices will work straight away. These devices 
 
 | Keyboard | Mouse | Mousemat | Keypad | Headset |
 |   :---:  | :---: |   :---:  | :---:  | :---:   |
-| ![Keyboard](.readme/status/keyboard-ok.png) | ![Mouse](.readme/status/mouse-warn.png) | ![Mousemat](.readme/status/mousemat-warn.png) | ![Keypad](.readme/status/keypad-warn.png) | ![Headset](.readme/status/headset-ok.png)
+| ![Keyboard](.readme/status/keyboard-ok.png) | ![Mouse](.readme/status/mouse-warn.png) | ![Mousemat](.readme/status/mousemat-warn.png) | ![Keypad](.readme/status/keypad-ok.png) | ![Headset](.readme/status/headset-ok.png)
 
 #### Known Issues
-* **Mice**
+* **Mice and mousemats**
   * Profile support will come in a future release.
-* **Mousemat**
-  * Profile support will come in a future release.
-* **Keypad**
-  * Profile support is not possible as the daemon does not support matrixes.
 
 With developments being made to the daemon, it will eventually be possible to:
 
 * Manage macros for keyboards and keypads.
 * Create and run "custom effects".
+
+There are some limitations:
+
+* Profile support is not possible for keypads as the daemon does not support matrixes.
 
 
 -------------
