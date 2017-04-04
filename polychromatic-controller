@@ -624,8 +624,11 @@ class Controller(object):
             js_exec.exec()
 
         elif self.current_page == 'preferences':
-            # Push strings
             trans.push('#page-header', _("Preferences"))
+
+            ########################
+            # About
+            ########################
             trans.push('#str-about', _("About"))
             trans.push('#str-tray', _("Tray Applet"))
             trans.push('#str-app-settings', _("General"))
@@ -641,88 +644,9 @@ class Controller(object):
             trans.push('#changelog-button', _("View Change Log"))
             trans.push('#releases-button', _("View Releases"))
 
-            for device in self.devices:
-                if device.name.startswith("Razer BlackWidow Chroma"):
-                    self.update_page("#demo-chroma", "show")
-                    trans.push('#demo-chroma', _("Play Demo - Razer BlackWidow Chroma Advert"))
-
-            trans.push('#str-app-profiles', _("Application Profiles"))
-            trans.push('#str-live-switch', _("Enable live switching"), True)
-            trans.push('#str-live-switch-help', _("Activate profiles instantly as soon as you click on them."))
-            trans.push('#str-live-preview', _("Enable live preview"), True)
-            trans.push('#str-live-preview-help', _("While editing, show your changes on the actual keyboard."))
-            trans.push('#str-activate-on-save', _("Always activate profiles after saving."), True)
-            trans.push('#str-interface', _("Interface"))
-            trans.push('#str-scaling', _("Scale:"))
-            trans.push('#str-scaling-help', _("Scale the application so it looks good on large displays. Requires restart."))
-
-            trans.push('#str-tray-icon', _("Tray Icon"))
-            trans.push('#str-tray-light', _("Light"), True)
-            trans.push('#str-tray-dark', _("Dark"), True)
-            trans.push('#str-tray-animated', _("Chroma"), True)
-            trans.push('#str-tray-custom', _("Use Custom Image"), True)
-            trans.push('#tray-custom', _("Custom Icon:"), True)
-            trans.push('#str-preferred-cols', _("Preferred Colors"), True)
-            trans.push('#str-primary', _("Primary Color:"))
-            trans.push('#str-secondary', _("Secondary Color:"))
-            trans.push('.str-set', _("Set..."))
-            trans.push('#str-startup', _("Start-up Settings"))
-            trans.push('#str-startup-hint', _("These settings are applied when the Tray Applet is started. Ensure the tray applet automatically starts when you login."))
-            trans.push('#str-enable-startup', _("Set preferences when the tray applet starts."), True)
-            trans.push('#str-start-effect', _("Start Effect:"))
-            trans.push('#str-disabled', _("No Change"))
-            trans.push('#str-spectrum', _("Spectrum"))
-            trans.push('#str-wave', _("Wave"))
-            trans.push('#str-reactive', _("Reactive"))
-            trans.push('#str-breath-r', _("Breath (Random)"))
-            trans.push('#str-breath-s', _("Breath (Single Color)"))
-            trans.push('#str-breath-d', _("Breath (Dual Color)"))
-            trans.push('#str-static', _("Static"))
-            trans.push('#str-none', _("None"))
-            trans.push('#str-profile-mode', _("Activate a Profile"))
-            trans.push('#str-start-bright', _("Start Brightness:"))
-            trans.push('#str-auto-macro', _("Automatically enable the macro keys."), True)
-            trans.push('#str-advanced', _("Advanced"))
-            trans.push('#str-reset-pref', _("Reset Preferences"), True)
-            trans.push('#str-reset-all', _("Reset Everything"))
-            trans.push('#pref-save', _("OK"), True)
-
-            trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
-            trans.push_var('no_change', _("No Change"))
-
             trans.push('#dialog-changelog-title', _("Update History"), True)
             trans.push('#dialog-changelog-subtitle', _("A human-readable list of changes made to Polychromatic."))
             trans.push('#dialog-close', _("Close"), True)
-
-            trans.push('#str-daemon-title', _("About the Daemon"))
-            trans.push('#str-daemon-info', _("The daemon is the software that communicates between the front-end applications and the driver."))
-            trans.push('#str-website', _("Website"), True)
-            trans.push('#str-project', _("Project"), True)
-            trans.push('#str-issues', _("Issues"))
-            trans.push('#str-troubleshooting', _("Troubleshooting"))
-            trans.push('#str-device-support', _("Device/Daemon Support"))
-            trans.push('#str-logs', _("Logs"))
-            trans.push('#str-logs-help', _("Useful for diagnosing issues and debugging daemon-related operations."))
-            trans.push('#str-watch', _("Watch"), True)
-
-            trans.push('#colour-choose', _("Choose..."))
-            trans.push('#colour-new', _("New"), True)
-            trans.push('#colour-reset', _("Restore Defaults"), True)
-            trans.push('#colour-save', _("Save"), True)
-            trans.push('#colour-revert', _("Revert"))
-            trans.push('#colour-delete', _("Delete"), True)
-
-            trans.push('#dialog-del-title', _("Reset Colors"))
-            trans.push('#dialog-del-hint', _("Are you sure you want to reset all colors to their defaults?"))
-            trans.push('#dialog-del-no', _("Cancel"))
-            trans.push('#dialog-del-yes', _("Reset Defaults"))
-
-            trans.push('#str-daemon-options', _("Daemon Service"))
-            trans.push('#str-daemon-stop', _("Stop"))
-            trans.push('#str-daemon-restart', _("Restart"))
-            trans.push('#str-daemon-service', _("If you have re-plugged devices, or are experiencing glitches, try restarting the daemon service."))
-            trans.push('#str-options-missing', _("Could not read the daemon's configuration file."))
-            trans.push('#str-options-restart', _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect."))
 
             # Append version information
             def make_dev_version():
@@ -759,68 +683,127 @@ class Controller(object):
                     self.update_page("#auto-update-info", "show")
                     make_dev_version()
 
-            # Populate start-up profiles list.
-            self.refresh_profiles_list()
+            # Synchronised demo for BlackWidow Chroma users.
+            for device in self.devices:
+                if device.name.startswith("Razer BlackWidow Chroma"):
+                    self.update_page("#demo-chroma", "show")
+                    trans.push('#demo-chroma', _("Play Demo - Razer BlackWidow Chroma Advert"))
 
-            # Set checkboxes
-            for setting in ['live_switch','live_preview','activate_on_save']:
-                if pref.get('editor', setting, 'true') == 'true':
-                    self.update_page('#'+setting, 'prop', 'checked', 'true')
+            ########################
+            # General
+            ########################
+            trans.push('#str-app-profiles', _("Application Profiles"))
+            trans.push('#str-live-switch', _("Enable live switching"), True)
+            trans.push('#str-live-switch-help', _("Activate profiles instantly as soon as you click on them."))
+            trans.push('#str-live-preview', _("Enable live preview"), True)
+            trans.push('#str-live-preview-help', _("While editing, show your changes on the actual keyboard."))
+            trans.push('#str-activate-on-save', _("Always activate profiles after saving."), True)
+            trans.push('#str-interface', _("Interface"))
+            trans.push('#str-scaling', _("Scale:"))
+            trans.push('#str-scaling-help', _("Scale the application so it looks good on large displays. Requires restart."))
+            trans.push('#str-advanced', _("Advanced"))
+            trans.push('#str-reset-pref', _("Reset Preferences"), True)
+            trans.push('#str-reset-all', _("Reset Everything"))
+            trans.push('#pref-save', _("OK"), True)
 
-            # Fetch settings for tray/start-up settings.
-            tray_icon_type = pref.get('tray_applet', 'icon_type', 'light')
-            tray_icon_path = pref.get('tray_applet', 'icon_path', '')
-            start_enabled = pref.get('startup', 'enabled', 'false')
-            start_effect = pref.get('startup', 'start_effect', None)
-            start_profile = pref.get('startup', 'start_profile', None)
-            start_brightness = int(pref.get('startup', 'start_brightness', 0))
-            start_macro = pref.get('startup', 'start_macro', 'false')
+            trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
+            trans.push_var('no_change', _("No Change"))
 
-            # Adapt icons for different desktop environments.
-            # MATE/Unity = "Humanity"
-            # KDE = "Breeze"
-            desktop_env = os.environ.get("XDG_CURRENT_DESKTOP")
-            if desktop_env == "KDE":
-                self.update_page("#tray-dark-preview", "attr", "src", "../tray/breeze-dark.svg")
-                self.update_page("#tray-light-preview", "attr", "src", "../tray/breeze-light.svg")
+            for setting in ["live_switch", "live_preview", "activate_on_save"]:
+                if pref.get("editor", setting, "true") == 'true':
+                    self.update_page("#" + setting, "prop", "checked", "true")
 
             # Set value for slider
-            scaling = pref.get('editor', 'scaling', 1)
-            self.update_page('#scaling', 'val', str(scaling))
+            scaling = pref.get("editor", "scaling", 1)
+            self.update_page("#scaling", "val", str(scaling))
 
-            # Set 'values' for textboxes and dropdowns.
-            self.update_page('#tray-'+tray_icon_type, 'prop', 'checked', 'true')
-            self.update_page('#tray-icon-path', 'val', tray_icon_path)
-            self.update_page('#tray-icon-path-preview', 'attr', 'src', tray_icon_path)
-            self.update_page('#start-effect-dropdown', 'val', start_effect)
-            self.update_page('#profiles-list', 'val', start_profile)
-            self.update_page('#start-brightness', 'val', str(start_brightness))
+            ########################
+            # Tray Applet
+            ########################
+            trans.push('#str-tray-icon', _("Tray Icon"))
+            trans.push('#str-tray-custom', _("Use Custom Image"), True)
+            trans.push('#tray-custom', _("Custom Icon:"), True)
+            trans.push('#str-tray-icon-builtin', _("Use a built-in icon"), True)
+            trans.push('#str-tray-icon-gtk', _("Use a theme icon (GTK)"), True)
+            trans.push('#str-tray-icon-custom', _("Use a custom image"), True)
+            trans.push('#str-gtk-example', _("Examples: ibus-keyboard, gnome-desktop-config"), True)
+            trans.push('#str-preview', _("Preview:"), True)
 
-            if start_macro == 'true':
-                self.update_page('#start-macro', 'prop', 'checked', 'true')
+            # If it's the first time loading, set default icon to desktop environment.
+            if not pref.exists("tray_icon", "type"):
+                common.set_default_tray_icon(pref)
 
-            # Hide/Show UI elements
-            if start_enabled == 'true':
-                self.update_page('#startup-enabled', 'prop', 'checked', 'true')
-                self.update_page('.startup-options', 'show')
+            # Populate built-in icons
+            def add_icon(uuid):
+                icon_name = icon_index[uuid]["name"]
+                icon_path = os.path.join(path.data_source, "tray", icon_index[uuid]["path"])
+                icon_info = icon_index[uuid]["info"]
+                onclick_cmd = "cmd('select-tray-icon-uuid?{0}'); $('.tray-uuid').removeClass('selected'); $('#tray-uuid-{0}').addClass('selected');".format(uuid)
+                self.update_page("#tray-icon-previews", "append", "<button id='tray-uuid-{0}' class='tray-uuid btn' onclick=\"{1}\"><img src='{2}'/></button>".format(uuid, onclick_cmd, icon_path))
 
-            if start_effect == 'profile':
-                self.update_page('#profiles-list', 'show')
-            else:
-                self.update_page('#profiles-list', 'hide')
+            icon_type = pref.get("tray_icon", "type", "builtin")
+            self.update_page("#tray-" + icon_type, "prop", "checked", "true")
+            self.webkit.run_javascript("show_only_relevant('.tray-options', '#tray-{0}-options')".format(icon_type))
 
-            if start_brightness == 0:
-                self.update_page('#start-brightness-text', 'html', _("No Change"))
-            else:
-                self.update_page('#start-brightness-text', 'html', str(int((start_brightness * 100) / 255 )) + '%')
+            icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
+            icons = sorted(list(icon_index.keys()))
+            for uuid in icons:
+                add_icon(uuid)
 
-            # Populate colours table
+            icon_value = pref.get("tray_icon", "value", "0")
+            if icon_type == "builtin":
+                self.update_page("#tray-uuid-" + icon_value, "addClass", "selected")
+
+            elif icon_type == "gtk":
+                self.update_page("#tray-icon-gtk", "val", icon_value)
+
+            elif icon_type == "custom":
+                self.update_page("#tray-icon-path", "val", icon_value)
+
+
+            ########################
+            # Colours
+            ########################
+            trans.push('#dialog-del-title', _("Reset Colors"))
+            trans.push('#dialog-del-hint', _("Are you sure you want to reset all colors to their defaults?"))
+            trans.push('#dialog-del-no', _("Cancel"))
+            trans.push('#dialog-del-yes', _("Reset Defaults"))
+
+            trans.push('#colour-choose', _("Choose..."))
+            trans.push('#colour-new', _("New"), True)
+            trans.push('#colour-reset', _("Restore Defaults"), True)
+            trans.push('#colour-save', _("Save"), True)
+            trans.push('#colour-revert', _("Revert"))
+            trans.push('#colour-delete', _("Delete"), True)
+
             self.populate_colours_table()
 
             # Reads and sets configuration set in razer.conf
             self.config_path = os.path.join(os.path.expanduser('~'), ".razer-service", "razer.conf")
             import configparser
             self.daemon_config = configparser.ConfigParser()
+
+            ########################
+            # Daemon
+            ########################
+            trans.push('#str-daemon-title', _("About the Daemon"))
+            trans.push('#str-daemon-info', _("The daemon is the software that communicates between the front-end applications and the driver."))
+            trans.push('#str-website', _("Website"), True)
+            trans.push('#str-project', _("Project"), True)
+            trans.push('#str-issues', _("Issues"))
+
+            trans.push('#str-troubleshooting', _("Troubleshooting"))
+            trans.push('#str-device-support', _("Device/Daemon Support"))
+            trans.push('#str-logs', _("Logs"))
+            trans.push('#str-logs-help', _("Useful for diagnosing issues and debugging daemon-related operations."))
+            trans.push('#str-watch', _("Watch"), True)
+
+            trans.push('#str-daemon-options', _("Daemon Service"))
+            trans.push('#str-daemon-stop', _("Stop"))
+            trans.push('#str-daemon-restart', _("Restart"))
+            trans.push('#str-daemon-service', _("If you have re-plugged devices, or are experiencing glitches, try restarting the daemon service."))
+            trans.push('#str-options-missing', _("Could not read the daemon's configuration file."))
+            trans.push('#str-options-restart', _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect."))
 
             if os.path.exists(self.config_path):
                 self.daemon_config.read(self.config_path)
@@ -830,8 +813,10 @@ class Controller(object):
                     self.update_page("#daemon-"+element, "addClass", "disabled")
                     self.update_page("#str-"+element, "addClass", "disabled")
 
-            """ Sets the initial checkbox state for razer.conf daemon settings """
             def read_daemon_config(group, item, element, label, description):
+                """
+                Sets the initial checkbox state for razer.conf daemon settings
+                """
                 element_checkbox = "#daemon-" + element
                 element_label = "#str-" + element
                 element_help = "#str-" + element + "-help"
@@ -1186,6 +1171,21 @@ class Controller(object):
             pref.clear_config()
             print('\nRestarting the application...\n')
             os.execv(__file__, sys.argv)
+
+        elif command.startswith('preview-gtk-icon?'):
+            try:
+                icon_name = command.split('?')[1]
+                icon_path = icon_name_to_path(icon_name)
+                self.update_page("#gtk-preview", "attr", "src", icon_path)
+            except:
+                self.update_page("#gtk-preview", "attr", "src", "")
+
+        elif command.startswith("select-tray-icon-uuid?"):
+            uuid = command.split('?')[1]
+            pref.set("tray_icon", "value", str(uuid))
+            self.update_page(".tray-uuids", "removeClass", "selected")
+            self.update_page("#tray-uuid-" + uuid, "addClass", "selected")
+            restart_tray_applet()
 
         ## Profile Editor / Management
         elif command.startswith('profile-edit'):

@@ -362,6 +362,8 @@ img.wave {
     border: 1px solid grey;
     color: white;
     width: 400px;
+    height: 24px;
+    float: left;
 }
 
 .pref-input.path {
@@ -1466,4 +1468,21 @@ label.disabled {
 
 #colour-edit-preview {
     float: left;
+}
+
+/************************
+   Preferences - Tray Icons
+*************************/
+.tray-uuid {
+    width: 64px;
+    height: 40px;
+}
+
+.tray-uuid > img {
+    width: 24px;
+    height: auto;
+}
+
+.tray-uuid.selected {
+    border: 2px solid lime;
 }

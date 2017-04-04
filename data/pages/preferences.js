@@ -135,3 +135,9 @@ function del_colours_dialog_close() {
     $('#overlay').fadeOut('fast');
     $('.blur-focus').removeClass('blur');
 }
+
+/* For only showing relevant options for a page */
+function show_only_relevant(element_class, target_element) {
+    $(element_class).slideUp('fast');
+    $(target_element).slideDown('fast');
+}

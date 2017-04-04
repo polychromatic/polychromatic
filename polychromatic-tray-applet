@@ -353,23 +353,19 @@ class AppIndicator(object):
 
         # If it's the first time loading, set default icon to desktop environment.
         if not pref.exists("tray_icon", "type"):
-            desktop_env = os.environ.get("XDG_CURRENT_DESKTOP")
-            pref.set("tray_icon", "type", "builtin")
-
-            if desktop_env == "KDE":
-                pref.set("tray_icon", "value", "breeze-light")
-            else:
-                # MATE/Unity/Others
-                pref.set("tray_icon", "value", "humanity-light")
+            common.set_default_tray_icon(pref)
 
         icon_type = pref.get("tray_icon", "type", "builtin")
-        icon_value = pref.get("tray_icon", "value", "humanity-light")
+        icon_value = pref.get("tray_icon", "value", "0")
         icon_fallback = os.path.join(path.data_source, "tray", "humanity-dark.svg")
 
         if icon_type == "builtin":
-            return(os.path.join(path.data_source, "tray", icon_value + ".svg"))
+            # icon_value = UUID
+            icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
+            return(os.path.join(path.data_source, "tray", icon_index[icon_value]["path"]))
 
         elif icon_type == "custom":
+            # icon_value = Path to icon
             if os.path.exists(icon_value):
                 return(icon_value)
             else:
@@ -378,6 +374,7 @@ class AppIndicator(object):
                 return(icon_fallback)
 
         elif icon_type == "gtk":
+            # icon_value = Icon name used by GTK
             return(icon_value)
 
         else:

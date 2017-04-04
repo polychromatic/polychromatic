@@ -317,3 +317,17 @@ def get_green_shades():
     "8": {"name": "Green 8", "col": [0, 75, 0]},
     "9": {"name": "Green 9", "col": [0, 50, 0]},
     }
+
+
+def set_default_tray_icon(pref):
+    """
+    Determines which tray icon is best suited for the current desktop environment.
+    """
+    desktop_env = os.environ.get("XDG_CURRENT_DESKTOP")
+    pref.set("tray_icon", "type", "builtin")
+
+    if desktop_env == "KDE":
+        pref.set("tray_icon", "value", "0")
+    else:
+        # MATE/Unity/Others
+        pref.set("tray_icon", "value", "0")
