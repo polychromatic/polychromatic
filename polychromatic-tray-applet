@@ -654,9 +654,9 @@ class AppIndicator(object):
                 icon = self._get_colour_icon(rgb)
                 submenu[1].append(create_menu_item(name, True, cb.set_colour, uuid, icon))
         else:
-            submenu[1].append(create_menu_item(_("No colours to list."), False))
+            submenu[1].append(create_menu_item(_("No colors to list."), False))
             submenu[1].append(create_seperator())
-            submenu[1].append(create_menu_item(_("Where did your colours go?"), False))
+            submenu[1].append(create_menu_item(_("Where did your colors go?"), False))
         stdout.vprint(" -- Loaded {0} colours.".format(str(len(uuids))))
         return(submenu[0])
 
