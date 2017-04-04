@@ -5,203 +5,293 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2017-03-07 21:42+0000\n"
-"PO-Revision-Date: 2017-03-07 21:42+0000\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2017-04-04 23:08+0100\n"
+"PO-Revision-Date: 2017-04-04 23:08+0100\n"
 "Language-Team: \n"
-"Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "X-Generator: Poedit 1.8.7.1\n"
+"Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en_GB\n"
 
-#: polychromatic-tray-applet:82 polychromatic-tray-applet:116
-msgid "Retry"
-msgstr "Retry"
-
-#: polychromatic-tray-applet:97
-msgid "Unable to connect to daemon."
-msgstr "Unable to connect to daemon."
-
-#: polychromatic-tray-applet:100
-msgid "No devices found."
-msgstr "No devices found."
-
-#: polychromatic-tray-applet:121 polychromatic-tray-applet:390
-msgid "Quit"
-msgstr "Quit"
-
-#: polychromatic-tray-applet:233
-msgid "Unknown Device"
-msgstr "Unknown Device"
-
-#: polychromatic-tray-applet:238
-msgid "Change Device"
-msgstr "Change Device"
-
-#: polychromatic-tray-applet:290
-msgid "Effects"
-msgstr "Effects"
-
-#: polychromatic-tray-applet:298
-msgid "Spectrum"
-msgstr "Spectrum"
-
-#: polychromatic-tray-applet:299
-msgid "Wave"
-msgstr "Wave"
-
-#: polychromatic-tray-applet:300
-msgid "Reactive"
-msgstr "Reactive"
-
-#: polychromatic-tray-applet:301
-msgid "Breath (Random)"
-msgstr "Breath (Random)"
-
-#: polychromatic-tray-applet:302
-msgid "Breath (Single Color)"
-msgstr "Breath (Single Colour)"
-
-#: polychromatic-tray-applet:303
-msgid "Breath (Dual Color)"
-msgstr "Breath (Dual Color)"
-
-#: polychromatic-tray-applet:304
-msgid "Ripple (Single Color)"
-msgstr "Ripple (Single Colour)"
-
-#: polychromatic-tray-applet:305
-msgid "Ripple (Random)"
-msgstr "Ripple (Random)"
-
-#: polychromatic-tray-applet:306
-msgid "Static"
-msgstr "Static"
-
-#: polychromatic-tray-applet:307
-msgid "None"
-msgstr "None"
-
-#: polychromatic-tray-applet:315
-msgid "Brightness"
-msgstr "Brightness"
-
-#: polychromatic-tray-applet:323
-msgid "Full (100%)"
-msgstr "Full (100%)"
-
-#: polychromatic-tray-applet:324
-msgid "Bright (75%)"
-msgstr "Bright (75%)"
-
-#: polychromatic-tray-applet:325
-msgid "Mid (50%)"
-msgstr "Mid (50%)"
-
-#: polychromatic-tray-applet:326
-msgid "Dim (25%)"
-msgstr "Dim (25%)"
-
-#: polychromatic-tray-applet:327
-msgid "Off (0%)"
-msgstr "Off (0%)"
-
-#: polychromatic-tray-applet:335
-msgid "Game Mode"
-msgstr "Game Mode"
-
-#: polychromatic-tray-applet:342
-msgid "Enable"
-msgstr "Enable"
-
-#: polychromatic-tray-applet:347
-msgid "Disable"
-msgstr "Disable"
-
-#: polychromatic-tray-applet:353
-msgid "Application Profiles"
-msgstr "Application Profiles"
-
-#: polychromatic-tray-applet:365 polychromatic-tray-applet:522
-#: polychromatic-tray-applet:631
-msgid "Change Primary Color..."
-msgstr "Change Primary Colour..."
-
-#: polychromatic-tray-applet:367 polychromatic-tray-applet:526
-#: polychromatic-tray-applet:634
-msgid "Change Secondary Color..."
-msgstr "Change Secondary Colour..."
-
-#: polychromatic-tray-applet:379
-msgid "Open Configuration Utility"
-msgstr "Open Configuration Utility"
-
-#: polychromatic-tray-applet:512
-msgid "Change Static Color"
-msgstr "Change Static Colour"
-
-#: polychromatic-tray-applet:553
-msgid "No profiles found."
-msgstr "No profiles found."
-
-#: polychromatic-tray-applet:561
-msgid "None Selected"
-msgstr "None Selected"
-
-#: polychromatic-tray-applet:576
+#: polychromatic-tray-applet:166 polychromatic-tray-applet:167
+#: polychromatic-tray-applet:168 polychromatic-tray-applet:172
+#: polychromatic-tray-applet:173 polychromatic-tray-applet:340
+#: polychromatic-tray-applet:673
 msgid "Unknown"
 msgstr "Unknown"
 
-#~ msgid "Enable Macro Keys"
-#~ msgstr "Enable Macro Keys"
+#: polychromatic-tray-applet:170
+msgid "Green"
+msgstr "Green"
 
-#~ msgid "Profiles"
-#~ msgstr "Profiles"
+#: polychromatic-tray-applet:181
+msgid "Daemon Not Installed."
+msgstr "Daemon Not Installed."
 
-#~ msgid "Spectrum Effect"
-#~ msgstr "Spectrum Effect"
+#: polychromatic-tray-applet:181
+msgid "Unknown command: razer-service"
+msgstr "Unknown command: razer-service"
 
-#~ msgid "Wave Effect"
-#~ msgstr "Wave Effect"
+#: polychromatic-tray-applet:186
+msgid "Daemon isn't running or crashed."
+msgstr "Daemon isn't running or crashed."
 
-#~ msgid "Reactive Effect"
-#~ msgstr "Reactive Effect"
+#: polychromatic-tray-applet:190
+msgid "No devices found."
+msgstr "No devices found."
 
-#~ msgid "Breath Effect (Random)"
-#~ msgstr "Breath Effect (Random)"
+#: polychromatic-tray-applet:236 polychromatic-tray-applet:266
+msgid "Main"
+msgstr "Main"
 
-#~ msgid "Breath Effect (Single Color)"
-#~ msgstr "Breath Effect (Single Colour)"
+#: polychromatic-tray-applet:243 polychromatic-tray-applet:277
+#: polychromatic-tray-applet:294 polychromatic-tray-applet:296
+msgid "Logo"
+msgstr "Logo"
 
-#~ msgid "Breath Effect (Dual Color)"
-#~ msgstr "Breath Effect (Dual Colour)"
+#: polychromatic-tray-applet:250 polychromatic-tray-applet:288
+#: polychromatic-tray-applet:300 polychromatic-tray-applet:302
+msgid "Scroll Wheel"
+msgstr "Scroll Wheel"
 
-#~ msgid "Static Effect"
-#~ msgstr "Static Effect"
+#: polychromatic-tray-applet:294 polychromatic-tray-applet:300
+#: polychromatic-tray-applet:594 polychromatic-tray-applet:599
+msgid "On"
+msgstr "On"
 
-#~ msgid "No Effect (Off)"
-#~ msgstr "No Effect (Off)"
+#: polychromatic-tray-applet:296 polychromatic-tray-applet:302
+#: polychromatic-tray-applet:595 polychromatic-tray-applet:600
+msgid "Off"
+msgstr "Off"
 
-#~ msgid "Brightness 100%"
-#~ msgstr "Brightness 100%"
+#: polychromatic-tray-applet:327 polychromatic-tray-applet:403
+msgid "Open Controller"
+msgstr "Open Controller"
 
-#~ msgid "Brightness 75%"
-#~ msgstr "Brightness 75%"
+#: polychromatic-tray-applet:328
+msgid "Advanced"
+msgstr "Advanced"
 
-#~ msgid "Brightness 50%"
-#~ msgstr "Brightness 50%"
+#: polychromatic-tray-applet:332 polychromatic-tray-applet:404
+msgid "Quit"
+msgstr "Quit"
 
-#~ msgid "Brightness 25%"
-#~ msgstr "Brightness 25%"
+#: polychromatic-tray-applet:400
+msgid "Retry"
+msgstr "Retry"
 
-#~ msgid "Brightness 0%"
-#~ msgstr "Brightness 0%"
+#: polychromatic-tray-applet:401
+msgid "Restart Daemon"
+msgstr "Restart Daemon"
 
-#~ msgid "Enable Game Mode"
-#~ msgstr "Enable Game Mode"
+#: polychromatic-tray-applet:414
+msgid "Change Device"
+msgstr "Change Device"
 
-#~ msgid "Disable Game Mode"
-#~ msgstr "Disable Game Mode"
+#: polychromatic-tray-applet:425
+msgid "Refresh Device List"
+msgstr "Refresh Device List"
+
+#: polychromatic-tray-applet:456 polychromatic-tray-applet:473
+#: polychromatic-tray-applet:487
+msgid "None"
+msgstr "None"
+
+#: polychromatic-tray-applet:457 polychromatic-tray-applet:474
+#: polychromatic-tray-applet:488
+msgid "Spectrum"
+msgstr "Spectrum"
+
+#: polychromatic-tray-applet:458
+msgid "Wave"
+msgstr "Wave"
+
+#: polychromatic-tray-applet:459 polychromatic-tray-applet:480
+#: polychromatic-tray-applet:494
+msgid "Reactive (Fast)"
+msgstr "Reactive (Fast)"
+
+#: polychromatic-tray-applet:460 polychromatic-tray-applet:481
+#: polychromatic-tray-applet:495
+msgid "Reactive (Medium)"
+msgstr "Reactive (Medium)"
+
+#: polychromatic-tray-applet:461 polychromatic-tray-applet:482
+#: polychromatic-tray-applet:496
+msgid "Reactive (Slow)"
+msgstr "Reactive (Slow)"
+
+#: polychromatic-tray-applet:462 polychromatic-tray-applet:483
+#: polychromatic-tray-applet:497
+msgid "Reactive (Very Slow)"
+msgstr "Reactive (Very Slow)"
+
+#: polychromatic-tray-applet:463 polychromatic-tray-applet:476
+#: polychromatic-tray-applet:490
+msgid "Breath (Random)"
+msgstr "Breath (Random)"
+
+#: polychromatic-tray-applet:464 polychromatic-tray-applet:477
+#: polychromatic-tray-applet:491
+msgid "Breath (Single)"
+msgstr "Breath (Single)"
+
+#: polychromatic-tray-applet:465 polychromatic-tray-applet:478
+#: polychromatic-tray-applet:492
+msgid "Breath (Dual)"
+msgstr "Breath (Dual)"
+
+#: polychromatic-tray-applet:466 polychromatic-tray-applet:479
+#: polychromatic-tray-applet:493
+msgid "Pulsate"
+msgstr "Pulsate"
+
+#: polychromatic-tray-applet:467
+msgid "Ripple (Random)"
+msgstr "Ripple (Random)"
+
+#: polychromatic-tray-applet:468
+msgid "Ripple (Single)"
+msgstr "Ripple (Single)"
+
+#: polychromatic-tray-applet:469
+msgid "Starlight"
+msgstr "Starlight"
+
+#: polychromatic-tray-applet:470 polychromatic-tray-applet:484
+#: polychromatic-tray-applet:498
+msgid "Static"
+msgstr "Static"
+
+#: polychromatic-tray-applet:475 polychromatic-tray-applet:489
+msgid "Blinking"
+msgstr "Blinking"
+
+#: polychromatic-tray-applet:562 polychromatic-tray-applet:574
+#: polychromatic-tray-applet:586
+msgid "Full (100%)"
+msgstr "Full (100%)"
+
+#: polychromatic-tray-applet:563 polychromatic-tray-applet:575
+#: polychromatic-tray-applet:587
+msgid "Bright (75%)"
+msgstr "Bright (75%)"
+
+#: polychromatic-tray-applet:564 polychromatic-tray-applet:576
+#: polychromatic-tray-applet:588
+msgid "Medium (50%)"
+msgstr "Medium (50%)"
+
+#: polychromatic-tray-applet:565 polychromatic-tray-applet:577
+#: polychromatic-tray-applet:589
+msgid "Dim (25%)"
+msgstr "Dim (25%)"
+
+#: polychromatic-tray-applet:566 polychromatic-tray-applet:578
+#: polychromatic-tray-applet:590
+msgid "Off (0%)"
+msgstr "Off (0%)"
+
+#: polychromatic-tray-applet:622
+msgid "Application Profiles"
+msgstr "Application Profiles"
+
+#: polychromatic-tray-applet:634
+msgid "No profiles to display."
+msgstr "No profiles to display."
+
+#: polychromatic-tray-applet:639
+msgid "Change Color"
+msgstr "Change Colour"
+
+#: polychromatic-tray-applet:657
+msgid "No colors to list."
+msgstr "No colours to list."
+
+#: polychromatic-tray-applet:659
+msgid "Where did your colors go?"
+msgstr "Where did your colours go?"
+
+#: polychromatic-tray-applet:665
+msgid "DPI"
+msgstr "DPI"
+
+#: polychromatic-tray-applet:675
+msgid "Super Slow (200)"
+msgstr "Super Slow (200)"
+
+#: polychromatic-tray-applet:676
+msgid "Slow (800)"
+msgstr "Slow (800)"
+
+#: polychromatic-tray-applet:677
+msgid "Medium (1800)"
+msgstr "Medium (1800)"
+
+#: polychromatic-tray-applet:678
+msgid "Fast (4500)"
+msgstr "Fast (4500)"
+
+#: polychromatic-tray-applet:679
+msgid "Super Fast (9000)"
+msgstr "Super Fast (9000)"
+
+#: polychromatic-tray-applet:680
+msgid "Blazingly Fast (16000)"
+msgstr "Blazingly Fast (16000)"
+
+#: polychromatic-tray-applet:692 polychromatic-tray-applet:851
+msgid "Enabled"
+msgstr "Enabled"
+
+#: polychromatic-tray-applet:694 polychromatic-tray-applet:853
+msgid "Disabled"
+msgstr "Disabled"
+
+#: polychromatic-tray-applet:696
+msgid "Game Mode"
+msgstr "Game Mode"
+
+#: polychromatic-tray-applet:697
+msgid "Enable"
+msgstr "Enable"
+
+#: polychromatic-tray-applet:698
+msgid "Disable"
+msgstr "Disable"
+
+#: polychromatic-tray-applet:814
+msgid "Change Tray Color"
+msgstr "Change Tray Colour"
+
+#: polychromatic-tray-applet:822
+msgid "Custom"
+msgstr "Custom"
+
+#: polychromatic-tray-applet:837
+msgid "Profile"
+msgstr "Profile"
+
+#: polychromatic-tray-applet:914
+msgid "Stopping razer-service..."
+msgstr "Stopping razer-service..."
+
+#: polychromatic-tray-applet:933
+msgid "Killing razer-service..."
+msgstr "Killing razer-service..."
+
+#: polychromatic-tray-applet:938
+msgid "Starting razer-service..."
+msgstr "Starting razer-service..."
+
+#: polychromatic-tray-applet:950
+msgid "Daemon Restart Error."
+msgstr "Daemon Restart Error."
+
+#: polychromatic-tray-applet:950
+msgid "The daemon process could not be found."
+msgstr "The daemon process could not be found."
