@@ -36,6 +36,7 @@ setproctitle.setproctitle('polychromatic-controller')
 import time
 import threading
 from subprocess import Popen as background_process
+from subprocess import check_output
 from platform import linux_distribution
 
 try:
@@ -2463,29 +2464,27 @@ def icon_name_to_path(icon_name):
 
 def restart_tray_applet():
     print("Tray applet restarting...")
-    # Get the PID written in memory.
     try:
-        with open(tray_pid_file) as stream:
-            tray_pid = int(stream.readline())
-        print(tray_pid)
-    except IOError:
-        print("Tray applet is not running.")
+        pid = int(check_output(["pidof", "polychromatic-tray-applet"]))
+        os.kill(pid, 9)
+    except Exception:
+        print("Tray applet is not running so not relaunching.")
         return
 
     # Where is the tray applet?
     if __file__.startswith("/usr"):
         tray_bin_path = "/usr/bin/polychromatic-tray-applet"
     else:
-        tray_bin_path = os.path.join(path.data_source, "/../polychromatic-tray-applet")
+        tray_bin_path = os.path.abspath(os.path.join(path.data_source, "../polychromatic-tray-applet"))
 
     # Attempt to gracefully stop the process, then launch again.
     try:
-        os.kill(tray_pid, 15)
         background_process(tray_bin_path)
     except OSError:
-        print("Tray applet is not running or couldn't be relaunched.")
+        print("Tray applet failed to relaunch.")
         return
-    print("Tray Applet Reloaded.")
+
+    print("Tray applet reloaded.")
 
 def restart_daemon_service():
     from subprocess import check_output
