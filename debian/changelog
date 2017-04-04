@@ -1,3 +1,18 @@
+polychromatic (0.3.8-xenial) xenial; urgency=low
+
+  * Internal code clean-ups.
+  * Prevent an exception when creating a new profile.
+  * Only show relevant daemon service options.
+  * Only show macros, game mode or profiles if supported by device.
+  * Overhaul tray applet, with improved device support.
+  * Add support for scroll brightness toggles.
+  * UI tweaks and improvements.
+  * Show green grades for Ultimate keyboards.
+  * Fix Overview tab not being selected properly.
+  * Update translation templates and eb_GB locales.
+
+ -- Luke Horwell <luke@ubuntu-mate.org>  Tue, 04 Apr 2017 23:18:22 +0100
+
 polychromatic (0.3.7.1-xenial) xenial; urgency=low
 
   * Fix regression when editing profiles.
