@@ -139,7 +139,7 @@ cp "$source/man/polychromatic-tray-applet.1" "$target_man/"
 
 # Copy locales
 printg "Copying to $locale_dir..."
-rsync -rlpt --exclude="polychromatic-controller.pot" --exclude="polychromatic-tray-applet.pot" --exclude=*.po "$source/locale/" "$locale_dir"
+rsync -rlpt --exclude=*.pot --exclude=*.po "$source/locale/" "$locale_dir"
 
 # Copy desktop launchers
 printg "Copying to $target_apps..."
