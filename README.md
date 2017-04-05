@@ -8,13 +8,11 @@ A front-end for customising the functionality of your Razer perpherials under GN
 | Screenshot | Features |
 | ---------- | -------- |
 | ![Controller v0-3-8](https://cloud.githubusercontent.com/assets/13032135/24725693/b9766b60-1a47-11e7-926b-df5568a13e8a.png) | <ul><li>Set effects, brightness, colours, DPI and modes supported by the device.</li><li>Create application profiles.</li><li>Set up colours for quick access.</li><li>View all connected devices and configure the daemon-specific settings.</li></ul>
-|
 
 ### Tray Applet
 | Screenshot | Features |
 | ---------- | -------- |
-| !![Tray Effects Menu](https://cloud.githubusercontent.com/assets/13032135/24725801/0aa359b2-1a48-11e7-8c4a-638c6024cb08.png) | <ul><li>Quickly change the Chroma effects of your device from this tray applet.</li><li>Set colours and application profiles on-the-fly.</li></ul>
-|
+| ![Tray Effects Menu](https://cloud.githubusercontent.com/assets/13032135/24725801/0aa359b2-1a48-11e7-8c4a-638c6024cb08.png) | <ul><li>Quickly change the Chroma effects of your device from this tray applet.</li><li>Set colours and application profiles on-the-fly.</li></ul>
 
 [View all screenshots](.readme/Screenshots.md)
 
