@@ -7,13 +7,13 @@ A front-end for customising the functionality of your Razer perpherials under GN
 ### Controller
 | Screenshot | Features |
 | ---------- | -------- |
-| ![controller-kbd-options](https://cloud.githubusercontent.com/assets/13032135/23827524/81aa49b6-06ad-11e7-91d8-2c9455225b50.gif) | <ul><li>Set effects, brightness, colours and modes supported by the device.</li><li>Create application profiles.</li><li>Specify preferences - such as default colours.</li><li>View all connected devices and configure the daemon-specific settings.</li></ul>
+| ![Controller v0-3-8](https://cloud.githubusercontent.com/assets/13032135/24725693/b9766b60-1a47-11e7-926b-df5568a13e8a.png) | <ul><li>Set effects, brightness, colours, DPI and modes supported by the device.</li><li>Create application profiles.</li><li>Set up colours for quick access.</li><li>View all connected devices and configure the daemon-specific settings.</li></ul>
 |
 
 ### Tray Applet
 | Screenshot | Features |
 | ---------- | -------- |
-| ![tray](https://cloud.githubusercontent.com/assets/13032135/20988404/85d08462-bcc8-11e6-8e9c-be3eaf976df1.jpg) | <ul><li>Quickly set supported effects, brightness and modes.</li><li>Change colours and application profiles on-the-fly.</li><li>Apply settings automatically when you log-in</li></ul>
+| !![Tray Effects Menu](https://cloud.githubusercontent.com/assets/13032135/24725801/0aa359b2-1a48-11e7-8c4a-638c6024cb08.png) | <ul><li>Quickly change the Chroma effects of your device from this tray applet.</li><li>Set colours and application profiles on-the-fly.</li></ul>
 |
 
 [View all screenshots](.readme/Screenshots.md)
