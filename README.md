@@ -177,6 +177,7 @@ Polychromatic interfaces with the daemon from the [razer-drivers project](https:
 | [python3-gi](https://packages.debian.org/sid/python3-gi) | [python-gobject](https://www.archlinux.org/packages/extra/x86_64/python-gobject/) | [python3-gobject](https://software.opensuse.org/package/python3-gobject)
 | [python3-setproctitle](https://packages.debian.org/sid/python3-setproctitle) | [python-setproctitle](https://www.archlinux.org/packages/community/x86_64/python-setproctitle/) | [python3-setproctitle](https://software.opensuse.org/package/python3-setproctitle)
 | [python3-requests](https://packages.debian.org/sid/python3-requests) | [python-requests](https://www.archlinux.org/packages/extra/any/python-requests/) | [python3-requests](https://software.opensuse.org/package/python3-requests)
+| [imagemagick](https://packages.debian.org/sid/imagemagick) | [imagemagick](https://www.archlinux.org/packages/extra/x86_64/imagemagick/) | [imagemagick](https://software.opensuse.org/package/ImageMagick)
 
 
 ## Something not working?

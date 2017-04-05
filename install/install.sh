@@ -31,8 +31,8 @@ polyc_modules="$python_path/polychromatic"
 razer_modules="$python_path/razer/"
 locale_dir="/usr/share/locale/"
 source=$(dirname "$0")/..
-dependencies_apt="gir1.2-webkit2-4.0 python3-gi python3-setproctitle python3-requests gir1.2-appindicator3-0.1"
-dependencies_pacman="webkitgtk python-gobject python-setproctitle python-requests libappindicator"
+dependencies_apt="gir1.2-webkit2-4.0 python3-gi python3-setproctitle python3-requests gir1.2-appindicator3-0.1 imagemagick"
+dependencies_pacman="webkitgtk python-gobject python-setproctitle python-requests libappindicator imagemagick"
 
 # Pretty colours!
 function printg() {
