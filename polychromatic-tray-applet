@@ -652,7 +652,7 @@ class AppIndicator(object):
                 name = colour_index[uuid]["name"]
                 rgb = colour_index[uuid]["col"]
                 icon = self._get_colour_icon(rgb)
-                submenu[1].append(create_menu_item(name, True, cb.set_colour, uuid, icon))
+                submenu[1].append(create_menu_item(name, True, cb.set_colour, [name, rgb], icon))
         else:
             submenu[1].append(create_menu_item(_("No colors to list."), False))
             submenu[1].append(create_seperator())
@@ -795,17 +795,16 @@ class Callback():
         indicator.rebuild_all_submenus()
         indicator.rebuild_root_menu()
 
-    def set_colour(cb, item, uuid):
-        colour_index = pref.load_file(path.colours)
-        try:
-            indicator.current_colour = colour_index[uuid]["name"]
-            indicator.current_colour_rgb = colour_index[uuid]["col"]
-        except Exception as e:
-            stdout.error("Failed to read colour information for UUID " + uuid)
-            stdout.error("Exception: " + str(e))
-            return
-        stdout.vprint("Set colour to: {0} (RGB {1})".format(indicator.current_colour, indicator.current_colour_rgb))
-        common.save_colours_to_all_sources(pref, indicator.active_device, "colour_primary", indicator.current_colour_rgb)
+    def set_colour(cb, item, params):
+        """
+            params = [name (str), rgb (list)]
+        """
+        name = params[0]
+        rgb = params[1]
+        indicator.current_colour = name
+        indicator.current_colour_rgb = rgb
+        stdout.vprint("Set colour to: {0} (RGB {1})".format(name, rgb))
+        common.save_colours_to_all_sources(pref, indicator.active_device, "colour_primary", rgb)
         common.repeat_last_effect(pref, indicator.active_device)
         indicator.rebuild_all_submenus()
         indicator.rebuild_root_menu()
