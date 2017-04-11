@@ -75,6 +75,7 @@ path.data_source = path.get_data_source(__file__)
 #   * requests
 #   * configparser
 #   * shutil
+#   * grp
 
 class Translations(object):
     def __init__(self):
@@ -1529,27 +1530,45 @@ class Controller(object):
         # Show an error if no devices were returned by the daemon.
         if len(found_devices) == 0:
             stdout.vprint("WARN: Daemon did not return any devices.")
+
             # Scan 'lsusb' in case device is incompatible with daemon.
             import subprocess
             lsusb = str(subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0])
             lsusb.find("ID 1532")
-            if lsusb == -1:
-                message = _("Please plug in your Razer device and reload the daemon/application.")
+
+            # Is the user in the 'plugdev' group?
+            import grp
+            if "plugdev" in [grp.getgrgid(g).gr_name for g in os.getgroups()]:
+                has_plugdev = True
             else:
-                message = _("However, Polychromatic detected there is a Razer product connected to your computer.") + '<br><br>' + \
-                          _("This could mean your Razer product is not bound to the driver properly, the daemon doesn't recognise it or it's not yet supported.") + \
+                has_plugdev = False
+
+            # Determine which message to display.
+            if lsusb == -1:
+                title   = _("No Razer Product Connected")
+                message = _("Please plug in your Razer device and reload the application/daemon.")
+
+            elif lsusb != -1 and not has_plugdev:
+                title = _("Insufficient Privileges")
+                message = _("This user account is not in the 'plugdev' group, the daemon requires this to control your device(s).") + \
+                          '<br><br>' + _("Please run this command in the terminal, then log out then back in:") + \
+                          '<br><code>sudo gpasswd -a ' + os.getlogin() + ' plugdev</code>'
+
+            else:
+                title = _("Device Not Recognised")
+                message = _("A Razer product is connected to your computer, but the daemon didn't detect it.") + '<br><br>' + \
+                          _("It is possible your Razer product is not bound to the driver properly or it is not yet supported.") + \
                           '<br><br><u>' + _("Suggestions:") + '</u>' \
-                          '<br>• ' + _("Try reloading the daemon.") + \
-                          '<br>• ' + _("Ensure your user is added to the 'plugdev' group.") + \
                           '<br>• ' + _("Use the 'modprobe' command to bind the driver to the device.") + \
                           '<br>• <u><a onclick="cmd(\'open?https://github.com/terrycain/razer-drivers#device-support\')">' + \
-                                _("Check whether your device is fully supported.") + \
+                                _("Check whether your device PID is listed.") + \
                            '</u></a><br><br>' + \
+                           _("As this is a driver/daemon problem, please") + ' ' + \
                            '<a onclick="cmd(\'open?https://github.com/terrycain/razer-drivers/wiki/Troubleshooting\')"><u>' + \
-                                _("Please refer troubleshooting guide on the driver/daemon repository for further assistance.") + \
+                                _("refer to the troubleshooting guide for further assistance.") + \
                            '</u></a>'
 
-            self.show_error_page("warning", "nodevice", _("No Devices Found"), message)
+            self.show_error_page("warning", "nodevice", title, message)
             return([])
 
         return(found_devices)
