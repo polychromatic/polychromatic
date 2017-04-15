@@ -191,6 +191,14 @@ For visual or functional problems with Polychromatic, [please raise an issue her
 
 ## Translations
 
-If you'd like to translate this application, take a look
-[at this wiki page](https://github.com/lah7/polychromatic/wiki/How-to-translate-the-application).
+The software is ready to speak multiple languages! Take a look
+[at this wiki page](https://github.com/lah7/polychromatic/wiki/How-to-translate-the-application) if you'd like to contribute.
 
+
+## Donations
+
+This software is developed in my spare time without any expection of money in return,
+but if you're [feeling generous](https://github.com/lah7/polychromatic/issues/75), then you are more then welcome to
+[donate to the lead developer](https://www.paypal.me/LukeHorwell) of Polychromatic
+and [the people who bring you the driver and daemon](https://github.com/terrycain/razer-drivers/blob/master/README.md#contributions).
+Thank you for your generosity.
