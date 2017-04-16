@@ -335,6 +335,8 @@ class Controller(object):
             self.devman_reason = str(e)
 
         # When the running daemon and installed library differ, request the user to restart the daemon.
+        # Running   = Current running daemon's version.
+        # Installed = Version installed globally on system.
         try:
             running_version = self.devman._daemon_version
             import razer_daemon.daemon
@@ -344,7 +346,7 @@ class Controller(object):
             running_version = 0
             installed_version = 0
 
-        if running_version < installed_version:
+        if installed_version < running_version:
             print("ERROR: Currently running daemon is older than the installed version.")
             self.show_error_page(
                 "warning", "restart-required", _("Daemon requires a restart"),
