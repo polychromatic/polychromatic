@@ -644,9 +644,9 @@ class Controller(object):
             trans.push('#str-version-daemon', _("Daemon Version:"))
             trans.push('#str-version-lib', _("Razer Python Library:"))
 
+            trans.push('#project-button', _("View on GitHub"), True)
             trans.push('#update-button', _("Check for Updates"))
             trans.push('#changelog-button', _("View Change Log"))
-            trans.push('#releases-button', _("View Releases"))
 
             trans.push('#dialog-changelog-title', _("Update History"), True)
             trans.push('#dialog-changelog-subtitle', _("A human-readable list of changes made to Polychromatic."))
@@ -706,6 +706,7 @@ class Controller(object):
             trans.push('#str-scaling', _("Scale:"))
             trans.push('#str-scaling-help', _("Scale the application so it looks good on large displays. Requires restart."))
             trans.push('#str-advanced', _("Advanced"))
+            trans.push('#str-open-config', _("Open Configuration Folder"), True)
             trans.push('#str-reset-pref', _("Reset Preferences"), True)
             trans.push('#str-reset-all', _("Reset Everything"))
             trans.push('#pref-save', _("OK"), True)

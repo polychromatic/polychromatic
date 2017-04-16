@@ -60,8 +60,8 @@
             <td>
               <br>
               <button id="update-button" class="btn" onclick="cmd('update-check')"></button>
+              <button id="project-button" class="btn" onclick="cmd('open?https://github.com/lah7/polychromatic')"><span class="fa fa-github"></span>&nbsp;</button>
               <button id="changelog-button" class="btn" onclick="cmd('fetch-changelog')"></button>
-              <button id="releases-button" class="btn" onclick="cmd('open?https://github.com/lah7/polychromatic/releases')"></button>
             </td>
           </tr>
         </table>
@@ -95,6 +95,7 @@
         <br>
 
         <h3 id="str-advanced"></h3>
+        <button id="str-open-config" class="btn" onclick="cmd('open-config-folder')"><span class="fa fa-folder"></span>&nbsp;</button>
         <button id="str-reset-pref" class="btn" onclick="cmd('pref-reset-conf')"><span class="fa fa-delete"></span> </button>
         <button id="str-reset-all" class="btn btn-serious" onclick="reset_all_prompt()"><span class="fa fa-delete"></span> </button>
       </div>
