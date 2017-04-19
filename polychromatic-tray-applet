@@ -331,7 +331,9 @@ class AppIndicator(object):
         root.append(create_seperator())
         root.append(create_menu_item(_("Quit"), True, cb.quit))
 
+        self.indicator.set_title("Polychromatic")
         self.indicator.set_menu(root)
+        self.indicator.set_secondary_activate_target(root)
 
     # Data fetching
     def _get_device_state(self, source, state):
