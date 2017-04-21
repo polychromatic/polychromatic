@@ -237,6 +237,13 @@ class AppIndicator(object):
                 else:
                     root.append(create_menu_item(state, False))
 
+            if self.active_device.has("lighting_backlight"):
+                state = common.get_effect_state_string(self._get_device_state("backlight", "effect"))
+                if multiple_sources:
+                    root.append(create_menu_item(_("Backlight") + ": " + state, False))
+                else:
+                    root.append(create_menu_item(state, False))
+
             if self.active_device.has("lighting_logo"):
                 state = common.get_effect_state_string(self._get_device_state("logo", "effect"))
                 if multiple_sources:
@@ -267,6 +274,17 @@ class AppIndicator(object):
                 else:
                     root.append(create_menu_item(state, False))
 
+            if self.active_device.has("lighting_backlight_brightness"):
+                try:
+                    state = str(int(self.active_device.fx.misc.backlight.brightness)) + "%"
+                except Exception:
+                    state = "---%"
+
+                if multiple_sources:
+                    root.append(create_menu_item(_("Backlight") + ": " + state, False))
+                else:
+                    root.append(create_menu_item(state, False))
+
             if self.active_device.has("lighting_logo_brightness"):
                 try:
                     state = str(int(self.active_device.fx.misc.logo.brightness)) + "%"
@@ -288,6 +306,12 @@ class AppIndicator(object):
                     root.append(create_menu_item(_("Scroll Wheel") + ": " + state, False))
                 else:
                     root.append(create_menu_item(state, False))
+
+            if self.active_device.has("lighting_backlight_active"):
+                if self.active_device.fx.misc.logo.active == 1:
+                    root.append(create_menu_item(_("Backlight") + ": " + _("On"), False))
+                else:
+                    root.append(create_menu_item(_("Backlight") + ": " + _("Off"), False))
 
             if self.active_device.has("lighting_logo_active"):
                 if self.active_device.fx.misc.logo.active == 1:
@@ -436,6 +460,11 @@ class AppIndicator(object):
         else:
             main_submenu = None
 
+        if self.active_device.has("lighting_backlight"):
+            backlight_submenu = create_submenu("Backlight", True)
+        else:
+            backlight_submenu = None
+
         if self.active_device.has("lighting_logo"):
             logo_submenu = create_submenu("Logo", True)
         else:
@@ -447,7 +476,10 @@ class AppIndicator(object):
             scroll_submenu = None
 
         # Disable menu if device has no light sources to set
-        if not self.active_device.has("lighting") and not self.active_device.has("lighting_logo") and not self.active_device.has("lighting_scroll"):
+        if not self.active_device.has("lighting") and \
+           not self.active_device.has("lighting_logo") and \
+           not self.active_device.has("lighting_scroll") and \
+           not self.active_device.has("lighting_backlight"):
             return None
 
         # Have multiple sub-menus if there are multiple light sources
@@ -517,6 +549,9 @@ class AppIndicator(object):
         if multiple_menus and main_submenu:
             root_submenu[1].append(main_submenu[0])
 
+        if multiple_menus and backlight_submenu:
+            root_submenu[1].append(backlight_submenu[0])
+
         if multiple_menus and logo_submenu:
             root_submenu[1].append(logo_submenu[0])
 
@@ -534,6 +569,11 @@ class AppIndicator(object):
         else:
             main_submenu = None
 
+        if self.active_device.has("lighting_backlight_brightness") or self.active_device.has("lighting_backlight_active"):
+            backlight_submenu = create_submenu("Backlight", True)
+        else:
+            backlight_submenu = None
+
         if self.active_device.has("lighting_logo_brightness") or self.active_device.has("lighting_logo_active"):
             logo_submenu = create_submenu("Logo", True)
         else:
@@ -546,9 +586,11 @@ class AppIndicator(object):
 
         # Disable menu if device has no light sources to set
         if not self.active_device.has("brightness") and \
+           not self.active_device.has("lighting_backlight_brightness") and \
+           not self.active_device.has("lighting_backlight_active") and \
            not self.active_device.has("lighting_logo_brightness") and \
-           not self.active_device.has("lighting_scroll_brightness") and \
            not self.active_device.has("lighting_logo_active") and \
+           not self.active_device.has("lighting_scroll_brightness") and \
            not self.active_device.has("lighting_scroll_active"):
             return None
 
@@ -566,6 +608,19 @@ class AppIndicator(object):
             target_submenu[1].append(create_menu_item(_("Medium (50%)"), True, cb.set_brightness, ["main", 50]))
             target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["main", 25]))
             target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["main", 0]))
+
+        if self.active_device.has("lighting_backlight_backlight"):
+            if multiple_menus:
+                target_submenu = backlight_submenu
+            else:
+                target_submenu = root_submenu
+
+            # No known devices use this yet (April 2017)
+            target_submenu[1].append(create_menu_item(_("Full (100%)"), True, cb.set_brightness, ["backlight", 100]))
+            target_submenu[1].append(create_menu_item(_("Bright (75%)"), True, cb.set_brightness, ["backlight", 75]))
+            target_submenu[1].append(create_menu_item(_("Medium (50%)"), True, cb.set_brightness, ["backlight", 50]))
+            target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["backlight", 25]))
+            target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["backlight", 0]))
 
         if self.active_device.has("lighting_logo_brightness"):
             if multiple_menus:
@@ -592,6 +647,11 @@ class AppIndicator(object):
             target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["scroll", 0]))
 
         # Only show on/off options if the device only supports that.
+        if self.active_device.has("lighting_backlight_active"):
+            backlight_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["backlight", 1]))
+            backlight_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["backlight", 0]))
+            multiple_menus = True
+
         if self.active_device.has("lighting_logo_active"):
             logo_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["logo", 1]))
             logo_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["logo", 0]))
@@ -604,6 +664,9 @@ class AppIndicator(object):
 
         if multiple_menus and main_submenu:
             root_submenu[1].append(main_submenu[0])
+
+        if multiple_menus and backlight_submenu:
+            root_submenu[1].append(backlight_submenu[0])
 
         if multiple_menus and logo_submenu:
             root_submenu[1].append(logo_submenu[0])

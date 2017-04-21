@@ -1601,7 +1601,7 @@ class Controller(object):
                 # Compile status data together (for multiple light sources)
                 buffer_effect = ""
                 buffer_brightness = ""
-                for source in ["main", "logo", "scroll"]:
+                for source in ["main", "backlight", "logo", "scroll"]:
                     if source == "main":
                         capability = "lighting"
                     else:
@@ -1611,12 +1611,33 @@ class Controller(object):
                         continue
 
                     try:
-                        if source == "main":
-                            current_brightness = int(device.brightness)
-                        elif source == "logo":
-                            current_brightness = int(device.fx.misc.logo.brightness)
-                        elif source == "scroll":
-                            current_brightness = int(device.fx.misc.scroll_wheel.brightness)
+                        # Brightness can only be toggled
+                        if device.has(capability + "_active"):
+                            if source == "main":
+                                turned_on = device.active
+                            elif source == "backlight":
+                                turned_on = device.fx.misc.backlight.active
+                            elif source == "logo":
+                                turned_on = device.fx.misc.logo.active
+                            elif source == "scroll":
+                                turned_on = device.fx.misc.scroll_wheel.active
+
+                            if turned_on:
+                                current_brightness = _("On")
+                            else:
+                                current_brightness = _("Off")
+
+                        # Brightness can be adjusted
+                        else:
+                            if source == "main":
+                                current_brightness = str(int(device.brightness)) + "%"
+                            elif source == "backlight":
+                                current_brightness = str(int(device.fx.misc.backlight.brightness)) + "%"
+                            elif source == "logo":
+                                current_brightness = str(int(device.fx.misc.logo.brightness)) + "%"
+                            elif source == "scroll":
+                                current_brightness = str(int(device.fx.misc.scroll_wheel.brightness)) + "%"
+
                     except:
                         current_brightness = None
 
@@ -1625,9 +1646,9 @@ class Controller(object):
 
                     if current_brightness:
                         if len(buffer_brightness) == 0:
-                            buffer_brightness = str(current_brightness) + "%"
+                            buffer_brightness = current_brightness
                         else:
-                            buffer_brightness += " / " + str(current_brightness) + "%"
+                            buffer_brightness += " / " + current_brightness
 
                     if current_effect:
                         if len(buffer_effect) > 0:
@@ -1704,6 +1725,8 @@ class Controller(object):
         device_image = self.get_device_image(self.active_device, "actual", "perspective_img")
         effect_support = [self.active_device.has("lighting"), self.active_device.has("lighting_logo"), self.active_device.has("lighting_scroll")]
         brightness_support = [self.active_device.has("brightness"), self.active_device.has("lighting_logo_brightness"), self.active_device.has("lighting_scroll_brightness")]
+        brightness_active_support = [self.active_device.has("lighting_backlight_active"), self.active_device.has("lighting_logo_active"), self.active_device.has("lighting_scroll_active")]
+        # 'backlight' missing from effect list as unused by devices.
 
         # Update GUI
         self.webkit.run_javascript("change_header('{0}')".format(device_name))
@@ -1845,17 +1868,21 @@ class Controller(object):
             self.update_page("#fx-brightness", "hide")
 
         # Unless the device only supports on/off toggling
-        if not True in brightness_support and self.active_device.has("lighting_logo_active"):
-            stdout.vprint("Device supports 'lighting_logo_active'")
+        if True in brightness_active_support:
             self.update_page("#fx-brightness", "show")
             self.update_page(".brightness-container", "hide")
-            self.update_page("#brightness-logo-toggle", "show")
 
-        if not True in brightness_support and self.active_device.has("lighting_scroll_active"):
-            stdout.vprint("Device supports 'lighting_logo_active'")
-            self.update_page("#fx-brightness", "show")
-            self.update_page(".brightness-container", "hide")
-            self.update_page("#brightness-scroll-toggle", "show")
+            if self.active_device.has("lighting_backlight_active"):
+                stdout.vprint("Device supports 'lighting_backlight_active'")
+                self.update_page("#brightness-backlight-toggle", "show")
+
+            if self.active_device.has("lighting_logo_active"):
+                stdout.vprint("Device supports 'lighting_logo_active'")
+                self.update_page("#brightness-logo-toggle", "show")
+
+            if self.active_device.has("lighting_scroll_active"):
+                stdout.vprint("Device supports 'lighting_scroll_active'")
+                self.update_page("#brightness-scroll-toggle", "show")
 
         # Mouse DPI
         if self.active_device.has("dpi"):
@@ -1882,6 +1909,12 @@ class Controller(object):
 
             ### Overview Screen
             self.update_page("#device-" + self.active_device_serial + "-brightness", "append", str(int(value)) + '%&nbsp;')
+
+        if self.active_device.has("lighting_backlight_active"):
+            if self.active_device.fx.misc.backlight.active == 1:
+                self.update_page("#brightness-backlight-switch", "prop", "checked", "true")
+            else:
+                self.update_page("#brightness-backlight-switch", "removeAttr", "checked")
 
         if self.active_device.has("lighting_logo_active"):
             if self.active_device.fx.misc.logo.active == 1:
@@ -1982,7 +2015,7 @@ class Controller(object):
         Refreshes the UI for displaying the correct and supported options.
 
         source = Which light source to process.
-                 e.g. main/logo/scroll
+                 e.g. main/backlight/logo/scroll
 
         effect = Known effect name to process.
                  e.g. reactive, wave, spectrum
@@ -2000,6 +2033,8 @@ class Controller(object):
 
         if source == "main":
             source_has_string = "lighting_"
+        elif source == "backlight":
+            source_has_string = "lighting_backlight_"
         elif source == "logo":
             source_has_string = "lighting_logo_"
         elif source == "scroll":
@@ -2144,7 +2179,7 @@ class Controller(object):
             colour_id               = ID of colour (in devicestate) and container element.
             target_append_element   = ID of element to append to.
             start_rgb               = [red, green, blue] - list containing current colour.
-            source                  = Where the colour is located, e.g. "main", "logo", "scroll".
+            source                  = Where the colour is located, e.g. "main", "backlight", "logo", "scroll".
             effect_callback         = [source, effect, params] - optional list for setting an effect based on effect.
         """
         colour_index = pref.load_file(path.colours, True)

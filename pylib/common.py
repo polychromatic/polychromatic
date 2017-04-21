@@ -42,11 +42,12 @@ def has_multiple_sources(device_obj):
     Returns True or False to determine whether a device has multiple light sources.
     """
     main_light = device_obj.has("lighting")
+    backlight_light = device_obj.has("lighting_backlight")
     logo_light = device_obj.has("lighting_logo")
     scroll_light = device_obj.has("lighting_scroll")
 
     light_sources = 0
-    for value in [main_light, logo_light, scroll_light]:
+    for value in [main_light, backlight_light, logo_light, scroll_light]:
         if value == True:
             light_sources += 1
 
@@ -113,6 +114,9 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
     # Determine source function
     if source == "main":
         fx = device_object.fx
+
+    elif source == "backlight":
+        fx = device_object.fx.misc.backlight
 
     elif source == "logo":
         fx = device_object.fx.misc.logo
@@ -225,6 +229,15 @@ def set_brightness(pref, device_object, source, value):
     if source == "main":
         device_object.brightness = int(value)
 
+    elif source == "backlight":
+        if value == "toggle":
+            if device_object.fx.misc.backlight.active == True:
+                device_object.fx.misc.backlight.active = False
+            else:
+                device_object.fx.misc.backlight.active = True
+        else:
+            device_object.fx.misc.backlight.brightness = int(value)
+
     elif source == "logo":
         if value == "toggle":
             if device_object.fx.misc.logo.active == True:
@@ -235,7 +248,13 @@ def set_brightness(pref, device_object, source, value):
             device_object.fx.misc.logo.brightness = int(value)
 
     elif source == "scroll":
-        device_object.fx.misc.scroll_wheel.brightness = int(value)
+        if value == "toggle":
+            if device_object.fx.misc.scroll_wheel.active == True:
+                device_object.fx.misc.scroll_wheel.active = False
+            else:
+                device_object.fx.misc.scroll_wheel.active = True
+        else:
+            device_object.fx.misc.scroll_wheel.brightness = int(value)
 
     if value != "toggle":
         pref.set_device_state(device_object.serial, source, "brightness", int(value))
@@ -248,8 +267,12 @@ def set_brightness_toggle(pref, device_object, source, state):
     state = True/False/"toggle"
     """
 
-    if source == "logo":
+    if source == "backlight":
+        source_obj = device_object.fx.misc.backlight
+
+    elif source == "logo":
         source_obj = device_object.fx.misc.logo
+
     elif source == "scroll":
         source_obj = device_object.fx.misc.scroll_wheel
 
@@ -277,6 +300,7 @@ def repeat_last_effect(pref, device_object):
             set_lighting_effect(pref, device_object, source, effect, effect_params)
 
     replay_source("main", "lighting")
+    replay_source("backlight", "lighting_backlight")
     replay_source("logo", "lighting_logo")
     replay_source("scroll", "lighting_scroll")
 
@@ -297,6 +321,7 @@ def save_colours_to_all_sources(pref, device_object, colour_name, colour_set):
             pref.set_device_state(serial, source, colour_name, colour_set)
 
     save_colour("main", "lighting")
+    save_colour("backlight", "lighting_backlight")
     save_colour("logo", "lighting_logo")
     save_colour("scroll", "lighting_scroll")
 

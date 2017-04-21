@@ -47,6 +47,13 @@
           <div id="brightness-scroll" class="brightness-container" hidden>
             <img src="../img/effects/scroll.svg"/> <input type="range" id="brightness-scroll-input" onchange="cmd('brightness?scroll?'+$(this).val())" min="0" max="100" value="50"/><span id="brightness-scroll-value">50%</span>
           </div>
+          <div id="brightness-backlight-toggle" class="brightness-container" hidden>
+            <img src="../img/effects/blinking.svg"/>
+            <label class="switch">
+              <input id="brightness-backlight-switch" type="checkbox" onclick="cmd('brightness?backlight?toggle')">
+              <div class="slider"></div>
+            </label>
+          </div>
           <div id="brightness-logo-toggle" class="brightness-container" hidden>
             <img src="../img/effects/logo.svg"/>
             <label class="switch">
