@@ -2006,8 +2006,10 @@ class Controller(object):
 
         ## DPI Sensitivity
         if self.active_device.has("dpi"):
+            dpi_max = str(self.active_device.max_dpi)
             dpi_value = str(self.active_device.dpi[0])
             self.update_page("#dpi-input", "val", dpi_value)
+            self.update_page("#dpi-input", "attr", "max", dpi_max)
             self.update_page("#dpi-value", "html", dpi_value)
 
     def update_lighting_options(self, source=None, effect=None):

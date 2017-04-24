@@ -737,12 +737,38 @@ class AppIndicator(object):
         except Exception:
             self.current_dpi = _("Unknown")
 
-        submenu[1].append(create_menu_item(_("Super Slow (200)"), True, cb.set_dpi, 200, os.path.join(path.data_source, "img/effects/dpi-slow.svg")))
-        submenu[1].append(create_menu_item(_("Slow (800)"), True, cb.set_dpi, 800, os.path.join(path.data_source, "img/effects/dpi-slow.svg")))
-        submenu[1].append(create_menu_item(_("Medium (1800)"), True, cb.set_dpi, 1800, os.path.join(path.data_source, "img/effects/dpi-slow.svg")))
-        submenu[1].append(create_menu_item(_("Fast (4500)"), True, cb.set_dpi, 4500, os.path.join(path.data_source, "img/effects/dpi-fast.svg")))
-        submenu[1].append(create_menu_item(_("Super Fast (9000)"), True, cb.set_dpi, 9000, os.path.join(path.data_source, "img/effects/dpi-fast.svg")))
-        submenu[1].append(create_menu_item(_("Blazingly Fast (16000)"), True, cb.set_dpi, 16000, os.path.join(path.data_source, "img/effects/dpi-fast.svg")))
+        # Use hardware values where known.
+        max_dpi = self.active_device.max_dpi
+        if max_dpi == 16000:
+            dpi_speed_1 = 200   # Not H/W
+            dpi_speed_2 = 800
+            dpi_speed_3 = 1800
+            dpi_speed_4 = 4500
+            dpi_speed_5 = 9000
+            dpi_speed_6 = 16000
+
+        elif max_dpi == 8200:
+            dpi_speed_1 = 200  # Not H/W
+            dpi_speed_2 = 800
+            dpi_speed_3 = 1800
+            dpi_speed_4 = 4800
+            dpi_speed_5 = 6400
+            dpi_speed_6 = 8200
+
+        else:
+            dpi_speed_1 = 200
+            dpi_speed_2 = int(max_dpi / 10)
+            dpi_speed_3 = int(max_dpi / 8)
+            dpi_speed_4 = int(max_dpi / 4)
+            dpi_speed_5 = int(max_dpi / 2)
+            dpi_speed_6 = int(max_dpi)
+
+        submenu[1].append(create_menu_item(_("Super Slow") + ' (' + str(dpi_speed_1) + ')', True, cb.set_dpi, dpi_speed_1, os.path.join(path.data_source, "img/effects/dpi-slow.svg")))
+        submenu[1].append(create_menu_item(_("Slow") + ' (' + str(dpi_speed_2) + ')', True, cb.set_dpi, dpi_speed_2, os.path.join(path.data_source, "img/effects/dpi-slow.svg")))
+        submenu[1].append(create_menu_item(_("Medium") + ' (' + str(dpi_speed_3) + ')', True, cb.set_dpi, dpi_speed_3, os.path.join(path.data_source, "img/effects/dpi-slow.svg")))
+        submenu[1].append(create_menu_item(_("Fast") + ' (' + str(dpi_speed_4) + ')', True, cb.set_dpi, dpi_speed_4, os.path.join(path.data_source, "img/effects/dpi-fast.svg")))
+        submenu[1].append(create_menu_item(_("Super Fast") + ' (' + str(dpi_speed_5) + ')', True, cb.set_dpi, dpi_speed_5, os.path.join(path.data_source, "img/effects/dpi-fast.svg")))
+        submenu[1].append(create_menu_item(_("Blazingly Fast") + ' (' + str(dpi_speed_6) + ')', True, cb.set_dpi, dpi_speed_6, os.path.join(path.data_source, "img/effects/dpi-fast.svg")))
 
         return(submenu[0])
 
