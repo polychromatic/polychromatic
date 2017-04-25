@@ -70,6 +70,7 @@ except Exception as e:
 
 path = pref.Paths()
 path.data_source = path.get_data_source(__file__)
+daemon_config_path = os.path.join(os.path.expanduser('~'), ".razer-service", "razer.conf")
 
 # Imported on-demand:
 #   * requests
@@ -546,6 +547,21 @@ class Controller(object):
             else:
                 self.update_device_supported_features()
                 self.update_device_active_options()
+
+            # Display warning and disable sync effects if enabled in daemon.
+            if os.path.exists(daemon_config_path):
+                with open(daemon_config_path, "r") as f:
+                    daemon_config = f.read()
+
+                if daemon_config.find("sync_effects_enabled = True") != -1:
+                    daemon_config = daemon_config.replace("sync_effects_enabled = True", "sync_effects_enabled = False")
+                    with open(daemon_config_path, 'w') as f:
+                        f.write(daemon_config)
+                    error_text = _("Sync effects have been disabled in the daemon's configuration as they are not supported in Polychromatic.")
+                    self.update_page("#error", "fadeIn")
+                    self.update_page("#error", "addClass", "warning")
+                    self.update_page("#error-text", "html", error_text)
+                    stdout.error(error_text)
 
         elif self.current_page == 'profile_editor':
             # Push strings
