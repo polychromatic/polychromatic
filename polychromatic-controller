@@ -129,6 +129,7 @@ class AppView(WebKit2.WebView):
         try:
             # Allows Keyboard SVGs to load.
             self.get_settings().set_allow_file_access_from_file_urls(True)
+            self.get_settings().set_allow_universal_access_from_file_urls(True)
 
             # Print console log errors to stdout
             self.get_settings().set_enable_write_console_messages_to_stdout(True)
@@ -136,6 +137,7 @@ class AppView(WebKit2.WebView):
             # Basic accessibility - keyboard navigation
             self.get_settings().set_enable_spatial_navigation(True)
             self.get_settings().set_enable_caret_browsing(True)
+
         except AttributeError:
             print("WebKit2GTK failed to initialise. Please try upgrading this dependency.\n")
             print("Your distribution may be using an older version of this package.")
