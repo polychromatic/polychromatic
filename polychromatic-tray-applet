@@ -161,6 +161,8 @@ class AppIndicator(object):
         self.menu_brightness = None
         self.menu_app_profiles = None
         self.menu_colours = None
+        self.menu_dpi = None
+        self.menu_poll_rate = None
         self.menu_misc = None
 
         self.current_device = _("Unknown")
@@ -170,6 +172,7 @@ class AppIndicator(object):
         self.current_colour = _("Green")
         self.current_colour_rgb = [0, 255, 0]
         self.current_dpi = _("Unknown")
+        self.current_poll_rate = _("Unknown")
         self.current_gamemode = _("Unknown")
 
         self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", self._get_tray_icon(), appindicator.IndicatorCategory.APPLICATION_STATUS)
@@ -211,6 +214,7 @@ class AppIndicator(object):
         self.menu_brightness = self._build_brightness_menu()
         self.menu_app_profiles = self._build_app_profile_menu()
         self.menu_dpi = self._build_dpi_menu()
+        self.menu_poll_rate = self._build_poll_rate_menu()
         self.menu_gamemode = self._build_gamemode_menu()
         self.menu_colours = self._build_colour_menu()
 
@@ -336,6 +340,11 @@ class AppIndicator(object):
         if self.menu_dpi:
             root.append(self.menu_dpi)
             root.append(create_menu_item(self.current_dpi, False))
+            root.append(create_seperator())
+
+        if self.menu_poll_rate:
+            root.append(self.menu_poll_rate)
+            root.append(create_menu_item(self.current_poll_rate, False))
             root.append(create_seperator())
 
         if self.menu_gamemode:
@@ -772,6 +781,24 @@ class AppIndicator(object):
 
         return(submenu[0])
 
+    def _build_poll_rate_menu(self):
+        stdout.vprint("Building poll rate menu...")
+        submenu = create_submenu(_("Poll Rate"), True)
+
+        if not self.active_device.has("poll_rate"):
+            return None
+
+        try:
+            self.current_poll_rate = str(self.active_device.poll_rate) + " Hz"
+        except Exception:
+            self.current_poll_rate = _("Unknown")
+
+        submenu[1].append(create_menu_item("125 Hz", True, cb.set_poll_rate, 125))
+        submenu[1].append(create_menu_item("500 Hz", True, cb.set_poll_rate, 500))
+        submenu[1].append(create_menu_item("1000 Hz", True, cb.set_poll_rate, 1000))
+
+        return(submenu[0])
+
     def _build_gamemode_menu(self):
         stdout.vprint("Building game mode menu...")
 
@@ -932,6 +959,12 @@ class Callback():
     def set_dpi(cb, item, value):
         indicator.active_device.dpi = (value, value)
         indicator.current_dpi = str(value)
+        indicator.rebuild_all_submenus()
+        indicator.rebuild_root_menu()
+
+    def set_poll_rate(cb, item, value):
+        indicator.active_device.poll_rate = value
+        indicator.current_poll_rate = str(value) + " Hz"
         indicator.rebuild_all_submenus()
         indicator.rebuild_root_menu()
 

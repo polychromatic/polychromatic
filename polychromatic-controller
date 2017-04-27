@@ -533,6 +533,9 @@ class Controller(object):
 
             trans.push('#str-browse-icon', _("Browse Icon"))
 
+            trans.push('#str-dpi', _("DPI"))
+            trans.push('#str-poll-rate', _("Polling Rate"))
+
             # Page actions
             self.webkit.run_javascript('instantProfileSwitch = false;')
             self.update_page('#profiles-activate', 'show')
@@ -978,6 +981,20 @@ class Controller(object):
                 pref.set_device_state(self.active_device.serial, "main", "dpi", value)
             except Exception as exception:
                 self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}",effect).replace("{1}",self.active_device.name))
+
+        elif command.startswith('poll-rate'):
+            try:
+                value = int(command.split("?")[1])
+                if value == 1:
+                    actual_value = 125
+                if value == 2:
+                    actual_value = 500
+                if value == 3:
+                    actual_value = 1000
+                self.active_device.poll_rate = actual_value
+                self.update_page("#poll-rate-value", "html", str(actual_value) + "Hz")
+            except Exception as exception:
+                self.print_error(exception, str(_("Failed to set poll rate for '{device_name}' to {poll_rate}.")).replace("{device_name}", self.active_device).replace("{poll_rate}",str(value)))
 
         elif command == 'enable-marco-keys':
             self.active_device.macro.enable_macros()
@@ -1924,6 +1941,12 @@ class Controller(object):
         else:
             self.update_page("#fx-dpi", "hide")
 
+        # Mouse Polling Rate
+        if self.active_device.has("poll_rate"):
+            self.update_page("#fx-poll-rate", "show")
+        else:
+            self.update_page("#fx-poll-rate", "hide")
+
     def update_device_active_options(self):
         """
         Refreshes the page by showing the options selected for the active device.
@@ -2045,6 +2068,18 @@ class Controller(object):
             self.update_page("#dpi-input", "val", dpi_value)
             self.update_page("#dpi-input", "attr", "max", dpi_max)
             self.update_page("#dpi-value", "html", dpi_value)
+
+        ## Poll Rate Sensitivity
+        if self.active_device.has("poll_rate"):
+            actual_value = self.active_device.poll_rate
+            if actual_value == 125:
+                value = 1
+            elif actual_value == 500:
+                value = 2
+            elif actual_value == 1000:
+                value = 3
+            self.update_page("#poll-rate-input", "val", str(value))
+            self.update_page("#poll-rate-value", "html", str(actual_value) + "Hz")
 
     def update_lighting_options(self, source=None, effect=None):
         """

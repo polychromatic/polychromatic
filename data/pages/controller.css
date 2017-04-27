@@ -992,11 +992,13 @@ label.disabled {
     vertical-align: bottom;
 }
 
-#fx-dpi input[type="range"] {
+#fx-dpi input[type="range"],
+#fx-poll-rate input[type="range"] {
     width: 9.6em;
 }
 
-#fx-dpi span {
+#fx-dpi span,
+#fx-poll-rate span {
     float: right;
     color: lime;
     font-size: 0.9em;
@@ -1005,6 +1007,12 @@ label.disabled {
     text-align: right;
 }
 
+/* Poll Rate Overlay */
+#fx-poll-rate {
+    bottom: 1em;
+    left: 36em;
+    width: 13em;
+}
 /* Lighting Overlay */
 #fx-lighting {
     top: 1.5em;
