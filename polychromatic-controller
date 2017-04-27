@@ -1388,11 +1388,21 @@ class Controller(object):
                     # Use GTK to determine theme icon.
                     try:
                         icon_path = icon_name_to_path(app_icon)
-                        if not os.path.exists(icon_path):
-                            # Icon path couldn't be determined.
-                            icon_path = unknown_icon_path
                     except:
                         icon_path = unknown_icon_path
+
+                # Icon path couldn't be determined.
+                if not os.path.exists(icon_path):
+                    icon_path = unknown_icon_path
+
+                # Only SVG or PNGs are supported.
+                if not icon_path.endswith(".png") and not icon_path.endswith(".svg"):
+                    icon_path = unknown_icon_path
+
+                # Large SVGs cause serve graphical glitches. Especially LibreOffice.
+                if os.stat(icon_path).st_size > 450000 or icon_path.find("libreoffice") != -1:
+                    stdout.vprint("Skipping large SVG: " + icon_path)
+                    icon_path = unknown_icon_path
 
                 append_item(str(unique_id), app_name, icon_path)
 
