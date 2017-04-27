@@ -173,7 +173,7 @@ Polychromatic interfaces with the daemon from the [razer-drivers project](https:
 | ------------- | ---- | -------- |
 | [gir1.2-gtk-3.0](https://packages.debian.org/sid/gir1.2-gtk-3.0) | [gtk3](https://www.archlinux.org/packages/extra/x86_64/gtk3/) | |
 | [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1) | [libappindicator](https://aur.archlinux.org/pkgbase/libappindicator/?comments=all) | [typelib-1_0-AppIndicator3-0_1](https://software.opensuse.org/package/typelib-1_0-AppIndicator3-0_1)
-| [gir1.2-webkit2-4.0](https://packages.debian.org/sid/gir1.2-webkit2-4.0) (>= 2.12.0) | [webkitgtk](https://www.archlinux.org/packages/extra/x86_64/webkitgtk/) | [typelib-1_0-WebKit2-4_0](https://software.opensuse.org/package/typelib-1_0-WebKit2-4_0)
+| [gir1.2-webkit2-4.0](https://packages.debian.org/sid/gir1.2-webkit2-4.0) (>= 2.12.0) | [webkit2gtk](https://www.archlinux.org/packages/extra/x86_64/webkit2gtk/) | [typelib-1_0-WebKit2-4_0](https://software.opensuse.org/package/typelib-1_0-WebKit2-4_0)
 | [python3-gi](https://packages.debian.org/sid/python3-gi) | [python-gobject](https://www.archlinux.org/packages/extra/x86_64/python-gobject/) | [python3-gobject](https://software.opensuse.org/package/python3-gobject)
 | [python3-setproctitle](https://packages.debian.org/sid/python3-setproctitle) | [python-setproctitle](https://www.archlinux.org/packages/community/x86_64/python-setproctitle/) | [python3-setproctitle](https://software.opensuse.org/package/python3-setproctitle)
 | [python3-requests](https://packages.debian.org/sid/python3-requests) | [python-requests](https://www.archlinux.org/packages/extra/any/python-requests/) | [python3-requests](https://software.opensuse.org/package/python3-requests)
