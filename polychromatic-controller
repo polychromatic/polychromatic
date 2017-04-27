@@ -145,6 +145,12 @@ class AppView(WebKit2.WebView):
             print("At least v2.12 is required for this software to function.")
             sys.exit(1)
 
+        # Enable web inspector for debugging
+        if stdout.inspector:
+            self.get_settings().set_property("enable-developer-extras", True)
+            inspector = self.get_inspector()
+            inspector.show()
+
         # Load the starting page
         default_page = 'loading'
         self.load_uri('file://' + os.path.join(path.data_source, 'pages/' + startpage + '.html'))
@@ -2433,6 +2439,7 @@ class Terminal(object):
         """
         self.be_verbose = False
         self.be_very_verbose = False
+        self.inspector = False
 
         for arg in sys.argv[1:]:
             if arg in ["--help", "-h"]:
@@ -2451,6 +2458,9 @@ class Terminal(object):
 
             elif arg == "--print-device-info":
                 self.print_device_capability_info()
+
+            elif arg == "--inspect":
+                self.inspector = True
 
             else:
                 print('Ignoring unrecognised parameters:' + arg)
