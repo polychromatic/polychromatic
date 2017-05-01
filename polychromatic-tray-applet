@@ -541,6 +541,12 @@ class AppIndicator(object):
             [scroll_submenu, "lighting_scroll_static", ["scroll", "static"], "static", _("Static")]
         ]
 
+        has_items = {
+            "main": False,
+            "logo": False,
+            "scroll": False
+        }
+
         for fx in fx_list:
             target_submenu = fx[0]
             capability = fx[1]
@@ -552,19 +558,23 @@ class AppIndicator(object):
                 icon_path = self._get_icon("effects", icon + ".svg")
                 if multiple_menus:
                     target_submenu[1].append(create_menu_item(label, True, cb.set_effect, callback, icon_path))
+                    has_items[callback[0]] = True
                 else:
                     root_submenu[1].append(create_menu_item(label, True, cb.set_effect, callback, icon_path))
 
-        if multiple_menus and main_submenu:
+        if multiple_menus and not has_items["main"] and not has_items["logo"] and not has_items["scroll"]:
+            return None
+
+        if multiple_menus and main_submenu and has_items["main"]:
             root_submenu[1].append(main_submenu[0])
 
         if multiple_menus and backlight_submenu:
             root_submenu[1].append(backlight_submenu[0])
 
-        if multiple_menus and logo_submenu:
+        if multiple_menus and logo_submenu and has_items["logo"]:
             root_submenu[1].append(logo_submenu[0])
 
-        if multiple_menus and scroll_submenu:
+        if multiple_menus and scroll_submenu and has_items["scroll"]:
             root_submenu[1].append(scroll_submenu[0])
 
         return(root_submenu[0])
