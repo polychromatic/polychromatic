@@ -9,6 +9,8 @@
 
 import os
 import gettext
+from time import sleep
+from threading import Thread
 
 # Use i18n translations for some strings in this module.
 whereami = os.path.abspath(os.path.join(os.path.dirname(__file__)))
@@ -356,3 +358,29 @@ def set_default_tray_icon(pref):
     else:
         # MATE/Unity/Others
         pref.set("tray_icon", "value", "0")
+
+
+def devicestate_monitor_start(callback_function, file_path):
+    """
+    Watches the devicestate.json file for changes, so different instances
+    of Polychromatic (e.g. tray applet / controller) can refresh.
+
+    callback_function   =   Function to call when there is a change.
+    file_path           =   Full path to devicestate.json
+    """
+    thread = Thread(target=devicestate_monitor_thread, args=(callback_function, file_path))
+    thread.daemon = True
+    thread.start()
+
+
+def devicestate_monitor_thread(callback_function, file_path):
+    """
+    Seperate thread for monitoring devicestate.json changes.
+    See devicestate_monitor_start() for reference.
+    """
+    while True:
+        before = os.stat(file_path).st_mtime
+        sleep(1)
+        after = os.stat(file_path).st_mtime
+        if before != after:
+             callback_function()

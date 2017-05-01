@@ -204,6 +204,9 @@ class AppIndicator(object):
         self.rebuild_all_submenus()
         self.rebuild_root_menu()
 
+        # Start watching devicestate index for changes.
+        common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
+
     def rebuild_all_submenus(self):
         """
         Rebuilds the submenus based on the currently active device.
@@ -366,7 +369,6 @@ class AppIndicator(object):
 
         self.indicator.set_title("Polychromatic")
         self.indicator.set_menu(root)
-        self.indicator.set_secondary_activate_target(root)
 
     # Data fetching
     def _get_device_state(self, source, state):
@@ -847,6 +849,12 @@ class AppIndicator(object):
             colour = [red, green, blue]
         """
         return "#{0:02X}{1:02X}{2:02X}".format(*colour)
+
+    # When there are external changes to devicestate.json
+    def device_state_changed(self):
+        stdout.vprint("Device state changed. Refreshing menus.")
+        indicator.rebuild_all_submenus()
+        indicator.rebuild_root_menu()
 
 
 class Callback():

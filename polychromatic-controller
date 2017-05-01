@@ -419,6 +419,9 @@ class Controller(object):
             self.active_device = self.devices[0]
             self.active_device_serial = self.devices[0].serial
 
+        # Start watching devicestate index for changes.
+        common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
+
         stdout.vprint('Application Ready.\n')
         self.show_menu('menu')
 
@@ -2387,6 +2390,9 @@ class Controller(object):
 
         self.update_page("#colour-table", "html", html_buffer)
 
+    def device_state_changed(self):
+        stdout.vprint("Device state changed. Refreshing interface.")
+        self.update_device_active_options()
 
 class Dialogues(object):
     def fatal_error(message, do_quit=False):
