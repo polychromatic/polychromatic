@@ -1,3 +1,15 @@
+polychromatic (0.3.9-xenial) xenial; urgency=low
+
+  * Fix wrong colour for green shade variants.
+  * Fix corrupt screen when choosing an application.
+  * Improved logic when devices cannot be found.
+  * Add support for mice with "backlight" functions.
+  * Add support for polling rate.
+  * Limit DPI according to mouse.
+  * Ensure 'sync_effects_enabled' is disabled in daemon.
+  * Hide "effects" menu in tray if device doesn't support them.
+  * Sync device state changes between tray/controller.
+
 polychromatic (0.3.8-xenial) xenial; urgency=low
 
   * Internal code clean-ups.
