@@ -189,6 +189,9 @@ class AppIndicator(object):
             self._setup_failed(_("Daemon isn't running or crashed."), str(e))
             return False
 
+        # Turn off incompatible features
+        self.devman.sync_effects = False
+
         if len(self.devman.devices) == 0:
             self._setup_failed(_("No devices found."))
             return False
