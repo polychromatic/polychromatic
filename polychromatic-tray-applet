@@ -727,6 +727,10 @@ class AppIndicator(object):
         uuids = list(colour_index)
         uuids.sort(key=int)
 
+        # Do not show colours menu if device does not support RGB at all.
+        if common.has_fixed_colour(self.active_device):
+            return None
+
         # Show a range of green shades for Ultimate keyboards that are not RGB.
         if self.active_device.name.find("Ultimate") != -1:
             colour_index = common.get_green_shades()

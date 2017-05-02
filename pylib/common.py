@@ -12,6 +12,10 @@ import gettext
 from time import sleep
 from threading import Thread
 
+# Devices that do not support RGB at all.
+# (excludes Ultimate which supports shades of green)
+fixed_coloured_devices = ["Taipan"]
+
 # Use i18n translations for some strings in this module.
 whereami = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 
@@ -384,3 +388,13 @@ def devicestate_monitor_thread(callback_function, file_path):
         after = os.stat(file_path).st_mtime
         if before != after:
              callback_function()
+
+
+def has_fixed_colour(device_obj):
+    """
+    Returns True if the device does not support RGB (e.g. can only turn LEDs on/off)
+    """
+    for name in fixed_coloured_devices:
+        if device_obj.name.find(name) != -1:
+            return True
+    return False
