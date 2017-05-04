@@ -1413,7 +1413,7 @@ class Controller(object):
                 if not icon_path.endswith(".png") and not icon_path.endswith(".svg"):
                     icon_path = unknown_icon_path
 
-                # Large SVGs cause serve graphical glitches. Especially LibreOffice.
+                # Large SVGs cause severe graphical glitches. Especially LibreOffice.
                 if os.stat(icon_path).st_size > 450000 or icon_path.find("libreoffice") != -1:
                     stdout.vprint("Skipping large SVG: " + icon_path)
                     icon_path = unknown_icon_path
