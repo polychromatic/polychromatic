@@ -46,22 +46,40 @@ if [ ! "$0" == "$clean_script" ]; then
 fi
 
 # Deleting files
-rm -rf "$target_data"
-rm -rf "$modules"
-rm     "$target_bin/polychromatic-controller"
-rm     "$target_bin/polychromatic-tray-applet"
-rm -rf "$target_apps/polychromatic-controller.desktop"
-rm -rf "$target_apps/polychromatic-tray-applet.desktop"
-rm     "$target_man/polychromatic-controller"*
-rm     "$target_man/polychromatic-tray-applet"*
-find /usr/share/icons/hicolor -name "polychromatic"* -type f -delete
-rm -rf /etc/xdg/autostart/polychromatic-tray-applet.desktop
+function delete_dir() {
+    if [ -d "$1" ]; then
+        echo "Deleting '$1'..."
+        rm -rf "$1"
+    fi
+}
+
+function delete_file() {
+    if [ -f "$1" ]; then
+        echo "Deleting '$1'..."
+        rm "$1"
+    fi
+}
+
+delete_dir  "$target_data"
+delete_dir  "$modules"
+delete_dir  "$target_apps/polychromatic-controller.desktop"
+delete_dir  "$target_apps/polychromatic-tray-applet.desktop"
+delete_file "$target_bin/polychromatic-controller"
+delete_file "$target_bin/polychromatic-tray-applet"
+delete_file "$target_man/polychromatic-controller"*
+delete_file "$target_man/polychromatic-tray-applet"*
+delete_file /etc/xdg/autostart/polychromatic-tray-applet.desktop
+
+echo "Deleting icons..."
+find /usr/share/icons/hicolor -name "polychromatic"\* -type f -delete
 
 # Delete locales
+echo "Deleting locales..."
 find $locale_dir -name "polychromatic-controller.mo" -type f -delete
 find $locale_dir -name "polychromatic-tray-applet.mo" -type f -delete
 
 # Post removal
+echo "Updating icon cache..."
 update-icon-caches /usr/share/icons/hicolor/
 
 # Success!
