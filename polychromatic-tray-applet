@@ -1081,6 +1081,14 @@ def restart_daemon_service():
         _update_status(_("Killing razer-service..."))
         os.kill(daemon_pid, 9)
 
+    # Ensure a clean log
+    print("\nArchiving log...")
+    app.update_page("#status-text", "html", _("Archiving log..."))
+    log_path = os.path.join(os.path.expanduser(), ".razer-service", "logs", "razer.log")
+    log_bak = os.path.join(os.path.expanduser(), ".razer-service", "logs", "razer.log.bak")
+    if os.path.exists(log_path):
+        os.rename(log_path, log_bak)
+
     # Wait for daemon to start again
     time.sleep(1)
     _update_status(_("Starting razer-service..."))
