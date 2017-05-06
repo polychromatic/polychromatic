@@ -3,12 +3,21 @@ DESTDIR = /
 PYTHONDIR = $(shell python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib()[4:])")
 
 all:
-	@echo "Run 'make install' to install."
+	@echo "---------------------------------------------------------"
+	@echo "This makefile is used for creating packages."
+	@echo "You should install from a package or by running ./install/install.sh"
 	@echo ""
-	@echo "Setting the PREFIX and the DESTDIR is supported. Default for PREFIX is /usr/local and default for DESTDIR is /."
+	@echo "You are on your own if you 'make install' here."
+	@echo "---------------------------------------------------------"
+	@echo "Setting the PREFIX and the DESTDIR is supported."
+	@echo ""
+	@echo "Defaults are:"
+	@echo "   - PREFIX=$(PREFIX)"
+	@echo "   - DESTDIR=$(DESTDIR)"
+	@echo "   - PYTHONDIR=$(PREFIX)$(PYTHONDIR)"
+	@echo ""
 	@echo "Example: 'make DESTDIR=/tmp PREFIX=/usr install'"
 	@echo ""
-	@echo "Info: With the current configuration Python files will be installed into: $(PREFIX)$(PYTHONDIR). If that's completely off, please file a bug report."
 
 install:
 	@install -dm755 $(DESTDIR)$(PREFIX)/share/polychromatic
