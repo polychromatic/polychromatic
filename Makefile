@@ -1,4 +1,4 @@
-PREFIX = /usr/local
+PREFIX = /usr
 DESTDIR = /
 PYTHONDIR = $(shell python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib()[4:])")
 
