@@ -2077,6 +2077,8 @@ class Controller(object):
                 value = 2
             elif actual_value == 1000:
                 value = 3
+            else:
+                value = 1
             self.update_page("#poll-rate-input", "val", str(value))
             self.update_page("#poll-rate-value", "html", str(actual_value) + "Hz")
 
