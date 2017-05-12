@@ -4,7 +4,7 @@
     Module for common functions used by Polychromatic's
     Controller and Tray Applet.
 """
-# Polychromatic is licensed under the GPLv2.
+# Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2017 Luke Horwell <luke@ubuntu-mate.org>
 
 import os

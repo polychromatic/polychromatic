@@ -3,7 +3,7 @@
 """
     Module for demoing Polychromatic.
 """
-# Polychromatic is licensed under the GPLv2.
+# Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2016-2017 Luke Horwell <luke@ubuntu-mate.org>
 
 import time

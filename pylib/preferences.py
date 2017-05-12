@@ -4,7 +4,7 @@
     Module for interfacing preferences stored by
     Polychromatic's applications.
 """
-# Polychromatic is licensed under the GPLv2.
+# Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2015-2017 Luke Horwell <luke@ubuntu-mate.org>
 
 import os
