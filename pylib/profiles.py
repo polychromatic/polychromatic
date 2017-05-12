@@ -135,14 +135,17 @@ class AppProfiles(object):
 
         return(sorted_list)
 
-
     def send_profile_to_keyboard(self, kbd_obj, data):
         """
         Load a profile and keyboard.
         """
-        for row in range(0, 6):
-            for col in range(0, 22):
-                kbd_obj.fx.advanced.matrix[row, col] = data["rows"][str(row)][col]
+        for row in range(0, kbd_obj.fx.advanced.rows):
+            for col in range(0, kbd_obj.fx.advanced.cols):
+                try:
+                    kbd_obj.fx.advanced.matrix[row, col] = data["rows"][str(row)][col]
+                except Exception:
+                    print("Matrix has no data: x={0} y={1}".format(str(row), str(col)))
+                    pass
         kbd_obj.fx.advanced.draw()
 
     def send_profile_from_file(self, kbd_obj, uuid):
