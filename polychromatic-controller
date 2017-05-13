@@ -343,9 +343,6 @@ class Controller(object):
             self.devman_error = "presume-crashed"
             self.devman_reason = str(e)
 
-        # Turn off incompatible features
-        self.devman.sync_effects = False
-
         # When the running daemon and installed library differ, request the user to restart the daemon.
         # Running   = Current running daemon's version.
         # Installed = Version installed globally on system.
@@ -406,6 +403,9 @@ class Controller(object):
             if len(self.devices) == 0:
                 # get_devices() function shows "No Devices Found".
                 return
+
+        # Turn off incompatible features
+        self.devman.sync_effects = False
 
         # Initialise Profiles
         stdout.vprint("Loading Application Profiles...")
