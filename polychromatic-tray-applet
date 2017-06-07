@@ -180,8 +180,8 @@ class AppIndicator(object):
 
     def setup(self):
         # Set active device
-        if not which("razer-service"):
-            self._setup_failed(_("Daemon Not Installed."), _("Unknown command: razer-service"))
+        if not which("razer-daemon"):
+            self._setup_failed(_("Daemon Not Installed."), _("Unknown command: razer-daemon"))
 
         try:
             self.devman = rclient.DeviceManager()
@@ -1059,7 +1059,7 @@ def restart_daemon_service():
         indicator.indicator.set_menu(root)
 
     # Gracefully stop the daemon
-    _update_status(_("Stopping razer-service..."))
+    _update_status(_("Stopping razer-daemon..."))
     try:
         indicator.devman.stop_daemon()
     except Exception as NoneType:
@@ -1070,7 +1070,7 @@ def restart_daemon_service():
     stopped = False
     for x in range(0,5):
         try:
-            daemon_pid = int(check_output(["pidof", "razer-service"]))
+            daemon_pid = int(check_output(["pidof", "razer-daemon"]))
         except:
             stopped = True
             break
@@ -1078,23 +1078,23 @@ def restart_daemon_service():
 
     # Kill the daemon if still not ended
     if not stopped:
-        _update_status(_("Killing razer-service..."))
+        _update_status(_("Killing razer-daemon..."))
         os.kill(daemon_pid, 9)
 
     # Ensure a clean log
     print("\nArchiving log...")
-    log_path = os.path.join(os.path.expanduser("~"), ".razer-service", "logs", "razer.log")
-    log_bak = os.path.join(os.path.expanduser("~"), ".razer-service", "logs", "razer.log.bak")
+    log_path = os.path.join(os.path.expanduser("~"), ".razer-daemon", "logs", "razer.log")
+    log_bak = os.path.join(os.path.expanduser("~"), ".razer-daemon", "logs", "razer.log.bak")
     if os.path.exists(log_path):
         os.rename(log_path, log_bak)
 
     # Wait for daemon to start again
     time.sleep(1)
-    _update_status(_("Starting razer-service..."))
-    background_process("razer-service", shell=True)
+    _update_status(_("Starting razer-daemon..."))
+    background_process("razer-daemon", shell=True)
     for x in range(0,5):
         try:
-            daemon_pid = int(check_output(["pidof", "razer-service"]))
+            daemon_pid = int(check_output(["pidof", "razer-daemon"]))
             running = True
             break
         except:
