@@ -463,416 +463,21 @@ class Controller(object):
 
     def page_loaded(self):
         """
-        Initialise the page when it has finished loading.
+        Initialise the page when WebKit has loaded the HTML.
         """
+
+        page_bindings = {
+            "menu": PageLoaded.menu,
+            "profile_editor": PageLoaded.profile_editor,
+            "preferences": PageLoaded.preferences,
+            "error": PageLoaded.error
+        }
+
         stdout.vvprint(" ** Running post-actions for page: '" + self.current_page + "'...")
-        trans.push('#close-window', _("Close"))
-
-        if self.current_page == 'menu':
-            # Push strings
-            trans.push('#page-header', _("Overview"))
-            trans.push_var('str_overview', _("Overview"))
-            trans.push('#str-brightness', _("Brightness"))
-            trans.push('#str-lighting', _("Lighting Effects"))
-            trans.push('#str-spectrum', _("Spectrum"))
-            trans.push('#str-wave', _("Wave"))
-            trans.push('#str-reactive', _("Reactive"))
-            trans.push('#str-breath', _("Breath"))
-            trans.push('#str-pulsate', _("Pulsate"))
-            trans.push('#str-ripple', _("Ripple"))
-            trans.push('#str-static', _("Static"))
-
-            trans.push('#str-color', _("Color:"), True)
-            trans.push('.str-custom', _("Custom..."))
-            trans.push('.str-none', _("None"), True)
-            trans.push('#str-direction', _("Direction:"), True)
-            trans.push('#str-wave-left', _("Left"))
-            trans.push('#str-wave-right', _("Right"))
-            trans.push('#str-speed', _("Speed:"), True)
-            trans.push('.str-random', _("Random"), True)
-            trans.push('.str-single-col', _("Single Color"), True)
-            trans.push('#str-dual-col', _("Dual Colors"), True)
-            trans.push('#str-cycles', _("Cycle:"), True)
-            trans.push('#str-colours', _("Colors:"), True)
-            trans.push('#str-slow', _("Slow"), True)
-            trans.push('#str-med', _("Medium"), True)
-            trans.push('#str-fast', _("Fast"), True)
-
-            trans.push('#str-modes', _("Key Modes"))
-            trans.push('#str-game-mode', _("Gaming Mode"))
-            trans.push('#game-mode-disable', _("Disable"))
-            trans.push('#game-mode-enable', _("Enable"))
-            trans.push('#game-mode-tip', _("Disables ALT+F4 and Super key."))
-            trans.push('#str-macro-keys', _("Macro Keys"))
-            trans.push('#macro-keys-enable', _("Activate"))
-            trans.push('#profiles-activate', _("Activate"), True)
-            trans.push('.str-help', _("Help"))
-
-            trans.push('#str-profiles', _("Application Profiles"), True)
-            trans.push('#profiles-new', _("New"), True)
-            trans.push('#profiles-edit', _("Edit"), True)
-            trans.push('#profiles-delete', _("Delete"), True)
-
-            trans.push('#dialog-new-title', _("Create New Application Profile"))
-            trans.push('#dialog-new-hint', _("Please enter a name for the new profile, and optionally an icon."))
-            trans.push('#str-new-name', _("Application:"))
-            trans.push('#str-new-icon', _("Icon Path:"))
-            trans.push('#str-fetch-launcher', _("Select Installed Application"))
-            trans.push('#dialog-new-cancel', _("Cancel"))
-            trans.push('#dialog-new-ok', _("Create"))
-
-            trans.push('#dialog-del-title', _("Delete"))
-            trans.push('#dialog-del-hint', _("Are you sure you want to delete this?"))
-            trans.push('#dialog-del-no', _("Keep"))
-            trans.push('#dialog-del-yes', _("Delete"))
-
-            trans.push('#dialog-applauncher-title', _("Choose an Application"))
-            trans.push('#dialog-applauncher-hint', _("The information from the chosen program will be used as the profile's base."))
-            trans.push('#dialog-applauncher-revert', _("Cancel"))
-            trans.push('#dialog-applauncher-ok', _("Select"))
-
-            trans.push('#dialog-help-title', _("Quick Help"))
-            # Just the macro keys are present here.
-            trans.push('#dialog-help-subtitle', _("Macro Keys Usage"))
-            trans.push('#dialog-help-body', _("You can also use on-the-fly macro recording (provided by the daemon) by following these steps:") +
-                       '<ol><li>FN + <div class="macro-key"></div> ' + _("to enter macro mode.") + '</li>' +
-                       '<li>' + _("Press the macro key to assign to. E.g. M1") +'</li>' +
-                       '<li>' + _("Typing in your key combination.") +'</li>' +
-                       '<li>' + _("Exiting macro mode with ") + ' FN + <div class="macro-key"></div></li></ol>')
-            trans.push('#dialog-help-close', _("Close"))
-
-            trans.push('#str-browse-icon', _("Browse Icon"))
-
-            trans.push('#str-dpi', _("DPI"))
-            trans.push('#str-poll-rate', _("Polling Rate"))
-
-            # Page actions
-            self.webkit.run_javascript('instantProfileSwitch = false;')
-            self.update_page('#profiles-activate', 'show')
-            self.refresh_device_list()
-            self.refresh_profiles_list()
-
-            # Tell JavaScript whether live profile switching is enabled.
-            if pref.get('editor', 'live_switch', 'true') == 'true':
-                self.webkit.run_javascript('live_switch = true;')
-                self.update_page('#profiles-activate', 'hide')
-            else:
-                self.webkit.run_javascript('live_switch = false;')
-
-            # If there are multiple devices connected, show the overview screen first.
-            if len(self.devices) > 1:
-                self.update_page(".device", "removeClass", "active")
-                self.update_page("#device-overview-tab", "addClass", "active")
-                self.update_page("#device-individual", "hide")
-                self.update_page("#device-overview", "fadeIn")
-            else:
-                self.update_device_supported_features()
-                self.update_device_active_options()
-
-        elif self.current_page == 'profile_editor':
-            # Push strings
-            trans.push('#cancel', _("Cancel"))
-            trans.push('#edit-preview', _("Preview"))
-            trans.push('#edit-save', _("Save"), True)
-
-            trans.push_var('str_set', _("Set"))
-            trans.push_var('str_set_help', _("Click on a key to assign a color here."))
-            trans.push_var('str_picker', _("Picker"))
-            trans.push_var('str_picker_help', _("Click on a key to grab its color."))
-            trans.push_var('str_clear', _("Clear"))
-            trans.push_var('str_clear_help', _("Click on a key to clear."))
-            self.webkit.run_javascript("set_mode('set')")
-
-            trans.push('#str-edit-profile', _("Edit"), True)
-            trans.push('#dialog-rename-title', _("Edit Profile Details"))
-            trans.push('#dialog-rename-hint', _("Change the name and icon for this profile."))
-            trans.push('#str-rename-name', _("Name:"))
-            trans.push('#str-rename-icon', _("Icon Path:"))
-            trans.push('#dialog-rename-cancel', _("Discard"))
-            trans.push('#dialog-rename-ok', _("Save Changes"))
-            trans.push('#str-browse-icon', _("Browse Icon"))
-
-            # Initialise keyboard layout
-            js_exec = self.webkit.JavaScriptExecutor(self.webkit)
-            kb_callback = self.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
-
-            # Initalise colour picker
-            self.print_colour_options("editor-colour", "#colour-selection", [0, 255, 0], "profile")
-
-            # Collect profile details.
-            uuid = self.profiles.selected_uuid
-            self.webkit.run_javascript("var selected_profile = '{0}'".format(uuid))
-            profile_path = os.path.join(path.profile_folder, str(uuid) + ".json")
-            self.profiles.memory = pref.load_file(profile_path)
-            profile_data = self.profiles.memory
-            profile_name = profile_data["name"]
-            profile_icon = profile_data["icon"]
-
-            # Set profile title on page
-            self.update_page("#profile-name", "html", profile_name)
-            self.update_page("#profile-name", "fadeIn")
-
-            # Set profile icon on page
-            self.update_page("#profile-icon", "attr", "src", profile_icon)
-            self.update_page("#profile-icon", "fadeIn")
-
-            # Set keyboard layout
-            kb_callback << "keyboard_obj.set_layout(\"kb-" + self.kb_layout + "\")"
-
-            # Load profile into keyboard.
-            self.profiles.selected_uuid = uuid
-            if pref.get('editor', 'live_preview', 'true') == 'true':
-                self.profiles.send_profile_to_keyboard(self.active_device, profile_data)
-
-            for row in range(0, 6):
-                for col in range(0, 22):
-                    red = profile_data["rows"][str(row)][col][0]
-                    green = profile_data["rows"][str(row)][col][1]
-                    blue = profile_data["rows"][str(row)][col][2]
-                    js_string = "keyboard_obj.set_key_colour({0},{1},\"#{2:02X}{3:02X}{4:02X}\")".format(row, col, red, green, blue)
-                    kb_callback << js_string
-
-            # Disable space key and FN for keyboards that don't support them.
-            device_name = str(self.active_device.name)
-            if device_name in "Razer BlackWidow Chroma" "Razer BlackWidow Ultimate":
-                # Except that BW Ultimate 2016 does support the keys.
-                if not device_name == "Razer BlackWidow Ultimate 2016":
-                    kb_callback << "keyboard_obj.disable_key(5,7)"
-                    kb_callback << "keyboard_obj.disable_key(5,12)"
-
-            # Hide preview button if live previewing is enabled.
-            if pref.get("editor", "live_preview", "true") == "true":
-                kb_callback << '$("#edit-preview").hide();'
-
-            kb_callback << "$(\"#cancel\").attr({onclick: \"cmd('cancel-changes?"+ self.cancel_changes + "?" + uuid + "')\"})"
-
-            js_exec << kb_callback
-            js_exec.exec()
-
-        elif self.current_page == 'preferences':
-            trans.push('#page-header', _("Preferences"))
-
-            ########################
-            # About
-            ########################
-            trans.push('#str-about', _("About"))
-            trans.push('#str-tray', _("Tray Applet"))
-            trans.push('#str-app-settings', _("General"))
-            trans.push('.str-colours', _("Colors"))
-            trans.push('#str-daemon', _("Daemon"))
-
-            trans.push('#str-version-app', _("Version:"))
-            trans.push('#str-version-config', _("Configuration:"))
-            trans.push('#str-version-daemon', _("Daemon Version:"))
-            trans.push('#str-version-lib', _("Razer Python Library:"))
-
-            trans.push('#project-button', _("View on GitHub"), True)
-            trans.push('#update-button', _("Check for Updates"))
-            trans.push('#changelog-button', _("View Change Log"))
-
-            trans.push('#dialog-changelog-title', _("Update History"), True)
-            trans.push('#dialog-changelog-subtitle', _("A human-readable list of changes made to Polychromatic."))
-            trans.push('#dialog-close', _("Close"), True)
-
-            # Append version information
-            def make_dev_version():
-                version_master = version[:-1] + str(int(version[-1:]) + 1)
-                self.update_page('#str-version-app-string', "html", version_master + "-dev")
-
-            if self.app_installed:
-                # Hide the option to update if the app is running globally.
-                self.update_page('#str-version-app-string', "html", version)
-                self.update_page("#update-button", "hide")
-            else:
-                # When running from 'master' directly.
-                make_dev_version()
-
-            self.update_page('#str-version-config-string', "html", str(pref.version))
-            self.update_page('#str-version-lib-string', "html", str(self.devman.version))
-            self.update_page('#str-version-daemon-string', "html", str(self.devman.daemon_version))
-
-            # For Apt, check for the source file to determine builds.
-            distro = linux_distribution()[0]
-            if distro == "Ubuntu" or distro == "Debian":
-                codename = linux_distribution()[2]
-
-                source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list"
-                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                    self.update_page("#auto-update-info", "html", "<tr><td style='color:lime'><br><span class='fa fa-check-circle'></span> {0}</td></tr>".format(
-                        _("You are set for automatic updates (via PPA)")))
-                    self.update_page("#auto-update-info", "show")
-
-                source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily-" + codename + ".list"
-                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                    self.update_page("#auto-update-info", "html", "<tr><td style='color:yellow'><br><span class='fa fa-check-circle'></span> {0}</td></tr>".format(
-                        _("You have opted for development packages.")))
-                    self.update_page("#auto-update-info", "show")
-                    make_dev_version()
-
-            # Synchronised demo for BlackWidow Chroma users.
-            for device in self.devices:
-                if device.name.startswith("Razer BlackWidow Chroma"):
-                    self.update_page("#demo-chroma", "show")
-                    trans.push('#demo-chroma', _("Play Demo - Razer BlackWidow Chroma Advert"))
-
-            ########################
-            # General
-            ########################
-            trans.push('#str-app-profiles', _("Application Profiles"))
-            trans.push('#str-live-switch', _("Enable live switching"), True)
-            trans.push('#str-live-switch-help', _("Activate profiles instantly as soon as you click on them."))
-            trans.push('#str-live-preview', _("Enable live preview"), True)
-            trans.push('#str-live-preview-help', _("While editing, show your changes on the actual keyboard."))
-            trans.push('#str-activate-on-save', _("Always activate profiles after saving."), True)
-            trans.push('#str-interface', _("Interface"))
-            trans.push('#str-scaling', _("Scale:"))
-            trans.push('#str-scaling-help', _("Scale the application so it looks good on large displays. Requires restart."))
-            trans.push('#str-advanced', _("Advanced"))
-            trans.push('#str-open-config', _("Open Configuration Folder"), True)
-            trans.push('#str-reset-pref', _("Reset Preferences"), True)
-            trans.push('#str-reset-all', _("Reset Everything"))
-            trans.push('#pref-save', _("OK"), True)
-
-            trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
-            trans.push_var('no_change', _("No Change"))
-
-            for setting in ["live_switch", "live_preview", "activate_on_save"]:
-                if pref.get("editor", setting, "true") == 'true':
-                    self.update_page("#" + setting, "prop", "checked", "true")
-
-            # Set value for slider
-            scaling = pref.get("editor", "scaling", 1)
-            self.update_page("#scaling", "val", str(scaling))
-
-            ########################
-            # Tray Applet
-            ########################
-            trans.push('#str-tray-icon', _("Tray Icon"))
-            trans.push('#str-tray-custom', _("Use Custom Image"), True)
-            trans.push('#tray-custom', _("Custom Icon:"), True)
-            trans.push('#str-tray-icon-builtin', _("Use a built-in icon"), True)
-            trans.push('#str-tray-icon-gtk', _("Use a theme icon (GTK)"), True)
-            trans.push('#str-tray-icon-custom', _("Use a custom image"), True)
-            trans.push('#str-gtk-example', _("Examples: ibus-keyboard, gnome-desktop-config"), True)
-            trans.push('#str-preview', _("Preview:"), True)
-
-            # If it's the first time loading, set default icon to desktop environment.
-            if not pref.exists("tray_icon", "type"):
-                common.set_default_tray_icon(pref)
-
-            # Populate built-in icons
-            def add_icon(uuid):
-                icon_name = icon_index[uuid]["name"]
-                icon_path = os.path.join(path.data_source, "tray", icon_index[uuid]["path"])
-                icon_info = icon_index[uuid]["info"]
-                onclick_cmd = "cmd('select-tray-icon-uuid?{0}'); $('.tray-uuid').removeClass('selected'); $('#tray-uuid-{0}').addClass('selected');".format(uuid)
-                self.update_page("#tray-icon-previews", "append", "<button id='tray-uuid-{0}' class='tray-uuid btn' onclick=\"{1}\"><img src='{2}'/></button>".format(uuid, onclick_cmd, icon_path))
-
-            icon_type = pref.get("tray_icon", "type", "builtin")
-            self.update_page("#tray-" + icon_type, "prop", "checked", "true")
-            self.webkit.run_javascript("show_only_relevant('.tray-options', '#tray-{0}-options')".format(icon_type))
-
-            icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
-            icons = sorted(list(icon_index.keys()))
-            for uuid in icons:
-                add_icon(uuid)
-
-            icon_value = pref.get("tray_icon", "value", "0")
-            if icon_type == "builtin":
-                self.update_page("#tray-uuid-" + icon_value, "addClass", "selected")
-
-            elif icon_type == "gtk":
-                self.update_page("#tray-icon-gtk", "val", icon_value)
-
-            elif icon_type == "custom":
-                self.update_page("#tray-icon-path", "val", icon_value)
-
-
-            ########################
-            # Colours
-            ########################
-            trans.push('#dialog-del-title', _("Reset Colors"))
-            trans.push('#dialog-del-hint', _("Are you sure you want to reset all colors to their defaults?"))
-            trans.push('#dialog-del-no', _("Cancel"))
-            trans.push('#dialog-del-yes', _("Reset Defaults"))
-
-            trans.push('#colour-choose', _("Choose..."))
-            trans.push('#colour-new', _("New"), True)
-            trans.push('#colour-reset', _("Restore Defaults"), True)
-            trans.push('#colour-save', _("Save"), True)
-            trans.push('#colour-revert', _("Revert"))
-            trans.push('#colour-delete', _("Delete"), True)
-
-            self.populate_colours_table()
-
-            # Reads and sets configuration set in razer.conf
-            self.config_path = os.path.join(os.path.expanduser('~'), ".razer-daemon", "razer.conf")
-            import configparser
-            self.daemon_config = configparser.ConfigParser()
-
-            ########################
-            # Daemon
-            ########################
-            trans.push('#str-daemon-title', _("About the Daemon"))
-            trans.push('#str-daemon-info', _("The daemon is the software that communicates between the front-end applications and the driver."))
-            trans.push('#str-website', _("Website"), True)
-            trans.push('#str-project', _("Project"), True)
-            trans.push('#str-issues', _("Issues"))
-
-            trans.push('#str-troubleshooting', _("Troubleshooting"))
-            trans.push('#str-device-support', _("Device/Daemon Support"))
-            trans.push('#str-logs', _("Logs"))
-            trans.push('#str-logs-help', _("Useful for diagnosing issues and debugging daemon-related operations."))
-            trans.push('#str-watch', _("Watch"), True)
-
-            trans.push('#str-daemon-options', _("Daemon Service"))
-            trans.push('#str-daemon-stop', _("Stop"))
-            trans.push('#str-daemon-restart', _("Restart"))
-            trans.push('#str-daemon-service', _("If you have re-plugged devices, or are experiencing glitches, try restarting the daemon service."))
-            trans.push('#str-options-missing', _("Could not read the daemon's configuration file."))
-            trans.push('#str-options-restart', _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect."))
-
-            if os.path.exists(self.config_path):
-                self.daemon_config.read(self.config_path)
-            else:
-                self.update_page("#daemon-options-missing", "show")
-                for element in ["verbose-logging", "sync-effects", "screensaver", "key-statistics"]:
-                    self.update_page("#daemon-"+element, "addClass", "disabled")
-                    self.update_page("#str-"+element, "addClass", "disabled")
-
-            def read_daemon_config(group, item, element, label, description):
-                """
-                Sets the initial checkbox state for razer.conf daemon settings
-                """
-                element_checkbox = "#daemon-" + element
-                element_label = "#str-" + element
-                element_help = "#str-" + element + "-help"
-                self.update_page(element_label, "append", label)
-                self.update_page(element_help, "html", description)
-                if not self.daemon_config.has_option(group, item):
-                    self.update_page(element_checkbox, "addClass", "disabled")
-                    self.update_page(element_label, "addClass", "disabled")
-                    return
-
-                if self.daemon_config.get(group, item) == 'True':
-                    self.update_page(element_checkbox, "prop", "checked", "true")
-
-            read_daemon_config("General", "verbose_logging", "verbose-logging", _("Verbose Logging"), _("Show lots of debug messages."))
-            read_daemon_config("Startup", "sync_effects_enabled", "sync-effects", _("Sync Effects to All Devices"), _("When setting an effect, apply this to all other connected devices (where supported)."))
-            read_daemon_config("Startup", "devices_off_on_screensaver", "screensaver", _("Turn off devices when screensaver is running"), _("Not all desktop environments support this feature."))
-            read_daemon_config("Statistics", "key_statistics", "key-statistics", _("Generate Key Statistics"), _("Collects number of key presses per hour for generating heatmaps."))
-
-        elif self.current_page == 'error':
-            self.update_page("#close-window", "html", _("Quit"))
-            self.update_page("#restart-app", "html", _("Retry"))
-            self.update_page("#restart-daemon", "html", _("Restart Daemon"))
-            self.update_page("#error-icon", "attr", "src", "../img/error/" + self.error_icon + ".png")
-            self.update_page("#error-title", "html", self.error_title)
-            self.update_page("#error-title", "addClass", self.error_class)
-            self.update_page("#error-details", "html", self.error_message)
-
-        else:
-            stdout.vvprint('No post-actions for this page.')
+        try:
+            page_bindings[self.current_page](self)
+        except Exception:
+            stdout.vvprint(" ** No post-actions to run!")
 
     def refresh_profiles_list(self):
         """
@@ -2393,6 +1998,430 @@ class Controller(object):
     def device_state_changed(self):
         stdout.vprint("Device state changed. Refreshing interface.")
         self.update_device_active_options()
+
+
+class PageLoaded():
+    """
+    All of the 'screens' in Polychromatic are here.
+    """
+    def menu(appobj):
+        """
+        The main menu, for choosing a profile or device.
+        """
+        # Push strings
+        trans.push('#close-window', _("Close"))
+        trans.push('#page-header', _("Overview"))
+        trans.push_var('str_overview', _("Overview"))
+        trans.push('#str-brightness', _("Brightness"))
+        trans.push('#str-lighting', _("Lighting Effects"))
+        trans.push('#str-spectrum', _("Spectrum"))
+        trans.push('#str-wave', _("Wave"))
+        trans.push('#str-reactive', _("Reactive"))
+        trans.push('#str-breath', _("Breath"))
+        trans.push('#str-pulsate', _("Pulsate"))
+        trans.push('#str-ripple', _("Ripple"))
+        trans.push('#str-static', _("Static"))
+
+        trans.push('#str-color', _("Color:"), True)
+        trans.push('.str-custom', _("Custom..."))
+        trans.push('.str-none', _("None"), True)
+        trans.push('#str-direction', _("Direction:"), True)
+        trans.push('#str-wave-left', _("Left"))
+        trans.push('#str-wave-right', _("Right"))
+        trans.push('#str-speed', _("Speed:"), True)
+        trans.push('.str-random', _("Random"), True)
+        trans.push('.str-single-col', _("Single Color"), True)
+        trans.push('#str-dual-col', _("Dual Colors"), True)
+        trans.push('#str-cycles', _("Cycle:"), True)
+        trans.push('#str-colours', _("Colors:"), True)
+        trans.push('#str-slow', _("Slow"), True)
+        trans.push('#str-med', _("Medium"), True)
+        trans.push('#str-fast', _("Fast"), True)
+
+        trans.push('#str-modes', _("Key Modes"))
+        trans.push('#str-game-mode', _("Gaming Mode"))
+        trans.push('#game-mode-disable', _("Disable"))
+        trans.push('#game-mode-enable', _("Enable"))
+        trans.push('#game-mode-tip', _("Disables ALT+F4 and Super key."))
+        trans.push('#str-macro-keys', _("Macro Keys"))
+        trans.push('#macro-keys-enable', _("Activate"))
+        trans.push('#profiles-activate', _("Activate"), True)
+        trans.push('.str-help', _("Help"))
+
+        trans.push('#str-profiles', _("Application Profiles"), True)
+        trans.push('#profiles-new', _("New"), True)
+        trans.push('#profiles-edit', _("Edit"), True)
+        trans.push('#profiles-delete', _("Delete"), True)
+
+        trans.push('#dialog-new-title', _("Create New Application Profile"))
+        trans.push('#dialog-new-hint', _("Please enter a name for the new profile, and optionally an icon."))
+        trans.push('#str-new-name', _("Application:"))
+        trans.push('#str-new-icon', _("Icon Path:"))
+        trans.push('#str-fetch-launcher', _("Select Installed Application"))
+        trans.push('#dialog-new-cancel', _("Cancel"))
+        trans.push('#dialog-new-ok', _("Create"))
+
+        trans.push('#dialog-del-title', _("Delete"))
+        trans.push('#dialog-del-hint', _("Are you sure you want to delete this?"))
+        trans.push('#dialog-del-no', _("Keep"))
+        trans.push('#dialog-del-yes', _("Delete"))
+
+        trans.push('#dialog-applauncher-title', _("Choose an Application"))
+        trans.push('#dialog-applauncher-hint', _("The information from the chosen program will be used as the profile's base."))
+        trans.push('#dialog-applauncher-revert', _("Cancel"))
+        trans.push('#dialog-applauncher-ok', _("Select"))
+
+        trans.push('#dialog-help-title', _("Quick Help"))
+        # Just the macro keys are present here.
+        trans.push('#dialog-help-subtitle', _("Macro Keys Usage"))
+        trans.push('#dialog-help-body', _("You can also use on-the-fly macro recording (provided by the daemon) by following these steps:") +
+                   '<ol><li>FN + <div class="macro-key"></div> ' + _("to enter macro mode.") + '</li>' +
+                   '<li>' + _("Press the macro key to assign to. E.g. M1") +'</li>' +
+                   '<li>' + _("Typing in your key combination.") +'</li>' +
+                   '<li>' + _("Exiting macro mode with ") + ' FN + <div class="macro-key"></div></li></ol>')
+        trans.push('#dialog-help-close', _("Close"))
+
+        trans.push('#str-browse-icon', _("Browse Icon"))
+
+        trans.push('#str-dpi', _("DPI"))
+        trans.push('#str-poll-rate', _("Polling Rate"))
+
+        # Page actions
+        appobj.webkit.run_javascript('instantProfileSwitch = false;')
+        appobj.update_page('#profiles-activate', 'show')
+        appobj.refresh_device_list()
+        appobj.refresh_profiles_list()
+
+        # Tell JavaScript whether live profile switching is enabled.
+        if pref.get('editor', 'live_switch', 'true') == 'true':
+            appobj.webkit.run_javascript('live_switch = true;')
+            appobj.update_page('#profiles-activate', 'hide')
+        else:
+            appobj.webkit.run_javascript('live_switch = false;')
+
+        # If there are multiple devices connected, show the overview screen first.
+        if len(appobj.devices) > 1:
+            appobj.update_page(".device", "removeClass", "active")
+            appobj.update_page("#device-overview-tab", "addClass", "active")
+            appobj.update_page("#device-individual", "hide")
+            appobj.update_page("#device-overview", "fadeIn")
+        else:
+            appobj.update_device_supported_features()
+            appobj.update_device_active_options()
+
+    def preferences(appobj):
+        """
+        The preferences menu, for changing Polychromatic's options.
+        """
+        trans.push('#page-header', _("Preferences"))
+        trans.push('#close-window', _("Close"))
+
+        ########################
+        # About
+        ########################
+        trans.push('#str-about', _("About"))
+        trans.push('#str-tray', _("Tray Applet"))
+        trans.push('#str-app-settings', _("General"))
+        trans.push('.str-colours', _("Colors"))
+        trans.push('#str-daemon', _("Daemon"))
+
+        trans.push('#str-version-app', _("Version:"))
+        trans.push('#str-version-config', _("Configuration:"))
+        trans.push('#str-version-daemon', _("Daemon Version:"))
+        trans.push('#str-version-lib', _("Razer Python Library:"))
+
+        trans.push('#project-button', _("View on GitHub"), True)
+        trans.push('#update-button', _("Check for Updates"))
+        trans.push('#changelog-button', _("View Change Log"))
+
+        trans.push('#dialog-changelog-title', _("Update History"), True)
+        trans.push('#dialog-changelog-subtitle', _("A human-readable list of changes made to Polychromatic."))
+        trans.push('#dialog-close', _("Close"), True)
+
+        # Append version information
+        def make_dev_version():
+            version_master = version[:-1] + str(int(version[-1:]) + 1)
+            appobj.update_page('#str-version-app-string', "html", version_master + "-dev")
+
+        if appobj.app_installed:
+            # Hide the option to update if the app is running globally.
+            appobj.update_page('#str-version-app-string', "html", version)
+            appobj.update_page("#update-button", "hide")
+        else:
+            # When running from 'master' directly.
+            make_dev_version()
+
+        appobj.update_page('#str-version-config-string', "html", str(pref.version))
+        appobj.update_page('#str-version-lib-string', "html", str(appobj.devman.version))
+        appobj.update_page('#str-version-daemon-string', "html", str(appobj.devman.daemon_version))
+
+        # For Apt, check for the source file to determine builds.
+        distro = linux_distribution()[0]
+        if distro == "Ubuntu" or distro == "Debian":
+            codename = linux_distribution()[2]
+
+            source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list"
+            if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
+                appobj.update_page("#auto-update-info", "html", "<tr><td style='color:lime'><br><span class='fa fa-check-circle'></span> {0}</td></tr>".format(
+                    _("You are set for automatic updates (via PPA)")))
+                appobj.update_page("#auto-update-info", "show")
+
+            source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily-" + codename + ".list"
+            if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
+                appobj.update_page("#auto-update-info", "html", "<tr><td style='color:yellow'><br><span class='fa fa-check-circle'></span> {0}</td></tr>".format(
+                    _("You have opted for development packages.")))
+                appobj.update_page("#auto-update-info", "show")
+                make_dev_version()
+
+        # Synchronised demo for BlackWidow Chroma users.
+        for device in appobj.devices:
+            if device.name.startswith("Razer BlackWidow Chroma"):
+                appobj.update_page("#demo-chroma", "show")
+                trans.push('#demo-chroma', _("Play Demo - Razer BlackWidow Chroma Advert"))
+
+        ########################
+        # General
+        ########################
+        trans.push('#str-app-profiles', _("Application Profiles"))
+        trans.push('#str-live-switch', _("Enable live switching"), True)
+        trans.push('#str-live-switch-help', _("Activate profiles instantly as soon as you click on them."))
+        trans.push('#str-live-preview', _("Enable live preview"), True)
+        trans.push('#str-live-preview-help', _("While editing, show your changes on the actual keyboard."))
+        trans.push('#str-activate-on-save', _("Always activate profiles after saving."), True)
+        trans.push('#str-interface', _("Interface"))
+        trans.push('#str-scaling', _("Scale:"))
+        trans.push('#str-scaling-help', _("Scale the application so it looks good on large displays. Requires restart."))
+        trans.push('#str-advanced', _("Advanced"))
+        trans.push('#str-open-config', _("Open Configuration Folder"), True)
+        trans.push('#str-reset-pref', _("Reset Preferences"), True)
+        trans.push('#str-reset-all', _("Reset Everything"))
+        trans.push('#pref-save', _("OK"), True)
+
+        trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
+        trans.push_var('no_change', _("No Change"))
+
+        for setting in ["live_switch", "live_preview", "activate_on_save"]:
+            if pref.get("editor", setting, "true") == 'true':
+                appobj.update_page("#" + setting, "prop", "checked", "true")
+
+        # Set value for slider
+        scaling = pref.get("editor", "scaling", 1)
+        appobj.update_page("#scaling", "val", str(scaling))
+
+        ########################
+        # Tray Applet
+        ########################
+        trans.push('#str-tray-icon', _("Tray Icon"))
+        trans.push('#str-tray-custom', _("Use Custom Image"), True)
+        trans.push('#tray-custom', _("Custom Icon:"), True)
+        trans.push('#str-tray-icon-builtin', _("Use a built-in icon"), True)
+        trans.push('#str-tray-icon-gtk', _("Use a theme icon (GTK)"), True)
+        trans.push('#str-tray-icon-custom', _("Use a custom image"), True)
+        trans.push('#str-gtk-example', _("Examples: ibus-keyboard, gnome-desktop-config"), True)
+        trans.push('#str-preview', _("Preview:"), True)
+
+        # If it's the first time loading, set default icon to desktop environment.
+        if not pref.exists("tray_icon", "type"):
+            common.set_default_tray_icon(pref)
+
+        # Populate built-in icons
+        def add_icon(uuid):
+            icon_name = icon_index[uuid]["name"]
+            icon_path = os.path.join(path.data_source, "tray", icon_index[uuid]["path"])
+            icon_info = icon_index[uuid]["info"]
+            onclick_cmd = "cmd('select-tray-icon-uuid?{0}'); $('.tray-uuid').removeClass('selected'); $('#tray-uuid-{0}').addClass('selected');".format(uuid)
+            appobj.update_page("#tray-icon-previews", "append", "<button id='tray-uuid-{0}' class='tray-uuid btn' onclick=\"{1}\"><img src='{2}'/></button>".format(uuid, onclick_cmd, icon_path))
+
+        icon_type = pref.get("tray_icon", "type", "builtin")
+        appobj.update_page("#tray-" + icon_type, "prop", "checked", "true")
+        appobj.webkit.run_javascript("show_only_relevant('.tray-options', '#tray-{0}-options')".format(icon_type))
+
+        icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
+        icons = sorted(list(icon_index.keys()))
+        for uuid in icons:
+            add_icon(uuid)
+
+        icon_value = pref.get("tray_icon", "value", "0")
+        if icon_type == "builtin":
+            appobj.update_page("#tray-uuid-" + icon_value, "addClass", "selected")
+
+        elif icon_type == "gtk":
+            appobj.update_page("#tray-icon-gtk", "val", icon_value)
+
+        elif icon_type == "custom":
+            appobj.update_page("#tray-icon-path", "val", icon_value)
+
+
+        ########################
+        # Colours
+        ########################
+        trans.push('#dialog-del-title', _("Reset Colors"))
+        trans.push('#dialog-del-hint', _("Are you sure you want to reset all colors to their defaults?"))
+        trans.push('#dialog-del-no', _("Cancel"))
+        trans.push('#dialog-del-yes', _("Reset Defaults"))
+
+        trans.push('#colour-choose', _("Choose..."))
+        trans.push('#colour-new', _("New"), True)
+        trans.push('#colour-reset', _("Restore Defaults"), True)
+        trans.push('#colour-save', _("Save"), True)
+        trans.push('#colour-revert', _("Revert"))
+        trans.push('#colour-delete', _("Delete"), True)
+
+        appobj.populate_colours_table()
+
+        # Reads and sets configuration set in razer.conf
+        appobj.config_path = os.path.join(os.path.expanduser('~'), ".razer-daemon", "razer.conf")
+        import configparser
+        appobj.daemon_config = configparser.ConfigParser()
+
+        ########################
+        # Daemon
+        ########################
+        trans.push('#str-daemon-title', _("About the Daemon"))
+        trans.push('#str-daemon-info', _("The daemon is the software that communicates between the front-end applications and the driver."))
+        trans.push('#str-website', _("Website"), True)
+        trans.push('#str-project', _("Project"), True)
+        trans.push('#str-issues', _("Issues"))
+
+        trans.push('#str-troubleshooting', _("Troubleshooting"))
+        trans.push('#str-device-support', _("Device/Daemon Support"))
+        trans.push('#str-logs', _("Logs"))
+        trans.push('#str-logs-help', _("Useful for diagnosing issues and debugging daemon-related operations."))
+        trans.push('#str-watch', _("Watch"), True)
+
+        trans.push('#str-daemon-options', _("Daemon Service"))
+        trans.push('#str-daemon-stop', _("Stop"))
+        trans.push('#str-daemon-restart', _("Restart"))
+        trans.push('#str-daemon-service', _("If you have re-plugged devices, or are experiencing glitches, try restarting the daemon service."))
+        trans.push('#str-options-missing', _("Could not read the daemon's configuration file."))
+        trans.push('#str-options-restart', _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect."))
+
+        if os.path.exists(appobj.config_path):
+            appobj.daemon_config.read(appobj.config_path)
+        else:
+            appobj.update_page("#daemon-options-missing", "show")
+            for element in ["verbose-logging", "sync-effects", "screensaver", "key-statistics"]:
+                appobj.update_page("#daemon-"+element, "addClass", "disabled")
+                appobj.update_page("#str-"+element, "addClass", "disabled")
+
+        def read_daemon_config(group, item, element, label, description):
+            """
+            Sets the initial checkbox state for razer.conf daemon settings
+            """
+            element_checkbox = "#daemon-" + element
+            element_label = "#str-" + element
+            element_help = "#str-" + element + "-help"
+            appobj.update_page(element_label, "append", label)
+            appobj.update_page(element_help, "html", description)
+            if not appobj.daemon_config.has_option(group, item):
+                appobj.update_page(element_checkbox, "addClass", "disabled")
+                appobj.update_page(element_label, "addClass", "disabled")
+                return
+
+            if appobj.daemon_config.get(group, item) == 'True':
+                appobj.update_page(element_checkbox, "prop", "checked", "true")
+
+        read_daemon_config("General", "verbose_logging", "verbose-logging", _("Verbose Logging"), _("Show lots of debug messages."))
+        read_daemon_config("Startup", "sync_effects_enabled", "sync-effects", _("Sync Effects to All Devices"), _("When setting an effect, apply this to all other connected devices (where supported)."))
+        read_daemon_config("Startup", "devices_off_on_screensaver", "screensaver", _("Turn off devices when screensaver is running"), _("Not all desktop environments support this feature."))
+        read_daemon_config("Statistics", "key_statistics", "key-statistics", _("Generate Key Statistics"), _("Collects number of key presses per hour for generating heatmaps."))
+
+    def profile_editor(appobj):
+        """
+        The editor for tweaking lighting profiles.
+        """
+        # Push strings
+        trans.push('#close-window', _("Close"))
+        trans.push('#cancel', _("Cancel"))
+        trans.push('#edit-preview', _("Preview"))
+        trans.push('#edit-save', _("Save"), True)
+
+        trans.push_var('str_set', _("Set"))
+        trans.push_var('str_set_help', _("Click on a key to assign a color here."))
+        trans.push_var('str_picker', _("Picker"))
+        trans.push_var('str_picker_help', _("Click on a key to grab its color."))
+        trans.push_var('str_clear', _("Clear"))
+        trans.push_var('str_clear_help', _("Click on a key to clear."))
+        appobj.webkit.run_javascript("set_mode('set')")
+
+        trans.push('#str-edit-profile', _("Edit"), True)
+        trans.push('#dialog-rename-title', _("Edit Profile Details"))
+        trans.push('#dialog-rename-hint', _("Change the name and icon for this profile."))
+        trans.push('#str-rename-name', _("Name:"))
+        trans.push('#str-rename-icon', _("Icon Path:"))
+        trans.push('#dialog-rename-cancel', _("Discard"))
+        trans.push('#dialog-rename-ok', _("Save Changes"))
+        trans.push('#str-browse-icon', _("Browse Icon"))
+
+        # Initialise keyboard layout
+        js_exec = appobj.webkit.JavaScriptExecutor(appobj.webkit)
+        kb_callback = appobj.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
+
+        # Initalise colour picker
+        appobj.print_colour_options("editor-colour", "#colour-selection", [0, 255, 0], "profile")
+
+        # Collect profile details.
+        uuid = appobj.profiles.selected_uuid
+        appobj.webkit.run_javascript("var selected_profile = '{0}'".format(uuid))
+        profile_path = os.path.join(path.profile_folder, str(uuid) + ".json")
+        appobj.profiles.memory = pref.load_file(profile_path)
+        profile_data = appobj.profiles.memory
+        profile_name = profile_data["name"]
+        profile_icon = profile_data["icon"]
+
+        # Set profile title on page
+        appobj.update_page("#profile-name", "html", profile_name)
+        appobj.update_page("#profile-name", "fadeIn")
+
+        # Set profile icon on page
+        appobj.update_page("#profile-icon", "attr", "src", profile_icon)
+        appobj.update_page("#profile-icon", "fadeIn")
+
+        # Set keyboard layout
+        kb_callback << "keyboard_obj.set_layout(\"kb-" + appobj.kb_layout + "\")"
+
+        # Load profile into keyboard.
+        appobj.profiles.selected_uuid = uuid
+        if pref.get('editor', 'live_preview', 'true') == 'true':
+            appobj.profiles.send_profile_to_keyboard(appobj.active_device, profile_data)
+
+        for row in range(0, 6):
+            for col in range(0, 22):
+                red = profile_data["rows"][str(row)][col][0]
+                green = profile_data["rows"][str(row)][col][1]
+                blue = profile_data["rows"][str(row)][col][2]
+                js_string = "keyboard_obj.set_key_colour({0},{1},\"#{2:02X}{3:02X}{4:02X}\")".format(row, col, red, green, blue)
+                kb_callback << js_string
+
+        # Disable space key and FN for keyboards that don't support them.
+        device_name = str(appobj.active_device.name)
+        if device_name in "Razer BlackWidow Chroma" "Razer BlackWidow Ultimate":
+            # Except that BW Ultimate 2016 does support the keys.
+            if not device_name == "Razer BlackWidow Ultimate 2016":
+                kb_callback << "keyboard_obj.disable_key(5,7)"
+                kb_callback << "keyboard_obj.disable_key(5,12)"
+
+        # Hide preview button if live previewing is enabled.
+        if pref.get("editor", "live_preview", "true") == "true":
+            kb_callback << '$("#edit-preview").hide();'
+
+        kb_callback << "$(\"#cancel\").attr({onclick: \"cmd('cancel-changes?"+ appobj.cancel_changes + "?" + uuid + "')\"})"
+
+        js_exec << kb_callback
+        js_exec.exec()
+
+    def error(appobj):
+        """
+        The screen shown when serious errors occur.
+        """
+        trans.push('#close-window', _("Close"))
+        appobj.update_page("#close-window", "html", _("Quit"))
+        appobj.update_page("#restart-app", "html", _("Retry"))
+        appobj.update_page("#restart-daemon", "html", _("Restart Daemon"))
+        appobj.update_page("#error-icon", "attr", "src", "../img/error/" + appobj.error_icon + ".png")
+        appobj.update_page("#error-title", "html", appobj.error_title)
+        appobj.update_page("#error-title", "addClass", appobj.error_class)
+        appobj.update_page("#error-details", "html", appobj.error_message)
 
 
 class Dialogues(object):
