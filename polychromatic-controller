@@ -17,24 +17,20 @@
 # Copyright (C) 2015-2017 Luke Horwell <luke@ubuntu-mate.org>
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
-version = "0.3.9.2"
+"""
+Main application for Polychromatic, a GUI for interfacing with Razer devices.
 
-import gi
-gi.require_version('Gtk', '3.0')
-gi.require_version('Gdk', '3.0')
-gi.require_version('WebKit2', '4.0')
-from gi.repository import Gtk, Gdk, WebKit2
+Requires razer-daemon to be installed and running on the system.
+"""
 
 import os
 import sys
 import glob
 import signal
-import json
 import gettext
-import setproctitle
-setproctitle.setproctitle('polychromatic-controller')
 import time
 import threading
+from setproctitle import setproctitle
 from subprocess import Popen as background_process
 from subprocess import check_output
 from platform import linux_distribution
@@ -68,6 +64,15 @@ except Exception as e:
     print("\nException:" + str(e))
     exit(1)
 
+import gi
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+gi.require_version("WebKit2", "4.0")
+from gi.repository import Gtk, Gdk, WebKit2
+
+setproctitle("polychromatic-controller")
+version = "0.3.9.2"
+
 path = pref.Paths()
 path.data_source = path.get_data_source(__file__)
 daemon_config_path = os.path.join(os.path.expanduser('~'), ".razer-daemon", "razer.conf")
@@ -90,7 +95,7 @@ class Translations(object):
 
         # Initialise i18n translations
         global _
-        t = gettext.translation('polychromatic-controller', localedir=self.locale_path, fallback=True)
+        t = gettext.translation("polychromatic-controller", localedir=self.locale_path, fallback=True)
         _ = t.gettext
 
     def push(self, element, string, append=False):
@@ -99,9 +104,9 @@ class Translations(object):
         """
         # "append=True" is useful for elements that share contents.
         if append:
-            app.update_page(element, 'append', "{0}".format(string))
+            app.update_page(element, "append", "{0}".format(string))
         else:
-            app.update_page(element, 'html', "{0}".format(string))
+            app.update_page(element, "html", "{0}".format(string))
 
     def push_var(self, variable, string):
         """
@@ -118,13 +123,13 @@ class AppView(WebKit2.WebView):
         # Create WebKit Container
         webkit = WebKit2
         webkit.WebView.__init__(self)
-        self.set_background_color(Gdk.RGBA(0,0,0,1))
+        self.set_background_color(Gdk.RGBA(0, 0, 0, 1))
 
         # Post-actions after pages fully load.
-        self.connect('load-changed', self.load_changed_cb)
-        self.connect('notify::title', self.title_changed_cb)
-        self.connect('context-menu', self.context_menu_cb)
-        stdout.vvprint('Initialised WebKit2.')
+        self.connect("load-changed", self.load_changed_cb)
+        self.connect("notify::title", self.title_changed_cb)
+        self.connect("context-menu", self.context_menu_cb)
+        stdout.vvprint("Initialised WebKit2.")
 
         try:
             # Allows Keyboard SVGs to load.
@@ -152,7 +157,7 @@ class AppView(WebKit2.WebView):
             inspector.show()
 
         # Load the starting page
-        default_page = 'loading'
+        default_page = "loading"
         self.load_uri('file://' + os.path.join(path.data_source, 'pages/' + startpage + '.html'))
 
     def title_changed_cb(self, view, frame):
@@ -161,7 +166,7 @@ class AppView(WebKit2.WebView):
         """
         title = self.get_title()
         if title not in ["null", None, "", " "]:
-            stdout.vvprint('** Command: ' + title)
+            stdout.vvprint("** Command: " + title)
             app.process_command(title)
 
     def load_changed_cb(self, view, frame):
@@ -175,7 +180,7 @@ class AppView(WebKit2.WebView):
             return
         if not self.is_loading():
             app.current_page = page
-            stdout.vvprint(' ** Page Changed: ' + page)
+            stdout.vvprint(" ** Page Changed: " + page)
             app.page_loaded()
 
     def context_menu_cb(self, view, menu, event, htr, user_data=None):
@@ -244,14 +249,14 @@ class Controller(object):
         """
 
         # Set up "memory" variables
-        self.current_page = 'loading'
+        self.current_page = "loading"
         self.load_lock = False
 
         # Set up variables provided by daemon
         try:
             self.kb_layout = get_keyboard_layout()
         except:
-            self.kb_layout = 'gb'
+            self.kb_layout = "gb"
 
         # Is this application installed in /usr/share or ran from repository?
         if os.path.exists(os.path.join(path.data_source + "/../install/update.sh")):
@@ -268,17 +273,17 @@ class Controller(object):
 
         # Create window
         w = Gtk.Window(title="Polychromatic Controller")
-        w.set_wmclass('polychromatic-controller', 'polychromatic-controller')
+        w.set_wmclass("polychromatic-controller", "polychromatic-controller")
         w.set_position(Gtk.WindowPosition.CENTER)
-        w.modify_bg(Gtk.StateType(0), Gdk.Color(0,0,0))
+        w.modify_bg(Gtk.StateType(0), Gdk.Color(0, 0, 0))
         w.set_resizable(False)
         self.window = w
         try:
-            w.set_icon_from_file(os.path.join(path.data_source, '../install/hicolor/16x16/apps/polychromatic-controller.svg'))
-            stdout.vvprint('Window icon set from relative path.')
+            w.set_icon_from_file(os.path.join(path.data_source, "../install/hicolor/16x16/apps/polychromatic-controller.svg"))
+            stdout.vvprint("Window icon set from relative path.")
         except:
-            w.set_icon_from_file('/usr/share/icons/hicolor/16x16/apps/polychromatic-controller.svg')
-            stdout.vvprint('Window icon set from /usr/share/ path.')
+            w.set_icon_from_file("/usr/share/icons/hicolor/16x16/apps/polychromatic-controller.svg")
+            stdout.vvprint("Window icon set from /usr/share/ path.")
 
         # Add elements to window
         sw = Gtk.ScrolledWindow()
@@ -286,7 +291,7 @@ class Controller(object):
         sw.add(self.webkit)
 
         # Scale the application so it looks good on large displays.
-        scale = float(pref.get('editor', 'scaling', 1))
+        scale = float(pref.get("editor", "scaling", 1))
         if scale == 1.5:
             self.webkit.set_zoom_level(1.5)
             w.set_size_request(1500, 900)
@@ -299,7 +304,7 @@ class Controller(object):
         else:
             self.webkit.set_zoom_level(1)
             w.set_size_request(1000, 600)
-        stdout.vprint('Program Scale Set: ' + str(scale))
+        stdout.vprint("Program Scale Set: " + str(scale))
 
         # Build an auto expanding box and add our scrolled window
         b = Gtk.VBox(homogeneous=False, spacing=0)
@@ -307,7 +312,7 @@ class Controller(object):
         w.add(b)
         w.connect("delete-event", Gtk.main_quit)
         w.show_all()
-        stdout.vvprint('Initialised Window.')
+        stdout.vvprint("Initialised Window.")
 
         # Kills process when CTRL+C'd.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -326,9 +331,9 @@ class Controller(object):
 
         if daemon_missing:
             self.show_error_page(
-                 "serious", "generic", _("Daemon Not Installed"),
-                 _("Polychromatic requires the daemon, but it could not be imported. Please check the Razer drivers, daemon and Python library are installed.") +
-                 '<br><br><a onclick="cmd(\'open?https://github.com/lah7/polychromatic\')">' + _("See the README for further information.") + '</a>')
+                "serious", "generic", _("Daemon Not Installed"),
+                _("Polychromatic requires the daemon, but it could not be imported. Please check the Razer drivers, daemon and Python library are installed.") +
+                '<br><br><a onclick="cmd(\'open?https://github.com/lah7/polychromatic\')">' + _("See the README for further information.") + '</a>')
             return
 
         try:
@@ -361,8 +366,7 @@ class Controller(object):
                 "warning", "restart-required", _("Daemon requires a restart"),
                 _("The daemon that is currently running is older than the installed version.") + "<br>" +
                 _("This can cause glitches. Please restart the daemon to continue.") + "<br><br>" +
-                _("This happens if the driver/daemon packages were updated, but you haven't restarted your session or computer.")
-            )
+                _("This happens if the driver/daemon packages were updated, but you haven't restarted your session or computer."))
             return
 
         # Display an upgrade message if using the old daemon.
@@ -383,8 +387,8 @@ class Controller(object):
 
             if self.devman_error == "not-running":
                 self.show_error_page(
-                     "serious", "generic", _("Daemon Not Running"),
-                     _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running."))
+                    "serious", "generic", _("Daemon Not Running"),
+                    _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running."))
                 return
 
             if self.devman_error == "presume-crashed":
@@ -392,9 +396,9 @@ class Controller(object):
                 for line in self.devman_reason.split('\n'):
                     exception += '<code>' + line + '</code><br>'
                 self.show_error_page(
-                     "serious", "generic", _("Daemon Not Responding"),
-                     _("Polychromatic could not initialise the daemon. This could be caused by a bug with the daemon process.") + "<br><br>" +
-                     _("Exception:") + ' <code>' + exception + '</code>')
+                    "serious", "generic", _("Daemon Not Responding"),
+                    _("Polychromatic could not initialise the daemon. This could be caused by a bug with the daemon process.") + "<br><br>" +
+                    _("Exception:") + ' <code>' + exception + '</code>')
                 return
 
         # Display "No Devices Found" screen if none can be found
@@ -425,8 +429,8 @@ class Controller(object):
         # Start watching devicestate index for changes.
         common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
 
-        stdout.vprint('Application Ready.\n')
-        self.show_menu('menu')
+        stdout.vprint("Application Ready.\n")
+        self.show_menu("menu")
 
     def update_page(self, element, function, parm1=None, parm2=None):
         """
@@ -461,7 +465,7 @@ class Controller(object):
         """
         Initialise the page when it has finished loading.
         """
-        stdout.vvprint(' ** Running post-actions for page: "' + self.current_page + '"...')
+        stdout.vvprint(" ** Running post-actions for page: '" + self.current_page + "'...")
         trans.push('#close-window', _("Close"))
 
         if self.current_page == 'menu':
@@ -531,10 +535,10 @@ class Controller(object):
             # Just the macro keys are present here.
             trans.push('#dialog-help-subtitle', _("Macro Keys Usage"))
             trans.push('#dialog-help-body', _("You can also use on-the-fly macro recording (provided by the daemon) by following these steps:") +
-            '<ol><li>FN + <div class="macro-key"></div> ' + _("to enter macro mode.") + '</li>' +
-            '<li>' + _("Press the macro key to assign to. E.g. M1") +'</li>' +
-            '<li>' + _("Typing in your key combination.") +'</li>' +
-            '<li>' + _("Exiting macro mode with ") + ' FN + <div class="macro-key"></div></li></ol>')
+                       '<ol><li>FN + <div class="macro-key"></div> ' + _("to enter macro mode.") + '</li>' +
+                       '<li>' + _("Press the macro key to assign to. E.g. M1") +'</li>' +
+                       '<li>' + _("Typing in your key combination.") +'</li>' +
+                       '<li>' + _("Exiting macro mode with ") + ' FN + <div class="macro-key"></div></li></ol>')
             trans.push('#dialog-help-close', _("Close"))
 
             trans.push('#str-browse-icon', _("Browse Icon"))
@@ -637,7 +641,7 @@ class Controller(object):
                     kb_callback << "keyboard_obj.disable_key(5,12)"
 
             # Hide preview button if live previewing is enabled.
-            if pref.get('editor', 'live_preview', 'true') == 'true':
+            if pref.get("editor", "live_preview", "true") == "true":
                 kb_callback << '$("#edit-preview").hide();'
 
             kb_callback << "$(\"#cancel\").attr({onclick: \"cmd('cancel-changes?"+ self.cancel_changes + "?" + uuid + "')\"})"
@@ -695,13 +699,13 @@ class Controller(object):
                 source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list"
                 if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
                     self.update_page("#auto-update-info", "html", "<tr><td style='color:lime'><br><span class='fa fa-check-circle'></span> {0}</td></tr>".format(
-                                    _("You are set for automatic updates (via PPA)")))
+                        _("You are set for automatic updates (via PPA)")))
                     self.update_page("#auto-update-info", "show")
 
                 source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily-" + codename + ".list"
                 if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
                     self.update_page("#auto-update-info", "html", "<tr><td style='color:yellow'><br><span class='fa fa-check-circle'></span> {0}</td></tr>".format(
-                                    _("You have opted for development packages.")))
+                        _("You have opted for development packages.")))
                     self.update_page("#auto-update-info", "show")
                     make_dev_version()
 
@@ -874,8 +878,8 @@ class Controller(object):
         """
         Reloads the key light profiles created by the user.
         """
-        stdout.vvprint('Refreshing profile list...')
-        self.update_page('#app-profiles', 'html' , ' ')
+        stdout.vvprint("Refreshing profile list...")
+        self.update_page('#app-profiles', 'html', ' ')
         uuid_in_use = pref.get_device_state(self.active_device.serial, "main", "profile")
 
         # Function to append to page.
@@ -937,7 +941,7 @@ class Controller(object):
                 self.update_device_active_options()
 
             except Exception as exception:
-                self.print_error(exception, str(_("Failed to set/change brightness for {0}.")).replace("{0}",self.active_device.name))
+                self.print_error(exception, str(_("Failed to set/change brightness for {0}.")).replace("{0}", self.active_device.name))
 
         elif command.startswith('effect'):
             """
@@ -959,7 +963,7 @@ class Controller(object):
                 common.set_lighting_effect(pref, self.active_device, source, effect, params)
                 self.update_lighting_options(source, effect)
             except Exception as exception:
-                self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}",effect).replace("{1}",self.active_device.name))
+                self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}", effect).replace("{1}", self.active_device.name))
 
             self.update_device_active_options()
             self.update_background_header(colours)
@@ -971,7 +975,7 @@ class Controller(object):
                 self.update_page("#dpi-value", "html", str(value))
                 pref.set_device_state(self.active_device.serial, "main", "dpi", value)
             except Exception as exception:
-                self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}",effect).replace("{1}",self.active_device.name))
+                self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}", effect).replace("{1}", self.active_device.name))
 
         elif command.startswith('poll-rate'):
             try:
@@ -985,7 +989,7 @@ class Controller(object):
                 self.active_device.poll_rate = actual_value
                 self.update_page("#poll-rate-value", "html", str(actual_value) + "Hz")
             except Exception as exception:
-                self.print_error(exception, str(_("Failed to set poll rate for '{device_name}' to {poll_rate}.")).replace("{device_name}", self.active_device).replace("{poll_rate}",str(value)))
+                self.print_error(exception, str(_("Failed to set poll rate for '{device_name}' to {poll_rate}.")).replace("{device_name}", self.active_device).replace("{poll_rate}", str(value)))
 
         elif command == 'enable-marco-keys':
             self.active_device.macro.enable_macros()
@@ -1000,7 +1004,7 @@ class Controller(object):
             try:
                 pref.set_device_state(self.active_device.serial, "main", "game_mode", True)
             except Exception as exception:
-                self.print_error(exception, str(_("Failed to change game mode for {0}.")).replace("{0}",self.active_device.name))
+                self.print_error(exception, str(_("Failed to change game mode for {0}.")).replace("{0}", self.active_device.name))
 
         elif command == 'gamemode-disable':
             self.active_device.game_mode_led = False
@@ -1010,7 +1014,7 @@ class Controller(object):
             try:
                 pref.set_device_state(self.active_device.serial, "main", "game_mode", False)
             except Exception as exception:
-                self.print_error(exception, str(_("Failed to change game mode for {0}.")).replace("{0}",self.active_device.name))
+                self.print_error(exception, str(_("Failed to change game mode for {0}.")).replace("{0}", self.active_device.name))
 
         elif command == 'refresh-overview-screen':
             self.refresh_device_list()
@@ -1236,7 +1240,7 @@ class Controller(object):
 
         elif command.startswith('set-key'):
             # Parse position/colour information
-            command = command.replace('%20',' ')
+            command = command.replace('%20', ' ')
             row = int(command.split('?')[1])
             col = int(command.split('?')[2])
             colour = command.split('?')[3]
@@ -1250,7 +1254,7 @@ class Controller(object):
                 self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
 
         elif command.startswith('clear-key'):
-            command = command.replace('%20',' ')
+            command = command.replace('%20', ' ')
             row = int(command.split('?')[1])
             col = int(command.split('?')[2])
             self.profiles.memory["rows"][str(row)][col] = (0, 0, 0)
@@ -1260,7 +1264,7 @@ class Controller(object):
                 self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
 
         elif command.startswith('profile-activate'):
-            command = command.replace('%20',' ')
+            command = command.replace('%20', ' ')
 
             # Send to keyboard
             uuid = command.split('profile-activate?')[1]
@@ -1360,7 +1364,7 @@ class Controller(object):
             def read_line(data, item):
                 for line in data:
                     if line.startswith(item):
-                        findings = line.split(item)[1].replace('\n','')
+                        findings = line.split(item)[1].replace('\n', '')
                         return findings
                 return 'null'
 
@@ -1489,7 +1493,7 @@ class Controller(object):
             value = command.split('?')[3]
             stdout.vprint("Writing to razer.conf: [{0}] -> {1} = {2}".format(group, item, value))
             self.daemon_config[group][item] = value
-            with open (self.config_path, 'w') as f:
+            with open(self.config_path, 'w') as f:
                 self.daemon_config.write(f)
 
         elif command == 'daemon-restart':
@@ -1590,7 +1594,7 @@ class Controller(object):
 
             # Determine which message to display.
             if lsusb == -1:
-                title   = _("No Razer Product Connected")
+                title = _("No Razer Product Connected")
                 message = _("Please plug in your Razer device and reload the application/daemon.")
 
             elif lsusb != -1 and not has_plugdev:
@@ -1622,9 +1626,9 @@ class Controller(object):
                            '</u></a>'
 
             self.show_error_page("warning", "nodevice", title, message)
-            return([])
+            return []
 
-        return(found_devices)
+        return found_devices
 
     def refresh_device_list(self):
         """
@@ -1713,10 +1717,9 @@ class Controller(object):
                             class_effects = None
 
                         buffer_effect += "<img {0}/> <span {1}>{2}</span>".format(
-                                            self.generate_css_colour_svg("../img/effects/{0}.svg".format(current_effect), current_colour, 22, 22, class_effects),
-                                            self.generate_css_colour_text(current_colour, class_effects),
-                                            common.get_effect_state_string(current_effect)
-                                        )
+                            self.generate_css_colour_svg("../img/effects/{0}.svg".format(current_effect), current_colour, 22, 22, class_effects),
+                            self.generate_css_colour_text(current_colour, class_effects),
+                            common.get_effect_state_string(current_effect))
 
                     if current_effect == "profile":
                         uuid = pref.get_device_state(serial, "main", "profile")
@@ -1746,16 +1749,16 @@ class Controller(object):
                 # Piece device together
                 htmlbuffer = ""
                 htmlbuffer += "<div class='device-card' onclick='switchPaneDevice(\"{0}\")'>".format(serial)
-                htmlbuffer +=   "<img src='{0}' style='opacity:{1};'/>".format(img_path, img_opacity)
-                htmlbuffer +=   "<h4>{0}</h4>".format(name)
+                htmlbuffer += "<img src='{0}' style='opacity:{1};'/>".format(img_path, img_opacity)
+                htmlbuffer += "<h4>{0}</h4>".format(name)
                 if device.has("serial"):
-                    htmlbuffer +=   "<p><b>{0}:</b>&nbsp; {1}</p>".format(_("Serial"), serial)
+                    htmlbuffer += "<p><b>{0}:</b>&nbsp; {1}</p>".format(_("Serial"), serial)
                 if device.has("firmware_version"):
-                    htmlbuffer +=   "<p><b>{0}:</b>&nbsp; {1}</p>".format(_("Firmware"), device.firmware_version)
+                    htmlbuffer += "<p><b>{0}:</b>&nbsp; {1}</p>".format(_("Firmware"), device.firmware_version)
                 if buffer_effect:
-                    htmlbuffer +=   "<p id='device-{0}-effect' class='effect-status'> {1}</p>".format(serial, buffer_effect)
+                    htmlbuffer += "<p id='device-{0}-effect' class='effect-status'> {1}</p>".format(serial, buffer_effect)
                 if buffer_brightness:
-                    htmlbuffer +=   "<p class='brightness-status'><span class='fa fa-lightbulb-o'></span> <span id='device-{0}-brightness'>{1}</span></p>".format(serial, str(buffer_brightness))
+                    htmlbuffer += "<p class='brightness-status'><span class='fa fa-lightbulb-o'></span> <span id='device-{0}-brightness'>{1}</span></p>".format(serial, str(buffer_brightness))
                 htmlbuffer += "</div>"
                 self.update_page("#device-overview", "append", htmlbuffer)
 
@@ -2262,10 +2265,10 @@ class Controller(object):
             start_rgb = [0, 255, 0]
 
         preview_element = "{0}-{1}-preview".format(colour_id, source)
-        html_buffer =  "<div id='{0}' class='colour-picker'>".format(colour_id)
+        html_buffer = "<div id='{0}' class='colour-picker'>".format(colour_id)
         html_buffer += "<table><tr><td><div id='{0}' class='colour-preview' style='background-color:rgba({1},{2},{3},1)'></div></td>".format(
-                            preview_element, str(start_rgb[0]), str(start_rgb[1]), str(start_rgb[2])) + \
-                        "<td><button class='btn' onclick='cmd(\"ask-colour?{0}?{2}\")'>{1}</button></td></tr>".format(colour_id, _("Custom..."), source)
+            preview_element, str(start_rgb[0]), str(start_rgb[1]), str(start_rgb[2])) + \
+            "<td><button class='btn' onclick='cmd(\"ask-colour?{0}?{2}\")'>{1}</button></td></tr>".format(colour_id, _("Custom..."), source)
         html_buffer += "<tr><td colspan='2'>"
 
         # Show a range of green shades for Ultimate keyboards that are not RGB.
@@ -2285,10 +2288,10 @@ class Controller(object):
             if effect_callback:
                 if effect_callback[2]:
                     onclick = "cmd(\"set-colour?{0}?{1}?{2}?{3}?{4}\"); cmd(\"effect?{5}?{6}?{7}\")".format(colour_id, red, green, blue, source,
-                                                                                                    effect_callback[0], effect_callback[1], effect_callback[2])
+                                effect_callback[0], effect_callback[1], effect_callback[2])
                 else:
                     onclick = "cmd(\"set-colour?{0}?{1}?{2}?{3}?{4}\"); cmd(\"effect?{5}?{6}\")".format(colour_id, red, green, blue, source,
-                                                                                                    effect_callback[0], effect_callback[1])
+                                effect_callback[0], effect_callback[1])
             else:
                 onclick = "cmd(\"set-colour?{0}?{1}?{2}?{3}?{4}\")".format(colour_id, red, green, blue, source)
 
@@ -2301,12 +2304,12 @@ class Controller(object):
             # Show first 10 items as clickable boxes.
             if item_no <= 9:
                 html_buffer += "<button class='colour-icon' onclick='{0}' title='{1}' style='background-color:rgba({2},{3},{4},1)'></button>".format(
-                                onclick, name, red, green, blue)
+                    onclick, name, red, green, blue)
 
             # Add the rest to the "show more" menu.
             else:
                 html_buffer += "<button onclick='{0}' title='{1}'><div class='colour-item' style='background-color:rgba({2},{3},{4},1)'></div> {1}</button>".format(
-                                onclick, name, red, green, blue)
+                    onclick, name, red, green, blue)
 
         # Close container for dropdown (if applicable)
         if item_no > 10:
@@ -2319,18 +2322,17 @@ class Controller(object):
     @staticmethod
     def generate_css_colour_svg(svg_path, colours, width, height, optional_class=None):
         inline_buffer = "style='background: rgba({0},{1},{2},1); -webkit-mask: url({3}) center / contain no-repeat; width: {4}px; height: {5}px;'".format(
-                            colours[0], colours[1], colours[2], svg_path, str(width), str(height)
-                        )
+            colours[0], colours[1], colours[2], svg_path, str(width), str(height))
         if optional_class:
             inline_buffer += " class='{0}'".format(optional_class)
-        return(inline_buffer)
+        return inline_buffer
 
     @staticmethod
     def generate_css_colour_text(colours, optional_class=None):
         inline_buffer = "style='color: rgba({0},{1},{2},1)'".format(colours[0], colours[1], colours[2])
         if optional_class:
             inline_buffer += " class='{0}'".format(optional_class)
-        return(inline_buffer)
+        return inline_buffer
 
     def get_device_image(self, device, image, direction=None):
         """
@@ -2356,12 +2358,12 @@ class Controller(object):
                 img_path = unknown_icon
 
         if img_path:
-            return(img_path)
+            return img_path
         else:
-            return(unknown_icon)
+            return unknown_icon
 
     def populate_colours_table(self):
-        self.update_page ("#colour-table", "html", " ")
+        self.update_page("#colour-table", "html", " ")
         colour_index = pref.load_file(path.colours)
         uuids = list(colour_index.keys())
         uuids.sort(key=int)
@@ -2395,7 +2397,7 @@ class Controller(object):
 
 class Dialogues(object):
     def fatal_error(message, do_quit=False):
-        dialog = Gtk.MessageDialog(type = Gtk.MessageType.ERROR, buttons = Gtk.ButtonsType.OK)
+        dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK)
         dialog.set_title("Polychromatic Controller")
         dialog.set_markup(message)
         dialog.run()
@@ -2414,7 +2416,7 @@ class Dialogues(object):
             green = int(colour.green / 256)
             blue = int(colour.blue / 256)
             colorseldlg.destroy()
-            return "{0},{1},{2}".format(str(red),str(green),str(blue))
+            return "{0},{1},{2}".format(str(red), str(green), str(blue))
         else:
             colorseldlg.destroy()
             return None
@@ -2488,13 +2490,13 @@ class Terminal(object):
             elif arg in ["--verbose", "-v"]:
                 self.be_verbose = True
                 pref.verbose = True
-                self.vprint('Verbose enabled.')
+                self.vprint("Verbose enabled.")
 
             elif arg in ["-vv", "--debug"]:
                 self.be_verbose = True
                 self.be_very_verbose = True
                 pref.verbose = True
-                self.vvprint('Debug verbose enabled.')
+                self.vvprint("Debug verbose enabled.")
 
             elif arg == "--print-device-info":
                 self.print_device_capability_info()
@@ -2503,18 +2505,18 @@ class Terminal(object):
                 self.inspector = True
 
             else:
-                print('Ignoring unrecognised parameters:' + arg)
+                print("Ignoring unrecognised parameters:" + arg)
 
     def show_help(self):
-      print("Usage: polychromatic-controller [parameters]\n")
-      #     | Command                      | Help Text                                     |
-      print("  -h, --help                   Show this help text.")
-      print("  -v, --verbose                Be verbose to stdout.")
-      print("  -vv, --debug                 Be very verbose. For debugging only.")
-      print("  --print-device-info          Output useful devices about the capabilities")
-      print("                               of a device.")
-      print("")
-      exit(0)
+        print("Usage: polychromatic-controller [parameters]\n")
+        #     | Command                      | Help Text                                     |
+        print("  -h, --help                   Show this help text.")
+        print("  -v, --verbose                Be verbose to stdout.")
+        print("  -vv, --debug                 Be very verbose. For debugging only.")
+        print("  --print-device-info          Output useful devices about the capabilities")
+        print("                               of a device.")
+        print("")
+        exit(0)
 
     def error(self, text):
         if sys.stdout.isatty():
@@ -2541,7 +2543,7 @@ class Terminal(object):
         print("===============================================================================")
         print("Please include this data when reporting device-specific issues on GitHub.")
         print("===============================================================================")
-        print("\nConnecting to the daemon...",end='')
+        print("\nConnecting to the daemon...", end='')
         try:
             devman = rclient.DeviceManager()
         except Exception as e:
@@ -2550,7 +2552,7 @@ class Terminal(object):
             print("\nPlease start Polychromatic normally to resolve this issue before proceeding.")
             exit(1)
 
-        print("\rListing devices...          ",end='')
+        print("\rListing devices...          ", end='')
         devices = devman.devices
         if len(devices) == 0:
             print("\rNo devices found.          ")
@@ -2634,7 +2636,7 @@ def restart_daemon_service():
     if not which("razer-daemon"):
         app.load_lock = False
         app.show_error_page("serious", "generic", _("Daemon Not Installed."),
-            _("Could not find the executable for 'razer-daemon'. Please try re-installing the daemon."))
+                            _("Could not find the executable for 'razer-daemon'. Please try re-installing the daemon."))
         return
 
     # Gracefully stop the daemon
@@ -2651,7 +2653,7 @@ def restart_daemon_service():
     app.update_page(".progress", "fadeIn", "fast")
     app.update_page(".progress-inner", "addClass", "increasing")
 
-    for x in range(0,5):
+    for x in range(0, 5):
         print(".", end='')
         try:
             daemon_pid = int(check_output(["pidof", "razer-daemon"]))
@@ -2687,7 +2689,7 @@ def restart_daemon_service():
     print("Waiting for razer-daemon to start...")
     app.update_page(".progress", "fadeIn", "fast")
     app.update_page(".progress-inner", "addClass", "increasing")
-    for x in range(0,5):
+    for x in range(0, 5):
         print(".", end='')
         try:
             daemon_pid = int(check_output(["pidof", "razer-daemon"]))
@@ -2700,8 +2702,8 @@ def restart_daemon_service():
     if not running:
         app.load_lock = False
         app.show_error_page("serious", "generic", _("Daemon cannot be relaunched."),
-            _("Failed to execute 'razer-daemon'. Please check the daemon log to troubleshoot the problem.") + \
-             '<br><code>~/.razer-daemon/logs/</code><br><br>' + _("Alternately, open a terminal and run:") + '<br><code>razer-daemon -F</code>')
+                            _("Failed to execute 'razer-daemon'. Please check the daemon log to troubleshoot the problem.") + \
+                            '<br><code>~/.razer-daemon/logs/</code><br><br>' + _("Alternately, open a terminal and run:") + '<br><code>razer-daemon -F</code>')
         return
 
     # Relaunch Controller / Tray Applet

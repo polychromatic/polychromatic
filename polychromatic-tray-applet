@@ -61,6 +61,9 @@ path = pref.Paths()
 path.data_source = path.get_data_source(__file__)
 session_storage = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet")
 
+"""
+GTK-based tray applet to control devices from the user's desktop environment.
+"""
 
 class Translations():
     def __init__(self):
@@ -110,7 +113,7 @@ def create_menu_item(label, enabled, function=None, function_params=None, icon_p
     elif function and function_params:
         item.connect("activate", function, function_params)
 
-    return(item)
+    return item
 
 def create_submenu(label, enabled):
     """
@@ -139,7 +142,7 @@ def create_seperator():
     """
     sep = Gtk.SeparatorMenuItem()
     sep.show()
-    return(sep)
+    return sep
 
 
 class AppIndicator(object):
@@ -378,7 +381,7 @@ class AppIndicator(object):
         value = pref.get_device_state(self.active_serial, source, state)
         if value == None:
             value = _("Unknown")
-        return(value)
+        return value
 
     def _get_tray_icon(self):
         """
@@ -402,23 +405,23 @@ class AppIndicator(object):
         if icon_type == "builtin":
             # icon_value = UUID
             icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
-            return(os.path.join(path.data_source, "tray", icon_index[icon_value]["path"]))
+            return os.path.join(path.data_source, "tray", icon_index[icon_value]["path"])
 
         elif icon_type == "custom":
             # icon_value = Path to icon
             if os.path.exists(icon_value):
-                return(icon_value)
+                return icon_value
             else:
                 stdout.error("Icon missing: " + icon_value)
                 stdout.error("Using fallback!")
-                return(icon_fallback)
+                return icon_fallback
 
         elif icon_type == "gtk":
             # icon_value = Icon name used by GTK
-            return(icon_value)
+            return icon_value
 
         else:
-            return(icon_fallback)
+            return icon_fallback
 
     def _get_icon(self, img_dir, icon):
         """
@@ -463,7 +466,7 @@ class AppIndicator(object):
             stdout.vprint(" -- Found: " + name)
         submenu[1].append(create_seperator())
         submenu[1].append(create_menu_item(_("Refresh Device List"), True, cb.reload_devices))
-        return(submenu[0])
+        return submenu[0]
 
     def _build_effect_menu(self):
         stdout.vprint("Building effect menu...")
@@ -582,7 +585,7 @@ class AppIndicator(object):
         if multiple_menus and scroll_submenu and has_items["scroll"]:
             root_submenu[1].append(scroll_submenu[0])
 
-        return(root_submenu[0])
+        return root_submenu[0]
 
     def _build_brightness_menu(self):
         stdout.vprint("Building brightness menu...")
@@ -721,7 +724,7 @@ class AppIndicator(object):
                     print("Exception: "  + str(e))
         else:
             submenu[1].append(create_menu_item(_("No profiles to display."), False))
-        return(submenu[0])
+        return submenu[0]
 
     def _build_colour_menu(self):
         stdout.vprint("Building colours menu...")
@@ -751,7 +754,7 @@ class AppIndicator(object):
             submenu[1].append(create_seperator())
             submenu[1].append(create_menu_item(_("Where did your colors go?"), False))
         stdout.vprint(" -- Loaded {0} colours.".format(str(len(uuids))))
-        return(submenu[0])
+        return submenu[0]
 
     def _build_dpi_menu(self):
         stdout.vprint("Building dpi menu...")
@@ -798,7 +801,7 @@ class AppIndicator(object):
         submenu[1].append(create_menu_item(_("Super Fast") + ' (' + str(dpi_speed_5) + ')', True, cb.set_dpi, dpi_speed_5, os.path.join(path.data_source, "img/effects/dpi-fast.svg")))
         submenu[1].append(create_menu_item(_("Blazingly Fast") + ' (' + str(dpi_speed_6) + ')', True, cb.set_dpi, dpi_speed_6, os.path.join(path.data_source, "img/effects/dpi-fast.svg")))
 
-        return(submenu[0])
+        return submenu[0]
 
     def _build_poll_rate_menu(self):
         stdout.vprint("Building poll rate menu...")
@@ -816,7 +819,7 @@ class AppIndicator(object):
         submenu[1].append(create_menu_item("500 Hz", True, cb.set_poll_rate, 500))
         submenu[1].append(create_menu_item("1000 Hz", True, cb.set_poll_rate, 1000))
 
-        return(submenu[0])
+        return submenu[0]
 
     def _build_gamemode_menu(self):
         stdout.vprint("Building game mode menu...")
@@ -833,7 +836,7 @@ class AppIndicator(object):
         submenu = create_submenu(_("Game Mode"), True)
         submenu[1].append(create_menu_item(_("Enable"), True, cb.set_gamemode, 1, os.path.join(path.data_source, "img/ui/game-mode.svg")))
         submenu[1].append(create_menu_item(_("Disable"), True, cb.set_gamemode, 0, os.path.join(path.data_source, "img/ui/game-mode-disabled.svg")))
-        return(submenu[0])
+        return submenu[0]
 
     # Creates bitmap files for previewing colours.
     def _get_colour_icon(self, colour):
@@ -847,7 +850,7 @@ class AppIndicator(object):
             foreground_process("convert -size 16x16 xc:{0} {1}".format(self._colour_to_hex(colour), colour_path), shell=True)
         if not os.path.exists(colour_path):
             stdout.error("ERROR: Failed to generate bitmap for: " + str(colour))
-        return(colour_path)
+        return colour_path
 
     @staticmethod
     def _colour_to_hex(colour):
@@ -961,7 +964,7 @@ class Callback():
             # Returns value between 0.0 - 1.0 * 255 = 8-bit RGB Value
 
             rgb = KeyboardColour.gdk_colour_to_rgb(result_rgb)
-            indicator.current_colour =  _("Custom") + " ({0}, {1}, {2})".format(str(rgb[0]), str(rgb[1]), str(rgb[2]))
+            indicator.current_colour = _("Custom") + " ({0}, {1}, {2})".format(str(rgb[0]), str(rgb[1]), str(rgb[2]))
             indicator.current_colour_rgb = [rgb[0], rgb[1], rgb[2]]
             stdout.vprint("Set custom colour to: " + str(indicator.current_colour_rgb))
             common.save_colours_to_all_sources(pref, indicator.active_device, "colour_primary", indicator.current_colour_rgb)
@@ -1027,12 +1030,12 @@ class Terminal(object):
                 print("Ignoring unrecognised parameters:" + arg)
 
     def show_help(self):
-      print("Usage: polychromatic-tray-applet [parameters]\n")
-      #     | Command                      | Help Text                                     |
-      print("  -h, --help                   Show this help text.")
-      print("  -v, --verbose                Be verbose to stdout.")
-      print("")
-      exit(0)
+        print("Usage: polychromatic-tray-applet [parameters]\n")
+        #     | Command                      | Help Text                                     |
+        print("  -h, --help                   Show this help text.")
+        print("  -v, --verbose                Be verbose to stdout.")
+        print("")
+        exit(0)
 
     def error(self, text):
         if sys.stdout.isatty():
@@ -1068,7 +1071,7 @@ def restart_daemon_service():
 
     # Wait for the daemon to stop.
     stopped = False
-    for x in range(0,5):
+    for x in range(0, 5):
         try:
             daemon_pid = int(check_output(["pidof", "razer-daemon"]))
         except:
@@ -1092,7 +1095,7 @@ def restart_daemon_service():
     time.sleep(1)
     _update_status(_("Starting razer-daemon..."))
     background_process("razer-daemon", shell=True)
-    for x in range(0,5):
+    for x in range(0, 5):
         try:
             daemon_pid = int(check_output(["pidof", "razer-daemon"]))
             running = True
@@ -1113,7 +1116,7 @@ def restart_daemon_service():
 
 if __name__ == "__main__":
     # Appear as its own process.
-    setproctitle.setproctitle('polychromatic-tray-applet')
+    setproctitle.setproctitle("polychromatic-tray-applet")
 
     # Kill the process when CTRL+C'd.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -1124,7 +1127,7 @@ if __name__ == "__main__":
 
     # Write a PID file for restarting later.
     tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
-    f = open(tray_pid_file,'w')
+    f = open(tray_pid_file, 'w')
     f.write(str(os.getpid()))
     f.close()
 
