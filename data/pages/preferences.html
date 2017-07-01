@@ -191,24 +191,30 @@
         <p id="str-logs-help"></p>
         <br>
         <table>
+          <tr><td>
+          </td></tr>
+          <tr><td>
+              <button class="btn" onclick="cmd('run?xdg-open /home/$USER/.config/openrazer/')">
+                <span class="fa fa-folder-open"></span>&nbsp;
+                <code>~/.config/openrazer/</code>
+              </button>
+          </td></tr>
+          <tr><td>
+              <button class="btn" onclick="cmd('run?xdg-open /home/$USER/.local/share/openrazer/')">
+                <span class="fa fa-folder-open"></span>&nbsp;
+                <code>~/.local/share/openrazer/</code>
+              </button>
+          </td></tr>
           <tr>
             <td>
-              <button class="btn" onclick="cmd('open?/home/$USER/.razer-service/logs/razer.log')">razer.log</button>
+              <button class="btn" onclick="cmd('open?/home/$USER/.local/share/openrazer/logs/razer.log')">
+                <span class="fa fa-file-text-o"></span>&nbsp;
+                <code>~/.local/share/openrazer/logs/razer.log</code>
+              </button>
+              <button class="btn" onclick="cmd('run?x-terminal-emulator -e tail -f /home/$USER/.local/share/openrazer/logs/razer.log')" id="str-watch">
+                <span class="fa fa-search"></span>&nbsp;
+              </button>
             </td>
-            <td>
-              <button class="btn" onclick="cmd('run?xdg-open /home/$USER/.razer-service/')"><span class="fa fa-folder-open"></span></button>
-              <button class="btn" onclick="cmd('run?x-terminal-emulator -e tail -f /home/$USER/.razer-service/logs/razer.log')" id="str-watch"><span class="fa fa-search"></span>&nbsp;</button>
-            </td>
-            <td><code>~/.razer-service/logs/razer.log</code></td>
-          </tr>
-          <tr>
-            <td>
-              <button class="btn" onclick="cmd('open?/tmp/razer_udev.log')">razer_udev.log</button>
-            </td>
-            <td>
-              <button class="btn" onclick="cmd('run?xdg-open /tmp/')"><span class="fa fa-folder-open"></span></button>
-            </td>
-            <td><code>/tmp/razer_udev.log</code></td>
           </tr>
         </table>
         <br>

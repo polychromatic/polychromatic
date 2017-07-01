@@ -75,7 +75,7 @@ version = "0.3.9.2"
 
 path = pref.Paths()
 path.data_source = path.get_data_source(__file__)
-daemon_config_path = os.path.join(os.path.expanduser('~'), ".razer-daemon", "razer.conf")
+daemon_config_path = os.path.join(os.path.expanduser('~'), ".local/share/openrazer/razer.conf")
 
 # Imported on-demand:
 #   * requests
@@ -2270,7 +2270,7 @@ class PageLoaded():
         appobj.populate_colours_table()
 
         # Reads and sets configuration set in razer.conf
-        appobj.config_path = os.path.join(os.path.expanduser('~'), ".razer-daemon", "razer.conf")
+        appobj.config_path = os.path.join(os.path.expanduser('~'), ".config/openrazer/razer.conf")
         import configparser
         appobj.daemon_config = configparser.ConfigParser()
 
@@ -2703,8 +2703,8 @@ def restart_daemon_service():
     # Ensure a clean log
     print("\nArchiving log...")
     app.update_page("#status-text", "html", _("Archiving log..."))
-    log_path = os.path.join(os.path.expanduser("~"), ".razer-daemon", "logs", "razer.log")
-    log_bak = os.path.join(os.path.expanduser("~"), ".razer-daemon", "logs", "razer.log.bak")
+    log_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log")
+    log_bak = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log.bak")
     if os.path.exists(log_path):
         os.rename(log_path, log_bak)
 
@@ -2732,7 +2732,7 @@ def restart_daemon_service():
         app.load_lock = False
         app.show_error_page("serious", "generic", _("Daemon cannot be relaunched."),
                             _("Failed to execute 'razer-daemon'. Please check the daemon log to troubleshoot the problem.") + \
-                            '<br><code>~/.razer-daemon/logs/</code><br><br>' + _("Alternately, open a terminal and run:") + '<br><code>razer-daemon -F</code>')
+                            '<br><code>~/.local/share/openrazer/logs/</code><br><br>' + _("Alternately, open a terminal and run:") + '<br><code>razer-daemon -F</code>')
         return
 
     # Relaunch Controller / Tray Applet

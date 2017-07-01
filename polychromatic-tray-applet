@@ -1086,8 +1086,8 @@ def restart_daemon_service():
 
     # Ensure a clean log
     print("\nArchiving log...")
-    log_path = os.path.join(os.path.expanduser("~"), ".razer-daemon", "logs", "razer.log")
-    log_bak = os.path.join(os.path.expanduser("~"), ".razer-daemon", "logs", "razer.log.bak")
+    log_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log")
+    log_bak = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log.bak")
     if os.path.exists(log_path):
         os.rename(log_path, log_bak)
 
