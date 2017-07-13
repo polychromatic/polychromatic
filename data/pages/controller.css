@@ -357,30 +357,6 @@ img.wave {
     font-weight: bold;
 }
 
-.pref-input {
-    background: black;
-    border: 1px solid grey;
-    color: white;
-    width: 400px;
-    height: 24px;
-    float: left;
-}
-
-.pref-input.path {
-    font-family: "Ubuntu Mono", "Droid Sans Mono", "FreeMono", "Courier New", Courier, monospace;
-}
-
-.pref-label {
-    color: #06FF00;
-}
-
-.pref-tray-preview {
-    width: 22px;
-    height: 22px;
-    margin-left: 2px;
-    margin-right: 4px;
-}
-
 input[type="checkbox"], input[type="radio"] {
     vertical-align: middle;
     position: relative;
@@ -829,8 +805,7 @@ label {
 }
 
 input[type='radio']:hover,
-input[type='checkbox']:hover,
-label:hover {
+input[type='checkbox']:hover {
     opacity: 0.8;
 }
 
@@ -1410,6 +1385,63 @@ label.disabled {
     float: right;
     top: 15px;
     position: relative;
+}
+
+/************************
+   Preferences - General
+*************************/
+/* Labels and Controls */
+.pref-input {
+    background: black;
+    border: 1px solid grey;
+    color: white;
+    width: 400px;
+    height: 24px;
+    float: left;
+    vertical-align: middle;
+}
+
+.pref-input.path {
+    font-family: "Ubuntu Mono", "Droid Sans Mono", "FreeMono", "Courier New", Courier, monospace;
+}
+
+.pref-label {
+    color: #06FF00;
+}
+
+.pref-tray-preview {
+    width: 22px;
+    height: 22px;
+    margin-left: 2px;
+    margin-right: 4px;
+}
+
+/* About page specific */
+#about-logo {
+    float: left;
+    margin: 1em;
+    margin-left: 0;
+}
+
+#about-logo-text {
+    float: left;
+    margin: 0.6em 0;
+}
+
+.about-update-status {
+    color: lime;
+    margin: 1em 0;
+    font-size: small;
+}
+
+.about-label {
+    clear: both;
+    display: block;
+    margin: 0.5em 0;
+}
+
+.about-label code {
+    color: lime;
 }
 
 /************************

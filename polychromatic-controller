@@ -797,9 +797,17 @@ class Controller(object):
 
         elif command.startswith('pref-set?'):
             # pref-set ? <group> ? <setting> ? <value>
-            group = command.split('?')[1]
-            setting = command.split('?')[2]
-            value = command.split('?')[3]
+            cmd = command.split('?')
+            group = cmd[1]
+            setting = cmd[2]
+            value = cmd[3]
+            pref.set(group, setting, value)
+
+        elif command.startswith('pref-toggle?'):
+            cmd = command.split('?')
+            group = cmd[1]
+            setting = cmd[2]
+            value = not pref.get(group, setting, False)
             pref.set(group, setting, value)
 
         elif command == 'pref-close':
@@ -1967,7 +1975,7 @@ class Controller(object):
         else:
             return unknown_icon
 
-    def populate_colours_table(self):
+    def populate_colours_table(self, get_html_only=False):
         self.update_page("#colour-table", "html", " ")
         colour_index = pref.load_file(path.colours)
         uuids = list(colour_index.keys())
@@ -1993,7 +2001,10 @@ class Controller(object):
                 stdout.error("Invalid colour entry: {0}".format(uuid))
                 continue
 
-        self.update_page("#colour-table", "html", html_buffer)
+        if get_html_only:
+            return html_buffer
+        else:
+            self.update_page("#colour-table", "html", html_buffer)
 
     def device_state_changed(self):
         stdout.vprint("Device state changed. Refreshing interface.")
@@ -2113,218 +2124,295 @@ class PageLoaded():
         """
         The preferences menu, for changing Polychromatic's options.
         """
-        trans.push('#page-header', _("Preferences"))
-        trans.push('#close-window', _("Close"))
+        appobj.update_page("#page-header", "html", "Preferences")
+        appobj.update_page("#close-window", "html", "Close")
+
+        ########################
+        # Tabs
+        ########################
+        def _append_tab(tab_id, icon_path, string, extra_class=""):
+            return '<button id="tab-{0}" class="tab {3}" onclick="switchTab(\'#tab-{0}\')"><img src="../img/{1}"/><span>{2}</span></button>'.format(
+                tab_id, icon_path, string, extra_class)
+
+        html = _append_tab("about", "logo.svg", _("About"), "active")
+        html += _append_tab("app", "ui/generic-application.svg", _("General"))
+        html += _append_tab("tray", "ui/profile-default.svg", _("Tray Applet"))
+        html += _append_tab("col", "effects/static.svg", _("Colors"))
+        html += _append_tab("daemon", "error/upgrade.png", _("Daemon"))
+        appobj.update_page(".tabs", "append", html)
 
         ########################
         # About
         ########################
-        trans.push('#str-about', _("About"))
-        trans.push('#str-tray', _("Tray Applet"))
-        trans.push('#str-app-settings', _("General"))
-        trans.push('.str-colours', _("Colors"))
-        trans.push('#str-daemon', _("Daemon"))
+        def _append_about_tab():
+            html = '<div id="tab-about-page" class="tab-content">'
+            html += '<img id="about-logo" src="../img/logo.svg"/> <h1 id="about-logo-text">polychromatic</h1>'
 
-        trans.push('#str-version-app', _("Version:"))
-        trans.push('#str-version-config', _("Configuration:"))
-        trans.push('#str-version-daemon', _("Daemon Version:"))
-        trans.push('#str-version-lib', _("Razer Python Library:"))
+            # Determine version text to display.
+            user_version = version
+            if not appobj.app_installed:
+                # When running from 'master' directly.
+                user_version = version[:-1] + str(int(version[-1:]) + 1) + "-dev"
 
-        trans.push('#project-button', _("View on GitHub"), True)
-        trans.push('#update-button', _("Check for Updates"))
-        trans.push('#changelog-button', _("View Change Log"))
+            html += UIControls.print_about_label(_("Version:"), user_version)
+            html += UIControls.print_about_label(_("Configuration:"), pref.version)
 
-        trans.push('#dialog-changelog-title', _("Update History"), True)
-        trans.push('#dialog-changelog-subtitle', _("A human-readable list of changes made to Polychromatic."))
-        trans.push('#dialog-close', _("Close"), True)
+            # For Apt, check for the source file to determine builds.
+            distro = linux_distribution()[0]
+            if distro == "Ubuntu" or distro == "Debian":
+                codename = linux_distribution()[2]
 
-        # Append version information
-        def make_dev_version():
-            version_master = version[:-1] + str(int(version[-1:]) + 1)
-            appobj.update_page('#str-version-app-string', "html", version_master + "-dev")
+                source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list"
+                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
+                    html += '<div class="about-update-status"><span class="fa fa-check-circle"></span> {0}</div>'.format(
+                        _("You are set for automatic updates (via PPA)"))
 
-        if appobj.app_installed:
-            # Hide the option to update if the app is running globally.
-            appobj.update_page('#str-version-app-string', "html", version)
-            appobj.update_page("#update-button", "hide")
-        else:
-            # When running from 'master' directly.
-            make_dev_version()
+                source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily-" + codename + ".list"
+                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
+                    html += '<div class="about-update-status"><span class="fa fa-check-circle"></span> {0}</div>'.format(
+                        _("You have opted for development packages."))
 
-        appobj.update_page('#str-version-config-string', "html", str(pref.version))
-        appobj.update_page('#str-version-lib-string', "html", str(appobj.devman.version))
-        appobj.update_page('#str-version-daemon-string', "html", str(appobj.devman.daemon_version))
+            if not appobj.app_installed or version.endswith("-dev"):
+                html += UIControls.print_button(_("Check for Updates"), "update-button", "update-check")
 
-        # For Apt, check for the source file to determine builds.
-        distro = linux_distribution()[0]
-        if distro == "Ubuntu" or distro == "Debian":
-            codename = linux_distribution()[2]
+            html += UIControls.print_button(_("View on GitHub"), "project-button", "open?https://github.com/lah7/polychromatic", "fa-github")
+            html += UIControls.print_button(_("View Change Log"), "changelog-button", "fetch-changelog")
 
-            source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list"
-            if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                appobj.update_page("#auto-update-info", "html", "<tr><td style='color:lime'><br><span class='fa fa-check-circle'></span> {0}</td></tr>".format(
-                    _("You are set for automatic updates (via PPA)")))
-                appobj.update_page("#auto-update-info", "show")
+            # fixme: old dialog
+            trans.push('#dialog-changelog-title', _("Update History"), True)
+            trans.push('#dialog-changelog-subtitle', _("A human-readable list of changes made to Polychromatic."))
+            trans.push('#dialog-close', _("Close"), True)
 
-            source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily-" + codename + ".list"
-            if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                appobj.update_page("#auto-update-info", "html", "<tr><td style='color:yellow'><br><span class='fa fa-check-circle'></span> {0}</td></tr>".format(
-                    _("You have opted for development packages.")))
-                appobj.update_page("#auto-update-info", "show")
-                make_dev_version()
-
-        # Synchronised demo for BlackWidow Chroma users.
-        for device in appobj.devices:
-            if device.name.startswith("Razer BlackWidow Chroma"):
-                appobj.update_page("#demo-chroma", "show")
-                trans.push('#demo-chroma', _("Play Demo - Razer BlackWidow Chroma Advert"))
+            html += '</div>'
+            return html
 
         ########################
         # General
         ########################
-        trans.push('#str-app-profiles', _("Application Profiles"))
-        trans.push('#str-live-switch', _("Enable live switching"), True)
-        trans.push('#str-live-switch-help', _("Activate profiles instantly as soon as you click on them."))
-        trans.push('#str-live-preview', _("Enable live preview"), True)
-        trans.push('#str-live-preview-help', _("While editing, show your changes on the actual keyboard."))
-        trans.push('#str-activate-on-save', _("Always activate profiles after saving."), True)
-        trans.push('#str-interface', _("Interface"))
-        trans.push('#str-scaling', _("Scale:"))
-        trans.push('#str-scaling-help', _("Scale the application so it looks good on large displays. Requires restart."))
-        trans.push('#str-advanced', _("Advanced"))
-        trans.push('#str-open-config', _("Open Configuration Folder"), True)
-        trans.push('#str-reset-pref', _("Reset Preferences"), True)
-        trans.push('#str-reset-all', _("Reset Everything"))
-        trans.push('#pref-save', _("OK"), True)
+        def _append_general_tab():
+            html = '<div id="tab-app-page" class="tab-content" hidden>'
 
-        trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
-        trans.push_var('no_change', _("No Change"))
+            # Profile Editor
+            html += UIControls.print_control_category(_("Application Profiles"))
+            html += UIControls.print_checkbox(_("Enable live switching"), "live_switch", "editor", "live_switch", False, _("Activate profiles instantly as soon as you click on them."))
+            html += UIControls.print_checkbox(_("Enable live preview"), "live_preview", "editor", "live_preview", False, _("While editing, show your changes on the actual keyboard."))
+            html += UIControls.print_checkbox(_("Always activate profiles after saving."), "activate_on_save", "editor", "activate_on_save", False, _("While editing, show your changes on the actual keyboard."))
 
-        for setting in ["live_switch", "live_preview", "activate_on_save"]:
-            if pref.get("editor", setting, "true") == 'true':
-                appobj.update_page("#" + setting, "prop", "checked", "true")
+            # General UI
+            html += UIControls.print_control_category(_("Interface"))
 
-        # Set value for slider
-        scaling = pref.get("editor", "scaling", 1)
-        appobj.update_page("#scaling", "val", str(scaling))
+            html += UIControls.print_slider(_("Scale:"), "scaling", "1", "2.5", "0.5", str(pref.get("editor", "scaling", 1)), "pref-set?editor?scaling?this", False,
+                                            _("Scale the application so it looks good on large displays. Requires restart."))
+
+            # Advanced
+            html += UIControls.print_control_category(_("Advanced"))
+            html += UIControls.print_button("Open Configuration Folder", "open-config", "open-config-folder", "fa-folder")
+            html += UIControls.print_button("Reset Preferences", "reset-conf", "pref-reset-conf", "fa-delete")
+            html += UIControls.print_button("Reset Everything", "reset-everything", "pref-reset-all", "fa-delete", False, "btn-serious")
+
+            # fixme: old dialog
+            trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
+            trans.push_var('no_change', _("No Change"))
+
+            html += '</div>'
+            return html
 
         ########################
         # Tray Applet
         ########################
-        trans.push('#str-tray-icon', _("Tray Icon"))
-        trans.push('#str-tray-custom', _("Use Custom Image"), True)
-        trans.push('#tray-custom', _("Custom Icon:"), True)
-        trans.push('#str-tray-icon-builtin', _("Use a built-in icon"), True)
-        trans.push('#str-tray-icon-gtk', _("Use a theme icon (GTK)"), True)
-        trans.push('#str-tray-icon-custom', _("Use a custom image"), True)
-        trans.push('#str-gtk-example', _("Examples: ibus-keyboard, gnome-desktop-config"), True)
-        trans.push('#str-preview', _("Preview:"), True)
+        def _append_tray_tab():
+            html = '<div id="tab-tray-page" class="tab-content" hidden>'
+            html += UIControls.print_control_category(_("Applet Icon"))
 
-        # If it's the first time loading, set default icon to desktop environment.
-        if not pref.exists("tray_icon", "type"):
-            common.set_default_tray_icon(pref)
+            # Set defaults if non-existant
+            if not pref.exists("tray_icon", "type"):
+                pref.set("tray_icon", "type", "builtin")
+                pref.set("tray_icon", "value", "0")
 
-        # Populate built-in icons
-        def add_icon(uuid):
-            icon_name = icon_index[uuid]["name"]
-            icon_path = os.path.join(path.data_source, "tray", icon_index[uuid]["path"])
-            icon_info = icon_index[uuid]["info"]
-            onclick_cmd = "cmd('select-tray-icon-uuid?{0}'); $('.tray-uuid').removeClass('selected'); $('#tray-uuid-{0}').addClass('selected');".format(uuid)
-            appobj.update_page("#tray-icon-previews", "append", "<button id='tray-uuid-{0}' class='tray-uuid btn' onclick=\"{1}\"><img src='{2}'/></button>".format(uuid, onclick_cmd, icon_path))
+            icon_type = pref.get("tray_icon", "type", "builtin")
+            icon_value = pref.get("tray_icon", "value", "0")
 
-        icon_type = pref.get("tray_icon", "type", "builtin")
-        appobj.update_page("#tray-" + icon_type, "prop", "checked", "true")
-        appobj.webkit.run_javascript("show_only_relevant('.tray-options', '#tray-{0}-options')".format(icon_type))
+            # If it's the first time loading, set default icon to desktop environment.
+            if not pref.exists("tray_icon", "type"):
+                common.set_default_tray_icon(pref)
 
-        icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
-        icons = sorted(list(icon_index.keys()))
-        for uuid in icons:
-            add_icon(uuid)
+            # Integrated to tray applet
+            html += UIControls.print_radio(_("Default Icon"), "tray-builtin-icon", "tray_icon", "type", "builtin", False, _("Choose a built-in icon."),
+                                            "set_pref_str('tray_icon', 'value', '0'); cmd('restart-tray');")
 
-        icon_value = pref.get("tray_icon", "value", "0")
-        if icon_type == "builtin":
-            appobj.update_page("#tray-uuid-" + icon_value, "addClass", "selected")
+            html += '<div id="tray-builtin-suboptions" class="tray-suboptions">'
+            html += '<div id="tray-icon-previews">'
+            # Populate built-in icons
+            def add_icon(uuid):
+                icon_name = icon_index[uuid]["name"]
+                icon_path = os.path.join(path.data_source, "tray", icon_index[uuid]["path"])
+                icon_info = icon_index[uuid]["info"]
+                onclick_cmd = "cmd('select-tray-icon-uuid?{0}'); $('.tray-uuid').removeClass('selected'); $('#tray-uuid-{0}').addClass('selected');".format(uuid)
+                return "<button id='tray-uuid-{0}' class='tray-uuid btn {3}' onclick=\"{1}\"><img src='{2}'/></button>".format(
+                uuid, onclick_cmd, icon_path, "selected" if uuid == icon_type else "")
 
-        elif icon_type == "gtk":
-            appobj.update_page("#tray-icon-gtk", "val", icon_value)
+            icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
+            icons = sorted(list(icon_index.keys()))
+            for uuid in icons:
+                html += add_icon(uuid)
+            html += '</div><br/>'
+            html += '</div>'
 
-        elif icon_type == "custom":
-            appobj.update_page("#tray-icon-path", "val", icon_value)
+            # Icons using GTK names
+            html += UIControls.print_radio(_("GTK Icon"), "tray-gtk-icon", "tray_icon", "type", "gtk", False, _("Use an icon provided by a GTK theme."),
+                                            "set_pref_str('tray_icon', 'value', $('#tray-icon-gtk').val()); cmd('restart-tray');")
+            html += '<div id="tray-gtk-suboptions" class="tray-suboptions">'
+            html += '<input id="tray-icon-gtk" class="pref-input" type="text" value=""/>'.format(
+                icon_value if icon_type == "gtk" else "")
+            html += '<button id="tray-icon-gtk-ok" class="btn" onclick="console.log($(\'#tray-icon-gtk\').val()); set_pref_str(\'tray_icon\', \'value\', $(\'#tray-icon-gtk\').val()); cmd(\'preview-gtk-icon?\'+$(\'#tray-icon-gtk\').val()); cmd(\'restart-tray\');"><span class="fa fa-check"></span></button>'
+            html += '<br>'
+            html += UIControls._get_helptext_html(_("Examples: ibus-keyboard, gnome-desktop-config"))
+            html += '<br><br>'
+            html += '<label id="str-preview">' + _("Preview:") + '</label><br>'
+            html += '<img id="gtk-preview" src="" />'
+            html += '</div>'
 
+            # Icons using GTK names
+            html += UIControls.print_radio(_("Custom Path"), "tray-custom-icon", "tray_icon", "type", "custom", False, None,
+                                            "set_pref_str('tray_icon', 'value', $('#tray-icon-path').val()); cmd('restart-tray');")
+            html += '<div id="tray-custom-suboptions" class="tray-suboptions">'
+            html += '<input id="tray-icon-path" class="pref-input" type="text" onchange="$(\'#tray-icon-path-ok\').removeClass(\'disabled\');" value="{0}"/>'.format(
+                icon_value if icon_type == "custom" else "")
+            html += '<button class="btn" onclick="cmd(\'browse-file-icon?tray-icon-path\');" onmouseout="set_pref_str(\'tray_icon\',\'value\', $(\'#tray-icon-path\').val()); $(\'#tray-icon-path-ok\').removeClass(\'disabled\');"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></button>'
+            html += '<button id="tray-icon-path-ok" class="btn disabled" onclick="set_pref_str(\'tray_icon\',\'value\', $(\'#tray-icon-path\').val()); $(this).addClass(\'disabled\'); cmd(\'restart-tray\');"><span class="fa fa-check"></span></button>'
+            html += '</div>'
+
+            html += '</div>'
+            return html
 
         ########################
         # Colours
         ########################
-        trans.push('#dialog-del-title', _("Reset Colors"))
-        trans.push('#dialog-del-hint', _("Are you sure you want to reset all colors to their defaults?"))
-        trans.push('#dialog-del-no', _("Cancel"))
-        trans.push('#dialog-del-yes', _("Reset Defaults"))
+        def _append_colours_tab():
+            html = '<div id="tab-col-page" class="tab-content" hidden>'
+            html += UIControls.print_control_category(_("Colours"))
+            html += '<div class="left">'
+            html += '<div id="colour-table">{0}</div>'.format(appobj.populate_colours_table(True))
+            html += '<br>'
+            html += UIControls.print_button(_("New"), "colour-new", "pref-colour-new", "fa-plus", False)
+            html += UIControls.print_button(_("Restore Defaults"), "colour-reset", "del_colours_dialog_open()", "fa-repeat", False, "btn-dim btn-serious")
+            html += '<br><br>'
+            html += '</div>'
 
-        trans.push('#colour-choose', _("Choose..."))
-        trans.push('#colour-new', _("New"), True)
-        trans.push('#colour-reset', _("Restore Defaults"), True)
-        trans.push('#colour-save', _("Save"), True)
-        trans.push('#colour-revert', _("Revert"))
-        trans.push('#colour-delete', _("Delete"), True)
+            html += '<div id="colour-editor" class="right" hidden>'
+            html += '<div id="colour-edit-preview" class="colour-preview" style="background-color:rgb(0,255,0)"></div>'
+            html += UIControls.print_button(_("Choose..."), "colour-choose", "ask-colour?colour?edit", None, False)
+            html += '<br><br>'
+            html += '<input id="colour-edit-name" class="pref-input" type="text"/>'
+            html += '<br><br>'
+            html += UIControls.print_button(_("Save"), "colour-save", "save_colour(0)", "fa-check", False)
+            html += UIControls.print_button(_("Delete"), "colour-revert", "delete_colour(0)", "fa-trash", False, "btn-serious")
+            html += '</div>'
 
-        appobj.populate_colours_table()
+            html += '</div>'
+            return html
 
+            # fixme: old trans functions
+            trans.push('#dialog-del-title', _("Reset Colors"))
+            trans.push('#dialog-del-hint', _("Are you sure you want to reset all colors to their defaults?"))
+            trans.push('#dialog-del-no', _("Cancel"))
+            trans.push('#dialog-del-yes', _("Reset Defaults"))
+
+        ########################
+        # Daemon
+        #########################
         # Reads and sets configuration set in razer.conf
         appobj.config_path = os.path.join(os.path.expanduser('~'), ".config/openrazer/razer.conf")
         import configparser
         appobj.daemon_config = configparser.ConfigParser()
 
+        def _append_daemon_tab():
+            html = '<div id="tab-daemon-page" class="tab-content" hidden>'
+            html += UIControls.print_control_category(_("About the Daemon"))
+            html += UIControls.print_about_label(_("The daemon is the software that communicates between the front-end applications and the driver."), "")
+            html += UIControls.print_about_label(_("Daemon Version:"), str(appobj.devman.version))
+            html += UIControls.print_about_label(_("Razer Python Library:"), str(appobj.devman.daemon_version))
+
+            html += UIControls.print_page_break()
+
+            html += UIControls.print_button(_("Website"), "daemon-website", "open?https://terrycain.github.io/razer-drivers", "fa-globe")
+            html += UIControls.print_button(_("Project"), "daemon-project", "open?https://github.com/terrycain/razer-drivers", "fa-github")
+            html += UIControls.print_page_break()
+            html += UIControls.print_button(_("Issues"), "daemon-issues", "open?https://github.com/terrycain/razer-drivers/issues", "fa-question-circle")
+            html += UIControls.print_button(_("Troubleshooting"), "daemon-troubleshoot", "open?https://github.com/terrycain/razer-drivers/wiki/Troubleshooting", None)
+            html += UIControls.print_button(_("Device/Daemon Support"), "daemon-support", "open?https://github.com/terrycain/razer-drivers#device-support", None)
+
+            html += UIControls.print_page_break()
+            html += UIControls.print_control_category(_("Logs"))
+            html += UIControls.print_about_label(_("Useful for diagnosing issues and debugging daemon-related operations."), "")
+            html += UIControls.print_button('<code>~/.config/openrazer/</code>', "config-folder", "run?xdg-open /home/$USER/.config/openrazer/", "fa-folder-open")
+            html += UIControls.print_button('<code>~/.local/share/openrazer/</code>', "config-local", "run?xdg-open /home/$USER/.local/share/openrazer/", "fa-folder-open")
+            html += UIControls.print_page_break()
+            html += UIControls.print_button('<code>~/.local/share/openrazer/logs/razer.log</code>', "log-open", "open?/home/$USER/.local/share/openrazer/logs/razer.log", "fa-file-text-o")
+            html += UIControls.print_button(_("Watch"), "log-watch", "run?x-terminal-emulator -e tail -f /home/$USER/.local/share/openrazer/logs/razer.log", "fa-search")
+
+            html += UIControls.print_page_break()
+            html += UIControls.print_control_category(_("Daemon Service"))
+            html += UIControls.print_about_label(_("If you have re-plugged devices, or are experiencing glitches, try restarting the daemon service."), "")
+            html += UIControls.print_button(_("Restart"), "daemon-restart", "daemon-restart")
+            html += UIControls.print_button(_("Stop"), "daemon-stop", "daemon-stop")
+
+            # TODO: Fix up this code for daemon configuration options
+
+            #~ html += UIControls.print_page_break()
+            #~ html += UIControls.print_control_category(_("Daemon Configuration"))
+            #~ if os.path.exists(appobj.config_path):
+                #~ appobj.daemon_config.read(appobj.config_path)
+            #~ else:
+                #~ html += '<div id="daemon-options-missing" class="alert">'
+                #~ html += '<span class="fa fa-warning"></span> ' + _("Could not read the daemon's configuration file.")
+                #~ html += '</div>'
+
+            #~ html += '<div id="daemon-options-restart" class="alert" hidden>'
+            #~ html += '<span class="fa fa-warning"></span> ' + _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect.")
+            #~ html += '</div>'
+
+            #~ if os.path.exists(appobj.config_path):
+                #~ appobj.daemon_config.read(appobj.config_path)
+            #~ else:
+                #~ for element in ["verbose-logging", "sync-effects", "screensaver", "key-statistics"]:
+                    #~ appobj.update_page("#daemon-"+element, "addClass", "disabled")
+                    #~ appobj.update_page("#str-"+element, "addClass", "disabled")
+
+            #~ def read_daemon_config(group, item, element, label, description):
+                #~ """
+                #~ Sets the initial checkbox state for razer.conf daemon settings
+                #~ """
+                #~ element_checkbox = "#daemon-" + element
+                #~ element_label = "#str-" + element
+                #~ element_help = "#str-" + element + "-help"
+                #~ appobj.update_page(element_label, "append", label)
+                #~ appobj.update_page(element_help, "html", description)
+                #~ if not appobj.daemon_config.has_option(group, item):
+                    #~ appobj.update_page(element_checkbox, "addClass", "disabled")
+                    #~ appobj.update_page(element_label, "addClass", "disabled")
+                    #~ return
+
+                #~ if appobj.daemon_config.get(group, item) == 'True':
+                    #~ appobj.update_page(element_checkbox, "prop", "checked", "true")
+
+            #~ read_daemon_config("General", "verbose_logging", "verbose-logging", _("Verbose Logging"), _("Show lots of debug messages."))
+            #~ read_daemon_config("Startup", "sync_effects_enabled", "sync-effects", _("Sync Effects to All Devices"), _("When setting an effect, apply this to all other connected devices (where supported)."))
+            #~ read_daemon_config("Startup", "devices_off_on_screensaver", "screensaver", _("Turn off devices when screensaver is running"), _("Not all desktop environments support this feature."))
+            #~ read_daemon_config("Statistics", "key_statistics", "key-statistics", _("Generate Key Statistics"), _("Collects number of key presses per hour for generating heatmaps."))
+
+            html += '</div>'
+            return html
+
         ########################
-        # Daemon
+        # Append
         ########################
-        trans.push('#str-daemon-title', _("About the Daemon"))
-        trans.push('#str-daemon-info', _("The daemon is the software that communicates between the front-end applications and the driver."))
-        trans.push('#str-website', _("Website"), True)
-        trans.push('#str-project', _("Project"), True)
-        trans.push('#str-issues', _("Issues"))
-
-        trans.push('#str-troubleshooting', _("Troubleshooting"))
-        trans.push('#str-device-support', _("Device/Daemon Support"))
-        trans.push('#str-logs', _("Logs"))
-        trans.push('#str-logs-help', _("Useful for diagnosing issues and debugging daemon-related operations."))
-        trans.push('#str-watch', _("Watch"), True)
-
-        trans.push('#str-daemon-options', _("Daemon Service"))
-        trans.push('#str-daemon-stop', _("Stop"))
-        trans.push('#str-daemon-restart', _("Restart"))
-        trans.push('#str-daemon-service', _("If you have re-plugged devices, or are experiencing glitches, try restarting the daemon service."))
-        trans.push('#str-options-missing', _("Could not read the daemon's configuration file."))
-        trans.push('#str-options-restart', _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect."))
-
-        if os.path.exists(appobj.config_path):
-            appobj.daemon_config.read(appobj.config_path)
-        else:
-            appobj.update_page("#daemon-options-missing", "show")
-            for element in ["verbose-logging", "sync-effects", "screensaver", "key-statistics"]:
-                appobj.update_page("#daemon-"+element, "addClass", "disabled")
-                appobj.update_page("#str-"+element, "addClass", "disabled")
-
-        def read_daemon_config(group, item, element, label, description):
-            """
-            Sets the initial checkbox state for razer.conf daemon settings
-            """
-            element_checkbox = "#daemon-" + element
-            element_label = "#str-" + element
-            element_help = "#str-" + element + "-help"
-            appobj.update_page(element_label, "append", label)
-            appobj.update_page(element_help, "html", description)
-            if not appobj.daemon_config.has_option(group, item):
-                appobj.update_page(element_checkbox, "addClass", "disabled")
-                appobj.update_page(element_label, "addClass", "disabled")
-                return
-
-            if appobj.daemon_config.get(group, item) == 'True':
-                appobj.update_page(element_checkbox, "prop", "checked", "true")
-
-        read_daemon_config("General", "verbose_logging", "verbose-logging", _("Verbose Logging"), _("Show lots of debug messages."))
-        read_daemon_config("Startup", "sync_effects_enabled", "sync-effects", _("Sync Effects to All Devices"), _("When setting an effect, apply this to all other connected devices (where supported)."))
-        read_daemon_config("Startup", "devices_off_on_screensaver", "screensaver", _("Turn off devices when screensaver is running"), _("Not all desktop environments support this feature."))
-        read_daemon_config("Statistics", "key_statistics", "key-statistics", _("Generate Key Statistics"), _("Collects number of key presses per hour for generating heatmaps."))
+        appobj.update_page("#pref-save", "append", _("Done"))
+        appobj.update_page(".menu_area", "append", _append_about_tab())
+        appobj.update_page(".menu_area", "append", _append_general_tab())
+        appobj.update_page(".menu_area", "append", _append_tray_tab())
+        appobj.update_page(".menu_area", "append", _append_colours_tab())
+        appobj.update_page(".menu_area", "append", _append_daemon_tab())
 
     def profile_editor(appobj):
         """
@@ -2422,6 +2510,103 @@ class PageLoaded():
         appobj.update_page("#error-title", "html", appobj.error_title)
         appobj.update_page("#error-title", "addClass", appobj.error_class)
         appobj.update_page("#error-details", "html", appobj.error_message)
+
+
+class UIControls():
+    def print_button(label, uid, cmd, icon=None, disabled=False, css_override=None):
+        if icon != None:
+            if icon.startswith("fa-"):
+                icon_div = '<span class="fa {0}"></span> '.format(icon)
+            else:
+                icon_div = '<img src="img/{0}" /> '.format(icon)
+        else:
+            icon_div = ""
+
+        if disabled:
+            disabled_class = "disabled"
+        else:
+            disabled_class = ""
+
+        return '<button id="{0}" class="btn {4} {5}" onclick="cmd(\'{1}\')">{2}{3}</button>'.format(
+            uid, cmd, icon_div, label, disabled_class, css_override)
+
+    def print_control_category(label):
+        return '<h3>{0}</h3>'.format(label)
+
+    def print_checkbox(label, uid, pref_group, pref_item, disabled=False, help_text=None):
+        if disabled:
+            disabled_class = "disabled"
+        else:
+            disabled_class = ""
+
+        cmd = "pref-toggle?{0}?{1}".format(pref_group, pref_item)
+
+        if pref.get(pref_group, pref_item, False):
+            checked_class = "checked"
+        else:
+            checked_class = ""
+
+        if help_text:
+            help_text = UIControls._get_helptext_html(help_text)
+        else:
+            help_text = ''
+
+        return '<label class="pref-label {1}"><input type="checkbox" id="{0}" onclick="cmd(\'{3}\')" class="{1}" {4}/> {2}</label> {5}<br/>'.format(
+            uid, disabled_class, label, cmd, checked_class, help_text)
+
+    def print_radio(label, uid, pref_group, pref_item, pref_value, disabled=False, help_text=None, additional_cmds=None):
+        if disabled:
+            disabled_class = "disabled"
+        else:
+            disabled_class = ""
+
+        if pref.get(pref_group, pref_item, "") == pref_value:
+            checked_class = "checked"
+        else:
+            checked_class = ""
+
+        if help_text:
+            help_text = UIControls._get_helptext_html(help_text)
+        else:
+            help_text = ""
+
+        if not additional_cmds:
+            additional_cmds = ""
+
+        cmd = "pref-set?{0}?{1}?{2}".format(pref_group, pref_item, pref_value)
+
+        return '<label class="pref-label {1}"><input type="radio" name="{5}" id="{0}" onclick="cmd(\'{3}\'); {6}" class="{1}" {4}/> {2}</label> {7}<br/>'.format(
+            uid, disabled_class, label, cmd, checked_class, pref_group, additional_cmds, help_text)
+
+    def print_about_label(label, value):
+        return '<label class="about-label">{0} <code>{1}</code></label>'.format(
+            label, value)
+
+    def print_slider(label, uid, min_value, max_value, step_value, start_value, cmd, disabled=False, help_text=None):
+        if disabled:
+            disabled_class = "disabled"
+        else:
+            disabled_class = ""
+
+        if cmd.find("this"):
+            cmd = cmd.replace("this", "$(\"#{0}\").val()".format(uid))
+
+        if help_text:
+            help_text = UIControls._get_helptext_html(help_text)
+        else:
+            help_text = ''
+
+        return '<label class="pref-label {7}">{6} <input class="{7}" type="range" id="{0}" onmouseout="cmd(\'{1}\')" min="{2}" max="{3}" value="{4}" step="{5}"/></label>'.format(
+            uid, cmd, min_value, max_value, start_value, step_value, label, disabled_class)
+
+    def _get_helptext_html(text):
+        return '<label class="pref-help">{0}</label>'.format(text)
+
+    def run_post_js(cmds):
+        return '<script>{0}</script>'.format(cmds)
+
+    def print_page_break():
+        return '<br><br>'
 
 
 class Dialogues(object):
