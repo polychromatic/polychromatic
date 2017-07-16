@@ -2194,7 +2194,7 @@ class PageLoaded():
             # General UI
             html += UIControls.print_control_category(_("Interface"))
 
-            html += UIControls.print_slider(_("Scale:"), "scaling", "1", "2.5", "0.5", str(pref.get("editor", "scaling", 1)), "pref-set?editor?scaling?this", False,
+            html += UIControls.print_slider(_("Scale:"), "scaling", "1", "2.5", "0.5", str(pref.get("editor", "scaling", 1)), "editor", "scaling", False,
                                             _("Scale the application so it looks good on large displays. Requires restart."))
 
             # Advanced
@@ -2589,21 +2589,19 @@ class UIControls():
         return '<label class="about-label">{0} <code>{1}</code></label>'.format(
             label, value)
 
-    def print_slider(label, uid, min_value, max_value, step_value, start_value, cmd, disabled=False, help_text=None):
+    def print_slider(label, uid, min_value, max_value, step_value, start_value, pref_group, pref_item, disabled=False, help_text=None):
         if disabled:
             disabled_class = "disabled"
         else:
             disabled_class = ""
-
-        if cmd.find("this"):
-            cmd = cmd.replace("this", "$(\"#{0}\").val()".format(uid))
 
         if help_text:
             help_text = UIControls._get_helptext_html(help_text)
         else:
             help_text = ''
 
-        return '<label class="pref-label {7}">{6} <input class="{7}" type="range" id="{0}" onmouseout="cmd(\'{1}\')" min="{2}" max="{3}" value="{4}" step="{5}"/></label>'.format(
+        cmd = "cmd('pref-set?editor?scaling?' + $(this).val())"
+        return '<label class="pref-label {7}">{6} <input class="{7}" type="range" id="{0}" onmouseout="{1}" min="{2}" max="{3}" value="{4}" step="{5}"/></label>'.format(
             uid, cmd, min_value, max_value, start_value, step_value, label, disabled_class)
 
     def _get_helptext_html(text):
