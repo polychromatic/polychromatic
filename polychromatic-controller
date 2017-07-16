@@ -1069,7 +1069,7 @@ class Controller(object):
 
             def fetch_failed():
                 self.update_page("#dialog-changelog-body", "html", ("Unable to fetch the changelog."))
-                self.webkit.run_javascript("changelog_dialog_open()")
+                self.webkit.run_javascript("dialog_open('dialog-changelog')")
 
             try:
                 r = requests.get('https://raw.githubusercontent.com/lah7/polychromatic/master/CHANGELOG')
@@ -1095,7 +1095,7 @@ class Controller(object):
                             self.update_page("#dialog-changelog-body", "append", "<li style='color:lime'>" + line.split('*')[1] + "</li>")
                         else:
                             self.update_page("#dialog-changelog-body", "append", "<li>" + line.split('*')[1] + "</li>")
-                self.webkit.run_javascript("changelog_dialog_open()")
+                self.webkit.run_javascript("dialog_open('dialog-changelog')")
             else:
                 fetch_failed()
                 return
