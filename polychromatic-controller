@@ -813,13 +813,6 @@ class Controller(object):
         elif command == 'pref-close':
             self.show_menu('menu')
 
-        elif command == 'pref-reset-conf':
-            print('User requested to reset configuration.')
-            pref.clear_config()
-            pref.load_pref()
-            print('Configuration successfully reset.')
-            self.show_menu('preferences')
-
         elif command == 'pref-reset-all':
             print('User requested to reset everything.')
             pref.clear_config()
@@ -2207,8 +2200,16 @@ class PageLoaded():
             # Advanced
             html += UIControls.print_control_category(_("Advanced"))
             html += UIControls.print_button("Open Configuration Folder", "open-config", "open-config-folder", "fa-folder")
-            html += UIControls.print_button("Reset Preferences", "reset-conf", "pref-reset-conf", "fa-delete")
-            html += UIControls.print_button("Reset Everything", "reset-everything", "pref-reset-all", "fa-delete", False, "btn-serious")
+
+            reset_all_dialog_uuid = UIControls.JavaScript.generate_confirmation_dialog(
+                appobj.update_page,
+                _("Reset Everything"),
+                _("This will erase all your preferences, profiles and settings. This cannot be undone.") + '<br><br>' + \
+                _("The application will restart."),
+                _("Reset Polychromatic"), "cmd(\'pref-reset-all\')", True,
+                _("Cancel"), None,
+                "50vw", "25vh")
+            html += UIControls.print_button("Reset Everything", "reset-everything", "dialog_open('" + reset_all_dialog_uuid + "');", "fa-delete", False, "btn-serious", True)
 
             # fixme: old dialog
             trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
