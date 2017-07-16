@@ -139,3 +139,25 @@ function dialog_icon_preview(input_box_element) {
     icon_path = $("#" + input_box_element).val();
     $("#" + input_box_element + "-preview").attr("src", icon_path);
 }
+
+
+/**
+ * Dialogue functions
+ */
+// Always fade in the page.
+/* Reset all colours confirmation */
+function dialog_open(dialogue_id) {
+    $('#' + dialogue_id).addClass('in');
+    $('#' + dialogue_id).show();
+    $('#overlay').fadeIn('fast');
+    $('.blur-focus').addClass('blur');
+}
+
+function dialog_close(dialogue_id) {
+    $('#' + dialogue_id).addClass('out');
+    setTimeout(function() {
+        $('#' + dialogue_id).removeClass('out').removeClass('in').hide()
+    }, 250);
+    $('#overlay').fadeOut('fast');
+    $('.blur-focus').removeClass('blur');
+}

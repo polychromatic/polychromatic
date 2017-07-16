@@ -2295,28 +2295,29 @@ class PageLoaded():
             html += '<div id="colour-table">{0}</div>'.format(appobj.populate_colours_table(True))
             html += '<br>'
             html += UIControls.print_button(_("New"), "colour-new", "pref-colour-new", "fa-plus", False)
-            html += UIControls.print_button(_("Restore Defaults"), "colour-reset", "del_colours_dialog_open()", "fa-repeat", False, "btn-dim btn-serious")
+            reset_colour_dialog_uuid = UIControls.JavaScript.generate_confirmation_dialog(
+                appobj.update_page,
+                _("Reset Colors"),
+                _("Are you sure you want to reset all the colors to their defaults?"),
+                _("Restore Defaults"), "cmd(\'pref-colour-reset\')", True,
+                _("Cancel"), None,
+                "50vw", "20vh")
+            html += UIControls.print_button(_("Restore Defaults"), "colour-reset", "dialog_open('" + reset_colour_dialog_uuid + "');", "fa-repeat", False, "btn-dim btn-serious", True)
             html += '<br><br>'
             html += '</div>'
 
             html += '<div id="colour-editor" class="right" hidden>'
             html += '<div id="colour-edit-preview" class="colour-preview" style="background-color:rgb(0,255,0)"></div>'
-            html += UIControls.print_button(_("Choose..."), "colour-choose", "ask-colour?colour?edit", None, False)
+            html += UIControls.print_button(_("Choose..."), "colour-edit", "ask-colour?colour?edit", None, False)
             html += '<br><br>'
             html += '<input id="colour-edit-name" class="pref-input" type="text"/>'
             html += '<br><br>'
-            html += UIControls.print_button(_("Save"), "colour-save", "save_colour(0)", "fa-check", False)
-            html += UIControls.print_button(_("Delete"), "colour-revert", "delete_colour(0)", "fa-trash", False, "btn-serious")
+            html += UIControls.print_button(_("Save"), "colour-save", "", "fa-check", False)
+            html += UIControls.print_button(_("Delete"), "colour-delete", "", "fa-trash", False, "btn-serious")
             html += '</div>'
 
             html += '</div>'
             return html
-
-            # fixme: old trans functions
-            trans.push('#dialog-del-title', _("Reset Colors"))
-            trans.push('#dialog-del-hint', _("Are you sure you want to reset all colors to their defaults?"))
-            trans.push('#dialog-del-no', _("Cancel"))
-            trans.push('#dialog-del-yes', _("Reset Defaults"))
 
         ########################
         # Daemon
@@ -2513,7 +2514,7 @@ class PageLoaded():
 
 
 class UIControls():
-    def print_button(label, uid, cmd, icon=None, disabled=False, css_override=None):
+    def print_button(label, uid, cmd, icon=None, disabled=False, css_override=None, cmd_is_js=False):
         if icon != None:
             if icon.startswith("fa-"):
                 icon_div = '<span class="fa {0}"></span> '.format(icon)
@@ -2527,8 +2528,13 @@ class UIControls():
         else:
             disabled_class = ""
 
-        return '<button id="{0}" class="btn {4} {5}" onclick="cmd(\'{1}\')">{2}{3}</button>'.format(
-            uid, cmd, icon_div, label, disabled_class, css_override)
+        if cmd_is_js:
+            onclick = cmd.replace("'", "\'")
+        else:
+            onclick = "cmd(\'{0}\')".format(cmd)
+
+        return '<button id="{0}" class="btn {4} {5}" onclick="{1}">{2}{3}</button>'.format(
+            uid, onclick, icon_div, label, disabled_class, css_override)
 
     def print_control_category(label):
         return '<h3>{0}</h3>'.format(label)
@@ -2607,6 +2613,35 @@ class UIControls():
 
     def print_page_break():
         return '<br><br>'
+
+    class JavaScript():
+        def generate_confirmation_dialog(update_page, title, message, ok_label, ok_cmd=None, ok_serious=False, cancel_label=None, cancel_cmd=None, width=None, height=None):
+            dialog_uuid = "dialog-" + pref.generate_uuid()
+            html = '<div id="{0}" class="dialog" style="width:{3}; height:{4}" hidden>' \
+                    '<h3>{1}</h3>' \
+                    '<p>{2}</p>' \
+                    '<div class="dialog-buttons">' \
+                    '<hr>'.format(
+                        dialog_uuid, title, message, width, height)
+
+            if cancel_label:
+                cancel_onclick = "dialog_close('" + dialog_uuid + "')"
+                if cancel_cmd:
+                    cancel_onclick += "; " + cancel_cmd
+
+                html += '<button class="btn" onclick="{1}">{0}</button>'.format(
+                    cancel_label,
+                    cancel_onclick)
+
+            html += '<button class="btn {3}" onclick="{0}; {1}">{2}</button>'.format(
+                "dialog_close('" + dialog_uuid + "');",
+                ok_cmd if ok_cmd else "",
+                ok_label,
+                "btn-serious" if ok_serious else "")
+
+            html += '</div></div>'
+            update_page("body", "append", html)
+            return dialog_uuid
 
 
 class Dialogues(object):
