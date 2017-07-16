@@ -2814,8 +2814,8 @@ class Terminal(object):
             no += 1
 
         print("\nEnter choice: ", end='')
-        no = int(sys.stdin.readline())
         try:
+            no = int(sys.stdin.readline())
             print("\nSelected: " + devices[no].name)
         except Exception:
             print("Invalid choice, or device not found.")
