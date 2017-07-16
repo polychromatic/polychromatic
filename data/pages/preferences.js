@@ -18,49 +18,7 @@
  ** Functions specific to the Preferences menu.
  */
 
-function reset_all_prompt() {
-    // Expects string variable pushed: del_all_text
-    if ( confirm(del_all_text) == true ) {
-      cmd('pref-reset-all');
-    }
-}
-
-function toggle_startup(element) {
-    set_pref_chkstate('startup', 'enabled', element);
-    state = $(element).is(':checked');
-    if ( state == true ) {
-        $('.startup-options').fadeIn('fast');
-    } else {
-        $('.startup-options').fadeOut('fast');
-    }
-}
-
-$('#start-effect-dropdown').change(function() {
-    selected = $("#start-effect-dropdown option:selected").val();
-    set_pref_str('startup', 'start_effect', selected);
-    if ( selected == 'profile' ) {
-        $('#profiles-list').fadeIn('fast');
-    } else {
-        $('#profiles-list').fadeOut('fast');
-    }
-});
-
-$('#profiles-list').change(function() {
-    selected = $("#profiles-list option:selected").val();
-    set_pref_str('startup', 'start_profile', selected);
-});
-
 $(document).ready(function () {
-    // Expects string variable pushed: no_change
-    $("#start-brightness").change(function () {
-        var value = $(this).val();
-        $('#start-brightness-text').text(value + "%");
-        if (value == 0) {
-            $("#start-brightness-text").text(no_change);
-        }
-        set_pref_str('startup','start_brightness', value);
-    });
-
     // Update the icon preview / save when text box changes.
     $('#tray-icon-path').bind('input', function() {
         dialog_icon_preview('tray-icon-path');
