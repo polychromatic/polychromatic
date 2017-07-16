@@ -393,9 +393,26 @@ def start_initalization():
             init_config(json_path)
 
     # Populate with defaults if none exists.
+    ## Default Preferences
+    data = load_file(path.preferences, True)
+    if len(data) <= 2:
+        default_pref = {
+            "editor": {
+                "live_switch": True,
+                "scaling": 1,
+                "live_preview": True,
+                "activate_on_save": True
+            },
+            "tray_icon": {
+                "type": "builtin",
+                "value": "0"
+            }
+        }
+        save_file(path.preferences, default_pref)
+
     ## Default Colours
     data = load_file(path.colours, True)
-    if len(data) == 0:
+    if len(data) <= 2:
         uuid = 0
         for name, red, green, blue in ["White", 255, 255, 255], ["Red", 255, 0, 0], ["Orange", 255, 165, 0], \
                                       ["Yellow", 255, 255, 0], ["Signature Green", 0, 255, 0], ["Aqua", 0, 255, 255], \
