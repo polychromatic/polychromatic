@@ -382,12 +382,19 @@ def devicestate_monitor_thread(callback_function, file_path):
     Seperate thread for monitoring devicestate.json changes.
     See devicestate_monitor_start() for reference.
     """
+    def _init_devicestate_file():
+        if not os.path.exists(file_path):
+            open(file_path, "a").close()
+
     while True:
-        before = os.stat(file_path).st_mtime
-        sleep(1)
-        after = os.stat(file_path).st_mtime
-        if before != after:
-             callback_function()
+        try:
+            before = os.stat(file_path).st_mtime
+            sleep(1)
+            after = os.stat(file_path).st_mtime
+            if before != after:
+                 callback_function()
+        except FileNotFoundError:
+            _init_devicestate_file()
 
 
 def has_fixed_colour(device_obj):
