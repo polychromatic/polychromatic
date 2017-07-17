@@ -1435,7 +1435,7 @@ class Controller(object):
                     ["lighting_breath_single", "breath", _("Breath")],
                     ["lighting_pulsate", "pulsate", _("Pulsate")],
                     ["lighting_ripple", "ripple", _("Ripple")],
-                    ["lighting_starlight", "starlight", _("Starlight")],
+                    ["lighting_starlight_random", "starlight", _("Starlight")],
                     ["lighting_static", "static", _("Static")]
                 ]
 
@@ -1770,6 +1770,10 @@ class Controller(object):
             add_but_check_ability("ripple_random", _("Random"), 'random')
             add_but_check_ability("ripple", _("Single Color"), 'single')
 
+        elif effect == "starlight":
+            add_but_check_ability("starlight_dual", _("Dual"), 'dual')
+            add_but_check_ability("starlight_random", _("Random"), 'random')
+
         # Show colour picker (for supported effects)
         show_primary = False
         show_secondary = False
@@ -1783,6 +1787,13 @@ class Controller(object):
             show_primary = True
 
         elif effect == "breath" and params == "dual":
+            show_primary = True
+            show_secondary = True
+
+        if effect == "starlight" and params == "single":
+            show_primary = True
+
+        elif effect == "starlight" and params == "dual":
             show_primary = True
             show_secondary = True
 

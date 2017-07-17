@@ -77,6 +77,8 @@ def get_effect_state_string(string):
         return _("Breath")
     elif string == 'ripple':
         return _("Ripple")
+    elif string == 'starlight':
+        return _("Starlight")
     elif string == 'static':
         return ("Static")
     elif string == 'none':
@@ -183,6 +185,7 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
                 fx.blinking(primary_red, primary_green, primary_blue)
 
         elif effect == "breath":
+            # Params: <type>
             if params:
                 if params[0] == 'random':
                     fx.breath_random()
@@ -204,6 +207,7 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
             fx.pulsate(primary_red, primary_green, primary_blue)
 
         elif effect == "ripple":
+            # Params: <type>
             if params:
                 if params[0] == 'single':
                     fx.ripple(primary_red, primary_green, primary_blue, 0.01)
@@ -216,7 +220,23 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
                 remember_params('random')
 
         elif effect == "starlight":
-            fx.starlight(primary_red, primary_green, primary_blue)
+            # Params: <type> [speed 1-3]
+            # TODO: Add option to set speed. Requires re-structure.
+            speed = 2 # Normal
+
+            if params:
+                if params[0] == 'single':
+                    fx.starlight_single(primary_red, primary_green, primary_blue, speed)
+
+                elif params[0] == 'dual':
+                    fx.starlight_dual(primary_red, primary_green, primary_blue,
+                                      secondary_red, secondary_green, secondary_blue, speed)
+
+                elif params[0] == 'random':
+                    fx.starlight_random(speed)
+            else:
+                fx.starlight_random(speed)
+                remember_params('random')
 
         elif effect == "static":
             fx.static(primary_red, primary_green, primary_blue)

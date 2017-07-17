@@ -517,7 +517,9 @@ class AppIndicator(object):
             [main_submenu, "lighting_pulsate", ["main", "pulsate"], "pulsate", _("Pulsate")],
             [main_submenu, "lighting_ripple_random", ["main", "ripple", "random"], "ripple", _("Ripple (Random)")],
             [main_submenu, "lighting_ripple", ["main", "ripple", "single"], "ripple", _("Ripple (Single)")],
-            [main_submenu, "lighting_starlight", ["main", "starlight"], "starlight", _("Starlight")],
+            [main_submenu, "lighting_starlight_single", ["main", "starlight", "single"], "starlight", _("Starlight (Single)")],
+            [main_submenu, "lighting_starlight_dual", ["main", "starlight", "dual"], "starlight", _("Starlight (Dual)")],
+            [main_submenu, "lighting_starlight_random", ["main", "starlight", "random"], "starlight", _("Starlight (Random)")],
             [main_submenu, "lighting_static", ["main", "static"], "static", _("Static")],
 
             # Logo Lighting
