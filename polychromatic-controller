@@ -771,12 +771,12 @@ class Controller(object):
             if command.find('?') > -1:
                 command, cancel_type, cancel_args = command.split('?')
                 if cancel_type == "new-profile":
-                    if pref.get('editor', 'live_switch', 'true') == 'true' or pref.get('editor', 'live_preview', 'true') == 'true':
+                    if pref.get('editor', 'live_switch', True) == True or pref.get('editor', 'live_preview', True) == True:
                         self.profiles.remove_profile(self.profiles.selected_uuid)
                         if self.profiles.previous_uuid:
                             self.profiles.send_profile_from_file(self.active_device, self.profiles.previous_uuid)
                 elif cancel_type == "edit-profile":
-                    if pref.get('editor', 'live_switch', 'true') == 'true' or pref.get('editor', 'live_preview', 'true') == 'true':
+                    if pref.get('editor', 'live_switch', True) == True or pref.get('editor', 'live_preview', True) == True:
                         if self.profiles.previous_uuid:
                             self.profiles.send_profile_from_file(self.active_device, self.profiles.previous_uuid)
 
@@ -856,7 +856,7 @@ class Controller(object):
             self.profiles.memory["rows"][str(row)][col] = (red, green, blue)
 
             # Live preview (if 'live_preview' is enabled in preferences)
-            if pref.get('editor', 'live_preview', 'true') == 'true':
+            if pref.get('editor', 'live_preview', True) == True:
                 self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
 
         elif command.startswith('clear-key'):
@@ -866,7 +866,7 @@ class Controller(object):
             self.profiles.memory["rows"][str(row)][col] = (0, 0, 0)
 
             # Live preview (if 'live_preview' is enabled in preferences)
-            if pref.get('editor', 'live_preview', 'true') == 'true':
+            if pref.get('editor', 'live_preview', True) == True:
                 self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
 
         elif command.startswith('profile-activate'):
@@ -933,7 +933,7 @@ class Controller(object):
             self.profiles.save_profile_from_memory(uuid)
             self.show_menu('menu')
 
-            if pref.get('editor', 'activate_on_save', 'true') == 'true':
+            if pref.get('editor', 'activate_on_save', True) == True:
                 self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
 
         elif command.startswith('profile-rename'):
@@ -2108,7 +2108,7 @@ class PageLoaded():
         appobj.refresh_profiles_list()
 
         # Tell JavaScript whether live profile switching is enabled.
-        if pref.get('editor', 'live_switch', 'true') == 'true':
+        if pref.get('editor', 'live_switch', True) == True:
             appobj.webkit.run_javascript('live_switch = true;')
             appobj.update_page('#profiles-activate', 'hide')
         else:
@@ -2483,7 +2483,7 @@ class PageLoaded():
 
         # Load profile into keyboard.
         appobj.profiles.selected_uuid = uuid
-        if pref.get('editor', 'live_preview', 'true') == 'true':
+        if pref.get('editor', 'live_preview', True) == True:
             appobj.profiles.send_profile_to_keyboard(appobj.active_device, profile_data)
 
         for row in range(0, 6):
@@ -2503,7 +2503,7 @@ class PageLoaded():
                 kb_callback << "keyboard_obj.disable_key(5,12)"
 
         # Hide preview button if live previewing is enabled.
-        if pref.get("editor", "live_preview", "true") == "true":
+        if pref.get("editor", "live_preview", True) == True:
             kb_callback << '$("#edit-preview").hide();'
 
         kb_callback << "$(\"#cancel\").attr({onclick: \"cmd('cancel-changes?"+ appobj.cancel_changes + "?" + uuid + "')\"})"
