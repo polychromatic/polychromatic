@@ -1771,6 +1771,7 @@ class Controller(object):
             add_but_check_ability("ripple", _("Single Color"), 'single')
 
         elif effect == "starlight":
+            add_but_check_ability("starlight_single", _("Single"), 'single')
             add_but_check_ability("starlight_dual", _("Dual"), 'dual')
             add_but_check_ability("starlight_random", _("Random"), 'random')
 
