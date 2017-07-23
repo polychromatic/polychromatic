@@ -1576,22 +1576,31 @@ class Controller(object):
             self.update_page("#device-" + self.active_device_serial + "-brightness", "append", str(int(value)) + '%&nbsp;')
 
         if self.active_device.has("lighting_backlight_active"):
-            if self.active_device.fx.misc.backlight.active == 1:
-                self.update_page("#brightness-backlight-switch", "prop", "checked", "true")
-            else:
-                self.update_page("#brightness-backlight-switch", "removeAttr", "checked")
+            try:
+                if self.active_device.fx.misc.backlight.active == 1:
+                    self.update_page("#brightness-backlight-switch", "prop", "checked", "true")
+                else:
+                    self.update_page("#brightness-backlight-switch", "removeAttr", "checked")
+            except Exception as e:
+                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
 
         if self.active_device.has("lighting_logo_active"):
-            if self.active_device.fx.misc.logo.active == 1:
-                self.update_page("#brightness-logo-switch", "prop", "checked", "true")
-            else:
-                self.update_page("#brightness-logo-switch", "removeAttr", "checked")
+            try:
+                if self.active_device.fx.misc.logo.active == 1:
+                    self.update_page("#brightness-logo-switch", "prop", "checked", "true")
+                else:
+                    self.update_page("#brightness-logo-switch", "removeAttr", "checked")
+            except Exception as e:
+                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
 
         if self.active_device.has("lighting_scroll_active"):
-            if self.active_device.fx.misc.scroll_wheel.active == 1:
-                self.update_page("#brightness-scroll-switch", "prop", "checked", "true")
-            else:
-                self.update_page("#brightness-scroll-switch", "removeAttr", "checked")
+            try:
+                if self.active_device.fx.misc.scroll_wheel.active == 1:
+                    self.update_page("#brightness-scroll-switch", "prop", "checked", "true")
+                else:
+                    self.update_page("#brightness-scroll-switch", "removeAttr", "checked")
+            except Exception as e:
+                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
 
         ## Brightness
         if self.active_device.has("brightness"):
@@ -1671,23 +1680,30 @@ class Controller(object):
 
         ## DPI Sensitivity
         if self.active_device.has("dpi"):
-            dpi_max = str(self.active_device.max_dpi)
-            dpi_value = str(self.active_device.dpi[0])
-            self.update_page("#dpi-input", "val", dpi_value)
-            self.update_page("#dpi-input", "attr", "max", dpi_max)
-            self.update_page("#dpi-value", "html", dpi_value)
+            try:
+                dpi_max = str(self.active_device.max_dpi)
+                dpi_value = str(self.active_device.dpi[0])
+                self.update_page("#dpi-input", "val", dpi_value)
+                self.update_page("#dpi-input", "attr", "max", dpi_max)
+                self.update_page("#dpi-value", "html", dpi_value)
+            except Exception as e:
+                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
 
         ## Poll Rate Sensitivity
         if self.active_device.has("poll_rate"):
-            actual_value = self.active_device.poll_rate
-            if actual_value == 125:
-                value = 1
-            elif actual_value == 500:
-                value = 2
-            elif actual_value == 1000:
-                value = 3
-            else:
-                value = 1
+            try:
+                actual_value = self.active_device.poll_rate
+                if actual_value == 125:
+                    value = 1
+                elif actual_value == 500:
+                    value = 2
+                elif actual_value == 1000:
+                    value = 3
+                else:
+                    value = 1
+            except Exception as e:
+                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
+
             self.update_page("#poll-rate-input", "val", str(value))
             self.update_page("#poll-rate-value", "html", str(actual_value) + "Hz")
 
