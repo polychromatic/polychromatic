@@ -107,7 +107,11 @@ def save_file(filepath, newdata):
     # Write new data to specified file.
     if os.access(filepath, os.W_OK):
         f = open(filepath, "w+")
-        f.write(json.dumps(newdata))
+        # Pretty save, but just the preferences.
+        if filepath == path.preferences:
+            f.write(json.dumps(newdata, sort_keys=True, indent=4))
+        else:
+            f.write(json.dumps(newdata))
         f.close()
     else:
         print(" ** Cannot write to file: " + filepath)
