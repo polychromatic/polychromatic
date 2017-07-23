@@ -23,6 +23,7 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 from gi.repository import Gtk, Gdk, AppIndicator3 as appindicator
+import argparse
 import collections
 import os
 import sys
@@ -74,10 +75,10 @@ class Translations():
 
         if os.path.exists(os.path.join(whereami, 'locale/')):
             locale_path = os.path.join(whereami, 'locale/')
-            stdout.vprint('Using relative path for translations.')
+            dbg.stdout("Using relative path for translations.", dbg.debug, 1)
         else:
             locale_path = '/usr/share/locale/'
-            stdout.vprint('Using "/usr/share/locale/" or falling back to "en_US" for translations.')
+            dbg.stdout("Using '/usr/share/locale/' or falling back to 'en_US' for translations.", dbg.debug, 1)
 
         # Initialise i18n translations
         global _
@@ -212,6 +213,7 @@ class AppIndicator(object):
 
         # Start watching devicestate index for changes.
         common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
+        dbg.stdout("Finished setting up applet.", dbg.success, 1)
 
     def rebuild_all_submenus(self):
         """
@@ -226,17 +228,19 @@ class AppIndicator(object):
         self.menu_poll_rate = self._build_poll_rate_menu()
         self.menu_gamemode = self._build_gamemode_menu()
         self.menu_colours = self._build_colour_menu()
+        dbg.stdout("Finished building submenus.", dbg.success, 1)
 
     def rebuild_root_menu(self):
         """
         Rebuilds the parent "tray" menu.
         """
-        stdout.vprint("Updating menu layout...")
+        dbg.stdout("Updating menu layout...", dbg.action, 1)
         root = Gtk.Menu()
 
         root.append(create_menu_item(self.current_device, False))
         root.append(self.menu_devices)
         root.append(create_seperator())
+        dbg.stdout("Finished building root menu.", dbg.success, 1)
 
         multiple_sources = common.has_multiple_sources(self.active_device)
 
@@ -453,7 +457,7 @@ class AppIndicator(object):
 
     # Builds sub-menus. Returns None if not available for current device.
     def _build_device_menu(self):
-        stdout.vprint("Building device menu...")
+        dbg.stdout("Building device menu...", dbg.action, 1)
         submenu = create_submenu(_("Change Device"), True)
         for device in self.devman.devices:
             name = device.name
@@ -463,13 +467,13 @@ class AppIndicator(object):
             if not os.path.exists(icon_path):
                 icon_path = self._get_icon("states", "unknown.svg")
             submenu[1].append(create_menu_item(name, True, cb.set_device, serial, icon_path))
-            stdout.vprint(" -- Found: " + name)
+            dbg.stdout(" -- Found: " + name, dbg.debug, 1)
         submenu[1].append(create_seperator())
         submenu[1].append(create_menu_item(_("Refresh Device List"), True, cb.reload_devices))
         return submenu[0]
 
     def _build_effect_menu(self):
-        stdout.vprint("Building effect menu...")
+        dbg.stdout("Building effect menu...", dbg.action, 1)
         root_submenu = create_submenu("Effects", True)
 
         if self.active_device.has("lighting"):
@@ -590,7 +594,7 @@ class AppIndicator(object):
         return root_submenu[0]
 
     def _build_brightness_menu(self):
-        stdout.vprint("Building brightness menu...")
+        dbg.stdout("Building brightness menu...", dbg.action, 1)
         root_submenu = create_submenu("Brightness", True)
 
         if self.active_device.has("brightness"):
@@ -706,7 +710,7 @@ class AppIndicator(object):
         return root_submenu[0]
 
     def _build_app_profile_menu(self):
-        stdout.vprint("Building app profiles menu...")
+        dbg.stdout("Building app profiles menu...", dbg.action, 1)
 
         if not self.active_device.has("lighting_led_matrix") or not str(self.active_device.type) == "keyboard":
             return None
@@ -729,7 +733,7 @@ class AppIndicator(object):
         return submenu[0]
 
     def _build_colour_menu(self):
-        stdout.vprint("Building colours menu...")
+        dbg.stdout("Building colours menu...", dbg.action, 1)
         submenu = create_submenu(_("Change Color"), True)
         colour_index = pref.load_file(path.colours)
         uuids = list(colour_index)
@@ -755,11 +759,11 @@ class AppIndicator(object):
             submenu[1].append(create_menu_item(_("No colors to list."), False))
             submenu[1].append(create_seperator())
             submenu[1].append(create_menu_item(_("Where did your colors go?"), False))
-        stdout.vprint(" -- Loaded {0} colours.".format(str(len(uuids))))
+        dbg.stdout(" -- Loaded {0} colours.".format(str(len(uuids))), dbg.debug, 1)
         return submenu[0]
 
     def _build_dpi_menu(self):
-        stdout.vprint("Building dpi menu...")
+        dbg.stdout("Building dpi menu...", dbg.action, 1)
         submenu = create_submenu(_("DPI"), True)
 
         if not self.active_device.has("dpi"):
@@ -806,7 +810,7 @@ class AppIndicator(object):
         return submenu[0]
 
     def _build_poll_rate_menu(self):
-        stdout.vprint("Building poll rate menu...")
+        dbg.stdout("Building poll rate menu...", dbg.action, 1)
         submenu = create_submenu(_("Poll Rate"), True)
 
         if not self.active_device.has("poll_rate"):
@@ -824,7 +828,7 @@ class AppIndicator(object):
         return submenu[0]
 
     def _build_gamemode_menu(self):
-        stdout.vprint("Building game mode menu...")
+        dbg.stdout("Building game mode menu...", dbg.action, 1)
 
         if not self.active_device.has("game_mode_led"):
             return None
@@ -848,7 +852,7 @@ class AppIndicator(object):
         """
         colour_path = os.path.join(session_storage, "{0}-{1}-{2}.png".format(str(colour[0]), str(colour[1]), str(colour[2])))
         if not os.path.exists(colour_path):
-            stdout.vprint("Creating colour bitmap for: " + str(colour))
+            dbg.stdout("Creating colour bitmap for: " + str(colour), dbg.action, 1)
             foreground_process("convert -size 16x16 xc:{0} {1}".format(self._colour_to_hex(colour), colour_path), shell=True)
         if not os.path.exists(colour_path):
             stdout.error("ERROR: Failed to generate bitmap for: " + str(colour))
@@ -864,30 +868,30 @@ class AppIndicator(object):
 
     # When there are external changes to devicestate.json
     def device_state_changed(self):
-        stdout.vprint("Device state changed. Refreshing menus.")
+        dbg.stdout("Device state changed. Refreshing menus.", dbg.action, 1)
         indicator.rebuild_all_submenus()
         indicator.rebuild_root_menu()
 
 
 class Callback():
     def launch_controller(cb, item):
-        stdout.vprint("=> Launch Controller")
+        dbg.stdout("=> Launch Controller", dbg.debug, 1)
         possible_paths = [
             os.path.join(path.data_source, "../polychromatic-controller"),
             "/usr/bin/polychromatic-controller"
         ]
         for bin_path in possible_paths:
             if os.path.exists(bin_path):
-                stdout.vprint("Executing: " + os.path.realpath(bin_path))
+                dbg.stdout("Executing: " + os.path.realpath(bin_path), dbg.debug, 1)
                 background_process(bin_path)
                 return
 
     def quit(cb, item):
-        stdout.vprint("=> Quit")
+        dbg.stdout("=> Quit", dbg.debug, 1)
         exit(0)
 
     def restart_daemon(cb, item):
-        stdout.vprint("=> Restart Daemon")
+        dbg.stdout("=> Restart Daemon", dbg.debug, 1)
         import threading
         thread = threading.Thread(target=restart_daemon_service, args=())
         thread.daemon = True
@@ -899,17 +903,17 @@ class Callback():
                 indicator.active_device = device
                 indicator.active_serial = device.serial
                 indicator.current_device = device.name
-                stdout.vprint("=> Set Device to: {0} (Serial: {1}".format(device.name, device.serial))
+                dbg.stdout("=> Set Device to: {0} (Serial: {1}".format(device.name, device.serial), dbg.debug, 1)
                 indicator.rebuild_all_submenus()
                 indicator.rebuild_root_menu()
 
     def reload_devices(cb, item):
-        stdout.vprint("=> Reload Devices")
+        dbg.stdout("=> Reload Devices", dbg.debug, 1)
         indicator.menu_devices = indicator._build_device_menu()
         indicator.setup()
 
     def retry_applet(cb, item):
-        stdout.vprint("=> Reload Tray Applet")
+        dbg.stdout("=> Reload Tray Applet", dbg.debug, 1)
         indicator.setup()
 
     def set_effect(cb, item, effect_params):
@@ -918,7 +922,7 @@ class Callback():
         """
         source = effect_params[0]
         effect = effect_params[1]
-        stdout.vprint("=> Set Effect ID:" + str(effect_params))
+        dbg.stdout("=> Set Effect ID:" + str(effect_params), dbg.debug, 1)
         try:
             params = effect_params[2]
         except Exception:
@@ -951,7 +955,7 @@ class Callback():
         rgb = params[1]
         indicator.current_colour = name
         indicator.current_colour_rgb = rgb
-        stdout.vprint("Set colour to: {0} (RGB {1})".format(name, rgb))
+        dbg.stdout("Set colour to: {0} (RGB {1})".format(name, rgb), dbg.debug, 1)
         common.save_colours_to_all_sources(pref, indicator.active_device, "colour_primary", rgb)
         common.repeat_last_effect(pref, indicator.active_device)
         indicator.rebuild_all_submenus()
@@ -968,7 +972,7 @@ class Callback():
             rgb = KeyboardColour.gdk_colour_to_rgb(result_rgb)
             indicator.current_colour = _("Custom") + " ({0}, {1}, {2})".format(str(rgb[0]), str(rgb[1]), str(rgb[2]))
             indicator.current_colour_rgb = [rgb[0], rgb[1], rgb[2]]
-            stdout.vprint("Set custom colour to: " + str(indicator.current_colour_rgb))
+            dbg.stdout("Set custom colour to: " + str(indicator.current_colour_rgb), dbg.debug, 1)
             common.save_colours_to_all_sources(pref, indicator.active_device, "colour_primary", indicator.current_colour_rgb)
             common.repeat_last_effect(pref, indicator.active_device)
             indicator.rebuild_all_submenus()
@@ -1008,49 +1012,17 @@ class Callback():
         indicator.rebuild_root_menu()
 
 
-class Terminal(object):
-    """
-    Various functions for pretty printing to stdout for debugging.
-    """
-    def __init__(self):
-        """
-        Process parameters (arguments) passed via the terminal.
-        """
-        self.be_verbose = False
-        self.be_very_verbose = False
+def parse_parameters():
+    parser = argparse.ArgumentParser(add_help=False)
+    parser._optionals.title = _("Optional arguments")
+    parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
+    parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
 
-        for arg in sys.argv[1:]:
-            if arg in ["--help", "-h"]:
-                self.show_help()
+    args = parser.parse_args()
 
-            elif arg in ["--verbose", "-v", "--debug", "-vv"]:
-                self.be_verbose = True
-                pref.verbose = True
-                self.vprint("Verbose enabled.")
-
-            else:
-                print("Ignoring unrecognised parameters:" + arg)
-
-    def show_help(self):
-        print("Usage: polychromatic-tray-applet [parameters]\n")
-        #     | Command                      | Help Text                                     |
-        print("  -h, --help                   Show this help text.")
-        print("  -v, --verbose                Be verbose to stdout.")
-        print("")
-        exit(0)
-
-    def error(self, text):
-        if sys.stdout.isatty():
-            print('\033[91m' + text + '\033[0m')
-        else:
-            print(text)
-
-    def vprint(self, text):
-        if self.be_verbose:
-            if sys.stdout.isatty():
-                print('\033[93m' + text + '\033[0m')
-            else:
-                print(text)
+    if args.verbose:
+        dbg.verbose_level = 1
+        dbg.stdout(_("Verbose enabled"), dbg.debug, 1)
 
 
 def restart_daemon_service():
@@ -1133,8 +1105,9 @@ if __name__ == "__main__":
     f.write(str(os.getpid()))
     f.close()
 
-    stdout = Terminal()
+    dbg = common.Debugging()
     trans = Translations()
+    parse_parameters()
     cb = Callback()
     indicator = AppIndicator()
     indicator.setup()

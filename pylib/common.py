@@ -8,6 +8,7 @@
 # Copyright (C) 2017 Luke Horwell <luke@ubuntu-mate.org>
 
 import os
+import sys
 import gettext
 from time import sleep
 from threading import Thread
@@ -27,6 +28,36 @@ else:
 global _
 t = gettext.translation('polychromatic-common', localedir=locale_path, fallback=True)
 _ = t.gettext
+
+
+class Debugging(object):
+    """
+    Outputs pretty debugging details to the terminal.
+    """
+    def __init__(self):
+        self.verbose_level = 0
+
+        # Colours for stdout
+        self.error = '\033[91m'
+        self.success = '\033[92m'
+        self.warning = '\033[93m'
+        self.action = '\033[93m'
+        self.debug = '\033[96m'
+        self.normal = '\033[0m'
+
+    def stdout(self, msg, colour_code='\033[0m', verbosity=0):
+        # msg           String containing message for stdout.
+        # color         stdout code (e.g. '\033[92m')
+        # verbosity     0 = Always shown
+        #               1 = -v flag
+        #               2 = -vv flag
+
+        if self.verbose_level >= verbosity:
+            # Only colourise output if running in a real terminal.
+            if sys.stdout.isatty():
+                print(colour_code + msg + '\033[0m')
+            else:
+                print(msg)
 
 
 def get_device_type(device_type):

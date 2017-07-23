@@ -30,6 +30,7 @@ import signal
 import gettext
 import time
 import threading
+import argparse
 from setproctitle import setproctitle
 from subprocess import Popen as background_process
 from subprocess import check_output
@@ -72,6 +73,7 @@ from gi.repository import Gtk, Gdk, WebKit2
 
 setproctitle("polychromatic-controller")
 version = "0.4.0"
+version_dev = False
 
 path = pref.Paths()
 path.data_source = path.get_data_source(__file__)
@@ -83,14 +85,22 @@ daemon_config_path = os.path.join(os.path.expanduser('~'), ".local/share/openraz
 #   * shutil
 #   * grp
 
+# Is this application installed in /usr/share or ran from repository?
+if os.path.exists(os.path.join(path.data_source + "/../install/update.sh")):
+    version_dev = True
+    version = version[:-1] + str(int(version[-1:]) + 1) + "-dev"
+else:
+    version_dev = False
+
+
 class Translations(object):
     def __init__(self):
         # Use relative translations if available.
         if os.path.exists(os.path.join(path.data_source, '../locale/')):
-            stdout.vprint("Using relative path for translations.")
+            dbg.stdout("Using relative path for translations.", dbg.debug, 1)
             self.locale_path = os.path.join(path.data_source, '../locale/')
         else:
-            stdout.vprint("Using '/usr/share/locale/' or falling back to 'en_US' for translations.")
+            dbg.stdout("Using '/usr/share/locale/' or falling back to 'en_US' for translations.", dbg.debug, 1)
             self.locale_path = '/usr/share/locale/'
 
         # Initialise i18n translations
@@ -129,7 +139,7 @@ class AppView(WebKit2.WebView):
         self.connect("load-changed", self.load_changed_cb)
         self.connect("notify::title", self.title_changed_cb)
         self.connect("context-menu", self.context_menu_cb)
-        stdout.vvprint("Initialised WebKit2.")
+        dbg.stdout("Initialised WebKit2.", dbg.debug, 2)
 
         try:
             # Allows Keyboard SVGs to load.
@@ -154,7 +164,7 @@ class AppView(WebKit2.WebView):
             exit(1)
 
         # Enable web inspector for debugging
-        if stdout.inspector:
+        if dbg.verbose_level == 3:
             self.get_settings().set_property("enable-developer-extras", True)
             inspector = self.get_inspector()
             inspector.show()
@@ -169,7 +179,7 @@ class AppView(WebKit2.WebView):
         """
         title = self.get_title()
         if title not in ["null", None, "", " "]:
-            stdout.vvprint("** Command: " + title)
+            dbg.stdout("** Command: " + title, dbg.debug, 2)
             app.process_command(title)
 
     def load_changed_cb(self, view, frame):
@@ -183,7 +193,7 @@ class AppView(WebKit2.WebView):
             return
         if not self.is_loading():
             app.current_page = page
-            stdout.vvprint(" ** Page Changed: " + page)
+            dbg.stdout(" ** Page Changed: " + page, dbg.debug, 2)
             app.page_loaded()
 
     def context_menu_cb(self, view, menu, event, htr, user_data=None):
@@ -203,7 +213,7 @@ class AppView(WebKit2.WebView):
                 self.wrapper = "$(document).ready(function(){{{0}}});"
             self.lines = []
             self.webkit = webkit
-            stdout.vvprint(' => JSExec: Ready.')
+            dbg.stdout(' => JSExec: Ready.', dbg.debug, 2)
 
             if script is not None:
                 self.add(script)
@@ -218,7 +228,7 @@ class AppView(WebKit2.WebView):
             :rtype: JavaScriptExecutor
             """
             line = str(line)
-            stdout.vvprint(' => JSExec: Line added: ' + line)
+            dbg.stdout(' => JSExec: Line added: ' + line, dbg.debug, 2)
 
             if line.endswith(';'):
                 self.lines.append(line)
@@ -232,7 +242,7 @@ class AppView(WebKit2.WebView):
             Runs the collection of commands.
             """
             payload = str(self)
-            stdout.vvprint(' => JSExec: Pushed to page.')
+            dbg.stdout(' => JSExec: Pushed to page.', dbg.debug, 2)
             self.webkit.run_javascript(payload)
 
         def __lshift__(self, other):
@@ -261,12 +271,6 @@ class Controller(object):
         except:
             self.kb_layout = "gb"
 
-        # Is this application installed in /usr/share or ran from repository?
-        if os.path.exists(os.path.join(path.data_source + "/../install/update.sh")):
-            self.app_installed = False
-        else:
-            self.app_installed = True
-
     def start(self):
         """
         Assembles and runs the application.
@@ -283,10 +287,10 @@ class Controller(object):
         self.window = w
         try:
             w.set_icon_from_file(os.path.join(path.data_source, "../install/hicolor/16x16/apps/polychromatic-controller.svg"))
-            stdout.vvprint("Window icon set from relative path.")
+            dbg.stdout("Window icon set from relative path.", dbg.success, 2)
         except:
             w.set_icon_from_file("/usr/share/icons/hicolor/16x16/apps/polychromatic-controller.svg")
-            stdout.vvprint("Window icon set from /usr/share/ path.")
+            dbg.stdout("Window icon set from /usr/share/ path.", dbg.success, 2)
 
         # Add elements to window
         sw = Gtk.ScrolledWindow()
@@ -307,7 +311,7 @@ class Controller(object):
         else:
             self.webkit.set_zoom_level(1)
             w.set_size_request(1000, 600)
-        stdout.vprint("Program Scale Set: " + str(scale))
+        dbg.stdout("Set scale to: " + str(scale), dbg.success, 1)
 
         # Build an auto expanding box and add our scrolled window
         b = Gtk.VBox(homogeneous=False, spacing=0)
@@ -315,7 +319,7 @@ class Controller(object):
         w.add(b)
         w.connect("delete-event", Gtk.main_quit)
         w.show_all()
-        stdout.vvprint("Initialised Window.")
+        dbg.stdout("Initialised Window.", dbg.success, 1)
 
         # Kills process when CTRL+C'd.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -330,7 +334,7 @@ class Controller(object):
         Starts the main application's operations.
         """
         # Prepare devices
-        stdout.vprint("Loading Daemon...")
+        dbg.stdout("Loading daemon...", dbg.action, 1)
 
         if daemon_missing:
             self.show_error_page(
@@ -415,7 +419,7 @@ class Controller(object):
         self.devman.sync_effects = False
 
         # Initialise Profiles
-        stdout.vprint("Loading Application Profiles...")
+        dbg.stdout("Loading application profiles...", dbg.action, 1)
         self.profiles = prof.AppProfiles()
         self.profiles.selected_uuid = None
         self.profiles.previous_uuid = None
@@ -432,7 +436,7 @@ class Controller(object):
         # Start watching devicestate index for changes.
         common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
 
-        stdout.vprint("Application Ready.\n")
+        dbg.stdout("Application Ready.\n", dbg.action, 2)
         self.show_menu("menu")
 
     def update_page(self, element, function, parm1=None, parm2=None):
@@ -441,15 +445,15 @@ class Controller(object):
         """
         if parm1 and parm2:
             buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "', '" + parm2.replace("'", '\\\'') + "')"
-            stdout.vvprint(' => Push JS: ' + buffer)
+            dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
             self.webkit.run_javascript(buffer)
         if parm1:
             buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "')"
-            stdout.vvprint(' => Push JS: ' + buffer)
+            dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
             self.webkit.run_javascript(buffer)
         else:
             buffer = '$("' + element + '").' + function + '()'
-            stdout.vvprint(' => Push JS: ' + buffer)
+            dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
             self.webkit.run_javascript(buffer)
 
     def show_menu(self, page):
@@ -476,17 +480,17 @@ class Controller(object):
             "error": PageLoaded.error
         }
 
-        stdout.vvprint(" ** Running post-actions for page: '" + self.current_page + "'...")
+        dbg.stdout(" ** Running post-actions for page: '" + self.current_page + "'...", dbg.debug, 2)
         try:
             page_bindings[self.current_page](self)
-        except Exception:
-            stdout.vvprint(" ** No post-actions to run!")
+        except KeyError:
+            dbg.stdout(" ** No post-actions to run!", dbg.error, 2)
 
     def refresh_profiles_list(self):
         """
         Reloads the key light profiles created by the user.
         """
-        stdout.vvprint("Refreshing profile list...")
+        dbg.stdout("Refreshing profile list...", dbg.debug, 2)
         self.update_page('#app-profiles', 'html', ' ')
         uuid_in_use = pref.get_device_state(self.active_device.serial, "main", "profile")
 
@@ -732,7 +736,7 @@ class Controller(object):
             self.update_page("#colour-editor", "fadeOut", "fast")
             self.populate_colours_table()
 
-            stdout.vprint("Saving colour '{1}' (id: {0}) with RGB {2}, {3}, {4} ...".format(uuid, name, red, green, blue))
+            dbg.stdout("Saving colour '{1}' (id: {0}) with RGB {2}, {3}, {4} ...".format(uuid, name, red, green, blue), dbg.action, 1)
             try:
                 colour_index = pref.load_file(path.colours)
                 colour_index[uuid] = {}
@@ -751,7 +755,7 @@ class Controller(object):
                 colour_id   = UUID from index
             """
             uuid = command.split("?")[1]
-            stdout.vprint("Deleting colour ID: {0} ...".format(uuid))
+            dbg.stdout("Deleting colour ID: {0} ...".format(uuid), dbg.action, 1)
             try:
                 colour_index = pref.load_file(path.colours)
                 colour_index.pop(uuid)
@@ -763,7 +767,7 @@ class Controller(object):
                 print("Deleting colour failed! Exception: " + str(e))
 
         elif command == 'pref-colour-reset':
-            stdout.vprint("Resetting colour configuration...")
+            dbg.stdout("Resetting colour configuration...", dbg.action, 1)
             pref.reset_config(path.colours)
             self.populate_colours_table()
             self.update_page("#colour-editor", "fadeOut", "fast")
@@ -1028,7 +1032,7 @@ class Controller(object):
 
                 # Large SVGs cause severe graphical glitches. Especially LibreOffice.
                 if os.stat(icon_path).st_size > 450000 or icon_path.find("libreoffice") != -1:
-                    stdout.vprint("Skipping large SVG: " + icon_path)
+                    dbg.stdout("Skipping large SVG: " + icon_path, dbg.action, 1)
                     icon_path = unknown_icon_path
 
                 append_item(str(unique_id), app_name, icon_path)
@@ -1100,7 +1104,7 @@ class Controller(object):
             group = command.split('?')[1]
             item = command.split('?')[2]
             value = command.split('?')[3]
-            stdout.vprint("Writing to razer.conf: [{0}] -> {1} = {2}".format(group, item, value))
+            dbg.stdout("Writing to razer.conf: [{0}] -> {1} = {2}".format(group, item, value), dbg.action, 1)
             self.daemon_config[group][item] = value
             with open(self.config_path, 'w') as f:
                 self.daemon_config.write(f)
@@ -1153,7 +1157,7 @@ class Controller(object):
                 print("Could not locate device with serial: " + selected_serial)
                 return
 
-            stdout.vprint("Selected: {0} [{1}]".format(selected_device.name, selected_serial))
+            dbg.stdout("Selected: {0} [{1}]".format(selected_device.name, selected_serial), dbg.debug, 1)
 
             # Clear any options from previous devices
             self.update_page(".fx-options", "html", " ")
@@ -1172,22 +1176,22 @@ class Controller(object):
         Shows a graphical error message to the page.
         """
         self.webkit.run_javascript("showWarning('" + human_text.replace("'", '"') + "')")
-        stdout.error(human_text)
-        stdout.error('Exception: ' + str(exception))
+        dbg.stdout(human_text, self.error, 0)
+        dbg.stdout("Exception: " + str(exception), self.error, 0)
 
     def get_devices(self):
         """
         Refreshes the currently connected devices, retrieved via the daemon.
         """
-        stdout.vprint("Gathering Devices...")
+        dbg.stdout("Gathering devices...", dbg.action, 1)
         found_devices = []
         for device in self.devman.devices:
-            stdout.vprint(" -- Found: " + str(device))
+            dbg.stdout(" -- Found: " + str(device), dbg.debug, 1)
             found_devices.append(device)
 
         # Show an error if no devices were returned by the daemon.
         if len(found_devices) == 0:
-            stdout.vprint("WARN: Daemon did not return any devices.")
+            dbg.stdout("WARN: Daemon did not return any devices.", dbg.warning, 1)
 
             # Scan 'lsusb' in case device is incompatible with daemon.
             import subprocess
@@ -1382,7 +1386,7 @@ class Controller(object):
         """
         Refreshes the page and only shows options that are supported by the current "active" device.
         """
-        stdout.vprint("\nSet active device: " + self.active_device.name)
+        dbg.stdout("\nSet active device: " + self.active_device.name, dbg.success, 1)
 
         # Gather device information
         device_name = str(self.active_device.name)
@@ -1519,15 +1523,15 @@ class Controller(object):
             self.update_page(".brightness-container", "hide")
 
             if self.active_device.has("brightness"):
-                stdout.vprint("Device supports 'brightness'")
+                dbg.stdout("Device supports 'brightness'", dbg.debug, 1)
                 self.update_page("#brightness-normal", "show")
 
             if self.active_device.has("lighting_logo_brightness"):
-                stdout.vprint("Device supports 'lighting_logo_brightness'")
+                dbg.stdout("Device supports 'lighting_logo_brightness'", dbg.debug, 1)
                 self.update_page("#brightness-logo", "show")
 
             if self.active_device.has("lighting_scroll_brightness"):
-                stdout.vprint("Device supports 'lighting_scroll_brightness'")
+                dbg.stdout("Device supports 'lighting_scroll_brightness'", dbg.debug, 1)
                 self.update_page("#brightness-scroll", "show")
         else:
             self.update_page("#fx-brightness", "hide")
@@ -1538,15 +1542,15 @@ class Controller(object):
             self.update_page(".brightness-container", "hide")
 
             if self.active_device.has("lighting_backlight_active"):
-                stdout.vprint("Device supports 'lighting_backlight_active'")
+                dbg.stdout("Device supports 'lighting_backlight_active'", dbg.debug, 1)
                 self.update_page("#brightness-backlight-toggle", "show")
 
             if self.active_device.has("lighting_logo_active"):
-                stdout.vprint("Device supports 'lighting_logo_active'")
+                dbg.stdout("Device supports 'lighting_logo_active'", dbg.debug, 1)
                 self.update_page("#brightness-logo-toggle", "show")
 
             if self.active_device.has("lighting_scroll_active"):
-                stdout.vprint("Device supports 'lighting_scroll_active'")
+                dbg.stdout("Device supports 'lighting_scroll_active'", dbg.debug, 1)
                 self.update_page("#brightness-scroll-toggle", "show")
 
         # Mouse DPI
@@ -1988,7 +1992,7 @@ class Controller(object):
             try:
                 img_path = device.razer_urls.get(direction)
             except:
-                stdout.vprint("Daemon does not have a '{0}' image for '{1}'".format(direction, device.name))
+                dbg.stdout("Daemon does not have a '{0}' image for '{1}'".format(direction, device.name), dbg.error, 1)
                 image = "icon"
 
         if image == "icon":
@@ -2025,7 +2029,7 @@ class Controller(object):
                 html_buffer += "</div></a>"
 
             except Exception:
-                stdout.error("Invalid colour entry: {0}".format(uuid))
+                dbg.stdout("Invalid colour entry: {0}".format(uuid), dbg.action, 0)
                 continue
 
         if get_html_only:
@@ -2034,7 +2038,7 @@ class Controller(object):
             self.update_page("#colour-table", "html", html_buffer)
 
     def device_state_changed(self):
-        stdout.vprint("Device state changed. Refreshing interface.")
+        dbg.stdout("Device state changed. Refreshing interface.", dbg.action, 1)
         self.update_device_active_options()
 
 
@@ -2175,13 +2179,7 @@ class PageLoaded():
             html = '<div id="tab-about-page" class="tab-content">'
             html += '<img id="about-logo" src="../img/logo.svg"/> <h1 id="about-logo-text">polychromatic</h1>'
 
-            # Determine version text to display.
-            user_version = version
-            if not appobj.app_installed:
-                # When running from 'master' directly.
-                user_version = version[:-1] + str(int(version[-1:]) + 1) + "-dev"
-
-            html += UIControls.print_about_label(_("Version:"), user_version)
+            html += UIControls.print_about_label(_("Version:"), version)
             html += UIControls.print_about_label(_("Configuration:"), pref.version)
 
             # For Apt, check for the source file to determine builds.
@@ -2199,7 +2197,7 @@ class PageLoaded():
                     html += '<div class="about-update-status"><span class="fa fa-check-circle"></span> {0}</div>'.format(
                         _("You have opted for development packages."))
 
-            if not appobj.app_installed or version.endswith("-dev"):
+            if version_dev or version.endswith("-dev"):
                 html += UIControls.print_button(_("Check for Updates"), "update-button", "update-check")
 
             html += UIControls.print_button(_("View on GitHub"), "project-button", "open?https://github.com/lah7/polychromatic", "fa-github")
@@ -2753,74 +2751,41 @@ class Dialogues(object):
             return None
 
 
-class Terminal(object):
-    """
-    Various functions for pretty printing to stdout for debugging.
-    """
-    def __init__(self):
-        """
-        Process parameters (arguments) passed via the terminal.
-        """
-        self.be_verbose = False
-        self.be_very_verbose = False
-        self.inspector = False
+def parse_parameters():
+    parser = argparse.ArgumentParser(add_help=False)
+    parser._optionals.title = _("Optional arguments")
+    parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
+    parser.add_argument("--version", help=_("Print progran version and exit"), action="store_true")
+    parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
+    parser.add_argument("-vv", "-d", "--debug", help=_("Be very verbose (for debugging)"), action="store_true")
+    parser.add_argument("--print-device-info", help=_("Gets a list of capabilities for a device"), action="store_true")
 
-        for arg in sys.argv[1:]:
-            if arg in ["--help", "-h"]:
-                self.show_help()
+    # For front-end debugging (developer tools)
+    parser.add_argument("--inspect", help=argparse.SUPPRESS, action="store_true")
 
-            elif arg in ["--verbose", "-v"]:
-                self.be_verbose = True
-                pref.verbose = True
-                self.vprint("Verbose enabled.")
+    args = parser.parse_args()
 
-            elif arg in ["-vv", "--debug"]:
-                self.be_verbose = True
-                self.be_very_verbose = True
-                pref.verbose = True
-                self.vvprint("Debug verbose enabled.")
-
-            elif arg == "--print-device-info":
-                self.print_device_capability_info()
-
-            elif arg == "--inspect":
-                self.inspector = True
-
-            else:
-                print("Ignoring unrecognised parameters:" + arg)
-
-    def show_help(self):
-        print("Usage: polychromatic-controller [parameters]\n")
-        #     | Command                      | Help Text                                     |
-        print("  -h, --help                   Show this help text.")
-        print("  -v, --verbose                Be verbose to stdout.")
-        print("  -vv, --debug                 Be very verbose. For debugging only.")
-        print("  --print-device-info          Output useful devices about the capabilities")
-        print("                               of a device.")
-        print("")
+    if args.version:
+        print("Polychromatic v" + version)
         exit(0)
 
-    def error(self, text):
-        if sys.stdout.isatty():
-            print('\033[91m' + text + '\033[0m')
-        else:
-            print(text)
+    if args.verbose:
+        dbg.verbose_level = 1
+        dbg.stdout(_("Verbose enabled"), dbg.debug, 1)
 
-    def vprint(self, text):
-        if self.be_verbose:
-            if sys.stdout.isatty():
-                print('\033[93m' + text + '\033[0m')
-            else:
-                print(text)
+    if args.debug:
+        dbg.verbose_level = 2
+        dbg.stdout(_("Debug verbose enabled"), dbg.debug, 2)
 
-    def vvprint(self, text):
-        if self.be_very_verbose:
-            if sys.stdout.isatty():
-                print('\033[94m' + text + '\033[0m')
-            else:
-                print(text)
+    if args.print_device_info:
+        CommandLineOnly.print_device_capability_info()
 
-    def print_device_capability_info(self):
+    if args.inspect:
+        dbg.verbose_level = 3
+
+
+class CommandLineOnly():
+    def print_device_capability_info():
         #     |                                                                               |
         print("===============================================================================")
         print("Please include this data when reporting device-specific issues on GitHub.")
@@ -2851,6 +2816,9 @@ class Terminal(object):
         try:
             no = int(sys.stdin.readline())
             print("\nSelected: " + devices[no].name)
+        except KeyboardInterrupt:
+            print("")
+            exit(0)
         except Exception:
             print("Invalid choice, or device not found.")
             exit(1)
@@ -3001,7 +2969,8 @@ def restart_daemon_service():
 tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
 
 if __name__ == "__main__":
-    stdout = Terminal()
+    dbg = common.Debugging()
     trans = Translations()
+    parse_parameters()
     app = Controller()
     app.start()
