@@ -88,32 +88,21 @@ If you later decide to revert back to the stable builds:
     sudo apt update
     sudo apt install polychromatic
 
-#### ![Debian](.readme/debian.png) Debian 8+
+#### ![Debian](.readme/debian.png) Debian
 
-**WebKit2 Dependency**
+Packages built for Ubuntu are also compatible with Debian. You can add the repository and signing key as follows:
 
- * Debian 8 "Jessie" provides an old version of `gir1.2-webkit2-4.0` which is incompatible with Polychromatic.
- * Please enable `jessie-backports` and update `gir1.2-webkit2-4.0` and its dependencies.
-
-Packages built for Ubuntu are also compatible with Debian.
-
-Add this line to your `/etc/apt/sources.list`:
-
-    deb http://ppa.launchpad.net/lah7/polychromatic/ubuntu xenial main
+```
+echo "deb http://ppa.launchpad.net/lah7/polychromatic/ubuntu xenial main" | sudo tee -a /etc/apt/sources.list.d/polychromatic.list
+sudo apt-key adv --recv-key --keyserver keyserver.ubuntu.com 6CFDA3EBE08FDDE9
+sudo apt update
+sudo apt install polychromatic
+```
 
 (Or `polychromatic-daily` for development builds)
 
-Then add the public key to verify the packages:
-
-    gpg --keyserver hkp://keyserver.ubuntu.com:11371 --recv-keys 6CFDA3EBE08FDDE9
-    gpg --armor --export 6CFDA3EBE08FDDE9 | sudo apt-key add -
-
-Followed by updating your Apt sources:
-
-    sudo apt-get update
-
-Otherwise, standalone packages are available from the [releases page](https://github.com/lah7/polychromatic/releases/latest/), or
-by following a manual installation below.
+Standalone packages are available from the [releases page](https://github.com/lah7/polychromatic/releases/latest/),
+or by following a manual installation below.
 
 
 #### ![Arch](.readme/arch.png) Arch Linux
