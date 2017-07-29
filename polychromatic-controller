@@ -134,7 +134,10 @@ class AppView(WebKit2.WebView):
         try:
             # Allows Keyboard SVGs to load.
             self.get_settings().set_allow_file_access_from_file_urls(True)
-            self.get_settings().set_allow_universal_access_from_file_urls(True)
+            try:
+                self.get_settings().set_allow_universal_access_from_file_urls(True)
+            except AttributeError:
+                print("Ignoring set_allow_universal_access_from_file_urls because the WebKit2GTK version is <2.14.")
 
             # Print console log errors to stdout
             self.get_settings().set_enable_write_console_messages_to_stdout(True)
