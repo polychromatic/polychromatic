@@ -146,12 +146,12 @@ class AppView(WebKit2.WebView):
             self.get_settings().set_enable_spatial_navigation(True)
             self.get_settings().set_enable_caret_browsing(True)
 
-        except AttributeError:
-            print("WebKit2GTK failed to initialise. Please try upgrading this dependency.\n")
-            print("Your distribution may be using an older version of this package.")
-            print("In Debian/Ubuntu, this package is provided in 'gir1.2-webkit-4.0'\n")
-            print("At least v2.12 is required for this software to function.")
-            sys.exit(1)
+        except AttributeError as e:
+            stdout.error("WebKit2GTK failed to initialise!")
+            print("Your distribution may be using an older version of this library.")
+            print("For example, Debian/Ubuntu provides this in 'gir1.2-webkit-4.0'\n")
+            stdout.error("The exception was: {0}\n".format(str(e)))
+            exit(1)
 
         # Enable web inspector for debugging
         if stdout.inspector:
