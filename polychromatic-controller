@@ -149,8 +149,9 @@ class AppView(WebKit2.WebView):
             except AttributeError:
                 print("Ignoring set_allow_universal_access_from_file_urls because the WebKit2GTK version is <2.14.")
 
-            # Print console log errors to stdout
-            self.get_settings().set_enable_write_console_messages_to_stdout(True)
+            # Print console log errors to stdout if verbose
+            if dbg.verbose_level >= 1:
+                self.get_settings().set_enable_write_console_messages_to_stdout(True)
 
             # Basic accessibility - keyboard navigation
             self.get_settings().set_enable_spatial_navigation(True)
