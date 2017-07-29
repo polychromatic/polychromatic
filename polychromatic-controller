@@ -1191,8 +1191,11 @@ class Controller(object):
 
             # Scan 'lsusb' in case device is incompatible with daemon.
             import subprocess
-            lsusb = str(subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0])
-            lsusb.find("ID 1532")
+            try:
+                lsusb = str(subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0])
+                lsusb.find("ID 1532")
+            except FileNotFoundError:
+                lsusb = None
 
             # Is the user in the 'plugdev' group?
             import grp
