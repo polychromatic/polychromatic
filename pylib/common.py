@@ -435,7 +435,8 @@ def devicestate_monitor_thread(callback_function, file_path):
     """
     def _init_devicestate_file():
         if not os.path.exists(file_path):
-            open(file_path, "a").close()
+            with open(file_path, "a") as f:
+                f.write("{}")
 
     while True:
         try:
