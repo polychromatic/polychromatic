@@ -2292,7 +2292,7 @@ class PageLoaded():
             html += '<img id="gtk-preview" src="" />'
             html += '</div>'
 
-            # Icons using GTK names
+            # Icons using custom paths.
             html += UIControls.print_radio(_("Custom Path"), "tray-custom-icon", "tray_icon", "type", "custom", False, None,
                                             "set_pref_str('tray_icon', 'value', $('#tray-icon-path').val()); cmd('restart-tray');")
             html += '<div id="tray-custom-suboptions" class="tray-suboptions">'

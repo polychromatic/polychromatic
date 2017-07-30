@@ -12,7 +12,7 @@ import json
 import shutil
 import time
 
-version = 4
+version = 5
 verbose = False
 
 # For default preferences, please see:
@@ -254,6 +254,7 @@ def upgrade_old_pref(config_version):
     Updates the configuration from previous revisions.
     """
     print(" ** Upgrading configuration from v{0} to v{1}...".format(config_version, version))
+
     if config_version < 3:
         # *** "chroma_editor" group now "editor" ***
         data = load_file(path.preferences, True)
@@ -317,6 +318,22 @@ def upgrade_old_pref(config_version):
 
         # Delete index file as no longer needed.
         os.remove(path.old_profiles)
+
+    if config_version < 5:
+        # Ensure preferences.json is clean.
+        data = load_file(path.preferences, True)
+        for key in ["activate_on_save", "live_switch", "live_preview"]:
+            try:
+                value = data["editor"][key]
+                if type(value) == str:
+                    if value in ['true', 'True']:
+                        data["editor"][key] = True
+                    else:
+                        data["editor"][key] = False
+            except Exception:
+                pass
+
+        save_file(path.preferences, data)
 
     # Ensure that new version number is written.
     pref_data = load_file(path.preferences, True)
