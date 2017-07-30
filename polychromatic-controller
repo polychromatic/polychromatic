@@ -2269,7 +2269,7 @@ class PageLoaded():
                 icon_info = icon_index[uuid]["info"]
                 onclick_cmd = "cmd('select-tray-icon-uuid?{0}'); $('.tray-uuid').removeClass('selected'); $('#tray-uuid-{0}').addClass('selected');".format(uuid)
                 return "<button id='tray-uuid-{0}' class='tray-uuid btn {3}' onclick=\"{1}\"><img src='{2}'/></button>".format(
-                uuid, onclick_cmd, icon_path, "selected" if uuid == icon_type else "")
+                uuid, onclick_cmd, icon_path, "selected" if uuid == icon_value else "")
 
             icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
             icons = sorted(list(icon_index.keys()))
