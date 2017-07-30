@@ -66,26 +66,6 @@ session_storage = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tr
 GTK-based tray applet to control devices from the user's desktop environment.
 """
 
-class Translations():
-    def __init__(self):
-        """
-        Determine the paths where the locales are stored.
-        """
-        whereami = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-
-        if os.path.exists(os.path.join(whereami, 'locale/')):
-            locale_path = os.path.join(whereami, 'locale/')
-            dbg.stdout("Using relative path for translations.", dbg.debug, 1)
-        else:
-            locale_path = '/usr/share/locale/'
-            dbg.stdout("Using '/usr/share/locale/' or falling back to 'en_US' for translations.", dbg.debug, 1)
-
-        # Initialise i18n translations
-        global _
-        t = gettext.translation('polychromatic-tray-applet', localedir=locale_path, fallback=True)
-        _ = t.gettext
-
-
 # Functions for populating the indicator menus.
 def create_menu_item(label, enabled, function=None, function_params=None, icon_path=None):
     """
@@ -1013,10 +993,12 @@ class Callback():
 
 
 def parse_parameters():
+    global _
     parser = argparse.ArgumentParser(add_help=False)
     parser._optionals.title = _("Optional arguments")
     parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
+    parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
 
     args = parser.parse_args()
 
@@ -1024,6 +1006,8 @@ def parse_parameters():
         dbg.verbose_level = 1
         dbg.stdout(_("Verbose enabled"), dbg.debug, 1)
 
+    if args.locale:
+        _ = common.setup_translations(__file__, "polychromatic-tray-applet", args.locale)
 
 def restart_daemon_service():
     from subprocess import check_output
@@ -1105,8 +1089,8 @@ if __name__ == "__main__":
     f.write(str(os.getpid()))
     f.close()
 
+    _ = common.setup_translations(__file__, "polychromatic-tray-applet")
     dbg = common.Debugging()
-    trans = Translations()
     parse_parameters()
     cb = Callback()
     indicator = AppIndicator()

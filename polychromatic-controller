@@ -94,20 +94,6 @@ else:
 
 
 class Translations(object):
-    def __init__(self):
-        # Use relative translations if available.
-        if os.path.exists(os.path.join(path.data_source, '../locale/')):
-            dbg.stdout("Using relative path for translations.", dbg.debug, 1)
-            self.locale_path = os.path.join(path.data_source, '../locale/')
-        else:
-            dbg.stdout("Using '/usr/share/locale/' or falling back to 'en_US' for translations.", dbg.debug, 1)
-            self.locale_path = '/usr/share/locale/'
-
-        # Initialise i18n translations
-        global _
-        t = gettext.translation("polychromatic-controller", localedir=self.locale_path, fallback=True)
-        _ = t.gettext
-
     def push(self, element, string, append=False):
         """
         Pushes a translatible string to the page.
@@ -2753,6 +2739,7 @@ class Dialogues(object):
 
 
 def parse_parameters():
+    global _
     parser = argparse.ArgumentParser(add_help=False)
     parser._optionals.title = _("Optional arguments")
     parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
@@ -2760,6 +2747,7 @@ def parse_parameters():
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
     parser.add_argument("-vv", "-d", "--debug", help=_("Be very verbose (for debugging)"), action="store_true")
     parser.add_argument("--print-device-info", help=_("Gets a list of capabilities for a device"), action="store_true")
+    parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
 
     # For front-end debugging (developer tools)
     parser.add_argument("--inspect", help=argparse.SUPPRESS, action="store_true")
@@ -2784,6 +2772,8 @@ def parse_parameters():
     if args.inspect:
         dbg.verbose_level = 3
 
+    if args.locale:
+        _ = common.setup_translations(__file__, "polychromatic-controller", args.locale)
 
 class CommandLineOnly():
     def print_device_capability_info():
@@ -2970,8 +2960,11 @@ def restart_daemon_service():
 tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
 
 if __name__ == "__main__":
-    dbg = common.Debugging()
+    # Legacy
     trans = Translations()
+
+    _ = common.setup_translations(__file__, "polychromatic-controller")
+    dbg = common.Debugging()
     parse_parameters()
     app = Controller()
     app.start()

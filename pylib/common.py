@@ -17,18 +17,6 @@ from threading import Thread
 # (excludes Ultimate which supports shades of green)
 fixed_coloured_devices = ["Taipan"]
 
-# Use i18n translations for some strings in this module.
-whereami = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-
-if os.path.exists(os.path.join(whereami, '../locale/')):
-    locale_path = os.path.join(whereami, '../locale/')
-else:
-    locale_path = '/usr/share/locale/'
-
-global _
-t = gettext.translation('polychromatic-common', localedir=locale_path, fallback=True)
-_ = t.gettext
-
 
 class Debugging(object):
     """
@@ -58,6 +46,33 @@ class Debugging(object):
                 print(colour_code + msg + '\033[0m')
             else:
                 print(msg)
+
+
+def setup_translations(bin_path, i18n_app, locale_override=None):
+    """
+    Initalises translations for the application.
+
+    bin_path = __file__ of the application that is being executed.
+    i18n_app = Name of the application's locales.
+
+    Returns
+    """
+    whereami = os.path.abspath(os.path.join(os.path.dirname(bin_path)))
+
+    if os.path.exists(os.path.join(whereami, 'locale/')):
+        # Using relative path
+        locale_path = os.path.join(whereami, 'locale/')
+    else:
+        # Using system path or en_US if none found
+        locale_path = '/usr/share/locale/'
+
+    if locale_override:
+        t = gettext.translation(i18n_app, localedir=locale_path, fallback=True, languages=[locale_override])
+    else:
+        t = gettext.translation(i18n_app, localedir=locale_path, fallback=True)
+
+    # This is set as the app's global variable: _
+    return t.gettext
 
 
 def get_device_type(device_type):
@@ -457,3 +472,8 @@ def has_fixed_colour(device_obj):
         if device_obj.name.find(name) != -1:
             return True
     return False
+
+"""
+Module Initalization
+"""
+_ = setup_translations(__file__, "polychromatic-common")
