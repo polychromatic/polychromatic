@@ -305,22 +305,31 @@ class AppIndicator(object):
                     root.append(create_menu_item(state, False))
 
             if self.active_device.has("lighting_backlight_active"):
-                if self.active_device.fx.misc.logo.active == 1:
-                    root.append(create_menu_item(_("Backlight") + ": " + _("On"), False))
-                else:
-                    root.append(create_menu_item(_("Backlight") + ": " + _("Off"), False))
+                try:
+                    if self.active_device.fx.misc.logo.active == 1:
+                        root.append(create_menu_item(_("Backlight") + ": " + _("On"), False))
+                    else:
+                        root.append(create_menu_item(_("Backlight") + ": " + _("Off"), False))
+                except Exception as e:
+                    print("Skipping lighting_backlight_active due to exception:\n" + str(e))
 
             if self.active_device.has("lighting_logo_active"):
-                if self.active_device.fx.misc.logo.active == 1:
-                    root.append(create_menu_item(_("Logo") + ": " + _("On"), False))
-                else:
-                    root.append(create_menu_item(_("Logo") + ": " + _("Off"), False))
+                try:
+                    if self.active_device.fx.misc.logo.active == 1:
+                        root.append(create_menu_item(_("Logo") + ": " + _("On"), False))
+                    else:
+                        root.append(create_menu_item(_("Logo") + ": " + _("Off"), False))
+                except Exception as e:
+                    print("Skipping lighting_logo_active due to exception:\n" + str(e))
 
             if self.active_device.has("lighting_scroll_active"):
-                if self.active_device.fx.misc.scroll_wheel.active == 1:
-                    root.append(create_menu_item(_("Scroll Wheel") + ": " + _("On"), False))
-                else:
-                    root.append(create_menu_item(_("Scroll Wheel") + ": " + _("Off"), False))
+                try:
+                    if self.active_device.fx.misc.scroll_wheel.active == 1:
+                        root.append(create_menu_item(_("Scroll Wheel") + ": " + _("On"), False))
+                    else:
+                        root.append(create_menu_item(_("Scroll Wheel") + ": " + _("Off"), False))
+                except Exception as e:
+                    print("Skipping lighting_scroll_active due to exception:\n" + str(e))
 
             root.append(create_seperator())
 
