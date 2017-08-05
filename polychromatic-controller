@@ -1163,8 +1163,8 @@ class Controller(object):
         Shows a graphical error message to the page.
         """
         self.webkit.run_javascript("showWarning('" + human_text.replace("'", '"') + "')")
-        dbg.stdout(human_text, self.error, 0)
-        dbg.stdout("Exception: " + str(exception), self.error, 0)
+        dbg.stdout(human_text, dbg.error, 0)
+        dbg.stdout("Exception: " + str(exception), dbg.error, 0)
 
     def get_devices(self):
         """
