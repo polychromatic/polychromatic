@@ -88,9 +88,10 @@ daemon_config_path = os.path.join(os.path.expanduser('~'), ".local/share/openraz
 # Is this application installed in /usr/share or ran from repository?
 if os.path.exists(os.path.join(path.data_source + "/../install/update.sh")):
     version_dev = True
-    version = version[:-1] + str(int(version[-1:]) + 1) + "-dev"
+    version = version + "-dev"
 else:
     version_dev = False
+    version = version + "-stable"
 
 
 class Translations(object):
@@ -299,6 +300,7 @@ class AppWindow(object):
         thread.start()
         Gtk.main()
 
+
 class Controller(object):
     def __init__(self):
         """
@@ -320,6 +322,7 @@ class Controller(object):
         Starts the main application's operations.
         """
         self.webkit = webkit
+        dbg.stdout("Version " + version, dbg.debug, 1)
 
         # Prepare devices
         dbg.stdout("Loading daemon...", dbg.action, 1)
