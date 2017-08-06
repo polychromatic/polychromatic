@@ -112,7 +112,7 @@ class Translations(object):
 
 
 class AppView(WebKit2.WebView):
-    def __init__(self, startpage):
+    def __init__(self):
         """
         Initialise WebKit2
         """
@@ -125,7 +125,7 @@ class AppView(WebKit2.WebView):
         self.connect("load-changed", self.load_changed_cb)
         self.connect("notify::title", self.title_changed_cb)
         self.connect("context-menu", self.context_menu_cb)
-        dbg.stdout("Initialised WebKit2.", dbg.debug, 2)
+        dbg.stdout("Initialised WebKit2.", dbg.success, 2)
 
         try:
             # Allows Keyboard SVGs to load.
@@ -157,8 +157,7 @@ class AppView(WebKit2.WebView):
             inspector.show()
 
         # Load the starting page
-        default_page = "loading"
-        self.load_uri('file://' + os.path.join(path.data_source, 'pages/' + startpage + '.html'))
+        self.load_uri("file://" + os.path.join(path.data_source, "pages/loading.html"))
 
     def title_changed_cb(self, view, frame):
         """
@@ -242,41 +241,25 @@ class AppView(WebKit2.WebView):
             return result
 
 
-class Controller(object):
-    def __init__(self):
+class AppWindow(object):
+    def run(self):
         """
-        Initialises the application.
-        """
-
-        # Set up "memory" variables
-        self.current_page = "loading"
-        self.load_lock = False
-
-        # Set up variables provided by daemon
-        try:
-            self.kb_layout = get_keyboard_layout()
-        except:
-            self.kb_layout = "gb"
-
-    def start(self):
-        """
-        Assembles and runs the application.
+        Assembles and begins running the application.
         """
         # Initalise WebKit
-        self.webkit = AppView(self.current_page)
+        self.webkit = AppView()
 
         # Create window
-        w = Gtk.Window(title="Polychromatic Controller")
-        w.set_wmclass("polychromatic-controller", "polychromatic-controller")
-        w.set_position(Gtk.WindowPosition.CENTER)
-        w.modify_bg(Gtk.StateType(0), Gdk.Color(0, 0, 0))
-        w.set_resizable(False)
-        self.window = w
+        self.window = Gtk.Window(title=_("Polychromatic Controller"))
+        self.window.set_wmclass("polychromatic-controller", "polychromatic-controller")
+        self.window.set_position(Gtk.WindowPosition.CENTER)
+        self.window.modify_bg(Gtk.StateType(0), Gdk.Color(0, 0, 0))
+
         try:
-            w.set_icon_from_file(os.path.join(path.data_source, "../install/hicolor/16x16/apps/polychromatic-controller.svg"))
+            self.window.set_icon_from_file(os.path.join(path.data_source, "../install/hicolor/16x16/apps/polychromatic-controller.svg"))
             dbg.stdout("Window icon set from relative path.", dbg.success, 2)
         except:
-            w.set_icon_from_file("/usr/share/icons/hicolor/16x16/apps/polychromatic-controller.svg")
+            self.window.set_icon_from_file("/usr/share/icons/hicolor/16x16/apps/polychromatic-controller.svg")
             dbg.stdout("Window icon set from /usr/share/ path.", dbg.success, 2)
 
         # Add elements to window
@@ -288,38 +271,56 @@ class Controller(object):
         scale = float(pref.get("editor", "scaling", 1))
         if scale == 1.5:
             self.webkit.set_zoom_level(1.5)
-            w.set_size_request(1500, 900)
+            self.window.set_size_request(1500, 900)
         elif scale == 2:
             self.webkit.set_zoom_level(2)
-            w.set_size_request(2000, 1200)
+            self.window.set_size_request(2000, 1200)
         elif scale == 2.5:
             self.webkit.set_zoom_level(2.5)
-            w.set_size_request(2500, 1500)
+            self.window.set_size_request(2500, 1500)
         else:
             self.webkit.set_zoom_level(1)
-            w.set_size_request(1000, 600)
+            self.window.set_size_request(1000, 600)
         dbg.stdout("Set scale to: " + str(scale), dbg.success, 1)
 
-        # Build an auto expanding box and add our scrolled window
+        # Build an auto expanding box and add the scrolled window
         b = Gtk.VBox(homogeneous=False, spacing=0)
         b.pack_start(sw, expand=True, fill=True, padding=0)
-        w.add(b)
-        w.connect("delete-event", Gtk.main_quit)
-        w.show_all()
+        self.window.add(b)
+        self.window.connect("delete-event", Gtk.main_quit)
+        self.window.show_all()
         dbg.stdout("Initialised Window.", dbg.success, 1)
 
         # Kills process when CTRL+C'd.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-        thread = threading.Thread(target=self.run_app, args=())
+        thread = threading.Thread(target=app.start_loading, args=([self.webkit]))
         thread.daemon = True
         thread.start()
         Gtk.main()
 
-    def run_app(self):
+class Controller(object):
+    def __init__(self):
+        """
+        Initialises variables throughout the application.
+        """
+        # Set up "memory" variables
+        self.webkit = None
+        self.current_page = "loading"
+        self.load_lock = False
+
+        # Set up variables provided by daemon
+        try:
+            self.kb_layout = get_keyboard_layout()
+        except:
+            self.kb_layout = "gb"
+
+    def start_loading(self, webkit):
         """
         Starts the main application's operations.
         """
+        self.webkit = webkit
+
         # Prepare devices
         dbg.stdout("Loading daemon...", dbg.action, 1)
 
@@ -2966,5 +2967,6 @@ if __name__ == "__main__":
     _ = common.setup_translations(__file__, "polychromatic-controller")
     dbg = common.Debugging()
     parse_parameters()
+    win = AppWindow()
     app = Controller()
-    app.start()
+    win.run()
