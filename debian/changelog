@@ -1,3 +1,14 @@
+polychromatic (0.3.10-xenial) xenial; urgency=low
+
+  * Catch more exceptions.
+  * Clean up how booleans are stored interally.
+  * Internal code refactoring, namely the preferences page.
+  * No longer depends on WebKit >=2.12
+  * Prevent exception when devicestate file didn't exist.
+  * Properly add support for starlight effect.
+
+ -- Luke Horwell <luke@ubuntu-mate.org>  Thu, 10 Aug 2017 21:24:39 +0100
+
 polychromatic (0.3.9.3-xenial) xenial; urgency=low
 
   * Daemon configuration paths updated.

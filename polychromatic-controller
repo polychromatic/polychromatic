@@ -72,7 +72,7 @@ gi.require_version("WebKit2", "4.0")
 from gi.repository import Gtk, Gdk, WebKit2
 
 setproctitle("polychromatic-controller")
-version = "0.4.0"
+version = "0.3.10"
 version_dev = False
 
 path = pref.Paths()
