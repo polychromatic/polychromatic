@@ -405,8 +405,8 @@ class AppIndicator(object):
             if os.path.exists(icon_value):
                 return icon_value
             else:
-                stdout.error("Icon missing: " + icon_value)
-                stdout.error("Using fallback!")
+                dbg.stdout("Icon missing: " + icon_value, dbg.error)
+                dbg.stdout("Using fallback!", dbg.error)
                 return icon_fallback
 
         elif icon_type == "gtk":
@@ -440,9 +440,9 @@ class AppIndicator(object):
         root.append(create_menu_item(_("Quit"), True, cb.quit))
         self.indicator.set_menu(root)
 
-        stdout.error("ERROR: " + error_reason)
+        dbg.stdout("ERROR: " + error_reason, dbg.error)
         if exception:
-            stdout.error("Exception: " + exception)
+            dbg.stdout("Exception: " + exception, dbg.error)
 
     # Builds sub-menus. Returns None if not available for current device.
     def _build_device_menu(self):
@@ -844,7 +844,7 @@ class AppIndicator(object):
             dbg.stdout("Creating colour bitmap for: " + str(colour), dbg.action, 1)
             foreground_process("convert -size 16x16 xc:{0} {1}".format(self._colour_to_hex(colour), colour_path), shell=True)
         if not os.path.exists(colour_path):
-            stdout.error("ERROR: Failed to generate bitmap for: " + str(colour))
+            dbg.stdout("ERROR: Failed to generate bitmap for: " + str(colour), dbg.error)
         return colour_path
 
     @staticmethod

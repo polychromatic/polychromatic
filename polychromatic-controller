@@ -144,10 +144,10 @@ class AppView(WebKit2.WebView):
             self.get_settings().set_enable_caret_browsing(True)
 
         except AttributeError as e:
-            stdout.error("WebKit2GTK failed to initialise!")
+            dbg.stdout("WebKit2GTK failed to initialise!", dbg.error)
             print("Your distribution may be using an older version of this library.")
             print("For example, Debian/Ubuntu provides this in 'gir1.2-webkit-4.0'\n")
-            stdout.error("The exception was: {0}\n".format(str(e)))
+            dbg.stdout("The exception was: {0}\n".format(str(e)), dbg.error)
             exit(1)
 
         # Enable web inspector for debugging
