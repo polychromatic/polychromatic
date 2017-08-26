@@ -2171,7 +2171,8 @@ class PageLoaded():
             html += '<img id="about-logo" src="../img/logo.svg"/> <h1 id="about-logo-text">polychromatic</h1>'
 
             html += UIControls.print_about_label(_("Version:"), version)
-            html += UIControls.print_about_label(_("Configuration:"), pref.version)
+            html += UIControls.print_about_label(_("Configuration:"), "v" + str(pref.version))
+            html += UIControls.print_about_label(_("Profile:"), "v" + str(prof.version))
 
             # For Apt, check for the source file to determine builds.
             distro = linux_distribution()[0]

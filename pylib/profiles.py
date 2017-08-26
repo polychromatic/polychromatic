@@ -11,6 +11,8 @@
 import os
 from shutil import copyfile
 
+version = 1
+
 try:
     # Relative copy
     import pylib.preferences as pref
