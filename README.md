@@ -2,6 +2,10 @@
 
 A front-end for customising the functionality of your Razer perpherials under GNU/Linux.
 
+[![GitHub Release](https://img.shields.io/github/release/lah7/polychromatic.svg)](https://github.com/lah7/polychromatic/releases)
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/lah7/polychromatic/blob/master/LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.5.2-blue.svg)](#)
+
 ## Features
 
 ### Controller
