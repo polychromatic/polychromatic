@@ -2636,6 +2636,10 @@ class UIControls():
     def print_page_break():
         return '<br><br>'
 
+    def append_tab(tab_id, icon_path, string, extra_class=""):
+        return '<button id="tab-{0}" class="tab {3}" onclick="switchTab(\'#tab-{0}\')"><img src="../img/{1}"/><span>{2}</span></button>'.format(
+            tab_id, icon_path, string, extra_class)
+
     class JavaScript():
         def generate_confirmation_dialog(update_page, title, message, ok_label, ok_cmd=None, ok_serious=False, cancel_label=None, cancel_cmd=None, width=None, height=None):
             dialog_uuid = "dialog-" + pref.generate_uuid()
