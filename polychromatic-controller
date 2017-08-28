@@ -69,7 +69,7 @@ import gi
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
 gi.require_version("WebKit2", "4.0")
-from gi.repository import Gtk, Gdk, WebKit2
+from gi.repository import GLib, Gtk, Gdk, WebKit2
 
 setproctitle("polychromatic-controller")
 version = "0.3.11"
@@ -160,6 +160,20 @@ class AppView(WebKit2.WebView):
         # Load the starting page
         self.load_uri("file://" + os.path.join(path.data_source, "pages/loading.html"))
 
+    def run_js(self, function):
+        """
+        Runs a JavaScript function on the page, regardless of which thread it is called from.
+        GTK+ operations must be performed on the same thread to prevent crashes.
+        """
+        GLib.idle_add(self._run_js, function)
+
+    def _run_js(self, function):
+        """
+        Runs a JavaScript function on the page when invoked from run_js()
+        """
+        self.run_javascript(function)
+        return GLib.SOURCE_REMOVE
+
     def title_changed_cb(self, view, frame):
         """
         Callback: Title changed ('commands' used for communicating to Python)
@@ -230,7 +244,7 @@ class AppView(WebKit2.WebView):
             """
             payload = str(self)
             dbg.stdout(' => JSExec: Pushed to page.', dbg.debug, 2)
-            self.webkit.run_javascript(payload)
+            self.run_javascript(payload)
 
         def __lshift__(self, other):
             self.add(other)
@@ -449,6 +463,12 @@ class Controller(object):
         dbg.stdout("Application Ready.\n", dbg.action, 2)
         self.show_menu("menu")
 
+    def run_javascript(self, function):
+        """
+        Sends a JavaScript function to the page.
+        """
+        self.webkit.run_js(function)
+
     def update_page(self, element, function, parm1=None, parm2=None):
         """
         Sends a jQuery function to the page, ensuring correctly parsed quotes.
@@ -456,15 +476,15 @@ class Controller(object):
         if parm1 and parm2:
             buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "', '" + parm2.replace("'", '\\\'') + "')"
             dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
-            self.webkit.run_javascript(buffer)
+            self.run_javascript(buffer)
         if parm1:
             buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "')"
             dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
-            self.webkit.run_javascript(buffer)
+            self.run_javascript(buffer)
         else:
             buffer = '$("' + element + '").' + function + '()'
             dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
-            self.webkit.run_javascript(buffer)
+            self.run_javascript(buffer)
 
     def show_menu(self, page):
         """
@@ -684,7 +704,7 @@ class Controller(object):
 
             # In profile editor, changing colour must 'reload' the tool.
             if self.current_page == "profile_editor":
-                self.webkit.run_javascript("set_mode('set')")
+                self.run_javascript("set_mode('set')")
 
         ## Preferences for changing colours
         elif command == 'pref-colour-new':
@@ -891,9 +911,9 @@ class Controller(object):
 
             # Send to keyboard
             uuid = command.split('profile-activate?')[1]
-            self.webkit.run_javascript('set_cursor("html","wait")')
+            self.run_javascript('set_cursor("html","wait")')
             self.profiles.send_profile_from_file(self.active_device, uuid)
-            self.webkit.run_javascript('set_cursor("html","normal")')
+            self.run_javascript('set_cursor("html","normal")')
 
             # Update UI
             data = self.profiles.get_metadata(uuid)
@@ -965,7 +985,7 @@ class Controller(object):
             self.update_page('#dialog-rename-icon', 'val', icon)
             self.update_page('#dialog-rename-name-preview', 'html', name)
             self.update_page('#dialog-rename-icon-preview', 'attr', 'src', icon)
-            self.webkit.run_javascript("rename_profile_dialog_open()")
+            self.run_javascript("rename_profile_dialog_open()")
 
         ## List application launchers to create profiles for.
         elif command == 'fetch-app-launchers':
@@ -1079,7 +1099,7 @@ class Controller(object):
 
             def fetch_failed():
                 self.update_page("#dialog-changelog-body", "html", ("Unable to fetch the changelog."))
-                self.webkit.run_javascript("dialog_open('dialog-changelog')")
+                self.run_javascript("dialog_open('dialog-changelog')")
 
             try:
                 r = requests.get('https://raw.githubusercontent.com/lah7/polychromatic/master/CHANGELOG')
@@ -1105,7 +1125,7 @@ class Controller(object):
                             self.update_page("#dialog-changelog-body", "append", "<li style='color:lime'>" + line.split('*')[1] + "</li>")
                         else:
                             self.update_page("#dialog-changelog-body", "append", "<li>" + line.split('*')[1] + "</li>")
-                self.webkit.run_javascript("dialog_open('dialog-changelog')")
+                self.run_javascript("dialog_open('dialog-changelog')")
             else:
                 fetch_failed()
                 return
@@ -1183,7 +1203,7 @@ class Controller(object):
         """
         Shows a graphical error message to the page.
         """
-        self.webkit.run_javascript("showWarning('" + human_text.replace("'", '"') + "')")
+        self.run_javascript("showWarning('" + human_text.replace("'", '"') + "')")
         dbg.stdout(human_text, dbg.error, 0)
         dbg.stdout("Exception: " + str(exception), dbg.error, 0)
 
@@ -1854,12 +1874,12 @@ class Controller(object):
             device_type = "generic"
 
         if effect == "spectrum":
-            self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "spectrum"))
+            self.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "spectrum"))
         elif effect == "wave":
-            self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "wave"))
+            self.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "wave"))
         else:
             rgba = "rgba({0},{1},{2},1)".format(str(red), str(green), str(blue))
-            self.webkit.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, rgba))
+            self.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, rgba))
 
     def show_error_page(self, severity, icon, title, message):
         """
