@@ -17,16 +17,40 @@
 */
 
 /************************
+   Colour Scheme
+*************************/
+@bg-colour: #323232;
+@text-colour: #888;
+@border-colour: #2D2D2D;    // #404040?
+@disabled-colour: #484848;
+@disabled-bg: #191919;
+@footer-colour: #121212;
+@active: #06FF00;
+@active-dark: #0DA902;
+@button-colour: #DED9CB;
+@serious: #FF2222;
+
+@spectrum1: #C500FF; // Purple
+@spectrum2: #FF8900; // Orange
+@spectrum3: #FBFF00; // Yellow
+@spectrum4: #7CFF00; // Green
+@spectrum5: #00FFD9; // Aqua
+@spectrum6: #005AFF; // Blue
+@spectrum7: #3D00FF; // Dark Blue
+
+/************************
    Global
 *************************/
 /* Fonts */
+@font-family: 'Play', 'Ubuntu', 'DejaVu Sans', 'Open Sans', sans-serif;
+
 @font-face {
     font-family: Play;
     src: url('lib/Play-Regular.ttf');
 }
 
 html, body, input, button {
-    font-family: 'Play', 'Ubuntu', 'DejaVu Sans', sans-serif;
+    font-family: @font-family;
 }
 
 /* Behave more like an application.
@@ -34,7 +58,7 @@ html, body, input, button {
 html, body {
     width: 100%;
     height: 100%;
-    background: -webkit-linear-gradient(black, #323232);
+    background: -webkit-linear-gradient(black, @bg-colour);
     -webkit-user-select: none;
     overflow: hidden;
     cursor: default;
@@ -46,7 +70,7 @@ img {
 }
 
 h1, h2, h3, h4, h5 {
-    font-family: 'Play', 'Ubuntu', 'DejaVu Sans', sans-serif;
+    font-family: @font-family;
     font-weight: lighter;
     color: lime;
     margin-top: 16px;
@@ -54,17 +78,17 @@ h1, h2, h3, h4, h5 {
 }
 
 p, a, button, table, td, tr, label, .alert {
-    font-family: 'Play', 'Ubuntu', 'DejaVu Sans', sans-serif;
-    color: #888;
+    font-family: @font-family;
+    color: @text-colour;
     font-size: small;
 }
 
 hr {
-    border-color: #565656;
+    border-color: @border-colour;
 }
 
 .btn.disabled {
-    color: #484848;
+    color: @disabled-colour;
     border-color: black;
 }
 
@@ -126,7 +150,7 @@ button {
     background-position: left -2px;
     background-size: 100%;
     font-weight: bold;
-    border-bottom: 2px solid #404040;
+    border-bottom: 2px solid @border-colour;
 
     &.is-dynamic {
         background-image: none;
@@ -172,12 +196,12 @@ button {
         &.generic {
             background-image: url('../img/header/generic.jpg');
         }
+    }
 
-        h3 {
-            padding: 0px;
-            margin: 0px;
-            margin-top: 5px;
-        }
+    h3 {
+        padding: 0px;
+        margin: 0px;
+        margin-top: 5px;
     }
 }
 
@@ -202,28 +226,28 @@ img.spectrum {
 
 @-webkit-keyframes spectrum {
     0% {
-        background-color: #C500FF;
+        background-color: @spectrum1;
     }
     14% {
-        background-color: #FF8900;
+        background-color: @spectrum2;
     }
     28% {
-        background-color: #FBFF00;
+        background-color: @spectrum3;
     }
     42% {
-        background-color: #7CFF00;
+        background-color: @spectrum4;
     }
     56% {
-        background-color: #00FFD9;
+        background-color: @spectrum5;
     }
     70% {
-        background-color: #005AFF;
+        background-color: @spectrum6;
     }
     84% {
-        background-color: #3D00FF;
+        background-color: @spectrum7;
     }
     100% {
-        background-color: #C500FF;
+        background-color: @spectrum1;
     }
 }
 
@@ -236,28 +260,28 @@ span.spectrum {
 
 @-webkit-keyframes spectrum-text {
     0% {
-        color: #C500FF;
+        color: @spectrum1;
     }
     14% {
-        color: #FF8900;
+        color: @spectrum2;
     }
     28% {
-        color: #FBFF00;
+        color: @spectrum3;
     }
     42% {
-        color: #7CFF00;
+        color: @spectrum4;
     }
     56% {
-        color: #00FFD9;
+        color: @spectrum5;
     }
     70% {
-        color: #005AFF;
+        color: @spectrum6;
     }
     84% {
-        color: #3D00FF;
+        color: @spectrum7;
     }
     100% {
-        color: #C500FF;
+        color: @spectrum1;
     }
 }
 
@@ -317,7 +341,7 @@ img.wave {
     }
 
     td, tr {
-        color: #888;
+        color: @text-colour;
     }
 
     td {
@@ -359,7 +383,7 @@ img.wave {
 }
 
 .mode-text {
-    color: #06FF00;
+    color: @active;
     font-weight: bold;
 }
 
@@ -384,7 +408,7 @@ input[type="radio"] {
     width: 100%;
     height: 32px;
     padding: 8px;
-    background-color: #121212;
+    background-color: @footer-colour;
 
     p {
         margin: 0;
@@ -579,8 +603,8 @@ input[type="radio"] {
 .btn {
     width: auto;
     height: 30px;
-    background-color: #323232;
-    color: #DED9CB;
+    background-color: @bg-colour;
+    color: @button-colour;
     display: inline-block;
     padding: 4px 16px;
     font-size: 14px;
@@ -588,49 +612,45 @@ input[type="radio"] {
     vertical-align: middle;
     text-decoration: none;
     text-align: center;
-    border: 2px solid #2D2D2D;
+    border: 2px solid @border-colour;
     -webkit-user-select: none;
     -webkit-appearance: none;
 
     &:hover {
-        color: #0DA902;
+        color: @active-dark;
     }
 
     &:active {
-        background-color: #00FF00;
-        color: #000;
+        background-color: @active;
+        color: black;
     }
 
     &.disabled {
-        background-color: #191919;
-        color: #959595;
+        background-color: @disabled-bg;
+        color: @disabled-colour;
         pointer-events: none;
     }
 
-    &:hover {
-        color: #FF9898 !important;
-    }
+    &.btn-serious {
+        color: @serious;
 
-    &:active {
-        color: white !important;
-        background-color: #FF0000;
-    }
+        &:hover {
+            color: lighten(@serious, 10%);
+        }
 
-    &:focus {
-        border-color: #800000 !important;
+        &:active {
+            color: white;
+            background-color: @serious;
+        }
+
+        &:focus {
+            border-color: darken(#800000, 10%);
+        }
     }
 
     &.active {
         background-color: green;
     }
-}
-
-.btn-dim {
-    color: #DED9CB;
-}
-
-.btn-serious {
-    color: #FF2222 !important;
 }
 
 .colour-preview {
@@ -644,7 +664,7 @@ input[type="radio"] {
     width: 24px;
     height: 24px;
     cursor: pointer;
-    border: 1px #888 solid;
+    border: 1px @text-colour solid;
     margin: 2px;
 }
 
@@ -696,7 +716,7 @@ input:checked + .slider {
 }
 
 input:focus + .slider {
-    box-shadow: 0 0 1px #00FF00;
+    box-shadow: 0 0 1px @active;
 }
 
 input:checked + .slider:before {
@@ -709,14 +729,14 @@ select {
     height: 28px;
     width: auto;
     padding: 4px;
-    background-color: #323232;
-    border: 2px solid #2D2D2D;
+    background-color: @bg-colour;
+    border: 2px solid @border-colour;
     color: lightgray;
     -webkit-appearance: none;
     background-image: url('../img/ui/dropdown.png');
     background-position: right;
     background-repeat: no-repeat;
-    color: #888;
+    color: @text-colour;
     font-size: small;
 }
 
@@ -794,7 +814,7 @@ select:focus {
 /* Input Ranges */
 input[type='range'] {
     -webkit-appearance: none;
-    background: #323232;
+    background: @bg-colour;
 }
 
 input[type='range']::-webkit-slider-thumb {
@@ -843,12 +863,12 @@ input[type='checkbox']:checked {
 }
 
 input.disabled {
-    background-color: #333333 !important;
+    background-color: @disabled-colour !important;
     pointer-events: none;
 }
 
 label.disabled {
-    color: #333333 !important;
+    color: @disabled-colour !important;
     pointer-events: none;
 }
 
@@ -859,7 +879,7 @@ label.disabled {
     background-color: black;
     color: white;
     padding: 2px;
-    border: 2px solid #2D2D2D;
+    border: 2px solid @border-colour;
     cursor: pointer;
     min-width: 200px;
     background-image: url("../img/ui/dropdown.png");
@@ -903,7 +923,7 @@ label.disabled {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #161616;
+    background-color: darken(@bg-colour, 10%);
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
@@ -916,7 +936,7 @@ label.disabled {
         display: block;
 
         &:hover {
-            background-color: #646464;
+            background-color: lighten(@bg-colour, 10%);
         }
     }
 }
@@ -1037,14 +1057,14 @@ label.disabled {
     padding-top: 2px;
     padding-bottom: 2px;
     border: 1px solid transparent;
-    color: #888;
+    color: @text-colour;
     cursor: default;
     vertical-align: middle;
     font-size: 16px;
 
     &:hover {
         opacity: 0.8;
-        background-color: #888;
+        background-color: @text-colour;
         color: white;
     }
 
@@ -1086,7 +1106,7 @@ label.disabled {
     margin: 4px;
     padding: 2px;
     border: 1px solid transparent;
-    color: #888;
+    color: @text-colour;
     font-size: 16px;
     cursor: default;
     vertical-align: middle;
@@ -1098,7 +1118,7 @@ label.disabled {
 
     &:hover {
         opacity: 0.8;
-        background-color: #888;
+        background-color: @text-colour;
         color: white;
     }
 
@@ -1129,7 +1149,7 @@ label.disabled {
     width: 102%;
     height: 32px;
     background-color: rgba(18,18,18,0.8);
-    border-bottom: 2px solid #404040;
+    border-bottom: 2px solid @bg-colour;
     margin-left: 4px;
     margin-right: 4px;
     overflow-y: none;
@@ -1147,7 +1167,7 @@ label.disabled {
         padding-right: 24px;
         vertical-align: bottom;
         border: 2px solid transparent !important;
-        border-bottom: 2px solid #404040 !important;
+        border-bottom: 2px solid @border-colour !important;
         color: white;
         -webkit-filter: grayscale(1);
         vertical-align: top;
@@ -1232,7 +1252,7 @@ label.disabled {
     bottom: 12em;
     left: 0; right: 0;
     margin: auto;
-    color: #888;
+    color: @text-colour;
     text-align: center;
     width: 400px;
     height: 1.3em;
@@ -1243,7 +1263,7 @@ label.disabled {
 *************************/
 .progress {
     position: fixed;
-    background-color: #444;
+    background-color: @disabled-bg;
     bottom: 10em;
     left: 0; right: 0;
     margin: auto;
@@ -1420,7 +1440,7 @@ label.disabled {
 }
 
 .pref-label {
-    color: #06FF00;
+    color: @active;
 }
 
 .pref-tray-preview {
@@ -1475,7 +1495,7 @@ label.disabled {
     padding-top: 2px;
     padding-bottom: 2px;
     border: 1px solid transparent;
-    color: #888;
+    color: @text-colour;
     cursor: default;
     vertical-align: middle;
     font-size: 16px;
@@ -1501,7 +1521,7 @@ label.disabled {
 
     &:hover {
         opacity: 0.8;
-        background-color: #888;
+        background-color: @text-colour;
 
         > .name,
         > .value {
