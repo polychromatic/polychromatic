@@ -1,6 +1,7 @@
 PREFIX = /usr
 DESTDIR = /
 PYTHONDIR = $(shell python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib()[4:])")
+LESSC = $(shell lessc source/data/controller.less data/pages/controller.css)
 
 all:
 	@echo "---------------------------------------------------------"

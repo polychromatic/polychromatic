@@ -3,3 +3,6 @@
 %:
 	dh $@
 
+override_dh_prep:
+	lessc source/data/controller.less data/pages/controller.css
+

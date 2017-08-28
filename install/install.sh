@@ -31,8 +31,8 @@ polyc_modules="$python_path/polychromatic"
 razer_modules="$python_path/razer/"
 locale_dir="/usr/share/locale/"
 source=$(dirname "$0")/..
-dependencies_apt="gir1.2-webkit2-4.0 python3-gi python3-setproctitle python3-requests gir1.2-appindicator3-0.1 imagemagick"
-dependencies_pacman="webkitgtk python-gobject python-setproctitle python-requests libappindicator imagemagick"
+dependencies_apt="gir1.2-webkit2-4.0 python3-gi python3-setproctitle python3-requests gir1.2-appindicator3-0.1 imagemagick node-less"
+dependencies_pacman="webkitgtk python-gobject python-setproctitle python-requests libappindicator imagemagick nodejs-less"
 
 # Pretty colours!
 function printg() {
@@ -152,6 +152,10 @@ cp "$source/install/uninstall.sh" "$target_data/uninstall-polychromatic.sh"
 # Create an autostart entry for tray applet.
 printg "Creating start-up entry in /etc/xdg/autostart/ ..."
 cp "$source/install/polychromatic-tray-applet.desktop" /etc/xdg/autostart/
+
+# Compile source files
+printg "Compiling LESS..."
+lessc "$source/data/controller.less" "$target_data/pages/controller.css"
 
 # Post installation
 printg "Updating icon cache..."

@@ -89,6 +89,27 @@ daemon_config_path = os.path.join(os.path.expanduser('~'), ".local/share/openraz
 if os.path.exists(os.path.join(path.data_source + "/../install/update.sh")):
     version_dev = True
     version = version + "-dev"
+
+    # Does the LESS exist? If not, try to compile it.
+    # For development, it's important the latest CSS is used.
+    css_path = os.path.join(path.data_source + "/pages/controller.css")
+    css_compile_cmd = "lessc source/data/controller.less data/pages/controller.css"
+    dbg = common.Debugging()
+    import shutil
+
+    if shutil.which("lessc") == None:
+        dbg.stdout("Please install 'lessc' and run the application again.", dbg.warning)
+        exit(1)
+    else:
+        dbg.stdout("Compiling LESS...", dbg.action, 1)
+        os.system(css_compile_cmd)
+        if os.path.exists(css_path):
+            dbg.stdout("Successfully compiled LESS.", dbg.success)
+        else:
+            dbg.stdout("Failed to compile LESS file! Please install 'lessc' and run:", dbg.error)
+            dbg.stdout(css_compile_cmd)
+            exit(1)
+
 else:
     version_dev = False
     version = version + "-stable"

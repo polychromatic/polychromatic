@@ -4,7 +4,8 @@ Priority: optional
 Maintainer: Luke Horwell <luke@ubuntu-mate.org>
 Build-Depends: debhelper (>= 9),
                python3,
-               python3-polib
+               python3-polib,
+               node-less
 Homepage: https://github.com/lah7/polychromatic
 
 Package: polychromatic
