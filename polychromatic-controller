@@ -1224,11 +1224,11 @@ class Controller(object):
                           _("It is possible your Razer product is not bound to the driver properly or it is not yet supported.") + \
                           '<br><br><u>' + _("Suggestions:") + '</u>' \
                           '<br>• ' + _("Use the 'modprobe' command to bind the driver to the device.") + \
-                          '<br>• <u><a onclick="cmd(\'open?https://github.com/openrazer/razer-drivers#device-support\')">' + \
+                          '<br>• <u><a onclick="cmd(\'open?https://github.com/openrazer/openrazer#device-support\')">' + \
                                 _("Check whether your device PID is listed.") + \
                            '</u></a><br><br>' + \
                            _("As this is a driver/daemon problem, please") + ' ' + \
-                           '<a onclick="cmd(\'open?https://github.com/openrazer/razer-drivers/wiki/Troubleshooting\')"><u>' + \
+                           '<a onclick="cmd(\'open?https://github.com/openrazer/openrazer/wiki/Troubleshooting\')"><u>' + \
                                 _("refer to the troubleshooting guide for further assistance.") + \
                            '</u></a>'
 
@@ -2362,11 +2362,11 @@ class PageLoaded():
             html += UIControls.print_page_break()
 
             html += UIControls.print_button(_("Website"), "daemon-website", "open?https://openrazer.github.io/", "fa-globe")
-            html += UIControls.print_button(_("Project"), "daemon-project", "open?https://github.com/openrazer/razer-drivers", "fa-github")
+            html += UIControls.print_button(_("Project"), "daemon-project", "open?https://github.com/openrazer/openrazer", "fa-github")
             html += UIControls.print_page_break()
-            html += UIControls.print_button(_("Issues"), "daemon-issues", "open?https://github.com/openrazer/razer-drivers/issues", "fa-question-circle")
-            html += UIControls.print_button(_("Troubleshooting"), "daemon-troubleshoot", "open?https://github.com/openrazer/razer-drivers/wiki/Troubleshooting", None)
-            html += UIControls.print_button(_("Device/Daemon Support"), "daemon-support", "open?https://github.com/openrazer/razer-drivers#device-support", None)
+            html += UIControls.print_button(_("Issues"), "daemon-issues", "open?https://github.com/openrazer/openrazer/issues", "fa-question-circle")
+            html += UIControls.print_button(_("Troubleshooting"), "daemon-troubleshoot", "open?https://github.com/openrazer/openrazer/wiki/Troubleshooting", None)
+            html += UIControls.print_button(_("Device/Daemon Support"), "daemon-support", "open?https://github.com/openrazer/openrazer#device-support", None)
 
             html += UIControls.print_page_break()
             html += UIControls.print_control_category(_("Logs"))

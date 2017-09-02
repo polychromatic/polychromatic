@@ -20,7 +20,7 @@ A front-end for customising the functionality of your Razer perpherials under GN
 
 ## Device Support
 
-See the [daemon's device support table](https://github.com/openrazer/razer-drivers#device-support) to check whether your device is supported by the daemon. Once it works with the daemon, it's likely to work in Polychromatic too.
+See the [daemon's device support table](https://github.com/openrazer/openrazer#device-support) to check whether your device is supported by the daemon. Once it works with the daemon, it's likely to work in Polychromatic too.
 
 However, not all newly supported devices will work straight away. These devices have known issues:
 
@@ -154,8 +154,8 @@ You can update your installation by clicking **"Check for Updates"** in the pref
 
 Polychromatic interfaces with the daemon from the [OpenRazer project](https://openrazer.github.io). These packages are required for all distributions:
 
-* [python3-razer](https://github.com/openrazer/razer-drivers)
-* [razer-daemon](https://github.com/openrazer/razer-drivers)
+* [python3-razer](https://github.com/openrazer/openrazer)
+* [razer-daemon](https://github.com/openrazer/openrazer)
 
 
 | Debian/Ubuntu | Arch | openSUSE |
@@ -171,9 +171,9 @@ Polychromatic interfaces with the daemon from the [OpenRazer project](https://op
 
 ## Something not working?
 
-* Check that the driver and daemon are [properly installed](https://github.com/openrazer/razer-drivers#installation) for your distribution.
-* Check that your [device has daemon support](https://github.com/openrazer/razer-drivers#device-support).
-* For DBUS, daemon or driver bugs, [see if an issue](https://github.com/openrazer/razer-drivers/issues) has been raised on the [razer-drivers repository](https://github.com/openrazer/razer-drivers), otherwise [please create a new issue there](https://github.com/openrazer/razer-drivers/issues/new).
+* Check that the driver and daemon are [properly installed](https://github.com/openrazer/openrazer#installation) for your distribution.
+* Check that your [device has daemon support](https://github.com/openrazer/openrazer#device-support).
+* For DBUS, daemon or driver bugs, [see if an issue](https://github.com/openrazer/openrazer/issues) has been raised on the [OpenRazer repository](https://github.com/openrazer/openrazer), otherwise [please create a new issue there](https://github.com/openrazer/openrazer/issues/new).
 
 For visual or functional problems with Polychromatic, [please raise an issue here instead](https://github.com/lah7/polychromatic/issues/new).
 
@@ -189,5 +189,5 @@ The software is ready to speak multiple languages! Take a look
 This software is developed in my spare time without any expection of money in return,
 but if you're [feeling generous](https://github.com/lah7/polychromatic/issues/75), then you are more then welcome to
 [donate to the lead developer](https://www.paypal.me/LukeHorwell) of Polychromatic
-and [the people who bring you the driver and daemon](https://github.com/openrazer/razer-drivers/blob/master/README.md#contributions).
+and [the people who bring you the driver and daemon](https://github.com/openrazer/openrazer/blob/master/README.md#contributions).
 Thank you for your generosity.
