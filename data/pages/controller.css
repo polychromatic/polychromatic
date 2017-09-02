@@ -1417,15 +1417,18 @@ label.disabled {
 }
 
 /* About page specific */
-#about-logo {
+.about-logo {
     float: left;
     margin: 1em;
     margin-left: 0;
+    max-height: 50px;
+    vertical-align: middle;
 }
 
-#about-logo-text {
+.about-text {
     float: left;
     margin: 0.6em 0;
+    vertical-align: middle;
 }
 
 .about-update-status {

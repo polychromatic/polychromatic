@@ -2156,11 +2156,11 @@ class PageLoaded():
             return '<button id="tab-{0}" class="tab {3}" onclick="switchTab(\'#tab-{0}\')"><img src="../img/{1}"/><span>{2}</span></button>'.format(
                 tab_id, icon_path, string, extra_class)
 
-        html = _append_tab("about", "logo.svg", _("About"), "active")
+        html = _append_tab("about", "logo/polychromatic.svg", _("About"), "active")
         html += _append_tab("app", "ui/generic-application.svg", _("General"))
         html += _append_tab("tray", "ui/profile-default.svg", _("Tray Applet"))
         html += _append_tab("col", "effects/static.svg", _("Colors"))
-        html += _append_tab("daemon", "error/upgrade.png", _("Daemon"))
+        html += _append_tab("daemon", "states/unknown.svg", _("Daemon"))
         appobj.update_page(".tabs", "append", html)
 
         ########################
@@ -2168,7 +2168,7 @@ class PageLoaded():
         ########################
         def _append_about_tab():
             html = '<div id="tab-about-page" class="tab-content">'
-            html += '<img id="about-logo" src="../img/logo.svg"/> <h1 id="about-logo-text">polychromatic</h1>'
+            html += '<img class="about-logo" src="../img/logo/polychromatic.svg"/> <h1 id="about-text">polychromatic</h1>'
 
             html += UIControls.print_about_label(_("Version:"), version)
             html += UIControls.print_about_label(_("Configuration:"), "v" + str(pref.version))
@@ -2354,7 +2354,7 @@ class PageLoaded():
 
         def _append_daemon_tab():
             html = '<div id="tab-daemon-page" class="tab-content" hidden>'
-            html += UIControls.print_control_category(_("About the Daemon"))
+            html += '<img class="about-logo" src="../img/logo/openrazer.svg"/> <h1 id="about-text">OpenRazer</h1>'
             html += UIControls.print_about_label(_("The daemon is the software that communicates between the front-end applications and the driver."), "")
             html += UIControls.print_about_label(_("Daemon Version:"), str(appobj.devman.version))
             html += UIControls.print_about_label(_("Razer Python Library:"), str(appobj.devman.daemon_version))
