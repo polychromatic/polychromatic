@@ -37,9 +37,9 @@ from subprocess import check_output
 from platform import linux_distribution
 
 try:
-    import razer.client as rclient
-    from razer_daemon.keyboard import get_keyboard_layout
-    from razer_daemon.keyboard import RGB
+    import openrazer.client as rclient
+    from openrazer_daemon.keyboard import get_keyboard_layout
+    from openrazer_daemon.keyboard import RGB
     daemon_missing = False
 except ImportError as e:
     # We'll show a graphical error when loading up.
@@ -351,8 +351,8 @@ class Controller(object):
         # Installed = Version installed globally on system.
         try:
             running_version = self.devman._daemon_version
-            import razer_daemon.daemon
-            installed_version = razer_daemon.daemon.__version__
+            import openrazer_daemon.daemon
+            installed_version = openrazer_daemon.daemon.__version__
         except Exception:
             # Daemon may have crashed, skip this check.
             running_version = 0
@@ -2879,14 +2879,14 @@ def restart_daemon_service():
     time.sleep(0.5)
 
     # Is the daemon actually installed?
-    if not which("razer-daemon"):
+    if not which("openrazer-daemon"):
         app.load_lock = False
         app.show_error_page("serious", "generic", _("Daemon Not Installed."),
-                            _("Could not find the executable for 'razer-daemon'. Please try re-installing the daemon."))
+                            _("Could not find the executable for 'openrazer-daemon'. Please try re-installing the daemon."))
         return
 
     # Gracefully stop the daemon
-    print("Stopping razer-daemon.", end='')
+    print("Stopping openrazer-daemon.", end='')
     app.update_page("#status-text", "html", _("Stopping daemon..."))
     try:
         app.devman.stop_daemon()
@@ -2902,7 +2902,7 @@ def restart_daemon_service():
     for x in range(0, 5):
         print(".", end='')
         try:
-            daemon_pid = int(check_output(["pidof", "razer-daemon"]))
+            daemon_pid = int(check_output(["pidof", "openrazer-daemon"]))
         except:
             stopped = True
             break
@@ -2913,7 +2913,7 @@ def restart_daemon_service():
 
     # Kill the daemon if still not ended
     if not stopped:
-        print("\nKilling razer-daemon...")
+        print("\nKilling openrazer-daemon...")
         app.update_page("#status-text", "html", _("Killing daemon process..."))
         os.kill(daemon_pid, 9)
 
@@ -2927,18 +2927,18 @@ def restart_daemon_service():
 
     # Wait for daemon to start again
     time.sleep(1)
-    print("\nStarting razer-daemon...")
+    print("\nStarting openrazer-daemon...")
     app.update_page("#status-text", "html", _("Starting daemon..."))
-    background_process("razer-daemon", shell=True)
+    background_process("openrazer-daemon", shell=True)
 
     # Check the process is running
-    print("Waiting for razer-daemon to start...")
+    print("Waiting for openrazer-daemon to start...")
     app.update_page(".progress", "fadeIn", "fast")
     app.update_page(".progress-inner", "addClass", "increasing")
     for x in range(0, 5):
         print(".", end='')
         try:
-            daemon_pid = int(check_output(["pidof", "razer-daemon"]))
+            daemon_pid = int(check_output(["pidof", "openrazer-daemon"]))
             running = True
             break
         except:
@@ -2948,8 +2948,8 @@ def restart_daemon_service():
     if not running:
         app.load_lock = False
         app.show_error_page("serious", "generic", _("Daemon cannot be relaunched."),
-                            _("Failed to execute 'razer-daemon'. Please check the daemon log to troubleshoot the problem.") + \
-                            '<br><code>~/.local/share/openrazer/logs/</code><br><br>' + _("Alternately, open a terminal and run:") + '<br><code>razer-daemon -F</code>')
+                            _("Failed to execute 'openrazer-daemon'. Please check the daemon log to troubleshoot the problem.") + \
+                            '<br><code>~/.local/share/openrazer/logs/</code><br><br>' + _("Alternately, open a terminal and run:") + '<br><code>openrazer-daemon -Fv</code>')
         return
 
     # Relaunch Controller / Tray Applet

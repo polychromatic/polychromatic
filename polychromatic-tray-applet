@@ -35,8 +35,8 @@ from subprocess import call as foreground_process
 from shutil import which
 
 try:
-    import razer.client as rclient
-    from razer_daemon.keyboard import KeyboardColour
+    import openrazer.client as rclient
+    from openrazer_daemon.keyboard import KeyboardColour
 except Exception as e:
     print("Failed to import modules for daemon.")
     print("Exception: " + str(e))
