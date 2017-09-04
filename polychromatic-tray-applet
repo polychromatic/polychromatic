@@ -164,8 +164,8 @@ class AppIndicator(object):
 
     def setup(self):
         # Set active device
-        if not which("razer-daemon"):
-            self._setup_failed(_("Daemon Not Installed."), _("Unknown command: razer-daemon"))
+        if not which("openrazer-daemon"):
+            self._setup_failed(_("Daemon Not Installed."), _("Unknown command: openrazer-daemon"))
 
         try:
             self.devman = rclient.DeviceManager()
@@ -1029,7 +1029,7 @@ def restart_daemon_service():
         indicator.indicator.set_menu(root)
 
     # Gracefully stop the daemon
-    _update_status(_("Stopping razer-daemon..."))
+    _update_status(_("Stopping openrazer-daemon..."))
     try:
         indicator.devman.stop_daemon()
     except Exception as NoneType:
@@ -1040,7 +1040,7 @@ def restart_daemon_service():
     stopped = False
     for x in range(0, 5):
         try:
-            daemon_pid = int(check_output(["pidof", "razer-daemon"]))
+            daemon_pid = int(check_output(["pidof", "openrazer-daemon"]))
         except:
             stopped = True
             break
@@ -1048,7 +1048,7 @@ def restart_daemon_service():
 
     # Kill the daemon if still not ended
     if not stopped:
-        _update_status(_("Killing razer-daemon..."))
+        _update_status(_("Killing openrazer-daemon..."))
         os.kill(daemon_pid, 9)
 
     # Ensure a clean log
@@ -1060,11 +1060,11 @@ def restart_daemon_service():
 
     # Wait for daemon to start again
     time.sleep(1)
-    _update_status(_("Starting razer-daemon..."))
-    background_process("razer-daemon", shell=True)
+    _update_status(_("Starting openrazer-daemon..."))
+    background_process("openrazer-daemon", shell=True)
     for x in range(0, 5):
         try:
-            daemon_pid = int(check_output(["pidof", "razer-daemon"]))
+            daemon_pid = int(check_output(["pidof", "openrazer-daemon"]))
             running = True
             break
         except:
