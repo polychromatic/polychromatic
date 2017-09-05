@@ -2356,6 +2356,7 @@ class PageLoaded():
             html += UIControls.print_about_label(_("The daemon is the software that communicates between the front-end applications and the driver."), "")
             html += UIControls.print_about_label(_("Daemon Version:"), str(appobj.devman.version))
             html += UIControls.print_about_label(_("Razer Python Library:"), str(appobj.devman.daemon_version))
+            html += UIControls.print_about_label(_("Supported Devices:"), str(len(appobj.devman.supported_devices)))
 
             html += UIControls.print_page_break()
 
