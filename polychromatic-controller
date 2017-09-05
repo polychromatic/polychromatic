@@ -386,6 +386,29 @@ class Controller(object):
                     _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running."))
                 return
 
+            # Check the user is in the 'plugdev' group
+            import grp
+            if "plugdev" in [grp.getgrgid(g).gr_name for g in os.getgroups()]:
+                has_plugdev = True
+            else:
+                has_plugdev = False
+
+            if not has_plugdev:
+                try:
+                    whoami = str(os.getlogin())
+                except FileNotFoundError:
+                    import pwd
+                    whoami = str(pwd.getpwuid(os.getuid())[0])
+                except Exception:
+                    whoami = _("<username>")
+
+                self.show_error_page("serious", "no-plugdev", _("Insufficient Privileges"),
+                    _("This user account is not in the 'plugdev' group, the daemon requires this to control your device(s).") + \
+                    '<br><br>' + _("Please run this command in the terminal, then log out then back in:") + \
+                    '<br><code>sudo gpasswd -a ' + whoami + ' plugdev</code>')
+                return
+
+            # Likely the daemon is not responding.
             if self.devman_error == "presume-crashed":
                 exception = ""
                 for line in self.devman_reason.split('\n'):
@@ -1186,34 +1209,11 @@ class Controller(object):
             except FileNotFoundError:
                 lsusb = None
 
-            # Is the user in the 'plugdev' group?
-            import grp
-            if "plugdev" in [grp.getgrgid(g).gr_name for g in os.getgroups()]:
-                has_plugdev = True
-            else:
-                has_plugdev = False
-
             # Determine which message to display.
             if lsusb == -1:
                 title = _("No Razer Product Connected")
                 message = _("Please plug in your Razer device and reload the application/daemon.")
                 icon = "no-device"
-
-            elif lsusb != -1 and not has_plugdev:
-                try:
-                    whoami = str(os.getlogin())
-                except FileNotFoundError:
-                    import pwd
-                    whoami = str(pwd.getpwuid(os.getuid())[0])
-                except:
-                    whoami = _("<username>")
-
-                title = _("Insufficient Privileges")
-                message = _("This user account is not in the 'plugdev' group, the daemon requires this to control your device(s).") + \
-                          '<br><br>' + _("Please run this command in the terminal, then log out then back in:") + \
-                          '<br><code>sudo gpasswd -a ' + whoami + ' plugdev</code>'
-                icon = "no-plugdev"
-
             else:
                 title = _("Device Not Recognised")
                 message = _("A Razer product is connected to your computer, but the daemon didn't detect it.") + '<br>' + \
