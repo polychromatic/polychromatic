@@ -2,6 +2,8 @@ polychromatic (0.3.11-xenial) xenial; urgency=low
 
   * Update dependencies for OpenRazer. Please use ppa:openrazer/stable instead.
   * Update error screens when initialization errors occur.
+  * Prevent a segfault with newer WebKit versions.
+  * Internal changes to how styling is compiled.
 
  -- Luke Horwell <luke@ubuntu-mate.org>  Wed, 06 Sep 2017 21:00:00 +0100
 
