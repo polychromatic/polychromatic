@@ -15,9 +15,6 @@ import time
 version = 5
 verbose = False
 
-# For default preferences, please see:
-#   https://github.com/lah7/polychromatic/wiki/Preferences-JSON-Structure
-
 ################################################################################
 
 class Paths(object):
