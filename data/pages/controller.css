@@ -1266,6 +1266,7 @@ label.disabled {
 *************************/
 #error-page {
     text-align: center;
+    line-height: 1.5em;
     -webkit-animation-name: error-page-entrance;
     -webkit-animation-duration: 0.4s;
     -webkit-animation-iteration-count: 1;
@@ -1274,7 +1275,7 @@ label.disabled {
 
 #error-page > img {
     margin-top: 3em;
-    width: 150px;
+    width: auto;
     height: 150px;
 }
 
@@ -1288,6 +1289,8 @@ label.disabled {
 
 #error-page > p {
     text-align: center;
+    max-height: 200px;
+    overflow-y: auto;
 }
 
 #error-page > p > code {

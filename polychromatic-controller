@@ -328,9 +328,9 @@ class Controller(object):
         dbg.stdout("Loading daemon...", dbg.action, 1)
 
         if daemon_missing:
-            self.show_error_page(
-                "serious", "generic", _("Daemon Not Installed"),
-                _("Polychromatic requires the daemon, but it could not be imported. Please check the Razer drivers, daemon and Python library are installed.") +
+            self.show_error_page("serious", "daemon-error", _("Daemon Not Installed"),
+                _("Polychromatic requires the OpenRazer Python library, but it could not be imported.") +
+                '<br><br>' + _("Please check the OpenRazer drivers, daemon and Python library are installed.") +
                 '<br><br><a onclick="cmd(\'open?https://github.com/lah7/polychromatic\')">' + _("See the README for further information.") + '</a>')
             return
 
@@ -360,8 +360,7 @@ class Controller(object):
 
         if installed_version < running_version:
             print("ERROR: Currently running daemon is older than the installed version.")
-            self.show_error_page(
-                "warning", "restart-required", _("Daemon requires a restart"),
+            self.show_error_page("warning", "restart-required", _("Daemon requires a restart"),
                 _("The daemon that is currently running is older than the installed version.") + "<br>" +
                 _("This can cause glitches. Please restart the daemon to continue.") + "<br><br>" +
                 _("This happens if the driver/daemon packages were updated, but you haven't restarted your session or computer."))
@@ -370,10 +369,9 @@ class Controller(object):
         # Display an upgrade message if using the old daemon.
         if os.path.exists("/usr/lib/python3/dist-packages/razer/inteface/keyboard.py") or os.path.exists(os.path.join(sys.path[-1], "/razer/inteface/keyboard.py")):
             print("ERROR: Daemon is incompatible with this version of the program.")
-            self.show_error_page(
-                "normal", "upgrade", _("Daemon Upgrade Required"),
-                _("The Razer 'Chroma' driver and daemon currently installed on your system is no longer supported by Polychromatic.") + "<br><br>" +
-                _("Please remove the current Razer driver/daemon from your system, then install the new one from: ") +
+            self.show_error_page("normal", "upgrade", _("Daemon Upgrade Required"),
+                _("The Razer 'Chroma' driver and daemon currently installed on your system is no longer supported by Polychromatic.") + '<br>' +
+                _("Please remove the current Razer driver/daemon from your system, then install OpenRazer from: ") +
                 '<a onclick="cmd(\'open?https://openrazer.github.io/\')">http://openrazer.github.io/</a>' +
                 '<br><br><a onclick="cmd(\'open?https://github.com/lah7/polychromatic/releases/tag/v0.3.0\')">' +
                 _("For more information, see the Release Notes for v0.3.0.") + '</a>')
@@ -384,8 +382,7 @@ class Controller(object):
             print("ERROR: Could not connect to the Daemon Device Manager!")
 
             if self.devman_error == "not-running":
-                self.show_error_page(
-                    "serious", "generic", _("Daemon Not Running"),
+                self.show_error_page("serious", "daemon-error", _("Daemon Not Running"),
                     _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running."))
                 return
 
@@ -393,10 +390,9 @@ class Controller(object):
                 exception = ""
                 for line in self.devman_reason.split('\n'):
                     exception += '<code>' + line + '</code><br>'
-                self.show_error_page(
-                    "serious", "generic", _("Daemon Not Responding"),
+                self.show_error_page("warning", "daemon-not-ready", _("Daemon Not Responding"),
                     _("Polychromatic could not initialise the daemon. This could be caused by a bug with the daemon process.") + "<br><br>" +
-                    _("Exception:") + ' <code>' + exception + '</code>')
+                    _("Exception:") + '<br><code>' + exception + '</code>')
                 return
 
         # Display "No Devices Found" screen if none can be found
@@ -1109,13 +1105,11 @@ class Controller(object):
 
         elif command == 'daemon-stop':
             self.devman.stop_daemon()
-            self.show_error_page(
-                "serious", "generic", _("Daemon gracefully stopped."),
+            self.show_error_page("warning", "daemon-stopped", _("Daemon gracefully stopped."),
                 _("The daemon has been requested to shut down. To use Polychromatic again, restart the daemon."))
 
         elif command == 'timeout-error':
-            self.show_error_page(
-                "serious", "generic", _("Something went wrong."),
+            self.show_error_page("serious", "generic", _("Something went wrong."),
                 _("Polychromatic took too long to initialise the application or daemon. Please reload and try again."))
 
         elif command == 'demo-chroma':
@@ -1203,6 +1197,7 @@ class Controller(object):
             if lsusb == -1:
                 title = _("No Razer Product Connected")
                 message = _("Please plug in your Razer device and reload the application/daemon.")
+                icon = "no-device"
 
             elif lsusb != -1 and not has_plugdev:
                 try:
@@ -1217,22 +1212,25 @@ class Controller(object):
                 message = _("This user account is not in the 'plugdev' group, the daemon requires this to control your device(s).") + \
                           '<br><br>' + _("Please run this command in the terminal, then log out then back in:") + \
                           '<br><code>sudo gpasswd -a ' + whoami + ' plugdev</code>'
+                icon = "no-plugdev"
 
             else:
                 title = _("Device Not Recognised")
-                message = _("A Razer product is connected to your computer, but the daemon didn't detect it.") + '<br><br>' + \
+                message = _("A Razer product is connected to your computer, but the daemon didn't detect it.") + '<br>' + \
                           _("It is possible your Razer product is not bound to the driver properly or it is not yet supported.") + \
                           '<br><br><u>' + _("Suggestions:") + '</u>' \
                           '<br>• ' + _("Use the 'modprobe' command to bind the driver to the device.") + \
                           '<br>• <u><a onclick="cmd(\'open?https://github.com/openrazer/openrazer#device-support\')">' + \
-                                _("Check whether your device PID is listed.") + \
+                            _("Check whether your device PID is listed.") + '</u></a>' + \
+                          '<br>• ' + _("Check the daemon log:") + ' <a onclick="cmd(\'open?/home/$USER/.local/share/openrazer/logs/razer.log\')"><u><code>~/.local/share/openrazer/logs/razer.log</code></u></a>' + \
                            '</u></a><br><br>' + \
                            _("As this is a driver/daemon problem, please") + ' ' + \
                            '<a onclick="cmd(\'open?https://github.com/openrazer/openrazer/wiki/Troubleshooting\')"><u>' + \
                                 _("refer to the troubleshooting guide for further assistance.") + \
                            '</u></a>'
+                icon = "no-support"
 
-            self.show_error_page("warning", "nodevice", title, message)
+            self.show_error_page("warning", icon, title, message)
             return []
 
         return found_devices
