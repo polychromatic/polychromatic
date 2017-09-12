@@ -1246,15 +1246,16 @@ class Controller(object):
             import subprocess
             try:
                 lsusb = str(subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0])
-                lsusb.find("ID 1532")
             except FileNotFoundError:
-                lsusb = None
+                dbg.stdout("'lsusb' not available, unable to determine if product is connected.", dbg.error, 1)
+                lsusb = ""
 
             # Determine which message to display.
-            if lsusb == -1:
+            if lsusb.find("ID 1532") == -1:
                 title = _("No Razer Product Connected")
                 message = _("Please plug in your Razer device and reload the application/daemon.")
                 icon = "no-device"
+                severity = "normal"
             else:
                 title = _("Device Not Recognised")
                 message = _("A Razer product is connected to your computer, but the daemon didn't detect it.") + '<br>' + \
@@ -1270,8 +1271,9 @@ class Controller(object):
                                 _("refer to the troubleshooting guide for further assistance.") + \
                            '</u></a>'
                 icon = "no-support"
+                severity = "warning"
 
-            self.show_error_page("warning", icon, title, message)
+            self.show_error_page(severity, icon, title, message)
             return []
 
         return found_devices
