@@ -57,7 +57,7 @@ Ubuntu and Linux Mint users can install this via this PPA:
 
     sudo add-apt-repository ppa:openrazer/stable
     sudo apt update
-    sudo apt install python3-razer razer-kernel-modules-dkms razer-daemon razer-doc
+    sudo apt install openrazer-meta
 
 Please see the [project website](http://openrazer.github.io/#download) for instructions for your distribution.
 
