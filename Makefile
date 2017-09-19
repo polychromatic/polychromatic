@@ -1,7 +1,7 @@
 PREFIX = /usr
 DESTDIR = /
 PYTHONDIR = $(shell python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib()[4:])")
-LESSC = $(shell lessc source/data/controller.less data/pages/controller.css)
+LESSC = lessc
 
 all:
 	@echo "---------------------------------------------------------"
@@ -20,7 +20,10 @@ all:
 	@echo "Example: 'make DESTDIR=/tmp PREFIX=/usr install'"
 	@echo ""
 
-install:
+css:
+	$(LESSC) source/data/controller.less data/pages/controller.css
+
+install: css
 	@install -dm755 $(DESTDIR)$(PREFIX)/share/polychromatic
 	@install -dm755 $(DESTDIR)$(PREFIX)$(PYTHONDIR)/polychromatic
 	@install -dm755 $(DESTDIR)$(PREFIX)/share/icons/hicolor
