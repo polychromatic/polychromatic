@@ -265,7 +265,7 @@ class AppView(WebKit2.WebView):
             """
             payload = str(self)
             dbg.stdout(' => JSExec: Pushed to page.', dbg.debug, 2)
-            self.run_javascript(payload)
+            self.webkit.run_javascript(payload)
 
         def __lshift__(self, other):
             self.add(other)
