@@ -17,6 +17,9 @@ from threading import Thread
 # (excludes Ultimate which supports shades of green)
 fixed_coloured_devices = ["Taipan"]
 
+# Frontend fade transition speed
+fade_speed = "500"
+sleep_interval = 0.5
 
 class Debugging(object):
     """
@@ -46,6 +49,13 @@ class Debugging(object):
                 print(colour_code + msg + '\033[0m')
             else:
                 print(msg)
+
+
+def parse_html(html):
+    """
+    Returns a string that is HTML safe for jQuery to use.
+    """
+    return html.strip().replace('\n', '')
 
 
 def setup_translations(bin_path, i18n_app, locale_override=None):

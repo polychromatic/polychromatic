@@ -43,7 +43,6 @@
 *************************/
 /* Fonts */
 @font-family: 'Play', 'Ubuntu', 'DejaVu Sans', 'Open Sans', sans-serif;
-
 @font-face {
     font-family: Play;
     src: url('lib/Play-Regular.ttf');
@@ -138,7 +137,7 @@ button {
 /************************
    Header
 *************************/
-.header {
+#header {
     position: fixed;
     left: 0;
     top: 0;
@@ -325,7 +324,7 @@ img.wave {
 /************************
    Content
 *************************/
-.content {
+#content {
     position: fixed;
     width: auto;
     padding: 4px;
@@ -401,7 +400,7 @@ input[type="radio"] {
 /************************
    Footer
 *************************/
-.footer {
+#footer {
     position: fixed;
     left: 0;
     bottom: 0;
@@ -417,7 +416,7 @@ input[type="radio"] {
         font-size: 13px;
     }
 
-    .left {
+    #footer-left {
         float: left;
         width: auto;
         margin-left: 8px;
@@ -425,7 +424,7 @@ input[type="radio"] {
         margin: 0;
     }
 
-    .right {
+    #footer-right {
         float: right;
         text-align: right;
         width: auto;
@@ -1141,17 +1140,16 @@ label.disabled {
 /************************
    Tabs
 *************************/
-.tabs {
+#tabs {
     position: fixed;
     top: 59px;
-    left: -1%;
-    right: -1%;
-    width: 102%;
+    left: 0;
+    right: 0;
+    width: calc(~'100% - 12px');
     height: 32px;
+    padding: 0 4px;
     background-color: rgba(18,18,18,0.8);
     border-bottom: 2px solid @bg-colour;
-    margin-left: 4px;
-    margin-right: 4px;
     overflow-y: none;
     white-space: nowrap;
 
@@ -1160,12 +1158,9 @@ label.disabled {
         position: relative;
         top: 0px;
         height: 34px;
-        padding: 4px;
         text-align: center;
         width: auto;
-        padding: 0px;
-        padding-right: 24px;
-        vertical-align: bottom;
+        padding: 0 10px;
         border: 2px solid transparent !important;
         border-bottom: 2px solid @border-colour !important;
         color: white;
@@ -1185,20 +1180,19 @@ label.disabled {
         }
 
         > img {
-            float: left;
-            top: 0px;
-            left: 8px;
-            height: 20px;
-            width: 20px;
-            position: relative;
+            vertical-align: middle;
+            width: 24px;
+            height: 24px;
         }
 
         > span {
-            float: left;
-            position: relative;
-            top: 2px;
-            left: 16px;
+            vertical-align: middle;
+            margin-left: 4px;
         }
+    }
+
+    .tab-right {
+        float: right;
     }
 }
 
@@ -1297,17 +1291,17 @@ label.disabled {
     text-align: center;
     line-height: 1.5em;
     -webkit-animation-name: error-page-entrance;
-    -webkit-animation-duration: 0.4s;
+    -webkit-animation-duration: 0.5s;
     -webkit-animation-iteration-count: 1;
     -webkit-animation-timing-function: ease-out;
 
-    > img {
+    img {
         margin-top: 3em;
         width: auto;
         height: 150px;
     }
 
-    > h2 {
+    h2 {
         &.serious {
             color: red;
         }
@@ -1317,7 +1311,7 @@ label.disabled {
         }
     }
 
-    > p {
+    p {
         text-align: center;
         max-height: 200px;
         overflow-y: auto;
@@ -1327,18 +1321,54 @@ label.disabled {
         }
     }
 
+    a {
+        text-decoration: underline;
+    }
+
     a:hover {
         cursor: pointer;
+        color: green;
+    }
+
+    #error-traceback {
+        text-align: left;
+        margin: auto;
+        max-width: 80vw;
+
+        h5 {
+            width: 100%;
+        }
+
+        pre {
+            background-color: black;
+            border-left: 2px solid green;
+            color: white;
+            padding: 0.5em;
+            -webkit-user-select: all;
+            cursor: text;
+
+            &::selection {
+                background: green;
+                color: white;
+            }
+        }
+    }
+
+    #error-code {
+        position: fixed;
+        left: 20px;
+        bottom: 64px;
+        z-index: 1000;
+        color: gray;
     }
 }
 
 @-webkit-keyframes error-page-entrance {
     0% {
-        opacity: 0;
         transform: scale(0.9);
     }
+
     100% {
-        opacity: 1;
         transform: scale(1);
     }
 }
