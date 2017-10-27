@@ -1020,7 +1020,7 @@ def parse_parameters():
         dbg.stdout(_("Verbose enabled"), dbg.debug, 1)
 
     if args.locale:
-        _ = common.setup_translations(__file__, "polychromatic-tray-applet", args.locale)
+        _ = common.setup_translations(__file__, "polychromatic", args.locale)
 
 def restart_daemon_service():
     from subprocess import check_output
@@ -1102,7 +1102,7 @@ if __name__ == "__main__":
     f.write(str(os.getpid()))
     f.close()
 
-    _ = common.setup_translations(__file__, "polychromatic-tray-applet")
+    _ = common.setup_translations(__file__, "polychromatic")
     dbg = common.Debugging()
     parse_parameters()
     cb = Callback()

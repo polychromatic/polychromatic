@@ -2745,7 +2745,7 @@ def parse_parameters():
         dbg.verbose_level = 3
 
     if args.locale:
-        _ = common.setup_translations(__file__, "polychromatic-controller", args.locale)
+        _ = common.setup_translations(__file__, "polychromatic", args.locale)
 
 class CommandLineOnly():
     def print_device_capability_info():
@@ -3039,7 +3039,7 @@ def restart_daemon_service():
 tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
 
 if __name__ == "__main__":
-    _ = common.setup_translations(__file__, "polychromatic-controller")
+    _ = common.setup_translations(__file__, "polychromatic")
     dbg = common.Debugging()
     parse_parameters()
     win = AppWindow()

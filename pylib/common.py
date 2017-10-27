@@ -486,4 +486,4 @@ def has_fixed_colour(device_obj):
 """
 Module Initalization
 """
-_ = setup_translations(__file__, "polychromatic-common")
+_ = setup_translations(__file__, "polychromatic")

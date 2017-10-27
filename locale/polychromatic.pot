@@ -1,0 +1,732 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2017-10-27 19:06+BST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: pylib/common.py:127
+msgid "Spectrum"
+msgstr ""
+
+#: pylib/common.py:129
+msgid "Wave"
+msgstr ""
+
+#: pylib/common.py:131
+msgid "Reactive"
+msgstr ""
+
+#: pylib/common.py:133
+msgid "Breath"
+msgstr ""
+
+#: pylib/common.py:135
+msgid "Ripple"
+msgstr ""
+
+#: pylib/common.py:137
+msgid "Starlight"
+msgstr ""
+
+#: pylib/common.py:143
+msgid "Profile"
+msgstr ""
+
+#: pylib/common.py:145
+msgid "Blinking"
+msgstr ""
+
+#: pylib/common.py:147
+msgid "Pulsate"
+msgstr ""
+
+#: pylib/common.py:149
+msgid "Try one..."
+msgstr ""
+
+#: pylib/common.py:417 pylib/common.py:418 pylib/common.py:419
+#: pylib/common.py:420 pylib/common.py:421 pylib/common.py:422
+#: pylib/common.py:423 pylib/common.py:424 pylib/common.py:425
+msgid "Green"
+msgstr ""
+
+#: polychromatic-controller:222 polychromatic-controller:2178
+msgid "Polychromatic Controller"
+msgstr ""
+
+#: polychromatic-controller:516
+msgid "Failed to set/change brightness for {0}."
+msgstr ""
+
+#: polychromatic-controller:538 polychromatic-controller:550
+msgid "Failed to set effect '{0}' for {1}."
+msgstr ""
+
+#: polychromatic-controller:564
+msgid "Failed to set poll rate for '{device_name}' to {poll_rate}."
+msgstr ""
+
+#: polychromatic-controller:579 polychromatic-controller:589
+msgid "Failed to change game mode for {0}."
+msgstr ""
+
+#: polychromatic-controller:647
+msgid "New Color"
+msgstr ""
+
+#: polychromatic-controller:668
+msgid "Unknown Color"
+msgstr ""
+
+#: polychromatic-controller:1003
+msgid "Choose Application Profile Icon"
+msgstr ""
+
+#: polychromatic-controller:1050
+msgid "View Release Notes"
+msgstr ""
+
+#: polychromatic-controller:1081
+msgid "Daemon gracefully stopped."
+msgstr ""
+
+#: polychromatic-controller:1082
+msgid ""
+"The daemon has been requested to shut down. To use Polychromatic again, "
+"restart the daemon."
+msgstr ""
+
+#: polychromatic-controller:1085
+msgid "Something went wrong."
+msgstr ""
+
+#: polychromatic-controller:1086
+msgid ""
+"Polychromatic took too long to initialise the application or daemon. Please "
+"reload and try again."
+msgstr ""
+
+#: polychromatic-controller:1164
+msgid "No Razer Product Connected"
+msgstr ""
+
+#: polychromatic-controller:1165
+msgid "Please plug in your Razer device and reload the application/daemon."
+msgstr ""
+
+#: polychromatic-controller:1169
+msgid "Device Not Recognised"
+msgstr ""
+
+#: polychromatic-controller:1170
+msgid ""
+"A Razer product is connected to your computer, but the daemon didn't detect "
+"it."
+msgstr ""
+
+#: polychromatic-controller:1171
+msgid ""
+"It is possible your Razer product is not bound to the driver properly or it "
+"is not yet supported."
+msgstr ""
+
+#: polychromatic-controller:1172
+msgid "Suggestions:"
+msgstr ""
+
+#: polychromatic-controller:1173
+msgid "Use the 'modprobe' command to bind the driver to the device."
+msgstr ""
+
+#: polychromatic-controller:1175
+msgid "Check whether your device PID is listed."
+msgstr ""
+
+#: polychromatic-controller:1176
+msgid "Check the daemon log:"
+msgstr ""
+
+#: polychromatic-controller:1178
+msgid "As this is a driver/daemon problem, please"
+msgstr ""
+
+#: polychromatic-controller:1180
+msgid "refer to the troubleshooting guide for further assistance."
+msgstr ""
+
+#: polychromatic-controller:1202
+msgid "Overview"
+msgstr ""
+
+#: polychromatic-controller:1203
+msgid "Connected Devices"
+msgstr ""
+
+#: polychromatic-controller:1237
+msgid "On"
+msgstr ""
+
+#: polychromatic-controller:1239 polychromatic-controller:1522
+msgid "Off"
+msgstr ""
+
+#: polychromatic-controller:1289
+msgid "Unknown Profile"
+msgstr ""
+
+#: polychromatic-controller:1312
+msgid "Serial"
+msgstr ""
+
+#: polychromatic-controller:1314
+msgid "Firmware"
+msgstr ""
+
+#: polychromatic-controller:1382 polychromatic-controller:1412
+#: polychromatic-controller:1442
+msgid "None"
+msgstr ""
+
+#: polychromatic-controller:1390 polychromatic-controller:1418
+#: polychromatic-controller:1449
+msgid "Static"
+msgstr ""
+
+#: polychromatic-controller:1536 polychromatic-controller:1545
+#: polychromatic-controller:1554 polychromatic-controller:1641
+#: polychromatic-controller:1656
+msgid "There was a problem communicating with the daemon for this device."
+msgstr ""
+
+#: polychromatic-controller:1711
+msgid "Down"
+msgstr ""
+
+#: polychromatic-controller:1712
+msgid "Up"
+msgstr ""
+
+#: polychromatic-controller:1714
+msgid "Clockwise"
+msgstr ""
+
+#: polychromatic-controller:1715
+msgid "Anti-clockwise"
+msgstr ""
+
+#: polychromatic-controller:1717
+msgid "Left"
+msgstr ""
+
+#: polychromatic-controller:1718
+msgid "Right"
+msgstr ""
+
+#: polychromatic-controller:1724
+msgid "Fast"
+msgstr ""
+
+#: polychromatic-controller:1725
+msgid "Medium"
+msgstr ""
+
+#: polychromatic-controller:1726
+msgid "Slow"
+msgstr ""
+
+#: polychromatic-controller:1727
+msgid "Very Slow"
+msgstr ""
+
+#: polychromatic-controller:1730 polychromatic-controller:1737
+#: polychromatic-controller:1743
+msgid "Random"
+msgstr ""
+
+#: polychromatic-controller:1731 polychromatic-controller:1738
+msgid "Single Color"
+msgstr ""
+
+#: polychromatic-controller:1732
+msgid "Dual Colors"
+msgstr ""
+
+#: polychromatic-controller:1741
+msgid "Single"
+msgstr ""
+
+#: polychromatic-controller:1742
+msgid "Dual"
+msgstr ""
+
+#: polychromatic-controller:1836
+msgid "Custom..."
+msgstr ""
+
+#: polychromatic-controller:1865
+msgid "More Colors"
+msgstr ""
+
+#: polychromatic-controller:2160
+msgid "Choose a Color"
+msgstr ""
+
+#: polychromatic-controller:2186
+msgid "All Images"
+msgstr ""
+
+#: polychromatic-controller:2194 polychromatic-controller:2199
+#: polychromatic-controller:2204 polychromatic-controller:2209
+msgid "Image"
+msgstr ""
+
+#: polychromatic-controller:2227
+msgid "Optional arguments"
+msgstr ""
+
+#: polychromatic-controller:2228
+msgid "Show this help message and exit"
+msgstr ""
+
+#: polychromatic-controller:2229
+msgid "Print progran version and exit"
+msgstr ""
+
+#: polychromatic-controller:2230
+msgid "Be verbose to stdout"
+msgstr ""
+
+#: polychromatic-controller:2231
+msgid "Be very verbose (for debugging)"
+msgstr ""
+
+#: polychromatic-controller:2232
+msgid "Gets a list of capabilities for a device"
+msgstr ""
+
+#: polychromatic-controller:2233
+msgid "Force a specific locale, e.g. de_DE"
+msgstr ""
+
+#: polychromatic-controller:2246
+msgid "Verbose enabled"
+msgstr ""
+
+#: polychromatic-controller:2250
+msgid "Debug verbose enabled"
+msgstr ""
+
+#: polychromatic-controller:2314
+msgid "Daemon Not Installed"
+msgstr ""
+
+#: polychromatic-controller:2315
+msgid ""
+"Polychromatic requires the OpenRazer Python library, but it could not be "
+"imported."
+msgstr ""
+
+#: polychromatic-controller:2316
+msgid ""
+"Please check the OpenRazer drivers, daemon and Python library are installed."
+msgstr ""
+
+#: polychromatic-controller:2317
+msgid "See the README for further information."
+msgstr ""
+
+#: polychromatic-controller:2324
+msgid "Daemon Not Running"
+msgstr ""
+
+#: polychromatic-controller:2325
+msgid ""
+"Polychromatic uses the daemon to interact with your Razer devices, but it "
+"doesn't appear to be running."
+msgstr ""
+
+#: polychromatic-controller:2332
+msgid "Daemon Not Responding"
+msgstr ""
+
+#: polychromatic-controller:2333
+msgid ""
+"Polychromatic could not initialise the daemon. This could be caused by a bug "
+"with the daemon process."
+msgstr ""
+
+#: polychromatic-controller:2340
+msgid "Daemon requires a restart"
+msgstr ""
+
+#: polychromatic-controller:2341
+msgid ""
+"The daemon that is currently running is older than the installed version."
+msgstr ""
+
+#: polychromatic-controller:2342
+msgid "This can cause glitches. Please restart the daemon to continue."
+msgstr ""
+
+#: polychromatic-controller:2343
+msgid ""
+"This happens if the driver/daemon packages were updated, but you haven't "
+"restarted your session or computer."
+msgstr ""
+
+#: polychromatic-controller:2350
+msgid "Daemon Upgrade Required"
+msgstr ""
+
+#: polychromatic-controller:2351
+msgid ""
+"The Razer 'Chroma' driver and daemon currently installed on your system is "
+"no longer supported by Polychromatic."
+msgstr ""
+
+#: polychromatic-controller:2352
+msgid ""
+"Please remove the current Razer driver/daemon from your system, then install "
+"OpenRazer from:"
+msgstr ""
+
+#: polychromatic-controller:2363
+msgid "<username>"
+msgstr ""
+
+#: polychromatic-controller:2368
+msgid "Insufficient Privileges"
+msgstr ""
+
+#: polychromatic-controller:2369
+msgid ""
+"This user account is not in the 'plugdev' group, the daemon requires this to "
+"control your device(s)."
+msgstr ""
+
+#: polychromatic-controller:2370
+msgid "Please run this command in the terminal, then log out then back in:"
+msgstr ""
+
+#: polychromatic-controller:2378
+msgid "Something went wrong"
+msgstr ""
+
+#: polychromatic-controller:2379
+msgid ""
+"There is no known reason for this error. That's very odd, as that should "
+"never happen! Please try again."
+msgstr ""
+
+#: polychromatic-controller:2403
+msgid "Daemon Not Installed."
+msgstr ""
+
+#: polychromatic-controller:2404
+msgid ""
+"Could not find the executable for 'openrazer-daemon'. Please try re-"
+"installing the daemon."
+msgstr ""
+
+#: polychromatic-controller:2409
+msgid "Stopping daemon..."
+msgstr ""
+
+#: polychromatic-controller:2436
+msgid "Killing daemon process..."
+msgstr ""
+
+#: polychromatic-controller:2441
+msgid "Archiving log..."
+msgstr ""
+
+#: polychromatic-controller:2450
+msgid "Starting daemon..."
+msgstr ""
+
+#: polychromatic-controller:2469
+msgid "Daemon cannot be relaunched."
+msgstr ""
+
+#: polychromatic-controller:2470
+msgid ""
+"Failed to execute 'openrazer-daemon'. Please check the daemon log to "
+"troubleshoot the problem."
+msgstr ""
+
+#: polychromatic-controller:2471
+msgid "Alternately, open a terminal and run:"
+msgstr ""
+
+#: pylib/screens/error.py:68
+msgid "Exception Details:"
+msgstr ""
+
+#: pylib/screens/error.py:76
+msgid "Close Program"
+msgstr ""
+
+#: pylib/screens/error.py:77
+msgid "Restart Daemon"
+msgstr ""
+
+#: pylib/screens/error.py:78
+msgid "Reload"
+msgstr ""
+
+#: pylib/screens/error.py:80
+msgid "Support Code:"
+msgstr ""
+
+#: pylib/screens/main.py:64 pylib/screens/main.py:72 pylib/screens/main.py:83
+msgid "Devices"
+msgstr ""
+
+#: pylib/screens/main.py:65 pylib/screens/main.py:73
+msgid "Profiles"
+msgstr ""
+
+#: pylib/screens/main.py:66 pylib/screens/main.py:74
+msgid "Preferences"
+msgstr ""
+
+#: polychromatic-tray-applet:152 polychromatic-tray-applet:153
+#: polychromatic-tray-applet:154 polychromatic-tray-applet:158
+#: polychromatic-tray-applet:159 polychromatic-tray-applet:160
+#: polychromatic-tray-applet:376 polychromatic-tray-applet:768
+#: polychromatic-tray-applet:815
+msgid "Unknown"
+msgstr ""
+
+#: polychromatic-tray-applet:168
+msgid "Unknown command: openrazer-daemon"
+msgstr ""
+
+#: polychromatic-tray-applet:173
+msgid "Daemon isn't running or crashed."
+msgstr ""
+
+#: polychromatic-tray-applet:180
+msgid "No devices found."
+msgstr ""
+
+#: polychromatic-tray-applet:233 polychromatic-tray-applet:270
+msgid "Main"
+msgstr ""
+
+#: polychromatic-tray-applet:240 polychromatic-tray-applet:281
+#: polychromatic-tray-applet:310 polychromatic-tray-applet:312
+msgid "Backlight"
+msgstr ""
+
+#: polychromatic-tray-applet:247 polychromatic-tray-applet:292
+#: polychromatic-tray-applet:319 polychromatic-tray-applet:321
+msgid "Logo"
+msgstr ""
+
+#: polychromatic-tray-applet:254 polychromatic-tray-applet:303
+#: polychromatic-tray-applet:328 polychromatic-tray-applet:330
+msgid "Scroll Wheel"
+msgstr ""
+
+#: polychromatic-tray-applet:362 polychromatic-tray-applet:443
+msgid "Open Controller"
+msgstr ""
+
+#: polychromatic-tray-applet:363
+msgid "Advanced"
+msgstr ""
+
+#: polychromatic-tray-applet:367 polychromatic-tray-applet:444
+msgid "Quit"
+msgstr ""
+
+#: polychromatic-tray-applet:440
+msgid "Retry"
+msgstr ""
+
+#: polychromatic-tray-applet:454
+msgid "Change Device"
+msgstr ""
+
+#: polychromatic-tray-applet:465
+msgid "Refresh Device List"
+msgstr ""
+
+#: polychromatic-tray-applet:507 polychromatic-tray-applet:530
+#: polychromatic-tray-applet:544
+msgid "Reactive (Fast)"
+msgstr ""
+
+#: polychromatic-tray-applet:508 polychromatic-tray-applet:531
+#: polychromatic-tray-applet:545
+msgid "Reactive (Medium)"
+msgstr ""
+
+#: polychromatic-tray-applet:509 polychromatic-tray-applet:532
+#: polychromatic-tray-applet:546
+msgid "Reactive (Slow)"
+msgstr ""
+
+#: polychromatic-tray-applet:510 polychromatic-tray-applet:533
+#: polychromatic-tray-applet:547
+msgid "Reactive (Very Slow)"
+msgstr ""
+
+#: polychromatic-tray-applet:511 polychromatic-tray-applet:526
+#: polychromatic-tray-applet:540
+msgid "Breath (Random)"
+msgstr ""
+
+#: polychromatic-tray-applet:512 polychromatic-tray-applet:527
+#: polychromatic-tray-applet:541
+msgid "Breath (Single)"
+msgstr ""
+
+#: polychromatic-tray-applet:513 polychromatic-tray-applet:528
+#: polychromatic-tray-applet:542
+msgid "Breath (Dual)"
+msgstr ""
+
+#: polychromatic-tray-applet:515
+msgid "Ripple (Random)"
+msgstr ""
+
+#: polychromatic-tray-applet:516
+msgid "Ripple (Single)"
+msgstr ""
+
+#: polychromatic-tray-applet:517
+msgid "Starlight (Single)"
+msgstr ""
+
+#: polychromatic-tray-applet:518
+msgid "Starlight (Dual)"
+msgstr ""
+
+#: polychromatic-tray-applet:519
+msgid "Starlight (Random)"
+msgstr ""
+
+#: polychromatic-tray-applet:632 polychromatic-tray-applet:645
+#: polychromatic-tray-applet:657 polychromatic-tray-applet:669
+msgid "Full (100%)"
+msgstr ""
+
+#: polychromatic-tray-applet:633 polychromatic-tray-applet:646
+#: polychromatic-tray-applet:658 polychromatic-tray-applet:670
+msgid "Bright (75%)"
+msgstr ""
+
+#: polychromatic-tray-applet:634 polychromatic-tray-applet:647
+#: polychromatic-tray-applet:659 polychromatic-tray-applet:671
+msgid "Medium (50%)"
+msgstr ""
+
+#: polychromatic-tray-applet:635 polychromatic-tray-applet:648
+#: polychromatic-tray-applet:660 polychromatic-tray-applet:672
+msgid "Dim (25%)"
+msgstr ""
+
+#: polychromatic-tray-applet:636 polychromatic-tray-applet:649
+#: polychromatic-tray-applet:661 polychromatic-tray-applet:673
+msgid "Off (0%)"
+msgstr ""
+
+#: polychromatic-tray-applet:713
+msgid "Application Profiles"
+msgstr ""
+
+#: polychromatic-tray-applet:725
+msgid "No profiles to display."
+msgstr ""
+
+#: polychromatic-tray-applet:730
+msgid "Change Color"
+msgstr ""
+
+#: polychromatic-tray-applet:752
+msgid "No colors to list."
+msgstr ""
+
+#: polychromatic-tray-applet:754
+msgid "Where did your colors go?"
+msgstr ""
+
+#: polychromatic-tray-applet:760
+msgid "DPI"
+msgstr ""
+
+#: polychromatic-tray-applet:796
+msgid "Super Slow"
+msgstr ""
+
+#: polychromatic-tray-applet:800
+msgid "Super Fast"
+msgstr ""
+
+#: polychromatic-tray-applet:801
+msgid "Blazingly Fast"
+msgstr ""
+
+#: polychromatic-tray-applet:807
+msgid "Poll Rate"
+msgstr ""
+
+#: polychromatic-tray-applet:831 polychromatic-tray-applet:1001
+msgid "Enabled"
+msgstr ""
+
+#: polychromatic-tray-applet:833 polychromatic-tray-applet:1003
+msgid "Disabled"
+msgstr ""
+
+#: polychromatic-tray-applet:835
+msgid "Game Mode"
+msgstr ""
+
+#: polychromatic-tray-applet:836
+msgid "Enable"
+msgstr ""
+
+#: polychromatic-tray-applet:837
+msgid "Disable"
+msgstr ""
+
+#: polychromatic-tray-applet:958
+msgid "Change Tray Color"
+msgstr ""
+
+#: polychromatic-tray-applet:966
+msgid "Custom"
+msgstr ""
+
+#: polychromatic-tray-applet:1036
+msgid "Stopping openrazer-daemon..."
+msgstr ""
+
+#: polychromatic-tray-applet:1055
+msgid "Killing openrazer-daemon..."
+msgstr ""
+
+#: polychromatic-tray-applet:1067
+msgid "Starting openrazer-daemon..."
+msgstr ""
+
+#: polychromatic-tray-applet:1079
+msgid "Daemon Restart Error."
+msgstr ""
+
+#: polychromatic-tray-applet:1079
+msgid "The daemon process could not be found."
+msgstr ""
