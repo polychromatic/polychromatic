@@ -36,6 +36,8 @@ class MainMenu(object):
         self.ui = ui
         self.dbg = dbg
 
+        self.current_tab_no = 0
+
     def open_screen(self, params=[]):
         """
         params[0]   int     Tab number
@@ -58,45 +60,75 @@ class MainMenu(object):
         """
         active_tab = params[0]
         active_sidebar = params[1]
+        self.current_tab_no = active_tab
 
         # Tabs
         self.dbg.stdout("Opening tab: " + str(active_tab), self.dbg.action, 2)
-        html = self.ui.print_tab(0, "states/keyboard.svg", _("Devices"), ("active" if active_tab == 0 else ""))
-        html += self.ui.print_tab(1, "ui/profile-default.svg", _("Profiles"), ("active" if active_tab == 1 else ""))
-        html += self.ui.print_tab(2, "ui/controller.svg", _("Preferences"), "tab-right " + ("active" if active_tab == 2 else ""))
-        self.update_page("#tabs", "html", html)
+        html_tab = self.ui.print_tab(0, "states/keyboard.svg", _("Devices"), ("active" if active_tab == 0 else ""))
+        html_tab += self.ui.print_tab(1, "ui/profile-default.svg", _("Profiles"), ("active" if active_tab == 1 else ""))
+        html_tab += self.ui.print_tab(2, "ui/controller.svg", _("Preferences"), "tab-right " + ("active" if active_tab == 2 else ""))
+        self.update_page("#tabs", "html", html_tab)
         self.update_page("#tabs", "fadeIn", fade_speed)
 
-        # Header
-        header_titles = {
-            0: _("Devices"),
-            1: _("Profiles"),
-            2: _("Preferences")
+        subpages = {
+        #   UUID: [<has sidebar?>, <label>, <function for printing>]
+            0: [_("Devices"), self._print_tab_content_devices],
+            1: [_("Profiles"), self._print_tab_content_profiles],
+            2: [_("Preferences"), self._print_tab_content_preferences]
         }
-        self.update_page("#header", "html", "<h3 id='page-title' hidden>{0}</h3>".format(header_titles[active_tab]))
+
+        # Header
+        self.update_page("#header", "html", "<h3 id='page-title' hidden>{0}</h3>".format(subpages[active_tab][0]))
         self.update_page("#header h3", "fadeIn", fade_speed)
 
-        # Sidebar
+        # Sidebar (if this page has one)
+        html_sidebar = "<div id='sidebar'>"
+        if active_sidebar == 0:
+            # List of devices
+            html_sidebar += self.ui.print_sidebar_item(0, "states/keyboard.svg", _("Devices"), ("active" if active_sidebar == 0 else ""))
+
+        elif active_sidebar == 1:
+            # List of profile options
+            pass
+
+        elif active_sidebar == 2:
+            # Categories for preferences
+            pass
+
+        html_sidebar += "</div>"
 
         # Tabs contents, depending which one is being opened.
-        html = "<div id='sidebar'>"
-        html += self.ui.print_sidebar_item(0, "states/keyboard.svg", _("Devices"), ("active" if active_tab == 0 else ""))
-        html += "</div>"
-        # 0 = Devices
-        # 1 = Profiles
-        # 2 = Preferences
+        html_content = "<div id='sidebar-page'>"
+        html_content += subpages[active_tab][1](active_sidebar)
+        html_content += "</div>"
 
-    def close_screen(self, params=[]):
-        pass
+        # Ready to display
+        self.update_page("#content", "html", html_sidebar + html_content)
+        self.update_page("#content", "addClass", "has-tabs")
+        self.update_page("#content", "addClass", "has-sidebar")
+        self.update_page("#content", "fadeIn", fade_speed)
+
+    def close_screen(self, new_uid):
+        self.update_page("#content", "removeClass", "has-tabs")
+        self.update_page("#content", "removeClass", "has-sidebar")
 
     def process_command(self, cmd):
         if cmd.startswith("switch-tab?"):
             tab_no = int(cmd.split("?")[1])
+            self.update_page("#content", "hide")
             self.open_screen([tab_no, 0])
             return True
         elif cmd.startswith("switch-sidebar?"):
-            tab_no = int(cmd.split("?")[1])
-            subpage_no = int(cmd.split("?")[2])
-            self.open_screen([tab_no, subpage_no])
+            subpage_no = int(cmd.split("?")[1])
+            self.open_screen([self.current_tab_no, subpage_no])
             return True
         return False
+
+    def _print_tab_content_devices(self, active_sidebar):
+        return "dev"
+
+    def _print_tab_content_profiles(self, active_sidebar):
+        return "prof"
+
+    def _print_tab_content_preferences(self, active_sidebar):
+        return "pref"

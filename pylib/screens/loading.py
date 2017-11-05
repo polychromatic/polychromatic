@@ -43,8 +43,9 @@ class Loading(object):
         self.update_page("#content", "append", html)
         self.update_page("#content", "fadeIn", fade_speed)
 
-    def close_screen(self, params=[]):
+    def close_screen(self, new_uid):
         self.update_page("#content", "fadeOut", fade_speed)
+        sleep(fade_interval)
 
     def process_command(self, cmd):
         pass

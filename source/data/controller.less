@@ -20,6 +20,8 @@
    Colour Scheme
 *************************/
 @bg-colour: #323232;
+@bg-colour-secondary: #000;
+@bg-sidebar: black;
 @text-colour: #888;
 @border-colour: #2D2D2D;    // #404040?
 @disabled-colour: #484848;
@@ -29,6 +31,7 @@
 @active-dark: #0DA902;
 @button-colour: #DED9CB;
 @serious: #FF2222;
+@hover-grey: gray;
 
 @spectrum1: #C500FF; // Purple
 @spectrum2: #FF8900; // Orange
@@ -137,13 +140,15 @@ button {
 /************************
    Header
 *************************/
+@header-height: 42px;
+@header-padding: 8px;
 #header {
     position: fixed;
     left: 0;
     top: 0;
     width: 100%;
-    height: 42px;
-    padding: 8px;
+    height: @header-height;
+    padding: @header-padding;
     background-image: url('../img/header/generic.jpg');
     background-repeat: no-repeat;
     background-position: left -2px;
@@ -333,6 +338,17 @@ img.wave {
     left: 16px;
     right: 16px;
     overflow-y: scroll;
+    color: @text-colour;
+    font-size: 0.9em;
+
+    &.has-tabs {
+        top: 95px;
+        padding: 0;
+    }
+
+    &.has-sidebar {
+        left: 0;
+    }
 
     p {
         padding: 0px;
@@ -400,13 +416,15 @@ input[type="radio"] {
 /************************
    Footer
 *************************/
+@footer-height: 32px;
+@footer-padding: 8px;
 #footer {
     position: fixed;
     left: 0;
     bottom: 0;
     width: 100%;
-    height: 32px;
-    padding: 8px;
+    height: @footer-height;
+    padding: @footer-padding;
     background-color: @footer-colour;
 
     p {
@@ -1140,14 +1158,16 @@ label.disabled {
 /************************
    Tabs
 *************************/
+@tab-height: 32px;
+@tab-padding: 4px;
 #tabs {
     position: fixed;
     top: 59px;
     left: 0;
     right: 0;
     width: calc(~'100% - 12px');
-    height: 32px;
-    padding: 0 4px;
+    height: @tab-height;
+    padding: 0 @tab-padding;
     background-color: rgba(18,18,18,0.8);
     border-bottom: 2px solid @bg-colour;
     overflow-y: none;
@@ -1201,6 +1221,70 @@ label.disabled {
     margin-right: 16px;
 }
 
+/************************
+   Sidebar
+*************************/
+@sidebar-width: 275px;
+@sidebar-border-width: 3px;
+@sidebar-transition-speed: 0.25s;
+#sidebar {
+    position: fixed;
+    top: calc(@header-height + @header-padding + @tab-height + @tab-padding + 9px);
+    bottom: calc(@footer-height + @footer-padding + 8px);
+    left: 0;
+    width: @sidebar-width;
+    display: inline-block;
+    vertical-align: top;
+    background-color: @bg-sidebar;
+
+    .sidebar-item {
+        width: 100%;
+        border-left: @sidebar-border-width solid @bg-sidebar;
+        border-bottom: 1px solid @border-colour;
+        padding-left: 4px;
+        transition: border-left @sidebar-transition-speed,
+                    padding-left @sidebar-transition-speed,
+                    background-color @sidebar-transition-speed,
+                    color @sidebar-transition-speed;
+
+        img {
+            vertical-align: middle;
+            padding: 0 4px;
+            transition: filter @sidebar-transition-speed;
+        }
+
+        span {
+            vertical-align: middle;
+        }
+
+        &.active {
+            border-left-color: @active;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: @hover-grey;
+            color: lighten(@hover-grey, 40%);
+            border-left-color: white !important;
+
+            img {
+                filter: grayscale(1) brightness(1.5);
+            }
+        }
+
+        &:active {
+            border-color: transparent !important;
+            border-left-color: white !important;
+        }
+    }
+}
+
+#sidebar-page {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: @sidebar-width;
+    padding: 8px;
+}
 
 /************************
    Loading Page

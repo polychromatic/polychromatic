@@ -80,7 +80,7 @@ class Error(object):
         self.update_page("#error-page", "append", "<p id='error-code' hidden>{0}</p>".format(_("Support Code:") + " " + str(error_code)))
         self.update_page("#error-code", "fadeIn", fade_speed)
 
-    def close_screen(self, params=[]):
+    def close_screen(self, new_uid):
         self.update_page("#content", "fadeOut", fade_speed)
         sleep(fade_interval)
 
