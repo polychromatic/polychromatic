@@ -400,11 +400,14 @@ class Controller(object):
             import grp
             if not "plugdev" in [grp.getgrgid(g).gr_name for g in os.getgroups()]:
                 show_fatal_error(105)
+                return
 
             if error_traceback:
                 show_fatal_error(error_code, error_traceback)
+                return
             else:
                 show_fatal_error(error_code)
+                return
 
         self.devices = self.get_devices()
 
@@ -1149,28 +1152,10 @@ class Controller(object):
 
             # Determine which message to display.
             if lsusb.find("ID 1532") == -1:
-                title = _("No Razer Product Connected")
-                message = _("Please plug in your Razer device and reload the application/daemon.")
-                icon = "no-device"
-                severity = "normal"
+                show_fatal_error(107)
             else:
-                title = _("Device Not Recognised")
-                message = _("A Razer product is connected to your computer, but the daemon didn't detect it.") + '<br>' + \
-                          _("It is possible your Razer product is not bound to the driver properly or it is not yet supported.") + \
-                          '<br><br><u>' + _("Suggestions:") + '</u>' \
-                          '<br>• ' + _("Use the 'modprobe' command to bind the driver to the device.") + \
-                          '<br>• <u><a onclick="cmd(\'open?https://github.com/openrazer/openrazer#device-support\')">' + \
-                            _("Check whether your device PID is listed.") + '</u></a>' + \
-                          '<br>• ' + _("Check the daemon log:") + ' <a onclick="cmd(\'open?/home/$USER/.local/share/openrazer/logs/razer.log\')"><u><code>~/.local/share/openrazer/logs/razer.log</code></u></a>' + \
-                           '</u></a><br><br>' + \
-                           _("As this is a driver/daemon problem, please") + ' ' + \
-                           '<a onclick="cmd(\'open?https://github.com/openrazer/openrazer/wiki/Troubleshooting\')"><u>' + \
-                                _("refer to the troubleshooting guide for further assistance.") + \
-                           '</u></a>'
-                icon = "no-support"
-                severity = "warning"
+                show_fatal_error(106)
 
-            self.show_error_page(severity, icon, title, message)
             return []
 
         return found_devices
@@ -2858,6 +2843,10 @@ def show_fatal_error(code, traceback=None):
     103     Daemon version mismatch
     104     Old daemon version detected
     105     User is not in plugdev group
+    106     No devices found, but Razer PID detected
+    107     No devices found
+    108     Daemon not installed (can't find path)
+    109     Daemon cannot be relaunched
 
     """
     params = [code]
@@ -2926,6 +2915,50 @@ def show_fatal_error(code, traceback=None):
                 '<br><code>sudo gpasswd -a ' + whoami + ' plugdev</code>'
         ]
 
+    elif code == 106:
+        params += [
+            "warning",
+            "no-support.png",
+            _("Device Not Recognised"),
+            _("A Razer product is connected to your computer, but the daemon didn't detect it.") + '<br>' + \
+                _("It is possible your Razer product is not bound to the driver properly or it is not yet supported.") + \
+                '<br><br><u>' + _("Suggestions:") + '</u>' \
+                '<br>• ' + _("Use the 'modprobe' command to bind the driver to the device.") + \
+                '<br>• <u><a onclick="cmd(\'open?https://github.com/openrazer/openrazer#device-support\')">' + \
+                _("Check whether your device PID is listed.") + '</u></a>' + \
+                '<br>• ' + _("Check the daemon log:") + ' <a onclick="cmd(\'open?/home/$USER/.local/share/openrazer/logs/razer.log\')"><u><code>~/.local/share/openrazer/logs/razer.log</code></u></a>' + \
+                '</u></a><br><br>' + \
+                _("As this is a driver/daemon problem, please") + ' ' + \
+                '<a onclick="cmd(\'open?https://github.com/openrazer/openrazer/wiki/Troubleshooting\')"><u>' + \
+                    _("refer to the troubleshooting guide for further assistance.") + \
+                '</u></a>'
+        ]
+
+    elif code == 107:
+        params += [
+            "normal",
+            "no-device.png",
+            _("No Razer Product Connected"),
+            _("Please plug in your Razer device and reload the application/daemon.")
+        ]
+
+    elif code == 108:
+        params += [
+            "serious",
+            "generic.png",
+            _("Daemon Not Installed"),
+            _("Could not find the executable for 'openrazer-daemon'. Please try re-installing the daemon.")
+        ]
+
+    elif code == 109:
+        params += [
+            "serious",
+            "generic.png",
+            _("Daemon cannot be relaunched."),
+            _("Failed to execute 'openrazer-daemon'. Please check the daemon log to troubleshoot the problem.") + \
+                '<br><code>~/.local/share/openrazer/logs/</code><br><br>' + _("Alternately, open a terminal and run:") + '<br><code>openrazer-daemon -Fv</code>'
+        ]
+
     else:
         params += [
             "serious",
@@ -2955,8 +2988,7 @@ def restart_daemon_service():
     # Is the daemon actually installed?
     if not which("openrazer-daemon"):
         app.load_lock = False
-        app.show_error_page("serious", "generic", _("Daemon Not Installed."),
-                            _("Could not find the executable for 'openrazer-daemon'. Please try re-installing the daemon."))
+        show_fatal_error(108)
         return
 
     # Gracefully stop the daemon
@@ -3021,9 +3053,7 @@ def restart_daemon_service():
 
     if not running:
         app.load_lock = False
-        app.show_error_page("serious", "generic", _("Daemon cannot be relaunched."),
-                            _("Failed to execute 'openrazer-daemon'. Please check the daemon log to troubleshoot the problem.") + \
-                            '<br><code>~/.local/share/openrazer/logs/</code><br><br>' + _("Alternately, open a terminal and run:") + '<br><code>openrazer-daemon -Fv</code>')
+        show_fatal_error(109)
         return
 
     # Relaunch Controller / Tray Applet

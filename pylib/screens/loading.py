@@ -31,6 +31,7 @@ class Loading(object):
         self.uid = "loading"
         self.webkit = controller.webkit
         self.update_page = controller.update_page
+        self.controller = controller
         self.pref = pref
         self.path = path
         self.ui = ui
