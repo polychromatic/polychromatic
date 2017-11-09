@@ -37,7 +37,7 @@ class MainMenu(object):
         self.ui = ui
         self.dbg = dbg
 
-        self.current_tab_no = 0
+        self.current_tab_no = -1
 
     def open_screen(self, params=[]):
         """
@@ -61,10 +61,10 @@ class MainMenu(object):
         """
         active_tab = params[0]
         active_sidebar = params[1]
-        self.current_tab_no = active_tab
+
+        self.dbg.stdout("Opening tab: {0} (sidebar item {1})".format(str(active_tab), str(active_sidebar)), self.dbg.action, 2)
 
         # Tabs
-        self.dbg.stdout("Opening tab: " + str(active_tab), self.dbg.action, 2)
         html_tab = self.ui.print_tab(0, "states/keyboard.svg", _("Devices"), ("active" if active_tab == 0 else ""))
         html_tab += self.ui.print_tab(1, "ui/profile-default.svg", _("Profiles"), ("active" if active_tab == 1 else ""))
         html_tab += self.ui.print_tab(2, "ui/controller.svg", _("Preferences"), "tab-right " + ("active" if active_tab == 2 else ""))
@@ -79,8 +79,9 @@ class MainMenu(object):
         }
 
         # Header
-        self.update_page("#header", "html", "<h3 id='page-title' hidden>{0}</h3>".format(subpages[active_tab][0]))
-        self.update_page("#header h3", "fadeIn", fade_speed)
+        if not self.current_tab_no == active_tab:
+            self.update_page("#header", "html", "<h3 id='page-title' hidden>{0}</h3>".format(subpages[active_tab][0]))
+            self.update_page("#header h3", "fadeIn", fade_speed)
 
         # Sidebar (if this page has one)
         html_sidebar = "<div id='sidebar'>"
@@ -108,6 +109,7 @@ class MainMenu(object):
         self.update_page("#content", "addClass", "has-tabs")
         self.update_page("#content", "addClass", "has-sidebar")
         self.update_page("#content", "fadeIn", fade_speed)
+        self.current_tab_no = active_tab
 
     def close_screen(self, new_uid):
         self.update_page("#content", "removeClass", "has-tabs")
