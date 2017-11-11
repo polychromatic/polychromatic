@@ -153,6 +153,7 @@ You can update your installation by clicking **"Check for Updates"** in the pref
 
     ./install/update.sh
 
+**Note for Red Hat or CentOS 7** - OpenRazer does not officially support this at the moment ([#399](https://github.com/openrazer/openrazer/issues/399), [#408](https://github.com/openrazer/openrazer/issues/408)). However [moozhub has created packages](https://github.com/moozhub/yum-repo-mooz) you can use.
 
 ### Dependencies
 
