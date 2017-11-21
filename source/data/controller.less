@@ -536,9 +536,18 @@ input[type="radio"] {
     height: 37%;
 }
 
-#dialog-changelog {
-    width: 60%;
-    height: 70%;
+/* Changelog */
+#changelog-body {
+    overflow: scroll;
+    height: calc(~'100% - 80px');
+    color: @text-colour;
+    font-size: 0.9em;
+
+    a {
+        color: lime;
+        text-decoration: underline;
+        cursor: pointer;
+    }
 }
 
 /* Dialog Animations */
@@ -1241,7 +1250,7 @@ label.disabled {
         width: 100%;
         border-left: @sidebar-border-width solid @bg-sidebar;
         border-bottom: 1px solid @border-colour;
-        padding-left: 4px;
+        padding: 4px;
         transition: border-left @sidebar-transition-speed,
                     padding-left @sidebar-transition-speed,
                     background-color @sidebar-transition-speed,
@@ -1251,6 +1260,8 @@ label.disabled {
             vertical-align: middle;
             padding: 0 4px;
             transition: filter @sidebar-transition-speed;
+            width: 24px;
+            height: 24px;
         }
 
         span {
@@ -1283,7 +1294,8 @@ label.disabled {
     display: inline-block;
     vertical-align: top;
     margin-left: @sidebar-width;
-    padding: 8px;
+    padding: 0em 1em;
+    width: calc(~'100% - 275px - 2.3em');
 }
 
 /************************
@@ -1603,8 +1615,8 @@ label.disabled {
 }
 
 .colour-table-item {
-    width: 75%;
-    margin: 0 1%;
+    width: 100%;
+    margin: 0;
     height: 24px;
     padding-top: 2px;
     padding-bottom: 2px;
@@ -1655,10 +1667,22 @@ label.disabled {
     }
 }
 
-#colour-editor {
-    position: fixed;
-    top: 10em;
-    right: 0em;
+#colour-left {
+    width: 300px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+#colour-right {
+    width: 300px;
+    display: inline-block;
+    vertical-align: top;
+    padding-left: 1em;
+
+    input {
+        width: 250px;
+        margin: 1em 0;
+    }
 }
 
 #colour-edit-preview {
@@ -1675,9 +1699,40 @@ label.disabled {
     > img {
         width: 24px;
         height: auto;
-
-        &.selected {
-            border: 2px solid lime;
-        }
     }
+
+    &.selected {
+        border: 2px solid lime;
+    }
+}
+
+input.invalid {
+    border: 1px solid red;
+}
+
+label.invalid {
+    color: red;
+    display: block;
+    width: 100%;
+    padding: 4px;
+}
+
+.gtk-preview-panel {
+    display: inline-block;
+    text-align: center;
+    height: 24px;
+    padding: 2px 16px;
+}
+
+.gtk-preview {
+    height: 22px;
+    width: 22px;
+}
+
+/************************
+   Misc UI
+*************************/
+.loading-text {
+    color: @text-colour;
+    font-size: 0.9em;
 }

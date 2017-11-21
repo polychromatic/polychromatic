@@ -12,6 +12,12 @@ import sys
 import gettext
 from time import sleep
 from threading import Thread
+from subprocess import Popen as background_process
+from subprocess import check_output
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 
 # Devices that do not support RGB at all.
 # (excludes Ultimate which supports shades of green)
@@ -438,6 +444,112 @@ def set_default_tray_icon(pref):
     else:
         # MATE/Unity/Others
         pref.set("tray_icon", "value", "0")
+
+
+def get_tray_icon_preview_bg_colours():
+    """
+    Uses GTK to determine the background color of a user's panel where
+    the tray applet will be shown.
+
+    Returns a list of possible colours - light and dark.
+    """
+    colours = []
+    win = Gtk.Window()
+    style_context = win.get_style_context()
+    colours.append(style_context.lookup_color("dark_bg_color").color.to_string())
+    colours.append(style_context.lookup_color("bg_color").color.to_string())
+    return colours
+
+
+def get_tray_icon(dbg, pref, path):
+        """
+        Icon Sources
+            "tray_icon": {"type": "?"}
+                builtin     = One provided by Polychromatic.    "humanity-light"
+                custom      = One specified by user.            "/path/to/file"
+                gtk         = Use icon by GTK name.             "keyboard"
+        """
+
+        # If it's the first time loading, set default icon to desktop environment.
+        if not pref.exists("tray_icon", "type"):
+            set_default_tray_icon(pref)
+
+        icon_type = pref.get("tray_icon", "type", "builtin")
+        icon_value = pref.get("tray_icon", "value", "0")
+        icon_fallback = os.path.join(path.data_source, "tray", "humanity-light.svg")
+
+        try:
+            if icon_type == "builtin":
+                # icon_value = UUID
+                icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
+                return os.path.join(path.data_source, "tray", icon_index[icon_value]["path"])
+
+            elif icon_type == "custom":
+                # icon_value = Path to icon
+                if os.path.exists(icon_value):
+                    return icon_value
+                else:
+                    dbg.stdout("Icon missing: " + icon_value, dbg.error)
+                    dbg.stdout("Using fallback!", dbg.error)
+                    return icon_fallback
+
+            elif icon_type == "gtk":
+                # icon_value = Icon name used by GTK
+                return icon_value
+
+            else:
+                return icon_fallback
+
+        except Exception:
+            dbg.stdout("Error whlie loading icon, using fallback.", dbg.error)
+            return icon_fallback
+
+
+def restart_tray_applet(dbg, path):
+    """
+    Restarts the tray applet if an instance is running in the background.
+    """
+    dbg.stdout("Restarting tray applet...", dbg.action, 1)
+    try:
+        pid = int(check_output(["pidof", "polychromatic-tray-applet"]))
+        os.kill(pid, 9)
+    except Exception:
+        dbg.stdout("Tray applet not running so won't restart.", dbg.action, 1)
+        return
+
+    # Where is the tray applet?
+    if __file__.startswith("/usr"):
+        # System-wide installation
+        tray_bin_path = "/usr/bin/polychromatic-tray-applet"
+    else:
+        # Local/development
+        tray_bin_path = os.path.abspath(os.path.join(path.data_source, "../polychromatic-tray-applet"))
+
+    # Attempt to gracefully stop the process, then launch again.
+    try:
+        background_process(tray_bin_path)
+        dbg.stdout("Successfully reloaded tray applet.", dbg.success, 1)
+    except OSError as e:
+        dbg.stdout("Failed to relaunch tray applet!", dbg.error)
+        dbg.stdout("Exception: " + str(e), dbg.error)
+    return
+
+
+def get_path_from_gtk_icon_name(icon_name):
+    """
+    Returns an image path determined by a GTK icon name, if there is one.
+    """
+    theme = Gtk.IconTheme.get_default()
+    info = theme.lookup_icon(icon_name, 22, 0)
+    try:
+        filename = info.get_filename()
+    except Exception:
+        filename= None
+
+    if filename:
+        return filename
+    else:
+        return ""
 
 
 def devicestate_monitor_start(callback_function, file_path):
