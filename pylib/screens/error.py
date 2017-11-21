@@ -10,14 +10,14 @@ Polychromatic Pages Module: Error
 The screen for when serious errors that stop us dead in our tracks.
 """
 
-from .. import common as Common
+from .. import common as common
 from time import sleep as sleep
 import os
 import sys
 
-_ = Common.setup_translations(__file__, "polychromatic")
-fade_speed = Common.fade_speed
-fade_interval = Common.sleep_interval
+_ = common.setup_translations(__file__, "polychromatic")
+fade_speed = common.fade_speed
+fade_interval = common.sleep_interval
 
 class Error(object):
     def __init__(self, controller, ui, pref, path, dbg):

@@ -10,7 +10,7 @@ Polychromatic Pages Module: Menu
 Contains the base UI for managing the application.
 """
 
-from .. import common as Common
+from .. import common as common
 from time import sleep as sleep
 import os
 import sys
@@ -19,9 +19,9 @@ from platform import linux_distribution
 from subprocess import Popen as background_process
 import requests
 
-_ = Common.setup_translations(__file__, "polychromatic")
-fade_speed = Common.fade_speed
-fade_interval = Common.sleep_interval
+_ = common.setup_translations(__file__, "polychromatic")
+fade_speed = common.fade_speed
+fade_interval = common.sleep_interval
 
 class MainMenu(object):
     def __init__(self, controller, ui, pref, path, dbg):
@@ -269,9 +269,9 @@ class MainMenu(object):
             self.update_page("label.invalid", "fadeOut", fade_speed)
 
             self.update_page("#tray-builtin-icon", "prop", "checked", "true")
-            icon_path = Common.get_tray_icon(self.dbg, self.pref, self.path)
+            icon_path = common.get_tray_icon(self.dbg, self.pref, self.path)
             self.update_page(".gtk-preview", "attr", "src", "file://" + icon_path)
-            Common.restart_tray_applet(self.dbg, self.path)
+            common.restart_tray_applet(self.dbg, self.path)
             return True
 
         elif cmd.startswith("select-tray-icon-gtk?"):
@@ -292,7 +292,7 @@ class MainMenu(object):
             self.update_page("input.invalid", "removeClass", "invalid")
             self.update_page("label.invalid", "fadeOut", fade_speed)
 
-            icon_path = Common.get_path_from_gtk_icon_name(gtk_name)
+            icon_path = common.get_path_from_gtk_icon_name(gtk_name)
             self.update_page(".gtk-preview", "attr", "src", "file://" + icon_path)
 
             self.update_page("input", "removeClass", "invalid")
@@ -303,7 +303,7 @@ class MainMenu(object):
                 self.update_page("#tray-icon-gtk", "removeClass", "invalid")
                 self.update_page("#tray-icon-gtk-invalid", "fadeOut", fade_speed)
                 self.dbg.stdout("Using GTK icon file: " + icon_path, self.dbg.success, 1)
-                Common.restart_tray_applet(self.dbg, self.path)
+                common.restart_tray_applet(self.dbg, self.path)
             return True
 
         elif cmd.startswith("select-tray-icon-custom?"):
@@ -331,14 +331,14 @@ class MainMenu(object):
             else:
                 self.update_page("#tray-icon-path", "removeClass", "invalid")
                 self.update_page("#tray-icon-path-invalid", "fadeOut", fade_speed)
-                Common.restart_tray_applet(self.dbg, self.path)
+                common.restart_tray_applet(self.dbg, self.path)
             return True
 
         elif cmd == "restart-tray":
             """
             Restarts the tray applet to re-apply any new settings.
             """
-            Common.restart_tray_applet(self.dbg, self.path)
+            common.restart_tray_applet(self.dbg, self.path)
             return True
 
         ## Managing colours
@@ -544,8 +544,8 @@ class MainMenu(object):
 
             # Preview Area
             html = self.ui.print_control_category(_("Preview"))
-            icon_path = Common.get_tray_icon(self.dbg, self.pref, self.path)
-            bg_colours = Common.get_tray_icon_preview_bg_colours()
+            icon_path = common.get_tray_icon(self.dbg, self.pref, self.path)
+            bg_colours = common.get_tray_icon_preview_bg_colours()
             html += "<div class='gtk-preview-panel' style='background-color:{1}'><img class='gtk-preview' src='{0}'/></div>".format(icon_path, bg_colours[0])
             html += "<div class='gtk-preview-panel' style='background-color:{1}'><img class='gtk-preview' src='{0}'/></div>".format(icon_path, bg_colours[1])
 
