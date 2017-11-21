@@ -320,6 +320,9 @@ class Controller(object):
         """
         Process a command issued from the frontend for the page
         """
+        if cmd == "null":
+            return
+
         dbg.stdout("=> Command: " + str(cmd), dbg.debug, 2)
 
         # Global commands
@@ -389,6 +392,9 @@ class Controller(object):
         else:
             if not self.screen.process_command(cmd):
                 dbg.stdout("Unimplemented or missing command: " + cmd, dbg.error)
+
+        # WebKit2 quirk - clear "title" so same command can execute again
+        self.run_javascript("cmd('null')");
 
     def start_loading(self, webkit):
         """
