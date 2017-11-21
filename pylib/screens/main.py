@@ -89,11 +89,11 @@ class MainMenu(object):
 
         # Sidebar (if this page has one)
         html_sidebar = "<div id='sidebar'>"
-        if active_sidebar == 0:
+        if active_tab == 0:
             # List of devices
             html_sidebar += self.ui.print_sidebar_item(0, "states/keyboard.svg", _("Devices"), ("active" if active_sidebar == 0 else ""))
 
-        elif active_sidebar == 1:
+        elif active_tab == 1:
             # List of profile options
             pass
 
@@ -149,6 +149,7 @@ class MainMenu(object):
             self.update_page("#content", "hide")
             self.open_screen([tab_no, 0])
             return True
+
         elif cmd.startswith("switch-sidebar?"):
             subpage_no = int(cmd.split("?")[1])
             self.open_screen([self.current_tab_no, subpage_no])
