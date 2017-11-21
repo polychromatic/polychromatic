@@ -80,7 +80,7 @@ version_dev = False
 
 path = pref.Paths()
 path.data_source = path.get_data_source(__file__)
-daemon_config_path = os.path.join(os.path.expanduser('~'), ".local/share/openrazer/razer.conf")
+daemon_config_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.conf")
 
 # Imported on-demand:
 #   * requests
@@ -305,15 +305,15 @@ class Controller(object):
         """
         if parm1 and parm2:
             buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "', '" + parm2.replace("'", '\\\'') + "')"
-            dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
+            dbg.stdout(' => ' + buffer, dbg.debug, 2)
             self.run_javascript(buffer)
         if parm1:
             buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "')"
-            dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
+            dbg.stdout(' => ' + buffer, dbg.debug, 2)
             self.run_javascript(buffer)
         else:
             buffer = '$("' + element + '").' + function + '()'
-            dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
+            dbg.stdout(' => ' + buffer, dbg.debug, 2)
             self.run_javascript(buffer)
 
     def process_command(self, cmd):
@@ -327,18 +327,37 @@ class Controller(object):
 
         # Global commands
         if cmd == "quit":
+            """
+            Close the application.
+            """
             exit()
 
         elif cmd == "restart-daemon":
+            """
+            Restarts the OpenRazer daemon.
+            """
             restart_daemon_service()
 
         elif cmd == "reload":
+            """
+            Restarts the application.
+            """
             os.execv(__file__, sys.argv)
 
         elif cmd.startswith("run?"):
+            """
+            Runs a program (or command) to run in the background.
+
+            Expects:    ?<program>
+            """
             background_process(cmd.split("run?")[1], shell=True)
 
         elif cmd.startswith("open?"):
+            """
+            Opens a file/folder/protocol using the default application.
+
+            Expects:    ?<path>
+            """
             os.system("xdg-open '{0}'".format(cmd.split("open?")[1]))
 
         elif cmd.startswith("browse?"):
@@ -418,7 +437,7 @@ class Controller(object):
         except Exception as e:
             self.devman = None
             error_code = 102
-            error_traceback = str(e)
+            show_fatal_error(error_code, str(e))
 
         # When the running daemon and installed library differ, request the user to restart the daemon.
         # Running   = Current running daemon's version.
@@ -432,7 +451,8 @@ class Controller(object):
             running_version = 0
             installed_version = 0
 
-        if installed_version < running_version:
+        # Require restart if daemon is outdated.
+        if running_version < installed_version and not version_dev:
             show_fatal_error(103)
             return
 
@@ -449,12 +469,8 @@ class Controller(object):
                 show_fatal_error(105)
                 return
 
-            if error_traceback:
-                show_fatal_error(error_code, error_traceback)
-                return
-            else:
-                show_fatal_error(error_code)
-                return
+            show_fatal_error(error_code)
+            return
 
         self.devices = self.get_devices()
 
