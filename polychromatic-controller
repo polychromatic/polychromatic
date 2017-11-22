@@ -270,7 +270,7 @@ class Controller(object):
         self.show_fatal_error = show_fatal_error
 
         self.screens = {
-            "mainmenu": Screens.main.MainMenu,
+            "mainscreen": Screens.main.MainScreen,
             "loading": Screens.loading.Loading,
             "error": Screens.error.Error
         }
@@ -496,7 +496,7 @@ class Controller(object):
         common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
 
         dbg.stdout("Application Ready.", dbg.success, 2)
-        self.change_screen("mainmenu", [0, 0])
+        self.change_screen("mainscreen", [0, 0])
 
 
 
