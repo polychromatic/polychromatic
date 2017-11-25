@@ -78,6 +78,9 @@ setproctitle("polychromatic-controller")
 version = "1.0.0-alpha"
 version_dev = False
 
+# For when fatal errors occur.
+deadlock = False
+
 path = pref.Paths()
 path.data_source = path.get_data_source(__file__)
 daemon_config_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.conf")
@@ -2616,6 +2619,12 @@ def show_fatal_error(code, traceback=None):
 
     """
     params = [code]
+
+    # Do not show another error again if one occurs.
+    global deadlock
+    if deadlock:
+        return
+    deadlock = True
 
     if code == 100:
         params += [
