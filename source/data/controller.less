@@ -31,6 +31,7 @@
 @active-dark: #0DA902;
 @button-colour: #DED9CB;
 @serious: #FF2222;
+@warning: yellow;
 @hover-grey: gray;
 
 @spectrum1: #C500FF; // Purple
@@ -40,6 +41,8 @@
 @spectrum5: #00FFD9; // Aqua
 @spectrum6: #005AFF; // Blue
 @spectrum7: #3D00FF; // Dark Blue
+
+@dialogue-speed: 0.25s;
 
 /************************
    Global
@@ -456,28 +459,14 @@ input[type="radio"] {
     color: red;
 
     .warning {
-        color: yellow;
+        color: @warning;
     }
 }
 
 
 /************************
-   Page Dialogues
+   Dialogue box
 *************************/
-#overlay {
-    position: fixed;
-    top: 0; bottom: 0;
-    left: 0; right: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-}
-
-.blur {
-    -webkit-filter: blur(2px);
-}
-
 .dialog {
     position: fixed;
     margin: auto;
@@ -497,8 +486,35 @@ input[type="radio"] {
     h3 {
         margin-top: 8px;
     }
-}
 
+    &.serious {
+        border: 2px solid darken(@serious, 10%);
+
+        h3 {
+            color: red;
+        }
+
+        .btn {
+            &:hover {
+                color: lighten(@serious, 20%);
+            }
+
+            &:focus {
+                border-color: @serious !important;
+            }
+
+            &:active {
+                color: white !important;
+                background-color: @serious;
+                border-color: @serious !important;
+            }
+        }
+
+        .btn.primary {
+            color: @serious;
+        }
+    }
+}
 
 .dialog-buttons {
     float: right;
@@ -509,31 +525,19 @@ input[type="radio"] {
     width: 97%;
 }
 
-/* Dialog Sizes */
-#dialog-new {
-    width: 50%;
-    height: 44%;
+/* Background blur/dim */
+#overlay {
+    position: fixed;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.1);
+    z-index: 1;
 }
 
-#dialog-rename {
-    width: 50%;
-    height: 44%;
-}
-
-#dialog-del {
-    width: 40%;
-    height: 20%;
-}
-
-#dialog-applauncher {
-    width: 72%;
-    height: 70%;
-    z-index: 11;
-}
-
-#dialog-help {
-    width: 60%;
-    height: 37%;
+.modal-blur {
+    filter: blur(5px);
 }
 
 /* Changelog */
@@ -553,33 +557,31 @@ input[type="radio"] {
 /* Dialog Animations */
 .dialog.in {
     -webkit-animation-name: dialog-in;
-    -webkit-animation-duration: 0.25s;
+    -webkit-animation-duration: @dialogue-speed;
     -webkit-animation-timing-function: ease-in-out;
 }
 
 @-webkit-keyframes dialog-in {
-    0% {
-        opacity: 0;
-        -webkit-transform: scale3d(0.8, 0.8, 0.8);
+    1% {
+        transform: translateY(-50px);
     }
     100% {
-        opacity: 1;
+        transform: translateY(0px);
     }
 }
 
 .dialog.out {
     -webkit-animation-name: dialog-out;
-    -webkit-animation-duration: 0.25s;
+    -webkit-animation-duration: @dialogue-speed;
     -webkit-animation-timing-function: ease-in-out;
 }
 
 @-webkit-keyframes dialog-out {
     0% {
-        opacity: 1;
+        transform: translateY(0px);
     }
     100% {
-        opacity: 0;
-        -webkit-transform: scale3d(0.8, 0.8, 0.8);
+        transform: translateY(50px);
     }
 }
 
@@ -657,7 +659,7 @@ input[type="radio"] {
         pointer-events: none;
     }
 
-    &.btn-serious {
+    &.serious {
         color: @serious;
 
         &:hover {
@@ -670,7 +672,7 @@ input[type="radio"] {
         }
 
         &:focus {
-            border-color: darken(#800000, 10%);
+            border-color: darken(@serious, 10%) !important;
         }
     }
 
@@ -1403,7 +1405,7 @@ label.disabled {
         }
 
         &.warning {
-            color: yellow;
+            color: @warning;
         }
     }
 

@@ -2292,6 +2292,8 @@ class UIControls():
             disabled_class = "disabled"
         else:
             disabled_class = ""
+
+    @staticmethod
     def print_invalid_label(element_id, label):
         return "<label id='{0}' class='invalid' style='display:none'><span class='fa fa-warning'></span> {1}</label>".format(element_id, label)
 
@@ -2303,7 +2305,6 @@ class UIControls():
         cmd = "cmd('pref-set?editor?scaling?' + $(this).val())"
         return '<label class="pref-label {7}">{6} <input class="{7}" type="range" id="{0}" onmouseout="{1}" min="{2}" max="{3}" value="{4}" step="{5}"/></label>'.format(
             uid, cmd, min_value, max_value, start_value, step_value, label, disabled_class)
-
 
     @staticmethod
     def _get_helptext_html(text):
@@ -2327,14 +2328,14 @@ class UIControls():
         return '<div id="{0}" class="loading-text" hidden>{1}</div>'.format(element_id, message)
 
     class JavaScript():
-        def generate_confirmation_dialog(update_page, title, message, ok_label, ok_cmd=None, ok_serious=False, cancel_label=None, cancel_cmd=None, width=None, height=None):
+        def generate_confirmation_dialog(update_page, title, message, ok_label, ok_cmd=None, cancel_label=None, cancel_cmd=None, style_class="", width=None, height=None):
             dialog_uuid = "dialog-" + pref.generate_uuid()
-            html = '<div id="{0}" class="dialog" style="width:{3}; height:{4}" hidden>' \
+            html = '<div id="{0}" class="dialog {5}" style="width:{3}; height:{4}" hidden>' \
                     '<h3>{1}</h3>' \
                     '<p>{2}</p>' \
                     '<div class="dialog-buttons">' \
                     '<hr>'.format(
-                        dialog_uuid, title, message, width, height)
+                        dialog_uuid, title, message, width, height, style_class)
 
             if cancel_label:
                 cancel_onclick = "dialog_close('" + dialog_uuid + "')"
@@ -2345,59 +2346,32 @@ class UIControls():
                     cancel_label,
                     cancel_onclick)
 
-            html += '<button class="btn {3}" onclick="{0}; {1}">{2}</button>'.format(
+            html += '<button class="btn primary" onclick="{0}; {1}">{2}</button>'.format(
                 "dialog_close('" + dialog_uuid + "');",
                 ok_cmd if ok_cmd else "",
-                ok_label,
-                "btn-serious" if ok_serious else "")
+                ok_label)
 
             html += '</div></div>'
             update_page("body", "append", html)
             return dialog_uuid
 
-        def generate_alert_dialog(update_page, title, message, ok_label, ok_cmd=None, ok_serious=False, width=None, height=None):
+        def generate_alert_dialog(update_page, title, message, ok_label, ok_cmd=None, style_class="", width=None, height=None):
             dialog_uuid = "dialog-" + pref.generate_uuid()
-            html = '<div id="{0}" class="dialog" style="width:{3}; height:{4}" hidden>' \
+            html = '<div id="{0}" class="dialog {5}" style="width:{3}; height:{4}" hidden>' \
                     '<h3>{1}</h3>' \
                     '<p>{2}</p>' \
                     '<div class="dialog-buttons">' \
                     '<hr>'.format(
-                        dialog_uuid, title, message, width, height)
+                        dialog_uuid, title, message, width, height, style_class)
 
-            html += '<button class="btn {3}" onclick="{0}; {1}">{2}</button>'.format(
+            html += '<button class="btn primary" onclick="{0}; {1}">{2}</button>'.format(
                 "dialog_close('" + dialog_uuid + "');",
                 ok_cmd if ok_cmd else "",
-                ok_label,
-                "btn-serious" if ok_serious else "")
+                ok_label)
 
             html += '</div></div>'
             update_page("body", "append", html)
             return dialog_uuid
-
-    @staticmethod
-    def get_dialog_alert(update_page, state, title, message, ok_label, ok_command=None, width=None, height=None):
-        """
-        Shows an alert dialogue box.
-
-        state           str     'normal', 'serious', 'warning'.
-        title           str     Dialog title
-        message         str     Dialog text
-        ok_label        str     Button for the OK button
-        ok_command      str     (Optional) Specify the command upon pressing OK
-        width           str     Valid CSS width, e.g. pixels, em or percent.
-        height          str     Valid CSS height, e.g. pixels, em or percent.
-        """
-        uuid = generate_uuid()
-        html = '<div id="{0}" class="dialog dialog-{1}" style="width:{2}; height:{3}">'.format(uuid, state, width, height)
-        html += '<h3>{0}</h3>'.format(title)
-        html += '<p>{0}</p>'.format(message)
-        html += '<div class="dialog-buttons">'
-        html += '<button class="btn" onclick="{0}; {1}">{2}</button>'.format("dialog_close('{0}')".format(uuid), ok_command, ok_label)
-        html += '</div>'
-        html += '</div>'
-
-        update_page("#overlay", "fadeIn", "500")
-        update_page("body", "append", html)
 
     @staticmethod
     def print_tab(tab_number, icon_path, string, extra_class=""):

@@ -80,7 +80,7 @@ def process_command(self, cmd):
         """
         self.update_page("#loading-changelog", "show")
         def fetch_failed(reason):
-            failed_dialog_uuid = self.ui.JavaScript.generate_alert_dialog(self.update_page, _("Failed to retrieve changelog"), reason, _("OK"), None, False, "30em", "8em")
+            failed_dialog_uuid = self.ui.JavaScript.generate_alert_dialog(self.update_page, _("Failed to retrieve changelog"), reason, _("OK"), None, "", "30em", "8em")
             self.update_page("#loading-changelog", "hide")
             self.controller.run_javascript("dialog_open('{0}')".format(failed_dialog_uuid))
 
@@ -109,8 +109,8 @@ def process_command(self, cmd):
                 changelog_uuid = self.ui.JavaScript.generate_alert_dialog(self.update_page,
                     _("What's New?"),
                     "<div id='changelog-body'>{0}</div>".format(html),
-                    _("Close"), None, False,
-                    "60%", "70%")
+                    _("Close"), None,
+                    "", "60%", "70%")
                 self.controller.run_javascript("dialog_open('{0}')".format(changelog_uuid))
             else:
                 fetch_failed(_("A communication error occurred. Check your connection, or try visiting the project's webpage instead."))
@@ -426,10 +426,10 @@ def _print_general_tab(self):
         _("Reset Everything"),
         _("This will erase all your preferences, profiles and settings. This cannot be undone.") + '<br><br>' + \
         _("The application will restart."),
-        _("Reset Polychromatic"), "cmd(\'pref-reset-all\')", True,
+        _("Reset Polychromatic"), "cmd(\'pref-reset-all\')",
         _("Cancel"), None,
-        "50vw", "25vh")
-    html += self.ui.print_button(_("Reset Everything"), "reset-everything", "dialog_open('{0}')".format(reset_all_dialog_uuid), "fa-delete", False, "btn-serious", True)
+        "serious", "50vw", "25vh")
+    html += self.ui.print_button(_("Reset Everything"), "reset-everything", "dialog_open('{0}')".format(reset_all_dialog_uuid), None, False, "serious", True)
 
     return html
 
@@ -516,10 +516,10 @@ def _print_colours_tab(self):
         self.controller.update_page,
         _("Reset Colors"),
         _("Are you sure you want to reset all the colors to their defaults?"),
-        _("Restore Defaults"), "cmd(\'pref-colour-reset\')", True,
+        _("Restore Defaults"), "cmd(\'pref-colour-reset\')",
         _("Cancel"), None,
-        "50vw", "20vh")
-    html += self.ui.print_button(_("Restore Defaults"), "colour-reset", "dialog_open('" + reset_colour_dialog_uuid + "');", "fa-repeat", False, "btn-dim btn-serious", True)
+        "serious", "50vw", "20vh")
+    html += self.ui.print_button(_("Restore Defaults"), "colour-reset", "dialog_open('" + reset_colour_dialog_uuid + "');", "fa-repeat", False, "btn-dim serious", True)
     html += "<br><br>"
     html += "</div>"
 
@@ -528,7 +528,7 @@ def _print_colours_tab(self):
     html += self.ui.print_button(_("Choose..."), "colour-edit", "colour-pick?colour-edit", None, False)
     html += "<input id='colour-edit-name' class='pref-input' type='text'/>"
     html += self.ui.print_button(_("Save"), "colour-save", "", "fa-check", False)
-    html += self.ui.print_button(_("Delete"), "colour-delete", "", "fa-trash", False, "btn-serious")
+    html += self.ui.print_button(_("Delete"), "colour-delete", "", "fa-trash", False, "serious")
     html += "</div>"
 
     return html
