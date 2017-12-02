@@ -70,40 +70,42 @@ Please see the [project website](http://openrazer.github.io/#download) for instr
 
 Polychromatic can be installed via this PPA:
 
-    sudo add-apt-repository ppa:lah7/polychromatic
+    sudo add-apt-repository ppa:polychromatic/stable
     sudo apt update
     sudo apt install polychromatic
 
 The PPA is recommended as it keeps the application up-to-date.
 
-##### Daily Builds
+##### Development Builds
 
 These builds deliver the newest features and improvements quicker, but are not well tested and may be buggy at times.
 
-    sudo add-apt-repository ppa:lah7/polychromatic-daily
+    sudo add-apt-repository ppa:polychromatic/daily
     sudo apt update
     sudo apt install polychromatic
 
 If you later decide to revert back to the stable builds:
 
     sudo apt remove polychromatic
-    sudo rm /etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily.list*
-    sudo add-apt-repository ppa:lah7/polychromatic
+    sudo rm /etc/apt/sources.list.d/polychromatic-ubuntu-daily.list*
+    sudo add-apt-repository ppa:polychromatic/daily
     sudo apt update
     sudo apt install polychromatic
+
+The previous `lah7/polychromatic` and `lah7/polychromatic-daily` PPAs have been deprecated, while they'll still be updated during this transition, in future versions you'll be advised to switch.
 
 #### ![Debian](.readme/debian.png) Debian
 
 Packages built for Ubuntu are also compatible with Debian. You can add the repository and signing key as follows:
 
 ```
-echo "deb http://ppa.launchpad.net/lah7/polychromatic/ubuntu xenial main" | sudo tee -a /etc/apt/sources.list.d/polychromatic.list
+echo "deb http://ppa.launchpad.net/polychromatic/stable/ubuntu xenial main" | sudo tee -a /etc/apt/sources.list.d/polychromatic.list
 sudo apt-key adv --recv-key --keyserver keyserver.ubuntu.com 6CFDA3EBE08FDDE9
 sudo apt update
 sudo apt install polychromatic
 ```
 
-(Or `polychromatic-daily` for development builds)
+(Or `daily` instead of `stable` for development builds)
 
 Standalone packages are available from the [releases page](https://github.com/lah7/polychromatic/releases/latest/),
 or by following a manual installation below.
