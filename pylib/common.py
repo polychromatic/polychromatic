@@ -10,10 +10,9 @@
 import os
 import sys
 import gettext
+import subprocess
 from time import sleep
 from threading import Thread
-from subprocess import Popen
-from subprocess import check_output
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -516,7 +515,7 @@ def restart_tray_applet(dbg, path):
     """
     dbg.stdout("Restarting tray applet...", dbg.action, 1)
     try:
-        pid = int(check_output(["pidof", "polychromatic-tray-applet"]))
+        pid = int(subprocess.check_output(["pidof", "polychromatic-tray-applet"]))
         os.kill(pid, 9)
     except Exception:
         dbg.stdout("Tray applet not running so won't restart.", dbg.action, 1)
