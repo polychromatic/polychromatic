@@ -12,7 +12,7 @@ import sys
 import gettext
 from time import sleep
 from threading import Thread
-from subprocess import Popen as background_process
+from subprocess import Popen
 from subprocess import check_output
 
 import gi
@@ -527,7 +527,7 @@ def restart_tray_applet(dbg, path):
 
     # Attempt to gracefully stop the process, then launch again.
     try:
-        background_process(tray_bin_path)
+        subprocess.Popen(tray_bin_path)
         dbg.stdout("Successfully reloaded tray applet.", dbg.success, 1)
     except OSError as e:
         dbg.stdout("Failed to relaunch tray applet!", dbg.error)
@@ -595,6 +595,27 @@ def has_fixed_colour(device_obj):
             return True
     return False
 
+
+
+def is_any_razer_device_connected(dbg):
+    """
+    Scan 'lsusb' for Razer devices. Used for diagnostics to check whether a device is incompatible with daemon.
+
+    Returns:
+    None        Cannot be determined.
+    True        Razer device was found
+    False       Could not find a Razer device
+    """
+    try:
+        lsusb = str(subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0])
+    except FileNotFoundError:
+        dbg.stdout("'lsusb' not available, unable to determine if product is connected.", dbg.error, 1)
+        return None
+
+    if lsusb.find("ID 1532") == -1:
+        return False
+    else:
+        return True
 """
 Module Initalization
 """

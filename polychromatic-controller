@@ -1208,19 +1208,11 @@ class Controller(object):
         if len(found_devices) == 0:
             dbg.stdout("WARN: Daemon did not return any devices.", dbg.warning, 1)
 
-            # Scan 'lsusb' in case device is incompatible with daemon.
-            import subprocess
-            try:
-                lsusb = str(subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0])
-            except FileNotFoundError:
-                dbg.stdout("'lsusb' not available, unable to determine if product is connected.", dbg.error, 1)
-                lsusb = ""
-
-            # Determine which message to display.
-            if lsusb.find("ID 1532") == -1:
-                show_fatal_error(107)
-            else:
+            # Check whether it's just a device incompatible with the daemon.
+            if common.is_any_razer_device_connected(dbg):
                 show_fatal_error(106)
+            else:
+                show_fatal_error(107)
 
             return []
 
