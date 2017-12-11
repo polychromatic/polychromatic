@@ -42,17 +42,21 @@ class Debugging(object):
         self.debug = '\033[96m'
         self.normal = '\033[0m'
 
-    def stdout(self, msg, colour_code='\033[0m', verbosity=0):
+    def stdout(self, msg, colour_code='\033[0m', verbosity=0, overwritable=False):
         # msg           String containing message for stdout.
         # color         stdout code (e.g. '\033[92m')
         # verbosity     0 = Always shown
         #               1 = -v flag
         #               2 = -vv flag
+        if overwritable:
+            line_end = "\r"
+        else:
+            line_end = "\n"
 
         if self.verbose_level >= verbosity:
             # Only colourise output if running in a real terminal.
             if sys.stdout.isatty():
-                print(colour_code + msg + '\033[0m')
+                print(colour_code + msg + '\033[0m', end=line_end)
             else:
                 print(msg)
 
