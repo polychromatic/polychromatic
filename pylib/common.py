@@ -601,6 +601,13 @@ def has_fixed_colour(device_obj):
     return False
 
 
+def colour_to_hex(colour):
+    """
+    Converts a list [R,G,B] input to #RRGGBB format
+    """
+    return "#{0:02X}{1:02X}{2:02X}".format(*colour)
+
+
 
 def is_any_razer_device_connected(dbg):
     """
