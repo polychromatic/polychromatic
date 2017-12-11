@@ -91,17 +91,18 @@ def setup_translations(bin_path, i18n_app, locale_override=None):
     return t.gettext
 
 
-def get_device_type(device_type):
+def get_device_type(device_obj):
     """
     Convert the daemon's device type string to what Polychromatic identifies as "form factor".
-    This is used for determining icons.
+    This is used for determining icons and filtering a list of device objects.
     """
-    if device_type == "firefly":
+    form_factor = device_obj.type
+
+    if form_factor == "firefly":
         form_factor = "mousemat"
-    elif device_type == "tartarus":
+    elif form_factor == "tartarus":
         form_factor = "keypad"
-    else:
-        form_factor = device_type
+
     return(form_factor)
 
 

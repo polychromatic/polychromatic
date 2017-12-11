@@ -452,7 +452,7 @@ class AppIndicator(object):
         for device in self.devman.devices:
             name = device.name
             serial = device.serial
-            formfactor = common.get_device_type(device.type)
+            formfactor = common.get_device_type(device)
             icon_path = self._get_icon("states", formfactor + ".svg")
             if not os.path.exists(icon_path):
                 icon_path = self._get_icon("states", "unknown.svg")

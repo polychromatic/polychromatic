@@ -1737,11 +1737,10 @@ class Controller(object):
 
         if effect == "wave":
             # Customise wave direction string depending on form factor
-            device_type = self.active_device.type
-            if common.get_device_type(device_type) == "mouse":
+            if common.get_device_type(self.active_device) == "mouse":
                 left = _("Down")
                 right = _("Up")
-            elif common.get_device_type(device_type) == "mousemat":
+            elif common.get_device_type(self.active_device) == "mousemat":
                 left = _("Clockwise")
                 right = _("Anti-clockwise")
             else:
@@ -1822,7 +1821,7 @@ class Controller(object):
         if not self.current_page == "menu":
             return
 
-        device_type = common.get_device_type(self.active_device.type)
+        device_type = common.get_device_type(self.active_device)
         effect = pref.get_device_state(self.active_device.serial, "main", "effect")
         if colour_rgb:
             red = colour_rgb[0]
@@ -1948,7 +1947,7 @@ class Controller(object):
                 image = "icon"
 
         if image == "icon":
-            formfactor = common.get_device_type(device.type)
+            formfactor = common.get_device_type(device)
             img_path = path.data_source + "/img/states/{0}.svg".format(formfactor)
             if not os.path.exists(img_path):
                 img_path = unknown_icon
