@@ -423,9 +423,9 @@ class AppIndicator(object):
         A simple menu is displayed when something goes wrong.
         """
         if indicator_support:
-            self.indicator.set_from_file(self._get_icon("../tray", "error.svg"))
-        else:
             self.indicator.set_icon(self._get_icon("../tray", "error.svg"))
+        else:
+            self.indicator.set_from_file(self._get_icon("../tray", "error.svg"))
 
         root = Gtk.Menu()
         root.append(create_menu_item(error_reason, False))
