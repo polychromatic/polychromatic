@@ -134,7 +134,7 @@ Thank you to [z3ntu](https://github.com/z3ntu) for setting this up.
 
 #### ![Gentoo](.readme/gentoo.png) Gentoo
 
-Rudimentary ebuilds for Gentoo are maintained by [vifino](https://github.com/vifino) in his personal overlay. These can be installed with these commands:
+Rudimentary ebuilds for Gentoo are maintained by [vifino](https://github.com/vifino) in [his personal overlay](https://github.com/vifino/vifino-overlay/tree/master/app-misc/polychromatic). These can be installed with these commands:
 
     sudo layman -a vifino-overlay
     emerge polychromatic
