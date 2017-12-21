@@ -423,6 +423,7 @@ class AppIndicator(object):
         A simple menu is displayed when something goes wrong.
         """
         if indicator_support:
+            self.indicator.set_title("Polychromatic")
             self.indicator.set_icon(self._get_icon("../tray", "error.svg"))
         else:
             self.indicator.set_from_file(self._get_icon("../tray", "error.svg"))
@@ -440,6 +441,7 @@ class AppIndicator(object):
             self.indicator.set_menu(root)
         else:
             self.menu = root
+            self.indicator.connect("popup-menu", self.cb_show_menu)
 
         dbg.stdout("ERROR: " + error_reason, dbg.error)
         if exception:
@@ -1019,7 +1021,10 @@ def restart_daemon_service():
         print(string)
         root = Gtk.Menu()
         root.append(create_menu_item(string, False))
-        indicator.indicator.set_menu(root)
+        if indicator_support:
+            indicator.indicator.set_menu(root)
+        else:
+            indicator.menu = root
 
     # Gracefully stop the daemon
     _update_status(_("Stopping openrazer-daemon..."))
