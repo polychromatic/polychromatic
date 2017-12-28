@@ -109,21 +109,55 @@ def get_device_type(device_obj):
     return(form_factor)
 
 
+def get_device_list_by_type(device_obj_list, filtered_type):
+    """
+    Returns a list of device objects filtered to the desired form factor of device.
+    """
+    filtered_list = []
+    for device_obj in device_obj_list:
+        formfactor = get_device_type(device_obj)
+        if formfactor == filtered_type:
+            filtered_list.append(device_obj)
+    return filtered_list
+
+
+def get_device_list_by_serial(device_obj_list, expected_serial):
+    """
+    Returns the device object based on serial number.
+    """
+    for device_obj in device_obj_list:
+        if device_obj.serial == expected_serial:
+            return device_obj
+    return None
+
+
+def get_supported_lighting_sources(device_obj):
+    """
+    Returns a list of supported lighting sources (may also be referred to as "targets")
+    """
+    supported_sources = []
+
+    if device_obj.has("lighting"):
+        supported_sources.append("main")
+
+    if device_obj.has("lighting_backlight"):
+        supported_sources.append("backlight")
+
+    if device_obj.has("lighting_logo"):
+        supported_sources.append("logo")
+
+    if device_obj.has("lighting_scroll"):
+        supported_sources.append("scroll")
+
+    return supported_sources
+
+
 def has_multiple_sources(device_obj):
     """
     Returns True or False to determine whether a device has multiple light sources.
     """
-    main_light = device_obj.has("lighting")
-    backlight_light = device_obj.has("lighting_backlight")
-    logo_light = device_obj.has("lighting_logo")
-    scroll_light = device_obj.has("lighting_scroll")
-
-    light_sources = 0
-    for value in [main_light, backlight_light, logo_light, scroll_light]:
-        if value == True:
-            light_sources += 1
-
-    if light_sources > 1:
+    source_list = get_supported_lighting_sources(device_obj)
+    if len(source_list) >= 1:
         return True
     else:
         return False
@@ -161,7 +195,7 @@ def get_effect_state_string(string):
         return string
 
 
-def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
+def set_lighting_effect(pref, device_object, source, effect, fx_params=None, primary_colours=None, secondary_colours=None):
     """
     Function to set a effect for a specific area of the device.
 
@@ -172,6 +206,9 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
                         e.g. wave / spectrum / static
     params =        (Optional) Any parameters for the effect, seperated by '?'.
                         e.g. 255?255?255?2
+
+    primary_colours =   (Optional) Use this list [R,G,B] these instead of default primary colour.
+    secondary_colours = (Optional) As above, but secondary colours.
     """
     serial = device_object.serial
 
@@ -199,8 +236,11 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
         fx = device_object.fx.misc.scroll_wheel
 
     # Determine colours
-    primary_colours = pref.get_device_state(serial, source, "colour_primary")
-    secondary_colours = pref.get_device_state(serial, source, "colour_secondary")
+    if not primary_colours:
+        primary_colours = pref.get_device_state(serial, source, "colour_primary")
+
+    if not secondary_colours:
+        secondary_colours = pref.get_device_state(serial, source, "colour_secondary")
 
     if primary_colours:
         primary_red = primary_colours[0]
@@ -607,6 +647,13 @@ def colour_to_hex(colour):
     return "#{0:02X}{1:02X}{2:02X}".format(*colour)
 
 
+def hex_to_colour(hex_string):
+    """
+    Converts a #RRGGBB to a [R,G,B] output.
+    """
+    hex_string = hex_string.lstrip("#")
+    return list(int(hex_string[i:i+2], 16) for i in (0, 2 ,4))
+
 
 def is_any_razer_device_connected(dbg):
     """
@@ -627,6 +674,8 @@ def is_any_razer_device_connected(dbg):
         return False
     else:
         return True
+
+
 """
 Module Initalization
 """
