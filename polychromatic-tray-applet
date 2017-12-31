@@ -169,11 +169,13 @@ class AppIndicator(object):
         if indicator_support:
             self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", self._get_tray_icon(), appindicator.IndicatorCategory.APPLICATION_STATUS)
             self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
+            dbg.stdout(_("Initialised AppIndicator"), dbg.debug, 1)
         else:
             self.indicator = Gtk.StatusIcon()
             self.indicator.set_name("polychromatic-tray-applet")
             self.indicator.set_from_file(self._get_tray_icon())
             self.indicator.set_visible(True)
+            dbg.stdout(_("Initialised GTK Status Icon (fallback)"), dbg.debug, 1)
 
     def setup(self):
         # Set active device
@@ -1003,6 +1005,7 @@ def parse_parameters():
     parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
     parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
+    parser.add_argument("--force-fallback", help=_("Force GTK Status Icon instead of AppIndicator"), action="store_true")
 
     args = parser.parse_args()
 
@@ -1012,6 +1015,10 @@ def parse_parameters():
 
     if args.locale:
         _ = common.setup_translations(__file__, "polychromatic", args.locale)
+
+    if args.force_fallback:
+        global indicator_support
+        indicator_support = False
 
 def restart_daemon_service():
     from subprocess import check_output
