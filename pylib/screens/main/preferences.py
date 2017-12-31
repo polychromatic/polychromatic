@@ -382,9 +382,10 @@ def _print_about_tab(self):
 
     # Frontend
     html = "<img class='about-logo' src='../img/logo/polychromatic.svg'/> <h1 id='about-text'>polychromatic</h1>"
-    html += self.ui.print_about_label(_("Version:"), version)
+    html += self.ui.print_about_label(_("Version:"), "v" + version)
     html += self.ui.print_about_label(_("Configuration:"), "v" + str(pref_version))
-    html += "<br/>"
+    html += self.ui.print_link("https://polychromatic.github.io", "https://polychromatic.github.io")
+    html += self.ui.print_page_break()
 
     if auto_updates and not dev_build:
         html += "<div class='about-update-status'><span class='fa fa-check-circle'></span> {0}</div>".format(
@@ -397,9 +398,15 @@ def _print_about_tab(self):
     if not auto_updates:
         html += self.ui.print_button(_("Check for Updates"), "update-button", "update-check")
 
-    html += self.ui.print_button(_("View on GitHub"), "project-button", "open?https://github.com/lah7/polychromatic", "fa-github")
     html += self.ui.print_button(_("View Change Log"), "changelog-button", "fetch-changelog")
     html += self.ui.print_loading_text("loading-changelog", _("Retrieving data..."))
+    html += self.ui.print_page_break()
+
+    html += "<div id='social-links'>"
+    html += self.ui.print_link("<span class='fa fa-github-square'></span> " + _("View on GitHub"), "https://github.com/lah7/polychromatic")
+    html += self.ui.print_link("<span class='fa fa-facebook-square'></span> " + _("Like on Facebook"), "https://facebook.com/p0lychromatic")
+    html += self.ui.print_link("<span class='fa fa-twitter-square'></span> " + _("Follow on Twitter"), "https://twitter.com/p0lychromatic")
+    html += "</div>"
 
     return html
 

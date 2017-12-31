@@ -115,8 +115,17 @@ button {
   }
 }
 
-.link:hover {
-    cursor: pointer;
+.link {
+    color: @accent-colour;
+
+    &:hover,
+    &:focus {
+        color: @secondary-colour;
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .alert {
@@ -1737,6 +1746,15 @@ label.invalid {
 /************************
    Misc UI
 *************************/
+#social-links {
+    span {
+        font-size: 1.5em;
+        vertical-align: middle;
+        padding-right: 0.2em;
+        display: inline-block;
+    }
+}
+
 .loading-text {
     color: @text-colour;
     font-size: 0.9em;

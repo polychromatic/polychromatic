@@ -527,6 +527,10 @@ class UIControls():
             uid, onclick, icon_div, label, disabled_class, css_override)
 
     @staticmethod
+    def print_link(label, url):
+        return '<button class="link" onclick="cmd(\'open?{0}\')">{1}</button>'.format(url, label)
+
+    @staticmethod
     def print_control_category(label):
         return '<h3>{0}</h3>'.format(label)
 
