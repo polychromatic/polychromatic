@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Polychromatic. If not, see <http://www.gnu.org/licenses/>.
 #
-# Copyright (C) 2016-2017 Luke Horwell <luke@ubuntu-mate.org>
+# Copyright (C) 2016-2018 Luke Horwell <luke@ubuntu-mate.org>
 #
 ############################################################################
 # This script updates the repository and installs the latest
