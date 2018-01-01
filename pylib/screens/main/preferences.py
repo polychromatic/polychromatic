@@ -403,7 +403,7 @@ def _print_about_tab(self):
     html += self.ui.print_page_break()
 
     html += "<div id='social-links'>"
-    html += self.ui.print_link("<span class='fa fa-github-square'></span> " + _("View on GitHub"), "https://github.com/lah7/polychromatic")
+    html += self.ui.print_link("<span class='fa fa-github-square'></span> " + _("View on GitHub"), "https://github.com/polychromatic")
     html += self.ui.print_link("<span class='fa fa-facebook-square'></span> " + _("Like on Facebook"), "https://facebook.com/p0lychromatic")
     html += self.ui.print_link("<span class='fa fa-twitter-square'></span> " + _("Follow on Twitter"), "https://twitter.com/p0lychromatic")
     html += "</div>"
