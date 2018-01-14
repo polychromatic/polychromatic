@@ -5,7 +5,7 @@
     Controller and Tray Applet.
 """
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2017-2018 Luke Horwell <luke@ubuntu-mate.org>
+# Copyright (C) 2017-2018 Luke Horwell <code@horwell.me>
 
 import os
 import sys

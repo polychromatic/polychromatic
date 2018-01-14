@@ -5,7 +5,7 @@
     application profiles to the keyboard.
 """
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2015-2018 Luke Horwell <luke@ubuntu-mate.org>
+# Copyright (C) 2015-2018 Luke Horwell <code@horwell.me>
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
 import os

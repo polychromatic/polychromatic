@@ -12,7 +12,7 @@
  You should have received a copy of the GNU General Public License
  along with Polychromatic. If not, see <http://www.gnu.org/licenses/>.
 
- Copyright (C) 2015-2018 Luke Horwell <luke@ubuntu-mate.org>
+ Copyright (C) 2015-2018 Luke Horwell <code@horwell.me>
                2015-2016 Terry Cain <terry@terrys-home.co.uk>
 */
 
