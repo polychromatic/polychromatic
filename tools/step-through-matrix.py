@@ -4,7 +4,7 @@
 # prompt for a label, to identify what lights up.
 #
 
-import razer.client as rclient
+import openrazer.client as rclient
 print("Successfully imported razer.client")
 
 devman = rclient.DeviceManager()
