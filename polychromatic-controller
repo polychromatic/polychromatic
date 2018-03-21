@@ -553,7 +553,7 @@ class Controller(object):
             try:
                 icon_path = data["icon"]
             except:
-                icon_path = path.data_source + "/img/profile-default.svg"
+                icon_path = path.data_source + "/img/ui/profile-default.svg"
             if self.current_page == "menu":
 
                 # Show highlight in UI if in use
@@ -966,7 +966,7 @@ class Controller(object):
             if os.path.exists(profile_icon):
                 self.profiles.set_metadata(uuid, "icon", profile_icon)
             else:
-                profile_icon = path.data_source + "/img/profile-default.svg"
+                profile_icon = path.data_source + "/img/ui/profile-default.svg"
                 self.profiles.set_metadata(uuid, "icon", profile_icon)
             self.show_menu('profile_editor')
             restart_tray_applet()
@@ -979,7 +979,7 @@ class Controller(object):
             if os.path.exists(new_icon):
                 self.profiles.memory["icon"] = new_icon
             else:
-                new_icon = path.data_source + "/img/profile-default.svg"
+                new_icon = path.data_source + "/img/ui/profile-default.svg"
 
             # New values are saved to profile stored in memory.
             self.profiles.memory["name"] = new_name
@@ -1510,6 +1510,7 @@ class Controller(object):
                 ]
 
                 # Razer Abyssus has "lighting_logo" but no effects, so track if this happens.
+                # Blade Stealth has "lighting_logo" as well, but only keyboard effects
                 has_effects = False
 
                 for fx in fx_list:
@@ -1518,8 +1519,11 @@ class Controller(object):
                         has_effects = True
 
                 if not has_effects:
-                    self.update_page("#lighting-dropdown", "hide")
-                    self.update_page("#fx-lighting", "hide")
+                    if self.active_device.type == "keyboard":
+                        self.update_page("#lighting-logo-dropdown", "hide")
+                    else:
+                        self.update_page("#lighting-dropdown", "hide")
+                        self.update_page("#fx-lighting", "hide")
 
             else:
                 self.update_page("#lighting-logo-dropdown", "hide")
