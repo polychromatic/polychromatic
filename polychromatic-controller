@@ -2183,6 +2183,18 @@ class PageLoaded():
             appobj.update_device_supported_features()
             appobj.update_device_active_options()
 
+        # Show message about the old PPA being deprecated.
+        distro = linux_distribution()[0]
+        if distro == "Ubuntu" or distro == "Debian":
+            codename = linux_distribution()[2]
+            for source_file in [
+                "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list",
+                "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily-" + codename + ".list"
+            ]:
+                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
+                    appobj.update_page("#error-text", "html", "Deprecated PPA detected: You may no longer get future updates for Polychromatic. <a onclick='cmd(&quot;open?https://github.com/polychromatic/polychromatic/releases/tag/v0.3.12&quot;)'><u style='color:lime;font-size:1.2em'>Learn more</u></a>")
+                    appobj.update_page("#error", "fadeIn")
+
     def preferences(appobj):
         """
         The preferences menu, for changing Polychromatic's options.
@@ -2219,16 +2231,29 @@ class PageLoaded():
             distro = linux_distribution()[0]
             if distro == "Ubuntu" or distro == "Debian":
                 codename = linux_distribution()[2]
+                source_html = ""
 
                 source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list"
                 if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                    html += '<div class="about-update-status"><span class="fa fa-check-circle"></span> {0}</div>'.format(
-                        _("You are set for automatic updates (via PPA)"))
+                    source_html += '<div class="about-update-status deprecated"><span class="fa fa-warning"></span> {0}</div>'.format(
+                        "The PPA you are using has been deprecated. <a onclick='cmd(&quot;open?https://github.com/polychromatic/polychromatic/releases/tag/v0.3.12&quot;)'><u>See here for details.</u></a>")
 
                 source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily-" + codename + ".list"
                 if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                    html += '<div class="about-update-status"><span class="fa fa-check-circle"></span> {0}</div>'.format(
+                    source_html += '<div class="about-update-status deprecated"><span class="fa fa-warning"></span> {0}</div>'.format(
+                        "The PPA you are using has been deprecated. <a onclick='cmd(&quot;open?https://github.com/polychromatic/polychromatic/releases/tag/v0.3.12&quot;)'><u>See here for details.</u></a>")
+
+                source_file = "/etc/apt/sources.list.d/polychromatic-ubuntu-stable-" + codename + ".list"
+                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
+                    source_html += '<div class="about-update-status"><span class="fa fa-check-circle"></span> {0}</div>'.format(
+                        _("You are set for automatic updates (via PPA)"))
+
+                source_file = "/etc/apt/sources.list.d/polychromatic-ubuntu-daily-" + codename + ".list"
+                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
+                    source_html += '<div class="about-update-status"><span class="fa fa-check-circle"></span> {0}</div>'.format(
                         _("You have opted for development packages."))
+
+                html += source_html
 
             if version_dev or version.endswith("-dev"):
                 html += UIControls.print_button(_("Check for Updates"), "update-button", "update-check")
