@@ -20,6 +20,8 @@ A front-end for customising the functionality of your Razer perpherials under GN
 
 [View all screenshots](.readme/Screenshots.md)
 
+GNOME Shell 3.xx (in some distributions) may also need to install an **AppIndicator extension** in order to see the tray applet.
+
 ------------
 
 ## Device Support
