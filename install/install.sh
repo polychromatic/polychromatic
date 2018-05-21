@@ -80,7 +80,7 @@ if [ "$distro" == "debian" ] || [ "$distro" == "ubuntu" ]; then
 elif [ "$distro" == "arch" ] || [ "$distro" == "manjaro" ]; then
     printy "Dependencies: $dependencies_pacman"
     read -p "Install dependencies with pacman? [y/n] | " choice
-    if [ "${choice,,}" == "y" ]; then
+    if [ "${choice,,}" == "y" ] || [ "${choice,,} == "yes" ]; then
         printg "Installing dependencies..."
         sudo pacman -Sy $dependencies_pacman
     fi
