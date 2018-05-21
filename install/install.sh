@@ -187,7 +187,7 @@ lessc "$source/data/controller.less" "$target_data/pages/controller.css"
 
 # Post installation
 printg "Updating icon cache..."
-update-icon-caches /usr/share/icons/hicolor/
+update-icon-caches $target_icon/hicolor/
 
 # Success!
 printg "\nPolychromatic Installed!"
