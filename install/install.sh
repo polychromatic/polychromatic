@@ -35,16 +35,27 @@ dependencies_apt="gir1.2-webkit2-4.0 python3-gi python3-setproctitle python3-req
 dependencies_pacman="webkitgtk python-gobject python-setproctitle python-requests libappindicator imagemagick nodejs-less"
 
 # Pretty colours!
+bold="$(tput bold)"
+black="$(tput setaf 0)"
+red="$(tput setaf 1)"
+green="$(tput setaf 2)"
+yellow="$(tput setaf 3)"
+blue="$(tput setaf 4)"
+magenta="$(tput setaf 5)"
+cyan="$(tput setaf 6)"
+white="$(tput setaf 7)"
+reset="$(tput sgr0)"
+
 function printg() {
-    echo -e "\033[92m$*\033[0m"
+    echo "${green}$*${reset}"
 }
 
 function printr() {
-    echo -e "\033[91m$*\033[0m"
+    echo "${red}$*${reset}"
 }
 
 function printy() {
-    echo -e "\033[93m$*\033[0m"
+    echo "${yellow}$*${reset}"
 }
 
 # Are we root?
