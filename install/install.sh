@@ -109,8 +109,8 @@ printy "Checking if Razer modules are present..."
 if [ ! -d "$razer_modules" ]; then
     echo "**************************************************"
     printr "The OpenRazer Python libraries are missing!"
-    echo -e "Please install them from \033[93mhttp://openrazer.github.io/\033[0m"
-    echo -e "They are expected to be installed here: \033[93m$razer_modules\033[0m"
+    echo "Please install them from ${yellow}http://openrazer.github.io${reset}"
+    echo "They are expected to be installed in ${yellow}$razer_modules${reset}"
     echo "**************************************************"
     read -p "Continue anyway? [y] " action
     if [ ! "$action" == 'y' ]; then
