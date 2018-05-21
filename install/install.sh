@@ -20,16 +20,44 @@
 # libraries.
 ############################################################################
 
+## Assign Global Install Variables
+# Function Definition
+function assign() {
+    var=$1
+    val=$2
+    eval ${var^^}=$( [ ${!var} ] && echo ${!var} || echo $val )
+}
+
+# Global Variables
+assign PREFIX /usr/local
+# assign EPREFIX $PREFIX
+# assign BINDIR $EPREFIX/bin
+# assign SBINDIR $EPREFIX/sbin
+# assign LIBEXECDIR $EPREFIX/libexec
+# assign SYSCONFDIR $PREFIX/etc
+# assign SHAREDSTATEDIR $PREFIX/com
+# assign LOCALSTATEDIR $PREFIX/var
+# assign RUNSTATEDIR $LOCALSTATEDIR/run
+# assign LIBDIR $EPREFIX/lib
+# assign INCLUDEDIR $PREFIX/include
+# assign OLDINCLUDEDIR /usr/include
+assign DATAROOTDIR $PREFIX/share
+assign DATADIR $DATAROOTDIR
+assign INFODIR $DATADIR/info
+assign LOCALEDIR $DATADIR/locale
+assign MANDIR $DATADIR/man
+assign DOCDIR $DATADIR/doc/polychromatic
+
 # Paths
-target_data="/usr/share/polychromatic"
-target_bin="/usr/bin"
-target_icon="/usr/share/icons"
-target_apps="/usr/share/applications"
-target_man="/usr/share/man/man1"
+target_data="$DATADIR/polychromatic"
+# target_bin="$BINDIR"
+target_icon="$DATADIR/icons"
+target_apps="$DATADIR/applications"
+target_man="$MANDIR/man1"
 python_path=$(python3 -c "import sys; print(sys.path[-1])")
 polyc_modules="$python_path/polychromatic"
 razer_modules="$python_path/razer/"
-locale_dir="/usr/share/locale/"
+# locale_dir="$LOCALEDIR"
 source=$(dirname "$0")/..
 dependencies_apt="gir1.2-webkit2-4.0 python3-gi python3-setproctitle python3-requests gir1.2-appindicator3-0.1 imagemagick node-less"
 dependencies_pacman="webkitgtk python-gobject python-setproctitle python-requests libappindicator imagemagick nodejs-less"
@@ -114,11 +142,11 @@ mkdir "$target_data"
 mkdir "$polyc_modules"
 
 # Copy bin files.
-printg "Copying to $target_bin..."
-cp "$source/polychromatic-controller" "$target_bin/"
-cp "$source/polychromatic-tray-applet" "$target_bin/"
-chmod +x "$target_bin/polychromatic-controller"
-chmod +x "$target_bin/polychromatic-tray-applet"
+printg "Copying to $BINDIR..."
+cp "$source/polychromatic-controller" "$BINDIR/"
+chmod +x "$BINDIR/polychromatic-controller"
+cp "$source/polychromatic-tray-applet" "$BINDIR/"
+chmod +x "$BINDIR/polychromatic-tray-applet"
 
 # Copy data files.
 printg "Copying to $target_data..."
@@ -138,8 +166,8 @@ cp "$source/man/polychromatic-controller.1" "$target_man/"
 cp "$source/man/polychromatic-tray-applet.1" "$target_man/"
 
 # Copy locales
-printg "Copying to $locale_dir..."
-rsync -rlpt --exclude=*.pot --exclude=*.po "$source/locale/" "$locale_dir"
+printg "Copying to $LOCALEDIR..."
+rsync -rlpt --exclude=*.pot --exclude=*.po "$source/locale/" "$LOCALEDIR"
 
 # Copy desktop launchers
 printg "Copying to $target_apps..."
