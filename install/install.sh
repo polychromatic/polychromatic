@@ -73,18 +73,18 @@ function get_distro() {
 distro=`get_distro`
 if [ "$distro" == "debian" ] || [ "$distro" == "ubuntu" ]; then
     printy "Dependencies: $dependencies_apt"
-    printg "Installing dependencies...\n"
-    sudo apt install $dependencies_apt
-    echo -e ''
+    printg "Installing dependencies..."
+    sudo apt install --yes $dependencies_apt
+    echo
 
 elif [ "$distro" == "arch" ] || [ "$distro" == "manjaro" ]; then
     printy "Dependencies: $dependencies_pacman"
     read -p "Install dependencies with pacman? [y/n] | " choice
-    if [ "$choice" == "y" ]; then
-        printg "Installing dependencies...\n"
-        sudo pacman -S $dependencies_pacman
+    if [ "${choice,,}" == "y" ]; then
+        printg "Installing dependencies..."
+        sudo pacman -Sy $dependencies_pacman
     fi
-    echo -e ''
+    echo
 
 else
     echo "**************************************************"
