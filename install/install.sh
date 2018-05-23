@@ -177,8 +177,14 @@ cp "$source/man/polychromatic-controller.1" "$target_man/"
 cp "$source/man/polychromatic-tray-applet.1" "$target_man/"
 
 # Copy locales
-printg "Copying to $LOCALEDIR..."
+printg "Generating locales to $LOCALEDIR..."
 rsync -rlpt --exclude=*.pot --exclude=*.po "$source/locale/" "$LOCALEDIR"
+for locale in $( ls --directory $source/locale/*/ | awk --field-separator / '{ print $(NF-1) }' ); do
+	for translation in $( find $source/locale/$locale -type f -name '*.po' ); do
+		[ ! -d $LOCALEDIR/$locale ] && mkdir --parents $LOCALEDIR/$locale/LC_MESSAGES
+		msgfmt $translation --output-file $LOCALEDIR/$locale/LC_MESSAGES/$( basename --suffix .po $translation ).mo
+	done
+done
 
 # Copy desktop launchers
 printg "Copying to $target_apps..."

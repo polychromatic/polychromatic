@@ -183,6 +183,7 @@ These packages are required just for **compiling** the application:
 | Debian/Ubuntu | Arch | openSUSE |
 | ------------- | ---- | -------- |
 | [node-less](https://packages.ubuntu.com/search?keywords=node-less) | [nodejs-less](https://www.archlinux.org/packages/community/any/nodejs-less/) | |
+| [gettext](https://packages.ubuntu.com/search?keywords=gettext) | [gettext](https://www.archlinux.org/packages/core/x86_64/gettext/) | [gettext-tools](https://software.opensuse.org/package/gettext-tools) |
 
 ## Something not working?
 
