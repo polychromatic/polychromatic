@@ -11,15 +11,15 @@ custom_target('css',
 
 subdir('locale')
 
-install_data('polychromatic-controller', install_dir : get_option('bindir'))
-install_data('polychromatic-tray-applet', install_dir : get_option('bindir'))
-install_man('man/polychromatic-controller.1')
-install_man('man/polychromatic-tray-applet.1')
+install_data(['polychromatic-controller', 'polychromatic-tray-applet'],
+             install_dir : get_option('bindir'))
+install_man(['man/polychromatic-controller.1', 'man/polychromatic-tray-applet.1'])
 
 install_subdir('data', install_dir : join_paths(get_option('datadir'), 'polychromatic'), strip_directory : true)
 install_subdir('pylib', install_dir : join_paths(python3.sysconfig_path('platlib'), 'polychromatic'), strip_directory : true)
 install_subdir('install/hicolor', install_dir : join_paths(get_option('datadir'), 'icons'))
 
-install_data('install/polychromatic-controller.desktop', install_dir : join_paths(get_option('datadir'), 'share/applications'))
-install_data('install/polychromatic-tray-applet.desktop', install_dir : join_paths(get_option('datadir'), 'share/applications'))
-install_data('install/polychromatic-tray-applet.desktop', install_dir : join_paths(get_option('sysconfdir'), 'xdg/autostart'))
+install_data(['install/polychromatic-controller.desktop', 'install/polychromatic-tray-applet.desktop'],
+             install_dir : join_paths(get_option('datadir'), 'share/applications'))
+install_data('install/polychromatic-tray-applet.desktop',
+             install_dir : join_paths(get_option('sysconfdir'), 'xdg/autostart'))
