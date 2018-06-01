@@ -20,8 +20,15 @@ _ = common.setup_translations(__file__, "polychromatic")
 fade_speed = common.fade_speed
 fade_interval = common.sleep_interval
 
+
 def print_sidebar(self, active_sidebar):
     html_sidebar = ""
+    device_id = -1
+    for device in self.controller.devices:
+        device_name = device.name
+        device_id += 1
+        html_sidebar += self.ui.print_sidebar_item(device_id, "states/" + common.get_device_type(device) + ".svg", device_name, ("active" if active_sidebar == device_id else ""))
+
     return html_sidebar
 
 

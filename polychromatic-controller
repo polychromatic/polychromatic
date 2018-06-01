@@ -267,6 +267,8 @@ class Controller(object):
         """
         # Variables are assigned later in start_loading()
         self.webkit = None
+        self.devman = None
+        self.devices = []
         self.screen = None
         self.screen_id = "unknown"
         self.version = version
@@ -475,7 +477,7 @@ class Controller(object):
             show_fatal_error(error_code)
             return
 
-        self.devices = self.get_devices()
+        self.devices = self.devman.devices
 
         # Turn off incompatible features
         self.devman.sync_effects = False
