@@ -157,7 +157,7 @@ def has_multiple_sources(device_obj):
     Returns True or False to determine whether a device has multiple light sources.
     """
     source_list = get_supported_lighting_sources(device_obj)
-    if len(source_list) >= 1:
+    if len(source_list) > 1:
         return True
     else:
         return False
