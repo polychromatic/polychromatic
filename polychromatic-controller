@@ -75,7 +75,7 @@ gi.require_version("WebKit2", "4.0")
 from gi.repository import GLib, Gtk, Gdk, WebKit2
 
 setproctitle("polychromatic-controller")
-version = "1.0.0-alpha"
+version = "0.4.0-alpha"
 version_dev = False
 
 # For when fatal errors occur.
@@ -217,7 +217,7 @@ class AppWindow(object):
         self.window.set_size_request(1000, 600)
 
         try:
-            self.window.set_icon_from_file(os.path.join(path.data_source, "../install/hicolor/16x16/apps/polychromatic-controller.svg"))
+            self.window.set_icon_from_file(os.path.join(path.data_source, "../source/hicolor/16x16/apps/polychromatic-controller.svg"))
             dbg.stdout("Window icon set from relative path.", dbg.debug, 2)
         except:
             self.window.set_icon_from_file("/usr/share/icons/hicolor/16x16/apps/polychromatic-controller.svg")
@@ -403,7 +403,7 @@ class Controller(object):
         # Commands specific to current page
         else:
             if not self.screen.process_command(cmd):
-                dbg.stdout("Unimplemented or missing command: " + cmd, dbg.error)
+                dbg.stdout("Unimplemented command: " + cmd, dbg.error)
 
         # WebKit2 quirk - clear "title" so same command can execute again
         self.run_javascript("cmd('null')");
@@ -675,15 +675,6 @@ class UIControls():
 
 
 class Dialogues():
-    def fatal_error(message, do_quit=False):
-        dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK)
-        dialog.set_title("Polychromatic Controller")
-        dialog.set_markup(message)
-        dialog.run()
-        dialog.destroy()
-        if do_quit:
-            sys.exit()
-
     def color_picker():
         # TODO: Ability to track and set last colour in GTK dialog.
         colorseldlg = Gtk.ColorSelectionDialog(_("Choose a Color"))
