@@ -90,7 +90,7 @@ If you later decide to revert back to the stable builds:
 
     sudo apt remove polychromatic
     sudo rm /etc/apt/sources.list.d/polychromatic-ubuntu-daily.list*
-    sudo add-apt-repository ppa:polychromatic/daily
+    sudo add-apt-repository ppa:polychromatic/stable
     sudo apt update
     sudo apt install polychromatic
 
