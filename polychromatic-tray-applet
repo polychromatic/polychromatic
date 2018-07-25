@@ -15,14 +15,21 @@
 # along with Polychromatic. If not, see <http://www.gnu.org/licenses/>.
 #
 # Copyright (C) 2015-2016 Terry Cain <terry@terrys-home.co.uk>
-#               2015-2017 Luke Horwell <luke@ubuntu-mate.org>
+#               2015-2018 Luke Horwell <code@horwell.me>
 #
 
 import gi
-gi.require_version('Gtk', '3.0')
-gi.require_version('Gdk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
-from gi.repository import Gtk, Gdk, AppIndicator3 as appindicator
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+from gi.repository import Gtk, Gdk
+
+try:
+    gi.require_version("AppIndicator3", "0.1")
+    from gi.repository import AppIndicator3 as appindicator
+    indicator_support = True
+except:
+    indicator_support = False
+
 import argparse
 import collections
 import os
@@ -159,8 +166,16 @@ class AppIndicator(object):
         self.current_poll_rate = _("Unknown")
         self.current_gamemode = _("Unknown")
 
-        self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", self._get_tray_icon(), appindicator.IndicatorCategory.APPLICATION_STATUS)
-        self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
+        if indicator_support:
+            self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", self._get_tray_icon(), appindicator.IndicatorCategory.APPLICATION_STATUS)
+            self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
+            dbg.stdout(_("Initialised AppIndicator"), dbg.debug, 1)
+        else:
+            self.indicator = Gtk.StatusIcon()
+            self.indicator.set_name("polychromatic-tray-applet")
+            self.indicator.set_from_file(self._get_tray_icon())
+            self.indicator.set_visible(True)
+            dbg.stdout(_("Initialised GTK Status Icon (fallback)"), dbg.debug, 1)
 
     def setup(self):
         # Set active device
@@ -185,9 +200,13 @@ class AppIndicator(object):
             self.current_device = self.active_device.name
 
         # Ensure correct tray icon is loaded
-        self.indicator.set_icon(self._get_tray_icon())
+        if indicator_support:
+            self.indicator.set_icon(self._get_tray_icon())
+        else:
+            self.indicator.set_from_file(self._get_tray_icon())
 
         # Populate root menu and submenus.
+        self.menu = None
         self.rebuild_all_submenus()
         self.rebuild_root_menu()
 
@@ -366,8 +385,19 @@ class AppIndicator(object):
         root.append(create_seperator())
         root.append(create_menu_item(_("Quit"), True, cb.quit))
 
-        self.indicator.set_title("Polychromatic")
-        self.indicator.set_menu(root)
+        if indicator_support:
+            self.indicator.set_title("Polychromatic")
+            self.indicator.set_menu(root)
+        else:
+            self.menu = root
+            self.indicator.connect("popup-menu", self.cb_show_menu)
+
+    def cb_show_menu(self, widget, button, time, data=None):
+        """
+        Callback for showing the non-indicator version of the menu.
+        """
+        self.menu.show_all()
+        self.menu.popup(None, None, Gtk.StatusIcon.position_menu, self.indicator, button, time)
 
     # Data fetching
     def _get_device_state(self, source, state):
@@ -379,46 +409,8 @@ class AppIndicator(object):
     def _get_tray_icon(self):
         """
         Returns path or filename for tray icon.
-
-        Icon Sources
-            "tray_icon": {"type": "?"}
-                builtin     = One provided by Polychromatic.    "humanity-light"
-                custom      = One specified by user.            "/path/to/file"
-                gtk         = Use icon by GTK name.             "keyboard"
         """
-
-        # If it's the first time loading, set default icon to desktop environment.
-        if not pref.exists("tray_icon", "type"):
-            common.set_default_tray_icon(pref)
-
-        icon_type = pref.get("tray_icon", "type", "builtin")
-        icon_value = pref.get("tray_icon", "value", "0")
-        icon_fallback = os.path.join(path.data_source, "tray", "humanity-light.svg")
-
-        try:
-            if icon_type == "builtin":
-                # icon_value = UUID
-                icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
-                return os.path.join(path.data_source, "tray", icon_index[icon_value]["path"])
-
-            elif icon_type == "custom":
-                # icon_value = Path to icon
-                if os.path.exists(icon_value):
-                    return icon_value
-                else:
-                    dbg.stdout("Icon missing: " + icon_value, dbg.error)
-                    dbg.stdout("Using fallback!", dbg.error)
-                    return icon_fallback
-
-            elif icon_type == "gtk":
-                # icon_value = Icon name used by GTK
-                return icon_value
-
-            else:
-                return icon_fallback
-        except Exception:
-            dbg.stdout("Error whlie loading icon, using fallback.", dbg.error)
-            return icon_fallback
+        return common.get_tray_icon(dbg, pref, path)
 
     def _get_icon(self, img_dir, icon):
         """
@@ -432,7 +424,11 @@ class AppIndicator(object):
         """
         A simple menu is displayed when something goes wrong.
         """
-        self.indicator.set_icon(self._get_icon("../tray", "error.svg"))
+        if indicator_support:
+            self.indicator.set_title("Polychromatic")
+            self.indicator.set_icon(self._get_icon("../tray", "error.svg"))
+        else:
+            self.indicator.set_from_file(self._get_icon("../tray", "error.svg"))
 
         root = Gtk.Menu()
         root.append(create_menu_item(error_reason, False))
@@ -442,7 +438,12 @@ class AppIndicator(object):
         root.append(create_seperator())
         root.append(create_menu_item(_("Open Controller"), True, cb.launch_controller, None, self._get_icon("ui", "controller.svg")))
         root.append(create_menu_item(_("Quit"), True, cb.quit))
-        self.indicator.set_menu(root)
+
+        if indicator_support:
+            self.indicator.set_menu(root)
+        else:
+            self.menu = root
+            self.indicator.connect("popup-menu", self.cb_show_menu)
 
         dbg.stdout("ERROR: " + error_reason, dbg.error)
         if exception:
@@ -455,7 +456,7 @@ class AppIndicator(object):
         for device in self.devman.devices:
             name = device.name
             serial = device.serial
-            formfactor = common.get_device_type(device.type)
+            formfactor = common.get_device_type(device)
             icon_path = self._get_icon("states", formfactor + ".svg")
             if not os.path.exists(icon_path):
                 icon_path = self._get_icon("states", "unknown.svg")
@@ -846,18 +847,10 @@ class AppIndicator(object):
         colour_path = os.path.join(session_storage, "{0}-{1}-{2}.png".format(str(colour[0]), str(colour[1]), str(colour[2])))
         if not os.path.exists(colour_path):
             dbg.stdout("Creating colour bitmap for: " + str(colour), dbg.action, 1)
-            foreground_process("convert -size 16x16 xc:{0} {1}".format(self._colour_to_hex(colour), colour_path), shell=True)
+            foreground_process("convert -size 16x16 xc:{0} {1}".format(common.colour_to_hex(colour), colour_path), shell=True)
         if not os.path.exists(colour_path):
             dbg.stdout("ERROR: Failed to generate bitmap for: " + str(colour), dbg.error)
         return colour_path
-
-    @staticmethod
-    def _colour_to_hex(colour):
-        """
-        Converts a tuple input to #RRGGBB format
-            colour = [red, green, blue]
-        """
-        return "#{0:02X}{1:02X}{2:02X}".format(*colour)
 
     # When there are external changes to devicestate.json
     def device_state_changed(self):
@@ -1012,6 +1005,7 @@ def parse_parameters():
     parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
     parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
+    parser.add_argument("--force-fallback", help=_("Force GTK Status Icon instead of AppIndicator"), action="store_true")
 
     args = parser.parse_args()
 
@@ -1020,7 +1014,11 @@ def parse_parameters():
         dbg.stdout(_("Verbose enabled"), dbg.debug, 1)
 
     if args.locale:
-        _ = common.setup_translations(__file__, "polychromatic-tray-applet", args.locale)
+        _ = common.setup_translations(__file__, "polychromatic", args.locale)
+
+    if args.force_fallback:
+        global indicator_support
+        indicator_support = False
 
 def restart_daemon_service():
     from subprocess import check_output
@@ -1030,7 +1028,10 @@ def restart_daemon_service():
         print(string)
         root = Gtk.Menu()
         root.append(create_menu_item(string, False))
-        indicator.indicator.set_menu(root)
+        if indicator_support:
+            indicator.indicator.set_menu(root)
+        else:
+            indicator.menu = root
 
     # Gracefully stop the daemon
     _update_status(_("Stopping openrazer-daemon..."))
@@ -1102,7 +1103,7 @@ if __name__ == "__main__":
     f.write(str(os.getpid()))
     f.close()
 
-    _ = common.setup_translations(__file__, "polychromatic-tray-applet")
+    _ = common.setup_translations(__file__, "polychromatic")
     dbg = common.Debugging()
     parse_parameters()
     cb = Callback()

@@ -4,5 +4,7 @@
 	dh $@
 
 override_dh_prep:
-	lessc source/data/controller.less data/pages/controller.css
+	rm -rf pylib/__pycache__/
+	rm -rf pylib/screens/__pycache__/
+	rm -rf pylib/screens/main/__pycache__/
 
