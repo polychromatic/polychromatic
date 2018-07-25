@@ -18,10 +18,8 @@
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
 """
-Main application for Polychromatic, a GUI for interfacing with the OpenRazer daemon
-and Polychromatic's command line functions.
-
-Requires openrazer-daemon to be installed.
+Main application for Polychromatic, a GUI for interfacing with the OpenRazer's
+Python Library (and daemon)
 """
 
 import os
@@ -39,8 +37,6 @@ from platform import linux_distribution
 
 try:
     import openrazer.client as rclient
-    from openrazer_daemon.keyboard import get_keyboard_layout
-    from openrazer_daemon.keyboard import RGB
     daemon_missing = False
 except ImportError as e:
     # We'll show a graphical error when loading up.
@@ -49,19 +45,17 @@ except ImportError as e:
     daemon_missing = True
 
 try:
-    # Relative copy
+    # Relative (for development)
     import pylib.preferences as pref
     import pylib.profiles as prof
     import pylib.common as common
-    import pylib.screens as Screens
-    relative = True
+    dev_version = True
 except ImportError:
     # Installed to system
     import polychromatic.preferences as pref
     import polychromatic.profiles as prof
     import polychromatic.common as common
-    import polychromatic.screens as Screens
-    relative = False
+    dev_version = False
 except Exception as e:
     print("One or more of Polychromatic's modules could not be imported!")
     print("Try re-installing the application.")
@@ -76,10 +70,6 @@ from gi.repository import GLib, Gtk, Gdk, WebKit2
 
 setproctitle("polychromatic-controller")
 version = "0.4.0-alpha"
-version_dev = False
-
-# For when fatal errors occur.
-deadlock = False
 
 path = pref.Paths()
 path.data_source = path.get_data_source(__file__)
@@ -92,8 +82,7 @@ daemon_config_path = os.path.join(os.path.expanduser("~"), ".local/share/openraz
 #   * grp
 
 # Is this application installed in /usr/share or ran from repository?
-if relative:
-    version_dev = True
+if dev_version:
     version = version + "-dev"
 
     # Compile LESS when working locally.
@@ -103,18 +92,15 @@ if relative:
         dbg = common.Debugging()
         dbg.stdout("Failed to start due to missing styling.", dbg.error)
         exit(1)
-
 else:
-    version_dev = False
     version = version + "-stable"
 
 
 class AppView(WebKit2.WebView):
     def __init__(self):
         """
-        Initialise WebKit2
+        WebKit2 provides the user interface using web technologies.
         """
-        # Create WebKit Container
         webkit = WebKit2
         webkit.WebView.__init__(self)
         self.set_background_color(Gdk.RGBA(0, 0, 0, 1))
@@ -154,8 +140,8 @@ class AppView(WebKit2.WebView):
             inspector = self.get_inspector()
             inspector.show()
 
-        # Load the starting page
-        self.load_uri("file://" + os.path.join(path.data_source, "pages/controller.html"))
+        # Load the base page structure
+        self.load_uri("file://" + os.path.join(path.data_source, "ui/controller.html"))
 
     def run_js(self, function):
         """
@@ -197,19 +183,15 @@ class AppView(WebKit2.WebView):
         if not self.is_loading():
             dbg.stdout("WebView Ready.", dbg.success, 2)
             thread = threading.Thread(target=app.start_loading, args=([view]))
-            thread.daemon = True
             thread.start()
 
 
 class AppWindow(object):
     def run(self):
         """
-        Assembles and begins running the application.
+        Assembles the main application window.
         """
-        # Initalise WebKit
         self.webkit = AppView()
-
-        # Create window
         self.window = Gtk.Window(title=_("Polychromatic Controller"))
         self.window.set_wmclass("polychromatic-controller", "polychromatic-controller")
         self.window.set_position(Gtk.WindowPosition.CENTER)
@@ -217,18 +199,16 @@ class AppWindow(object):
         self.window.set_size_request(1000, 600)
 
         try:
-            self.window.set_icon_from_file(os.path.join(path.data_source, "../source/hicolor/16x16/apps/polychromatic-controller.svg"))
-            dbg.stdout("Window icon set from relative path.", dbg.debug, 2)
+            self.window.set_icon_from_file(os.path.join(path.data_source, "ui/img/general/controller.svg"))
         except:
-            self.window.set_icon_from_file("/usr/share/icons/hicolor/16x16/apps/polychromatic-controller.svg")
-            dbg.stdout("Window icon set from /usr/share/ path.", dbg.debug, 2)
+            dbg.stdout("Failed to set window icon.", dbg.warning, 2)
 
         # Add elements to window
         sw = Gtk.ScrolledWindow()
         sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         sw.add(self.webkit)
 
-        # Scale the application for HIDPI displays and DEs that don't handle this automatically.
+        # Compatibility option if DEs don't scale to HIDPI displays automatically.
         scale2x = float(pref.get("editor", "scale2x", False))
         if scale2x == True:
             self.webkit.set_zoom_level(1.5)
@@ -251,40 +231,12 @@ class AppWindow(object):
 class Controller(object):
     def __init__(self):
         """
-        Initialises variables throughout the application.
+        The main application runtime. Manipulates the UI and communicates with the OpenRazer daemon.
         """
         # Variables are assigned later in start_loading()
         self.webkit = None
         self.devman = None
         self.devices = []
-        self.screen = None
-        self.screen_id = "unknown"
-        self.version = version
-        self.show_fatal_error = show_fatal_error
-
-        self.screens = {
-            "mainscreen": Screens.main.MainScreen,
-            "loading": Screens.loading.Loading,
-            "error": Screens.error.Error
-        }
-
-    def change_screen(self, new_screen_id, params=[]):
-        """
-        Sets a new screen in the user interface.
-        """
-        if self.screen:
-            dbg.stdout("Leaving screen: " + self.screen_id, dbg.action, 1)
-            self.screen.close_screen(new_screen_id)
-
-        dbg.stdout("Entering screen: " + new_screen_id, dbg.action, 1)
-        ui = UIControls()
-        self.screen = self.screens[new_screen_id](self, ui, pref, path, dbg)
-        self.screen_id = new_screen_id
-        if len(params) == 0:
-            self.screen.open_screen()
-        else:
-            dbg.stdout("Screen parameters: " + str(params), dbg.debug, 2)
-            self.screen.open_screen(params)
 
     def run_javascript(self, function):
         """
@@ -311,7 +263,7 @@ class Controller(object):
 
     def process_command(self, cmd):
         """
-        Process a command issued from the frontend for the page
+        Process a command issued from the frontend for the page.
         """
         if cmd == "null":
             return
@@ -320,45 +272,30 @@ class Controller(object):
 
         # Global commands
         if cmd == "quit":
-            """
-            Close the application.
-            """
+             # Close the application.
             exit()
 
         elif cmd == "restart-daemon":
-            """
-            Restarts the OpenRazer daemon.
-            """
+            # Restarts the OpenRazer daemon.
             restart_daemon_service()
 
         elif cmd == "reload":
-            """
-            Restarts the application.
-            """
+            # Restarts the application.
             os.execv(__file__, sys.argv)
 
         elif cmd.startswith("run?"):
-            """
-            Runs a program (or command) to run in the background.
-
-            Expects:    ?<program>
-            """
+            # Runs a program (or command) to run in the background.
+            # Expects:    ?<program>
             background_process(cmd.split("run?")[1], shell=True)
 
         elif cmd.startswith("open?"):
-            """
-            Opens a file/folder/protocol using the default application.
-
-            Expects:    ?<path>
-            """
+            # Opens a file/folder/protocol using the default application.
+            # Expects:    ?<path>
             os.system("xdg-open '{0}'".format(cmd.split("open?")[1]))
 
         elif cmd.startswith("browse?"):
-            """
-            Opens the Browse dialogue and sets the path to a textbox.
-
-            Expects:    ?<browse_id>?<target element id>
-            """
+            # Opens the Browse dialogue and sets the path to a textbox.
+            # Expects:    ?<browse_id>?<target element id>
             cmd = cmd.split("?")
             browse_id = int(cmd[1])
             target_element = cmd[2]
@@ -374,21 +311,16 @@ class Controller(object):
 
         # Special
         elif cmd == "pref-reset-all":
-            """
-            Completely nukes data stored by Polychromatic.
-            """
-            dbg.stdout("Destroying: ~/.config/polychromatic ...", dbg.action)
+            # Completely nukes save data stored by Polychromatic.
+            dbg.stdout("Erasing ~/.config/polychromatic/ ...", dbg.action)
             pref.clear_config()
             dbg.stdout("Application will restart.", dbg.action)
             os.execv(__file__, sys.argv)
 
         # Colours
         elif cmd.startswith("colour-pick?"):
-            """
-            Opens the colour picker to choose a colour for an element.
-
-            Expects:    ?<element id>?
-            """
+            # Opens the colour picker to choose a colour for an element.
+            # Expects:    ?<element id>?
             cmd = cmd.split("?")
             element_id = "#" + cmd[1] + "-preview"
             dbg.stdout("Opening colour picker", dbg.action, 1)
@@ -414,264 +346,11 @@ class Controller(object):
         """
         self.webkit = webkit
         dbg.stdout("Version " + version, dbg.debug, 1)
-        self.change_screen("loading")
-
-        dbg.stdout("Connecting to OpenRazer Daemon...", dbg.action, 1)
-
-        if daemon_missing:
-            show_fatal_error(100)
-            return
-
-        try:
-            self.devman = rclient.DeviceManager()
-        except rclient.DaemonNotFound:
-            self.devman = None
-            error_code = 101
-        except Exception as e:
-            self.devman = None
-            error_code = 102
-            show_fatal_error(error_code, str(e))
-
-        # When the running daemon and installed library differ, request the user to restart the daemon.
-        # Running   = Current running daemon's version.
-        # Installed = Version installed globally on system.
-        try:
-            running_version = self.devman._daemon_version
-            import openrazer_daemon.daemon
-            installed_version = openrazer_daemon.daemon.__version__
-        except Exception:
-            # Daemon may have crashed, skip this check.
-            running_version = 0
-            installed_version = 0
-
-        # Require restart if daemon is outdated.
-        if running_version < installed_version and not version_dev:
-            show_fatal_error(103)
-            return
-
-        # Display an upgrade message if using the old daemon.
-        if os.path.exists("/usr/lib/python3/dist-packages/razer/inteface/keyboard.py") or os.path.exists(os.path.join(sys.path[-1], "/razer/inteface/keyboard.py")):
-            show_fatal_error(104)
-            return
-
-        # Display an error message if the daemon is having problems on the system.
-        if not self.devman:
-            # Check the user is in the 'plugdev' group
-            import grp
-            if not "plugdev" in [grp.getgrgid(g).gr_name for g in os.getgroups()]:
-                show_fatal_error(105)
-                return
-
-            show_fatal_error(error_code)
-            return
-
-        self.devices = self.devman.devices
-
-        # Turn off incompatible features
-        self.devman.sync_effects = False
-
-        # Initialise Profiles
-        dbg.stdout("Loading application profiles...", dbg.action, 1)
-        self.profiles = prof.AppProfiles()
-        self.profiles.selected_uuid = None
-        self.profiles.previous_uuid = None
-
-        # Set active device.
-        if len(self.devices) == 0:
-            self.active_device = None
-            self.active_device_serial = None
-            return
-        else:
-            self.active_device = self.devices[0]
-            self.active_device_serial = self.devices[0].serial
-
-        # Start watching devicestate index for changes.
-        common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
 
         dbg.stdout("Application Ready.", dbg.success, 2)
-        self.change_screen("mainscreen", [0, 0])
 
-
-class UIControls():
-    @staticmethod
-    def print_button(label, uid, cmd, icon=None, disabled=False, css_override=None, cmd_is_js=False):
-        if icon != None:
-            if icon.startswith("fa-"):
-                icon_div = '<span class="fa {0}"></span> '.format(icon)
-            else:
-                icon_div = '<img src="img/{0}" /> '.format(icon)
-        else:
-            icon_div = ""
-
-        if disabled:
-            disabled_class = "disabled"
-        else:
-            disabled_class = ""
-
-        if cmd_is_js:
-            onclick = cmd.replace("'", "\'")
-        else:
-            onclick = "cmd(\'{0}\')".format(cmd)
-
-        return '<button id="{0}" class="btn {4} {5}" onclick="{1}">{2}{3}</button>'.format(
-            uid, onclick, icon_div, label, disabled_class, css_override)
-
-    @staticmethod
-    def print_link(label, url):
-        return '<button class="link" onclick="cmd(\'open?{0}\')">{1}</button>'.format(url, label)
-
-    @staticmethod
-    def print_control_category(label):
-        return '<h3>{0}</h3>'.format(label)
-
-    @staticmethod
-    def print_checkbox(label, uid, pref_group, pref_item, disabled=False, help_text=None):
-        if disabled:
-            disabled_class = "disabled"
-        else:
-            disabled_class = ""
-
-        cmd = "pref-toggle?{0}?{1}".format(pref_group, pref_item)
-
-        if pref.get(pref_group, pref_item, False):
-            checked_class = "checked"
-        else:
-            checked_class = ""
-
-        if help_text:
-            help_text = UIControls._get_helptext_html(help_text)
-        else:
-            help_text = ''
-
-        return '<label class="pref-label {1}"><input type="checkbox" id="{0}" onclick="cmd(\'{3}\')" class="{1}" {4}/> {2}</label> {5}<br/>'.format(
-            uid, disabled_class, label, cmd, checked_class, help_text)
-
-    @staticmethod
-    def print_radio(label, uid, pref_group, pref_item, pref_value, disabled=False, help_text=None, additional_cmds=None):
-        if disabled:
-            disabled_class = "disabled"
-        else:
-            disabled_class = ""
-
-        if pref.get(pref_group, pref_item, "") == pref_value:
-            checked_class = "checked"
-        else:
-            checked_class = ""
-
-        if help_text:
-            help_text = UIControls._get_helptext_html(help_text)
-        else:
-            help_text = ""
-
-        if not additional_cmds:
-            additional_cmds = ""
-
-        cmd = "pref-set?{0}?{1}?{2}".format(pref_group, pref_item, pref_value)
-
-        return '<label class="pref-label {1}"><input type="radio" name="{5}" id="{0}" onclick="cmd(\'{3}\'); {6}" class="{1}" {4}/> {2}</label> {7}<br/>'.format(
-            uid, disabled_class, label, cmd, checked_class, pref_group, additional_cmds, help_text)
-
-    @staticmethod
-    def print_about_label(label, value):
-        return '<label class="about-label">{0} <code>{1}</code></label>'.format(
-            label, value)
-
-    @staticmethod
-    def print_slider(label, uid, min_value, max_value, step_value, start_value, pref_group, pref_item, disabled=False, help_text=None):
-        if disabled:
-            disabled_class = "disabled"
-        else:
-            disabled_class = ""
-
-    @staticmethod
-    def print_invalid_label(element_id, label):
-        return "<label id='{0}' class='invalid' style='display:none'><span class='fa fa-warning'></span> {1}</label>".format(element_id, label)
-
-        if help_text:
-            help_text = UIControls._get_helptext_html(help_text)
-        else:
-            help_text = ''
-
-        cmd = "cmd('pref-set?editor?scaling?' + $(this).val())"
-        return '<label class="pref-label {7}">{6} <input class="{7}" type="range" id="{0}" onmouseout="{1}" min="{2}" max="{3}" value="{4}" step="{5}"/></label>'.format(
-            uid, cmd, min_value, max_value, start_value, step_value, label, disabled_class)
-
-    @staticmethod
-    def _get_helptext_html(text):
-        return '<label class="pref-help">{0}</label>'.format(text)
-
-    @staticmethod
-    def run_post_js(cmds):
-        return '<script>{0}</script>'.format(cmds)
-
-    @staticmethod
-    def print_page_break():
-        return '<br><br>'
-
-    @staticmethod
-    def append_tab(tab_id, icon_path, string, extra_class=""):
-        return '<button id="tab-{0}" class="tab {3}" onclick="switchTab(\'#tab-{0}\')"><img src="../img/{1}"/><span>{2}</span></button>'.format(
-            tab_id, icon_path, string, extra_class)
-
-    @staticmethod
-    def print_loading_text(element_id, message):
-        return '<div id="{0}" class="loading-text" hidden>{1}</div>'.format(element_id, message)
-
-    class JavaScript():
-        def generate_confirmation_dialog(update_page, title, message, ok_label, ok_cmd=None, cancel_label=None, cancel_cmd=None, style_class="", width=None, height=None):
-            dialog_uuid = "dialog-" + pref.generate_uuid()
-            html = '<div id="{0}" class="dialog {5}" style="width:{3}; height:{4}" hidden>' \
-                    '<h3>{1}</h3>' \
-                    '<p>{2}</p>' \
-                    '<div class="dialog-buttons">' \
-                    '<hr>'.format(
-                        dialog_uuid, title, message, width, height, style_class)
-
-            if cancel_label:
-                cancel_onclick = "dialog_close('" + dialog_uuid + "')"
-                if cancel_cmd:
-                    cancel_onclick += "; " + cancel_cmd
-
-                html += '<button class="btn" onclick="{1}">{0}</button>'.format(
-                    cancel_label,
-                    cancel_onclick)
-
-            html += '<button class="btn primary" onclick="{0}; {1}">{2}</button>'.format(
-                "dialog_close('" + dialog_uuid + "');",
-                ok_cmd if ok_cmd else "",
-                ok_label)
-
-            html += '</div></div>'
-            update_page("body", "append", html)
-            return dialog_uuid
-
-        def generate_alert_dialog(update_page, title, message, ok_label, ok_cmd=None, style_class="", width=None, height=None):
-            dialog_uuid = "dialog-" + pref.generate_uuid()
-            html = '<div id="{0}" class="dialog {5}" style="width:{3}; height:{4}" hidden>' \
-                    '<h3>{1}</h3>' \
-                    '<p>{2}</p>' \
-                    '<div class="dialog-buttons">' \
-                    '<hr>'.format(
-                        dialog_uuid, title, message, width, height, style_class)
-
-            html += '<button class="btn primary" onclick="{0}; {1}">{2}</button>'.format(
-                "dialog_close('" + dialog_uuid + "');",
-                ok_cmd if ok_cmd else "",
-                ok_label)
-
-            html += '</div></div>'
-            update_page("body", "append", html)
-            return dialog_uuid
-
-    @staticmethod
-    def print_tab(tab_number, icon_path, string, extra_class=""):
-        return '<button id="tab-{0}" class="tab {3}" onclick="cmd(\'switch-tab?{0}\')"><img src="../img/{1}"/><span>{2}</span></button>'.format(
-            str(tab_number), icon_path, string, extra_class)
-
-    @staticmethod
-    def print_sidebar_item(subpage_number, icon_path, string, extra_class=""):
-        return '<button id="sidebar-item-{0}" class="sidebar-item {3}" onclick="cmd(\'switch-sidebar?{0}\')"><img src="../img/{1}"/><span>{2}</span></button>'.format(
-            str(subpage_number), icon_path, string, extra_class)
+    def device_state_changed():
+        pass
 
 
 class Dialogues():
@@ -816,166 +495,6 @@ def restart_tray_applet():
         return
 
     print("Tray applet reloaded.")
-
-
-def show_fatal_error(code, traceback=None):
-    """
-    Interrupt the whole application and show a 'friendly' error message.
-
-    controller      Controller() object.
-    code            An integer that determines the message to display, as follows:
-    traceback       A string containing traceback/exception details.
-
-    change_screen params are as follows:
-    [errcode, state, image_filename, title, message]
-
-    Code    Reason
-    ------  ----------------------------------------------------
-    100     Daemon not installed (module import error)
-    101     Daemon responded not found (not running)
-    102     Daemon responded with exception (crashed)
-    103     Daemon version mismatch
-    104     Old daemon version detected
-    105     User is not in plugdev group
-    106     No devices found, but Razer PID detected
-    107     No devices found
-    108     Daemon not installed (can't find path)
-    109     Daemon cannot be relaunched
-
-    """
-    params = [code]
-
-    # Do not show another error again if one occurs.
-    global deadlock
-    if deadlock:
-        return
-    deadlock = True
-
-    if code == 100:
-        params += [
-            "serious",
-            "daemon-error.png",
-            _("Daemon Not Installed"),
-            _("Polychromatic requires the OpenRazer Python library, but it could not be imported.") +
-                '<br>' + _("Please check the OpenRazer drivers, daemon and Python library are installed.") +
-                '<br><a onclick="cmd(\'open?https://github.com/lah7/polychromatic\')">' + _("See the README for further information.") + '</a>'
-        ]
-
-    elif code == 101:
-        params += [
-            "serious",
-            "daemon-error.png",
-            _("Daemon Not Running"),
-            _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running.")
-        ]
-
-    elif code == 102:
-        params += [
-            "warning",
-            "daemon-not-ready.png",
-            _("Daemon Not Responding"),
-            _("Polychromatic could not initialise the daemon. This could be caused by a bug with the daemon process.")
-        ]
-
-    elif code == 103:
-        params += [
-            "warning",
-            "restart-required.png",
-            _("Daemon requires a restart"),
-            _("The daemon that is currently running is older than the installed version.") + "<br>" +
-                _("This can cause glitches. Please restart the daemon to continue.") + "<br><br>" +
-                _("This happens if the driver/daemon packages were updated, but you haven't restarted your session or computer.")
-        ]
-
-    elif code == 104:
-        params += [
-            "normal",
-            "upgrade.png",
-            _("Daemon Upgrade Required"),
-            _("The Razer 'Chroma' driver and daemon currently installed on your system is no longer supported by Polychromatic.") + '<br>' +
-                _("Please remove the current Razer driver/daemon from your system, then install OpenRazer from:") +
-                ' <a onclick="cmd(\'open?https://openrazer.github.io/\')">http://openrazer.github.io/</a>'
-        ]
-
-    elif code == 105:
-        try:
-            whoami = str(os.getlogin())
-        except FileNotFoundError:
-            import pwd
-            whoami = str(pwd.getpwuid(os.getuid())[0])
-        except Exception:
-            whoami = _("<username>")
-
-        params += [
-            "serious",
-            "no-plugdev.png",
-            _("Insufficient Privileges"),
-            _("This user account is not in the 'plugdev' group, the daemon requires this to control your device(s).") + \
-                '<br><br>' + _("Please run this command in the terminal, then log out then back in:") + \
-                '<br><code>sudo gpasswd -a ' + whoami + ' plugdev</code>'
-        ]
-
-    elif code == 106:
-        params += [
-            "warning",
-            "no-support.png",
-            _("Device Not Recognised"),
-            _("A Razer product is connected to your computer, but the daemon didn't detect it.") + '<br>' + \
-                _("It is possible your Razer product is not bound to the driver properly or it is not yet supported.") + \
-                '<br><br><u>' + _("Suggestions:") + '</u>' \
-                '<br>• ' + _("Use the 'modprobe' command to bind the driver to the device.") + \
-                '<br>• <u><a onclick="cmd(\'open?https://github.com/openrazer/openrazer#device-support\')">' + \
-                _("Check whether your device PID is listed.") + '</u></a>' + \
-                '<br>• ' + _("Check the daemon log:") + ' <a onclick="cmd(\'open?/home/$USER/.local/share/openrazer/logs/razer.log\')"><u><code>~/.local/share/openrazer/logs/razer.log</code></u></a>' + \
-                '</u></a><br><br>' + \
-                _("As this is a driver/daemon problem, please") + ' ' + \
-                '<a onclick="cmd(\'open?https://github.com/openrazer/openrazer/wiki/Troubleshooting\')"><u>' + \
-                    _("refer to the troubleshooting guide for further assistance.") + \
-                '</u></a>'
-        ]
-
-    elif code == 107:
-        params += [
-            "normal",
-            "no-device.png",
-            _("No Razer Product Connected"),
-            _("Please plug in your Razer device and reload the application/daemon.")
-        ]
-
-    elif code == 108:
-        params += [
-            "serious",
-            "generic.png",
-            _("Daemon Not Installed"),
-            _("Could not find the executable for 'openrazer-daemon'. Please try re-installing the daemon.")
-        ]
-
-    elif code == 109:
-        params += [
-            "serious",
-            "generic.png",
-            _("Daemon cannot be relaunched."),
-            _("Failed to execute 'openrazer-daemon'. Please check the daemon log to troubleshoot the problem.") + \
-                '<br><code>~/.local/share/openrazer/logs/</code><br><br>' + _("Alternately, open a terminal and run:") + '<br><code>openrazer-daemon -Fv</code>'
-        ]
-
-    else:
-        params += [
-            "serious",
-            "generic.png",
-            _("Something went wrong"),
-            _("There is no known reason for this error. That's very odd, as that should never happen! Please try again.")
-        ]
-
-    dbg.stdout("Ran into an error! Support Code: " + str(params[0]), dbg.error)
-    dbg.stdout("  " + params[3], dbg.error)
-    dbg.stdout("  " + params[4], dbg.error)
-
-    if traceback:
-        params.append(str(traceback))
-        dbg.stdout("  " + traceback, dbg.error)
-
-    app.change_screen("error", params)
 
 
 def restart_daemon_service():
