@@ -81,15 +81,15 @@ daemon_config_path = os.path.join(os.path.expanduser("~"), ".local/share/openraz
 #   * shutil
 #   * grp
 
-# Is this application installed in /usr/share or ran from repository?
 if dev_version:
     version = version + "-dev"
+    dbg = common.Debugging()
 
-    # Compile LESS when working locally.
-    os.system(os.path.join(path.data_source, "../tools/build-less.sh"))
+    # Compile styling when working locally.
+    dbg.stdout("Compiling Styling...", dbg.action)
+    os.system(os.path.join(path.data_source, "../tools/build-sass.sh"))
 
-    if not os.path.exists(os.path.join(path.data_source, "pages/css/default.css")):
-        dbg = common.Debugging()
+    if not os.path.exists(os.path.join(path.data_source, "ui/css/default.css")):
         dbg.stdout("Failed to start due to missing styling.", dbg.error)
         exit(1)
 else:

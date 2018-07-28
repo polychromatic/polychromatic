@@ -1,0 +1,50 @@
+#tabs {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: $tab-height;
+    background-color: $bg-tab;
+    overflow-y: none;
+    white-space: nowrap;
+
+    > button {
+        display: inline-block;
+        text-align: center;
+        height: $tab-height + ($tab-button-padding / 2);
+        width: auto;
+        padding: 0 $tab-button-padding;
+        background: transparent;
+        border-bottom: $tab-border-height solid $border-colour;
+        color: white;
+        vertical-align: top;
+        filter: grayscale(1);
+
+        &:hover,
+        &:focus {
+            opacity: 0.8;
+            border-bottom-color: $secondary-colour;
+        }
+
+        &.active {
+            color: $accent-colour;
+            border-bottom-color: $accent-colour;
+            filter: grayscale(0);
+        }
+
+        > img {
+            display: inline-block;
+            max-height: $tab-icon-size;
+            max-width: $tab-icon-size;
+            vertical-align: middle;
+        }
+
+        > span {
+            display: inline-block;
+            margin-left: $tab-button-padding / 2;
+            vertical-align: middle;
+            font-size: 0.9em;
+        }
+    }
+}

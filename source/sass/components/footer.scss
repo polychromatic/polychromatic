@@ -1,0 +1,10 @@
+footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: $footer-height;
+    padding: $footer-padding-v $footer-padding-h;
+    background-color: $bg-footer;
+    text-align: right;
+}

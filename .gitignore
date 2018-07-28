@@ -1,5 +1,9 @@
+# Ignore caches
 __pycache__
 *.pyc
-data/pages/css/*.css
-source/data/*.css
+.sass-cache/
+
+# Ignore compiled files
+*.css
+*.css.map
 build/

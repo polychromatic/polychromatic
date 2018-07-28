@@ -1,0 +1,11 @@
+content {
+    position: fixed;
+    top: $header-height + $tab-border-height + ($header-padding-v * 2);
+    bottom: $footer-height + ($footer-padding-v * 2);
+    left: $content-padding-h;
+    right: $content-padding-h;
+    overflow-y: scroll;
+    color: $text-colour;
+    font-size: 0.9em;
+    border: 1px solid red;
+}

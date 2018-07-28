@@ -1,0 +1,50 @@
+/* Behave more like an application and not a webpage. */
+html, body {
+    width: 100%;
+    height: 100%;
+    -webkit-user-select: none;
+    background: $bg-gradient;
+    overflow: hidden;
+    cursor: default;
+}
+
+img {
+    -webkit-user-select: none;
+    pointer-events: none;
+}
+
+a {
+    -webkit-user-drag: none;
+}
+
+hr {
+    border-color: $border-colour;
+}
+
+@font-face {
+    font-family: Play;
+    src: url('../lib/Play-Regular.ttf');
+}
+
+html, body, input, button {
+    font-family: $font-family;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: $font-family;
+    font-weight: lighter;
+    color: $accent-colour;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+p, a, button, table, td, tr, label, .alert {
+    font-family: $font-family;
+    color: $text-colour;
+    font-size: small;
+}
+
+p {
+    margin: 16px;
+    padding: 0;
+}

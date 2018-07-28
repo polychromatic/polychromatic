@@ -1,0 +1,56 @@
+/*
+* The default dark and green brand for Polychromatic.
+*/
+
+/* Colours */
+$accent-colour: #00FF00;
+$secondary-colour: #008000;
+
+$bg-colour: #323232;
+$bg-colour-secondary: #000;
+$bg-gradient: linear-gradient(#000, $bg-colour);
+$bg-sidebar: #000;
+$bg-tab: rgba(18,18,18,0.8);
+$bg-disabled: #191919;
+$bg-footer: #121212;
+
+$text-colour: #888;
+$border-colour: #2D2D2D;    // #404040?
+$disabled-colour: #484848;
+$active: #06FF00;
+$active-dark: #0DA902;
+$button-colour: #DED9CB;
+$serious: #FF2222;
+$warning: #FFFF00;
+$hover-grey: #808080;
+
+$spectrum1: #C500FF; // Purple
+$spectrum2: #FF8900; // Orange
+$spectrum3: #FBFF00; // Yellow
+$spectrum4: #7CFF00; // Green
+$spectrum5: #00FFD9; // Aqua
+$spectrum6: #005AFF; // Blue
+$spectrum7: #3D00FF; // Dark Blue
+
+/* Fonts */
+$font-family: 'Play', 'Ubuntu', 'DejaVu Sans', 'Open Sans', sans-serif;
+
+/* Animations */
+$dialogue-speed: 0.25s;
+
+/* Dimensions */
+$header-height: 64px;
+$header-padding-v: 8px;
+$header-padding-h: 8px;
+
+$tab-height: 30px;
+$tab-button-padding: 8px;
+$tab-border-height: 2px;
+$tab-icon-size: 24px;
+
+$content-padding-v: 16px;
+$content-padding-h: 16px;
+
+$footer-height: 32px;
+$footer-padding-v: 8px;
+$footer-padding-h: 16px;
