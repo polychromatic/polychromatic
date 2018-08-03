@@ -13,8 +13,9 @@ $bg-sidebar: #000;
 $bg-tab: rgba(18,18,18,0.8);
 $bg-disabled: #191919;
 $bg-footer: #121212;
+$bg-control: #808080;
 
-$text-colour: #888;
+$text-colour: #C4C4C4;
 $border-colour: #2D2D2D;    // #404040?
 $disabled-colour: #484848;
 $active: #06FF00;
@@ -34,9 +35,11 @@ $spectrum7: #3D00FF; // Dark Blue
 
 /* Fonts */
 $font-family: 'Play', 'Ubuntu', 'DejaVu Sans', 'Open Sans', sans-serif;
+$font-mono: 'Ubuntu Mono', 'Droid Sans Mono', 'FreeMono', 'Courier New', Courier, monospace;
 
 /* Animations */
 $dialogue-speed: 0.25s;
+$header-transition: 0.25s;
 
 /* Dimensions */
 $header-height: 64px;

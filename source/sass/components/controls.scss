@@ -1,0 +1,227 @@
+/* Buttons & Links */
+button {
+    display: inline-block;
+    -webkit-appearance: none;
+    -webkit-user-select: none;
+    background-color: $bg-colour;
+    color: $button-colour;
+    border: 2px solid $border-colour;
+    width: auto;
+    height: 30px;
+    margin: 0;
+    padding: 4px 16px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 0;
+    vertical-align: middle;
+    text-decoration: none;
+    text-align: center;
+
+    > label {
+        top: 2px;
+        position: relative;
+    }
+
+    &:hover,
+    &:focus {
+        color: $active-dark;
+    }
+
+    &:active {
+        background-color: $active;
+        color: black;
+    }
+
+    &.disabled {
+        color: $disabled-colour;
+        border-color: black;
+    }
+
+    &.active {
+        background-color: $secondary-colour;
+    }
+
+    &.serious {
+        color: $serious;
+
+        &:hover {
+            color: lighten($serious, 10%);
+        }
+
+        &:active {
+            color: white;
+            background-color: $serious;
+        }
+
+        &:focus {
+            border-color: darken($serious, 10%) !important;
+        }
+    }
+}
+
+a {
+    color: $accent-colour;
+
+    &:hover,
+    &:focus {
+        color: darken($accent-colour, 20%);
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:active {
+        color: lighten($accent-colour, 20%);
+    }
+}
+
+/* Dropdown controls */
+select {
+    height: 28px;
+    width: auto;
+    padding: 4px;
+    background-color: $bg-colour;
+    border: 2px solid $border-colour;
+    color: $text-colour;
+    -webkit-appearance: none;
+    background-image: url('../img/general/dropdown.svg');
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 24px;
+    color: $text-colour;
+    font-size: small;
+    filter: grayscale(1);
+    border-radius: 0;
+    vertical-align: middle;
+
+    &:focus {
+        color: $accent-colour;
+        filter: grayscale(0);
+        background-image: url('../img/general/dropdown-hover.svg');
+    }
+
+    option {
+        -webkit-appearance: none;
+    }
+}
+
+/* Checkbox and radio buttons */
+$control-toggle-size: 16px !default;
+$control-toggle-speed: 0.5s !default;
+
+input[type='radio'],
+input[type='checkbox'] {
+    -webkit-appearance: none;
+    margin: 0 0 0 1em;
+    width: $control-toggle-size;
+    height: $control-toggle-size;
+    background-color: $bg-control;
+    vertical-align: middle;
+    transition: background-color $control-toggle-speed;
+
+    & + label {
+        padding: 0 0.25em;
+        vertical-align: middle;
+        transition: color $control-toggle-speed;
+    }
+
+    &:hover,
+    &:focus {
+        opacity: 0.8;
+        outline: 0;
+    }
+
+    &:checked {
+        background-color: $accent-colour;
+        background-size: $control-toggle-size;
+        background-position: center;
+
+        & + label {
+            color: $accent-colour;
+        }
+    }
+
+    &:disabled {
+        background-color: $bg-colour;
+        cursor: not-allowed;
+
+        & + label {
+            color: $bg-colour;
+            cursor: not-allowed;
+        }
+    }
+
+}
+
+input[type='radio'] {
+    border-radius: 100%;
+
+    &:checked {
+        background-image: url('../img/general/radio.svg');
+    }
+}
+
+
+input[type='checkbox'] {
+    &:checked {
+        background-image: url('../img/general/checkbox.svg');
+    }
+}
+
+/* Ranges (aka. sliders) */
+input[type='range'] {
+    -webkit-appearance: none;
+    height: 8px;
+    background: $bg-colour;
+    transition: background $control-toggle-speed;
+    vertical-align: middle;
+
+    &:hover,
+    &:focus {
+        background: lighten($bg-colour, 10%);
+    }
+
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        background: $bg-control;
+        height: 20px;
+        width: 8px;
+        cursor: grabbing;
+    }
+}
+
+/* Focus for keyboard navigation - each element has a distinct hover/focus state */
+input, a, button, select {
+    &:focus {
+        outline: 0;
+    }
+}
+
+/* Text box */
+input[type='text'] {
+    background-color: $bg-colour;
+    color: $button-colour;
+    border: 1px solid $border-colour;
+    padding: 4px;
+    width: 400px;
+    height: 16px;
+    font-size: 13px;
+    vertical-align: middle;
+
+    &.path {
+        font-family: $font-mono;
+    }
+
+    &:hover,
+    &:focus {
+        background-color: lighten($bg-colour, 5%);
+    }
+
+    &:disabled {
+        background-color: $bg-colour-secondary;
+        border-color: $bg-colour-secondary !important;
+        color: $disabled-colour;
+        cursor: not-allowed;
+    }
+}
