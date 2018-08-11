@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Module for common functions used by Polychromatic's
-    Controller and Tray Applet.
+Module for common functions used by Polychromatic's Controller and Tray Applet.
 """
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2017-2018 Luke Horwell <code@horwell.me>
@@ -21,10 +20,6 @@ from gi.repository import Gtk
 # Devices that do not support RGB at all.
 # (excludes Ultimate which supports shades of green)
 fixed_coloured_devices = ["Taipan"]
-
-# Frontend fade transition speed
-fade_speed = "500"
-sleep_interval = 0.5
 
 class Debugging(object):
     """
@@ -676,7 +671,5 @@ def is_any_razer_device_connected(dbg):
         return True
 
 
-"""
-Module Initalization
-"""
+# Module Initalization
 _ = setup_translations(__file__, "polychromatic")

@@ -18,22 +18,28 @@
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
 """
-Main application for Polychromatic, a GUI for interfacing with the OpenRazer's
-Python Library (and daemon)
+Polychromatic GUI for interfacing with the OpenRazer's Python Library and daemon
 """
 
-import os
-import sys
-import glob
-import signal
-import gettext
-import time
-import threading
 import argparse
+import gettext
+import glob
+import os
+import re
+import signal
+import sys
+import threading
+import time
 from setproctitle import setproctitle
 from subprocess import Popen as background_process
 from subprocess import check_output
 from platform import linux_distribution
+
+import gi
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+gi.require_version("WebKit2", "4.0")
+from gi.repository import GLib, Gtk, Gdk, WebKit2
 
 try:
     import openrazer.client as rclient
@@ -61,12 +67,6 @@ except Exception as e:
     print("Try re-installing the application.")
     print("\nException:" + str(e))
     exit(1)
-
-import gi
-gi.require_version("Gtk", "3.0")
-gi.require_version("Gdk", "3.0")
-gi.require_version("WebKit2", "4.0")
-from gi.repository import GLib, Gtk, Gdk, WebKit2
 
 setproctitle("polychromatic-controller")
 version = "0.4.0-alpha"
@@ -116,7 +116,6 @@ class AppView(WebKit2.WebView):
         self.connect("load-changed", self.load_changed_cb)
         self.connect("notify::title", self.title_changed_cb)
         self.connect("context-menu", self.context_menu_cb)
-        dbg.stdout("WebView Initialised.", dbg.success, 2)
 
         try:
             # Allows local SVG files to load.
@@ -149,6 +148,7 @@ class AppView(WebKit2.WebView):
 
         # Load the base page structure
         self.load_uri("file://" + os.path.join(path.data_source, "ui/controller.html"))
+        dbg.stdout("WebView Initialised", dbg.success, 1)
 
     def run_js(self, function):
         """
@@ -187,8 +187,9 @@ class AppView(WebKit2.WebView):
 
         Intended to be called when the initial controller.html page has finished loading.
         """
+        dbg.stdout("WebView still loading...", dbg.debug, 2)
         if not self.is_loading():
-            dbg.stdout("WebView Ready.", dbg.success, 2)
+            dbg.stdout("WebView Ready.", dbg.success, 1)
             thread = threading.Thread(target=app.start_loading, args=([view]))
             thread.start()
 
@@ -238,7 +239,7 @@ class AppWindow(object):
 class Controller(object):
     def __init__(self):
         """
-        The main application runtime. Manipulates the UI and communicates with the OpenRazer daemon.
+        The main application runtime. Responsive for populating the UI and user interaction logic.
         """
         # Variables are assigned later in start_loading()
         self.webkit = None
@@ -484,11 +485,11 @@ def parse_parameters():
 
     if args.verbose:
         dbg.verbose_level = 1
-        dbg.stdout(_("Verbose enabled"), dbg.debug, 1)
+        dbg.stdout(_("Verbose Enabled"), dbg.action, 1)
 
     if args.debug:
         dbg.verbose_level = 2
-        dbg.stdout(_("Debug verbose enabled"), dbg.debug, 2)
+        dbg.stdout(_("Debug Verbose Enabled"), dbg.action, 2)
 
     if args.print_device_info:
         CommandLineOnly.print_device_capability_info()

@@ -390,9 +390,10 @@ def generate_uuid():
     return(str(int(time.time() * 1000000)))
 
 
+# Module Initalization
 def start_initalization():
     """
-    Module Initialisation
+    Prepares the preferences module for use.
     """
     # Create folders if they do not exist.
     for folder in [path.root, path.profile_folder, path.profile_backups]:
@@ -437,8 +438,6 @@ def start_initalization():
             data[str(uuid)]["col"] = [red, green, blue]
         save_file(path.colours, data)
 
-
-################################################################################
 
 path = Paths()
 start_initalization()
