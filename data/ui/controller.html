@@ -18,17 +18,17 @@
 <html>
 <head>
     <link href="css/default.css" rel="stylesheet" media="screen">
-    <link href="lib/font-awesome.min.css" rel="stylesheet" media="screen">
 </head>
 <body>
     <div id="overlay" hidden></div>
-    <div id="header"></div>
-    <div id="tabs" hidden></div>
-    <div id="content"></div>
-    <div id="footer">
-      <div id="footer-left"></div>
-      <div id="footer-right"></div>
-    </div>
+    <header class="generic">
+        <h3 id="title"></h3>
+        <div id="tabs">
+        </div>
+    </header>
+    <content></content>
+    <footer>
+    </footer>
     <script src="lib/jquery-3.3.1.min.js"></script>
     <script src="controller.js"></script>
 </body>

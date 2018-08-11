@@ -96,6 +96,13 @@ else:
     version = version + "-stable"
 
 
+def get_string_bank(_):
+    return {
+        "debug1": "Hello World",
+        "debug2": "Test String"
+    }
+
+
 class AppView(WebKit2.WebView):
     def __init__(self):
         """
@@ -261,6 +268,25 @@ class Controller(object):
             dbg.stdout(' => ' + buffer, dbg.debug, 2)
             self.run_javascript(buffer)
 
+    def update_content_view(self, section_name, target_element="content"):
+        """
+        Loads a HTML 'section' into the content view parsing string placeholders.
+        """
+        dbg.stdout("Loading content view: " + section_name, dbg.debug, 1)
+        with open(os.path.join(path.data_source, "ui/sections/" + section_name + ".html")) as f:
+            html = f.read().replace('\n', '')
+
+        # Process strings
+        content_strings = re.findall(r"\[\[(.*?)\]\]",html)
+        for string in content_strings:
+            try:
+                html = html.replace("[[" + string + "]]", string_bank[string.strip()])
+            except KeyError:
+                dbg.stdout("Missing '{0}' string in section '{1}'".format(string.strip(), section_name), dbg.error)
+
+        dbg.stdout("Loaded content view: {0} ({1} strings)".format(section_name, len(content_strings)), dbg.debug, 1)
+        self.update_page(target_element, "html", html)
+
     def process_command(self, cmd):
         """
         Process a command issued from the frontend for the page.
@@ -347,7 +373,9 @@ class Controller(object):
         self.webkit = webkit
         dbg.stdout("Version " + version, dbg.debug, 1)
 
-        dbg.stdout("Application Ready.", dbg.success, 2)
+        self.update_content_view("ui-test")
+
+        dbg.stdout("Application Ready.", dbg.success, 1)
 
     def device_state_changed():
         pass
@@ -589,6 +617,7 @@ tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray
 
 if __name__ == "__main__":
     _ = common.setup_translations(__file__, "polychromatic")
+    string_bank = get_string_bank(_)
     dbg = common.Debugging()
     parse_parameters()
     win = AppWindow()
