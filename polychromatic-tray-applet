@@ -468,25 +468,25 @@ class AppIndicator(object):
 
     def _build_effect_menu(self):
         dbg.stdout("Building effect menu...", dbg.action, 1)
-        root_submenu = create_submenu("Effects", True)
+        root_submenu = create_submenu(_("Effects"), True)
 
         if self.active_device.has("lighting"):
-            main_submenu = create_submenu("Main", True)
+            main_submenu = create_submenu(_("Main"), True)
         else:
             main_submenu = None
 
         if self.active_device.has("lighting_backlight"):
-            backlight_submenu = create_submenu("Backlight", True)
+            backlight_submenu = create_submenu(_("Backlight"), True)
         else:
             backlight_submenu = None
 
         if self.active_device.has("lighting_logo"):
-            logo_submenu = create_submenu("Logo", True)
+            logo_submenu = create_submenu(_("Logo"), True)
         else:
             logo_submenu = None
 
         if self.active_device.has("lighting_scroll"):
-            scroll_submenu = create_submenu("Scroll Wheel", True)
+            scroll_submenu = create_submenu(_("Scroll Wheel"), True)
         else:
             scroll_submenu = None
 
@@ -589,25 +589,25 @@ class AppIndicator(object):
 
     def _build_brightness_menu(self):
         dbg.stdout("Building brightness menu...", dbg.action, 1)
-        root_submenu = create_submenu("Brightness", True)
+        root_submenu = create_submenu(_("Brightness"), True)
 
         if self.active_device.has("brightness"):
-            main_submenu = create_submenu("Main", True)
+            main_submenu = create_submenu(_("Main"), True)
         else:
             main_submenu = None
 
         if self.active_device.has("lighting_backlight_brightness") or self.active_device.has("lighting_backlight_active"):
-            backlight_submenu = create_submenu("Backlight", True)
+            backlight_submenu = create_submenu(_("Backlight"), True)
         else:
             backlight_submenu = None
 
         if self.active_device.has("lighting_logo_brightness") or self.active_device.has("lighting_logo_active"):
-            logo_submenu = create_submenu("Logo", True)
+            logo_submenu = create_submenu(_("Logo"), True)
         else:
             logo_submenu = None
 
         if self.active_device.has("lighting_scroll_brightness") or self.active_device.has("lighting_scroll_active"):
-            scroll_submenu = create_submenu("Scroll Wheel", True)
+            scroll_submenu = create_submenu(_("Scroll Wheel"), True)
         else:
             scroll_submenu = None
 
