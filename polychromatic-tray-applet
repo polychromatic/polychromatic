@@ -426,9 +426,9 @@ class AppIndicator(object):
         """
         if indicator_support:
             self.indicator.set_title("Polychromatic")
-            self.indicator.set_icon(self._get_icon("../tray", "error.svg"))
+            self.indicator.set_icon(self._get_icon("../tray/", "error.svg"))
         else:
-            self.indicator.set_from_file(self._get_icon("../tray", "error.svg"))
+            self.indicator.set_from_file(self._get_icon("../tray/", "error.svg"))
 
         root = Gtk.Menu()
         root.append(create_menu_item(error_reason, False))
@@ -636,6 +636,9 @@ class AppIndicator(object):
             target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["main", 25]))
             target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["main", 0]))
 
+        # For each of the lighting sources, use on/off toggle if daemon reports "toggle", otherwise
+        # show the 0%-100% brightness range.
+        # ==> Backlight
         if self.active_device.has("lighting_backlight_backlight"):
             if multiple_menus:
                 target_submenu = backlight_submenu
@@ -649,19 +652,28 @@ class AppIndicator(object):
             target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["backlight", 25]))
             target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["backlight", 0]))
 
-        if self.active_device.has("lighting_logo_brightness"):
+        elif self.active_device.has("lighting_backlight_active"):
             if multiple_menus:
-                target_submenu = logo_submenu
+                target_submenu = backlight_submenu
             else:
                 target_submenu = root_submenu
 
-            target_submenu[1].append(create_menu_item(_("Full (100%)"), True, cb.set_brightness, ["logo", 100]))
-            target_submenu[1].append(create_menu_item(_("Bright (75%)"), True, cb.set_brightness, ["logo", 75]))
-            target_submenu[1].append(create_menu_item(_("Medium (50%)"), True, cb.set_brightness, ["logo", 50]))
-            target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["logo", 25]))
-            target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["logo", 0]))
+            target_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["backlight", 1]))
+            target_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["backlight", 0]))
+            multiple_menus = True
 
-        if self.active_device.has("lighting_scroll_brightness"):
+        # ==> Scroll Wheel
+        if self.active_device.has("lighting_scroll_active"):
+            if multiple_menus:
+                target_submenu = scroll_submenu
+            else:
+                target_submenu = root_submenu
+
+            target_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["scroll", 1]))
+            target_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["scroll", 0]))
+            multiple_menus = True
+
+        elif self.active_device.has("lighting_scroll_brightness"):
             if multiple_menus:
                 target_submenu = scroll_submenu
             else:
@@ -673,22 +685,30 @@ class AppIndicator(object):
             target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["scroll", 25]))
             target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["scroll", 0]))
 
-        # Only show on/off options if the device only supports that.
-        if self.active_device.has("lighting_backlight_active"):
-            backlight_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["backlight", 1]))
-            backlight_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["backlight", 0]))
-            multiple_menus = True
-
+        # ==> Logo
         if self.active_device.has("lighting_logo_active"):
-            logo_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["logo", 1]))
-            logo_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["logo", 0]))
+            if multiple_menus:
+                target_submenu = logo_submenu
+            else:
+                target_submenu = root_submenu
+
+            target_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["logo", 1]))
+            target_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["logo", 0]))
             multiple_menus = True
 
-        if self.active_device.has("lighting_scroll_active"):
-            scroll_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["scroll", 1]))
-            scroll_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["scroll", 0]))
-            multiple_menus = True
+        elif self.active_device.has("lighting_logo_brightness"):
+            if multiple_menus:
+                target_submenu = logo_submenu
+            else:
+                target_submenu = root_submenu
 
+            target_submenu[1].append(create_menu_item(_("Full (100%)"), True, cb.set_brightness, ["logo", 100]))
+            target_submenu[1].append(create_menu_item(_("Bright (75%)"), True, cb.set_brightness, ["logo", 75]))
+            target_submenu[1].append(create_menu_item(_("Medium (50%)"), True, cb.set_brightness, ["logo", 50]))
+            target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["logo", 25]))
+            target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["logo", 0]))
+
+        # For devices with multiple lighting sources, add submenus to root menu.
         if multiple_menus and main_submenu:
             root_submenu[1].append(main_submenu[0])
 
