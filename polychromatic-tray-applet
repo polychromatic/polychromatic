@@ -166,19 +166,10 @@ class AppIndicator(object):
         self.current_poll_rate = _("Unknown")
         self.current_gamemode = _("Unknown")
 
-        if indicator_support:
-            self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", self._get_tray_icon(), appindicator.IndicatorCategory.APPLICATION_STATUS)
-            self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
-            dbg.stdout(_("Initialised AppIndicator"), dbg.debug, 1)
-        else:
-            self.indicator = Gtk.StatusIcon()
-            self.indicator.set_name("polychromatic-tray-applet")
-            self.indicator.set_from_file(self._get_tray_icon())
-            self.indicator.set_visible(True)
-            dbg.stdout(_("Initialised GTK Status Icon (fallback)"), dbg.debug, 1)
-
     def setup(self):
-        # Set active device
+        """
+        Preparations for running the tray applet.
+        """
         if not which("openrazer-daemon"):
             self._setup_failed(_("Daemon Not Installed."), _("Unknown command: openrazer-daemon"))
 
@@ -191,6 +182,7 @@ class AppIndicator(object):
         # Turn off incompatible features
         self.devman.sync_effects = False
 
+        # Set active device
         if len(self.devman.devices) == 0:
             self._setup_failed(_("No devices found."))
             return False
@@ -198,6 +190,28 @@ class AppIndicator(object):
             self.active_device = self.devman.devices[0]
             self.active_serial = self.active_device.serial
             self.current_device = self.active_device.name
+
+        # Build the applet initially
+        self.rebuild_indicator()
+
+        # Start watching devicestate index for changes.
+        common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
+        dbg.stdout("Finished setting up applet.", dbg.success, 1)
+
+    def rebuild_indicator(self):
+        """
+        Creates a new tray applet.
+        """
+        if indicator_support:
+            self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", self._get_tray_icon(), appindicator.IndicatorCategory.APPLICATION_STATUS)
+            self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
+            dbg.stdout(_("Initialised AppIndicator"), dbg.debug, 1)
+        else:
+            self.indicator = Gtk.StatusIcon()
+            self.indicator.set_name("polychromatic-tray-applet")
+            self.indicator.set_from_file(self._get_tray_icon())
+            self.indicator.set_visible(True)
+            dbg.stdout(_("Initialised GTK Status Icon (fallback)"), dbg.debug, 1)
 
         # Ensure correct tray icon is loaded
         if indicator_support:
@@ -209,10 +223,6 @@ class AppIndicator(object):
         self.menu = None
         self.rebuild_all_submenus()
         self.rebuild_root_menu()
-
-        # Start watching devicestate index for changes.
-        common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
-        dbg.stdout("Finished setting up applet.", dbg.success, 1)
 
     def rebuild_all_submenus(self):
         """
@@ -875,8 +885,7 @@ class AppIndicator(object):
     # When there are external changes to devicestate.json
     def device_state_changed(self):
         dbg.stdout("Device state changed. Refreshing menus.", dbg.action, 1)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        indicator.rebuild_indicator()
 
 
 class Callback():
@@ -909,9 +918,9 @@ class Callback():
                 indicator.active_device = device
                 indicator.active_serial = device.serial
                 indicator.current_device = device.name
+
                 dbg.stdout("=> Set Device to: {0} (Serial: {1}".format(device.name, device.serial), dbg.debug, 1)
-                indicator.rebuild_all_submenus()
-                indicator.rebuild_root_menu()
+                indicator.rebuild_indicator()
 
     def reload_devices(cb, item):
         dbg.stdout("=> Reload Devices", dbg.debug, 1)
@@ -936,22 +945,19 @@ class Callback():
         common.set_lighting_effect(pref, indicator.active_device, source, effect, params)
         indicator.current_app_profile = None
         indicator.current_effect = common.get_effect_state_string(effect)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        indicator.rebuild_indicator()
 
     def set_brightness(cb, item, attr):
         source = attr[0]
         value = attr[1]
         common.set_brightness(pref, indicator.active_device, source, value)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        indicator.rebuild_indicator()
 
     def set_brightness_toggle(cb, item, attr):
         source = attr[0]
         value = attr[1]
         common.set_brightness_toggle(pref, indicator.active_device, source, value)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        indicator.rebuild_indicator()
 
     def set_colour(cb, item, params):
         """
@@ -964,8 +970,7 @@ class Callback():
         dbg.stdout("Set colour to: {0} (RGB {1})".format(name, rgb), dbg.debug, 1)
         common.save_colours_to_all_sources(pref, indicator.active_device, "colour_primary", rgb)
         common.repeat_last_effect(pref, indicator.active_device)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        indicator.rebuild_indicator()
 
     def set_colour_custom(cb, item):
         color_selection_dlg = Gtk.ColorSelectionDialog(_("Change Tray Color"))
@@ -981,8 +986,7 @@ class Callback():
             dbg.stdout("Set custom colour to: " + str(indicator.current_colour_rgb), dbg.debug, 1)
             common.save_colours_to_all_sources(pref, indicator.active_device, "colour_primary", indicator.current_colour_rgb)
             common.repeat_last_effect(pref, indicator.active_device)
-            indicator.rebuild_all_submenus()
-            indicator.rebuild_root_menu()
+            indicator.rebuild_indicator()
 
         color_selection_dlg.destroy()
 
@@ -993,20 +997,17 @@ class Callback():
         metadata = indicator.profiles.get_metadata(uuid)
         indicator.current_effect = _("Profile")
         indicator.current_app_profile = metadata["name"]
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        indicator.rebuild_indicator()
 
     def set_dpi(cb, item, value):
         indicator.active_device.dpi = (value, value)
         indicator.current_dpi = str(value)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        indicator.rebuild_indicator()
 
     def set_poll_rate(cb, item, value):
         indicator.active_device.poll_rate = value
         indicator.current_poll_rate = str(value) + " Hz"
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        indicator.rebuild_indicator()
 
     def set_gamemode(cb, item, state=False):
         indicator.active_device.game_mode_led = state
@@ -1014,8 +1015,7 @@ class Callback():
             indicator.current_gamemode = _("Enabled")
         else:
             indicator.current_gamemode = _("Disabled")
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        indicator.rebuild_indicator()
 
 
 def parse_parameters():
