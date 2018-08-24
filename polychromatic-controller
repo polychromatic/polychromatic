@@ -17,9 +17,7 @@
 # Copyright (C) 2015-2018 Luke Horwell <code@horwell.me>
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
-"""
-Polychromatic GUI for interfacing with the OpenRazer's Python Library and daemon
-"""
+"""Polychromatic GUI for interfacing with the OpenRazer's Python Library and daemon"""
 
 import argparse
 import gettext
@@ -103,11 +101,12 @@ def get_string_bank(_):
     }
 
 
-class AppView(WebKit2.WebView):
+class WebView(WebKit2.WebView):
+    """
+    WebView class responsible for rendering the user interface using web technologies.
+    """
     def __init__(self):
-        """
-        WebKit2 provides the user interface using web technologies.
-        """
+        """Initalises WebKit and loads the base HTML page."""
         webkit = WebKit2
         webkit.WebView.__init__(self)
         self.set_background_color(Gdk.RGBA(0, 0, 0, 1))
@@ -175,7 +174,7 @@ class AppView(WebKit2.WebView):
         if title not in ["null", None, "", " "]:
             app.process_command(title)
 
-    def context_menu_cb(self, view, menu, event, htr, user_data=None):
+    def context_menu_cb(self, view, menu, event, htr):
         """
         Callback: Disables the context menu.
         """
@@ -195,11 +194,21 @@ class AppView(WebKit2.WebView):
 
 
 class AppWindow(object):
+    """
+    Main application class for building the skeleton of the GTK application window.
+    """
+    def __init__(self):
+        """
+        Variables to be set later.
+        """
+        self.webkit = None
+        self.window = None
+
     def run(self):
         """
         Assembles the main application window.
         """
-        self.webkit = AppView()
+        self.webkit = WebView()
         self.window = Gtk.Window(title=_("Polychromatic Controller"))
         self.window.set_wmclass("polychromatic-controller", "polychromatic-controller")
         self.window.set_position(Gtk.WindowPosition.CENTER)
@@ -208,7 +217,7 @@ class AppWindow(object):
 
         try:
             self.window.set_icon_from_file(os.path.join(path.data_source, "ui/img/general/controller.svg"))
-        except:
+        except Exception:
             dbg.stdout("Failed to set window icon.", dbg.warning, 2)
 
         # Add elements to window
@@ -218,7 +227,7 @@ class AppWindow(object):
 
         # Compatibility option if DEs don't scale to HIDPI displays automatically.
         scale2x = float(pref.get("editor", "scale2x", False))
-        if scale2x == True:
+        if scale2x:
             self.webkit.set_zoom_level(1.5)
             self.window.set_size_request(1500, 900)
             dbg.stdout("HIDPI compatibility enabled", dbg.action, 1)
@@ -237,14 +246,15 @@ class AppWindow(object):
 
 
 class Controller(object):
+    """
+    The main application runtime. Responsive for populating the UI and user interaction logic.
+    """
     def __init__(self):
         """
-        The main application runtime. Responsive for populating the UI and user interaction logic.
+        Variables are assigned later in start_loading()
         """
-        # Variables are assigned later in start_loading()
         self.webkit = None
         self.devman = None
-        self.devices = []
 
     def run_javascript(self, function):
         """
@@ -273,19 +283,19 @@ class Controller(object):
         """
         Loads a HTML 'section' into the content view parsing string placeholders.
         """
-        dbg.stdout("Loading content view: " + section_name, dbg.debug, 1)
+        dbg.stdout("Loading content view: {0} [target: {1}]".format(section_name, target_element), dbg.action, 1)
         with open(os.path.join(path.data_source, "ui/sections/" + section_name + ".html")) as f:
             html = f.read().replace('\n', '')
 
         # Process strings
-        content_strings = re.findall(r"\[\[(.*?)\]\]",html)
+        content_strings = re.findall(r"\[\[(.*?)\]\]", html)
         for string in content_strings:
             try:
                 html = html.replace("[[" + string + "]]", string_bank[string.strip()])
             except KeyError:
                 dbg.stdout("Missing '{0}' string in section '{1}'".format(string.strip(), section_name), dbg.error)
 
-        dbg.stdout("Loaded content view: {0} ({1} strings)".format(section_name, len(content_strings)), dbg.debug, 1)
+        dbg.stdout("Loaded content view: {0} ({1} strings)".format(section_name, len(content_strings)), dbg.success, 1)
         self.update_page(target_element, "html", html)
 
     def process_command(self, cmd):
@@ -365,7 +375,7 @@ class Controller(object):
                 dbg.stdout("Unimplemented command: " + cmd, dbg.error)
 
         # WebKit2 quirk - clear "title" so same command can execute again
-        self.run_javascript("cmd('null')");
+        self.run_javascript("cmd('null')")
 
     def start_loading(self, webkit):
         """
@@ -374,7 +384,6 @@ class Controller(object):
         self.webkit = webkit
         dbg.stdout("Version " + version, dbg.debug, 1)
 
-        self.update_content_view("ui-test")
 
         dbg.stdout("Application Ready.", dbg.success, 1)
 
