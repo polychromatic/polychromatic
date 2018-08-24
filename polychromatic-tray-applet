@@ -472,6 +472,14 @@ class AppIndicator(object):
                 icon_path = self._get_icon("effects", "unknown.svg")
             submenu[1].append(create_menu_item(name, True, cb.set_device, serial, icon_path))
             dbg.stdout(" -- Found: " + name, dbg.debug, 1)
+
+        try:
+            for vid_pid in common.get_incompatible_device_list(dbg, self.devman.devices):
+                submenu[1].append(create_menu_item(_("Unrecognised") + ": {0}:{1}".format(vid_pid[0], vid_pid[1]), False, cb.set_device, None, self._get_icon("devices", "unknown.svg")))
+                dbg.stdout(" -- Found unrecognised device: {0}:{1}".format(str(vid_pid[0]), str(vid_pid[1])), dbg.debug, 1)
+        except Exception as e:
+            dbg.stdout("Failed to list USB devices. Exception: " + str(e), dbg.error, 1)
+
         submenu[1].append(create_seperator())
         submenu[1].append(create_menu_item(_("Refresh Device List"), True, cb.reload_devices))
         return submenu[0]

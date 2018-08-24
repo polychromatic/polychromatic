@@ -464,6 +464,15 @@ class Controller(object):
 
         # TODO: Add try/except to catch page load errors
 
+        for vid_pid in common.get_incompatible_device_list(dbg, self.devman.devices):
+            device_id += 1
+            dbg.stdout(" -- Found unrecognised device: {0}:{1}".format(str(vid_pid[0]), str(vid_pid[1])), dbg.debug, 1)
+            html += "<button class='item dim' onclick='cmd(\"select-unrecog-device\")'><img src='{0}'/> <span>{3}: {1}:{2}</span></button>".format(
+                os.path.join(path.data_source, "ui/img/devices/unknown.svg"),
+                str(vid_pid[0]),
+                str(vid_pid[1]),
+                get_string_bank(_)["unknown-device"])
+
         self.update_page("#device-list", "html", html)
 
 

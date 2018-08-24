@@ -697,5 +697,50 @@ def is_any_razer_device_connected(dbg):
         return True
 
 
+def get_incompatible_device_list(dbg, devices):
+    """
+    Scans 'lsusb' for incompatible Razer devices. As the daemon doesn't recognise them,
+    they can be listed, but cannot be interacted with. Excludes already connected devices.
+
+    Returns a list in format: [[vid1, pid1], [vid2, pid2]]
+    Returns None if an error occurs (e.g. 'lsusb' not installed)
+    """
+    all_usb_ids = []
+    reg_ids = []
+    unreg_ids = []
+
+    # Strip lsusb to just get VIDs and PIDs
+    try:
+        lsusb = subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
+    except FileNotFoundError:
+        dbg.stdout("'lsusb' not available, unable to determine if product is connected.", dbg.error, 1)
+        return None
+
+    for usb in lsusb.split("\n"):
+        if len(usb) > 0:
+            try:
+                vidpid = usb.split(" ")[5].split(":")
+                all_usb_ids.append([vidpid[0].upper(), vidpid[1].upper()])
+            except AttributeError:
+                pass
+
+    # Get VIDs and PIDs of current devices to exclude them.
+    for device in devices:
+        vid = str(hex(device._vid))[2:].upper().rjust(4, '0')
+        pid = str(hex(device._pid))[2:].upper().rjust(4, '0')
+        reg_ids.append([vid, pid])
+
+    # Identify Razer VIDs that are not registered in the daemon
+    for usb in all_usb_ids:
+        if usb[0] != "1532":
+            continue
+
+        if usb in reg_ids:
+            continue
+
+        unreg_ids.append(usb)
+
+    return unreg_ids
+
 # Module Initalization
 _ = setup_translations(__file__, "polychromatic")
