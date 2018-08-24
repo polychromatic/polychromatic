@@ -575,6 +575,7 @@ def restart_tray_applet(dbg, path):
     Restarts the tray applet if an instance is running in the background.
     """
     dbg.stdout("Restarting tray applet...", dbg.action, 1)
+
     try:
         pid = int(subprocess.check_output(["pidof", "polychromatic-tray-applet"]))
         os.kill(pid, 9)
@@ -583,20 +584,22 @@ def restart_tray_applet(dbg, path):
         return
 
     # Where is the tray applet?
-    if __file__.startswith("/usr"):
+    if os.path.dirname(__file__).endswith("bin"):
         # System-wide installation
-        tray_bin_path = "/usr/bin/polychromatic-tray-applet"
+        tray_bin_path = os.path.dirname(__file__) + "/polychromatic-tray-applet"
     else:
-        # Local/development
+        # Development
         tray_bin_path = os.path.abspath(os.path.join(path.data_source, "../polychromatic-tray-applet"))
 
     # Attempt to gracefully stop the process, then launch again.
     try:
         subprocess.Popen(tray_bin_path)
         dbg.stdout("Successfully reloaded tray applet.", dbg.success, 1)
+
     except OSError as e:
         dbg.stdout("Failed to relaunch tray applet!", dbg.error)
         dbg.stdout("Exception: " + str(e), dbg.error)
+
     return
 
 
