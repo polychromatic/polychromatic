@@ -1,0 +1,98 @@
+.sidebar-container {
+    display: flex;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+
+    > .left {
+        position: fixed;
+        top: $header-height + ($header-padding-v * 2) + 2px;
+        left: 0;
+        bottom: $footer-height + ($footer-padding-v * 2);
+        width: $sidebar-width;
+        background-color: $bg-sidebar;
+
+        .item-heading {
+            color: $sidebar-heading;
+            margin-top: 1em;
+            padding: 0.25em;
+            border-bottom: 1px solid darken($sidebar-heading, 40%);
+        }
+
+        .item {
+            display: block;
+            padding: 0.25em;
+            border-bottom: 1px solid darken($sidebar-heading, 40%);
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
+
+            img {
+                vertical-align: middle;
+            }
+
+            span {
+                padding: 0 0.1em;
+            }
+
+            &:hover,
+            &:focus {
+                background: lighten($bg-sidebar, 20%);
+                color: white;
+                text-decoration: none;
+            }
+
+            &.active {
+                background: $secondary-colour;
+
+                &:hover,
+                &:focus {
+                    color: white;
+                    text-decoration: none;
+                }
+            }
+
+            &:active {
+                background: $accent-colour;
+
+                img {
+                    filter: brightness(0);
+                }
+
+                span {
+                    color: black;
+                }
+            }
+
+            &.dim {
+                color: $disabled-colour;
+
+                img {
+                    filter: grayscale(1) brightness(0.5);
+                }
+            }
+        }
+
+        .item-group {
+            .item {
+                padding: 0.2em 1em;
+            }
+        }
+    }
+
+    > .right {
+        position: fixed;
+        top: $header-height + ($header-padding-v * 2) + 2px;
+        left: $sidebar-width;
+        right: 0;
+        bottom: $footer-height + ($footer-padding-v * 2);
+        padding: 0;
+        overflow-y: auto;
+
+        p {
+            margin: 0;
+            padding-bottom: 1em;
+        }
+    }
+}

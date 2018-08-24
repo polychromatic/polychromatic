@@ -9,13 +9,14 @@
     overflow-y: none;
     white-space: nowrap;
 
-    > button {
+    button {
         display: inline-block;
         text-align: center;
-        height: $tab-height + ($tab-button-padding / 2);
+        height: $tab-height + ($tab-button-padding / 2) - 2px;
         width: auto;
         padding: 0 $tab-button-padding;
         background: transparent;
+        border: none;
         border-bottom: $tab-border-height solid $border-colour;
         color: white;
         vertical-align: top;
@@ -25,6 +26,13 @@
         &:focus {
             opacity: 0.8;
             border-bottom-color: $secondary-colour;
+        }
+
+        &:active {
+            opacity: 0.5;
+            color: $accent-colour;
+            border-bottom-color: $accent-colour;
+            filter: grayscale(0.5);
         }
 
         &.active {
@@ -46,5 +54,10 @@
             vertical-align: middle;
             font-size: 0.9em;
         }
+    }
+
+    .right {
+        display: inline;
+        float: right;
     }
 }

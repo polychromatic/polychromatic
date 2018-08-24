@@ -97,7 +97,48 @@ else:
 def get_string_bank(_):
     return {
         "debug1": "Hello World",
-        "debug2": "Test String"
+        "debug2": "Test String",
+        "devices": _("Devices"),
+        "effects": _("Effects"),
+        "profiles": _("Profiles"),
+        "schedule": _("Schedule"),
+        "preferences": _("Preferences"),
+        "device-info": _("Device Info"),
+        "brightness": _("Brightness"),
+        "effect": _("Effect"),
+        "spectrum": _("Spectrum"),
+        "wave": _("Wave"),
+        "reactive": _("Reactive"),
+        "breath": _("Breath"),
+        "ripple": _("Ripple"),
+        "static": _("Static"),
+        "starlight": _("Starlight"),
+        "game_mode": _("Game Mode"),
+        "enabled": _("Enabled"),
+        "learn_more": _("Learn more"),
+        "macros": _("Macros"),
+        "dpi": _("DPI"),
+        "polling_rate": _("Polling Rate"),
+        "wave-settings": _("Wave Direction"),
+        "left": _("Left"),
+        "right": _("Right"),
+        "clockwise": _("Clockwise"),
+        "anticlockwise": _("Anticlockwise"),
+        "up": _("Up"),
+        "down": _("Down"),
+        "reactive-settings": _("Reactive Speed"),
+        "fast": _("Fast"),
+        "medium": _("Medium"),
+        "slow": _("Slow"),
+        "vslow": _("Very Slow"),
+        "breath-settings": _("Breath Type"),
+        "random": _("Random"),
+        "single": _("Single"),
+        "dual": _("Dual"),
+        "ripple-settings": _("Ripple Type"),
+        "color": _("Color"),
+        "unknown-device": _("Unrecognized"),
+        "close-app": _("Close Application")
     }
 
 
@@ -384,11 +425,46 @@ class Controller(object):
         self.webkit = webkit
         dbg.stdout("Version " + version, dbg.debug, 1)
 
+        self.update_content_view("header", "header")
+        self.update_content_view("footer", "footer")
+
+        dbg.stdout("Spawning daemon device manager...", dbg.debug, 1)
+        self.devman = rclient.DeviceManager()
+        self.active_device = None
+
+        init_devices = self.devman.devices
+        if len(init_devices) > 0:
+            self.active_device = init_devices[0]
+
+        self.load_devices_screen()
 
         dbg.stdout("Application Ready.", dbg.success, 1)
 
     def device_state_changed():
         pass
+
+    def load_devices_screen(self):
+        """
+        Opens or reloads the device screen based on the current device.
+        """
+        self.update_content_view("devices")
+
+        # Populate device list on the sidebar.
+        dbg.stdout("Getting device list...", dbg.action, 1)
+        html = ""
+        device_id = -1
+        for device in self.devman.devices:
+            device_id += 1
+            dbg.stdout(" -- Found: " + device.name, dbg.debug, 1)
+            html += "<button class='item {3}' onclick='cmd(\"select-device?{0}\")'><img src='{1}'/> <span>{2}</span></button>".format(
+                str(device_id),
+                common.get_device_image(device, path.data_source),
+                device.name,
+                "active" if self.active_device == device else "")
+
+        # TODO: Add try/except to catch page load errors
+
+        self.update_page("#device-list", "html", html)
 
 
 class Dialogues():

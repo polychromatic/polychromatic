@@ -1,0 +1,33 @@
+.device-info {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    height: 8em;
+    width: 100%;
+    background: $bg-colour-secondary;
+    margin-bottom: 1em;
+
+    #current-image {
+        max-width: 150px;
+        height: 6em;
+        width: 100%;
+        padding: 1em;
+    }
+
+    #current-name {
+
+    }
+
+    #current-effect {
+
+        & + #current-effect-text {
+
+        }
+    }
+
+    #more-details-btn {
+        position: absolute;
+        right: 0.5em;
+        top: 1em;
+    }
+}

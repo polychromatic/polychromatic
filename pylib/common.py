@@ -126,6 +126,32 @@ def get_device_list_by_serial(device_obj_list, expected_serial):
     return None
 
 
+def get_device_image(device, data_dir):
+    """
+    Gets a generic Polychromatic image of the current device.
+    """
+    return "{0}/ui/img/devices/{1}.svg".format(data_dir, get_device_type(device))
+
+
+def get_real_device_image(device, angle="top"):
+    """
+    Returns the device image provided via the daemon if available.
+
+    angle = top
+            side
+            perspective
+    """
+    try:
+        if angle == "top":
+            return device.razer_urls["top_img"]
+        elif angle == "side":
+            return device.razer_urls["side_img"]
+        elif angle == "perspective":
+            return device.razer_urls["perspective_img"]
+    except KeyError:
+        return get_device_image(device)
+
+
 def get_supported_lighting_sources(device_obj):
     """
     Returns a list of supported lighting sources (may also be referred to as "targets")

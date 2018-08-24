@@ -2,9 +2,27 @@ content {
     position: fixed;
     top: $header-height + $tab-border-height + ($header-padding-v * 2);
     bottom: $footer-height + ($footer-padding-v * 2);
-    left: $content-padding-h;
-    right: $content-padding-h;
+    padding: 0 $content-padding-h;
+    left: 0;
+    right: 0;
+    overflow-x: hidden;
     overflow-y: scroll;
     color: $text-colour;
     font-size: 0.9em;
+}
+
+.group {
+    display: flex;
+
+    .left {
+        width: 20%;
+        margin: 1em;
+        padding-left: 2em;
+        padding-top: 0.1em;
+    }
+
+    .right {
+        width: 80%;
+        margin: 1em;
+    }
 }

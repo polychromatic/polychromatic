@@ -57,6 +57,41 @@ button {
             border-color: darken($serious, 10%) !important;
         }
     }
+
+    &.effect-btn {
+        height: 80px;
+        width: 80px;
+        padding: 0;
+        transition: background-color ($control-toggle-speed/4);
+
+        img {
+            width: 100%;
+            max-height: 40px;
+        }
+
+        span {
+            display: block;
+            text-align: center;
+            height: 20px;
+            line-height: 25px;
+        }
+
+        &:hover,
+        &:focus {
+            img {
+                opacity: 0.5;
+            }
+        }
+
+        &:active {
+            transition: none;
+
+            img {
+                opacity: 1;
+                filter: grayscale(1) brightness(0);
+            }
+        }
+    }
 }
 
 a {
@@ -107,13 +142,10 @@ select {
 }
 
 /* Checkbox and radio buttons */
-$control-toggle-size: 16px !default;
-$control-toggle-speed: 0.5s !default;
-
 input[type='radio'],
 input[type='checkbox'] {
     -webkit-appearance: none;
-    margin: 0 0 0 1em;
+    margin: 0;
     width: $control-toggle-size;
     height: $control-toggle-size;
     background-color: $bg-control;
@@ -124,6 +156,7 @@ input[type='checkbox'] {
         padding: 0 0.25em;
         vertical-align: middle;
         transition: color $control-toggle-speed;
+        clear: all;
     }
 
     &:hover,

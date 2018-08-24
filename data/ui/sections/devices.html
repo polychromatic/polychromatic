@@ -1,0 +1,184 @@
+<div class="sidebar-container">
+    <div class="left">
+        <button class="item" onclick="return false;">
+            <img src="img/general/overview.svg"/> <span>Overview</span>
+        </button>
+        <div class="item-group">
+            <div class="item-heading">Devices</div>
+            <span id="device-list"></span>
+        </div>
+    </div>
+    <div class="right">
+        <div class="device-info">
+            <img id="current-image" src=""/>
+            <div>
+                <h3 id="current-name">BlackWidow Chroma</h3>
+                <p><img id="current-effect" src="img/effects/static.svg"/><span id="current-effect-text"></span></p>
+            </div>
+            <button id="more-details-btn" onclick="">[[ device-info ]]</button>
+        </div>
+
+        <!-- Brightness -->
+        <div class="group" id="group-brightness">
+            <div class="left">
+                <label>[[ brightness ]]</label>
+            </div>
+            <div class="right">
+                <input id="brightness-main-slider" onchange="" type="range" min="0" max="100" step="5" value="50"> <span id="brightness-main-value">50%</span>
+            </div>
+        </div>
+
+        <!-- Effect Selection -->
+        <div class="group" id="group-effects">
+            <div class="left">
+                <label>[[ effect ]]</label>
+            </div>
+            <div class="right">
+                <button id="effect-spectrum" class="effect-btn active" onclick="">
+                    <img src="img/effects/spectrum.svg"/><span>[[ spectrum ]]</span>
+                </button>
+                <button id="effect-wave" class="effect-btn" onclick="">
+                    <img src="img/effects/wave.svg"/><span>[[ wave ]]</span>
+                </button>
+                <button id="effect-reactive" class="effect-btn" onclick="">
+                    <img src="img/effects/reactive.svg"/><span>[[ reactive ]]</span>
+                </button>
+                <button id="effect-breath" class="effect-btn" onclick="">
+                    <img src="img/effects/breath.svg"/><span>[[ breath ]]</span>
+                </button>
+                <button id="effect-ripple" class="effect-btn" onclick="">
+                    <img src="img/effects/ripple.svg"/><span>[[ ripple ]]</span>
+                </button>
+                <button id="effect-starlight" class="effect-btn" onclick="">
+                    <img src="img/effects/starlight.svg"/><span>[[ starlight ]]</span>
+                </button>
+                <button id="effect-static" class="effect-btn" onclick="">
+                    <img src="img/effects/static.svg"/><span>[[ static ]]</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Effect Settings: Wave -->
+        <div class="group" id="group-wave">
+            <div class="left">
+                <label>[[ wave-settings ]]</label>
+            </div>
+            <div class="right">
+                <p><input id="wave-left" type="radio" name="wave" value="0" onclick=""/><label for="wave-left">[[ left ]]</label></p>
+                <p><input id="wave-right" type="radio" name="wave" value="1" onclick=""/><label for="wave-right">[[ right ]]</label></p>
+                <p><input id="wave-clock" type="radio" name="wave" value="0" onclick=""/><label for="wave-clock">[[ clockwise ]]</label></p>
+                <p><input id="wave-anti" type="radio" name="wave" value="1" onclick=""/><label for="wave-anti">[[ anticlockwise ]]</label></p>
+                <p><input id="wave-up" type="radio" name="wave" value="0" onclick=""/><label for="wave-up">[[ up ]]</label></p>
+                <p><input id="wave-down" type="radio" name="wave" value="1" onclick=""/><label for="wave-down">[[ down ]]</label></p>
+            </div>
+        </div>
+
+        <!-- Effect Settings: Reactive -->
+        <div class="group" id="group-reactive">
+            <div class="left">
+                <label>[[ reactive-settings ]]</label>
+            </div>
+            <div class="right">
+                <p><input id="reactive-fast" type="radio" name="reactive" value="1" onclick=""/><label for="reactive-fast">[[ fast ]]</label></p>
+                <p><input id="reactive-medium" type="radio" name="reactive" value="2" onclick=""/><label for="reactive-medium">[[ medium ]]</label></p>
+                <p><input id="reactive-slow" type="radio" name="reactive" value="3" onclick=""/><label for="reactive-slow">[[ slow ]]</label></p>
+                <p><input id="reactive-vslow" type="radio" name="reactive" value="4" onclick=""/><label for="reactive-vslow">[[ vslow ]]</label></p>
+            </div>
+        </div>
+
+        <!-- Effect Settings: Breath -->
+        <div class="group" id="group-breath">
+            <div class="left">
+                <label>[[ breath-settings ]]</label>
+            </div>
+            <div class="right">
+                <p><input id="breath-random" type="radio" name="breath" value="0" onclick=""/><label for="breath-random">[[ random ]]</label></p>
+                <p><input id="breath-single" type="radio" name="breath" value="1" onclick=""/><label for="breath-single">[[ single ]]</label></p>
+                <p><input id="breath-dual" type="radio" name="breath" value="2" onclick=""/><label for="breath-dual">[[ dual ]]</label></p>
+            </div>
+        </div>
+
+        <!-- Effect Settings: Ripple -->
+        <div class="group" id="group-ripple">
+            <div class="left">
+                <label>[[ ripple-settings ]]</label>
+            </div>
+            <div class="right">
+                <p><input id="ripple-random" type="radio" name="ripple" value="0" onclick=""/><label for="ripple-random">[[ random ]]</label></p>
+                <p><input id="ripple-single" type="radio" name="ripple" value="1" onclick=""/><label for="ripple-single">[[ single ]]</label></p>
+            </div>
+        </div>
+
+        <!-- Colour 1 -->
+        <div class="group" id="group-color-1">
+            <div class="left">
+                <label>[[ color ]] 1</label>
+            </div>
+            <div class="right">
+                [! colour-picker-single !]
+            </div>
+        </div>
+
+        <!-- Colour 2 -->
+        <div class="group" id="group-color-2">
+            <div class="left">
+                <label>[[ color ]] 2</label>
+            </div>
+            <div class="right">
+                [! colour-picker-single !]
+            </div>
+        </div>
+
+        <!-- Game Mode -->
+        <div class="group" id="group-game-mode">
+            <div class="left">
+                <label>[[ game_mode ]]</label>
+            </div>
+            <div class="right">
+                <input id="game-mode" onchange="" type="checkbox">
+                <label for="game-mode">[[ enabled ]]</label>
+            </div>
+        </div>
+
+        <!-- Macros -->
+        <div class="group" id="group-macros">
+            <div class="left">
+                <label>[[ macros ]]</label>
+            </div>
+            <div class="right">
+                <button onclick="">[[ learn_more ]]</button>
+            </div>
+        </div>
+
+        <!-- DPI -->
+        <div class="group" id="group-dpi">
+            <div class="left">
+                <label>[[ dpi ]]</label>
+            </div>
+            <div class="right">
+                <select id="dpi" value="800" onchange="">
+                    <option value="200">200 Hz</option>
+                    <option value="800">800 Hz</option>
+                    <option value="1800">1800 Hz</option>
+                    <option value="9000">9000 Hz</option>
+                    <option value="16000">16000 Hz</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Polling Rate -->
+        <div class="group" id="group-poll-rate">
+            <div class="left">
+                <label>[[ polling_rate ]]</label>
+            </div>
+            <div class="right">
+                <select id="poll-rate" value="500" onchange="">
+                    <option value="250">250 Hz</option>
+                    <option value="500">500 Hz</option>
+                    <option value="1000">1000 Hz</option>
+                </select>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -24,6 +24,7 @@ $button-colour: #DED9CB;
 $serious: #FF2222;
 $warning: #FFFF00;
 $hover-grey: #808080;
+$sidebar-heading: #969696;
 
 $spectrum1: #C500FF; // Purple
 $spectrum2: #FF8900; // Orange
@@ -40,8 +41,12 @@ $font-mono: 'Ubuntu Mono', 'Droid Sans Mono', 'FreeMono', 'Courier New', Courier
 /* Animations */
 $dialogue-speed: 0.25s;
 $header-transition: 0.25s;
+$control-toggle-speed: 0.5s;
+$sidebar-transition-speed: 0.25s;
 
 /* Dimensions */
+$scrollbar-width: 16px;
+
 $header-height: 64px;
 $header-padding-v: 8px;
 $header-padding-h: 8px;
@@ -49,11 +54,16 @@ $header-padding-h: 8px;
 $tab-height: 30px;
 $tab-button-padding: 8px;
 $tab-border-height: 2px;
-$tab-icon-size: 24px;
+$tab-icon-size: 20px;
 
 $content-padding-v: 16px;
-$content-padding-h: 16px;
+$content-padding-h: 0;
 
 $footer-height: 32px;
 $footer-padding-v: 8px;
 $footer-padding-h: 16px;
+
+$control-toggle-size: 16px;
+
+$sidebar-width: 275px;
+$sidebar-border-width: 3px;

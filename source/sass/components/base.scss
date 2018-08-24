@@ -14,6 +14,8 @@ html {
 
 body {
     animation: welcome 0.25s ease-out forwards;
+    animation-delay: 0.25s;
+    opacity: 0;
     margin: 0;
 }
 
@@ -54,17 +56,16 @@ h1, h2, h3, h4, h5 {
     font-family: $font-family;
     font-weight: lighter;
     color: $accent-colour;
-    margin-top: 16px;
-    margin-bottom: 16px;
+    margin-top: 1em;
+    margin-bottom: 1em;
 }
 
-p, a, button, table, td, tr, label, .alert {
+p, a, button, table, td, tr, label {
     font-family: $font-family;
     color: $text-colour;
-    font-size: small;
 }
 
 p {
-    margin: 16px;
+    margin: 1em;
     padding: 0;
 }
