@@ -10,6 +10,7 @@ import os
 import sys
 import gettext
 import subprocess
+import grp
 from time import sleep
 from threading import Thread
 
@@ -744,6 +745,18 @@ def get_incompatible_device_list(dbg, devices):
         unreg_ids.append(usb)
 
     return unreg_ids
+
+
+def is_user_in_plugdev_group():
+    """
+    Check the groups of the currently logged in user to identify if it is
+    missing 'plugdev' as required by the daemon.
+    """
+    if "plugdev" in [grp.getgrgid(g).gr_name for g in os.getgroups()]:
+        return True
+    else:
+        return False
+
 
 # Module Initalization
 _ = setup_translations(__file__, "polychromatic")
