@@ -20,7 +20,7 @@ from gi.repository import Gtk
 
 # Devices that do not support RGB at all.
 # (excludes Ultimate which supports shades of green)
-fixed_coloured_devices = ["Taipan"]
+fixed_coloured_devices = ["Taipan", "Ouroboros"]
 
 class Debugging(object):
     """
