@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-
-"""
-    Module for managing, manipulating and submitting
-    application profiles to the keyboard.
-"""
+#
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2015-2018 Luke Horwell <code@horwell.me>
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
+#
+"""
+This module for manages, manipulates and sends profiles to the keyboard.
+"""
 
 import os
 from shutil import copyfile

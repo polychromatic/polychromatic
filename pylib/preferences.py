@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-
-"""
-    Module for interfacing preferences stored by
-    Polychromatic's applications.
-"""
+#
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2015-2018 Luke Horwell <code@horwell.me>
+#
+"""
+This module is responsible for loading/saving persistent data used by Polychromatic's frontends.
+"""
 
 import os
 import json

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-
-"""
-Module for common functions used by Polychromatic's Controller and Tray Applet.
-"""
+#
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2017-2018 Luke Horwell <code@horwell.me>
+#
+"""
+This module contains shared functions that are used across Polychromatic's interfaces.
+"""
 
 import os
 import sys
