@@ -7,7 +7,7 @@ A front-end to customise your Razer perpherials under GNU/Linux. Powered by [Ope
 [![Python Version](https://img.shields.io/badge/python-3.5.2-blue.svg)](#)
 
 
-### [https://polychromatic.github.io](https://polychromatic.github.io)
+### [https://polychromatic.app](https://polychromatic.app)
 Take a look at the website for features, screenshots, downloads and documentation.
 
 ------------
@@ -19,15 +19,15 @@ their [supported devices](https://openrazer.github.io/#devices) grid to confirm 
 supported by the daemon. If the daemon supports it, Polychromatic will see it too.
 
 Due to the diversity of devices, not all of a device's features may be supported right away.
-[Check out the roadmap](https://polychromatic.github.io/docs/roadmap/) for progress.
+[Check out the roadmap](https://polychromatic.app/docs/roadmap/) for progress.
 
 
 ## Getting Started
 
-* [Head to the downloads page](https://polychromatic.github.io/download/) for instructions for your distribution.
-* For build instructions, [see the "Manual Installation" page](https://polychromatic.github.io/download/manual/).
-* For dependencies and other documentation, [see the docs](https://polychromatic.github.io/docs/).
-* Curious? [Here's some FAQs](https://polychromatic.github.io/docs/faqs/)
+* [Head to the downloads page](https://polychromatic.app/download/) for instructions for your distribution.
+* For build instructions, [see the "Manual Installation" page](https://polychromatic.app/download/manual/).
+* For dependencies and other documentation, [see the docs](https://polychromatic.app/docs/).
+* Curious? [Here's some FAQs](https://polychromatic.app/docs/faqs/)
 
 
 ## Troubleshooting
@@ -43,7 +43,7 @@ For visual or functional problems with Polychromatic, [please raise an issue her
 ## Translations
 
 The software is ready to speak multiple languages!
-[Here's a guide](https://polychromatic.github.io/docs/translations/) if you'd like to contribute.
+[Here's a guide](https://polychromatic.app/docs/translations/) if you'd like to contribute.
 
 
 ## Donations
