@@ -44,8 +44,12 @@ hr {
 }
 
 @font-face {
-    font-family: Play;
-    src: url('../lib/Play-Regular.ttf');
+    font-family: "Play";
+    src: url('../lib/Play-Regular.svg');
+    font-weight: 400;
+    font-style: normal;
+    -webkit-font-smoothing: auto;
+    -webkit-text-stroke-width: 0;
 }
 
 html, body, input, button {
