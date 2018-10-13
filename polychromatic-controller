@@ -41,24 +41,25 @@ from gi.repository import GLib, Gtk, Gdk, WebKit2
 
 try:
     import openrazer.client as rclient
-    daemon_missing = False
 except ImportError as e:
     # We'll show a graphical error when loading up.
+    rclient = None
     print("Failed to import modules for daemon.")
     print("Exception: " + str(e))
-    daemon_missing = True
 
 try:
     # Relative (for development)
     import pylib.preferences as pref
     import pylib.profiles as prof
     import pylib.common as common
+    import pylib.uicallback as uicallback
     dev_version = True
 except ImportError:
     # Installed to system
     import polychromatic.preferences as pref
     import polychromatic.profiles as prof
     import polychromatic.common as common
+    import polychromatic.uicallback as uicallback
     dev_version = False
 except Exception as e:
     print("One or more of Polychromatic's modules could not be imported!")
@@ -98,6 +99,7 @@ def get_string_bank(_):
     return {
         "debug1": "Hello World",
         "debug2": "Test String",
+        "overview": _("All Devices"),
         "devices": _("Devices"),
         "effects": _("Effects"),
         "profiles": _("Profiles"),
@@ -138,7 +140,19 @@ def get_string_bank(_):
         "ripple-settings": _("Ripple Type"),
         "color": _("Color"),
         "unknown-device": _("Unrecognized"),
-        "close-app": _("Close Application")
+        "close-app": _("Close Application"),
+        "troubleshoot": _("Troubleshoot"),
+        "retry": _("Retry"),
+        "on": _("On"),
+        "off": _("Off"),
+        "formfactor": _("Form Factor"),
+        "serial": _("Serial"),
+        "firmware_version": _("Firmware Version"),
+        "macro_support": _("Macro Support"),
+        "matrix_size": _("Matrix Dimensions"),
+        "capability_name": _("Daemon Capability"),
+        "capability_supported": _("Supported?"),
+        "capability_description": _("Description")
     }
 
 
@@ -296,6 +310,9 @@ class Controller(object):
         """
         self.webkit = None
         self.devman = None
+        self.active_device = None
+        self.active_device_id = None
+        self.uicmd = None
 
     def run_javascript(self, function):
         """
@@ -320,13 +337,24 @@ class Controller(object):
             dbg.stdout(' => ' + buffer, dbg.debug, 2)
             self.run_javascript(buffer)
 
-    def update_content_view(self, section_name, target_element="content"):
+    def get_content_view(self, section_name, replace_dict={}):
         """
-        Loads a HTML 'section' into the content view parsing string placeholders.
+        Returns HTML from a 'sections' file, replacing strings for translation
+        and optionally any placeholder sections marked as '[! variable !]'
+
+        Params:
+            section_name        HTML file in 'data/ui/sections' folder
+            replace_dict        Optional dictionary to replace variables
+                                in format: {"variable1": "Variable 1"}
         """
-        dbg.stdout("Loading content view: {0} [target: {1}]".format(section_name, target_element), dbg.action, 1)
-        with open(os.path.join(path.data_source, "ui/sections/" + section_name + ".html")) as f:
-            html = f.read().replace('\n', '')
+        dbg.stdout("Parsing section: {0}".format(section_name), dbg.action, 1)
+
+        try:
+            with open(os.path.join(path.data_source, "ui/sections/" + section_name + ".html")) as f:
+                html = f.read().replace('\n', '')
+        except FileNotFoundError:
+            dbg.stdout("Missing section: {0}".format(section_name), dbg.error)
+            html = ""
 
         # Process strings
         content_strings = re.findall(r"\[\[(.*?)\]\]", html)
@@ -334,86 +362,73 @@ class Controller(object):
             try:
                 html = html.replace("[[" + string + "]]", string_bank[string.strip()])
             except KeyError:
-                dbg.stdout("Missing '{0}' string in section '{1}'".format(string.strip(), section_name), dbg.error)
+                dbg.stdout("String missing: '{0}' (section '{1}')".format(string.strip(), section_name), dbg.error)
 
-        dbg.stdout("Loaded content view: {0} ({1} strings)".format(section_name, len(content_strings)), dbg.success, 1)
+        # Process variables
+        for variable in replace_dict.keys():
+            try:
+                html = html.replace("[!" + variable + "!]", replace_dict[variable])
+            except TypeError:
+                dbg.stdout("Variable missing: '{0}' (section '{1}')".format(string.strip(), section_name), dbg.error)
+
+        dbg.stdout("Loaded section: {0} ({1} strings, {2} variables)".format(section_name, len(content_strings), len(replace_dict.keys())), dbg.success, 1)
+
+        return html
+
+    def update_content_view(self, section_name, target_element="content", replace_dict={}):
+        """
+        Loads a HTML 'section' into the content view parsing string placeholders.
+        """
+        html = self.get_content_view(section_name, replace_dict)
+        dbg.stdout("Pushed section: '{0}' (to '{1}')".format(section_name, target_element), dbg.success, 1)
         self.update_page(target_element, "html", html)
 
-    def process_command(self, cmd):
+    def process_command(self, full_cmd_string):
         """
         Process a command issued from the frontend for the page.
         """
-        if cmd == "null":
+        if full_cmd_string == "null":
             return
 
-        dbg.stdout("=> Command: " + str(cmd), dbg.debug, 2)
+        dbg.stdout("=> " + str(full_cmd_string), dbg.debug, 2)
+        cmd = full_cmd_string.split("?")[0]
 
-        # Global commands
+        uicmd = self.uicmd
+        cmds = {
+            # Main Runtime
+            "quit": uicmd.close_application,
+            "reload": uicmd.reload_application,
+
+            # Devices
+            "device-overview": uicmd.devices_set_overview,
+            "device-select": uicmd.devices_set_device,
+            "device-unrecog": uicmd.devices_set_unknown,
+            "device-info": uicmd.devices_show_device_info,
+            "set-effect": uicmd.set_effect,
+            "set-effect-param": uicmd.set_effect_param,
+            "set-brightness": uicmd.set_brightness,
+            "set-game-mode": uicmd.set_gamemode,
+            "set-dpi": uicmd.set_dpi,
+            "set-poll-rate": uicmd.set_poll_rate,
+
+            # Tabs
+            "devices-tab": uicmd.devices_init_tab,
+            "effects-tab": None,
+            "schedule-tab": None,
+            "preferences-tab": None
+        }
+
+        # Must run from main thread
         if cmd == "quit":
-             # Close the application.
-            exit()
+            uicmd.close_application()
 
-        elif cmd == "restart-daemon":
-            # Restarts the OpenRazer daemon.
-            restart_daemon_service()
-
-        elif cmd == "reload":
-            # Restarts the application.
-            os.execv(__file__, sys.argv)
-
-        elif cmd.startswith("run?"):
-            # Runs a program (or command) to run in the background.
-            # Expects:    ?<program>
-            background_process(cmd.split("run?")[1], shell=True)
-
-        elif cmd.startswith("open?"):
-            # Opens a file/folder/protocol using the default application.
-            # Expects:    ?<path>
-            os.system("xdg-open '{0}'".format(cmd.split("open?")[1]))
-
-        elif cmd.startswith("browse?"):
-            # Opens the Browse dialogue and sets the path to a textbox.
-            # Expects:    ?<browse_id>?<target element id>
-            cmd = cmd.split("?")
-            browse_id = int(cmd[1])
-            target_element = cmd[2]
-
-            dbg.stdout("Opening file picker: " + str(browse_id), dbg.action, 1)
-            picker = Dialogues.file_picker(browse_id)
-            if picker != None:
-                dbg.stdout("Picked file: " + picker, dbg.success, 1)
-                self.update_page("#" + target_element, "val", picker)
-            else:
-                dbg.stdout("File browser was closed without picking a file", dbg.warning, 1)
-                return
-
-        # Special
-        elif cmd == "pref-reset-all":
-            # Completely nukes save data stored by Polychromatic.
-            dbg.stdout("Erasing ~/.config/polychromatic/ ...", dbg.action)
-            pref.clear_config()
-            dbg.stdout("Application will restart.", dbg.action)
-            os.execv(__file__, sys.argv)
-
-        # Colours
-        elif cmd.startswith("colour-pick?"):
-            # Opens the colour picker to choose a colour for an element.
-            # Expects:    ?<element id>?
-            cmd = cmd.split("?")
-            element_id = "#" + cmd[1] + "-preview"
-            dbg.stdout("Opening colour picker", dbg.action, 1)
-            picker = Dialogues.color_picker()
-
-            if picker:
-                dbg.stdout("Selected colour RGB " + picker, dbg.success, 1)
-                self.update_page(element_id, "css", "background-color", "rgb({0})".format(picker))
-            else:
-                dbg.stdout("Cancelled colour picker dialogue window.", dbg.action, 1)
-
-        # Commands specific to current page
-        else:
-            if not self.screen.process_command(cmd):
-                dbg.stdout("Unimplemented command: " + cmd, dbg.error)
+        try:
+            params = full_cmd_string.split("?")
+            params.pop(0)
+            dbg.stdout("=> {0} {1}".format(cmd, str(params)), dbg.action, 1)
+            common.run_thread(uicmd.run_command(cmds[cmd], full_cmd_string))
+        except KeyError:
+            dbg.stdout("Unimplemented command: " + cmd, dbg.error)
 
         # WebKit2 quirk - clear "title" so same command can execute again
         self.run_javascript("cmd('null')")
@@ -426,54 +441,26 @@ class Controller(object):
         dbg.stdout("Version " + version, dbg.debug, 1)
 
         self.update_content_view("header", "header")
+        self.update_content_view("loading")
         self.update_content_view("footer", "footer")
 
         dbg.stdout("Spawning daemon device manager...", dbg.debug, 1)
-        self.devman = rclient.DeviceManager()
-        self.active_device = None
+        if rclient:
+            try:
+                self.devman = rclient.DeviceManager()
+                init_devices = self.devman.devices
+                if len(init_devices) > 0:
+                    self.active_device = init_devices[0]
+            except rclient.DaemonNotFound:
+                self.devman = rclient.DaemonNotFound
+            except Exception as e:
+                self.devman = None
+                dbg.stdout("Daemon threw an exception:\n" + str(e), dbg.error, 0)
 
-        init_devices = self.devman.devices
-        if len(init_devices) > 0:
-            self.active_device = init_devices[0]
-
-        self.load_devices_screen()
-
+        self.uicmd = uicallback.UICmd(self, self.webkit, self.devman, get_string_bank, path.data_source)
         dbg.stdout("Application Ready.", dbg.success, 1)
 
-    def device_state_changed():
-        pass
-
-    def load_devices_screen(self):
-        """
-        Opens or reloads the device screen based on the current device.
-        """
-        self.update_content_view("devices")
-
-        # Populate device list on the sidebar.
-        dbg.stdout("Getting device list...", dbg.action, 1)
-        html = ""
-        device_id = -1
-        for device in self.devman.devices:
-            device_id += 1
-            dbg.stdout(" -- Found: " + device.name, dbg.debug, 1)
-            html += "<button class='item {3}' onclick='cmd(\"select-device?{0}\")'><img src='{1}'/> <span>{2}</span></button>".format(
-                str(device_id),
-                common.get_device_image(device, path.data_source),
-                device.name,
-                "active" if self.active_device == device else "")
-
-        # TODO: Add try/except to catch page load errors
-
-        for vid_pid in common.get_incompatible_device_list(dbg, self.devman.devices):
-            device_id += 1
-            dbg.stdout(" -- Found unrecognised device: {0}:{1}".format(str(vid_pid[0]), str(vid_pid[1])), dbg.debug, 1)
-            html += "<button class='item dim' onclick='cmd(\"select-unrecog-device\")'><img src='{0}'/> <span>{3}: {1}:{2}</span></button>".format(
-                os.path.join(path.data_source, "ui/img/devices/unknown.svg"),
-                str(vid_pid[0]),
-                str(vid_pid[1]),
-                get_string_bank(_)["unknown-device"])
-
-        self.update_page("#device-list", "html", html)
+        self.uicmd.devices_init_tab()
 
 
 class Dialogues():
@@ -594,121 +581,6 @@ def parse_parameters():
     if args.locale:
         _ = common.setup_translations(__file__, "polychromatic", args.locale)
 
-
-def restart_tray_applet():
-    print("Tray applet restarting...")
-    try:
-        pid = int(check_output(["pidof", "polychromatic-tray-applet"]))
-        os.kill(pid, 9)
-    except Exception:
-        print("Tray applet is not running so not relaunching.")
-        return
-
-    # Where is the tray applet?
-    if __file__.startswith("/usr"):
-        tray_bin_path = "/usr/bin/polychromatic-tray-applet"
-    else:
-        tray_bin_path = os.path.abspath(os.path.join(path.data_source, "../polychromatic-tray-applet"))
-
-    # Attempt to gracefully stop the process, then launch again.
-    try:
-        background_process(tray_bin_path)
-    except OSError:
-        print("Tray applet failed to relaunch.")
-        return
-
-    print("Tray applet reloaded.")
-
-
-def restart_daemon_service():
-    from subprocess import check_output
-    from shutil import which
-
-    # Enough time to load "loading" page
-    time.sleep(0.5)
-
-    # Is the daemon actually installed?
-    if not which("openrazer-daemon"):
-        app.load_lock = False
-        show_fatal_error(108)
-        return
-
-    # Gracefully stop the daemon
-    print("Stopping openrazer-daemon.", end='')
-    app.update_page("#status-text", "html", _("Stopping daemon..."))
-    try:
-        app.devman.stop_daemon()
-    except Exception as NoneType:
-        # Cannot stop gracefully. Skip this.
-        pass
-
-    # Wait for the daemon to stop.
-    stopped = False
-    app.update_page(".progress", "fadeIn", "fast")
-    app.update_page(".progress-inner", "addClass", "increasing")
-
-    for x in range(0, 5):
-        print(".", end='')
-        try:
-            daemon_pid = int(check_output(["pidof", "openrazer-daemon"]))
-        except:
-            stopped = True
-            break
-        time.sleep(1)
-
-    app.update_page(".progress", "fadeOut", "fast")
-    app.update_page(".progress-inner", "removeClass", "increasing")
-
-    # Kill the daemon if still not ended
-    if not stopped:
-        print("\nKilling openrazer-daemon...")
-        app.update_page("#status-text", "html", _("Killing daemon process..."))
-        os.kill(daemon_pid, 9)
-
-    # Ensure a clean log
-    print("\nArchiving log...")
-    app.update_page("#status-text", "html", _("Archiving log..."))
-    log_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log")
-    log_bak = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log.bak")
-    if os.path.exists(log_path):
-        os.rename(log_path, log_bak)
-
-    # Wait for daemon to start again
-    time.sleep(1)
-    print("\nStarting openrazer-daemon...")
-    app.update_page("#status-text", "html", _("Starting daemon..."))
-    background_process("openrazer-daemon", shell=True)
-
-    # Check the process is running
-    print("Waiting for openrazer-daemon to start...")
-    app.update_page(".progress", "fadeIn", "fast")
-    app.update_page(".progress-inner", "addClass", "increasing")
-    for x in range(0, 5):
-        print(".", end='')
-        try:
-            daemon_pid = int(check_output(["pidof", "openrazer-daemon"]))
-            running = True
-            break
-        except:
-            running = False
-        time.sleep(1)
-
-    if not running:
-        app.load_lock = False
-        show_fatal_error(109)
-        return
-
-    # Relaunch Controller / Tray Applet
-    print("Relaunching Polychromatic...")
-    app.update_page(".progress", "fadeOut", "fast")
-    app.update_page("#loading", "fadeOut", "fast")
-    app.update_page("#status-text", "fadeOut", "fast")
-    restart_tray_applet()
-    os.execv(__file__, sys.argv)
-
-
-# For restarting the tray applet (only when running)
-tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
 
 if __name__ == "__main__":
     _ = common.setup_translations(__file__, "polychromatic")

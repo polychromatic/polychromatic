@@ -8,9 +8,8 @@
     margin-bottom: 1em;
 
     #current-image {
-        max-width: 150px;
-        height: 6em;
-        width: 100%;
+        max-width: 12em;
+        max-height: 6em;
         padding: 1em;
     }
 
@@ -18,6 +17,13 @@
 
     }
 
+    #current-effect,
+    #current-effect-text {
+        display: inline-block;
+        padding-right: 0.25em;
+        vertical-align: middle;
+
+    }
     #current-effect {
 
         & + #current-effect-text {
@@ -29,5 +35,23 @@
         position: absolute;
         right: 0.5em;
         top: 1em;
+    }
+}
+
+.device-unknown {
+    text-align: center;
+
+    img {
+        display: inline-block;
+        margin: auto;
+        margin-top: 2em;
+    }
+
+    .details {
+        padding: 0 2em;
+
+        h2 {}
+        p {}
+        button {}
     }
 }

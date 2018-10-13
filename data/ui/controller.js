@@ -21,24 +21,35 @@ function cmd(cmd) {
 }
 
 // Dialogue front-end operations
-dialog_ani_speed = 250;
-function dialog_open(dialogue_id) {
-    $('#' + dialogue_id).fadeIn(dialog_ani_speed).addClass('in');
-    $('#overlay').fadeIn(dialog_ani_speed);
-    $('#header').addClass('modal-blur');
-    $('#content').addClass('modal-blur');
-    $('#tabs').addClass('modal-blur');
-    $('#footer').addClass('modal-blur');
+var transition_speed = 250;
+
+function open_dialog() {
+    $("#modal-overlay").show();
+    $("header").addClass("blur");
+    $("content").addClass("blur");
+    $("footer").addClass("blur");
+    $("#dialog").addClass("in").fadeIn(transition_speed);
+    setTimeout(function() {
+        $("#dialog").removeClass("in");
+    }, transition_speed + 50);
 }
 
-function dialog_close(dialogue_id) {
-    $('#' + dialogue_id).addClass('out').fadeOut(dialog_ani_speed);
+function close_dialog() {
+    $("#modal-overlay").hide();
+    $("header").removeClass("blur");
+    $("content").removeClass("blur");
+    $("footer").removeClass("blur");
+    $("#dialog").removeClass("in").addClass("out").fadeOut(transition_speed);
     setTimeout(function() {
-        $('#' + dialogue_id).removeClass('out').removeClass('in');
-    }, dialog_ani_speed);
-    $('#overlay').fadeOut(dialog_ani_speed);
-    $('#header').removeClass('modal-blur');
-    $('#content').removeClass('modal-blur');
-    $('#tabs').removeClass('modal-blur');
-    $('#footer').removeClass('modal-blur');
+        $("#dialog").remove();
+    }, transition_speed + 50);
 }
+
+// UI Helpers
+function swap_elements(from, to) {
+    $(from).fadeOut(transition_speed);
+    setTimeout(function() {
+        $(to).fadeIn(transition_speed);
+    }, transition_speed);
+}
+

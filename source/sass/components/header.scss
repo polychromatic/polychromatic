@@ -5,7 +5,7 @@ header {
     top: 0;
     height: $header-height;
     padding: $header-padding-v $header-padding-h;
-    background-image: url('../../img/header/generic.jpg');
+    background-image: url('../../img/header/default.svg');
     background-repeat: no-repeat;
     background-position: left -2px;
     background-size: 100%;
@@ -38,7 +38,7 @@ header {
     }
 
     &.generic {
-        background-image: url('../img/header/generic.jpg');
+        background-image: url('../img/header/default.svg');
     }
 
     h3 {

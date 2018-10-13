@@ -11,6 +11,7 @@
         bottom: $footer-height + ($footer-padding-v * 2);
         width: $sidebar-width;
         background-color: $bg-sidebar;
+        overflow-y: auto;
 
         .item-heading {
             color: $sidebar-heading;
@@ -30,6 +31,7 @@
 
             img {
                 vertical-align: middle;
+                width: 1.7em;
             }
 
             span {
@@ -79,6 +81,16 @@
                 padding: 0.2em 1em;
             }
         }
+
+        .loading {
+            color: transparent !important;
+            background: linear-gradient(270deg, lighten($bg-sidebar, 5%), lighten($bg-sidebar, 20%));
+            background-size: 400% 400%;
+            margin: 1em;
+            height: 0.75em;
+            width: calc(100% - 2.5em);
+            animation: photocopier 1s ease infinite;
+        }
     }
 
     > .right {
@@ -94,5 +106,29 @@
             margin: 0;
             padding-bottom: 1em;
         }
+
+        .loading-text {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            text-align: center;
+            height: 2em;
+            color: $sidebar-heading;
+        }
+    }
+}
+
+@keyframes photocopier {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
     }
 }

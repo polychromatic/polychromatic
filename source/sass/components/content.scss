@@ -26,3 +26,15 @@ content {
         margin: 1em;
     }
 }
+
+code {
+    display: inline-block;
+    vertical-align: middle;
+    color: $accent-colour;
+    background: black;
+    padding: 0.25em;
+    margin: 0.25em;
+    -webkit-user-select: auto;
+    pointer-events: auto;
+    cursor: text;
+}

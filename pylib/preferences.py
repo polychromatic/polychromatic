@@ -366,7 +366,7 @@ def get_device_state(serial, source, state):
     Reads the device state file for a specific state.
         serial  = Serial number or unique identifer of the device.
         source  = Light source to check, e.g. "main", "logo", "scroll".
-        state   = Name of state, e.g. "brightness", "effect", "colour_primary", etc.
+        state   = Name of state, e.g. "effect", "effect_params", "colour_primary", etc.
     """
     data = load_file(path.devicestate, True)
 

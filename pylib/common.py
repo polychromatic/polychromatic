@@ -12,16 +12,16 @@ import sys
 import gettext
 import subprocess
 import grp
-from time import sleep
+import time
 from threading import Thread
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-# Devices that do not support RGB at all.
-# (excludes Ultimate which supports shades of green)
-fixed_coloured_devices = ["Taipan", "Ouroboros"]
+# PID file used to restart tray applet
+tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
+
 
 class Debugging(object):
     """
@@ -132,7 +132,11 @@ def get_device_image(device, data_dir):
     """
     Gets a generic Polychromatic image of the current device.
     """
-    return "{0}/ui/img/devices/{1}.svg".format(data_dir, get_device_type(device))
+    image_path = "{0}/ui/img/devices/{1}.svg".format(data_dir, get_device_type(device))
+    if os.path.exists(image_path):
+        return image_path
+    else:
+        return "{0}/ui/img/devices/unknown.svg".format(data_dir)
 
 
 def get_real_device_image(device, angle="top"):
@@ -318,6 +322,7 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
             if params:
                 if params[0] == 'random':
                     fx.breath_random()
+                    remember_params('random')
 
                 elif params[0] == 'single':
                     fx.breath_single(primary_red, primary_green, primary_blue)
@@ -440,6 +445,49 @@ def set_brightness_toggle(pref, device_object, source, state):
         source_obj.active = state
 
 
+def is_brightness_toggled(device_object, source):
+    """
+    Determines if a device toggles its brightness on/off.
+
+    Returns True if specified source is on/off.
+    Returns False if specified source is variable.
+    """
+    if source == "main":
+        if device_obj.has("lighting_active"):
+            return True
+
+    if device_obj.has("lighting_backlight"):
+        supported_sources.append("backlight")
+
+    if device_obj.has("lighting_logo"):
+        supported_sources.append("logo")
+
+    if device_obj.has("lighting_scroll"):
+        supported_sources.append("scroll")
+
+
+def get_dpi_range(device):
+    """
+    Returns a list of default DPI values determined by the mouse's DPI range.
+    """
+    max_dpi = device.max_dpi
+
+    if max_dpi == 16000:
+        return [200, 800, 1800, 4500, 9000, 16000]
+
+    elif max_dpi == 8200:
+        return [200, 800, 1800, 4800, 6400, 8200]
+
+    else:
+        return [200,
+            int(max_dpi / 10),
+            int(max_dpi / 8),
+            int(max_dpi / 4),
+            int(max_dpi / 2),
+            int(max_dpi)
+        ]
+
+
 def repeat_last_effect(pref, device_object):
     """
     Function to "replay" the last effect, for example, if the colour was changed.
@@ -462,12 +510,13 @@ def repeat_last_effect(pref, device_object):
 
 def save_colours_to_all_sources(pref, device_object, colour_name, colour_set):
     """
-    Function to store the colour for all sources the device supports.
+    Function to bulk save a colour for all light sources the device supports, e.g.
+    logo, scroll, etc.
 
-    E.g. the tray applet sets the colour for all the device.
+    The tray applet uses this as it sets colour across the entire device.
 
-    colour_name = string as used in devicestate, e.g. "colour_primary"
-    colour_set = list in format [red, green, blue]
+    colour_name     String as used in devicestate, e.g. "colour_primary"
+    colour_set      List in format [red, green, blue]
     """
     serial = device_object.serial
 
@@ -479,6 +528,30 @@ def save_colours_to_all_sources(pref, device_object, colour_name, colour_set):
     save_colour("backlight", "lighting_backlight")
     save_colour("logo", "lighting_logo")
     save_colour("scroll", "lighting_scroll")
+
+
+def is_device_fixed_colour(device):
+    """
+    Returns True if the device does not support RGB (e.g. can only turn LEDs on/off)
+    """
+    if not device.has("lighting_led_matrix"):
+        return True
+
+    return False
+
+
+def is_device_greenscale(device):
+    """
+    Determines whether a Chroma-enabled device is "greenscale" - meaning
+    it only has green LEDs (no RGB).
+
+    This allows non-RGB keyboards to show green variants instead of full RGB
+    for devices like the Razer BlackWidow Ultimate.
+    """
+    if not device.has("lighting_led_matrix") or device.name.find("Ultimate") != -1:
+        return True
+
+    return False
 
 
 def get_green_shades():
@@ -622,6 +695,19 @@ def get_path_from_gtk_icon_name(icon_name):
         return ""
 
 
+def run_thread(target_function, args=()):
+    """
+    Executes a function that will run outside the main thread.
+
+    target_function     Function to execute.
+    args                (Optional) A tuple containing arguments.
+    """
+    thread = Thread(target=target_function, args=args)
+    thread.daemon = True
+    thread.start()
+    return thread
+
+
 def devicestate_monitor_start(callback_function, file_path):
     """
     Watches the devicestate.json file for changes, so different instances
@@ -630,14 +716,12 @@ def devicestate_monitor_start(callback_function, file_path):
     callback_function   =   Function to call when there is a change.
     file_path           =   Full path to devicestate.json
     """
-    thread = Thread(target=devicestate_monitor_thread, args=(callback_function, file_path))
-    thread.daemon = True
-    thread.start()
+    run_thread(devicestate_monitor_thread, (callback_function, file_path))
 
 
 def devicestate_monitor_thread(callback_function, file_path):
     """
-    Seperate thread for monitoring devicestate.json changes.
+    Main thread for monitoring devicestate.json changes.
     See devicestate_monitor_start() for reference.
     """
     def _init_devicestate_file():
@@ -648,7 +732,7 @@ def devicestate_monitor_thread(callback_function, file_path):
     while True:
         try:
             before = os.stat(file_path).st_mtime
-            sleep(1)
+            time.sleep(1)
             after = os.stat(file_path).st_mtime
             if before != after:
                  callback_function()
@@ -656,26 +740,16 @@ def devicestate_monitor_thread(callback_function, file_path):
             _init_devicestate_file()
 
 
-def has_fixed_colour(device_obj):
-    """
-    Returns True if the device does not support RGB (e.g. can only turn LEDs on/off)
-    """
-    for name in fixed_coloured_devices:
-        if device_obj.name.find(name) != -1:
-            return True
-    return False
-
-
 def colour_to_hex(colour):
     """
-    Converts a list [R,G,B] input to #RRGGBB format
+    Converts [R,G,B] list to #RRGGBB string.
     """
     return "#{0:02X}{1:02X}{2:02X}".format(*colour)
 
 
 def hex_to_colour(hex_string):
     """
-    Converts a #RRGGBB to a [R,G,B] output.
+    Converts "#RRGGBB" string to [R,G,B] list.
     """
     hex_string = hex_string.lstrip("#")
     return list(int(hex_string[i:i+2], 16) for i in (0, 2 ,4))
@@ -700,6 +774,15 @@ def is_any_razer_device_connected(dbg):
         return False
     else:
         return True
+
+
+def get_device_vid_pid(device):
+    """
+    Extracts VID:PID from the daemon's device object in list format: [VID,PID]
+    """
+    vid = str(hex(device._vid))[2:].upper().rjust(4, '0')
+    pid = str(hex(device._pid))[2:].upper().rjust(4, '0')
+    return [vid, pid]
 
 
 def get_incompatible_device_list(dbg, devices):
@@ -731,9 +814,8 @@ def get_incompatible_device_list(dbg, devices):
 
     # Get VIDs and PIDs of current devices to exclude them.
     for device in devices:
-        vid = str(hex(device._vid))[2:].upper().rjust(4, '0')
-        pid = str(hex(device._pid))[2:].upper().rjust(4, '0')
-        reg_ids.append([vid, pid])
+        vidpid = get_device_vid_pid(device)
+        reg_ids.append([vidpid[0], vidpid[1]])
 
     # Identify Razer VIDs that are not registered in the daemon
     for usb in all_usb_ids:
@@ -757,6 +839,19 @@ def is_user_in_plugdev_group():
         return True
     else:
         return False
+
+def get_plural(integer, non_plural, plural):
+    """
+    Returns the correct plural or non-plural spelling based on an integer.
+    """
+    if integer == 1:
+        return non_plural
+    else:
+        return plural
+
+
+def generate_uuid():
+    return(str(int(time.time() * 1000000)))
 
 
 # Module Initalization

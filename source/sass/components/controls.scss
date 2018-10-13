@@ -7,7 +7,7 @@ button {
     color: $button-colour;
     border: 2px solid $border-colour;
     width: auto;
-    height: 30px;
+    height: $button-height;
     margin: 0;
     padding: 4px 16px;
     align-items: flex-start;
@@ -125,7 +125,7 @@ select {
     background-repeat: no-repeat;
     padding-right: 24px;
     color: $text-colour;
-    font-size: small;
+    font-size: 0.9em;
     filter: grayscale(1);
     border-radius: 0;
     vertical-align: middle;
@@ -138,6 +138,11 @@ select {
 
     option {
         -webkit-appearance: none;
+    }
+
+    &.seamless {
+        background-color: transparent;
+        border: none;
     }
 }
 
@@ -222,6 +227,11 @@ input[type='range'] {
         width: 8px;
         cursor: grabbing;
     }
+}
+
+/* Icons next to controls */
+img {
+    vertical-align: middle;
 }
 
 /* Focus for keyboard navigation - each element has a distinct hover/focus state */
