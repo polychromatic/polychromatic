@@ -41,61 +41,45 @@ gi.require_version("Gdk", "3.0")
 gi.require_version("WebKit2", "4.0")
 from gi.repository import GLib, Gtk, Gdk, WebKit2
 
+setproctitle("polychromatic-controller")
+
 try:
     import openrazer.client as rclient
 except ImportError as e:
-    # We'll show a graphical error when loading up.
     rclient = None
-    print("Failed to import modules for daemon.")
-    print("Exception: " + str(e))
+    print("Failed to import modules for daemon.\n" + e.message)
 
-try:
-    # Relative (for development)
-    import pylib.preferences as pref
-    import pylib.profiles as prof
-    import pylib.common as common
-    import pylib.uicallback as uicallback
+# Import relative copies if running in development mode.
+dev_version = False
+if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
     dev_version = True
-except ImportError:
-    # Installed to system
-    import polychromatic.preferences as pref
-    import polychromatic.profiles as prof
-    import polychromatic.common as common
-    import polychromatic.uicallback as uicallback
-    dev_version = False
-except Exception as e:
-    print("One or more of Polychromatic's modules could not be imported!")
-    print("Try re-installing the application.")
-    print("\nException:" + str(e))
-    exit(1)
+    try:
+        # Relative (for development)
+        import pylib.preferences as pref
+        import pylib.profiles as prof
+        import pylib.common as common
+        import pylib.uicallback as uicallback
+    except (ImportError, Exception) as e:
+        print("Failed to import modules relatively.\n")
+        print(e)
+        exit(1)
 
-setproctitle("polychromatic-controller")
-version = "0.4.0-alpha"
+# Import modules if installed to system.
+else:
+    version = version + "-stable"
+    try:
+        import polychromatic.preferences as pref
+        import polychromatic.profiles as prof
+        import polychromatic.common as common
+        import polychromatic.uicallback as uicallback
+    except (ImportError, Exception) as e:
+        print("Polychromatic's modules could not be imported.")
+        print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
+        print(e)
+        exit(1)
 
 path = pref.Paths()
 path.data_source = path.get_data_source(__file__)
-daemon_config_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.conf")
-
-# Imported on-demand:
-#   * requests
-#   * configparser
-#   * shutil
-#   * grp
-
-if dev_version:
-    version = version + "-dev"
-    dbg = common.Debugging()
-
-    # Compile styling when working locally.
-    dbg.stdout("Compiling Styling...", dbg.action)
-    os.system(os.path.join(path.data_source, "../tools/build-sass.sh"))
-
-    if not os.path.exists(os.path.join(path.data_source, "ui/css/default.css")):
-        dbg.stdout("Failed to start due to missing styling.", dbg.error)
-        exit(1)
-else:
-    version = version + "-stable"
-
 
 def get_string_bank(_):
     return {
@@ -588,6 +572,18 @@ if __name__ == "__main__":
     _ = common.setup_translations(__file__, "polychromatic")
     string_bank = get_string_bank(_)
     dbg = common.Debugging()
+
+    # Compile styling when working locally.
+    if dev_version:
+        version = version + "-dev"
+
+        dbg.stdout("Compiling Styling...", dbg.action)
+        os.system(os.path.join(path.data_source, "../tools/build-sass.sh"))
+
+        if not os.path.exists(os.path.join(path.data_source, "ui/css/default.css")):
+            dbg.stdout("Failed to start due to missing styling.", dbg.error)
+            exit(1)
+
     parse_parameters()
     win = AppWindow()
     app = Controller()
