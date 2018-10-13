@@ -772,11 +772,11 @@ class AppIndicator(object):
         uuids.sort(key=int)
 
         # Do not show colours menu if device does not support RGB at all.
-        if common.has_fixed_colour(self.active_device):
+        if common.is_device_fixed_colour(self.active_device):
             return None
 
         # Show a range of green shades for Ultimate keyboards that are not RGB.
-        if self.active_device.name.find("Ultimate") != -1:
+        if common.is_device_greenscale(self.active_device):
             colour_index = common.get_green_shades()
             uuids = list(colour_index.keys())
             uuids.sort()
@@ -806,38 +806,14 @@ class AppIndicator(object):
         except Exception:
             self.current_dpi = _("Unknown")
 
-        # Use hardware values where known.
-        max_dpi = self.active_device.max_dpi
-        if max_dpi == 16000:
-            dpi_speed_1 = 200   # Not H/W
-            dpi_speed_2 = 800
-            dpi_speed_3 = 1800
-            dpi_speed_4 = 4500
-            dpi_speed_5 = 9000
-            dpi_speed_6 = 16000
+        dpi_range = common.get_dpi_range(self.active_device)
 
-        elif max_dpi == 8200:
-            dpi_speed_1 = 200  # Not H/W
-            dpi_speed_2 = 800
-            dpi_speed_3 = 1800
-            dpi_speed_4 = 4800
-            dpi_speed_5 = 6400
-            dpi_speed_6 = 8200
-
-        else:
-            dpi_speed_1 = 200
-            dpi_speed_2 = int(max_dpi / 10)
-            dpi_speed_3 = int(max_dpi / 8)
-            dpi_speed_4 = int(max_dpi / 4)
-            dpi_speed_5 = int(max_dpi / 2)
-            dpi_speed_6 = int(max_dpi)
-
-        submenu[1].append(create_menu_item(_("Super Slow") + ' (' + str(dpi_speed_1) + ')', True, cb.set_dpi, dpi_speed_1, self._get_icon("effects", "dpi-slow.svg")))
-        submenu[1].append(create_menu_item(_("Slow") + ' (' + str(dpi_speed_2) + ')', True, cb.set_dpi, dpi_speed_2, self._get_icon("effects", "dpi-slow.svg")))
-        submenu[1].append(create_menu_item(_("Medium") + ' (' + str(dpi_speed_3) + ')', True, cb.set_dpi, dpi_speed_3, self._get_icon("effects", "dpi-slow.svg")))
-        submenu[1].append(create_menu_item(_("Fast") + ' (' + str(dpi_speed_4) + ')', True, cb.set_dpi, dpi_speed_4, self._get_icon("effects", "dpi-fast.svg")))
-        submenu[1].append(create_menu_item(_("Super Fast") + ' (' + str(dpi_speed_5) + ')', True, cb.set_dpi, dpi_speed_5, self._get_icon("effects", "dpi-fast.svg")))
-        submenu[1].append(create_menu_item(_("Blazingly Fast") + ' (' + str(dpi_speed_6) + ')', True, cb.set_dpi, dpi_speed_6, self._get_icon("effects", "dpi-fast.svg")))
+        submenu[1].append(create_menu_item(_("Super Slow") + ' (' + str(dpi_range[0]) + ')', True, cb.set_dpi, dpi_range[0], self._get_icon("effects", "dpi-slow.svg")))
+        submenu[1].append(create_menu_item(_("Slow") + ' (' + str(dpi_range[1]) + ')', True, cb.set_dpi, dpi_range[1], self._get_icon("effects", "dpi-slow.svg")))
+        submenu[1].append(create_menu_item(_("Medium") + ' (' + str(dpi_range[2]) + ')', True, cb.set_dpi, dpi_range[2], self._get_icon("effects", "dpi-slow.svg")))
+        submenu[1].append(create_menu_item(_("Fast") + ' (' + str(dpi_range[3]) + ')', True, cb.set_dpi, dpi_range[3], self._get_icon("effects", "dpi-fast.svg")))
+        submenu[1].append(create_menu_item(_("Super Fast") + ' (' + str(dpi_range[4]) + ')', True, cb.set_dpi, dpi_range[4], self._get_icon("effects", "dpi-fast.svg")))
+        submenu[1].append(create_menu_item(_("Blazingly Fast") + ' (' + str(dpi_range[5]) + ')', True, cb.set_dpi, dpi_range[5], self._get_icon("effects", "dpi-fast.svg")))
 
         return submenu[0]
 
@@ -1126,8 +1102,7 @@ if __name__ == "__main__":
         os.makedirs(session_storage)
 
     # Write a PID file for restarting later.
-    tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
-    f = open(tray_pid_file, 'w')
+    f = open(common.tray_pid_file, 'w')
     f.write(str(os.getpid()))
     f.close()
 
@@ -1141,6 +1116,6 @@ if __name__ == "__main__":
     Gtk.main()
 
     # Application Closed
-    if os.path.exists(tray_pid_file):
-        os.remove(tray_pid_file)
+    if os.path.exists(common.tray_pid_file):
+        os.remove(common.tray_pid_file)
     exit(0)
