@@ -22,13 +22,6 @@
         display: inline-block;
         padding-right: 0.25em;
         vertical-align: middle;
-
-    }
-    #current-effect {
-
-        & + #current-effect-text {
-
-        }
     }
 
     #more-details-btn {
@@ -53,5 +46,80 @@
         h2 {}
         p {}
         button {}
+    }
+}
+
+.device-overview-container {
+    display: block;
+
+    .device {
+        margin-bottom: 2em;
+
+        > * {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        /* Device image */
+        .device-image {
+            width: 25%;
+            text-align: center;
+
+            img {
+                max-height: 8em;
+                max-width: 8em;
+                padding: 0 2em;
+            }
+        }
+
+        .device-details {
+            vertical-align: middle;
+
+            /* Device title */
+            h3 {
+                margin: 0;
+            }
+
+            /* Device serial */
+            code {
+                background: transparent;
+                color: $text-colour;
+                margin: 1em 0;
+                padding: 0;
+                opacity: 0.5;
+                -webkit-user-select: none;
+                pointer-events: none;
+            }
+
+            /* Device status */
+            .statuses {
+                display: block;
+            }
+
+            .status {
+                display: inline-block;
+                margin-right: 1em;
+
+                img,
+                span {
+                    display: inline-block;
+                    padding-right: 0.25em;
+                    vertical-align: middle;
+                }
+
+                + .status {
+                    margin-right: 1em;
+                }
+            }
+        }
+
+        .device-actions {
+            float: right;
+            margin: 0.5em 1em;
+
+            button {
+                margin-left: 0.5em;
+            }
+        }
     }
 }

@@ -466,7 +466,7 @@ class UICmd(object):
 
         # Update page title & sidebar
         self._set_title(device.name)
-        self._set_active_button("#device-" + str(device_id), "#device-list .item")
+        self._set_active_button("#device-" + str(device_id), ".sidebar-container .item")
 
         # Populate device summary and current status
         if fade_in:
@@ -638,7 +638,7 @@ class UICmd(object):
                     if multiple_sources:
                         effects_html += self._make_group(localised_names[source] + ' ' + _("Effect Options"), effect_options_html)
                     else:
-                        effects_html += self._make_group(_("Effects Options"), effect_options_html)
+                        effects_html += self._make_group(_("Effect Options"), effect_options_html)
 
                 # Show colour options
                 show_primary_colour = False
@@ -741,12 +741,19 @@ class UICmd(object):
 
     def devices_show_device_info(self, params=[]):
         """
-        Shows the devices info screen containing details about the active device.
+        Shows the devices info screen containing details about a device.
+
+        Params:
+            - int   (Optional) Device ID from daemon device manager.
+                    Defaults to active device.
         """
-        device = self.controller.active_device
-        title = _("Device Info for") + ' ' + device.name
+        if len(params) > 0:
+            device = self.devman.devices[int(params[0])]
+        else:
+            device = self.controller.active_device
 
         # Gather device info
+        title = _("Device Info for") + ' ' + device.name
         formfactor_icon = common.get_device_type(device)
         formfactor = formfactor_icon.capitalize()
 
@@ -828,7 +835,67 @@ class UICmd(object):
         Params:
           - None
         """
-        pass
+        target_element = ".sidebar-container > .right"
+        self._hide(target_element)
+        self._set_active_button("#device-overview", ".sidebar-container .item")
+
+        devices_html = ""
+
+        device_id = -1
+        for device in self.devman.devices:
+            device_id = device_id + 1
+            device_name = device.name
+            device_serial = device.serial
+            device_image = common.get_real_device_image(device, "top")
+
+            # Determine states to display
+            current_state_html = ""
+            for source in common.get_supported_lighting_sources(device):
+                # -- Effect
+                current_state = pref.get_device_state(device.serial, source, "effect")
+                if current_state:
+                    current_effect_text = common.get_effect_state_string(current_state)
+                    current_effect_image = "img/effects/" + current_state + ".svg"
+                    current_state_html += "<div class='status'><img src='{1}'/><span>{0}</span></div>".format(current_effect_text, current_effect_image)
+
+                # -- Brightness
+                current_brightness = common.get_brightness(device, source)
+                current_brightness_icon = common.get_source_icon(device, source)
+
+                if type(current_brightness) == int:
+                    current_state_html += "<div class='status'><img src='{1}'/><span>{0}%</span></div>".format(current_brightness, current_brightness_icon)
+                elif type(current_brightness) == bool:
+                    if current_brightness == True:
+                        string = _("On")
+                    else:
+                        string = _("Off")
+
+                    current_state_html += "<div class='status'><img src='{1}'/><span>{0}</span></div>".format(string, current_brightness_icon)
+
+            html = "<div class='device'>"
+            html += "<div class='device-image'>"
+            html += "<img src='{0}'>".format(device_image)
+            html += "</div>"
+            html += "<div class='device-details'>"
+            html += "<h3>{0}</h3>".format(device_name)
+            html += "<code>{0}</code>".format(device_serial)
+            html += "<div class='statuses'>{0}</div>".format(current_state_html)
+            html += "</div>"
+            html += "<div class='device-actions'>"
+            html += "<button onclick='cmd(\"device-info?{0}\")'>{1}</button>".format(str(device_id), _("Device Info"))
+            html += "<button onclick='cmd(\"device-select?{0}?true\")'>{1}</button>".format(str(device_id), _("Configure"))
+            html += "</div>"
+            html += "</div>"
+            devices_html += html
+
+        if len(self.devman.devices) == 0:
+            self.devices_init_tab()
+
+        replace_dict = {
+            "device-list": "<div class='device-overview-container'>" + devices_html + "</div>"
+        }
+        self.update_content_view("device-overview", target_element, replace_dict)
+        self._fade_in(target_element)
 
     def devices_set_unknown(self, params=[]):
         """

@@ -381,6 +381,37 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
         print("Unrecognised source! FX not applied.")
 
 
+def get_brightness(device_object, source):
+    """
+    Returns an integer of the brightness for a specified light source
+    or a boolean for devices that can only toggle their brightness.
+    """
+    if source == "main":
+        # Only integers are supported
+        if device_object.has("brightness"):
+            return int(device_object.brightness)
+
+    elif source == "logo":
+        if device_object.has("lighting_logo_active"):
+            return int(device_object.fx.misc.logo.brightness) == 1
+        elif device_object.has("lighting_logo_brightness"):
+            return int(device_object.fx.misc.logo.brightness)
+
+    elif source == "scroll":
+        if device_object.has("lighting_scroll_active"):
+            return int(device_object.fx.misc.scroll_wheel.brightness) == 1
+        elif device_object.has("lighting_scroll_brightness"):
+            return int(device_object.fx.misc.scroll_wheel.brightness)
+
+    elif source == "backlight":
+        if device_object.has("lighting_backlight_active"):
+            return int(device_object.fx.misc.backlight.brightness) == 1
+        elif device_object.has("lighting_backlight_brightness"):
+            return int(device_object.fx.misc.backlight.brightness)
+
+    return None
+
+
 def set_brightness(pref, device_object, source, value):
     """
     Function to set the brightness for a specific area of the device.
@@ -464,6 +495,35 @@ def is_brightness_toggled(device_object, source):
 
     if device_obj.has("lighting_scroll"):
         supported_sources.append("scroll")
+
+
+def get_source_icon(device_object, source):
+    """
+    Returns a path (excluding data source) to an icon that matches the context
+    of the device and the lighting source.
+
+    For example:
+        - Mice show a mouse graphic with highlighted logo/scroll wheel
+        - Naga Hex shows the 'rings' for 'main'.
+        - Blade Stealth show clamshell logo for 'logo'.
+    """
+    # Defaults
+    graphics = {
+        "main": "img/effects/brightness.svg",
+        "logo": "img/sources/logo.svg",
+        "scroll": "img/sources/scroll.svg",
+        "backlight": "img/fa/lightbulb.svg"
+    }
+
+    path = graphics[source]
+
+    if device_object.name in ["Razer Naga Hex", "Razer Naga Hex V2", "Razer Naga Hex (Red)"]:
+        path = "img/sources/naga-hex-ring.svg"
+
+    if device_object.name.find("Blade") != -1 and source == "logo":
+        path = "img/sources/blade-logo.svg"
+
+    return path
 
 
 def get_dpi_range(device):
