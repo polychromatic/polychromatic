@@ -427,66 +427,49 @@ def get_brightness(device_object, source):
 
 def set_brightness(pref, device_object, source, value):
     """
-    Function to set the brightness for a specific area of the device.
+    Function to set the brightness level or turn it on/off
+    for a specific area of the device.
+
+    pref            Preferences object (for updating devicestate)
+    device_object   Daemon device object
+    source          Lighting source to use, e.g. "main" or "logo"
+    value           Integer of the value. For "toggle" hardware, >0 will turn on,
+                    0 will turn off.
     """
+    device_fn = None
 
     if source == "main":
-        device_object.brightness = int(value)
+        if device_object.has("brightness"):
+            device_fn = device_object
 
     elif source == "backlight":
-        if value == "toggle":
-            if device_object.fx.misc.backlight.active == True:
-                device_object.fx.misc.backlight.active = False
-            else:
-                device_object.fx.misc.backlight.active = True
-        else:
-            device_object.fx.misc.backlight.brightness = int(value)
+        if device_object.has("lighting_backlight") or device_object.has("lighting_backlight_active"):
+            device_fn = device_object.fx.misc.backlight
 
     elif source == "logo":
-        if value == "toggle":
-            if device_object.fx.misc.logo.active == True:
-                device_object.fx.misc.logo.active = False
-            else:
-                device_object.fx.misc.logo.active = True
-        else:
-            device_object.fx.misc.logo.brightness = int(value)
+        if device_object.has("lighting_logo_brightness") or device_object.has("lighting_logo_active"):
+            device_fn = device_object.fx.misc.logo
 
     elif source == "scroll":
-        if value == "toggle":
-            if device_object.fx.misc.scroll_wheel.active == True:
-                device_object.fx.misc.scroll_wheel.active = False
-            else:
-                device_object.fx.misc.scroll_wheel.active = True
+        if device_object.has("lighting_scroll_brightness") or device_object.has("lighting_scroll_active"):
+            device_fn = device_object.fx.misc.scroll_wheel
+
+    if not device_fn:
+        return None
+
+    # For devices that only turn on/off.
+    if is_brightness_toggled(device_object, source):
+        if value > 0:
+            device_fn.active = True
         else:
-            device_object.fx.misc.scroll_wheel.brightness = int(value)
+            device_fn.active = False
 
-    if value != "toggle":
-        pref.set_device_state(device_object.serial, source, "brightness", int(value))
-
-
-def set_brightness_toggle(pref, device_object, source, state):
-    """
-    Function to turn on or off a specific area of the device (for supported devices)
-
-    state = True/False/"toggle"
-    """
-
-    if source == "backlight":
-        source_obj = device_object.fx.misc.backlight
-
-    elif source == "logo":
-        source_obj = device_object.fx.misc.logo
-
-    elif source == "scroll":
-        source_obj = device_object.fx.misc.scroll_wheel
-
-    if str(state) == "toggle":
-        if source_obj.active == True:
-            source_obj.active = 0
-        else:
-            source_obj.active = 1
+    # For devices that use a brightness level.
     else:
-        source_obj.active = state
+        device_fn.brightness = value
+
+    # Update devicestate
+    pref.set_device_state(device_object.serial, source, "brightness", int(value))
 
 
 def is_brightness_toggled(device_object, source):
@@ -496,18 +479,19 @@ def is_brightness_toggled(device_object, source):
     Returns True if specified source is on/off.
     Returns False if specified source is variable.
     """
-    if source == "main":
-        if device_object.has("lighting_active"):
-            return True
+    if source == "main" and device_object.has("lighting_active"):
+        return True
 
-    if device_object.has("lighting_backlight"):
-        supported_sources.append("backlight")
+    if source == "backlight" and device_object.has("lighting_backlight_active"):
+        return True
 
-    if device_object.has("lighting_logo"):
-        supported_sources.append("logo")
+    if source == "logo" and device_object.has("lighting_logo"):
+        return True
 
-    if device_object.has("lighting_scroll"):
-        supported_sources.append("scroll")
+    if source == "scroll" and device_object.has("lighting_scroll"):
+        return True
+
+    return False
 
 
 def get_source_icon(device_object, source):

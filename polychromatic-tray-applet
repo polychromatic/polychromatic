@@ -676,8 +676,8 @@ class AppIndicator(object):
             else:
                 target_submenu = root_submenu
 
-            target_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["backlight", 1]))
-            target_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["backlight", 0]))
+            target_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness, ["backlight", 1]))
+            target_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness, ["backlight", 0]))
             multiple_menus = True
 
         # ==> Scroll Wheel
@@ -687,8 +687,8 @@ class AppIndicator(object):
             else:
                 target_submenu = root_submenu
 
-            target_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["scroll", 1]))
-            target_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["scroll", 0]))
+            target_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness, ["scroll", 1]))
+            target_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness, ["scroll", 0]))
             multiple_menus = True
 
         elif self.active_device.has("lighting_scroll_brightness"):
@@ -710,8 +710,8 @@ class AppIndicator(object):
             else:
                 target_submenu = root_submenu
 
-            target_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["logo", 1]))
-            target_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["logo", 0]))
+            target_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness, ["logo", 1]))
+            target_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness, ["logo", 0]))
             multiple_menus = True
 
         elif self.active_device.has("lighting_logo_brightness"):
@@ -935,12 +935,6 @@ class Callback():
         source = attr[0]
         value = attr[1]
         common.set_brightness(pref, indicator.active_device, source, value)
-        indicator.rebuild_indicator()
-
-    def set_brightness_toggle(cb, item, attr):
-        source = attr[0]
-        value = attr[1]
-        common.set_brightness_toggle(pref, indicator.active_device, source, value)
         indicator.rebuild_indicator()
 
     def set_colour(cb, item, params):

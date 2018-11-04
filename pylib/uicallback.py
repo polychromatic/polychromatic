@@ -1079,15 +1079,8 @@ class UICmd(object):
         Params:
           - value       Brightness %
         """
-        value = params[0]
+        value = int(params[0])
         for device in self.devman.devices:
             for source in common.get_supported_lighting_sources(device):
-                if common.is_brightness_toggled(device, source):
-                    if value > 0:
-                        boolean = True
-                    else:
-                        boolean = False
-                    common.set_brightness_toggle(pref, device, source, boolean)
-                else:
-                    common.set_brightness(pref, device, source, value)
+                common.set_brightness(pref, device, source, value)
 
