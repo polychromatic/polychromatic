@@ -140,7 +140,8 @@ def get_string_bank(_):
         "capability_supported": _("Supported?"),
         "capability_description": _("Description"),
         "connected-devices": _("Connected Devices"),
-        "apply-to-all": _("Apply to All")
+        "apply-to-all": _("Apply to All"),
+        "unsupported-all-effects": _("Some devices could not be applied as they do not support this effect.")
     }
 
 
@@ -398,6 +399,10 @@ class Controller(object):
             "set-game-mode": uicmd.set_gamemode,
             "set-dpi": uicmd.set_dpi,
             "set-poll-rate": uicmd.set_poll_rate,
+
+            # Overview
+            "set-all-effect": uicmd.set_all_effect,
+            "set-all-brightness": uicmd.set_all_brightness,
 
             # Tabs
             "devices-tab": uicmd.devices_init_tab,

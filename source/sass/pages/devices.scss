@@ -62,18 +62,19 @@
 
         /* Device image */
         .device-image {
-            width: 25%;
+            width: 10em;
             text-align: center;
 
             img {
                 max-height: 8em;
                 max-width: 8em;
-                padding: 0 2em;
+                padding: 0 1em;
             }
         }
 
         .device-details {
             vertical-align: middle;
+            max-width: calc(100% - 10em - 16em);
 
             /* Device title */
             h3 {
@@ -115,10 +116,13 @@
 
         .device-actions {
             float: right;
+            text-align: right;
             margin: 0.5em 1em;
+            max-width: 16em;
 
             button {
                 margin-left: 0.5em;
+                margin-bottom: 0.5em;
             }
         }
     }

@@ -68,3 +68,20 @@ code {
     pointer-events: auto;
     cursor: text;
 }
+
+.warning-block {
+    background: $bg-colour-secondary;
+    color: $warning;
+    border: 1px solid $warning;
+    width: calc(100% - 1em);
+    padding: 0.5em;
+
+    img {
+        height: 22px;
+        width: 22px;
+    }
+
+    span, img {
+        vertical-align: middle;
+    }
+}

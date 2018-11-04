@@ -288,70 +288,73 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
         secondary_blue = 0
 
     # Execute function (only if source is known)
+    successful = False
+    params_to_set = None
+
     if fx:
         if effect == "none":
-            fx.none()
+            success = fx.none()
 
         elif effect == "spectrum":
-            fx.spectrum()
+            success = fx.spectrum()
 
         elif effect == "wave":
             # Params:  <direction 1-2>
             if params:
-                fx.wave(int(params[0]))
+                success = fx.wave(int(params[0]))
             else:
-                fx.wave(1)
-                remember_params(1)
+                success = fx.wave(1)
+                params_to_set = 1
 
         elif effect == "reactive":
             # Params:  <speed 1-4>
             if params:
-                fx.reactive(primary_red, primary_green, primary_blue, int(params[0]))
+                success = fx.reactive(primary_red, primary_green, primary_blue, int(params[0]))
             else:
-                fx.reactive(primary_red, primary_green, primary_blue, 2)
-                remember_params(2)
+                success = fx.reactive(primary_red, primary_green, primary_blue, 2)
+                params_to_set = 2
 
         elif effect == "blinking":
             if params:
-                fx.blinking(primary_red, primary_green, primary_blue)
+                success = fx.blinking(primary_red, primary_green, primary_blue)
             else:
-                fx.blinking(primary_red, primary_green, primary_blue)
+                success = fx.blinking(primary_red, primary_green, primary_blue)
 
         elif effect == "breath":
             # Params: <type>
             if params:
                 if params[0] == 'random':
-                    fx.breath_random()
-                    remember_params('random')
+                    success = fx.breath_random()
+                    params_to_set = 'random'
 
                 elif params[0] == 'single':
-                    fx.breath_single(primary_red, primary_green, primary_blue)
+                    success = fx.breath_single(primary_red, primary_green, primary_blue)
 
                 elif params[0] == 'dual':
-                    fx.breath_dual(primary_red, primary_green, primary_blue,
+                    success = fx.breath_dual(primary_red, primary_green, primary_blue,
                                    secondary_red, secondary_green, secondary_blue)
 
                 # TODO: Add triple breath support
 
             else:
-                fx.breath_random()
-                remember_params('random')
+                success = fx.breath_random()
+                params_to_set = 'random'
 
         elif effect == "pulsate":
-            fx.pulsate(primary_red, primary_green, primary_blue)
+            success = fx.pulsate(primary_red, primary_green, primary_blue)
 
         elif effect == "ripple":
             # Params: <type>
             if params:
                 if params[0] == 'single':
-                    fx.ripple(primary_red, primary_green, primary_blue, 0.01)
+                    success = fx.ripple(primary_red, primary_green, primary_blue, 0.01)
 
                 elif params[0] == 'random':
-                    fx.ripple_random(0.01)
+                    success = fx.ripple_random(0.01)
 
             else:
-                fx.ripple_random()
-                remember_params('random')
+                success = fx.ripple_random()
+                params_to_set = 'random'
 
         elif effect == "starlight":
             # Params: <type> [speed 1-3]
@@ -360,25 +363,35 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
 
             if params:
                 if params[0] == 'single':
-                    fx.starlight_single(primary_red, primary_green, primary_blue, speed)
+                    success = fx.starlight_single(primary_red, primary_green, primary_blue, speed)
 
                 elif params[0] == 'dual':
-                    fx.starlight_dual(primary_red, primary_green, primary_blue,
+                    success = fx.starlight_dual(primary_red, primary_green, primary_blue,
                                       secondary_red, secondary_green, secondary_blue, speed)
 
                 elif params[0] == 'random':
-                    fx.starlight_random(speed)
+                    success = fx.starlight_random(speed)
             else:
-                fx.starlight_random(speed)
-                remember_params('random')
+                success = fx.starlight_random(speed)
+                params_to_set = 'random'
 
         elif effect == "static":
-            fx.static(primary_red, primary_green, primary_blue)
-
-        pref.set_device_state(device_object.serial, source, "effect", effect)
+            success = fx.static(primary_red, primary_green, primary_blue)
 
     else:
         print("Unrecognised source! FX not applied.")
+
+    # Daemon returns True/False whether effect was successful.
+    # Only save state if the operation was successful
+    if success:
+        pref.set_device_state(device_object.serial, source, "effect", effect)
+
+        if params_to_set:
+            remember_params(params_to_set)
+
+    # Some devices may throw a DBUS error, so returning function should be
+    # prepared for that too.
+    return(success)
 
 
 def get_brightness(device_object, source):
@@ -484,16 +497,16 @@ def is_brightness_toggled(device_object, source):
     Returns False if specified source is variable.
     """
     if source == "main":
-        if device_obj.has("lighting_active"):
+        if device_object.has("lighting_active"):
             return True
 
-    if device_obj.has("lighting_backlight"):
+    if device_object.has("lighting_backlight"):
         supported_sources.append("backlight")
 
-    if device_obj.has("lighting_logo"):
+    if device_object.has("lighting_logo"):
         supported_sources.append("logo")
 
-    if device_obj.has("lighting_scroll"):
+    if device_object.has("lighting_scroll"):
         supported_sources.append("scroll")
 
 

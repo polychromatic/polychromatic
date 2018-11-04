@@ -242,6 +242,26 @@ class UICmd(object):
             label)
 
     @staticmethod
+    def _make_effect_button(fx_name, label, active, source, custom_icon_path=None, cmd="set-effect"):
+        """
+        Generates a button for effects.
+
+        fx_name             ID for effect, used in pathnames.
+        label               Label to show on button.
+        active              True/False if should be enabled
+        source              Lighting source (based to function)
+        custom_icon_path    (Optional) Show alternate icon instead of effect default.
+        function            (Optional) Name of command to execute.
+        """
+        return "<button id='effect-{0}' class='effect-btn {2}' onclick='cmd(\"{5}?{3}?{0}\")'><img src='{4}'/><span>{1}</span></button>".format(
+            fx_name,
+            label,
+            "active" if active else "",
+            source,
+            custom_icon_path if custom_icon_path else "img/effects/" + fx_name + ".svg",
+            cmd)
+
+    @staticmethod
     def _make_control_dropdown(element_id, onchange_cmd, initial_value, item_list, additional_class=None, prepend="", append=""):
         """
         Generates a dropdown for Python generated HTML.
@@ -521,9 +541,6 @@ class UICmd(object):
         # Create controls for supported effects
         effects_html = ""
         colour_html = ""
-        def _make_effect_button(fx_name, label, active, source, custom_icon_path=None):
-            return "<button id='effect-{0}' class='effect-btn {2}' onclick='cmd(\"set-effect?{3}?{0}\")'><img src='{4}'/><span>{1}</span></button>".format(
-                fx_name, label, "active" if active else "", source, custom_icon_path if custom_icon_path else "img/effects/" + fx_name + ".svg")
 
         for source in ["main", "backlight", "logo", "scroll"]:
             source_html = ""
@@ -550,40 +567,40 @@ class UICmd(object):
             current_effect_params = pref.get_device_state(device.serial, source, "effect_params")
 
             if device.has(prefix + "spectrum"):
-                source_html += _make_effect_button("spectrum", _("Spectrum"), current_effect == "spectrum", source)
+                source_html += self._make_effect_button("spectrum", _("Spectrum"), current_effect == "spectrum", source)
 
             if device.has(prefix + "wave"):
-                source_html += _make_effect_button("wave", _("Wave"), current_effect == "wave", source)
+                source_html += self._make_effect_button("wave", _("Wave"), current_effect == "wave", source)
 
             if device.has(prefix + "reactive"):
-                source_html += _make_effect_button("reactive", _("Reactive"), current_effect == "reactive", source)
+                source_html += self._make_effect_button("reactive", _("Reactive"), current_effect == "reactive", source)
 
             if device.has(prefix + "breath_dual") \
                 or device.has(prefix + "breath_random") \
                 or device.has(prefix + "breath_single") \
                 or device.has(prefix + "breath_triple"):
-                    source_html += _make_effect_button("breath", _("Breath"), current_effect == "breath", source)
+                    source_html += self._make_effect_button("breath", _("Breath"), current_effect == "breath", source)
 
             if device.has(prefix + "starlight_dual") \
                 or device.has(prefix + "starlight_random") \
                 or device.has(prefix + "starlight_single") \
                 or device.has(prefix + "starlight_triple"):
-                source_html += _make_effect_button("starlight", _("Starlight"), current_effect == "starlight", source)
+                source_html += self._make_effect_button("starlight", _("Starlight"), current_effect == "starlight", source)
 
             if device.has(prefix + "blinking"):
-                source_html += _make_effect_button("blinking", _("Blinking"), current_effect == "blinking", source)
+                source_html += self._make_effect_button("blinking", _("Blinking"), current_effect == "blinking", source)
 
             if device.has(prefix + "pulsate"):
-                source_html += _make_effect_button("pulsate", _("Pulsate"), current_effect == "pulsate", source)
+                source_html += self._make_effect_button("pulsate", _("Pulsate"), current_effect == "pulsate", source)
 
             if device.has(prefix + "ripple"):
-                source_html += _make_effect_button("ripple", _("Ripple"), current_effect == "ripple", source)
+                source_html += self._make_effect_button("ripple", _("Ripple"), current_effect == "ripple", source)
 
             if device.has(prefix + "static"):
-                source_html += _make_effect_button("static", _("Static"), current_effect == "static", source)
+                source_html += self._make_effect_button("static", _("Static"), current_effect == "static", source)
 
             if source == "main" and device.has("lighting_led_matrix"):
-                source_html += _make_effect_button("custom", _("Custom"), current_effect == "custom", source, "img/fa/effects-circle.svg")
+                source_html += self._make_effect_button("custom", _("Custom"), current_effect == "custom", source, "img/fa/effects-circle.svg")
 
             if len(source_html) > 0:
                 if multiple_sources:
@@ -891,8 +908,23 @@ class UICmd(object):
         if len(self.devman.devices) == 0:
             self.devices_init_tab()
 
+        # Add controls to set brightness/effect on all devices (where supported)
+        brightness_slider = self._make_effect_button("brightness", _("Off"), False, None, "img/brightness/0.svg", "set-all-brightness?0")
+        brightness_slider += self._make_effect_button("brightness", "25%", False, None, "img/brightness/25.svg", "set-all-brightness?25")
+        brightness_slider += self._make_effect_button("brightness", "50%", False, None, "img/brightness/50.svg", "set-all-brightness?50")
+        brightness_slider += self._make_effect_button("brightness", "75%", False, None, "img/brightness/75.svg", "set-all-brightness?75")
+        brightness_slider += self._make_effect_button("brightness", "100%", False, None, "img/brightness/100.svg", "set-all-brightness?100")
+
+        effect_buttons = self._make_effect_button("spectrum", _("Spectrum"), False, None, None, "set-all-effect")
+        effect_buttons += self._make_effect_button("wave", _("Wave"), False, None, None, "set-all-effect")
+        effect_buttons += self._make_effect_button("breath", _("Breath"), False, None, None, "set-all-effect")
+        effect_buttons += self._make_effect_button("reactive", _("Reactive"), False, None, None, "set-all-effect")
+        effect_buttons += self._make_effect_button("static", _("Static"), False, None, None, "set-all-effect")
+
         replace_dict = {
-            "device-list": "<div class='device-overview-container'>" + devices_html + "</div>"
+            "device-list": "<div class='device-overview-container'>" + devices_html + "</div>",
+            "brightness-slider": brightness_slider,
+            "effect-buttons": effect_buttons
         }
         self.update_content_view("device-overview", target_element, replace_dict)
         self._fade_in(target_element)
@@ -1019,3 +1051,43 @@ class UICmd(object):
         device = self.controller.active_device
         value = int(params[0])
         device.poll_rate = value
+
+    def set_all_effect(self, params=[]):
+        """
+        Sets an effect (with defaults) to all connected devices.
+
+        Params:
+          - effect      Effect name (as identified by Polychromatic)
+        """
+        effect = params[1]
+        for device in self.devman.devices:
+            for source in common.get_supported_lighting_sources(device):
+                try:
+                    successful = common.set_lighting_effect(pref, device, source, effect)
+                except Exception:
+                    successful = False
+
+                if successful == False:
+                    self._fade_in("#unsupported-all-effect")
+
+
+    def set_all_brightness(self, params=[]):
+        """
+        Sets the brightness for all connected devices. For devices with only an
+        "active" toggle, this is either on/off.
+
+        Params:
+          - value       Brightness %
+        """
+        value = params[0]
+        for device in self.devman.devices:
+            for source in common.get_supported_lighting_sources(device):
+                if common.is_brightness_toggled(device, source):
+                    if value > 0:
+                        boolean = True
+                    else:
+                        boolean = False
+                    common.set_brightness_toggle(pref, device, source, boolean)
+                else:
+                    common.set_brightness(pref, device, source, value)
+
