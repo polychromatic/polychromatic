@@ -270,12 +270,6 @@ class AppWindow(object):
         sw.add(self.webkit)
         pane = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
 
-        # Compatibility option if DEs don't scale to HIDPI displays automatically.
-        scale2x = float(pref.get("editor", "scale2x", False))
-        if scale2x:
-            self.webkit.set_zoom_level(1.5)
-            self.window.set_size_request(1500, 900)
-            dbg.stdout("HIDPI compatibility enabled", dbg.action, 1)
         # GTK Window -> Paned -> ScrolledWindow -> WebKit + Inspector (debugging)
         pane.add(sw)
         self.window.add(pane)
