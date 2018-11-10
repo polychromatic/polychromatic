@@ -186,8 +186,6 @@ class WebView(WebKit2.WebView):
         # Enable web inspector for debugging
         if dbg.verbose_level == 3:
             self.get_settings().set_property("enable-developer-extras", True)
-            inspector = self.get_inspector()
-            inspector.show()
 
         # Load the base page structure
         self.load_uri("file://" + os.path.join(path.data_source, "ui/controller.html"))
@@ -253,21 +251,24 @@ class AppWindow(object):
         Assembles the main application window.
         """
         self.webkit = WebView()
+
         self.window = Gtk.Window(title=_("Polychromatic Controller"))
         self.window.set_wmclass("polychromatic-controller", "polychromatic-controller")
         self.window.set_position(Gtk.WindowPosition.CENTER)
         self.window.modify_bg(Gtk.StateType(0), Gdk.Color(0, 0, 0))
         self.window.set_size_request(1000, 600)
+        self.window.connect("delete-event", Gtk.main_quit)
 
         try:
             self.window.set_icon_from_file(os.path.join(path.data_source, "ui/img/general/controller.svg"))
         except Exception:
             dbg.stdout("Failed to set window icon.", dbg.warning, 2)
 
-        # Add elements to window
+        # Create scrolled window (containing WebKit) to be part of a horz. pane
         sw = Gtk.ScrolledWindow()
         sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         sw.add(self.webkit)
+        pane = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
 
         # Compatibility option if DEs don't scale to HIDPI displays automatically.
         scale2x = float(pref.get("editor", "scale2x", False))
@@ -275,18 +276,31 @@ class AppWindow(object):
             self.webkit.set_zoom_level(1.5)
             self.window.set_size_request(1500, 900)
             dbg.stdout("HIDPI compatibility enabled", dbg.action, 1)
+        # GTK Window -> Paned -> ScrolledWindow -> WebKit + Inspector (debugging)
+        pane.add(sw)
+        self.window.add(pane)
 
-        # Build an auto expanding box and add the scrolled window
-        b = Gtk.VBox(homogeneous=False, spacing=0)
-        b.pack_start(sw, expand=True, fill=True, padding=0)
-        self.window.add(b)
-        self.window.connect("delete-event", Gtk.main_quit)
-        self.window.show_all()
-        dbg.stdout("Window Initialised", dbg.success, 1)
+        # When debugging, re-position window.
+        if dbg.verbose_level == 3:
+            def dummy(webview):
+                return True
+
+            inspector = self.webkit.get_inspector()
+            inspector.connect("open-window", dummy)
+            inspector.show()
+            inspector_webview = inspector.get_web_view()
+            pane.add(inspector_webview)
+            pane.set_position(1000)
+
+            self.window.set_size_request(1920, 600)
 
         # Kills process when CTRL+C'd.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+        # Showtime!
+        self.window.show_all()
         Gtk.main()
+        dbg.stdout("Window Initialised", dbg.success, 1)
 
 
 class Controller(object):
