@@ -141,7 +141,8 @@ def get_string_bank(_):
         "capability_description": _("Description"),
         "connected-devices": _("Connected Devices"),
         "apply-to-all": _("Apply to All"),
-        "unsupported-all-effects": _("Some devices could not be applied as they do not support this effect.")
+        "unsupported-all-effects": _("Some devices could not be applied as they do not support this effect."),
+        "saved-colours": _("Saved Colors")
     }
 
 
@@ -396,6 +397,9 @@ class Controller(object):
             "quit": uicmd.close_application,
             "reload": uicmd.reload_application,
 
+            # Common
+            "open-colour-picker": uicmd.show_colour_selector,
+
             # Devices
             "device-overview": uicmd.devices_set_overview,
             "device-select": uicmd.devices_set_device,
@@ -407,6 +411,8 @@ class Controller(object):
             "set-game-mode": uicmd.set_gamemode,
             "set-dpi": uicmd.set_dpi,
             "set-poll-rate": uicmd.set_poll_rate,
+            "set-primary-colour": uicmd.set_primary_colour,
+            "set-secondary-colour": uicmd.set_secondary_colour,
 
             # Overview
             "set-all-effect": uicmd.set_all_effect,

@@ -53,3 +53,33 @@ function swap_elements(from, to) {
     }, transition_speed);
 }
 
+// Colour Picker
+var colour_picker;
+function colour_picker_init(hex) {
+    colour_picker = new KellyColorPicker({
+        color: hex,
+        place: "colour-picker",
+        input: "colour-input",
+        size: 160,
+        method: "triangle",
+        changeCursor: false,
+        userEvents: {
+            change: function(self) {
+                var rgb = self.getCurColorRgb();
+                $("#colour-input-red").val(rgb.r);
+                $("#colour-input-green").val(rgb.g);
+                $("#colour-input-blue").val(rgb.b);
+            }
+        }
+    });
+
+    $(".colour-input-rgb > input").change(function() {
+        colour_picker.setColorByHex(rgb_to_hex($("#colour-input-red").val(), $("#colour-input-green").val(), $("#colour-input-blue").val()));
+    });
+}
+
+function rgb_to_hex(r,g,b) {
+    return "#" + ("0" + parseInt(r,10).toString(16)).slice(-2) +
+        ("0" + parseInt(g,10).toString(16)).slice(-2) +
+        ("0" + parseInt(b,10).toString(16)).slice(-2);
+}

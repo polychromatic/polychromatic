@@ -290,7 +290,7 @@ class UICmd(object):
         return html
 
     @staticmethod
-    def _make_colour_selector(current_colour, callback_function):
+    def _make_colour_selector(current_colour, callback_function, title, device=None):
         """
         Generates a preview box to view/change a colour.
 
@@ -298,11 +298,67 @@ class UICmd(object):
             current_colour      List in format: [red, green, blue] of current colour.
             callback_function   String inside cmd('XXX?R?G?B') where XXX is the command.
                                 This is used when a new custom colour is selected.
+            device              (Optional) Pass device to check if greenscale.
         """
-        return "<div class='colour-selector'><div id='{0}' class='current-colour' style='background-color:{1}'></div> <button onclick='cmd($quot;open-colour-picker?{0}?{2})'>{3}</button></div>".format(
+        greenscale = "false"
+        if device:
+            if common.is_device_greenscale(device):
+                greenscale = "true"
+
+        return "<div id='{2}' class='colour-selector'><div id='{0}' class='current-colour' style='background-color:{1}'></div> <button onclick='cmd(&quot;open-colour-picker?{0}?{1}?{4}?{2}?{5}&quot;)'>{3}</button></div>".format(
             common.generate_uuid(),
             common.colour_to_hex(current_colour),
-            callback_function, _("Change..."))
+            callback_function,
+            _("Change..."),
+            title,
+            greenscale)
+
+    def show_colour_selector(self, params):
+        """
+        Shows a dialogue box prompting to choose a different colour.
+
+        Params:
+            uuid            Element ID containing the original colour.
+            current_hex     Current colour as Hex #.
+            title           Title of the dialogue box.
+            callback_fn     (Optional) Callback function to run after saving new colour.
+            greenscale      'true' if device can only show green colours.
+        """
+        uuid = params[0]
+        current_hex = params[1]
+        title = params[2]
+        callback_fn = params[3]
+        greenscale = params[4]
+
+        # Load user colours
+        saved_colours_html = ""
+        colour_index = pref.load_file(pref.path.colours)
+        colour_index_keys = sorted(list(colour_index.keys()))
+        for uuid in colour_index_keys:
+            name = colour_index[uuid]["name"]
+            rgb = colour_index[uuid]["col"]
+            saved_colours_html += "<button class='colour-btn' onclick='colour_picker.setColorByHex(&quot;{0}&quot;)'><div class='colour-box' style='background-color:{0}'></div> {1}</button>".format(
+                common.colour_to_hex(rgb), name)
+
+        # Set class if device can only output green
+        if greenscale in ["true", True]:
+            additional_classes = "greenscale"
+        else:
+            additional_classes = ""
+
+        replace_dict = {
+            "hex": current_hex,
+            "saved-colours": saved_colours_html,
+            "additional-classes": additional_classes
+        }
+
+        html = self.controller.get_content_view("colour-picker", replace_dict)
+        buttons = [
+            ["close_dialog()", _("Cancel")],
+            ["cmd(&quot;{1}?&quot; + colour_picker.getCurColorHex());close_dialog();".format(uuid, callback_fn, ), _("Save")]
+        ]
+        self._open_dialog("general", title, html, "21em", "35em", buttons)
+        self.webkit.run_js("colour_picker_init('{0}')".format(current_hex))
 
     # Specific to devices screen
     def _show_device_error(self, image, title, text):
@@ -675,7 +731,7 @@ class UICmd(object):
                     if not primary_colour:
                         primary_colour = [0, 255, 0]
 
-                    html = self._make_colour_selector(primary_colour, "set-primary-colour")
+                    html = self._make_colour_selector(primary_colour, "set-primary-colour", _("Set Primary Color"))
                     colour_html += self._make_group(_("Primary Color"), html)
 
                 if show_secondary_colour:
@@ -683,7 +739,7 @@ class UICmd(object):
                     if not secondary_colour:
                         secondary_colour = [0, 255, 0]
 
-                    html = self._make_colour_selector(primary_colour, "set-secondary-colour")
+                    html = self._make_colour_selector(primary_colour, "set-secondary-colour", _("Set Secondary Color"))
                     colour_html += self._make_group(_("Secondary Color"), html)
 
         # Game Mode
@@ -982,6 +1038,9 @@ class UICmd(object):
         # Apply new effect settings
         common.set_lighting_effect(pref, device, source, effect, effect_params, primary_colours, secondary_colours)
 
+        # Reload devices page
+        self.devices_set_device([self.controller.active_device_id, False])
+
     def set_brightness(self, params=[]):
         """
         Sets the brightness for active device.
@@ -1084,3 +1143,30 @@ class UICmd(object):
             for source in common.get_supported_lighting_sources(device):
                 common.set_brightness(pref, device, source, value)
 
+    def set_primary_colour(self, params=[]):
+        """
+        Sets the primary colour of the current active effect.
+
+        Params:
+          - hex     New colour hex
+        """
+        colour_rgb = common.hex_to_colour(params[0])
+        active_device = self.controller.active_device
+
+        self.update_page("#set-primary-colour", "html", self._make_colour_selector(colour_rgb, "set-primary-colour", _("Set Primary Color"), active_device))
+        common.save_colours_to_all_sources(pref, active_device, "colour_primary", colour_rgb)
+        common.repeat_last_effect(pref, active_device)
+
+    def set_secondary_colour(self, params=[]):
+        """
+        Sets the primary colour of the current active effect.
+
+        Params:
+          - hex     New colour hex
+        """
+        colour_rgb = common.hex_to_colour(params[0])
+        active_device = self.controller.active_device
+
+        self.update_page("#set-secondary-colour", "html", self._make_colour_selector(colour_rgb, "set-secondary-colour", _("Set Secondary Color"), active_device))
+        common.save_colours_to_all_sources(pref, active_device, "colour_secondary", colour_rgb)
+        common.repeat_last_effect(pref, active_device)

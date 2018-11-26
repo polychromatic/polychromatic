@@ -1,0 +1,103 @@
+$colour-picker-size: 160px;
+
+#colour-picker-container {
+    display: flex;
+    flex-direction: row;
+
+    #colour-picker {
+        cursor: crosshair;
+    }
+
+    #colour-input {
+        font-family: $font-mono;
+        font-size: 1.25em;
+        text-align: center;
+        margin-top: 0.5em;
+        padding: 0.5em 0;
+        width: 160px;
+    }
+
+    .left {
+        display: inline-block;
+        width: 33%;
+        height: 15em;
+    }
+
+    .right {
+        display: inline-block;
+        width: 66%;
+        height: 15em;
+        overflow-y: auto;
+
+        button {
+            width: 50%;
+        }
+    }
+
+    .saved-colours-list {
+        .title {
+            display: block;
+            padding: 0 0.5em 0.5em;
+            opacity: 0.5;
+        }
+
+        .colour-btn {
+            float: left;
+            width: 48%;
+            margin-right: 1%;
+            padding-left: 1em;
+
+            &:active {
+                background-color: $bg-control;
+                color: white;
+            }
+        }
+    }
+}
+
+.greenscale {
+    /* mix-blend-mode not supported, colour wheel hidden as cannot apply green overlay */
+    canvas {
+        display: none;
+    }
+}
+
+.colour-btn {
+    background: transparent;
+    border: none;
+    text-align: left;
+}
+
+.colour-box {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 0.5em;
+    vertical-align: middle;
+}
+
+.colour-input-rgb {
+    display: flex;
+    flex-direction: row;
+    width: $colour-picker-size;
+
+    input[type='number'] {
+        background: transparent;
+        width: 33%;
+        position: relative;
+        background: url(../img/general/spinner.svg);
+        background-repeat: no-repeat;
+        background-position: right center;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            position: absolute;
+            width: 1em;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            margin: 0;
+        }
+    }
+}

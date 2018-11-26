@@ -242,7 +242,8 @@ input, a, button, select {
 }
 
 /* Text box */
-input[type='text'] {
+input[type='text'],
+input[type='number'] {
     background-color: $bg-colour;
     color: $button-colour;
     border: 1px solid $border-colour;
