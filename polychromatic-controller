@@ -270,6 +270,7 @@ class AppWindow(object):
         sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         sw.add(self.webkit)
         pane = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
+        pane.modify_bg(Gtk.StateType(0), Gdk.Color(0, 0, 0))
 
         # GTK Window -> Paned -> ScrolledWindow -> WebKit + Inspector (debugging)
         pane.add(sw)
@@ -286,8 +287,8 @@ class AppWindow(object):
             inspector_webview = inspector.get_web_view()
             pane.add(inspector_webview)
             pane.set_position(1000)
-
             self.window.set_size_request(1920, 600)
+            self.window.set_position(Gtk.WindowPosition.CENTER)
 
         # Kills process when CTRL+C'd.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
