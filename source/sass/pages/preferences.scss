@@ -1,0 +1,52 @@
+.program-logo {
+    margin: 1em;
+
+    img {
+        display: inline-block;
+        max-height: 50px;
+        vertical-align: middle;
+    }
+
+    span {
+        display: inline-block;
+        margin: 0em 0.2em;
+        color: $accent-colour;
+        font-size: 32px;
+        vertical-align: middle;
+    }
+}
+
+.program-links {
+    margin: 0 5em;
+
+    .social-link {
+        display: inline-block;
+        margin: 0 0.25em;
+
+        &:hover,
+        &:focus {
+            img {
+                filter: brightness(0.75);
+            }
+        }
+
+        &:active {
+            background: lime;
+
+            img {
+                filter: brightness(0);
+            }
+        }
+    }
+
+    img {
+        height: 2em;
+        width: 2em;
+    }
+}
+
+#tray-icon-preview {
+    max-height: 24px;
+    max-width: 24px;
+}
+

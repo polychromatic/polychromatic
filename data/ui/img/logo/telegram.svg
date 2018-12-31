@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="32" width="32" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="0 0 32 32">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <filter style="color-interpolation-filters:sRGB">
+   <feColorMatrix values="180" type="hueRotate" result="color1"/>
+   <feColorMatrix values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 -0.21 -0.72 -0.07 2 0 " result="color2"/>
+  </filter>
+ </defs>
+ <path fill="#00ff00" d="m26.688 6.3007c-.211-.0235-.444.0149-.678.1211l-20.502 7.9062c-1.3995.56132-1.3901 1.3416-.25391 1.6895l5.2598 1.6426 1.8086 5.9531c.23782.65655.12101.91797.81055.91797.53210 0 .76745-.24445 1.0645-.53320l2.5566-2.4863 5.3184 3.9297c.97881.54007 1.6859.26099 1.9297-.90820l3.49-16.454c.268-1.0748-.172-1.7086-.804-1.7793zm-26.688-6.3007h32v32h-32z"/>
+</svg>

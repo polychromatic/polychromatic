@@ -105,6 +105,10 @@
         p {
             margin: 0;
             padding-bottom: 1em;
+
+            &.info {
+                margin: 0 1.5em;
+            }
         }
 
         .loading-text {

@@ -124,6 +124,12 @@ def set(group, setting, value, filepath=None):
 
     data = load_file(filepath)
 
+    # In case a boolean was passed via JavaScript, correct the data type.
+    if value == "true":
+        value = True
+    if value == "false":
+        value = False
+
     # Create group if non-existent.
     try:
         data[group]

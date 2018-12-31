@@ -38,6 +38,7 @@
     animation: dialog-glow-green 2.5s infinite;
 */
 
+    /* Animations */
     &.in {
         animation: dialog-in $dialogue-speed ease-in-out forwards;
     }
@@ -46,6 +47,7 @@
         animation: dialog-out $dialogue-speed ease-in-out forwards;
     }
 
+    /* Inner */
     #dialog-title {
         position: absolute;
         top: 0;
@@ -84,6 +86,35 @@
             margin-left: 0.5em;
         }
     }
+}
+
+/* Dialog Variants */
+@mixin dialog-variant($colour) {
+    border-color: $colour;
+
+    #dialog-title {
+        color: $colour;
+    }
+
+    button {
+        &:hover,
+        &:focus {
+            color: $colour;
+        }
+
+        &:active {
+            background-color: $colour;
+            color: black;
+        }
+    }
+}
+
+#dialog.error {
+    @include dialog-variant($serious);
+}
+
+#dialog.warning {
+    @include dialog-variant($warning);
 }
 
 /* Dialog Animations */

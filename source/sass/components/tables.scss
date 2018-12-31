@@ -25,6 +25,10 @@ table {
         -webkit-user-select: auto;
     }
 
+    &.transparent {
+        background: transparent;
+    }
+
     th, td {
         border: 1px solid $bg-colour;
         padding: 0.15em 0.5em;

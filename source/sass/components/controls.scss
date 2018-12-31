@@ -41,20 +41,77 @@ button {
         background-color: $secondary-colour;
     }
 
+    &.inline {
+        /* Inline icons are light */
+        svg {
+            max-height: 16px;
+            max-width: 16px;
+            vertical-align: middle;
+
+            path {
+                fill: $text-colour;
+            }
+        }
+
+        span {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        &:hover,
+        &:focus {
+            svg {
+                path {
+                    fill: $active-dark;
+                }
+            }
+        }
+
+        &:active {
+            svg {
+                path {
+                    fill: black;
+                }
+            }
+        }
+    }
+
     &.serious {
         color: $serious;
 
+        svg {
+            path {
+                fill: $serious;
+            }
+        }
+
         &:hover {
             color: lighten($serious, 10%);
+
+            svg {
+                path {
+                    fill: $serious-dark;
+                }
+            }
+        }
+
+        &:focus {
+            svg {
+                path {
+                    fill: $serious-dark;
+                }
+            }
         }
 
         &:active {
             color: white;
             background-color: $serious;
-        }
 
-        &:focus {
-            border-color: darken($serious, 10%) !important;
+            svg {
+                path {
+                    fill: white;
+                }
+            }
         }
     }
 
@@ -267,5 +324,9 @@ input[type='number'] {
         border-color: $bg-colour-secondary !important;
         color: $disabled-colour;
         cursor: not-allowed;
+    }
+
+    &::-webkit-input-placeholder {
+        color: $bg-control;
     }
 }

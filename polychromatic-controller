@@ -19,7 +19,7 @@
 
 """Polychromatic GUI for interfacing with the OpenRazer's Python Library and daemon"""
 
-version = "0.4.0"
+VERSION = "0.4.0"
 
 import argparse
 import gettext
@@ -50,9 +50,9 @@ except ImportError as e:
     print("Failed to import modules for daemon.\n" + e.message)
 
 # Import relative copies if running in development mode.
-dev_version = False
+DEV_VERSION = False
 if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
-    dev_version = True
+    DEV_VERSION = True
     try:
         # Relative (for development)
         import pylib.preferences as pref
@@ -66,7 +66,7 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
 
 # Import modules if installed to system.
 else:
-    version = version + "-stable"
+    VERSION = VERSION + "-stable"
     try:
         import polychromatic.preferences as pref
         import polychromatic.profiles as prof
@@ -142,7 +142,11 @@ def get_string_bank(_):
         "connected-devices": _("Connected Devices"),
         "apply-to-all": _("Apply to All"),
         "unsupported-all-effects": _("Some devices could not be applied as they do not support this effect."),
-        "saved-colours": _("Saved Colors")
+        "saved-colours": _("Saved Colors"),
+        "about": _("About"),
+        "general": _("General"),
+        "tray-applet": _("Tray Applet"),
+        "daemon": _("Daemon")
     }
 
 
@@ -312,6 +316,16 @@ class Controller(object):
         self.active_device = None
         self.active_device_id = None
         self.uicmd = None
+        self.version = VERSION
+
+        try:
+            self.versions = {
+                "gi": gi.__version__,
+                "gtk": "{0}.{1}.{2}".format(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION),
+                "webkit": "{0}.{1}.{2}".format(WebKit2.MAJOR_VERSION, WebKit2.MINOR_VERSION, WebKit2.MICRO_VERSION),
+            }
+        except NameError:
+            self.versions = False
 
     def run_javascript(self, function):
         """
@@ -400,6 +414,13 @@ class Controller(object):
 
             # Common
             "open-colour-picker": uicmd.show_colour_selector,
+            "open-uri": uicmd.open_uri,
+            "browse": uicmd.browse_input,
+            "restart": uicmd.restart_component,
+
+            # Tabs
+            "devices-tab": uicmd.devices_init_tab,
+            "preferences-tab": uicmd.preferences_init_tab,
 
             # Devices
             "device-overview": uicmd.devices_set_overview,
@@ -419,11 +440,9 @@ class Controller(object):
             "set-all-effect": uicmd.set_all_effect,
             "set-all-brightness": uicmd.set_all_brightness,
 
-            # Tabs
-            "devices-tab": uicmd.devices_init_tab,
-            "effects-tab": None,
-            "schedule-tab": None,
-            "preferences-tab": None
+            # Preferences
+            "pref-set-tab": uicmd.preferences_set_tab,
+            "pref-set": uicmd.preferences_set_pref
         }
 
         # Must run from main thread
@@ -446,7 +465,7 @@ class Controller(object):
         Function that triggers the main application's operations.
         """
         self.webkit = webkit
-        dbg.stdout("Version " + version, dbg.debug, 1)
+        dbg.stdout("Version " + VERSION, dbg.debug, 1)
 
         self.update_content_view("header", "header")
         self.update_content_view("loading")
@@ -465,91 +484,10 @@ class Controller(object):
                 self.devman = None
                 dbg.stdout("Daemon threw an exception:\n" + str(e), dbg.error, 0)
 
-        self.uicmd = uicallback.UICmd(self, self.webkit, self.devman, get_string_bank, path.data_source)
+        self.uicmd = uicallback.UICmd(self, self.webkit, self.devman, get_string_bank, path)
         dbg.stdout("Application Ready.", dbg.success, 1)
 
         self.uicmd.devices_init_tab()
-
-
-class Dialogues():
-    def color_picker():
-        # TODO: Ability to track and set last colour in GTK dialog.
-        colorseldlg = Gtk.ColorSelectionDialog(_("Choose a Color"))
-        colorsel = colorseldlg.get_color_selection()
-
-        if colorseldlg.run() == Gtk.ResponseType.OK:
-            colour = colorsel.get_current_color()
-            red = int(colour.red / 256)
-            green = int(colour.green / 256)
-            blue = int(colour.blue / 256)
-            colorseldlg.destroy()
-            return "{0},{1},{2}".format(str(red), str(green), str(blue))
-        else:
-            colorseldlg.destroy()
-            return None
-
-    def file_picker(browse_id):
-        """
-        Opens a file picker and returns the string (if result is OK)
-
-        Expects:
-            browse_id       An integer that determines the settings for the dialog.
-
-        Browse IDs:
-        1       Choose icon for tray applet
-
-        """
-
-        if browse_id == 1:
-            help_text = _("Choose an icon to use for the tray applet.")
-            filter_mode = "image"
-        else:
-            dbg.stdout("Unimplemented file picker!", dbg.error, 1)
-            return
-
-        win = Gtk.Window(title=_("Polychromatic Controller"))
-        dialog = Gtk.FileChooserDialog(help_text, win, Gtk.FileChooserAction.OPEN, \
-                                       (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, \
-                                        Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
-        # Setup filters
-        if filter_mode == "image":
-            a = Gtk.FileFilter()
-            a.set_name(_("All Images"))
-            a.add_mime_type("image/jpeg")
-            a.add_mime_type("image/png")
-            a.add_mime_type("image/gif")
-            a.add_mime_type("image/svg+xml")
-            dialog.add_filter(a)
-
-            j = Gtk.FileFilter()
-            j.set_name("JPEG " + _("Image"))
-            j.add_mime_type("image/jpeg")
-            dialog.add_filter(j)
-
-            p = Gtk.FileFilter()
-            p.set_name("PNG " + _("Image"))
-            p.add_mime_type("image/png")
-            dialog.add_filter(p)
-
-            g = Gtk.FileFilter()
-            g.set_name("GIF " + _("Image"))
-            g.add_mime_type("image/gif")
-            dialog.add_filter(g)
-
-            s = Gtk.FileFilter()
-            s.set_name("SVG " + _("Image"))
-            s.add_mime_type("image/svg+xml")
-            dialog.add_filter(s)
-
-        response = dialog.run()
-
-        if response == Gtk.ResponseType.OK:
-            filename = dialog.get_filename()
-            dialog.destroy()
-            return filename
-        else:
-            dialog.destroy()
-            return None
 
 
 def parse_parameters():
@@ -596,8 +534,8 @@ if __name__ == "__main__":
     dbg = common.Debugging()
 
     # Compile styling when working locally.
-    if dev_version:
-        version = version + "-dev"
+    if DEV_VERSION:
+        VERSION = VERSION + "-dev"
 
         dbg.stdout("Compiling Styling...", dbg.action)
         os.system(os.path.join(path.data_source, "../tools/build-sass.sh"))
