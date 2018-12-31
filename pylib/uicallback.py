@@ -1046,6 +1046,7 @@ class UICmd(object):
         target_element = ".sidebar-container > .right"
         self._hide(target_element)
         self._set_active_button("#device-overview", ".sidebar-container .item")
+        self._set_title(_("All Devices"))
 
         devices_html = ""
 

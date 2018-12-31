@@ -533,14 +533,14 @@ if __name__ == "__main__":
     string_bank = get_string_bank(_)
     dbg = common.Debugging()
 
-    # Compile styling when working locally.
+    # Compile styling during development.
     if DEV_VERSION:
         VERSION = VERSION + "-dev"
 
         dbg.stdout("Compiling Styling...", dbg.action)
         os.system(os.path.join(path.data_source, "../tools/build-sass.sh"))
 
-        if not os.path.exists(os.path.join(path.data_source, "ui/css/default.css")):
+        if not os.path.exists(os.path.join(path.data_source, "ui/theme/dark.css")):
             dbg.stdout("Failed to start due to missing styling.", dbg.error)
             exit(1)
 

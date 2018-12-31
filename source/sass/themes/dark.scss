@@ -16,7 +16,7 @@ $bg-footer: #121212;
 $bg-control: #808080;
 
 $text-colour: #C4C4C4;
-$border-colour: #2D2D2D;    // #404040?
+$border-colour: #2D2D2D;
 $disabled-colour: #484848;
 $active: #06FF00;
 $active-dark: #0DA902;
@@ -72,3 +72,7 @@ $sidebar-width: 275px;
 $sidebar-border-width: 3px;
 
 $button-height: 30px;
+
+/* Theme */
+@import "../theme";
+

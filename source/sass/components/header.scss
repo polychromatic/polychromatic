@@ -5,41 +5,13 @@ header {
     top: 0;
     height: $header-height;
     padding: $header-padding-v $header-padding-h;
-    background-image: url('../../img/header/default.svg');
+    background-image: url('../img/header/static.svg');
     background-repeat: no-repeat;
     background-position: left -2px;
     background-size: 100%;
     font-weight: 600;
     border-bottom: 2px solid $border-colour;
     transition: background-image $header-transition ease-in-out;
-
-    &.overview {
-        background-image: url('../img/header/generic.jpg');
-    }
-
-    &.keyboard {
-        background-image: url('../img/header/keyboard.png');
-    }
-
-    &.mouse {
-        background-image: url('../img/header/mouse.png');
-    }
-
-    &.mousemat {
-        background-image: url('../img/header/mousemat.png');
-    }
-
-    &.keypad {
-        background-image: url('../img/header/keypad.png');
-    }
-
-    &.headset {
-        background-image: url('../img/header/headset.png');
-    }
-
-    &.generic {
-        background-image: url('../img/header/default.svg');
-    }
 
     h3 {
         padding: 0;

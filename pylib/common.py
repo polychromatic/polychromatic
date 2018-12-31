@@ -466,7 +466,7 @@ def set_brightness(pref, device_object, source, value):
 
     # For devices that use a brightness level.
     else:
-        device_fn.brightness = value
+        device_fn.brightness = float(value)
 
     # Update devicestate
     pref.set_device_state(device_object.serial, source, "brightness", int(value))
