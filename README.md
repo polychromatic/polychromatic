@@ -6,6 +6,7 @@ A front-end to customise your Razer perpherials under GNU/Linux. Powered by [Ope
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/polychromatic/polychromatic/blob/master/LICENSE)
 [![Python Version](https://img.shields.io/badge/python-3.5.2-blue.svg)](#)
 
+![Screenshot of Polychromatic's interfaces](.github/screenshot.png)
 
 ### [https://polychromatic.app](https://polychromatic.app)
 Take a look at the website for features, screenshots, downloads and documentation.
