@@ -1,17 +1,21 @@
 <div class="sidebar-container">
     <div class="left">
-        <button id="device-overview" class="item" onclick="cmd('device-overview')">
-            <img src="img/general/overview.svg"/> <span>[[ overview ]]</span>
-        </button>
-        <div class="item-group">
-            <div class="item-heading">[[ devices ]]</div>
-            <span id="device-list"></span>
-            <!-- Example
-            <button class="item active" onclick="">
-                <img src="img/devices/keyboard.svg"/> <span>BlackWidow Chroma</span>
+        <div id="sidebar-items" class="hidden">
+            <button id="device-overview" class="item" onclick="cmd('device-overview')">
+                <img src="img/general/overview.svg"/> <span>[[ overview ]]</span>
             </button>
-            -->
+            <div class="item-group">
+                <div class="item-heading">[[ devices ]]</div>
+                <span id="device-list"></span>
+                <!-- Example
+                <button class="item active" onclick="">
+                    <img src="img/devices/keyboard.svg"/> <span>BlackWidow Chroma</span>
+                </button>
+                -->
+            </div>
         </div>
     </div>
-    <div class="right"></div>
+    <div class="right">
+        <div id="device-content" class="start-hidden"></div>
+    </div>
 </div>

@@ -41,10 +41,11 @@ $font-family: 'Play', 'Ubuntu', 'DejaVu Sans', 'Open Sans', sans-serif;
 $font-mono: 'Ubuntu Mono', 'Droid Sans Mono', 'FreeMono', 'Courier New', Courier, monospace;
 
 /* Animations */
-$dialogue-speed: 0.25s;
-$header-transition: 0.25s;
+$transition-speed: 0.25s;
+$dialogue-speed: $transition-speed;
+$header-transition: $transition-speed;
 $control-toggle-speed: 0.5s;
-$sidebar-transition-speed: 0.25s;
+$sidebar-transition-speed: $transition-speed;
 
 /* Dimensions */
 $scrollbar-width: 16px;

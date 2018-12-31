@@ -73,3 +73,9 @@ p {
     margin: 1em;
     padding: 0;
 }
+
+/* For transitioning element states */
+.start-hidden {
+    visibility: hidden;
+}
+

@@ -131,6 +131,7 @@ class UICmd(object):
     def _show(self, element):
         """Alias to show an element"""
         self.update_page(element, "show")
+        self.update_page(element, "removeClass", "start-hidden")
 
     def _set_img(self, element, path):
         """Alias to set an img's src tag"""
@@ -176,6 +177,7 @@ class UICmd(object):
     def _fade_in(self, element, pause=False):
         """Alias to fade in an element using default animation timings. Can optionally pause Python execution."""
         self.update_page(element, "fadeIn", self.ani_js_speed)
+        self.update_page(element, "removeClass", "start-hidden")
         if pause:
             sleep(self.ani_py_speed)
 
@@ -508,13 +510,13 @@ class UICmd(object):
         self.update_page(".sidebar-container .left .active", "removeClass", "active")
 
         selector = ".sidebar-container > .right"
-        self.update_page(selector, "hide")
+        self._hide(selector)
         self.update_content_view("device-error", selector)
         self.update_page("#error-image", "attr", "src", "img/error/" + image)
         self.update_page("#error-title", "html", title)
         self.update_page("#error-text", "html", text)
         self.update_page("#error-image", "show")
-        self.update_page(selector, "fadeIn", self.ani_js_speed)
+        self._fade_in(selector)
 
     def run_command(self, function, params=""):
         """
@@ -637,6 +639,7 @@ class UICmd(object):
             dbg.stdout("Failed to get scan 'lsusb' for unrecognised devices!", dbg.warning)
             dbg.stdout("Exception: " + str(e), dbg.warning)
 
+        self._fade_in("#sidebar-items")
         self.devices_set_device([0, True])
 
         self._set_active_button("#devices-tab", ".tab")
@@ -942,8 +945,7 @@ class UICmd(object):
         }
 
         self.update_content_view("device-controls", target_element, replace_dict)
-        if fade_in:
-            self._fade_in(target_element)
+        self._fade_in(target_element)
 
     def devices_show_device_info(self, params=[]):
         """
