@@ -11,8 +11,9 @@ import os
 import json
 import shutil
 import time
+from . import common
 
-version = 5
+version = 6
 verbose = False
 
 ################################################################################
@@ -334,7 +335,72 @@ def upgrade_old_pref(config_version):
 
         save_file(path.preferences, data)
 
-    # Ensure that new version number is written.
+    if config_version < 6:
+        # Migrate preferences.json to new keys
+        old_data = load_file(path.preferences, True)
+        try:
+            old_live_preview = old_data["editor"]["live_preview"]
+            old_tray_type = old_data["tray_icon"]["type"]
+            old_tray_value = old_data["tray_icon"]["value"]
+        except KeyError:
+            old_live_preview = ""
+            old_tray_type = ""
+            old_tray_value = ""
+
+        new_data = {
+            "colours": {
+                "primary": "#00FF00",
+                "secondary": "#00FFFF"
+            },
+            "effects": {
+                "live_preview": old_live_preview
+            },
+            "tray_icon": {
+                "force_fallback": False
+            }
+        }
+
+        if old_tray_type == "builtin":
+            new_data["tray_icon"]["icon_id"] = old_tray_value
+        elif old_tray_type == "gtk":
+            new_data["tray_icon"]["gtk_icon_name"] = old_tray_value
+        elif old_tray_type == "custom":
+            new_data["tray_icon"]["custom_image_path"] = old_tray_value
+
+        save_file(path.preferences, new_data)
+
+        # Migrate colours from RGB lists to HEX strings.
+        # -- Saved Colours
+        new_colours = []
+        old_colours = load_file(path.colours)
+        old_ids = list(old_colours.keys())
+        old_ids.sort()
+        for uuid in old_ids:
+            try:
+                new_name = old_colours[uuid]["name"]
+                new_hex = common.rgb_to_hex(old_colours[uuid]["col"])
+                new_colours.append({"name": new_name, "hex": new_hex})
+            except Exception:
+                # Ignore invalid data
+                pass
+
+        save_file(path.colours, new_colours)
+
+        # -- Device State
+        data = load_file(path.devicestate, True)
+        for serial in data.keys():
+            for source in data[serial].keys():
+                for key in ["colour_primary", "colour_secondary"]:
+                    try:
+                        rgb = data[serial][source][key]
+                        new_hex = common.rgb_to_hex(rgb)
+                        data[serial][source][key] = new_hex
+                    except Exception as e:
+                        # Key non-existant
+                        pass
+        save_file(path.devicestate, data)
+
+    # Write new version number.
     pref_data = load_file(path.preferences, True)
     pref_data["config_version"] = version
     save_file(path.preferences, pref_data)
@@ -434,16 +500,22 @@ def start_initalization():
     ## Default Colours
     data = load_file(path.colours, True)
     if len(data) <= 2:
-        uuid = 0
-        for name, red, green, blue in ["White", 255, 255, 255], ["Red", 255, 0, 0], ["Orange", 255, 165, 0], \
-                                      ["Yellow", 255, 255, 0], ["Signature Green", 0, 255, 0], ["Aqua", 0, 255, 255], \
-                                      ["Blue", 0, 0, 255], ["Purple", 128, 0, 128], ["Pink", 255, 0, 255]:
-            uuid += 1
-            data[str(uuid)] = {}
-            data[str(uuid)]["name"] = name
-            data[str(uuid)]["col"] = [red, green, blue]
-        save_file(path.colours, data)
+        default_data = [
+            {"name": _("White"), "hex": "#FFFFFF"},
+            {"name": _("Red"), "hex": "#FF0000"},
+            {"name": _("Green"), "hex": "#00FF00"},
+            {"name": _("Blue"), "hex": "#0000FF"},
+            {"name": _("Aqua"), "hex": "#00FFFF"},
+            {"name": _("Orange"), "hex": "#FFA500"},
+            {"name": _("Pink"), "hex": "#FFC0CB"},
+            {"name": _("Purple"), "hex": "#800080"},
+            {"name": _("Yellow"), "hex": "#FFFF00"},
+            {"name": _("Light Grey"), "hex": "#BFBFBF"},
+            {"name": _("Dark Grey"), "hex": "#7F7F7F"},
+            {"name": _("Black"), "hex": "#000000"}
+        ]
+        save_file(path.colours, default_data)
 
-
+_ = common.setup_translations(__file__, "polychromatic")
 path = Paths()
 start_initalization()

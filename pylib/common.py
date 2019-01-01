@@ -233,8 +233,7 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
                         e.g. wave / spectrum / static
     params =        (Optional) Any parameters for the effect, seperated by '?'.
                         e.g. 255?255?255?2
-
-    primary_colours =   (Optional) Use this list [R,G,B] these instead of default primary colour.
+    primary_colours   = (Optional) Use specified HEX instead of default primary colour.
     secondary_colours = (Optional) As above, but secondary colours.
     """
     serial = device_object.serial
@@ -262,30 +261,32 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
     elif source == "scroll":
         fx = device_object.fx.misc.scroll_wheel
 
-    # Determine colours
+    # Determine colours, if unspecified, use previously set colours.
     if not primary_colours:
         primary_colours = pref.get_device_state(serial, source, "colour_primary")
 
     if not secondary_colours:
         secondary_colours = pref.get_device_state(serial, source, "colour_secondary")
 
+    # Convert colours to R,G,B to pass to the daemon.
+    # If device hasn't previously specified colours, use default colours.
     if primary_colours:
-        primary_red = primary_colours[0]
-        primary_green = primary_colours[1]
-        primary_blue = primary_colours[2]
+        rgb = hex_to_rgb(primary_colours)
     else:
-        primary_red = 0
-        primary_green = 255
-        primary_blue = 0
+        rgb = hex_to_rgb(pref.get("colours", "primary", "#00FF00"))
+
+    primary_red = rgb[0]
+    primary_green = rgb[1]
+    primary_blue = rgb[2]
 
     if secondary_colours:
-        secondary_red = secondary_colours[0]
-        secondary_green = secondary_colours[1]
-        secondary_blue = secondary_colours[2]
+        rgb = hex_to_rgb(secondary_colours)
     else:
-        secondary_red = 255
-        secondary_green = 0
-        secondary_blue = 0
+        rgb = hex_to_rgb(pref.get("colours", "primary", "#00FFFF"))
+
+    secondary_red = rgb[0]
+    secondary_green = rgb[1]
+    secondary_blue = rgb[2]
 
     # Execute function (only if source is known)
     successful = False
@@ -565,7 +566,7 @@ def repeat_last_effect(pref, device_object):
     replay_source("scroll", "lighting_scroll")
 
 
-def save_colours_to_all_sources(pref, device_object, colour_name, colour_set):
+def save_colours_to_all_sources(pref, device_object, colour_name, colour_hex):
     """
     Function to bulk save a colour for all light sources the device supports, e.g.
     logo, scroll, etc.
@@ -573,13 +574,13 @@ def save_colours_to_all_sources(pref, device_object, colour_name, colour_set):
     The tray applet uses this as it sets colour across the entire device.
 
     colour_name     String as used in devicestate, e.g. "colour_primary"
-    colour_set      List in format [red, green, blue]
+    colour_hex      Colour hex, e.g. "#00FF00"
     """
     serial = device_object.serial
 
     def save_colour(source, capability):
         if device_object.has(capability):
-            pref.set_device_state(serial, source, colour_name, colour_set)
+            pref.set_device_state(serial, source, colour_name, colour_hex)
 
     save_colour("main", "lighting")
     save_colour("backlight", "lighting_backlight")
@@ -616,17 +617,17 @@ def get_green_shades():
     Returns a custom colours.json for use with non-RGB keyboards,
     like the Razer BlackWidow Ultimate.
     """
-    return {
-        "1": {"name": _("Green") + " 1", "col": [0, 255, 0]},
-        "2": {"name": _("Green") + " 2", "col": [0, 225, 0]},
-        "3": {"name": _("Green") + " 3", "col": [0, 200, 0]},
-        "4": {"name": _("Green") + " 4", "col": [0, 175, 0]},
-        "5": {"name": _("Green") + " 5", "col": [0, 150, 0]},
-        "6": {"name": _("Green") + " 6", "col": [0, 125, 0]},
-        "7": {"name": _("Green") + " 7", "col": [0, 100, 0]},
-        "8": {"name": _("Green") + " 8", "col": [0, 75, 0]},
-        "9": {"name": _("Green") + " 9", "col": [0, 50, 0]},
-    }
+    return [
+        {"name": _("Green") + " 1", "hex": "#00FF00"},
+        {"name": _("Green") + " 2", "hex": "#00E100"},
+        {"name": _("Green") + " 3", "hex": "#00C800"},
+        {"name": _("Green") + " 4", "hex": "#00AF00"},
+        {"name": _("Green") + " 5", "hex": "#009600"},
+        {"name": _("Green") + " 6", "hex": "#007D00"},
+        {"name": _("Green") + " 7", "hex": "#006400"},
+        {"name": _("Green") + " 8", "hex": "#004B00"},
+        {"name": _("Green") + " 9", "hex": "#003200"}
+    ]
 
 
 def set_default_tray_icon(pref):
@@ -797,16 +798,18 @@ def devicestate_monitor_thread(callback_function, file_path):
             _init_devicestate_file()
 
 
-def colour_to_hex(colour):
+def rgb_to_hex(rgb_list):
     """
     Converts [R,G,B] list to #RRGGBB string.
+    Polychromatic stores and presents colours as hex values.
     """
-    return "#{0:02X}{1:02X}{2:02X}".format(*colour)
+    return "#{0:02X}{1:02X}{2:02X}".format(*rgb_list)
 
 
-def hex_to_colour(hex_string):
+def hex_to_rgb(hex_string):
     """
     Converts "#RRGGBB" string to [R,G,B] list.
+    The daemon expects parameters with individual RGB values.
     """
     hex_string = hex_string.lstrip("#")
     return list(int(hex_string[i:i+2], 16) for i in (0, 2 ,4))

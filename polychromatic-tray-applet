@@ -861,7 +861,7 @@ class AppIndicator(object):
         colour_path = os.path.join(session_storage, "{0}-{1}-{2}.png".format(str(colour[0]), str(colour[1]), str(colour[2])))
         if not os.path.exists(colour_path):
             dbg.stdout("Creating colour bitmap for: " + str(colour), dbg.action, 1)
-            foreground_process("convert -size 16x16 xc:{0} {1}".format(common.colour_to_hex(colour), colour_path), shell=True)
+            foreground_process("convert -size 16x16 xc:{0} {1}".format(common.rgb_to_hex(colour), colour_path), shell=True)
         if not os.path.exists(colour_path):
             dbg.stdout("ERROR: Failed to generate bitmap for: " + str(colour), dbg.error)
         return colour_path

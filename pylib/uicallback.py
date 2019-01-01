@@ -410,12 +410,12 @@ class UICmd(object):
         return html
 
     @staticmethod
-    def _make_colour_selector(current_colour, callback_function, title, device=None):
+    def _make_colour_selector(current_hex, callback_function, title, device=None):
         """
         Generates a preview box to view/change a colour.
 
         Params:
-            current_colour      List in format: [red, green, blue] of current colour.
+            current_hex         Colour hex of current colour.
             callback_function   String inside cmd('XXX?R?G?B') where XXX is the command.
                                 This is used when a new custom colour is selected.
             device              (Optional) Pass device to check if greenscale.
@@ -427,7 +427,7 @@ class UICmd(object):
 
         return "<div id='{2}' class='colour-selector'><div id='{0}' class='current-colour' style='background-color:{1}'></div> <button onclick='cmd(&quot;open-colour-picker?{0}?{1}?{4}?{2}?{5}&quot;)'>{3}</button></div>".format(
             common.generate_uuid(),
-            common.colour_to_hex(current_colour),
+            current_hex,
             callback_function.replace("?", "¿"),
             _("Change..."),
             title,
@@ -467,13 +467,11 @@ class UICmd(object):
 
         # Load user colours
         saved_colours_html = ""
-        colour_index = pref.load_file(pref.path.colours)
-        colour_index_keys = sorted(list(colour_index.keys()))
-        for uuid in colour_index_keys:
-            name = colour_index[uuid]["name"]
-            rgb = colour_index[uuid]["col"]
-            saved_colours_html += "<button class='colour-btn' onclick='colour_picker.setColorByHex(&quot;{0}&quot;)'><div class='colour-box' style='background-color:{0}'></div> {1}</button>".format(
-                common.colour_to_hex(rgb), name)
+        saved_colours = pref.load_file(pref.path.colours)
+        for colour in saved_colours:
+            name = colour["name"]
+            hex_code = colour["hex"]
+            saved_colours_html += "<button class='colour-btn' onclick='colour_picker.setColorByHex(&quot;{0}&quot;)'><div class='colour-box' style='background-color:{0}'></div> {1}</button>".format(hex_code, name)
 
         # Set class if device can only output green
         if greenscale in ["true", True]:
@@ -865,7 +863,7 @@ class UICmd(object):
                 if show_primary_colour:
                     primary_colour = pref.get_device_state(serial, source, "colour_primary")
                     if not primary_colour:
-                        primary_colour = [0, 255, 0]
+                        primary_colour = pref.get("colours", "primary")
 
                     html = self._make_colour_selector(primary_colour, "set-primary-colour", _("Set Primary Color"))
                     colour_html += self._make_group(_("Primary Color"), html)
@@ -873,7 +871,7 @@ class UICmd(object):
                 if show_secondary_colour:
                     secondary_colour = pref.get_device_state(serial, source, "colour_secondary")
                     if not secondary_colour:
-                        secondary_colour = [0, 255, 0]
+                        secondary_colour = pref.get("colours", "secondary")
 
                     html = self._make_colour_selector(primary_colour, "set-secondary-colour", _("Set Secondary Color"))
                     colour_html += self._make_group(_("Secondary Color"), html)
@@ -1285,11 +1283,11 @@ class UICmd(object):
         Params:
           - hex     New colour hex
         """
-        colour_rgb = common.hex_to_colour(params[0])
+        colour_hex = params[0]
         active_device = self.controller.active_device
 
-        self.update_page("#set-primary-colour", "html", self._make_colour_selector(colour_rgb, "set-primary-colour", _("Set Primary Color"), active_device))
-        common.save_colours_to_all_sources(pref, active_device, "colour_primary", colour_rgb)
+        self.update_page("#set-primary-colour", "html", self._make_colour_selector(colour_hex, "set-primary-colour", _("Set Primary Color"), active_device))
+        common.save_colours_to_all_sources(pref, active_device, "colour_primary", colour_hex)
         common.repeat_last_effect(pref, active_device)
 
     def set_secondary_colour(self, params=[]):
@@ -1299,11 +1297,11 @@ class UICmd(object):
         Params:
           - hex     New colour hex
         """
-        colour_rgb = common.hex_to_colour(params[0])
+        colour_hex = params[0]
         active_device = self.controller.active_device
 
-        self.update_page("#set-secondary-colour", "html", self._make_colour_selector(colour_rgb, "set-secondary-colour", _("Set Secondary Color"), active_device))
-        common.save_colours_to_all_sources(pref, active_device, "colour_secondary", colour_rgb)
+        self.update_page("#set-secondary-colour", "html", self._make_colour_selector(colour_hex, "set-secondary-colour", _("Set Secondary Color"), active_device))
+        common.save_colours_to_all_sources(pref, active_device, "colour_secondary", colour_hex)
         common.repeat_last_effect(pref, active_device)
 
     def open_uri(self, params=[]):
@@ -1505,8 +1503,8 @@ class UICmd(object):
             self._set_title(_("Saved Colors"))
 
             # Default Colours
-            col_primary = self._make_colour_selector(common.hex_to_colour(pref.get("colours", "primary", "#00FF00")), "pref-set?colours?primary?true", _("Default Primary Color"))
-            col_secondary = self._make_colour_selector(common.hex_to_colour(pref.get("colours", "secondary", "#00FFFF")), "pref-set?colours?secondary?true", _("Default Secondary Color"))
+            col_primary = self._make_colour_selector(pref.get("colours", "primary", "#00FF00"), "pref-set?colours?primary?true", _("Default Primary Color"))
+            col_secondary = self._make_colour_selector(pref.get("colours", "secondary", "#00FFFF"), "pref-set?colours?secondary?true", _("Default Secondary Color"))
 
             html = self._make_group_name(_("Default Colors"))
             html += "<p class='info'>{0}</p>".format(_("These colors will be chosen when setting effects from 'All Devices' or the tray applet."))
