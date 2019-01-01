@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2015-2018 Luke Horwell <code@horwell.me>
+# Copyright (C) 2015-2019 Luke Horwell <code@horwell.me>
 #
 """
 This module is responsible for loading/saving persistent data used by Polychromatic's frontends.
