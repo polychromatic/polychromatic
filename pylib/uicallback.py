@@ -20,7 +20,6 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
-
 _ = common.setup_translations(__file__, "polychromatic")
 dbg = common.Debugging()
 

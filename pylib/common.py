@@ -16,7 +16,7 @@ import time
 from threading import Thread
 
 import gi
-gi.require_version('Gtk', '3.0')
+gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 # PID file used to restart tray applet

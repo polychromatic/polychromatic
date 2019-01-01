@@ -22,18 +22,11 @@
 VERSION = "0.4.0"
 
 import argparse
-import gettext
-import glob
 import os
 import re
 import signal
-import sys
 import threading
-import time
 from setproctitle import setproctitle
-from subprocess import Popen as background_process
-from subprocess import check_output
-from platform import linux_distribution
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -41,8 +34,7 @@ gi.require_version("Gdk", "3.0")
 gi.require_version("WebKit2", "4.0")
 from gi.repository import GLib, Gtk, Gdk, WebKit2
 
-setproctitle("polychromatic-controller")
-
+# Import OpenRazer
 try:
     import openrazer.client as rclient
 except ImportError as e:
@@ -80,6 +72,7 @@ else:
 
 path = pref.Paths()
 path.data_source = path.get_data_source(__file__)
+setproctitle("polychromatic-controller")
 
 def get_string_bank(_):
     return {

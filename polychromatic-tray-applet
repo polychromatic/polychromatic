@@ -31,11 +31,9 @@ except:
     indicator_support = False
 
 import argparse
-import collections
 import os
 import sys
 import signal
-import gettext
 import setproctitle
 from subprocess import Popen as background_process
 from subprocess import call as foreground_process
