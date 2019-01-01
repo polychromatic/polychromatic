@@ -487,6 +487,20 @@ class Controller(object):
         self.uicmd = uicallback.UICmd(self, self.webkit, self.devman, get_string_bank, path)
         dbg.stdout("Application Ready.", dbg.success, 1)
 
+        # Ensure configuration is compatible for this version.
+        pref_data = pref.load_file(path.preferences)
+        pref_version = pref.version
+        save_version = pref_data["config_version"]
+        if save_version > pref_version:
+            self.uicmd._open_dialog("error",
+                _("Incompatible Save Data"),
+                _("Polychromatic's configuration (including effects and profiles) has previously been saved in a newer version of this software.") + "<br><br>" + \
+                _("Running older versions of the software could corrupt your save data or cause instability.") + "<br>" + \
+                "<br><code>{0} {1} ({2} {3})".format(_("Application Version:"), VERSION, _("Config Version:"), pref_version) + \
+                "<br>{0} {1}</code><br><br>".format(_("Saved Version:"), save_version) + \
+                _("Consider updating Polychromatic, or reset the application by deleting [path]").replace("[path]", "<code>~/.config/polychromatic</code>"),
+                "18em", "40em")
+
         self.uicmd.devices_init_tab()
 
 
