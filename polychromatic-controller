@@ -485,7 +485,7 @@ class Controller(object):
         pref_version = pref.version
         save_version = pref_data["config_version"]
         if save_version > pref_version:
-            self.uicmd._open_dialog("error",
+            self.uicmd._open_dialog("serious",
                 _("Incompatible Save Data"),
                 _("Polychromatic's configuration (including effects and profiles) has previously been saved in a newer version of this software.") + "<br><br>" + \
                 _("Running older versions of the software could corrupt your save data or cause instability.") + "<br>" + \

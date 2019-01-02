@@ -1315,7 +1315,7 @@ class UICmd(object):
         result = os.system("xdg-open '{0}'".format(uri))
 
         if result > 0:
-            self._open_dialog("error", _("Failed to open URI"), _("The process returned exit code") + " {0}.".format(str(result)))
+            self._open_dialog("serious", _("Failed to open URI"), _("The process returned exit code") + " {0}.".format(str(result)))
 
     def preferences_init_tab(self, params=[]):
         """
@@ -1403,13 +1403,13 @@ class UICmd(object):
                     "python": "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
                 }
             else:
-                self._open_dialog("error", _("Incompatible Version"), _("Some of the modules could not have their versions determined."))
+                self._open_dialog("serious", _("Incompatible Version"), _("Some of the modules could not have their versions determined."))
 
             try:
                 versions["openrazer"] = self.devman.version
                 versions["openrazer_daemon"] = self.devman.daemon_version
             except NameError as e:
-                self._open_dialog("error", _("Incompatible Version"), _("Some of the modules could not have their versions determined."))
+                self._open_dialog("serious", _("Incompatible Version"), _("Some of the modules could not have their versions determined."))
 
             # Application
             ver_app = _add_version(_("Version"), "polychromatic", None, versions["polychromatic"] + " <a onclick='cmd(\"open-uri?{1}\")'>({0})</a>".format(_("Changelog"), changelog_url))
@@ -1546,7 +1546,7 @@ class UICmd(object):
                 ver_html += _add_version(_("Kernel"), "kernel", versions)
                 html += ver_html
             except NameError:
-                self._open_dialog("error", _("Incompatible Version"), _("Some of the modules could not have their versions determined."))
+                self._open_dialog("serious", _("Incompatible Version"), _("Some of the modules could not have their versions determined."))
 
             # Logs
             home_dir = os.environ["HOME"]

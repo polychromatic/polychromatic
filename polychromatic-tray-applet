@@ -39,6 +39,7 @@ from subprocess import Popen as background_process
 from subprocess import call as foreground_process
 from shutil import which
 
+# Import OpenRazer
 try:
     import openrazer.client as rclient
     from openrazer_daemon.keyboard import KeyboardColour
@@ -59,7 +60,7 @@ except ImportError:
     import polychromatic.common as common
 except Exception as e:
     print("One or more of Polychromatic's modules could not be imported!")
-    print("Try re-installing the application.")
+    print("Check your PYTHONPATH or try re-installing..")
     print("\nException:" + str(e))
     exit(1)
 

@@ -459,6 +459,9 @@ def get_device_state(serial, source, state):
 
 
 def generate_uuid():
+    """
+    Returns a random UUID.
+    """
     return(str(int(time.time() * 1000000)))
 
 
