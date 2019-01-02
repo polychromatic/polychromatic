@@ -175,16 +175,18 @@ class UICmd(object):
 
     def _fade_in(self, element, pause=False):
         """Alias to fade in an element using default animation timings. Can optionally pause Python execution."""
-        self.update_page(element, "fadeIn", self.ani_js_speed)
-        self.update_page(element, "removeClass", "start-hidden")
-        if pause:
-            sleep(self.ani_py_speed)
+        #~ self.update_page(element, "fadeIn", self.ani_js_speed)
+        #~ self.update_page(element, "removeClass", "start-hidden")
+        #~ if pause:
+            #~ sleep(self.ani_py_speed)
+        self._show(element)
 
     def _fade_out(self, element, pause=False):
         """Alias to fade out an element using default animation timings. Can optionally pause Python execution."""
-        self.update_page(element, "fadeOut", self.ani_js_speed)
-        if pause:
-            sleep(self.ani_py_speed)
+        #~ self.update_page(element, "fadeOut", self.ani_js_speed)
+        #~ if pause:
+            #~ sleep(self.ani_py_speed)
+        self._hide(element)
 
     def _open_dialog(self, dialog_type, title, inner_html, height="10em", width="32em", buttons=[["close_dialog()", _("Close")]]):
         """
