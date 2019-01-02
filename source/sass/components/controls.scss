@@ -34,7 +34,14 @@ button {
 
     &.disabled {
         color: $disabled-colour;
-        border-color: black;
+        opacity: 0.5;
+        pointer-events: none;
+
+        svg {
+            path {
+                fill: $disabled-colour;
+            }
+        }
     }
 
     &.active {

@@ -435,7 +435,13 @@ class Controller(object):
 
             # Preferences
             "pref-set-tab": uicmd.preferences_set_tab,
-            "pref-set": uicmd.preferences_set_pref
+            "pref-set": uicmd.preferences_set_pref,
+            "saved-col-new": uicmd.preferences_saved_colour_new,
+            "saved-col-del": uicmd.preferences_saved_colour_del,
+            "saved-col-set-data": uicmd.preferences_saved_colour_set_data,
+            "saved-col-reorder": uicmd.preferences_saved_colour_reorder,
+            "saved-col-reset": uicmd.preferences_saved_colour_reset,
+            "saved-col-reset-OK": uicmd.preferences_saved_colour_reset_confirmed
         }
 
         # Must run from main thread

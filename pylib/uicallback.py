@@ -424,7 +424,7 @@ class UICmd(object):
             if common.is_device_greenscale(device):
                 greenscale = "true"
 
-        return "<div id='{2}' class='colour-selector'><div id='{0}' class='current-colour' style='background-color:{1}'></div> <button onclick='cmd(&quot;open-colour-picker?{0}?{1}?{4}?{2}?{5}&quot;)'>{3}</button></div>".format(
+        return "<div class='colour-selector'><div id='{0}' class='current-colour' style='background-color:{1}'></div> <button onclick='cmd(&quot;open-colour-picker?{0}?{1}?{4}?{2}?{5}&quot;)'>{3}</button></div>".format(
             common.generate_uuid(),
             current_hex,
             callback_function.replace("?", "¿"),
@@ -1510,6 +1510,36 @@ class UICmd(object):
             html += self._make_group(_("Primary Color"), col_primary, True)
             html += self._make_group(_("Secondary Color"), col_secondary, True)
 
+            # Saved Colours
+            def _add_colour(pos, length):
+                """Generates HTML for a row in the saved colours table"""
+                try:
+                    name = col_index[pos]["name"]
+                    hex_val = col_index[pos]["hex"]
+                    output = "<div class='saved-row'><div class='name'>{0}</div> {1} <div class='options'>{2} {3} {4}</div></div>".format(
+                        self._make_control_text("", "saved-col-set-data?name?" + str(pos), name, _("Colour Name")),
+                        self._make_colour_selector(hex_val, "saved-col-set-data?hex?" + str(pos), name),
+                        self._make_control_button("", "saved-col-reorder?{0}?{1}".format(str(pos), str(pos - 1)), "", "img/fa/move-up.svg", True if pos == 0 else False),
+                        self._make_control_button("", "saved-col-reorder?{0}?{1}".format(str(pos), str(pos + 1)), "", "img/fa/move-down.svg", True if pos == length - 1 else False),
+                        self._make_control_button("", "saved-col-del?" + str(pos), "", "img/fa/bin.svg", False, True))
+                    return output
+                except Exception as e:
+                    dbg.stdout("Couldn't process colour {0}. Exception: {1}".format(str(pos), str(e)), dbg.error)
+                    return ""
+
+            col_table = "<div id='saved-colours'>"
+            col_index = pref.load_file(self.path.colours)
+            for pos in range(0, len(col_index)):
+                col_table += _add_colour(pos, len(col_index))
+            col_table += "</div>"
+
+            html += self._make_group_name(_("Saved Colors"))
+            html += col_table
+            html += "<div class='inner-block'>"
+            html += self._make_control_button("", "saved-col-new", _("New"), "img/fa/new.svg")
+            html += self._make_control_button("", "saved-col-reset", _("Reset to Defaults"), "img/fa/bin.svg", False, True)
+            html += "</div>"
+
             return html
 
         def daemon_section():
@@ -1561,8 +1591,7 @@ class UICmd(object):
             "1": general_section,
             "2": tray_section,
             "3": colours_section,
-            "4": daemon_section,
-            "5": schedule_section
+            "4": daemon_section
         }
 
         self.current_tab = section_id
@@ -1592,6 +1621,98 @@ class UICmd(object):
 
         if reload_tab == "true":
             self.preferences_set_tab([self.current_tab])
+
+    def preferences_saved_colour_new(self, params=[]):
+        """
+        Creates a new saved colour in the 'Saved Colours' preferences pane.
+        Appends a blank key to the end of the colours.json list.
+
+        Params: None
+        """
+        default_colour = pref.get("colours", "primary", "#00FF00")
+        index = pref.load_file(self.path.colours)
+        index.append({"name": "", "hex": default_colour})
+        pref.save_file(self.path.colours, index)
+
+        self.preferences_set_tab(['3'])
+
+    def preferences_saved_colour_del(self, params=[]):
+        """
+        Deletes an existing colour in the colours.json list.
+
+        Params:
+            - pos       Integer of the position in the list.
+        """
+        pos = int(params[0])
+
+        index = pref.load_file(self.path.colours)
+        index.pop(pos)
+        pref.save_file(self.path.colours, index)
+
+        self.preferences_set_tab(['3'])
+
+    def preferences_saved_colour_reset(self, params=[]):
+        """
+        Shows a dialogue box to confirm reset colours.json to defaults.
+
+        Params: None
+        """
+        self._open_dialog("serious",
+            _("Reset Saved Colors"),
+            _("All colours in this list will be reverted back to the defaults. This action cannot be undone."),
+            "10em", "32em",
+            [
+                ["close_dialog()", _("Cancel")],
+                ["cmd(&quot;saved-col-reset-OK&quot;); close_dialog();", _("Reset")]
+            ])
+
+    def preferences_saved_colour_reset_confirmed(self, params=[]):
+        """
+        Resets colours.json to the defaults.
+
+        Params: None
+        """
+        pref.reset_config(self.path.colours)
+        self.preferences_set_tab(['3'])
+
+    def preferences_saved_colour_set_data(self, params=[]):
+        """
+        Saves the new value for a saved colour attribute.
+
+        Params:
+            - key           Either "name" or "hex".
+            - pos           Integer of the position in the list.
+            - value         Either the new name or new value hex.
+        """
+        key = params[0]
+        pos = int(params[1])
+        data = params[2]
+
+        index = pref.load_file(self.path.colours)
+        index[pos][key] = data
+        pref.save_file(self.path.colours, index)
+
+        self.preferences_set_tab(['3'])
+
+    def preferences_saved_colour_reorder(self, params=[]):
+        """
+        Reorders the saved colours list.
+
+        Params:
+            - old_pos       Integer of the old position in the list.
+            - new_pos       Integer of the new position in the list.
+        """
+        old_pos = int(params[0])
+        new_pos = int(params[1])
+
+        index = pref.load_file(self.path.colours)
+        rem_name = index[old_pos]["name"]
+        rem_hex = index[old_pos]["hex"]
+        index.pop(old_pos)
+        index.insert(new_pos, {"name": rem_name, "hex": rem_hex})
+        pref.save_file(self.path.colours, index)
+
+        self.preferences_set_tab(['3'])
 
     def browse_input(self, params=[]):
         """

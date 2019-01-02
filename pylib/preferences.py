@@ -514,8 +514,7 @@ def start_initalization():
             {"name": _("Purple"), "hex": "#800080"},
             {"name": _("Yellow"), "hex": "#FFFF00"},
             {"name": _("Light Grey"), "hex": "#BFBFBF"},
-            {"name": _("Dark Grey"), "hex": "#7F7F7F"},
-            {"name": _("Black"), "hex": "#000000"}
+            {"name": _("Dark Grey"), "hex": "#7F7F7F"}
         ]
         save_file(path.colours, default_data)
 

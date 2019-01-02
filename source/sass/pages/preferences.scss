@@ -50,3 +50,43 @@
     max-width: 24px;
 }
 
+#saved-colours {
+    margin: 0 2em;
+    width: auto;
+
+    .saved-row {
+        margin: 4px 0;
+    }
+
+    .name,
+    .colour-selector,
+    .options {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .name {
+        p {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        input {
+            width: 175px;
+        }
+    }
+
+    .colour-selector {
+        margin: 0 5px;
+    }
+
+    .options {
+        button {
+            height: $button-height;
+            width: $button-height + 10px;
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+    }
+}
