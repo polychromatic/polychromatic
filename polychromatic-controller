@@ -58,7 +58,6 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
 
 # Import modules if installed to system.
 else:
-    VERSION = VERSION + "-stable"
     try:
         import polychromatic.preferences as pref
         import polychromatic.profiles as prof
@@ -548,7 +547,7 @@ if __name__ == "__main__":
 
     # Compile styling during development.
     if DEV_VERSION:
-        VERSION = VERSION + "-dev"
+        VERSION = VERSION + "-devel"
 
         dbg.stdout("Compiling Styling...", dbg.action)
         os.system(os.path.join(path.data_source, "../tools/build-sass.sh"))
