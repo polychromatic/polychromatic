@@ -179,15 +179,37 @@ def get_supported_lighting_sources(device_obj):
     return supported_sources
 
 
-def has_multiple_sources(device_obj):
+def has_multiple_sources(device):
     """
     Returns True or False to determine whether a device has multiple light sources.
     """
-    source_list = get_supported_lighting_sources(device_obj)
+    source_list = get_supported_lighting_sources(device)
     if len(source_list) > 1:
         return True
     else:
         return False
+
+
+def get_source_name(source, device):
+    """
+    Returns a human readable string for a device's lighting source.
+
+    E.g. "logo" on a Razer Hex refers to the hex ring.
+    """
+    if source == "logo" and device_obj.name == "Razer Nex":
+        return _("Hex Ring")
+
+    source_names = {
+        "main": _("Main"),
+        "logo": _("Logo"),
+        "scroll": _("Scroll Wheel"),
+        "backlight": _("Backlight")
+    }
+
+    try:
+        return source_names[source]
+    except NameError:
+        return source
 
 
 def get_effect_state_string(string):
@@ -524,6 +546,23 @@ def get_source_icon(device_object, source):
     return path
 
 
+def get_wave_direction(device):
+    """
+    Returns a list of localised direction strings according to the device.
+    """
+    if get_device_type(device) == "mouse":
+        left = _("Down")
+        right = _("Up")
+    elif get_device_type(device) == "mousemat":
+        left = _("Clockwise")
+        right = _("Anti-clockwise")
+    else:
+        left = _("Left")
+        right = _("Right")
+
+    return [left, right]
+
+
 def get_dpi_range(device):
     """
     Returns a list of default DPI values determined by the mouse's DPI range.
@@ -644,68 +683,82 @@ def set_default_tray_icon(pref):
         pref.set("tray_icon", "value", "0")
 
 
-def get_tray_icon_preview_bg_colours():
-    """
-    Uses GTK to determine the background color of a user's panel where
-    the tray applet will be shown.
-
-    Returns a list of possible colours - light and dark.
-    """
-    colours = []
-    win = Gtk.Window()
-    style_context = win.get_style_context()
-    colours.append(style_context.lookup_color("dark_bg_color").color.to_string())
-    colours.append(style_context.lookup_color("bg_color").color.to_string())
-    return colours
-
-
 def get_tray_icon(dbg, pref, path):
-        """
-        Icon Sources
-            "tray_icon": {"type": "?"}
-                builtin     = One provided by Polychromatic.    "humanity-light"
-                custom      = One specified by user.            "/path/to/file"
-                gtk         = Use icon by GTK name.             "keyboard"
-        """
+    """
+    Returns the full path to the icon to use with the tray applet.
+    """
 
-        # If it's the first time loading, set default icon to desktop environment.
-        if not pref.exists("tray_icon", "type"):
-            set_default_tray_icon(pref)
+    # If it's the first time loading, set default icon to desktop environment.
+    if not pref.exists("tray_icon", "type"):
+        set_default_tray_icon(pref)
 
-        icon_type = pref.get("tray_icon", "type", "builtin")
-        icon_value = pref.get("tray_icon", "value", "0")
-        icon_fallback = os.path.join(path.data_source, "tray", "humanity-light.svg")
+    icon_type = pref.get("tray_icon", "type", "builtin")
+    icon_fallback = os.path.join(path.data_source, "tray", "humanity-light.svg")
 
-        try:
-            if icon_type == "builtin":
-                # icon_value = UUID
-                icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
-                return os.path.join(path.data_source, "tray", icon_index[icon_value]["path"])
+    try:
+        if icon_type == "builtin":
+            icon_id = pref.get("tray_icon", "icon_id")
+            icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
+            return os.path.join(path.data_source, "tray", icon_index[icon_id]["path"])
 
-            elif icon_type == "custom":
-                # icon_value = Path to icon
-                if os.path.exists(icon_value):
-                    return icon_value
-                else:
-                    dbg.stdout("Icon missing: " + icon_value, dbg.error)
-                    dbg.stdout("Using fallback!", dbg.error)
-                    return icon_fallback
-
-            elif icon_type == "gtk":
-                # icon_value = Icon name used by GTK
-                return icon_value
-
+        elif icon_type == "custom":
+            icon_path = pref.get("tray_icon", "custom_image_path")
+            if os.path.exists(icon_path):
+                return icon_path
             else:
-                return icon_fallback
+                dbg.stdout("Icon missing: " + icon_path, dbg.error)
+                dbg.stdout("Using fallback!", dbg.error)
+                return icon_path
 
-        except Exception:
-            dbg.stdout("Error whlie loading icon, using fallback.", dbg.error)
+        elif icon_type == "gtk":
+            icon_gtk = pref.get("tray_icon", "gtk_icon_name")
+            return get_path_from_gtk_icon_name(icon_gtk)
+
+        else:
             return icon_fallback
 
+    except Exception:
+        dbg.stdout("Error whlie loading icon, using fallback.", dbg.error)
+        return icon_fallback
 
-def restart_tray_applet(dbg, path):
+
+def execute_polychromatic_component(dbg, suffix, current_bin_path, data_source, jump_to):
+    """
+    Starts a Polychromatic application relative to its location or system-wide
+    if installed.
+
+    Params:
+        suffix              e.g. "controller" would run "polychromatic-controller"
+        current_bin_path    Application's __file__
+        data_source         Data directory, e.g. /usr/share/polychromatic
+        jump_to             (Optional - Controller only) Opens a specific tab.
+    """
+    possible_paths = [
+        os.path.join(data_source, "../polychromatic-" + suffix),
+        os.path.join(os.path.dirname(current_bin_path), "polychromatic-" + suffix),
+        "/usr/bin/polychromatic-" + suffix
+    ]
+
+    for bin_path in possible_paths:
+        if os.path.exists(bin_path):
+            dbg.stdout("Executing: " + os.path.realpath(bin_path), dbg.debug, 1)
+            try:
+                subprocess.Popen(bin_path) # Add jump_to here
+            except Exception:
+                pass
+            return True
+    return False
+
+
+def restart_tray_applet(dbg, current_bin_path, data_source):
     """
     Restarts the tray applet if an instance is running in the background.
+    Returns True/False depending on success.
+
+    Params:
+        dbg                 Debugging() object
+        current_bin_path    Application's __file__
+        data_source         Data directory, e.g. /usr/share/polychromatic
     """
     dbg.stdout("Restarting tray applet...", dbg.action, 1)
 
@@ -713,27 +766,54 @@ def restart_tray_applet(dbg, path):
         pid = int(subprocess.check_output(["pidof", "polychromatic-tray-applet"]))
         os.kill(pid, 9)
     except Exception:
-        dbg.stdout("Tray applet not running so won't restart.", dbg.action, 1)
-        return
+        dbg.stdout("Tray applet PID not found.", dbg.warning, 1)
+        return False
 
-    # Where is the tray applet?
-    if os.path.dirname(__file__).endswith("bin"):
-        # System-wide installation
-        tray_bin_path = os.path.dirname(__file__) + "/polychromatic-tray-applet"
-    else:
-        # Development
-        tray_bin_path = os.path.abspath(os.path.join(path.data_source, "../polychromatic-tray-applet"))
+    result = execute_polychromatic_component(dbg, "tray-applet", current_bin_path, data_source)
+    return result
 
-    # Attempt to gracefully stop the process, then launch again.
+
+def restart_openrazer_daemon(dbg, devman):
+    """
+    Restarts the OpenRazer daemon.
+    Returns True/False depending on success.
+    """
+    dbg.stdout("Restarting OpenRazer daemon...", dbg.action, 1)
+
+    # Try gracefully via OpenRazer Python library.
     try:
-        subprocess.Popen(tray_bin_path)
-        dbg.stdout("Successfully reloaded tray applet.", dbg.success, 1)
+        dbg.stdout("-- Stopping via DeviceManager...", dbg.action, 1)
+        devman.stop_daemon()
+        dbg.stdout("-- OK!", dbg.success, 1)
+    except Exception as e:
+        dbg.stdout("-- Error!", dbg.error, 1)
 
-    except OSError as e:
-        dbg.stdout("Failed to relaunch tray applet!", dbg.error)
-        dbg.stdout("Exception: " + str(e), dbg.error)
+    # Check process is still running
+    try:
+        daemon_pid = int(subprocess.check_output(["pidof", "openrazer-daemon"]))
+        still_running = True
+    except subprocess.CalledProcessError:
+        # Returns 1 if
+        still_running = False
 
-    return
+    # Kill the daemon if still not ended
+    if still_running:
+        dbg.stdout("-- Killing process PID {0}...".format(str(daemon_pid)), dbg.action, 1)
+        os.kill(daemon_pid, 9)
+
+    # Ensure a clean log
+    dbg.stdout("-- Archiving razer.log...", dbg.action, 1)
+    log_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log")
+    log_bak = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log.bak")
+    if os.path.exists(log_path):
+        os.rename(log_path, log_bak)
+
+    # Wait for daemon to start again
+    dbg.stdout("-- Starting openrazer-daemon...", dbg.action, 1)
+    subprocess.Popen("openrazer-daemon", shell=True)
+
+    # Running application must restart.
+    os.execv(__file__, sys.argv)
 
 
 def get_path_from_gtk_icon_name(icon_name):

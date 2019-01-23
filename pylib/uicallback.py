@@ -791,7 +791,7 @@ class UICmd(object):
                 source_html += self._make_effect_button("static", _("Static"), current_effect == "static", source)
 
             if source == "main" and device.has("lighting_led_matrix"):
-                source_html += self._make_effect_button("custom", _("Custom"), current_effect == "custom", source, "img/fa/effects-circle.svg")
+                source_html += self._make_effect_button("custom", _("Custom"), current_effect == "custom", source, "img/fa/custom.svg")
 
             if len(source_html) > 0:
                 if multiple_sources:
@@ -804,15 +804,9 @@ class UICmd(object):
             if not source == "backlight":
                 # Wave - can set direction
                 if current_effect == "wave":
-                    if common.get_device_type(device) == "mouse":
-                        left = _("Down")
-                        right = _("Up")
-                    elif common.get_device_type(device) == "mousemat":
-                        left = _("Clockwise")
-                        right = _("Anti-clockwise")
-                    else:
-                        left = _("Left")
-                        right = _("Right")
+                    localised_directions = common.get_wave_direction(device)
+                    left = localised_directions[0]
+                    right = localised_directions[1]
 
                     for value, label in enumerate([right, left], start=1):
                         effect_options_html += self._make_control_radio("", "set-effect-param?" + source + "?" + str(value), label, True if int(current_effect_params) == value else False, "wave-direction")
@@ -914,7 +908,7 @@ class UICmd(object):
 
             # Slider
             html += "<div id='dpi-slider-container' {0}>".format("hidden" if show_dropdown else "")
-            html += self._make_control_slider("dpi", "set-dpi", dpi_range[0], dpi_range[5], 100, current_value, "", "<img src='img/effects/dpi-slow.svg'/>", "<img src='img/effects/dpi-fast.svg'/>")
+            html += self._make_control_slider("dpi", "set-dpi", dpi_range[0], dpi_range[5], 100, current_value, "", "<img src='img/general/dpi-slow.svg'/>", "<img src='img/general/dpi-fast.svg'/>")
             html += "<a onclick='swap_elements(&quot;#dpi-slider-container&quot;, &quot;#dpi-presets-container&quot;);'>{0}</a>".format(_("Use Presets"))
             html += "</div>"
 
@@ -924,7 +918,7 @@ class UICmd(object):
         poll_rate_html = ""
         if device.has("poll_rate"):
             current_value = device.poll_rate
-            html = self._make_control_dropdown("polling-rate", "set-poll-rate", current_value, [[125, "125 Hz"], [500, "500 Hz"], [1000, "1000 Hz"]])
+            html = self._make_control_dropdown("polling-rate", "set-poll-rate", current_value, [[125, _("125 Hz (8 ms)")], [500, _("500 Hz (2 ms)")], [1000, _("1000 Hz (1 ms)")]])
             poll_rate_html = self._make_group(_("Poll Rate"), html)
 
         # Display the page
@@ -1745,3 +1739,5 @@ class UICmd(object):
 
         if component == "tray":
             return common.restart_tray_applet(dbg, self.path)
+        elif component == "openrazer":
+            return common.restart_openrazer_daemon(dbg, self.path)
