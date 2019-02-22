@@ -16,7 +16,8 @@ from . import common
 version = 6
 verbose = False
 
-################################################################################
+dbg = common.Debugging()
+
 
 class Paths(object):
     # Directories
@@ -40,7 +41,7 @@ class Paths(object):
         elif os.path.exists('/usr/share/polychromatic/'):
             path = '/usr/share/polychromatic/'
         else:
-            print("Data directory cannot be located. Exiting.")
+            dbg.stdout("Data directory cannot be located. Exiting.", dbg.error)
             exit(1)
         return path
 
@@ -57,7 +58,7 @@ def load_file(filepath, no_version_check=False):
             with open(filepath) as stream:
                 data = json.load(stream)
         except Exception as e:
-            print(" ** Failed to load '{0}'.\n **** Exception: {1}".format(filepath, str(e)))
+            dbg.stdout("Failed to load '{0}'.\nException: {1}".format(filepath, str(e)), dbg.error)
             init_config(filepath)
             data = {}
     else:
@@ -79,11 +80,11 @@ def load_file(filepath, no_version_check=False):
 
         # Is the config newer then the software? Wicked time travelling!
         if config_version > version:
-            print('\n******** WARNING: Your preferences file is newer then the module! ********')
-            print(' ** This could cause undesired glitches in applications. Consider updating the Python modules.')
-            print('      Your Config Version:     v.' + str(config_version))
-            print('      Software Config Version: v.' + str(version))
-            print(' ')
+            dbg.stdout("\nWARNING: Your preferences file is newer then the module!", dbg.error)
+            dbg.stdout("This could cause undesired glitches in applications. Consider updating the Python modules.", dbg.error)
+            dbg.stdout("    Your Config Version:     v." + str(config_version), dbg.error)
+            dbg.stdout("     Software Config Version: v." + str(version), dbg.error)
+            dbg.stdout("")
 
     # Passes data back to the variable
     return(data)
@@ -108,7 +109,7 @@ def save_file(filepath, newdata):
         f.write(json.dumps(newdata, sort_keys=True, indent=4))
         f.close()
     else:
-        print(" ** Cannot write to file: " + filepath)
+        dbg.stdout("Cannot write to file: " + filepath, dbg.error)
 
 
 def set(group, setting, value, filepath=None):
@@ -142,7 +143,7 @@ def set(group, setting, value, filepath=None):
         data[group][setting] = value
         save_file(filepath, data)
     except:
-        print(" ** Failed to write '{0}' for item '{1}' in group '{2}'!".format(value, setting, group))
+        dbg.stdout("Failed to write '{0}' for item '{1}' in group '{2}'!".format(value, setting, group), dbg.error)
 
 
 def get(group, setting, default_value="", filepath=None):
@@ -165,7 +166,7 @@ def get(group, setting, default_value="", filepath=None):
     except:
         # Should it be non-existent, return a fallback option.
         if verbose:
-            print(" ** Preference '{0}' in '{1}' non-existent. Using default '{2}' instead.".format(setting, group, default_value))
+            dbg.stdout("Preference '{0}' in '{1}' non-existent. Using default '{2}' instead.".format(setting, group, default_value), dbg.debug)
         set(group, setting, default_value, filepath)
         return default_value
 
@@ -202,7 +203,7 @@ def get_group(group, filepath):
         else:
             listdata = list(data[group].keys())
     except:
-        print(" ** Failed to retrieve data from group '{0]' from file '{1}'".format(group, os.path.basename(filepath)))
+        dbg.stdout("Failed to retrieve data from group '{0]' from file '{1}'".format(group, os.path.basename(filepath)), dbg.error)
         return []
 
     return listdata
@@ -215,18 +216,18 @@ def init_config(filepath):
     try:
         # Backup if the JSON was invalid.
         if os.path.exists(filepath):
-            print(' ** JSON File corrupt and will be backed up before discarding: ' + filepath)
-            os.rename(filepath, filepath + '.bak')
+            dbg.stdout("JSON corrupt and will be backed up then discarded: " + filepath, dbg.error)
+            os.rename(filepath, filepath + ".bak")
 
         # Touch new file
         save_file(filepath, {})
         if verbose:
-            print(' ** New configuration ready: ' + filepath)
+            dbg.stdout("New configuration ready: " + filepath, dbg.success)
 
     except Exception as e:
         # Couldn't create the default configuration.
-        print(' ** Failed to write default preferences.')
-        print(' **** Exception: ', str(e))
+        dbg.stdout("Failed to write default preferences.", dbg.error)
+        dbg.stdout("Exception: ", str(e), dbg.error)
 
 
 def clear_config():
@@ -234,7 +235,7 @@ def clear_config():
     Erases all the configuration stored on disk.
     """
     if verbose:
-        print(' ** Deleting configuration folder "' + path.root + '"...')
+        dbg.stdout("Deleting configuration folder '" + path.root + "'...", dbg.action)
     shutil.rmtree(path.root)
 
 
@@ -244,7 +245,7 @@ def reset_config(filepath):
     This will cause it to be re-generated when it is next called.
     """
     if verbose:
-        print(" ** Resetting configuration file: " + filepath)
+        dbg.stdout("Resetting configuration file: " + filepath, dbg.action)
     os.remove(filepath)
     start_initalization()
 
@@ -253,7 +254,7 @@ def upgrade_old_pref(config_version):
     """
     Updates the configuration from previous revisions.
     """
-    print(" ** Upgrading configuration from v{0} to v{1}...".format(config_version, version))
+    dbg.stdout("Upgrading configuration from v{0} to v{1}...".format(config_version, version), dbg.action)
 
     if config_version < 3:
         # *** "chroma_editor" group now "editor" ***
@@ -405,7 +406,7 @@ def upgrade_old_pref(config_version):
     pref_data["config_version"] = version
     save_file(path.preferences, pref_data)
 
-    print(" ** Configuration successfully upgraded.")
+    dbg.stdout("Configuration successfully upgraded.", dbg.success)
 
 
 def set_device_state(serial, source, state, value):
@@ -430,7 +431,7 @@ def set_device_state(serial, source, state, value):
     data[serial][source][state] = value
     save_file(path.devicestate, data)
     if verbose:
-        print(" ** Device state updated: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value))
+        dbg.stdout("Set device state: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value), dbg.debug)
 
 
 def get_device_state(serial, source, state):
@@ -446,13 +447,13 @@ def get_device_state(serial, source, state):
         value = data[serial][source][state]
         return value
         if verbose:
-            print(" ** Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value))
+            dbg.stdout("Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value), dbg.debug)
     except KeyError:
         if verbose:
-            print(" ** Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [No value]".format(serial, source, state))
+            dbg.stdout("Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [No value]".format(serial, source, state), dbg.debug)
         return None
     except TypeError:
-        print(" ** Device state corrupt:  [Serial: {0}] [Source: {1}] ... Will reset.".format(str(serial), str(source)))
+        dbg.stdout("Device state corrupt:  [Serial: {0}] [Source: {1}] ... Will reset.".format(str(serial), str(source)), dbg.debug)
         data.pop(serial)
         save_file(path.devicestate, data)
         return None
@@ -474,7 +475,7 @@ def start_initalization():
     for folder in [path.root, path.profile_folder, path.profile_backups]:
         if not os.path.exists(folder):
             if verbose:
-                print(' ** Configuration folder does not exist. Creating: ', folder)
+                dbg.stdout("Configuration folder does not exist. Creating: ", folder, dbg.action)
             os.makedirs(folder)
 
     # Create preferences if non-existent.
