@@ -1,0 +1,33 @@
+.common-info {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    height: 8em;
+    width: 100%;
+    background: $bg-colour-secondary;
+    margin-bottom: 1em;
+
+    #main-image {
+        max-width: 12em;
+        max-height: 6em;
+        padding: 1em;
+    }
+}
+
+.common-unknown {
+    text-align: center;
+
+    img {
+        display: inline-block;
+        margin: auto;
+        margin-top: 2em;
+    }
+
+    .details {
+        padding: 0 2em;
+
+        h2 {}
+        p {}
+        button {}
+    }
+}

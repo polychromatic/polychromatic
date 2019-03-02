@@ -1,54 +1,3 @@
-.device-info {
-    display: flex;
-    flex-direction: row;
-    position: relative;
-    height: 8em;
-    width: 100%;
-    background: $bg-colour-secondary;
-    margin-bottom: 1em;
-
-    #current-image {
-        max-width: 12em;
-        max-height: 6em;
-        padding: 1em;
-    }
-
-    #current-name {
-
-    }
-
-    #current-effect,
-    #current-effect-text {
-        display: inline-block;
-        padding-right: 0.25em;
-        vertical-align: middle;
-    }
-
-    #more-details-btn {
-        position: absolute;
-        right: 0.5em;
-        top: 1em;
-    }
-}
-
-.device-unknown {
-    text-align: center;
-
-    img {
-        display: inline-block;
-        margin: auto;
-        margin-top: 2em;
-    }
-
-    .details {
-        padding: 0 2em;
-
-        h2 {}
-        p {}
-        button {}
-    }
-}
-
 .device-overview-container {
     display: block;
 
@@ -126,4 +75,10 @@
             }
         }
     }
+}
+
+#more-details-btn {
+    position: absolute;
+    right: 0.5em;
+    top: 1em;
 }
