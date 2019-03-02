@@ -510,7 +510,6 @@ def parse_parameters():
     parser.add_argument("--version", help=_("Print progran version and exit"), action="store_true")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
     parser.add_argument("-vv", "-d", "--debug", help=_("Be very verbose (for debugging)"), action="store_true")
-    parser.add_argument("--print-device-info", help=_("Gets a list of capabilities for a device"), action="store_true")
     parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
 
     # For front-end debugging (developer tools)
@@ -529,9 +528,6 @@ def parse_parameters():
     if args.debug:
         dbg.verbose_level = 2
         dbg.stdout(_("Debug Verbose Enabled"), dbg.action, 2)
-
-    if args.print_device_info:
-        CommandLineOnly.print_device_capability_info()
 
     if args.inspect:
         dbg.verbose_level = 3
