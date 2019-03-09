@@ -13,5 +13,5 @@ if [ -z "$cmd" ]; then
     exit 1
 fi
 
-sass --watch ./themes/dark.scss:../../data/ui/theme/dark.css --sourcemap=none --scss --style compressed
+sass --watch .:../../data/ui/themes/ --sourcemap=none --scss --style compressed
 

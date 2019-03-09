@@ -546,7 +546,7 @@ if __name__ == "__main__":
         VERSION = VERSION + "-devel"
 
     # Verify styling is present.
-    if not os.path.exists(os.path.join(path.data_source, "ui/theme/dark.css")):
+    if not os.path.exists(os.path.join(path.data_source, "ui/themes/dark.css")):
         dbg.stdout("Failed to start due to missing styling.", dbg.error)
         exit(1)
 
