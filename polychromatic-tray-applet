@@ -289,7 +289,7 @@ class AppIndicator(object):
         # Show actions that apply to all devices
         if not no_devices_listed and len(self.devman.devices) > 1:
             root.append(create_seperator())
-            bulk_submenu = create_submenu(_("Apply to All"), True, get_icon("devices", "unknown.svg"))
+            bulk_submenu = create_submenu(_("Apply to All"), True, get_icon("devices", "all.svg"))
 
             # -- Effects
             create_submenu_item(bulk_submenu, _("Effects"), False)
