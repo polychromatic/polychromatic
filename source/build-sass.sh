@@ -10,7 +10,7 @@ if [ -z "$cmd" ]; then
     exit 1
 fi
 
-cd $(dirname "$0")/../source/sass/
+cd $(dirname "$0")/sass/
 
 for source in $(find themes/ -maxdepth 1 -name "*.scss"); do
     filename=$(basename -- "$source")
@@ -22,3 +22,4 @@ for source in $(find themes/ -maxdepth 1 -name "*.scss"); do
         rm "$dest"
     fi
 done
+
