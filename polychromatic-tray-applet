@@ -349,7 +349,7 @@ class AppIndicator(object):
             otherwise show an icon representing the menu option, e.g. brightness = bulb.
             """
             if multiple_sources:
-                return os.path.join(self.data_path, "/ui/", common.get_source_icon(device, source))
+                return os.path.join(path.data_source, "/ui/", common.get_source_icon(device, source))
             else:
                 return get_icon(img_dir, icon)
 
@@ -528,9 +528,9 @@ class AppIndicator(object):
         # Polling Rate
         if device.has("poll_rate"):
             poll_menu = create_submenu(_("Polling Rate"), True, get_icon("fa", "poll-rate.svg"))
-            create_submenu_item(poll_menu, _("125 Hz (8ms)"), cb.set_poll_rate, [125])
-            create_submenu_item(poll_menu, _("500 Hz (2ms)"), cb.set_poll_rate, [500])
-            create_submenu_item(poll_menu, _("1000 Hz (1ms)"), cb.set_poll_rate, [1000])
+            create_submenu_item(poll_menu, _("125 Hz (8ms)"), True, cb.set_poll_rate, [125])
+            create_submenu_item(poll_menu, _("500 Hz (2ms)"), True, cb.set_poll_rate, [500])
+            create_submenu_item(poll_menu, _("1000 Hz (1ms)"), True, cb.set_poll_rate, [1000])
             submenu[1].append(poll_menu[0])
 
         # Colour (repeats last effect)
