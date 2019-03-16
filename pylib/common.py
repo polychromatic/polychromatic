@@ -196,7 +196,7 @@ def get_source_name(source, device):
 
     E.g. "logo" on a Razer Hex refers to the hex ring.
     """
-    if source == "logo" and device_obj.name == "Razer Nex":
+    if source == "logo" and device.name == "Razer Nex":
         return _("Hex Ring")
 
     source_names = {
@@ -311,7 +311,7 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
     secondary_blue = rgb[2]
 
     # Execute function (only if source is known)
-    successful = False
+    success = False
     params_to_set = None
 
     if fx:
@@ -401,6 +401,9 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
         elif effect == "static":
             success = fx.static(primary_red, primary_green, primary_blue)
 
+        else:
+            print("Unrecognised effect {}! FX not applied.".format(effect))
+
     else:
         print("Unrecognised source! FX not applied.")
 
@@ -482,7 +485,7 @@ def set_brightness(pref, device_object, source, value):
 
     # For devices that only turn on/off.
     if is_brightness_toggled(device_object, source):
-        if value > 0:
+        if float(value) > 0:
             device_fn.active = True
         else:
             device_fn.active = False
@@ -508,10 +511,10 @@ def is_brightness_toggled(device_object, source):
     if source == "backlight" and device_object.has("lighting_backlight_active"):
         return True
 
-    if source == "logo" and device_object.has("lighting_logo"):
+    if source == "logo" and device_object.has("lighting_logo_active"):
         return True
 
-    if source == "scroll" and device_object.has("lighting_scroll"):
+    if source == "scroll" and device_object.has("lighting_scroll_active"):
         return True
 
     return False
