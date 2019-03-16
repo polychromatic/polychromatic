@@ -311,7 +311,7 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
     secondary_blue = rgb[2]
 
     # Execute function (only if source is known)
-    successful = False
+    success = False
     params_to_set = None
 
     if fx:
@@ -400,6 +400,9 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
 
         elif effect == "static":
             success = fx.static(primary_red, primary_green, primary_blue)
+
+        else:
+            print("Unrecognised effect {}! FX not applied.".format(effect))
 
     else:
         print("Unrecognised source! FX not applied.")
