@@ -29,10 +29,17 @@ table {
         background: transparent;
     }
 
+    &.align-top {
+        th, td {
+            vertical-align: top;
+        }
+    }
+
     th, td {
         border: 1px solid $bg-colour;
         padding: 0.15em 0.5em;
         text-align: left;
+        font-weight: normal;
 
         img {
             vertical-align: middle;

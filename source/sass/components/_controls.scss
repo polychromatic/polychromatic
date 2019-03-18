@@ -22,14 +22,26 @@ button {
         position: relative;
     }
 
+    svg path {
+        fill: $text-colour;
+    }
+
     &:hover,
     &:focus {
         color: $active-dark;
+
+        svg path {
+            fill: $active-dark;
+        }
     }
 
     &:active {
         background-color: $active;
         color: black;
+
+        svg path {
+            fill: black;
+        }
     }
 
     &.disabled {

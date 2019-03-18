@@ -24,6 +24,8 @@ class Paths(object):
     root = os.path.join(os.path.expanduser('~'), '.config', 'polychromatic')
     profile_folder = os.path.join(root, 'profiles')
     profile_backups = os.path.join(root, 'backups')
+    cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
+    effects = os.path.join(root, "effects")
 
     # Files
     preferences = os.path.join(root, 'preferences.json')
@@ -472,7 +474,7 @@ def start_initalization():
     Prepares the preferences module for use.
     """
     # Create folders if they do not exist.
-    for folder in [path.root, path.profile_folder, path.profile_backups]:
+    for folder in [path.root, path.effects, path.profiles, path.cache]:
         if not os.path.exists(folder):
             if verbose:
                 dbg.stdout("Configuration folder does not exist. Creating: ", folder, dbg.action)

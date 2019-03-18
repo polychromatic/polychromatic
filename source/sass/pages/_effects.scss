@@ -1,0 +1,54 @@
+#effect-details {
+    .common-info {
+        height: auto;
+
+        table {
+            th {
+                font-weight: normal;
+                vertical-align: top;
+            }
+        }
+    }
+
+    .small {
+        opacity: 0.75;
+        font-size: 0.9em;
+        margin-top: 0.5em;
+    }
+}
+
+#effect-image {
+    margin: 1em 1em auto;
+    padding: 1em;
+    width: 100%;
+    max-height: 6em;
+    max-width: 6em;
+}
+
+#edit-icon-preview {
+    max-height: 4em;
+    width: 4em;
+    overflow-y: auto;
+}
+
+.emblem-icon {
+    border: 1px solid transparent;
+    display: inline-block;
+    height: 3em;
+    width: 3em;
+    padding: 0.25em;
+
+    svg {
+        height: 3em;
+        width: 3em;
+
+        path {
+            fill: $accent-colour;
+        }
+    }
+
+    &:hover,
+    &:focus {
+        border-color: $accent-colour;
+    }
+}

@@ -91,6 +91,45 @@ def setup_translations(bin_path, i18n_app, locale_override=None):
     return t.gettext
 
 
+def get_all_device_types():
+    """
+    Returns a list of all the known device types in Polychromatic.
+    We refer to these as "form factors".
+    """
+    return [
+        "keyboard",
+        "mouse",
+        "mousemat",
+        "keypad",
+        "mug",
+        "headset",
+        "core",
+        "mug"
+    ]
+
+
+def get_device_type_pretty(device_type):
+    """
+    Returns a human-readable, translatable string for a device type.
+    """
+    strings = {
+        "keyboard": _("Keyboard"),
+        "mouse": _("Mouse"),
+        "mousemat": _("Mousemat"),
+        "keypad": _("Keypad"),
+        "mug": _("Mug"),
+        "headset": _("Headset"),
+        "core": _("External Graphics Enclosure"),
+        "mug": _("Mug Holder")
+    }
+
+    try:
+        return strings[device_type]
+    except KeyError:
+        return device_type
+
+
+
 def get_device_type(device_obj):
     """
     Convert the daemon's device type string to what Polychromatic identifies as "form factor".
@@ -128,15 +167,22 @@ def get_device_list_by_serial(device_obj_list, expected_serial):
     return None
 
 
-def get_device_image(device, data_dir):
+def get_device_image(device, data_source):
     """
-    Gets a generic Polychromatic image of the current device.
+    Gets a Polychromatic image of the current device.
     """
-    image_path = "{0}/ui/img/devices/{1}.svg".format(data_dir, get_device_type(device))
+    return get_device_image_by_type(device.type, data_source)
+
+
+def get_device_image_by_type(device_type, data_source):
+    """
+    Gets a Polychromatic image that represents a device's form factor.
+    """
+    image_path = "{0}/ui/img/devices/{1}.svg".format(data_source, device_type)
     if os.path.exists(image_path):
         return image_path
     else:
-        return "{0}/ui/img/devices/unknown.svg".format(data_dir)
+        return "{0}/ui/img/devices/unknown.svg".format(data_source)
 
 
 def get_real_device_image(device, angle="top"):
@@ -983,6 +1029,7 @@ def is_user_in_plugdev_group():
     else:
         return False
 
+
 def get_plural(integer, non_plural, plural):
     """
     Returns the correct plural or non-plural spelling based on an integer.
@@ -995,6 +1042,20 @@ def get_plural(integer, non_plural, plural):
 
 def generate_uuid():
     return(str(int(time.time() * 1000000)))
+
+
+def get_locale_pretty(locale):
+    """
+    Returns a 'prettier' string to show in UI for localized (if known)
+    """
+    try:
+        locales = {
+            "en_US": _("US"),
+            "en_GB": _("British")
+        }
+        return locales[locale]
+    except KeyError:
+        return locale
 
 
 # Module Initalization

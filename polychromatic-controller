@@ -48,7 +48,6 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
     try:
         # Relative (for development)
         import pylib.preferences as pref
-        import pylib.profiles as prof
         import pylib.common as common
         import pylib.uicallback as uicallback
     except (ImportError, Exception) as e:
@@ -60,7 +59,6 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
 else:
     try:
         import polychromatic.preferences as pref
-        import polychromatic.profiles as prof
         import polychromatic.common as common
         import polychromatic.uicallback as uicallback
     except (ImportError, Exception) as e:
@@ -138,7 +136,18 @@ def get_string_bank(_):
         "about": _("About"),
         "general": _("General"),
         "tray-applet": _("Tray Applet"),
-        "daemon": _("Daemon")
+        "daemon": _("Daemon"),
+        "effects-welcome-title": _("Select an effect to begin."),
+        "new-effect": _("New Effect"),
+        "import-effect": _("Import..."),
+        "author": _("Author"),
+        "type": _("Type"),
+        "mapping": _("Mapped Hardware"),
+        "key_mapping": _("Key Mapping"),
+        "emblem": _("Emblem"),
+        "file-system": _("File System"),
+        "browse": _("Browse"),
+        "custom-path-info": _("Choose an image or .desktop file from your computer."),
     }
 
 
@@ -412,6 +421,7 @@ class Controller(object):
 
             # Tabs
             "devices-tab": uicmd.devices_init_tab,
+            "effects-tab": uicmd.effects_init_tab,
             "preferences-tab": uicmd.preferences_init_tab,
 
             # Devices
@@ -440,7 +450,19 @@ class Controller(object):
             "saved-col-set-data": uicmd.preferences_saved_colour_set_data,
             "saved-col-reorder": uicmd.preferences_saved_colour_reorder,
             "saved-col-reset": uicmd.preferences_saved_colour_reset,
-            "saved-col-reset-OK": uicmd.preferences_saved_colour_reset_confirmed
+            "saved-col-reset-OK": uicmd.preferences_saved_colour_reset_confirmed,
+
+            # Effects
+            "effect-open": uicmd.effects_open_details,
+            "effect-new": uicmd.effects_new_dialog,
+            "effect-new-2": uicmd.effects_new_dialog_step2,
+            "effect-import": None,
+            "effect-edit": uicmd.effects_edit_dialog,
+            "effect-edit-save": uicmd.effects_edit_dialog_save,
+            "browse-effect-icon": uicmd.effects_browse_icon,
+            "effect-clone": uicmd.effects_clone_dialog,
+            "effect-delete": uicmd.effects_delete_dialog,
+            "effect-editor": None,
         }
 
         # Must run from main thread

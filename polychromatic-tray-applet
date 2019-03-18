@@ -50,12 +50,10 @@ except Exception as e:
 try:
     # Relative copy
     import pylib.preferences as pref
-    import pylib.profiles as prof
     import pylib.common as common
 except ImportError:
     # Installed to system
     import polychromatic.preferences as pref
-    import polychromatic.profiles as prof
     import polychromatic.common as common
 except Exception as e:
     print("One or more of Polychromatic's modules could not be imported!")

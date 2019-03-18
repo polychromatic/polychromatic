@@ -12,6 +12,7 @@ This module contains "callbacks" when "commands" are issued via the Controller a
 """
 from . import common
 from . import preferences as pref
+from . import effects as effects
 from time import sleep
 from platform import uname, linux_distribution
 import os
@@ -43,7 +44,11 @@ class GTKDialogues():
         if dialog_id == 1:
             help_title = _("Custom Tray Icon")
             help_text = _("Choose an icon to use for the tray applet.")
-            filter_set = "image"
+            filter_set = ["all_image", "jpeg", "png", "gif", "svg"]
+        elif dialog_id == 2:
+            help_title = _("Choose Icon")
+            help_text = _("Choose an icon to use for this file.")
+            filter_set = ["all_image+desktop", "jpeg", "png", "gif", "svg", "desktop"]
         else:
             return None
 
@@ -52,34 +57,55 @@ class GTKDialogues():
                                        (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, \
                                         Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         # Setup filters
-        if filter_set == "image":
-            a = Gtk.FileFilter()
-            a.set_name(_("All Images"))
-            a.add_mime_type("image/jpeg")
-            a.add_mime_type("image/png")
-            a.add_mime_type("image/gif")
-            a.add_mime_type("image/svg+xml")
-            dialog.add_filter(a)
+        for filter in filter_set:
+            if filter_set == "all_image":
+                f = Gtk.FileFilter()
+                f.set_name(_("All Images"))
+                f.add_mime_type("image/jpeg")
+                f.add_mime_type("image/png")
+                f.add_mime_type("image/gif")
+                f.add_mime_type("image/svg+xml")
+                dialog.add_filter(f)
 
-            j = Gtk.FileFilter()
-            j.set_name("JPEG " + _("Image"))
-            j.add_mime_type("image/jpeg")
-            dialog.add_filter(j)
+            if filter_set == "all_image+desktop":
+                f = Gtk.FileFilter()
+                f.set_name(_("All Images and Desktop Launchers"))
+                f.add_mime_type("image/jpeg")
+                f.add_mime_type("image/png")
+                f.add_mime_type("image/gif")
+                f.add_mime_type("image/svg+xml")
+                f.add_mime_type("application/x-desktop")
+                dialog.add_filter(f)
 
-            p = Gtk.FileFilter()
-            p.set_name("PNG " + _("Image"))
-            p.add_mime_type("image/png")
-            dialog.add_filter(p)
+            if filter_set == "jpeg":
+                f = Gtk.FileFilter()
+                f.set_name("JPEG " + _("Image"))
+                f.add_mime_type("image/jpeg")
+                dialog.add_filter(f)
 
-            g = Gtk.FileFilter()
-            g.set_name("GIF " + _("Image"))
-            g.add_mime_type("image/gif")
-            dialog.add_filter(g)
+            if filter_set == "png":
+                f = Gtk.FileFilter()
+                f.set_name("PNG " + _("Image"))
+                f.add_mime_type("image/png")
+                dialog.add_filter(f)
 
-            s = Gtk.FileFilter()
-            s.set_name("SVG " + _("Image"))
-            s.add_mime_type("image/svg+xml")
-            dialog.add_filter(s)
+            if filter_set == "gif":
+                f = Gtk.FileFilter()
+                f.set_name("GIF " + _("Image"))
+                f.add_mime_type("image/gif")
+                dialog.add_filter(f)
+
+            if filter_set == "svg":
+                f = Gtk.FileFilter()
+                f.set_name("SVG " + _("Image"))
+                f.add_mime_type("image/svg+xml")
+                dialog.add_filter(f)
+
+            if filter_set == "desktop":
+                f = Gtk.FileFilter()
+                f.set_name(_("Desktop Launcher"))
+                f.add_mime_type("application/x-desktop")
+                dialog.add_filter(f)
 
         response = dialog.run()
 
@@ -193,7 +219,7 @@ class UICmd(object):
         Opens a dialog box based on parameters. The size is automatic based on its contents.
 
         Params:
-          - dialog_type     Styling to apply: info, error, general, warning
+          - dialog_type     Styling to apply: general, serious, warning
           - title           Name of dialog
           - inner_html      HTML to place inside
           - buttons         List containing onclick and labels, e.g. [["cmd()", "Item 1"], ["cmd()", "Item 2"]]
@@ -436,16 +462,29 @@ class UICmd(object):
 
     def _load_svg(self, svg_path):
         """
-        Loads the contents of an SVG file from data source. If non-existent, returns False.
+        Loads the contents of an SVG file relative from data source. If non-existent, returns False.
+        It also strips the 'fill' styling if used as this is set from CSS.
         """
         svg_path = os.path.join(self.path.data_source, svg_path)
         if not os.path.exists(svg_path):
             return False
 
         with open(svg_path) as f:
-            contents = f.read().replace("\n", "")
+            contents = f.read().replace("\n", "").replace("fill:", "f")
 
         return contents
+
+    def _get_emblem_list_html(self):
+        """
+        Generates the HTML for presenting a list of Polychromatic's emblem graphics.
+        """
+        def _add_emblem(name, human_name):
+            return "<a class='emblem-icon' onclick='set_emblem(&quot;{0}&quot;)' title='{1}'>{2}</a>".format(name,
+                human_name, self._load_svg("ui/img/emblems/" + name + ".svg"))
+        emblems = []
+        emblems.append(_add_emblem("chroma", "Chroma"))
+        emblems.append(_add_emblem("controller", "Controller"))
+        return "".join(emblems)
 
     def show_colour_selector(self, params):
         """
@@ -1741,3 +1780,276 @@ class UICmd(object):
             return common.restart_tray_applet(dbg, self.path)
         elif component == "openrazer":
             return common.restart_openrazer_daemon(dbg, self.path)
+
+    def effects_init_tab(self, params=[]):
+        """
+        Loads the effects tab.
+        """
+        self._set_title(_("Effects"))
+        self._set_active_button("#effects-tab", ".tab")
+
+        # Populate the list of effects
+        html = ""
+        for formfactor in common.get_all_device_types():
+            effect_list = effects.get_effect_list_for_device(self.path.effects, formfactor, self.path.data_source)
+
+            if len(effect_list) == 0:
+                continue
+
+            html += "<div class='item-group'>"
+            html += "<div class='item-heading'>{0}</div>".format(common.get_device_type_pretty(formfactor))
+            for effect in effect_list:
+                html += "<button id='{2}' class='item' onclick='cmd(\"effect-open?{2}\");'><img src='{1}'/> <span>{0}</span></button>".format(effect[0],
+                    effect[1],
+                    effect[2].replace(" ", "").replace(".json", "").lower())
+            html += "</div>"
+
+        replace_dict = {
+            "effect_groups": html
+        }
+        self.update_content_view("effects", "content", replace_dict)
+
+    def effects_open_details(self, params=[]):
+        """
+        Views details about an effect in the effects tab.
+
+        Params:
+            - filename      Name of the JSON file as seen in 'effects' folder.
+        """
+        filename = params[0]
+        uuid = filename.replace(" ", "").replace(".json", "").lower()
+        effect = effects.EffectData()
+        status = effect.load_from_file(os.path.join(self.path.effects, filename + ".json"))
+
+        if status == False:
+            self._open_dialog("serious",
+                _("Unable to load file:") + ' ' + filename,
+                _("The file is no longer accessible or is corrupt."))
+            return
+
+        # Update view
+        self._set_title(effect.name)
+        self._set_active_button("#" + uuid, ".sidebar-container .item")
+
+        # Pretty effect type
+        locales_type = {
+            "static": _("Static"),
+            "animated": _("Animated"),
+            "script": _("Scripted")
+        }
+
+        # Pretty link for authors
+        if effect.author_url:
+            author = "<a onclick='cmd(\"open-uri?{0}\")'>{1}</a>".format(effect.author_url, effect.author)
+        else:
+            author = effect.author
+
+        # Generate buttons
+        buttons = ""
+        if effect.effect_type == "static":
+            buttons += self._make_control_button("", "effect-play?" + uuid, _("Activate"), "img/fa/lightbulb.svg")
+        elif effect.effect_type == "animated":
+            buttons += self._make_control_button("", "effect-play?" + uuid, _("Play"), "img/fa/play.svg")
+        elif effect.effect_type == "scripted":
+            buttons += self._make_control_button("", "effect-play?" + uuid, _("Run"), "img/fa/play.svg")
+        buttons +=  self._make_control_button("", "effect-edit?" + filename + "?false", _("Edit"), "img/fa/edit.svg")
+        buttons +=  self._make_control_button("", "effect-clone?" + filename + "?false", _("Clone"), "img/fa/clone.svg")
+        buttons +=  self._make_control_button("", "effect-delete?" + filename + "?false", _("Delete"), "img/fa/bin.svg")
+
+        # Get pretty locale if known/available
+        mapping_locale = "(" + common.get_locale_pretty(effect.mapping_locale) + ")"
+        if len(mapping_locale) <= 2:
+            mapping_locale = ""
+
+        replace_dict = {
+            "effect_name": effect.name,
+            "image_path": effect.get_icon_path(self.path.data_source),
+            "effect_type": locales_type[effect.effect_type],
+            "author": author,
+            "formfactor": "<img src='{0}'> {1}".format(common.get_device_image_by_type(effect.formfactor, self.path.data_source), common.get_device_type_pretty(effect.formfactor)),
+            "mapping": "{0} {1}".format(effect.mapping, mapping_locale),
+            "mapping_dimensions": "({0} {2}, {1} {3})".format(str(effect.mapping_dimensions[0]), str(effect.mapping_dimensions[1]), _("rows"), _("columns")),
+            "buttons": buttons,
+            "edit_button": self._make_control_button("", "effect-editor?" + uuid, _("Edit") + "...")
+        }
+
+        # Populate the list of effects
+        self.update_content_view("effect-details", ".sidebar-container .right", replace_dict)
+
+    def effects_new_dialog(self, params=[]):
+        """
+        Opens a dialogue box to create a new effect. First, to ask of the type of effect.
+        """
+        def _add_button(effect_name, label, icon_path, description):
+            return "<tr><td>{0}</td><td>{1}</td></tr>".format(
+                self._make_control_button("", "effect-new-2?" + effect_name, label, icon_path),
+                description)
+
+        inner_html = "<table class='no-grid'>"
+        inner_html += _add_button("static", _("Static"), "img/fa/lightbulb.svg", _("A single frame"))
+        inner_html += _add_button("animated", _("Animated"), "img/fa/clock.svg", _("A series of keyframes, with layers support."))
+        inner_html += _add_button("scripted", _("Scripted"), "img/fa/scripted.svg", _("A Python script"))
+        inner_html += "</table>"
+        self._open_dialog("info", _("Choose a new effect"), inner_html, "14em", "30em", [["close_dialog()", _("Cancel")]])
+
+    def effects_new_dialog_step2(self, params=[]):
+        """
+        Opens a dialogue box to seek more options for creating an effect. Second, choose the type of device.
+
+        Parameters:
+        -   effect_type         Should be passed from effects_new_dialog option. E.g. "static", "animated".
+        """
+        effect_type = params[0]
+
+        inner_html = "Mapping unimplemented"
+
+        pretty_name = {
+            "static": _("Static"),
+            "animated": _("Animated"),
+            "scripted": _("Scripted")
+        }
+        title = _("Choose a device for this [type] effect").replace("[type]", pretty_name[effect_type].lower())
+
+        self._open_dialog("info", title, inner_html, "10em", "32em", [["cmd(&quot;effect-new&quot;)", _("Go Back")], ["close_dialog()", _("Cancel")]])
+
+    def effects_edit_dialog(self, params=[]):
+        """
+        Opens a dialogue box to edit metadata for an effect.
+
+        Parameters:
+        -   filename        Name of JSON file, without extension, e.g. "my-effect"
+                            or null if non-existant.
+        -   is_new          A string that reads 'true' or 'false' to indicate
+                            the file hasn't been created yet.
+        """
+        filename = params[0]
+        is_new = params[1]
+        effect = effects.EffectData()
+        status = effect.load_from_file(os.path.join(self.path.effects, filename + ".json"))
+
+        if status == False:
+            self._open_dialog("serious",
+                _("Unable to load file:") + ' ' + filename,
+                _("The file is no longer accessible or is corrupt."))
+            return
+
+        replace_dict = {
+            "orig_filename": filename,
+            "orig_name": effect.name,
+            "orig_author": effect.author,
+            "orig_author_url": effect.author_url,
+            "orig_icon_path": effect.get_icon_path(self.path.data_source),
+            "orig_icon": effect.icon,
+            "orig_emblem": effect.emblem,
+            "emblem_list": self._get_emblem_list_html()
+        }
+
+        inner_html = self.controller.get_content_view("edit-effect", replace_dict)
+        buttons = [["close_dialog()", _("Revert")], ["save_effect()", _("Save Changes")]]
+        self._open_dialog("info", _("Edit Effect:") + " " + effect.name, inner_html, "23em", "40em", buttons)
+
+    def effects_edit_dialog_save(self, params=[]):
+        """
+        Completes the save operation from an edit dialogue box.
+
+        Parameters:
+        -   old_filename    Previous JSON file name. If new, this is null.
+        -   name            Name of effect.
+        -   author          Name of author.
+        -   author_url      Optional URL field for author.
+        -   emblem          Name of an emblem.
+        -   icon            Absolute path an image or a base64 encode.
+        """
+        old_filename = params[0]
+        name = params[1]
+        author = params[2]
+        author_url = params[3]
+        emblem = params[4]
+        icon = params[5]
+
+
+        self._close_dialog()
+
+    def effects_browse_icon(self, params=[]):
+        """
+        Opens the file browser to select a custom icon for an effect.
+
+        If a .desktop file is used, the "Icon=" path will be retrieved.
+        """
+        dbg.stdout("Opening GTK file browser...", dbg.action, 1)
+        result_path = GTKDialogues.file_picker(2)
+        dbg.stdout("Got path:" + str(result_path), dbg.action, 1)
+
+        if result_path == None:
+            return None
+
+        # If this is a .desktop file, let's get the Icon= path.
+        if result_path.endswith(".desktop"):
+            launcher_icon = None
+            with open(result_path, "r") as f:
+                for line in f.readlines():
+                    if line.startswith("Icon="):
+                        try:
+                            launcher_icon = line.split("Icon=")[1]
+                        except KeyError:
+                            pass
+                        break
+
+            if not launcher_icon:
+                dbg.stdout("Launcher file does not have an icon path!", dbg.error)
+                return None
+
+            # See if this contains an absolute path.
+            if os.path.exists(launcher_icon):
+                file_ext = launcher_icon.split(".")[-1]
+            else:
+                # Not all hope is lost! Maybe it's a GTK icon.
+                # FIXME: Check /usr/share/icons directories, etc
+                possible_gtk_path = common.get_path_from_gtk_icon_name(launcher_icon)
+                if not os.path.exists(possible_gtk_path):
+                    dbg.stdout("Could not find a valid icon for launcher: " + launcher_icon, dbg.error)
+                    return None
+                result_path = possible_gtk_path
+
+        # Update the hidden fields in the frontend to be saved later.
+        self.webkit.run_js("$('#edit-icon-preview').attr('src', '{0}')".format(result_path))
+        self.webkit.run_js("$('#effect-icon').val('{0}')".format(result_path))
+        self.webkit.run_js("$('#effect-emblem').val('')")
+
+
+    def effects_delete_dialog(self, params=[]):
+        """
+        Opens a dialogue box to confirm deletion of an event. Also called again to trigger
+        the deletion.
+
+        Parameters:
+        -   filename        Name of JSON file, without extension, e.g. "my-effect"
+        -   do_delete       Pass 'true' or 'false'.
+        """
+        filename = params[0]
+        do_delete = params[1]
+        effect_path = os.path.join(self.path.effects, filename + ".json")
+
+        if not os.path.exists(effect_path):
+            self._open_dialog("serious", _("Delete Effect"),
+                _("The file is no longer accessible or is corrupt."))
+            self.effects_init_tab()
+            return
+
+        try:
+            effect = effects.EffectData()
+            effect.load_from_file(effect_path)
+            effect_name = effect.name
+        except Exception:
+            effect_name = _("this effect?")
+
+        if do_delete == "true":
+            self._close_dialog()
+            effect.delete_self()
+            self.effects_init_tab()
+            return
+        else:
+            self._open_dialog("warning", "{0} {1}".format(_("Delete"), effect_name),
+                _("This action cannot be undone. If this effect is used by a profile, this will be unlinked too."), "10em", "32em",
+                [["close_dialog()", _("Cancel")], ["cmd(&quot;effect-delete?" + filename + "?true&quot;)", _("Delete")]])
+

@@ -1,0 +1,66 @@
+<div id="edit-dialog">
+    <input id="effect-filename" type="hidden" value="[!orig_filename!]"/>
+    <table class="no-grid align-top">
+        <tr>
+            <td><img id="edit-icon-preview" src="[!orig_icon_path!]"/></td>
+            <th>Name</th>
+            <td><input id="effect-name" type="text" value="[!orig_name!]"/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <th>Author</th>
+            <td><input id="effect-author" type="text" value="[!orig_author!]"/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <th>Author URL</th>
+            <td><input id="effect-author-url" type="text" value="[!orig_author_url!]"/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <th>Change Icon</th>
+            <td>
+                <input id="effect-icon" type="hidden" value="[!orig_icon!]"/>
+                <input id="effect-emblem" type="hidden" value="[!orig_emblem!]"/>
+                <div id="effect-icon-tabs" class="tabs">
+                    <button class="tab active" onclick="show_tab(this, 'emblem')"><img src="img/fa/palette.svg"/> [[ emblem ]]</button>
+                    <button class="tab" onclick="show_tab(this, 'custom')"><img src="img/fa/folder.svg"/> [[ file-system ]]</button>
+                </div>
+                <div id="effect-icon-tabs" class="tab-icon-chooser">
+                    <div id="tab-icon-emblem" class="tab-content">
+                        [!emblem_list!]
+                    </div>
+                    <div id="tab-icon-custom" class="tab-content" hidden>
+                        <p>[[ custom-path-info ]]</p>
+                        <p><button onclick="cmd('browse-effect-icon')">[[ browse ]]...</button></p>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<script>
+    function save_effect() {
+        var cmd_to_send = "effect-edit-save";
+        cmd_to_send += "?" + $("#effect-filename").val();
+        cmd_to_send += "?" + $("#effect-name").val().replace("?", "");
+        cmd_to_send += "?" + $("#effect-author").val().replace("?", "");
+        cmd_to_send += "?" + $("#effect-author-url").val().replace("?", "");
+        cmd_to_send += "?" + $("#effect-emblem").val();
+        cmd_to_send += "?" + $("#effect-icon").val();
+        cmd(cmd_to_send);
+    }
+
+    function show_tab(self, prefix) {
+        $("#effect-icon-tabs .tab").removeClass("active");
+        $(self).addClass("active");
+        $("#effect-icon-tabs .tab-content").hide();
+        $("#tab-icon-" + prefix).show();
+    }
+
+    function set_emblem(name) {
+        $("#edit-icon-preview").attr("src", "img/emblems/" + name + ".svg");
+        $("#effect-icon").val("");
+        $("#effect-emblem").val(name);
+    }
+</script>

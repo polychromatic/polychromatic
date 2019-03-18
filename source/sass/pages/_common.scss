@@ -30,4 +30,32 @@
         p {}
         button {}
     }
+
+    /* For tabs that do not auto-select the first item */
+    &.passive {
+        img {
+            height: 100px;
+            width: 100px;
+            filter: grayscale(1) brightness(0.5);
+            opacity: 0.75;
+        }
+
+        .details {
+            h2 {
+                color: $hover-grey;
+            }
+        }
+    }
+}
+
+.common-right-actions {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1em;
+    margin-left: auto;
+    margin-right: 1em;
+
+    button {
+        margin-top: 0.5em;
+    }
 }
