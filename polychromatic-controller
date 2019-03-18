@@ -39,7 +39,7 @@ try:
     import openrazer.client as rclient
 except ImportError as e:
     rclient = None
-    print("Failed to import modules for daemon.\n" + e.message)
+    print("Failed to import modules for daemon.\n" + str(e))
 
 # Import relative copies if running in development mode.
 DEV_VERSION = False
@@ -52,7 +52,7 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
         import pylib.uicallback as uicallback
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
-        print(e)
+        print(str(e))
         exit(1)
 
 # Import modules if installed to system.
@@ -64,7 +64,7 @@ else:
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
-        print(e)
+        print(str(e))
         exit(1)
 
 path = pref.Paths()
