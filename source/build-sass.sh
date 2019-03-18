@@ -12,14 +12,5 @@ fi
 
 cd $(dirname "$0")/sass/
 
-for source in $(find themes/ -maxdepth 1 -name "*.scss"); do
-    filename=$(basename -- "$source")
-    extension="${filename##*.}"
-    output="${filename%.*}"
-    dest="../../data/ui/theme/$output.css"
-    $cmd "$source" "$dest" --sourcemap=none --scss --style compressed
-    if [ ! $? == 0 ]; then
-        rm "$dest"
-    fi
-done
+$cmd ./dark.scss ../../data/ui/theme/dark.css --scss --style compressed
 
