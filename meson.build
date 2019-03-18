@@ -15,8 +15,8 @@ i18n = import('i18n')
 
 sass = find_program('sass', 'sassc')
 custom_target('css',
-              input : 'source/sass/dark.scss',
-              output : 'dark.css',
+              input : 'source/sass/controller.scss',
+              output : 'controller.css',
               command : [sass, '@INPUT@', '@OUTPUT@', '--style', 'compressed'],
               build_by_default : true,
               install : true,

@@ -1,4 +1,4 @@
-/* Themes import this file */
+@import "components/variables";
 @import "components/base";
 @import "components/common";
 @import "components/content";
@@ -10,7 +10,6 @@
 @import "components/sidebar";
 @import "components/tables";
 @import "components/tabs";
-
 @import "pages/common";
 @import "pages/devices";
 @import "pages/effects";
