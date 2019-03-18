@@ -124,8 +124,8 @@ class UICmd(object):
 
     All parameters are passed as strings within a list. '?' is the delimiter.
     """
-    def __init__(self, controller, webkit, devman, get_string_bank, path):
-        self.webkit = webkit
+    def __init__(self, controller, webview, devman, get_string_bank, path):
+        self.webview = webview
         self.controller = controller
         self.update_page = controller.update_page
         self.update_content_view = controller.update_content_view
@@ -236,11 +236,11 @@ class UICmd(object):
         html += "</div>"
         html += "</div>"
         self.update_page("body", "append", html)
-        self.webkit.run_js("open_dialog()")
+        self.webview.run_js("open_dialog()")
 
     def _close_dialog(self):
         """Closes a dialog via Python"""
-        self.webkit.run_javascript("close_dialog()")
+        self.webview.run_js("close_dialog()")
 
     @staticmethod
     def _make_group(label, content, condensed=False):
@@ -531,7 +531,7 @@ class UICmd(object):
             ["cmd(&quot;{1}?&quot; + colour_picker.getCurColorHex());close_dialog();".format(uuid, callback_fn, ), _("Save")]
         ]
         self._open_dialog("general", title, html, "21em", "35em", buttons)
-        self.webkit.run_js("colour_picker_init('{0}')".format(current_hex))
+        self.webview.run_js("colour_picker_init('{0}')".format(current_hex))
 
     # Specific to devices screen
     def _show_device_error(self, image, title, text):
@@ -2012,10 +2012,9 @@ class UICmd(object):
                 result_path = possible_gtk_path
 
         # Update the hidden fields in the frontend to be saved later.
-        self.webkit.run_js("$('#edit-icon-preview').attr('src', '{0}')".format(result_path))
-        self.webkit.run_js("$('#effect-icon').val('{0}')".format(result_path))
-        self.webkit.run_js("$('#effect-emblem').val('')")
-
+        self.webview.run_js("$('#edit-icon-preview').attr('src', '{0}')".format(result_path))
+        self.webview.run_js("$('#effect-icon').val('{0}')".format(result_path))
+        self.webview.run_js("$('#effect-emblem').val('')")
 
     def effects_delete_dialog(self, params=[]):
         """

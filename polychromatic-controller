@@ -151,50 +151,52 @@ def get_string_bank(_):
     }
 
 
-class WebView(WebKit2.WebView):
+class WebView(object):
     """
-    WebView class responsible for rendering the user interface using web technologies.
+    WebKit is responsible for rendering the user interface using web technologies.
     """
     def __init__(self):
-        """Initalises WebKit and loads the base HTML page."""
+        """
+        Initalises WebView, a component of WebKit2.
+        """
+        # Ensure WebKit's cache is the same folder as ours.
         webkit = WebKit2
-        webkit.WebView.__init__(self)
-        self.set_background_color(Gdk.RGBA(0, 0, 0, 1))
+        webview = webkit.WebView
+        context = webkit.WebContext
+        dataman = webkit.WebsiteDataManager(base_cache_directory=path.cache, base_data_directory=path.cache, disk_cache_directory=path.cache)
+        context = context.new_with_website_data_manager(dataman)
+        self.webview = webview.new_with_context(context)
+
+    def build_webview(self):
+        """
+        Sets up the WebView object and loads the initial page.
+        """
+        # Match background colour with page.
+        self.webview.set_background_color(Gdk.RGBA(0, 0, 0, 1))
 
         # Post-actions after pages fully load.
-        self.connect("load-changed", self.load_changed_cb)
-        self.connect("notify::title", self.title_changed_cb)
-        self.connect("context-menu", self.context_menu_cb)
+        self.webview.connect("load-changed", self.load_changed_cb)
+        self.webview.connect("notify::title", self.title_changed_cb)
+        self.webview.connect("context-menu", self.context_menu_cb)
 
-        try:
-            # Allows local SVG files to load.
-            self.get_settings().set_allow_file_access_from_file_urls(True)
-            try:
-                self.get_settings().set_allow_universal_access_from_file_urls(True)
-            except AttributeError:
-                dbg.stdout("Ignoring set_allow_universal_access_from_file_urls because the WebKit2GTK version is <2.14.", dbg.warning, 1)
+        # Allows local SVG files to load.
+        self.webview.get_settings().set_allow_file_access_from_file_urls(True)
+        self.webview.get_settings().set_allow_universal_access_from_file_urls(True)
 
-            # Print console log errors to stdout if verbose
-            if dbg.verbose_level >= 1:
-                self.get_settings().set_enable_write_console_messages_to_stdout(True)
+        # Print console log errors to stdout if verbose
+        if dbg.verbose_level >= 1:
+            self.webview.get_settings().set_enable_write_console_messages_to_stdout(True)
 
-            # Basic accessibility - keyboard navigation
-            self.get_settings().set_enable_spatial_navigation(True)
-            self.get_settings().set_enable_caret_browsing(True)
-
-        except AttributeError as e:
-            dbg.stdout("WebKit2GTK failed to initialise!", dbg.error)
-            print("Your distribution may be using an older version of this library.")
-            print("For example, Debian/Ubuntu provides this in 'gir1.2-webkit-4.0'\n")
-            dbg.stdout("The exception was: {0}\n".format(str(e)), dbg.error)
-            exit(1)
+        # Accessibility - keyboard navigation
+        self.webview.get_settings().set_enable_spatial_navigation(True)
+        self.webview.get_settings().set_enable_caret_browsing(True)
 
         # Enable web inspector for debugging
         if dbg.verbose_level == 3:
-            self.get_settings().set_property("enable-developer-extras", True)
+            self.webview.get_settings().set_property("enable-developer-extras", True)
 
         # Load the base page structure
-        self.load_uri("file://" + os.path.join(path.data_source, "ui/controller.html"))
+        self.webview.load_uri("file://" + os.path.join(path.data_source, "ui/controller.html"))
         dbg.stdout("WebView Initialised", dbg.success, 1)
 
     def run_js(self, function):
@@ -208,7 +210,7 @@ class WebView(WebKit2.WebView):
         """
         Private function for running a JavaScript function on the page when invoked from run_js()
         """
-        self.run_javascript(function)
+        self.webview.run_javascript(function)
         return GLib.SOURCE_REMOVE
 
     def title_changed_cb(self, view, frame):
@@ -218,7 +220,7 @@ class WebView(WebKit2.WebView):
         This is where the frontend has set document.title, which is used for
         communicating to Python via commands.
         """
-        title = self.get_title()
+        title = self.webview.get_title()
         if title not in ["null", None, "", " "]:
             app.process_command(title)
 
@@ -235,9 +237,9 @@ class WebView(WebKit2.WebView):
         Intended to be called when the initial controller.html page has finished loading.
         """
         dbg.stdout("WebView still loading...", dbg.debug, 2)
-        if not self.is_loading():
+        if not self.webview.is_loading():
             dbg.stdout("WebView Ready.", dbg.success, 1)
-            thread = threading.Thread(target=app.start_loading, args=([view]))
+            thread = threading.Thread(target=app.start_loading, args=([self]))
             thread.start()
 
 
@@ -249,14 +251,15 @@ class AppWindow(object):
         """
         Variables to be set later.
         """
-        self.webkit = None
+        self.webview = None
         self.window = None
 
     def run(self):
         """
         Assembles the main application window.
         """
-        self.webkit = WebView()
+        self.webview = WebView()
+        self.webview.build_webview()
 
         self.window = Gtk.Window(title=_("Polychromatic Controller"))
         self.window.set_wmclass("polychromatic-controller", "polychromatic-controller")
@@ -273,7 +276,7 @@ class AppWindow(object):
         # Create scrolled window (containing WebKit) to be part of a horz. pane
         sw = Gtk.ScrolledWindow()
         sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        sw.add(self.webkit)
+        sw.add(self.webview.webview)
         pane = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
         pane.modify_bg(Gtk.StateType(0), Gdk.Color(0, 0, 0))
 
@@ -286,7 +289,7 @@ class AppWindow(object):
             def dummy(webview):
                 return True
 
-            inspector = self.webkit.get_inspector()
+            inspector = self.webview.webview.get_inspector()
             inspector.connect("open-window", dummy)
             inspector.show()
             inspector_webview = inspector.get_web_view()
@@ -312,7 +315,7 @@ class Controller(object):
         """
         Variables are assigned later in start_loading()
         """
-        self.webkit = None
+        self.webview = None
         self.devman = None
         self.active_device = None
         self.active_device_id = None
@@ -332,7 +335,7 @@ class Controller(object):
         """
         Sends a JavaScript function to the page.
         """
-        self.webkit.run_js(function)
+        self.webview.run_js(function)
 
     def update_page(self, element, function, parm1=None, parm2=None):
         """
@@ -480,11 +483,11 @@ class Controller(object):
         # WebKit2 quirk - clear "title" so same command can execute again
         self.run_javascript("cmd('null')")
 
-    def start_loading(self, webkit):
+    def start_loading(self, webview):
         """
         Function that triggers the main application's operations.
         """
-        self.webkit = webkit
+        self.webview = webview
         dbg.stdout("Version " + VERSION, dbg.debug, 1)
 
         self.update_content_view("header", "header")
@@ -504,7 +507,7 @@ class Controller(object):
                 self.devman = None
                 dbg.stdout("Daemon threw an exception:\n" + str(e), dbg.error, 0)
 
-        self.uicmd = uicallback.UICmd(self, self.webkit, self.devman, get_string_bank, path)
+        self.uicmd = uicallback.UICmd(self, self.webview, self.devman, get_string_bank, path)
         dbg.stdout("Application Ready.", dbg.success, 1)
 
         # Ensure configuration is compatible for this version.
