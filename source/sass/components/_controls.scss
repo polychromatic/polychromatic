@@ -196,7 +196,7 @@ select {
     border: 2px solid $border-colour;
     color: $text-colour;
     -webkit-appearance: none;
-    background-image: url('../img/general/dropdown.svg');
+    background-image: url('img/general/dropdown.svg');
     background-position: right;
     background-repeat: no-repeat;
     padding-right: 24px;
@@ -209,7 +209,7 @@ select {
     &:focus {
         color: $accent-colour;
         filter: grayscale(0);
-        background-image: url('../img/general/dropdown-hover.svg');
+        background-image: url('img/general/dropdown-hover.svg');
     }
 
     option {
@@ -272,14 +272,14 @@ input[type='radio'] {
     border-radius: 100%;
 
     &:checked {
-        background-image: url('../img/general/radio.svg');
+        background-image: url('img/general/radio.svg');
     }
 }
 
 
 input[type='checkbox'] {
     &:checked {
-        background-image: url('../img/general/checkbox.svg');
+        background-image: url('img/general/checkbox.svg');
     }
 }
 
