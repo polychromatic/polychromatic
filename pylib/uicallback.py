@@ -722,7 +722,7 @@ class UICmd(object):
         if fade_in:
             self._hide(target_element)
         device_name = device.name
-        device_image = common.get_real_device_image(device, "top")
+        device_image = common.get_real_device_image(device)
         current_state = pref.get_device_state(device.serial, "main", "effect")
 
         if current_state:
@@ -1087,7 +1087,7 @@ class UICmd(object):
             device_id = device_id + 1
             device_name = device.name
             device_serial = device.serial
-            device_image = common.get_real_device_image(device, "top")
+            device_image = common.get_real_device_image(device)
 
             # Determine states to display
             current_state_html = ""

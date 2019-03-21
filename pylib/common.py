@@ -185,21 +185,13 @@ def get_device_image_by_type(device_type, data_source):
         return "{0}/ui/img/devices/unknown.svg".format(data_source)
 
 
-def get_real_device_image(device, angle="top"):
+def get_real_device_image(device):
     """
     Returns the device image provided via the daemon if available.
-
-    angle = top
-            side
-            perspective
     """
+    # TODO: In future, this variable will just be DEVICE_IMAGE
     try:
-        if angle == "top":
-            return device.razer_urls["top_img"]
-        elif angle == "side":
-            return device.razer_urls["side_img"]
-        elif angle == "perspective":
-            return device.razer_urls["perspective_img"]
+        return device.razer_urls["top_img"]
     except KeyError:
         return get_device_image(device)
 
