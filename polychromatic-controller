@@ -463,7 +463,6 @@ class Controller(object):
             "effect-edit": uicmd.effects_edit_dialog,
             "effect-edit-save": uicmd.effects_edit_dialog_save,
             "browse-effect-icon": uicmd.effects_browse_icon,
-            "effect-clone": uicmd.effects_clone_dialog,
             "effect-delete": uicmd.effects_delete_dialog,
             "effect-editor": None,
         }

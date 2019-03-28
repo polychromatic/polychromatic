@@ -57,8 +57,8 @@ class GTKDialogues():
                                        (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, \
                                         Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         # Setup filters
-        for filter in filter_set:
-            if filter_set == "all_image":
+        for ext in filter_set:
+            if ext == "all_image":
                 f = Gtk.FileFilter()
                 f.set_name(_("All Images"))
                 f.add_mime_type("image/jpeg")
@@ -67,7 +67,7 @@ class GTKDialogues():
                 f.add_mime_type("image/svg+xml")
                 dialog.add_filter(f)
 
-            if filter_set == "all_image+desktop":
+            if ext == "all_image+desktop":
                 f = Gtk.FileFilter()
                 f.set_name(_("All Images and Desktop Launchers"))
                 f.add_mime_type("image/jpeg")
@@ -77,31 +77,31 @@ class GTKDialogues():
                 f.add_mime_type("application/x-desktop")
                 dialog.add_filter(f)
 
-            if filter_set == "jpeg":
+            if ext == "jpeg":
                 f = Gtk.FileFilter()
                 f.set_name("JPEG " + _("Image"))
                 f.add_mime_type("image/jpeg")
                 dialog.add_filter(f)
 
-            if filter_set == "png":
+            if ext == "png":
                 f = Gtk.FileFilter()
                 f.set_name("PNG " + _("Image"))
                 f.add_mime_type("image/png")
                 dialog.add_filter(f)
 
-            if filter_set == "gif":
+            if ext == "gif":
                 f = Gtk.FileFilter()
                 f.set_name("GIF " + _("Image"))
                 f.add_mime_type("image/gif")
                 dialog.add_filter(f)
 
-            if filter_set == "svg":
+            if ext == "svg":
                 f = Gtk.FileFilter()
                 f.set_name("SVG " + _("Image"))
                 f.add_mime_type("image/svg+xml")
                 dialog.add_filter(f)
 
-            if filter_set == "desktop":
+            if ext == "desktop":
                 f = Gtk.FileFilter()
                 f.set_name(_("Desktop Launcher"))
                 f.add_mime_type("application/x-desktop")
@@ -1852,8 +1852,8 @@ class UICmd(object):
             buttons += self._make_control_button("", "effect-play?" + uuid, _("Play"), "img/fa/play.svg")
         elif effect.effect_type == "scripted":
             buttons += self._make_control_button("", "effect-play?" + uuid, _("Run"), "img/fa/play.svg")
-        buttons +=  self._make_control_button("", "effect-edit?" + filename + "?false", _("Edit"), "img/fa/edit.svg")
-        buttons +=  self._make_control_button("", "effect-clone?" + filename + "?false", _("Clone"), "img/fa/clone.svg")
+        buttons +=  self._make_control_button("", "effect-edit?" + filename + "?existing", _("Edit"), "img/fa/edit.svg")
+        buttons +=  self._make_control_button("", "effect-edit?" + filename + "?clone", _("Clone"), "img/fa/clone.svg")
         buttons +=  self._make_control_button("", "effect-delete?" + filename + "?false", _("Delete"), "img/fa/bin.svg")
 
         # Get pretty locale if known/available
@@ -1878,7 +1878,8 @@ class UICmd(object):
 
     def effects_new_dialog(self, params=[]):
         """
-        Opens a dialogue box to create a new effect. First, to ask of the type of effect.
+        Opens a dialogue box to create a new effect.
+        First, this will prompt to choose which type of effect.
         """
         def _add_button(effect_name, label, icon_path, description):
             return "<tr><td>{0}</td><td>{1}</td></tr>".format(
@@ -1894,7 +1895,8 @@ class UICmd(object):
 
     def effects_new_dialog_step2(self, params=[]):
         """
-        Opens a dialogue box to seek more options for creating an effect. Second, choose the type of device.
+        Opens a dialogue box to seek more options for creating an effect.
+        Second, choose the mapping for this device.
 
         Parameters:
         -   effect_type         Should be passed from effects_new_dialog option. E.g. "static", "animated".
@@ -1917,58 +1919,124 @@ class UICmd(object):
         Opens a dialogue box to edit metadata for an effect.
 
         Parameters:
-        -   filename        Name of JSON file, without extension, e.g. "my-effect"
-                            or null if non-existant.
-        -   is_new          A string that reads 'true' or 'false' to indicate
-                            the file hasn't been created yet.
+        -   filename        Name of JSON file, without extension, e.g. "my-effect".
+        -   operation       One of these strings to indicate how to process this file:
+                                - 'new'         File does not exist yet.
+                                - 'existing'    Modify an existing file.
+                                - 'clone'       Create new file based on original filename.
         """
         filename = params[0]
-        is_new = params[1]
+        operation = params[1]
         effect = effects.EffectData()
-        status = effect.load_from_file(os.path.join(self.path.effects, filename + ".json"))
 
-        if status == False:
-            self._open_dialog("serious",
-                _("Unable to load file:") + ' ' + filename,
-                _("The file is no longer accessible or is corrupt."))
-            return
+        if operation in ["clone", "existing"]:
+            status = effect.load_from_file(os.path.join(self.path.effects, filename + ".json"))
+
+            if status == False:
+                self._open_dialog("serious",
+                    _("Unable to load file:") + ' ' + filename,
+                    _("The file is no longer accessible or is corrupt."))
+                return
+
+        # Prevents placeholder [!tag!] if no emblem is specified.
+        if not effect.emblem:
+            effect.emblem = ""
+
+        # Show filesystem icon tab if it was originally an icon
+        show_filesystem_tab = "false"
+        if effect.icon:
+            show_filesystem_tab = "true"
+
+        # Set an accurate dialog title
+        if operation == "existing":
+            dialog_title = _("Edit Effect:") + " " + effect.name
+        elif operation == "clone":
+            dialog_title = _("Clone Effect:") + " " + effect.name
 
         replace_dict = {
+            "operation": operation,
             "orig_filename": filename,
             "orig_name": effect.name,
             "orig_author": effect.author,
             "orig_author_url": effect.author_url,
             "orig_icon_path": effect.get_icon_path(self.path.data_source),
-            "orig_icon": effect.icon,
             "orig_emblem": effect.emblem,
+            "orig_icon": effect.icon,
             "emblem_list": self._get_emblem_list_html()
         }
 
         inner_html = self.controller.get_content_view("edit-effect", replace_dict)
         buttons = [["close_dialog()", _("Revert")], ["save_effect()", _("Save Changes")]]
-        self._open_dialog("info", _("Edit Effect:") + " " + effect.name, inner_html, "23em", "40em", buttons)
+        self._open_dialog("info", dialog_title, inner_html, "23em", "40em", buttons)
+        self.webview.run_js("run_when_dialog_opens({0})".format(show_filesystem_tab));
 
     def effects_edit_dialog_save(self, params=[]):
         """
         Completes the save operation from an edit dialogue box.
 
         Parameters:
-        -   old_filename    Previous JSON file name. If new, this is null.
+        -   operation       See effects_edit_dialog() parameters.
+        -   filename        Previous JSON file name.
+                                If new, this is null.
         -   name            Name of effect.
         -   author          Name of author.
         -   author_url      Optional URL field for author.
         -   emblem          Name of an emblem.
         -   icon            Absolute path an image or a base64 encode.
         """
-        old_filename = params[0]
-        name = params[1]
-        author = params[2]
-        author_url = params[3]
-        emblem = params[4]
-        icon = params[5]
+        operation = params[0]
+        filename = params[1]
+        name = params[2]
+        author = params[3]
+        author_url = params[4]
+        emblem = params[5]
+        icon = params[6]
 
+        effect = effects.EffectData()
 
-        self._close_dialog()
+        if operation in ["existing", "clone"]:
+            status = effect.load_from_file(os.path.join(self.path.effects, filename + ".json"))
+
+            if status == False:
+                self._open_dialog("serious",
+                    _("Unable to load file:") + ' ' + filename,
+                    _("The file is no longer accessible or is corrupt."))
+                return
+
+        # Update values of effect in memory and save to file.
+        effect.name = name
+        effect.author = author
+        effect.author_url = author_url
+        if emblem:
+            effect.set_icon_path(True, emblem)
+        elif icon:
+            effect.set_icon_path(False, icon)
+        else:
+            effect.emblem = None
+            effect.icon = None
+
+        # Rename file if new.
+        if operation == "existing":
+            status = effect.rename_self()
+            if not status:
+                self._open_dialog("serious",
+                    _("Unable to rename file!"),
+                    _("This could indicate a permissions error or a malformed filename."))
+                return
+        elif operation == "clone":
+            effect.file_path = None
+
+        result = effect.save_to_file()
+
+        if result:
+            self._close_dialog()
+            self.effects_init_tab()
+        else:
+            self._open_dialog("serious",
+                _("Unable to save file!"),
+                _("This could indicate a permissions error or a malformed filename."))
+            return
+
 
     def effects_browse_icon(self, params=[]):
         """
@@ -2051,4 +2119,3 @@ class UICmd(object):
             self._open_dialog("warning", "{0} {1}".format(_("Delete"), effect_name),
                 _("This action cannot be undone. If this effect is used by a profile, this will be unlinked too."), "10em", "32em",
                 [["close_dialog()", _("Cancel")], ["cmd(&quot;effect-delete?" + filename + "?true&quot;)", _("Delete")]])
-

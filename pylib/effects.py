@@ -32,9 +32,9 @@ class EffectData(object):
         Initialises the object. Data will be altered in memory before saving
         to disk.
         """
-        self.filename = None                # Examples / Options
-        self.name = ""                      # My awesome effect
-        self.author = ""                    # Author name
+        self.file_path = None               # Absolute path to the file
+        self.name = ""                      # "Awesome effect name"
+        self.author = ""                    # Author name or alias
         self.author_url = ""                # Optional URL to author's website
         self.emblem = None                  # E.g. "lamp", "software"
         self.icon = None                    # base64 encoded string of an image (PNG/JPG)
@@ -71,7 +71,7 @@ class EffectData(object):
                 data = json.load(stream)
 
             # File -> Memory
-            self.filename = path
+            self.file_path = path
             metadata = data.get("metadata")
             self.name = metadata.get("name")
             self.author = metadata.get("author")
@@ -127,17 +127,23 @@ class EffectData(object):
         if len(self.name) == 0:
             return False
 
-        if not os.path.exists(self.filename):
-            self.filename = self.generate_filename()
+        if not self.file_path:
+            self.file_path = os.path.join(path.effects, self.generate_filename() + ".json")
 
-        if os.path.writable(self.filename):
-            try:
-                f = open(self.filename, "w+")
-                f.write(json.dumps(structure, sort_keys=True, indent=4))
-                f.close()
-                return True
-            except Exception:
-                return False
+            # Prevent overriding if effect with same name exists.
+            if os.path.exists(self.file_path):
+                self.file_path = os.path.join(path.effects, "{0}-{1}.json".format(self.generate_filename(), str(int(time.time()))))
+
+        try:
+            f = open(self.file_path, "w+")
+            f.write(json.dumps(structure, sort_keys=True, indent=4))
+            f.close()
+            dbg.stdout("Successfully written: " + self.file_path, dbg.success, 1)
+            return True
+        except Exception as e:
+            dbg.stdout("Write error: " + self.file_path, dbg.error)
+            dbg.stdout("Exception: " + str(e), dbg.error)
+            return False
 
         return False
 
@@ -191,42 +197,12 @@ class EffectData(object):
         # Encode file as base64 for portability.
         if os.path.exists(emblem_or_path):
             with open(emblem_or_path, "rb") as image_file:
-                encoded_string = base64.b64encode(image_file.read())
+                encoded_string = base64.b64encode(image_file.read()).decode("UTF-8")
             self.icon = encoded_string
             self.emblem = None
             return True
 
         return False
-
-    def generate_filename(self):
-        """
-        Determines a pretty filename for new files.
-        """
-        if len(self.name) > 0:
-            filename = ''.join(e for e in self.name if e.isalnum())
-            filename = filename.lower().replace(" ", "-")
-
-            if os.path.exists(os.path.join(path.effects, "/", filename + ".json")):
-                filename += "-" + str(int(time.time()))
-
-            filename += ".json"
-            return filename
-
-    def set_metadata(self, name, value):
-        """
-        Sets metadata for this effect.
-        """
-        self.metadata[name] = value
-
-    def get_metadata(self, name, value):
-        """
-        Returns metadata for this effect.
-        """
-        try:
-            return self.metadata[name]
-        except Exception:
-            dbg.stdout("Invalid metadata key: " + name, dbg.warning)
-            return None
 
     def render(self):
         """
@@ -303,6 +279,39 @@ class EffectData(object):
         """
         self.playback["looped"] = looped
 
+    def generate_filename(self):
+        """
+        Determines a pretty filename for a new file.
+        """
+        if len(self.name) > 0:
+            filename = ''.join(e for e in self.name if e.isalnum())
+            filename = filename.lower().replace(" ", "-")
+            return filename
+
+    def rename_self(self):
+        """
+        Performs a rename of an existing filename. Returns boolean for status.
+        """
+        old_path = self.file_path
+        new_path = os.path.join(path.effects, self.generate_filename() + ".json")
+
+        if len(self.name) == 0 or not os.path.exists(old_path):
+            return False
+
+        if old_path == new_path:
+            return True
+
+        # Prevent overriding if effect with same name exists.
+        if os.path.exists(new_path):
+            new_path = os.path.join(path.effects, "{0}-{1}.json".format(self.generate_filename(), str(int(time.time()))))
+
+        try:
+            os.rename(old_path, new_path)
+            self.file_path = new_path
+            return True
+        except OSError:
+            return False
+
     def delete_self(self):
         """
         User has requested to delete this effect from the UI. In addition to removing
@@ -311,19 +320,17 @@ class EffectData(object):
 
         Returns True or False to indicate success.
         """
-        dbg.stdout("Deleting: " + self.filename, dbg.action, 1)
-        if not os.path.exists(self.filename):
+        dbg.stdout("Deleting: " + self.file_path, dbg.action, 1)
+        if not os.path.exists(self.file_path):
             return False
-
-        os.remove(self.filename)
-
+        os.remove(self.file_path)
         return True
 
 
 
 def get_effect_list_for_device(effect_dir, formfactor, data_source):
     """
-    Returns a list with sublists in format: [name, icon, filename]
+    Returns a list with a sublist in format: [name, icon, filename]
 
     Parameters:
         - effect_dir        Reads effect JSON from this directory, usually path.effects.
@@ -333,13 +340,13 @@ def get_effect_list_for_device(effect_dir, formfactor, data_source):
     file_list = os.listdir(effect_dir)
     effect_list = []
     for filename in file_list:
-        #~ try:
+        try:
             effect = EffectData()
             effect.load_from_file(os.path.join(effect_dir, filename))
             if effect.formfactor == formfactor or formfactor == None:
                 effect_list.append([effect.name, effect.get_icon_path(data_source), filename])
-        #~ except Exception as e:
-            #~ dbg.stdout("Failed to load effect JSON: " + filename, dbg.error)
-            #~ dbg.stdout("Exception: " + str(e))
+        except Exception as e:
+            dbg.stdout("Skipping unreadable JSON: " + filename, dbg.error)
+            dbg.stdout("Exception: " + str(e))
 
     return effect_list

@@ -20,11 +20,11 @@
             <td></td>
             <th>Change Icon</th>
             <td>
-                <input id="effect-icon" type="hidden" value="[!orig_icon!]"/>
                 <input id="effect-emblem" type="hidden" value="[!orig_emblem!]"/>
+                <input id="effect-icon" type="hidden" value="[!orig_icon!]"/>
                 <div id="effect-icon-tabs" class="tabs">
-                    <button class="tab active" onclick="show_tab(this, 'emblem')"><img src="img/fa/palette.svg"/> [[ emblem ]]</button>
-                    <button class="tab" onclick="show_tab(this, 'custom')"><img src="img/fa/folder.svg"/> [[ file-system ]]</button>
+                    <button id="tab-btn-emblem" class="tab active" onclick="show_tab(this, 'emblem')"><img src="img/fa/palette.svg"/> [[ emblem ]]</button>
+                    <button id="tab-btn-custom" class="tab" onclick="show_tab(this, 'custom')"><img src="img/fa/folder.svg"/> [[ file-system ]]</button>
                 </div>
                 <div id="effect-icon-tabs" class="tab-icon-chooser">
                     <div id="tab-icon-emblem" class="tab-content">
@@ -42,6 +42,7 @@
 <script>
     function save_effect() {
         var cmd_to_send = "effect-edit-save";
+        cmd_to_send += "?" + "[!operation!]";
         cmd_to_send += "?" + $("#effect-filename").val();
         cmd_to_send += "?" + $("#effect-name").val().replace("?", "");
         cmd_to_send += "?" + $("#effect-author").val().replace("?", "");
@@ -63,4 +64,11 @@
         $("#effect-icon").val("");
         $("#effect-emblem").val(name);
     }
+
+    function run_when_dialog_opens(show_filesystem_tab) {
+        if (show_filesystem_tab == true) {
+            show_tab($("#tab-btn-custom"), 'custom');
+        }
+    }
+
 </script>
