@@ -20,7 +20,7 @@ custom_target('css',
               command : [sass, '@INPUT@', '@OUTPUT@', '--style', 'compressed'],
               build_by_default : true,
               install : true,
-              install_dir : join_paths(get_option('datadir'), 'polychromatic', 'ui', 'themes'))
+              install_dir : join_paths(get_option('datadir'), 'polychromatic', 'ui'))
 
 install_data('polychromatic-controller',
              'polychromatic-tray-applet',
