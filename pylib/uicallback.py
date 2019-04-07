@@ -307,7 +307,7 @@ class UICmd(object):
             placeholder,
             initial_value)
         if browse_btn:
-            html += self._make_control_button(element_id, "browse?{0}?{1}".format(element_id, 1), _("Browse"), "img/fa/browse.svg")
+            html += self._make_control_button(element_id, "browse?{0}?{1}".format(element_id, 1), _("Browse"), "ui/img/fa/browse.svg")
         html += "<span id='{0}-options' style='display:none'>".format(element_id)
         html += "<button onclick='cmd(\"{0}?\" + $(\"#{1}\").val());$(\"#{1}-options\").hide()'>Save</button>".format(command, element_id)
         html += "</span> " + append + "</p>"
@@ -376,7 +376,7 @@ class UICmd(object):
                 element_id,
                 "disabled" if disabled else "",
                 command,
-                self._load_svg("ui/" + icon_path),
+                self._load_svg(icon_path),
                 label,
                 "serious" if serious else "")
         else:
@@ -1554,9 +1554,9 @@ class UICmd(object):
                     output = "<div class='saved-row'><div class='name'>{0}</div> {1} <div class='options'>{2} {3} {4}</div></div>".format(
                         self._make_control_text("", "saved-col-set-data?name?" + str(pos), name, _("Colour Name")),
                         self._make_colour_selector(hex_val, "saved-col-set-data?hex?" + str(pos), name),
-                        self._make_control_button("", "saved-col-reorder?{0}?{1}".format(str(pos), str(pos - 1)), "", "img/fa/move-up.svg", True if pos == 0 else False),
-                        self._make_control_button("", "saved-col-reorder?{0}?{1}".format(str(pos), str(pos + 1)), "", "img/fa/move-down.svg", True if pos == length - 1 else False),
-                        self._make_control_button("", "saved-col-del?" + str(pos), "", "img/fa/bin.svg", False, True))
+                        self._make_control_button("", "saved-col-reorder?{0}?{1}".format(str(pos), str(pos - 1)), "", "ui/img/fa/move-up.svg", True if pos == 0 else False),
+                        self._make_control_button("", "saved-col-reorder?{0}?{1}".format(str(pos), str(pos + 1)), "", "ui/img/fa/move-down.svg", True if pos == length - 1 else False),
+                        self._make_control_button("", "saved-col-del?" + str(pos), "", "ui/img/fa/bin.svg", False, True))
                     return output
                 except Exception as e:
                     dbg.stdout("Couldn't process colour {0}. Exception: {1}".format(str(pos), str(e)), dbg.error)
@@ -1571,8 +1571,8 @@ class UICmd(object):
             html += self._make_group_name(_("Saved Colors"))
             html += col_table
             html += "<div class='inner-block'>"
-            html += self._make_control_button("", "saved-col-new", _("New"), "img/fa/new.svg")
-            html += self._make_control_button("", "saved-col-reset", _("Reset to Defaults"), "img/fa/bin.svg", False, True)
+            html += self._make_control_button("", "saved-col-new", _("New"), "ui/img/fa/new.svg")
+            html += self._make_control_button("", "saved-col-reset", _("Reset to Defaults"), "ui/img/fa/bin.svg", False, True)
             html += "</div>"
 
             return html
@@ -1847,14 +1847,14 @@ class UICmd(object):
         # Generate buttons
         buttons = ""
         if effect.effect_type == "static":
-            buttons += self._make_control_button("", "effect-play?" + uuid, _("Activate"), "img/fa/lightbulb.svg")
+            buttons += self._make_control_button("", "effect-play?" + uuid, _("Activate"), "ui/img/fa/lightbulb.svg")
         elif effect.effect_type == "animated":
-            buttons += self._make_control_button("", "effect-play?" + uuid, _("Play"), "img/fa/play.svg")
+            buttons += self._make_control_button("", "effect-play?" + uuid, _("Play"), "ui/img/fa/play.svg")
         elif effect.effect_type == "scripted":
-            buttons += self._make_control_button("", "effect-play?" + uuid, _("Run"), "img/fa/play.svg")
-        buttons +=  self._make_control_button("", "effect-edit?" + filename + "?existing", _("Edit"), "img/fa/edit.svg")
-        buttons +=  self._make_control_button("", "effect-edit?" + filename + "?clone", _("Clone"), "img/fa/clone.svg")
-        buttons +=  self._make_control_button("", "effect-delete?" + filename + "?false", _("Delete"), "img/fa/bin.svg")
+            buttons += self._make_control_button("", "effect-play?" + uuid, _("Run"), "ui/img/fa/play.svg")
+        buttons +=  self._make_control_button("", "effect-edit?" + filename + "?existing", _("Edit"), "ui/img/fa/edit.svg")
+        buttons +=  self._make_control_button("", "effect-edit?" + filename + "?clone", _("Clone"), "ui/img/fa/clone.svg")
+        buttons +=  self._make_control_button("", "effect-delete?" + filename + "?false", _("Delete"), "ui/img/fa/bin.svg")
 
         # Get pretty locale if known/available
         mapping_locale = "(" + common.get_locale_pretty(effect.mapping_locale) + ")"
@@ -1887,9 +1887,9 @@ class UICmd(object):
                 description)
 
         inner_html = "<table class='no-grid'>"
-        inner_html += _add_button("static", _("Static"), "img/fa/lightbulb.svg", _("A single frame"))
-        inner_html += _add_button("animated", _("Animated"), "img/fa/clock.svg", _("A series of keyframes, with layers support."))
-        inner_html += _add_button("scripted", _("Scripted"), "img/fa/scripted.svg", _("A Python script"))
+        inner_html += _add_button("static", _("Static"), "ui/img/fa/lightbulb.svg", _("Design a single frame."))
+        inner_html += _add_button("animated", _("Animated"), "ui/img/fa/clock.svg", _("Design an animation with keyframes and layers."))
+        inner_html += _add_button("scripted", _("Scripted"), "ui/img/fa/scripted.svg", _("Design a Python script, with full dynamic control."))
         inner_html += "</table>"
         self._open_dialog("info", _("Choose a new effect"), inner_html, "14em", "30em", [["close_dialog()", _("Cancel")]])
 

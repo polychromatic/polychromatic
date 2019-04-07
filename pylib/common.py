@@ -167,22 +167,26 @@ def get_device_list_by_serial(device_obj_list, expected_serial):
     return None
 
 
-def get_device_image(device, data_source):
+def get_device_image(device, data_source, relative_path=False):
     """
     Gets a Polychromatic image of the current device.
     """
-    return get_device_image_by_type(device.type, data_source)
+    return get_device_image_by_type(device.type, data_source, relative_path)
 
 
-def get_device_image_by_type(device_type, data_source):
+def get_device_image_by_type(device_type, data_source, relative_path=False):
     """
     Gets a Polychromatic image that represents a device's form factor.
     """
-    image_path = "{0}/ui/img/devices/{1}.svg".format(data_source, device_type)
-    if os.path.exists(image_path):
+    image_path = "ui/img/devices/{0}.svg".format(device_type)
+
+    if not os.path.exists(os.path.join(data_source, image_path)):
+        image_path = "ui/img/devices/unknown.svg"
+
+    if relative_path:
         return image_path
     else:
-        return "{0}/ui/img/devices/unknown.svg".format(data_source)
+        return os.path.join(data_source, image_path)
 
 
 def get_real_device_image(device):
