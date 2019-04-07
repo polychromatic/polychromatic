@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
+# vim: tabstop=4 shiftwidth=4 softtabstop=4 expandtab colorcolumn=96 :
 #
 # Polychromatic is free software: you can redistribute it and/or modify
 # it under the temms of the GNU General Public License as published by
@@ -2533,9 +2534,11 @@ class PageLoaded():
         trans.push('#dialog-rename-ok', _("Save Changes"))
         trans.push('#str-browse-icon', _("Browse Icon"))
 
+        device_name = str(appobj.active_device.name)
+
         # Initialise keyboard layout
         js_exec = appobj.webkit.JavaScriptExecutor(appobj.webkit)
-        kb_callback = appobj.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(function(){{{0}}});")
+        kb_callback = appobj.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(\""+ device_name + "\", function(){{{0}}});")
 
         # Initalise colour picker
         appobj.print_colour_options("editor-colour", "#colour-selection", [0, 255, 0], "profile")
@@ -2574,7 +2577,6 @@ class PageLoaded():
                 kb_callback << js_string
 
         # Disable space key and FN for keyboards that don't support them.
-        device_name = str(appobj.active_device.name)
         if device_name in "Razer BlackWidow Chroma" "Razer BlackWidow Ultimate":
             # Except that BW Ultimate 2016 does support the keys.
             if not device_name == "Razer BlackWidow Ultimate 2016":

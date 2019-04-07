@@ -36,13 +36,11 @@ function getTextColour(hex) {
  * Keyboard class
  *
  * @param keyboard_element_id {string} ID for container of keyboard
- * @param keyboard_svg_path {string} Path to keyboard SVG
  */
 
-function Keyboard(keyboard_element_id, keyboard_svg_path) {
+function Keyboard(keyboard_element_id) {
 
     var keyboard_id = keyboard_element_id;
-    var svg_path = keyboard_svg_path;
     var snap_object;
 
     var layouts = [];
@@ -309,14 +307,29 @@ function Keyboard(keyboard_element_id, keyboard_svg_path) {
     };
 
     /**
-     * Load the keyboard SVG into the keyboard container
+     * Returns path to the keyboard's SVG file
+     *
+	 * @param model {string} Keyboard model name
      */
-    this.load = function (callback) {
+	this.svg_path = function (model) {
+		var map = "blackwidow-chroma";
+		switch (model) {
+			case "Razer BlackWidow Elite":
+				map = "blackwidow-elite";
+				break;
+		}
+		return "../mapping/"+map+"-keyboard-layout.svg";
+	}
+
+    /**
+     * Load the keyboard SVG into the keyboard container
+     *
+	 * @param model {string} Keyboard model name
+	 * @param callback {function} This function will be called after load
+     */
+    this.load = function (model, callback) {
         snap_object = Snap("#" + keyboard_id);
-
-
-
-        Snap.load(svg_path, function (svg_contents) {
+        Snap.load(this.svg_path(model), function (svg_contents) {
             snap_object.append(svg_contents);
 
             keyboard_obj.setup();
@@ -330,7 +343,7 @@ function Keyboard(keyboard_element_id, keyboard_svg_path) {
 
 
 // Initialise keyboard object
-var keyboard_obj = new Keyboard("keyboard-div", "../mapping/blackwidow-chroma-keyboard-layout.svg");
+var keyboard_obj = new Keyboard("keyboard-div");
 
 
 /**
@@ -445,3 +458,5 @@ function rename_profile_dialog_close() {
     $('#overlay').fadeOut('fast');
     $('.blur-focus').removeClass('blur');
 }
+
+// vim: tabstop=4 shiftwidth=4 softtabstop=4 expandtab colorcolumn=96 :
