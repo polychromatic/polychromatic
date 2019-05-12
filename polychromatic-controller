@@ -52,8 +52,7 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
         import pylib.uicallback as uicallback
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
-        print(str(e))
-        exit(1)
+        raise e
 
 # Import modules if installed to system.
 else:
@@ -547,11 +546,9 @@ def parse_parameters():
 
     if args.verbose:
         dbg.verbose_level = 1
-        dbg.stdout(_("Verbose Enabled"), dbg.action, 1)
 
     if args.debug:
         dbg.verbose_level = 2
-        dbg.stdout(_("Debug Verbose Enabled"), dbg.action, 2)
 
     if args.inspect:
         dbg.verbose_level = 3
