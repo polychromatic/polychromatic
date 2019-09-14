@@ -11,5 +11,5 @@ fi
 
 cd $(dirname "$0")/sass/
 
-sass ./controller.scss ../../data/ui/controller.css --scss --style=compressed --sourcemap=none
+sass ./controller.scss ../../data/ui/controller.css --style=compressed --no-source-map
 

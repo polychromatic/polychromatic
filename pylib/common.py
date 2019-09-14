@@ -335,7 +335,10 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
     # Convert colours to R,G,B to pass to the daemon.
     # If device hasn't previously specified colours, use default colours.
     if primary_colours:
-        rgb = hex_to_rgb(primary_colours)
+        if type(primary_colours) == str:
+            rgb = hex_to_rgb(primary_colours)
+        elif type(primary_colours) == list:
+            rgb = primary_colours
     else:
         rgb = hex_to_rgb(pref.get("colours", "primary", "#00FF00"))
 
@@ -344,7 +347,10 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
     primary_blue = rgb[2]
 
     if secondary_colours:
-        rgb = hex_to_rgb(secondary_colours)
+        if type(secondary_colours) == str:
+            rgb = hex_to_rgb(secondary_colours)
+        elif type(secondary_colours) == list:
+            rgb = secondary_colours
     else:
         rgb = hex_to_rgb(pref.get("colours", "primary", "#00FFFF"))
 
