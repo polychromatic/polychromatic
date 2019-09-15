@@ -343,7 +343,10 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None, pri
     primary_blue = rgb[2]
 
     if secondary_colours:
-        rgb = hex_to_rgb(secondary_colours)
+        if type(secondary_colours) == str:
+            rgb = hex_to_rgb(secondary_colours)
+        elif type(secondary_colours) == list:
+            rgb = secondary_colours
     else:
         rgb = hex_to_rgb(pref.get("colours", "primary", "#00FFFF"))
 
