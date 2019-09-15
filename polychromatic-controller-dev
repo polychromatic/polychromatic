@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# Starts Polychromatic Controller and essential development tasks like
+# compiling the styles.
+#
+# Defaults to using -d (verbose) parameter, but also passes any others when
+# executing this script.
+#
+params=$*
+
+cd "$(dirname "$0")"
+
+# Compile SASS files
+./source/build-sass.sh
+if [ $? != 0 ]; then
+    exit 1
+fi
+
+# Start!
+./polychromatic-controller -d $params
