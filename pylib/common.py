@@ -1049,6 +1049,7 @@ def get_locale_pretty(locale):
     try:
         locales = {
             "en_US": _("US"),
+            "pt_BR": _("Brazilian Portuguese"),
             "en_GB": _("British")
         }
         return locales[locale]
