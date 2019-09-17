@@ -531,7 +531,7 @@ def parse_parameters():
     parser = argparse.ArgumentParser(add_help=False)
     parser._optionals.title = _("Optional arguments")
     parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
-    parser.add_argument("--version", help=_("Print progran version and exit"), action="store_true")
+    parser.add_argument("--version", help=_("Print program version and exit"), action="store_true")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
     parser.add_argument("-vv", "-d", "--debug", help=_("Be very verbose (for debugging)"), action="store_true")
     parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
