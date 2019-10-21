@@ -33,10 +33,9 @@ Due to the diversity of devices, not all of a device's features may be supported
 
 ## Troubleshooting
 
-
 Occasionally, issues are caused by an improper installation of OpenRazer, which covers
 DBus, the daemon and the driver. [Check if an issue already exists](https://github.com/openrazer/openrazer/issues)
-for your specific device before [creating a new issue one](https://github.com/openrazer/openrazer/issues/new).
+for your specific device before [creating a new issue](https://github.com/openrazer/openrazer/issues/new).
 
 For visual or functional problems with Polychromatic, [please raise an issue here instead](https://github.com/polychromatic/polychromatic/issues/new).
 
