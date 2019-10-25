@@ -17,11 +17,14 @@
 # Copyright (C) 2015-2019 Luke Horwell <code@horwell.me>
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
-"""Polychromatic GUI for interfacing with the OpenRazer's Python Library and daemon"""
+"""
+Frontend interface for Polychromatic based on WebKitGTK
+"""
 
-VERSION = "0.4.0"
+VERSION = "0.5.0"
 
 import argparse
+import json
 import os
 import re
 import signal
@@ -34,32 +37,24 @@ gi.require_version("Gdk", "3.0")
 gi.require_version("WebKit2", "4.0")
 from gi.repository import GLib, Gtk, Gdk, WebKit2
 
-# Import OpenRazer
-try:
-    import openrazer.client as rclient
-except ImportError as e:
-    rclient = None
-    print("Failed to import modules for daemon.\n" + str(e))
-
-# Import relative copies if running in development mode.
+# Import modules if running relatively.
 DEV_VERSION = False
 if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
     DEV_VERSION = True
     try:
-        # Relative (for development)
         import pylib.preferences as pref
         import pylib.common as common
-        import pylib.uicallback as uicallback
+        from pylib.controller import PolychromaticController as controller
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
 
-# Import modules if installed to system.
+# Import modules if installed system.-wide.
 else:
     try:
         import polychromatic.preferences as pref
         import polychromatic.common as common
-        import polychromatic.uicallback as uicallback
+        from polychromatic.controller import PolychromaticController as controller
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
@@ -70,89 +65,10 @@ path = pref.Paths()
 path.data_source = path.get_data_source(__file__)
 setproctitle("polychromatic-controller")
 
-def get_string_bank(_):
-    return {
-        "debug1": "Hello World",
-        "debug2": "Test String",
-        "overview": _("All Devices"),
-        "devices": _("Devices"),
-        "effects": _("Effects"),
-        "profiles": _("Profiles"),
-        "schedule": _("Schedule"),
-        "preferences": _("Preferences"),
-        "device-info": _("Device Info"),
-        "brightness": _("Brightness"),
-        "effect": _("Effect"),
-        "spectrum": _("Spectrum"),
-        "wave": _("Wave"),
-        "reactive": _("Reactive"),
-        "breath": _("Breath"),
-        "ripple": _("Ripple"),
-        "static": _("Static"),
-        "starlight": _("Starlight"),
-        "game_mode": _("Game Mode"),
-        "enabled": _("Enabled"),
-        "learn_more": _("Learn more"),
-        "macros": _("Macros"),
-        "dpi": _("DPI"),
-        "polling_rate": _("Polling Rate"),
-        "wave-settings": _("Wave Direction"),
-        "left": _("Left"),
-        "right": _("Right"),
-        "clockwise": _("Clockwise"),
-        "anticlockwise": _("Anticlockwise"),
-        "up": _("Up"),
-        "down": _("Down"),
-        "reactive-settings": _("Reactive Speed"),
-        "fast": _("Fast"),
-        "medium": _("Medium"),
-        "slow": _("Slow"),
-        "vslow": _("Very Slow"),
-        "breath-settings": _("Breath Type"),
-        "random": _("Random"),
-        "single": _("Single"),
-        "dual": _("Dual"),
-        "ripple-settings": _("Ripple Type"),
-        "color": _("Color"),
-        "unknown-device": _("Unrecognized"),
-        "close-app": _("Close Application"),
-        "troubleshoot": _("Troubleshoot"),
-        "retry": _("Retry"),
-        "on": _("On"),
-        "off": _("Off"),
-        "formfactor": _("Form Factor"),
-        "serial": _("Serial"),
-        "firmware_version": _("Firmware Version"),
-        "macro_support": _("Macro Support"),
-        "matrix_size": _("Matrix Dimensions"),
-        "capability_name": _("Daemon Capability"),
-        "capability_supported": _("Supported?"),
-        "capability_description": _("Description"),
-        "connected-devices": _("Connected Devices"),
-        "apply-to-all": _("Apply to All"),
-        "unsupported-all-effects": _("Some devices could not be applied as they do not support this effect."),
-        "saved-colours": _("Saved Colors"),
-        "about": _("About"),
-        "general": _("General"),
-        "tray-applet": _("Tray Applet"),
-        "daemon": _("Daemon"),
-        "effects-welcome-title": _("Select an effect to begin."),
-        "new-effect": _("New Effect"),
-        "import-effect": _("Import..."),
-        "author": _("Author"),
-        "type": _("Type"),
-        "mapping": _("Mapped Hardware"),
-        "key_mapping": _("Key Mapping"),
-        "emblem": _("Emblem"),
-        "file-system": _("File System"),
-        "browse": _("Browse"),
-        "custom-path-info": _("Choose an image or .desktop file from your computer."),
-    }
-
 
 class WebView(object):
     """
-    WebKit is responsible for rendering the user interface using web technologies.
+    WebKit renders the user interface using web technologies.
     """
     def __init__(self):
         """
@@ -168,8 +84,10 @@ class WebView(object):
 
     def build_webview(self):
         """
-        Sets up the WebView object and loads the initial page.
+        Sets up the WebView object and loads the page.
         """
+        dbg.stdout("Initalising WebView...", dbg.action, 1)
+
         # Match background colour with page.
         self.webview.set_background_color(Gdk.RGBA(0, 0, 0, 1))
 
@@ -178,7 +96,7 @@ class WebView(object):
         self.webview.connect("notify::title", self.title_changed_cb)
         self.webview.connect("context-menu", self.context_menu_cb)
 
-        # Allows local SVG files to load.
+        # Allow local SVG files to load.
         self.webview.get_settings().set_allow_file_access_from_file_urls(True)
         self.webview.get_settings().set_allow_universal_access_from_file_urls(True)
 
@@ -191,25 +109,25 @@ class WebView(object):
         self.webview.get_settings().set_enable_caret_browsing(True)
 
         # Enable web inspector for debugging
-        if dbg.verbose_level == 3:
+        if dbg.verbose_level == 2:
             self.webview.get_settings().set_property("enable-developer-extras", True)
 
         # Load the base page structure
         self.webview.load_uri("file://" + os.path.join(path.data_source, "ui/controller.html"))
         dbg.stdout("WebView Initialised", dbg.success, 1)
 
-    def run_js(self, function):
+    def run_js(self, code):
         """
-        Runs a JavaScript function on the page, regardless of which thread it is called from.
+        Runs JavaScript code on the page, regardless of which thread it is called from.
         GTK+ operations must be performed on the same thread to prevent crashes.
         """
-        GLib.idle_add(self._run_js, function)
+        GLib.idle_add(self._run_js, code)
 
-    def _run_js(self, function):
+    def _run_js(self, code):
         """
-        Private function for running a JavaScript function on the page when invoked from run_js()
+        Private function for running JavaScript code on the page when invoked from run_js()
         """
-        self.webview.run_javascript(function)
+        self.webview.run_javascript(code)
         return GLib.SOURCE_REMOVE
 
     def title_changed_cb(self, view, frame):
@@ -217,11 +135,11 @@ class WebView(object):
         Callback: Title changed
 
         This is where the frontend has set document.title, which is used for
-        communicating to Python via commands.
+        sending/recieving requests to the "controller" layer.
         """
         title = self.webview.get_title()
         if title not in ["null", None, "", " "]:
-            app.process_command(title)
+            app.incoming_request(title)
 
     def context_menu_cb(self, view, menu, event, htr):
         """
@@ -233,12 +151,12 @@ class WebView(object):
         """
         Callback: Page changed
 
-        Intended to be called when the initial controller.html page has finished loading.
+        Intended to be called when the initial page has finished loading.
         """
         dbg.stdout("WebView still loading...", dbg.debug, 2)
         if not self.webview.is_loading():
-            dbg.stdout("WebView Ready.", dbg.success, 1)
-            thread = threading.Thread(target=app.start_loading, args=([self]))
+            dbg.stdout("Page loaded", dbg.success, 1)
+            thread = threading.Thread(target=app.start_app, args=([]))
             thread.start()
 
 
@@ -246,18 +164,17 @@ class AppWindow(object):
     """
     Main application class for building the skeleton of the GTK application window.
     """
-    def __init__(self):
+    def __init__(self, _webview):
         """
-        Variables to be set later.
+        Prepares variables to be set later.
         """
-        self.webview = None
-        self.window = None
+        self.webview = _webview
 
     def run(self):
         """
         Assembles the main application window.
         """
-        self.webview = WebView()
+        dbg.stdout("Initalising Window...", dbg.action, 1)
         self.webview.build_webview()
 
         self.window = Gtk.Window(title=_("Polychromatic Controller"))
@@ -270,7 +187,7 @@ class AppWindow(object):
         try:
             self.window.set_icon_from_file(os.path.join(path.data_source, "ui/img/general/controller.svg"))
         except Exception:
-            dbg.stdout("Failed to set window icon.", dbg.warning, 2)
+            dbg.stdout("Failed to set window icon.", dbg.warning, 0)
 
         # Create scrolled window (containing WebKit) to be part of a horz. pane
         sw = Gtk.ScrolledWindow()
@@ -284,7 +201,7 @@ class AppWindow(object):
         self.window.add(pane)
 
         # When debugging, re-position window.
-        if dbg.verbose_level == 3:
+        if dbg.verbose_level == 2:
             def dummy(webview):
                 return True
 
@@ -301,25 +218,25 @@ class AppWindow(object):
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         # Showtime!
+        dbg.stdout("Initialised Window", dbg.success, 1)
         self.window.show_all()
         Gtk.main()
-        dbg.stdout("Window Initialised", dbg.success, 1)
 
 
 class Controller(object):
     """
-    The main application runtime. Responsive for populating the UI and user interaction logic.
+    The main application runtime. Responsive for relaying user interactions to/from
+    the view and 'actual' controller.
     """
-    def __init__(self):
+    def __init__(self, webview, window):
         """
-        Variables are assigned later in start_loading()
+        Variables that are necessary for running the application.
         """
-        self.webview = None
-        self.devman = None
-        self.active_device = None
-        self.active_device_id = None
-        self.uicmd = None
+        self.webview = webview
+        self.window = window
+        self.controller = controller(self, self.window, self.webview, dbg)
         self.version = VERSION
+        self.versions = {}
 
         try:
             self.versions = {
@@ -330,199 +247,87 @@ class Controller(object):
         except NameError:
             self.versions = False
 
-    def run_javascript(self, function):
+    def _run_js(self, code):
         """
-        Sends a JavaScript function to the page.
+        Sends JavaScript code to the page.
         """
-        self.webview.run_js(function)
+        self.webview.run_js(code)
 
-    def update_page(self, element, function, parm1=None, parm2=None):
+    def send_view_data(self, callback_fn, data):
         """
-        Sends a jQuery function to the page, ensuring correctly parsed quotes.
-        """
-        if parm1 and parm2:
-            buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "', '" + parm2.replace("'", '\\\'') + "')"
-            dbg.stdout(' => ' + buffer, dbg.debug, 2)
-            self.run_javascript(buffer)
-        if parm1:
-            buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "')"
-            dbg.stdout(' => ' + buffer, dbg.debug, 2)
-            self.run_javascript(buffer)
-        else:
-            buffer = '$("' + element + '").' + function + '()'
-            dbg.stdout(' => ' + buffer, dbg.debug, 2)
-            self.run_javascript(buffer)
-
-    def get_content_view(self, section_name, replace_dict={}):
-        """
-        Returns HTML from a 'sections' file, replacing strings for translation
-        and optionally any placeholder sections marked as '[! variable !]'
+        Send a response (or request) to the view. This normally updates the UI
+        in some way.
 
         Params:
-            section_name        HTML file in 'data/ui/sections' folder
-            replace_dict        Optional dictionary to replace variables
-                                in format: {"variable1": "Variable 1"}
+            callback_fn         Name of function to run.
+            data                Python dictonary containing the data.
         """
-        dbg.stdout("Parsing section: {0}".format(section_name), dbg.action, 1)
+        dbg.stdout("→ View: " + str(raw), dbg.debug, 1)
 
         try:
-            with open(os.path.join(path.data_source, "ui/sections/" + section_name + ".html")) as f:
-                html = f.read().replace('\n', '')
-        except FileNotFoundError:
-            dbg.stdout("Missing section: {0}".format(section_name), dbg.error)
-            html = ""
+            data = json.dumps(raw, ensure_ascii=False)
+            self._run_js("{0}({1});".format(callback_fn, data))
+            return True
+        except Exception:
+            dbg.stdout("Internal Error: Cannot parse data for function: " + callback_fn, dbg.error)
+            return False
 
-        # Process strings
-        content_strings = re.findall(r"\[\[(.*?)\]\]", html)
-        for string in content_strings:
-            try:
-                html = html.replace("[[" + string + "]]", string_bank[string.strip()])
-            except KeyError:
-                dbg.stdout("String missing: '{0}' (section '{1}')".format(string.strip(), section_name), dbg.error)
-
-        # Process variables
-        for variable in replace_dict.keys():
-            try:
-                html = html.replace("[!" + variable + "!]", replace_dict[variable])
-            except TypeError:
-                dbg.stdout("Variable missing: '{0}' (section '{1}')".format(string.strip(), section_name), dbg.error)
-
-        dbg.stdout("Loaded section: {0} ({1} strings, {2} variables)".format(section_name, len(content_strings), len(replace_dict.keys())), dbg.success, 1)
-
-        return html
-
-    def update_content_view(self, section_name, target_element="content", replace_dict={}):
+    def send_view_variable(self, variable, data):
         """
-        Loads a HTML 'section' into the content view parsing string placeholders.
+        Update a variable in the view's global scope.
+
+        Params:
+            variable            Name of variable.
+            data                A string, integer, list or dictonary data.
         """
-        html = self.get_content_view(section_name, replace_dict)
-        dbg.stdout("Pushed section: '{0}' (to '{1}')".format(section_name, target_element), dbg.success, 1)
-        self.update_page(target_element, "html", html)
+        dbg.stdout("→ View variable '{0}' set with data: {1}".format(variable, data), dbg.debug, 2)
+        if type(data) == dict:
+            data = json.dumps(data, ensure_ascii=False)
 
-    def process_command(self, full_cmd_string):
+        self._run_js("{0} = {1};".format(variable, data))
+
+    def incoming_request(self, raw):
         """
-        Process a command issued from the frontend for the page.
+        Process a request issued from the frontend for the page.
         """
-        if full_cmd_string == "null":
-            return
+        dbg.stdout("→ Controller: " + str(raw), dbg.debug, 1)
 
-        dbg.stdout("=> " + str(full_cmd_string), dbg.debug, 2)
-        cmd = full_cmd_string.split("?")[0]
+        try:
+            data = json.loads(raw)
+        except Exception:
+            dbg.stdout("Internal Error: Controller cannot parse data!", dbg.error)
+            return False
 
-        uicmd = self.uicmd
-        cmds = {
-            # Main Runtime
-            "quit": uicmd.close_application,
-            "reload": uicmd.reload_application,
-
-            # Common
-            "open-colour-picker": uicmd.show_colour_selector,
-            "open-uri": uicmd.open_uri,
-            "browse": uicmd.browse_input,
-            "restart": uicmd.restart_component,
-
-            # Tabs
-            "devices-tab": uicmd.devices_init_tab,
-            "effects-tab": uicmd.effects_init_tab,
-            "preferences-tab": uicmd.preferences_init_tab,
-
-            # Devices
-            "device-overview": uicmd.devices_set_overview,
-            "device-select": uicmd.devices_set_device,
-            "device-unrecog": uicmd.devices_set_unknown,
-            "device-info": uicmd.devices_show_device_info,
-            "set-effect": uicmd.set_effect,
-            "set-effect-param": uicmd.set_effect_param,
-            "set-brightness": uicmd.set_brightness,
-            "set-game-mode": uicmd.set_gamemode,
-            "set-dpi": uicmd.set_dpi,
-            "set-poll-rate": uicmd.set_poll_rate,
-            "set-primary-colour": uicmd.set_primary_colour,
-            "set-secondary-colour": uicmd.set_secondary_colour,
-
-            # Overview
-            "set-all-effect": uicmd.set_all_effect,
-            "set-all-brightness": uicmd.set_all_brightness,
-
-            # Preferences
-            "pref-set-tab": uicmd.preferences_set_tab,
-            "pref-set": uicmd.preferences_set_pref,
-            "saved-col-new": uicmd.preferences_saved_colour_new,
-            "saved-col-del": uicmd.preferences_saved_colour_del,
-            "saved-col-set-data": uicmd.preferences_saved_colour_set_data,
-            "saved-col-reorder": uicmd.preferences_saved_colour_reorder,
-            "saved-col-reset": uicmd.preferences_saved_colour_reset,
-            "saved-col-reset-OK": uicmd.preferences_saved_colour_reset_confirmed,
-
-            # Effects
-            "effect-open": uicmd.effects_open_details,
-            "effect-new": uicmd.effects_new_dialog,
-            "effect-new-2": uicmd.effects_new_dialog_step2,
-            "effect-import": None,
-            "effect-edit": uicmd.effects_edit_dialog,
-            "effect-edit-save": uicmd.effects_edit_dialog_save,
-            "browse-effect-icon": uicmd.effects_browse_icon,
-            "effect-delete": uicmd.effects_delete_dialog,
-            "effect-editor": None,
-        }
+        try:
+            function = data["request"]
+        except Exception:
+            dbg.stdout("Internal Error: Controller received invalid data!", dbg.error)
+            dbg.stdout(str(data), dbg.error)
+            return False
 
         # Must run from main thread
-        if cmd == "quit":
-            uicmd.close_application()
+        if function == "quit":
+            self.stop_app()
 
-        try:
-            params = full_cmd_string.split("?")
-            params.pop(0)
-            dbg.stdout("=> {0} {1}".format(cmd, str(params)), dbg.action, 1)
-            common.run_thread(uicmd.run_command(cmds[cmd], full_cmd_string))
-        except KeyError:
-            dbg.stdout("Unimplemented command: " + cmd, dbg.error)
+        self.controller.run_function(request, data)
 
         # WebKit2 quirk - clear "title" so same command can execute again
-        self.run_javascript("cmd('null')")
+        self._run_js("cmd('null')")
 
-    def start_loading(self, webview):
+    def start_app(self):
         """
-        Function that triggers the main application's operations.
+        Asynchronous thread to start loading the application's UI and save data
+        in the application's 'actual' controller.
         """
-        self.webview = webview
-        dbg.stdout("Version " + VERSION, dbg.debug, 1)
+        self.window = app.window
+        self.webview = app.webview
+        self.controller.initalise_app(self.version, self.versions)
 
-        self.update_content_view("header", "header")
-        self.update_content_view("loading")
-        self.update_content_view("footer", "footer")
-
-        dbg.stdout("Spawning daemon device manager...", dbg.debug, 1)
-        if rclient:
-            try:
-                self.devman = rclient.DeviceManager()
-                init_devices = self.devman.devices
-                if len(init_devices) > 0:
-                    self.active_device = init_devices[0]
-            except rclient.DaemonNotFound:
-                self.devman = rclient.DaemonNotFound
-            except Exception as e:
-                self.devman = None
-                dbg.stdout("Daemon threw an exception:\n" + str(e), dbg.error, 0)
-
-        self.uicmd = uicallback.UICmd(self, self.webview, self.devman, get_string_bank, path)
-        dbg.stdout("Application Ready.", dbg.success, 1)
-
-        # Ensure configuration is compatible for this version.
-        pref_data = pref.load_file(path.preferences)
-        pref_version = pref.version
-        save_version = pref_data["config_version"]
-        if save_version > pref_version:
-            self.uicmd._open_dialog("serious",
-                _("Incompatible Save Data"),
-                _("Polychromatic's configuration (including effects and profiles) has previously been saved in a newer version of this software.") + "<br><br>" + \
-                _("Running older versions of the software could corrupt your save data or cause instability.") + "<br>" + \
-                "<br><code>{0} {1} ({2} {3})".format(_("Application Version:"), VERSION, _("Config Version:"), pref_version) + \
-                "<br>{0} {1}</code><br><br>".format(_("Saved Version:"), save_version) + \
-                _("Consider updating Polychromatic, or reset the application by deleting [path]").replace("[path]", "<code>~/.config/polychromatic</code>"),
-                "18em", "40em")
-
-        self.uicmd.devices_init_tab()
+    def stop_app(self):
+        """
+        Stop execution of the program.
+        """
+        exit(0)
 
 
 def parse_parameters():
@@ -532,7 +337,6 @@ def parse_parameters():
     parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
     parser.add_argument("--version", help=_("Print program version and exit"), action="store_true")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
-    parser.add_argument("-vv", "-d", "--debug", help=_("Be very verbose (for debugging)"), action="store_true")
     parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
 
     # For front-end debugging (developer tools)
@@ -547,11 +351,8 @@ def parse_parameters():
     if args.verbose:
         dbg.verbose_level = 1
 
-    if args.debug:
-        dbg.verbose_level = 2
-
     if args.inspect:
-        dbg.verbose_level = 3
+        dbg.verbose_level = 2
 
     if args.locale:
         _ = common.setup_translations(__file__, "polychromatic", args.locale)
@@ -559,12 +360,11 @@ def parse_parameters():
 
 if __name__ == "__main__":
     _ = common.setup_translations(__file__, "polychromatic")
-    string_bank = get_string_bank(_)
     dbg = common.Debugging()
 
     # Is this a development build?
     if DEV_VERSION:
-        VERSION = VERSION + "-devel"
+        VERSION = VERSION + "-dev"
 
     # Verify styling is present.
     if not os.path.exists(os.path.join(path.data_source, "ui/controller.css")):
@@ -572,6 +372,7 @@ if __name__ == "__main__":
         exit(1)
 
     parse_parameters()
-    win = AppWindow()
-    app = Controller()
+    webview = WebView()
+    win = AppWindow(webview)
+    app = Controller(webview, win)
     win.run()

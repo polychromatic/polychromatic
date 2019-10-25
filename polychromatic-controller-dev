@@ -3,7 +3,7 @@
 # Starts Polychromatic Controller and essential development tasks like
 # compiling the styles.
 #
-# Defaults to using -d (verbose) parameter, but also passes any others when
+# Defaults to using --verbose (verbose) parameter, but also passes any others when
 # executing this script.
 #
 params=$*
@@ -17,4 +17,4 @@ if [ $? != 0 ]; then
 fi
 
 # Start!
-./polychromatic-controller -d $params
+./polychromatic-controller --verbose $params
