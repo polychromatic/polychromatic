@@ -57,12 +57,11 @@ except ImportError:
     import polychromatic.common as common
 except Exception as e:
     print("One or more of Polychromatic's modules could not be imported!")
-    print("Check your PYTHONPATH or try re-installing..")
-    print("\nException:" + str(e))
+    print("Check your PYTHONPATH or try re-installing.")
+    print("\nException: " + str(e))
     exit(1)
 
 path = pref.Paths()
-path.data_source = path.get_data_source(__file__)
 session_storage = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet")
 
 """
@@ -151,7 +150,7 @@ def get_icon(img_dir, icon):
         img_dir = Folder inside "ui/img", e.g. "effects"
         icon    = Filename, including extension.
     """
-    return os.path.join(path.data_source, "ui/img/", img_dir, icon)
+    return os.path.join(common.DATA_PATH, "ui/img/", img_dir, icon)
 
 
 class AppIndicator(object):
@@ -338,7 +337,7 @@ class AppIndicator(object):
         cb = Callback()
         device_name = device.name
         multiple_sources = common.has_multiple_sources(device)
-        submenu = create_submenu(device_name, True, common.get_device_image(device, path.data_source))
+        submenu = create_submenu(device_name, True, common.get_device_image(device, common.DATA_PATH))
         dbg.stdout("- {0}".format(device_name), dbg.action, 1)
 
         def _get_option_icon(device, source, img_dir, icon):
@@ -347,7 +346,7 @@ class AppIndicator(object):
             otherwise show an icon representing the menu option, e.g. brightness = bulb.
             """
             if multiple_sources:
-                return os.path.join(path.data_source, "/ui/", common.get_source_icon(device, source))
+                return os.path.join(common.DATA_PATH, "/ui/", common.get_source_icon(device, source))
             else:
                 return get_icon(img_dir, icon)
 
@@ -589,7 +588,7 @@ class Callback():
         else:
             dbg.stdout("=> Launch Controller", dbg.debug, 1)
 
-        common.execute_polychromatic_component(dbg, "controller", __file__, path.data_source, jump_to)
+        common.execute_polychromatic_component(dbg, "controller", __file__, common.DATA_PATH, jump_to)
 
     def quit(cb, item):
         """
@@ -780,7 +779,7 @@ if __name__ == "__main__":
         os.makedirs(session_storage)
 
     # Write a PID file for restarting later.
-    f = open(common.tray_pid_file, 'w')
+    f = open(common.PID_FILE_TRAY, 'w')
     f.write(str(os.getpid()))
     f.close()
 
@@ -796,6 +795,6 @@ if __name__ == "__main__":
     Gtk.main()
 
     # Application Closed
-    if os.path.exists(common.tray_pid_file):
-        os.remove(common.tray_pid_file)
+    if os.path.exists(common.PID_FILE_TRAY):
+        os.remove(common.PID_FILE_TRAY)
     exit(0)

@@ -4,7 +4,7 @@
 # Copyright (C) 2017-2019 Luke Horwell <code@horwell.me>
 #
 """
-This module contains shared functions that are used across Polychromatic's interfaces.
+Shared functions that are commonly used across Polychromatic's interfaces.
 """
 
 import os
@@ -13,14 +13,12 @@ import gettext
 import subprocess
 import grp
 import time
+import traceback
 from threading import Thread
 
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
-
-# PID file used to restart tray applet
-tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
 
 
 class Debugging(object):
@@ -57,11 +55,32 @@ class Debugging(object):
                 print(msg)
 
 
-def parse_html(html):
+def get_exception_as_string(e):
     """
-    Returns a string that is HTML safe for jQuery to use.
+    For when things go wrong, convert an exception object into a human-readable
+    output that is normally displayed via the GUI.
     """
-    return html.strip().replace('\n', '')
+    return traceback.format_exc()
+
+
+def get_data_dir_path():
+    """
+    Returns the path for the data directory.
+
+    For development, this is normally adjacent to the application executable.
+    For system-wide installs, this is generally /usr/share/polychromatic.
+    """
+    module_path = __file__
+
+    if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))):
+        path = os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))
+    elif os.path.exists("/usr/share/polychromatic/"):
+        path = "/usr/share/polychromatic/"
+    else:
+        dbg.stdout("Data directory cannot be located. Exiting.", dbg.error)
+        exit(1)
+
+    return path
 
 
 def setup_translations(bin_path, i18n_app, locale_override=None):
@@ -71,7 +90,7 @@ def setup_translations(bin_path, i18n_app, locale_override=None):
     bin_path = __file__ of the application that is being executed.
     i18n_app = Name of the application's locales.
 
-    Returns
+    Returns a gettext object used for performing translations.
     """
     whereami = os.path.abspath(os.path.join(os.path.dirname(bin_path)))
 
@@ -91,58 +110,60 @@ def setup_translations(bin_path, i18n_app, locale_override=None):
     return t.gettext
 
 
-def get_all_device_types():
+def get_form_factor(device_type):
     """
-    Returns a list of all the known device types in Polychromatic.
-    We refer to these as "form factors".
-    """
-    return [
-        "keyboard",
-        "mouse",
-        "mousemat",
-        "keypad",
-        "mug",
-        "headset",
-        "core",
-        "mug"
-    ]
+    Reads a string provided by a backend and returns data that is used to refer
+    to the device ("form factor") throughout the application.
 
+    Params:
+        device_type         String from a backend (e.g. OpenRazer)
 
-def get_device_type_pretty(device_type):
+    Returns:
+        {id, icon, label}   A dictionary consisting of:
+                                id          The resulting 'form factor'
+                                icon        Absolute path to form factor icon
+                                label       Human-readable name of form factor
     """
-    Returns a human-readable, translatable string for a device type.
-    """
-    strings = {
+    type_to_form_factor = {
+        # Razer
+        "firefly": "mousemat",
+        "tartarus": "keypad",
+        "core": "gpu",
+        "mug": "accessory",
+
+        # Generic
+        "keyboard": "keyboard",
+        "mouse": "mouse",
+        "mousemat": "mousemat",
+        "keypad": "keypad",
+        "headset": "headset",
+        "unrecognised": "unrecognised",
+    }
+
+    form_factor_labels = {
+        "accessory": _("USB Accessory"),
         "keyboard": _("Keyboard"),
         "mouse": _("Mouse"),
         "mousemat": _("Mousemat"),
         "keypad": _("Keypad"),
-        "mug": _("Mug"),
         "headset": _("Headset"),
-        "core": _("External Graphics Enclosure"),
-        "mug": _("Mug Holder")
+        "gpu": _("External Graphics Enclosure"),
+        "unrecognised": _("Unrecogonised")
     }
 
     try:
-        return strings[device_type]
+        form_factor = type_to_form_factor[device_type]
     except KeyError:
-        return device_type
+        form_factor = "accessory"
+
+    return {
+        "id": form_factor,
+        "icon": os.path.abspath(os.path.join(DATA_PATH, "ui/img/devices/" + form_factor + ".svg")),
+        "label": form_factor_labels[form_factor]
+    }
 
 
 
-def get_device_type(device_obj):
-    """
-    Convert the daemon's device type string to what Polychromatic identifies as "form factor".
-    This is used for determining icons and filtering a list of device objects.
-    """
-    form_factor = device_obj.type
-
-    if form_factor == "firefly":
-        form_factor = "mousemat"
-    elif form_factor == "tartarus":
-        form_factor = "keypad"
-
-    return(form_factor)
 
 
 def get_device_list_by_type(device_obj_list, filtered_type):
@@ -232,26 +253,53 @@ def has_multiple_sources(device):
         return False
 
 
-def get_source_name(source, device):
+def get_zone_metadata(zones, device_name):
     """
-    Returns a human readable string for a device's lighting source.
+    Returns human readable strings and icons for a device's lighting areas.
 
-    E.g. "logo" on a Razer Hex refers to the hex ring.
+    For example, "logo" on a Razer Hex refers to the hex ring.
     """
-    if source == "logo" and device.name == "Razer Nex":
-        return _("Hex Ring")
+    zone_names = {}
+    zone_icons = {}
 
-    source_names = {
+    zones_to_string = {
         "main": _("Main"),
         "logo": _("Logo"),
         "scroll": _("Scroll Wheel"),
-        "backlight": _("Backlight")
+        "backlight": _("Backlight"),
+        "left": _("Left"),
+        "right": _("Right")
     }
 
-    try:
-        return source_names[source]
-    except NameError:
-        return source
+    for zone in zones:
+        try:
+            name = zones_to_string[zone]
+            icon = zone
+        except KeyError:
+            dbg.stdout("Unimplemented zone name '{0}' (used by device '{1}')".format(zone, device_name), dbg.warning)
+            name = zone
+            icon = "unknown"
+
+        if zone == "logo" and device_name == "Razer Nex":
+            name = _("Hex Ring")
+            icon = "naga-hex-ring"
+
+        if zone == "logo" and device_name.startswith("Razer Blade"):
+            name = _("Laptop Lid")
+            icon = "blade-logo"
+
+        icon_path = os.path.abspath(os.path.join(DATA_PATH, "ui/img/zones/" + icon + ".svg"))
+
+        if not os.path.exists(icon_path):
+            icon_path = os.path.abspath(os.path.join(DATA_PATH, "ui/img/devices/unrecognised.svg"))
+
+        zone_names[zone] = name
+        zone_icons[zone] = icon_path
+
+    return {
+        "names": zone_names,
+        "icons": zone_icons
+    }
 
 
 def get_effect_state_string(string):
@@ -744,13 +792,13 @@ def get_tray_icon(dbg, pref, path):
         set_default_tray_icon(pref)
 
     icon_type = pref.get("tray_icon", "type", "builtin")
-    icon_fallback = os.path.join(path.data_source, "tray", "humanity-light.svg")
+    icon_fallback = os.path.join(DATA_PATH, "tray", "humanity-light.svg")
 
     try:
         if icon_type == "builtin":
             icon_id = pref.get("tray_icon", "icon_id")
-            icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
-            return os.path.join(path.data_source, "tray", icon_index[icon_id]["path"])
+            icon_index = pref.load_file(os.path.join(DATA_PATH, "tray/icons.json"))
+            return os.path.join(DATA_PATH, "tray", icon_index[icon_id]["path"])
 
         elif icon_type == "custom":
             icon_path = pref.get("tray_icon", "custom_image_path")
@@ -946,92 +994,6 @@ def hex_to_rgb(hex_string):
     return list(int(hex_string[i:i+2], 16) for i in (0, 2 ,4))
 
 
-def is_any_razer_device_connected(dbg):
-    """
-    Scan 'lsusb' for Razer devices. Used for diagnostics to check whether a device is incompatible with daemon.
-
-    Returns:
-    None        Cannot be determined.
-    True        Razer device was found
-    False       Could not find a Razer device
-    """
-    try:
-        lsusb = str(subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0])
-    except FileNotFoundError:
-        dbg.stdout("'lsusb' not available, unable to determine if product is connected.", dbg.error, 1)
-        return None
-
-    if lsusb.find("ID 1532") == -1:
-        return False
-    else:
-        return True
-
-
-def get_device_vid_pid(device):
-    """
-    Extracts VID:PID from the daemon's device object in list format: [VID,PID]
-    """
-    vid = str(hex(device._vid))[2:].upper().rjust(4, '0')
-    pid = str(hex(device._pid))[2:].upper().rjust(4, '0')
-    return [vid, pid]
-
-
-def get_incompatible_device_list(dbg, devices):
-    """
-    Scans 'lsusb' for incompatible Razer devices. As the daemon doesn't recognise them,
-    they can be listed, but cannot be interacted with. Excludes already connected devices.
-
-    Returns a list in format: [[vid1, pid1], [vid2, pid2]]
-    Returns None if an error occurs (e.g. 'lsusb' not installed)
-    """
-    all_usb_ids = []
-    reg_ids = []
-    unreg_ids = []
-
-    # Strip lsusb to just get VIDs and PIDs
-    try:
-        lsusb = subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
-    except FileNotFoundError:
-        dbg.stdout("'lsusb' not available, unable to determine if product is connected.", dbg.error, 1)
-        return None
-
-    for usb in lsusb.split("\n"):
-        if len(usb) > 0:
-            try:
-                vidpid = usb.split(" ")[5].split(":")
-                all_usb_ids.append([vidpid[0].upper(), vidpid[1].upper()])
-            except AttributeError:
-                pass
-
-    # Get VIDs and PIDs of current devices to exclude them.
-    for device in devices:
-        vidpid = get_device_vid_pid(device)
-        reg_ids.append([vidpid[0], vidpid[1]])
-
-    # Identify Razer VIDs that are not registered in the daemon
-    for usb in all_usb_ids:
-        if usb[0] != "1532":
-            continue
-
-        if usb in reg_ids:
-            continue
-
-        unreg_ids.append(usb)
-
-    return unreg_ids
-
-
-def is_user_in_plugdev_group():
-    """
-    Check the groups of the currently logged in user to identify if it is
-    missing 'plugdev' as required by the daemon.
-    """
-    if "plugdev" in [grp.getgrgid(g).gr_name for g in os.getgroups()]:
-        return True
-    else:
-        return False
-
-
 def get_plural(integer, non_plural, plural):
     """
     Returns the correct plural or non-plural spelling based on an integer.
@@ -1063,3 +1025,6 @@ def get_locale_pretty(locale):
 
 # Module Initalization
 _ = setup_translations(__file__, "polychromatic")
+DATA_PATH = get_data_dir_path()
+PID_FILE_TRAY = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
+

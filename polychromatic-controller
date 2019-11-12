@@ -62,7 +62,6 @@ else:
         exit(1)
 
 path = pref.Paths()
-path.data_source = path.get_data_source(__file__)
 setproctitle("polychromatic-controller")
 
 
@@ -113,7 +112,7 @@ class WebView(object):
             self.webview.get_settings().set_property("enable-developer-extras", True)
 
         # Load the base page structure
-        self.webview.load_uri("file://" + os.path.join(path.data_source, "ui/controller.html"))
+        self.webview.load_uri("file://" + os.path.join(common.DATA_PATH, "ui/controller.html"))
         dbg.stdout("WebView Initialised", dbg.success, 1)
 
     def run_js(self, code):
@@ -185,7 +184,7 @@ class AppWindow(object):
         self.window.connect("delete-event", Gtk.main_quit)
 
         try:
-            self.window.set_icon_from_file(os.path.join(path.data_source, "ui/img/general/controller.svg"))
+            self.window.set_icon_from_file(os.path.join(common.DATA_PATH, "ui/img/general/controller.svg"))
         except Exception:
             dbg.stdout("Failed to set window icon.", dbg.warning, 0)
 
@@ -312,7 +311,7 @@ class Controller(object):
         self.controller.run_function(request, data)
 
         # WebKit2 quirk - clear "title" so same command can execute again
-        self._run_js("cmd('null')")
+        self._run_js("document.title = ''")
 
     def start_app(self):
         """
@@ -367,7 +366,7 @@ if __name__ == "__main__":
         VERSION = VERSION + "-dev"
 
     # Verify styling is present.
-    if not os.path.exists(os.path.join(path.data_source, "ui/controller.css")):
+    if not os.path.exists(os.path.join(common.DATA_PATH, "ui/controller.css")):
         dbg.stdout("Failed to start due to missing styling.", dbg.error)
         exit(1)
 

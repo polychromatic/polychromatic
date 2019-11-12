@@ -14,6 +14,7 @@ from threading import Thread
 from . import common
 from . import locales
 from . import preferences as pref
+from .backends import openrazer
 
 
 class PolychromaticController():
@@ -30,10 +31,12 @@ class PolychromaticController():
         self.send_view_data = _app.send_view_data
         self.send_view_variable = _app.send_view_variable
 
-        # Used for the session
-        self.openrazer = None
+        # Set later in initalise_app()
         self.version = None
         self.versions = None
+        self.backends = {
+            "openrazer": False
+        }
 
     def run_function(self, function, data):
         """
@@ -51,6 +54,21 @@ class PolychromaticController():
         dbg.stdout("Version " + version, dbg.debug, 1)
 
         self.send_view_variable("LOCALES", locales.LOCALES)
+        self.run_function("build_view", {})
+
+        dbg.stdout("OpenRazer: Getting device list...", dbg.debug, 1)
+        devices = openrazer.get_device_list()
+
+        if devices == -1:
+            dbg.stdout("OpenRazer: Daemon not running", dbg.warning)
+
+        elif type(devices) == str:
+            dbg.stdout("OpenRazer: Daemon encountered exception: " + str(devices), dbg.warning)
+
+        else:
+            # Daemon OK
+            self.backends["openrazer"] = True
+
 
         dbg.stdout("Application Ready.", dbg.success, 1)
 

@@ -48,7 +48,6 @@ except Exception as e:
 
 dbg = common.Debugging()
 path = pref.Paths()
-path.data_source = path.get_data_source(__file__)
 _ = common.setup_translations(__file__, "polychromatic")
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
