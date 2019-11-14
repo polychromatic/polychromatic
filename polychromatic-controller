@@ -23,6 +23,7 @@ Main application for Polychromatic, a GUI for interfacing with Razer devices.
 Requires openrazer-daemon to be installed and running on the system.
 """
 
+import distro
 import os
 import sys
 import glob
@@ -34,7 +35,6 @@ import argparse
 from setproctitle import setproctitle
 from subprocess import Popen as background_process
 from subprocess import check_output
-from platform import linux_distribution
 
 try:
     import openrazer.client as rclient
@@ -2184,9 +2184,9 @@ class PageLoaded():
             appobj.update_device_active_options()
 
         # Show message about the old PPA being deprecated.
-        distro = linux_distribution()[0]
-        if distro == "Ubuntu" or distro == "Debian":
-            codename = linux_distribution()[2]
+        distro_name = distro.linux_distribution()[0]
+        if distro_name == "Ubuntu" or distro_name == "Debian":
+            codename = distro.codename
             for source_file in [
                 "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list",
                 "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily-" + codename + ".list"
@@ -2228,9 +2228,9 @@ class PageLoaded():
             html += UIControls.print_about_label(_("Profile:"), "v" + str(prof.version))
 
             # For Apt, check for the source file to determine builds.
-            distro = linux_distribution()[0]
-            if distro == "Ubuntu" or distro == "Debian":
-                codename = linux_distribution()[2]
+            distro_name = distro.linux_distribution()[0]
+            if distro_name == "Ubuntu" or distro_name == "Debian":
+                codename = distro.codename()
                 source_html = ""
 
                 source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list"
