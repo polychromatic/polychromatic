@@ -71,6 +71,7 @@ class PolychromaticController():
 
 
         dbg.stdout("Application Ready.", dbg.success, 1)
+        self.window.show_window()
 
 
 # Module Initalization

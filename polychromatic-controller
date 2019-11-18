@@ -167,7 +167,22 @@ class AppWindow(object):
         """
         Prepares variables to be set later.
         """
+        self.window = None
         self.webview = _webview
+
+    def show_window(self):
+        """
+        Opens the GTK+ window after the runtime has initialised. This is to prevent
+        the window flashing colours as the window and WebKit initialises.
+        """
+        GLib.idle_add(self._show_window)
+
+    def _show_window(self):
+        """
+        Private function to actually show the window.
+        """
+        self.window.show_all()
+        return GLib.SOURCE_REMOVE
 
     def run(self):
         """
@@ -177,9 +192,7 @@ class AppWindow(object):
         self.webview.build_webview()
 
         self.window = Gtk.Window(title=_("Polychromatic Controller"))
-        self.window.set_wmclass("polychromatic-controller", "polychromatic-controller")
         self.window.set_position(Gtk.WindowPosition.CENTER)
-        self.window.modify_bg(Gtk.StateType(0), Gdk.Color(0, 0, 0))
         self.window.set_size_request(1000, 600)
         self.window.connect("delete-event", Gtk.main_quit)
 
@@ -193,7 +206,6 @@ class AppWindow(object):
         sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         sw.add(self.webview.webview)
         pane = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
-        pane.modify_bg(Gtk.StateType(0), Gdk.Color(0, 0, 0))
 
         # GTK Window -> Paned -> ScrolledWindow -> WebKit + Inspector (debugging)
         pane.add(sw)
@@ -218,7 +230,6 @@ class AppWindow(object):
 
         # Showtime!
         dbg.stdout("Initialised Window", dbg.success, 1)
-        self.window.show_all()
         Gtk.main()
 
 
