@@ -34,7 +34,7 @@ def get_device_list():
     except rclient.DaemonNotFound:
         return -1
     except Exception as e:
-        return str(e)
+        return common.get_exception_as_string(e)
 
     # Devices that are bound by the daemon
     uid = -1
@@ -89,7 +89,7 @@ def get_device(uid):
     settings, the type of lighting it supports, its serial and firmware version.
 
     Params:
-        uid         Numeric ID of device in daemon's device list.
+        uid         (int)   Numeric ID of device in daemon's device list.
 
     Returns:
         {}          Success: Dictonary of metadata
@@ -98,10 +98,10 @@ def get_device(uid):
     """
     try:
         rdevice = rclient.DeviceManager().devices[uid]
-    except KeyError:
+    except IndexError:
         return None
     except Exception as e:
-        return str(e)
+        return common.get_exception_as_string(e)
 
     name = rdevice.name
     form_factor = common.get_form_factor(rdevice.type)
@@ -132,22 +132,35 @@ def get_device(uid):
     zone_icons = zone_metadata["icons"]
 
     # Determine other device data
+    # -> Strings
     name = ""
     serial = ""
-    firmware_version = 0
+    firmware_version = None
+    keyboard_layout = None
+
+    # -> Booleans
     monochromatic = False
     macros = False
-    keyboard_layout = ""
     game_mode = None
     matrix = False
-    matrix_rows = 0
-    matrix_cols = 0
-    dpi_x = 0
-    dpi_y = 0
+
+    # -> Integers
+    matrix_rows = None
+    matrix_cols = None
+    dpi_x = None
+    dpi_y = None
+    dpi_max = None
+    dpi_single = False
+    poll_rate = None
+    battery_level = None
+
+    # -> Lists
     dpi_ranges = []
-    dpi_max = 0
-    poll_rate = 0
     poll_rate_ranges = [250, 500, 1000] # Always static
+
+    # -> Dict
+    zone_states = {}
+    zone_supported = {}
 
     if capabilities.get("firmware_version"):
         firmware_version = rdevice.firmware_version
@@ -193,34 +206,20 @@ def get_device(uid):
                 int(max_dpi)
             ]
 
+        # DeathAdder 3.5G only supports DPI X (#209)
+        if capabilities.get("available_dpi"):
+            dpi_single = True
+
     if capabilities.get("poll_rate"):
         poll_rate = rdevice.poll_rate
 
     # Determine which effects are supported (and currently set) for each zone.
-    zone_states = {}
-    zone_supported = {}
-
     for zone in zones:
         zone_states[zone] = {}
         zone_supported[zone] = {}
 
-        zone_to_capability = {
-            "main": "lighting",
-            "logo": "lighting_logo",
-            "scroll": "lighting_scroll",
-            "backlight": "lighting_backlight",
-            "left": "lighting_left",
-            "right": "lighting_right"
-        }
-
-        zone_to_device = {
-            "main": rdevice.fx,
-            "logo": rdevice.fx.misc.logo,
-            "scroll": rdevice.fx.misc.scroll_wheel,
-            "backlight": rdevice.fx.misc.backlight,
-            "left": rdevice.fx.misc.left,
-            "right": rdevice.fx.misc.right
-        }
+        zone_to_device = _get_device_zones(rdevice)
+        zone_to_capability = _get_zone_capability_prefix()
 
         def _create_list_for_key_if_empty(key, subkey):
             try:
@@ -283,29 +282,28 @@ def get_device(uid):
             # Not applicable to non-Chroma devices (Bug? OpenRazer daemon could return an object)
             if matrix:
                 zone_states[zone]["effect"] = str(zone_to_device[zone].effect)
-                zone_states[zone]["colors"] = _convert_colour_bytes(zone_to_device[zone].colors)
+                zone_states[zone]["colours"] = _convert_colour_bytes(zone_to_device[zone].colors)
                 zone_states[zone]["params_speed"] = int(zone_to_device[zone].speed)
                 zone_states[zone]["params_direction"] = int(zone_to_device[zone].wave_dir)
         except Exception as e:
             dbg.stdout("Unable to get device states for " + name, dbg.error)
             dbg.stdout(common.get_exception_as_string(e))
             dbg.stdout("This probably indicates a bug or improperly specified Chroma device:\n{0} ({1}:{2})".format(name, vid, pid), dbg.warning)
-            for key in ["effect", "colors", "params_speed", "params_direction"]:
+            for key in ["effect", "colours", "params_speed", "params_direction"]:
                 if key in zone_states[zone]:
                     del zone_states[zone][key]
 
     # If this is a mouse, get the current battery level.
-    battery_level = None
     if form_factor.get("id") == "mouse":
         battery_level = _get_battery_level_dirty()
 
 
     return {
+        "name": name,
         "uid": "{0}{1}".format(vid, pid),
         "backend": "openrazer",
         "vid": vid,
         "pid": pid,
-        "name": name,
         "form_factor": form_factor.get("label"),
         "form_factor_id": form_factor.get("id"),
         "icon": form_factor.get("icon"),
@@ -317,6 +315,7 @@ def get_device(uid):
         "monochromatic": _is_device_monochromatic(rdevice),
         "dpi_x": dpi_x,
         "dpi_y": dpi_y,
+        "dpi_single": dpi_single,
         "dpi_ranges": dpi_ranges,
         "poll_rate": poll_rate,
         "battery_level": battery_level,
@@ -330,6 +329,211 @@ def get_device(uid):
         "available": True
     }
 
+
+def set_device_state(uid, request, zone, colour_hex, params):
+    """
+    Sends a request to the the device, like setting the brightness, the hardware effect or
+    a hardware property (such as DPI).
+
+    It is expected the parent calling this function has validated the request,
+    e.g. command line validated zone for device.
+
+    Params:
+        uid         (int)   Numeric ID of device in device list.
+        request     (str)   Polychromatic's request, e.g. "brightness", "effect"
+        params      (lst)   If required, a list of parameters to parse. E.g. brightness value or wave direction, etc.
+        zone        (str)   If applicable, a valid lighting area, e.g. "logo".
+        colour_hex  (lst)   If applicable, a list of strings in format: [#RRGGBB,  #RRGGBB]
+
+    Returns:
+        True        Operation successful.
+        False       Operation failed, such as an incorrect request.
+        None        Device not found, possibly removed.
+        (str)       Operation failed. The string of the exception.
+    """
+    try:
+        rdevice = rclient.DeviceManager().devices[uid]
+    except KeyError:
+        return None
+    except Exception as e:
+        return common.get_exception_as_string(e)
+
+    zone_to_capability = _get_zone_capability_prefix()
+    zone_to_device = _get_device_zones(rdevice)
+
+    # Prepare colours (to RGB values)
+    colour_primary = [0, 255, 0]        # Green
+    colour_secondary = [255, 0, 0]      # Red
+    colour_tertiary = [0, 0, 255]       # Blue
+
+    if colour_hex:
+        try:
+            colour_primary = common.hex_to_rgb(colour_hex[0])
+            colour_secondary = common.hex_to_rgb(colour_hex[1])
+            colour_tertiary = common.hex_to_rgb(colour_hex[2])
+        except IndexError:
+            # Expected, as not all colours may be needed. Use default.
+            pass
+
+    try:
+        ################################
+        # Brightness
+        ################################
+        if request == "brightness":
+            if zone == "main":
+                is_brightness = rdevice.has("brightness")
+            else:
+                is_brightness = rdevice.has(zone_to_capability[zone] + "_brightness")
+            is_active = rdevice.has(zone_to_capability[zone] + "_active")
+            value = int(params[0])
+
+            # Polychromatic merges "brightness" into either a scale (0-100%) or an on/off toggle.
+            if is_brightness and not is_active:
+                # 'main' brightness is outside the 'fx' class.
+                if zone == "main":
+                    rdevice.brightness = value
+                else:
+                    zone_to_device[zone].brightness = value
+
+            elif is_active:
+                # 'main' does not have an 'active' attribute
+                if not zone == "main":
+                    # 'active' accepts either True/False, or 0/1.
+                    zone_to_device[zone].active = value
+
+        ################################
+        # Effects
+        ################################
+        elif request == "spectrum":
+            # No params.
+            zone_to_device[zone].spectrum()
+
+        elif request == "wave":
+            # Params: <direction 1-2>
+            zone_to_device[zone].wave(int(params[0]))
+
+        elif request == "reactive":
+            # Params: <red> <green> <blue> <speed 1-4>
+            zone_to_device[zone].reactive(colour_primary[0], colour_primary[1], colour_primary[2], int(params[0]))
+
+        elif request == "blinking":
+            # Params: <red> <green> <blue>
+            zone_to_device[zone].blinking(colour_primary[0], colour_primary[1], colour_primary[2])
+
+        elif request == "breath_random":
+            # No params.
+            zone_to_device[zone].breath_random()
+
+        elif request == "breath_single":
+            # Params: <red> <green> <blue>
+            zone_to_device[zone].breath_single(colour_primary[0], colour_primary[1], colour_primary[2])
+
+        elif request == "breath_dual":
+            # Params: <red1> <green1> <blue1> <red2> <green2> <blue2>
+            zone_to_device[zone].breath_dual(colour_primary[0], colour_primary[1], colour_primary[2],
+                colour_secondary[0], colour_secondary[1], colour_secondary[2])
+
+        elif request == "breath_triple":
+            # Params: <red1> <green1> <blue1> <red2> <green2> <blue2> <red3> <green3> <blue3>
+            zone_to_device[zone].breath_dual(colour_primary[0], colour_primary[1], colour_primary[2],
+                colour_secondary[0], colour_secondary[1], colour_secondary[2],
+                colour_tertiary[0], colour_tertiary[1], colour_tertiary[2])
+
+        elif request == "pulsate":
+            # Params: <red> <green> <blue>
+            zone_to_device[zone].pulsate(colour_primary[0], colour_primary[1], colour_primary[2])
+
+        elif request == "ripple_single":
+            # Params: <red> <green> <blue> <speed>
+            zone_to_device[zone].ripple(colour_primary[0], colour_primary[1], colour_primary[2], int(params[0]))
+
+        elif request == "ripple":
+            # Params: <red> <green> <blue> <speed>
+            zone_to_device[zone].ripple(int(params[0]))
+
+        elif request == "starlight_single":
+            # Params: <red> <green> <blue> <speed>
+            zone_to_device[zone].starlight_single(colour_primary[0], colour_primary[1], colour_primary[2], int(params[0]))
+
+        elif request == "starlight_dual":
+            # Params: <red1> <green1> <blue1> <red2> <green2> <blue2> <speed>
+            zone_to_device[zone].starlight_dual(colour_primary[0], colour_primary[1], colour_primary[2],
+                colour_secondary[0], colour_secondary[1], colour_secondary[2], int(params[0]))
+
+        elif request == "starlight_random":
+            # Params: <speed>
+            zone_to_device[zone].starlight_random(int(params[0]))
+
+        elif request == "static":
+            # Params: <red> <green> <blue>
+            zone_to_device[zone].static(colour_primary[0], colour_primary[1], colour_primary[2])
+
+        ################################
+        # Other
+        ################################
+        elif request == "game_mode":
+            # Params: <true/false>
+            if params[0] in [True, "true"]:
+                rdevice.game_mode_led = True
+            else:
+                rdevice.game_mode_led = False
+
+        elif request == "dpi":
+            # Params: <dpi X> <dpi Y>
+            # DeathAdder 3.5G only supports DPI X (#209)
+            if rdevice.has("available_dpi"):
+                rdevice.dpi = (int(params[0]), -1)
+            else:
+                rdevice.dpi = (int(params[0]), int(params[1]))
+
+        elif request == "poll_rate":
+            # Params: <poll>
+            rdevice.poll_rate = int(params[0])
+
+        else:
+            return False
+
+    except Exception as e:
+        return common.get_exception_as_string(e)
+
+    return True
+
+
+def _get_device_zones(rdevice):
+    """
+    Returns a dictionary referencing the classes used for various zones for a
+    device.
+    """
+    zone_to_device = {
+        "main": rdevice.fx,
+        "logo": rdevice.fx.misc.logo,
+        "scroll": rdevice.fx.misc.scroll_wheel,
+        "backlight": rdevice.fx.misc.backlight
+    }
+
+    # Ignore missing left/right classes, most devices do not support these.
+    try:
+        zone_to_device["left"] = rdevice.fx.misc.left
+        zone_to_device["right"] = rdevice.fx.misc.right
+    except Exception:
+        pass
+
+    return zone_to_device
+
+
+def _get_zone_capability_prefix():
+    """
+    Returns a dictionary of the prefixes when reading a device's capabilities
+    by zone.
+    """
+    return {
+        "main": "lighting",
+        "logo": "lighting_logo",
+        "scroll": "lighting_scroll",
+        "backlight": "lighting_backlight",
+        "left": "lighting_left",
+        "right": "lighting_right"
+    }
 
 
 def _get_incompatible_device_list(devices):
@@ -442,7 +646,7 @@ def _is_device_monochromatic(device):
 
 def _convert_colour_bytes(raw):
     """
-    Convert the daemon's '.colors' function to a usage hex.
+    Convert the daemon's '.colors' function to a string hex.
     """
     input_hex = str(raw.hex())
     primary_hex = "#000000"

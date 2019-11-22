@@ -263,7 +263,7 @@ class Controller(object):
         """
         self.webview.run_js(code)
 
-    def send_view_data(self, callback_fn, data):
+    def send_view_data(self, callback_fn, raw):
         """
         Send a response (or request) to the view. This normally updates the UI
         in some way.
