@@ -12,6 +12,21 @@ from . import common
 
 _ = common.setup_translations(__file__, "polychromatic")
 
+KEYBOARD_LAYOUTS = {
+    "en_US": _("English (US)"),
+    "en_GB": _("English (British)"),
+    "el_GR": _("Greek"),
+    "de_DE": _("German"),
+    "fr_FR": _("French"),
+    "ru_RU": _("Russian"),
+    "ja_JP": _("Japanese"),
+    "es_ES": _("Spanish"),
+    "it_IT": _("Italian"),
+    "pt_PT": _("Portuguese (Portugal)"),
+    "pt_BR": _("Portuguese (Brazil)"),
+    "en_US_mac": _("English (US, Macintosh)")
+}
+
 LOCALES = {
     "overview": _("All Devices"),
     "devices": _("Devices"),
