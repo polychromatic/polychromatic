@@ -20,26 +20,22 @@
 """
 Control Razer devices from the command line. Useful for commamd line users or bash scripting.
 """
+VERSION = "0.5.0"
 
 import argparse
 import signal
 import sys
 
 try:
-    import openrazer.client as rclient
-except Exception as e:
-    print("Failed to import modules for daemon.")
-    print("Exception: " + str(e))
-    exit(1)
-
-try:
     # Relative copy
     import pylib.preferences as pref
     import pylib.common as common
+    from pylib.backends import openrazer
 except ImportError:
     # Installed to system
     import polychromatic.preferences as pref
     import polychromatic.common as common
+    from polychromatic.backends import openrazer
 except Exception as e:
     print("One or more of Polychromatic's modules could not be imported!")
     print("Try re-installing the application.")
@@ -51,54 +47,60 @@ path = pref.Paths()
 _ = common.setup_translations(__file__, "polychromatic")
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-
+########################################
 # Valid Options
-possible_devices = ["all", "keyboard", "mouse", "mousemat", "keypad", "headset", "stand", "mug"]
+########################################
+possible_devices = ["all", "keyboard", "mouse", "mousemat", "keypad", "headset", "gpu", "accessory"]
 possible_effects = ["static", "wave", "spectrum", "reactive", "breath", "ripple", "starlight", "blinking", "pulsate"]
-possible_wave_params = ["1", "2"]
+possible_wave_params = ["left", "right"]
 possible_reactive_params = ["fast", "medium", "slow", "vslow"]
-possible_breath_params = ["random", "single", "dual"]
+possible_breath_params = ["random", "single", "dual", "triple"]
 possible_starlight_params = ["random", "single", "dual"]
 possible_ripple_params = ["random", "single"]
-possible_lighting_targets = ["main", "logo", "scroll", "backlight"]
+possible_lighting_zones = ["main", "logo", "scroll", "backlight", "left", "right"]
 possible_poll_rates = ["125", "500", "1000"]
 min_dpi = 400
 
+########################################
 # Parse arguments
+########################################
 parser = argparse.ArgumentParser(add_help=False)
 parser._optionals.title = _("These arguments can be specified")
 
-# -> Device selection
-parser.add_argument("-d", "--device", help=_("Control device(s) by its form factor. Default is all devices."), action="store", choices=possible_devices)
-parser.add_argument("-s", "--serial", help=_("Control device by its serial number"), action="store")
+# Device selection
+parser.add_argument("-d", "--device", help=_("Select device(s) by its form factor. Default is all devices."), action="store", choices=possible_devices)
+parser.add_argument("-s", "--serial", help=_("Select device by its serial number"), action="store")
+parser.add_argument("-z", "--zone", help=_("Make change to specific zone. Defaults to 'all'."), action="store", choices=["all"] + possible_lighting_zones)
 
-# -> Brightness
+parser.add_argument("-l", "--list-devices", help=_("List connected Razer device(s)"), action="store_true")
+parser.add_argument("--list-zones", help=_("Lists the zones available for device(s)"), action="store_true")
+parser.add_argument("--list-status", help=_("Show information about device(s)"), action="store_true")
+
+# Brightness
 parser.add_argument("-b", "--brightness", help=_("Set brightness (between 0-100 or 0-1 for devices that only support on/off)"), action="store")
 
-# -> Effects and parameters
+# Effects and parameters
 parser.add_argument("-e", "--effect", help=_("Set a specific type of effect"), action="store", choices=possible_effects)
-parser.add_argument("-c", "--color", help=_("Set the primary colour (in Hex or RGB)"))
-parser.add_argument("--color2", help=_("Set the secondary colour (in Hex or RGB)"))
 parser.add_argument("--wave-direction", help=_("For wave effect only"), choices=possible_wave_params)
 parser.add_argument("--reactive-speed", help=_("For reactive effect only"), choices=possible_reactive_params)
 parser.add_argument("--breath-type", help=_("For breath effect only"), choices=possible_breath_params)
 parser.add_argument("--ripple-type", help=_("For ripple effect only"), choices=possible_ripple_params)
+parser.add_argument("--ripple-speed", help=_("Ripple refresh rate. Default: 0.01"), action="store")
 parser.add_argument("--starlight-type", help=_("For starlight effect only"), choices=possible_ripple_params)
 
-# -> Device-specific
-parser.add_argument("--game-mode", help=_("For supported keyboards"), action="store", choices=["on", "off"])
-parser.add_argument("--dpi", help=_("For supported mice"), action="store")
-parser.add_argument("--poll-rate", help=_("For supported mice"), action="store", choices=possible_poll_rates)
+# Colours
+parser.add_argument("--rgb", help=_("Set the primary colour (e.g. '#00FF00' or 0,255,0)"))
+parser.add_argument("--rgb2", help=_("Set the secondary colour (e.g. '#FF0000' or 255,0,0)"))
+parser.add_argument("--rgb3", help=_("Set the tertiary colour (e.g. '#0000FF' or 0,0,255)"))
 
-# -> Devices that have different areas
-parser.add_argument("--list-targets", help=_("Lists the lighting sources available for the chosen device"), action="store_true")
-parser.add_argument("-t", "--target", help=_("Apply to this chosen lighting source. Defaults to 'all'."), action="store", choices=["all"] + possible_lighting_targets)
+# Device-specific
+parser.add_argument("--game-mode", help=_("Disable keys for uninterrupted gaming"), action="store", choices=["on", "off"])
+parser.add_argument("--dpi", help=_("How fast the cursor moves. Example: 1800 or 1800,800"), action="store")
+parser.add_argument("--poll-rate", help=_("How frequent the CPU polls the mouse"), action="store", choices=possible_poll_rates)
 
-# -> Misc
+# Misc
+parser.add_argument("--version", help=_("Print version and exit"), action="store_true")
 parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
-parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
-parser.add_argument("-l", "--list-devices", help=_("List connected Razer devices and exit"), action="store_true")
-parser.add_argument("--print-device-info", help=_("Show information about this device"), action="store_true")
 
 args = parser.parse_args()
 
@@ -106,300 +108,437 @@ args = parser.parse_args()
 if not len(sys.argv) > 1:
     dbg.stdout(_("No arguments passed."), dbg.error)
     dbg.stdout(_("Type polychromatic-cmd --help to see possible combinations."))
-
-
-# Determine which 'lighting source' (targets) to use
-if not args.target or args.target == "all":
-    target_light_sources = possible_lighting_targets
-else:
-    target_light_sources = [args.target]
-
-
-# For verbose output
-if args.verbose:
-    dbg.verbose_level = 1
-
-
-# Connect to the daemon
-dbg.stdout("Connecting to daemon...", dbg.action, 1, True)
-try:
-    devman = rclient.DeviceManager()
-except rclient.DaemonNotFound:
-    dbg.stdout(_("Daemon is not running."), dbg.error)
-    dbg.stdout(_("Try executing 'openrazer-daemon' then run polychromatic again.") + '\n', dbg.error)
-    exit(1)
-except Exception as e:
-    dbg.stdout(_("Daemon encountered an error. It may have crashed."), dbg.error)
-    dbg.stdout(_("Exception was:") + '\n\n' + str(e) + '\n', dbg.error)
-    dbg.stdout(_("Try executing 'openrazer-daemon -r' then run polychromatic again.") + '\n', dbg.error)
-    exit(1)
-
-
-# List devices
-if args.list_devices:
-    all_devices = devman.devices
-    if len(all_devices) == 0:
-        if common.is_any_razer_device_connected(dbg):
-            dbg.stdout(_("There are no OpenRazer compatible devices found."), dbg.error)
-            dbg.stdout(_("A Razer device was detected, but the daemon isn't aware of it."), dbg.warning)
-            dbg.stdout(_("Try running 'openrazer-daemon -r' or start the Controller application for details."), dbg.warning)
-        else:
-            dbg.stdout(_("There are no Razer devices connected."), dbg.error)
-        exit(1)
-
-    for device in all_devices:
-        dbg.stdout("{white}{name}  {green}{formfactor}  {yellow}{serial}".format(
-            white = dbg.normal,
-            name = device.name,
-            green = dbg.success,
-            formfactor = common.get_device_type(device),
-            yellow = dbg.warning,
-            serial = device.serial))
     exit(0)
 
+if args.version:
+    dbg.stdout(_("Version") + " " + VERSION)
+    exit(0)
 
-# Determine device to use
-devices_to_change = []
+########################################
+# Pretty columns
+########################################
+def print_column(data):
+    """
+    Prints a basic 'pretty' table ensuring each column has enough room.
+
+    Params:
+        data = ["One", "2", "Item Three"]
+
+    Output:
+        "One         2           Item Three"
+    """
+    max_col_width = max(len(col) for row in data for col in row) + 2
+    for row in data:
+        print("".join(col.ljust(max_col_width) for col in row))
+
+
+########################################
+# List devices, zones or current status.
+########################################
+devices = openrazer.get_device_list()
+found_unsupported = False
+
+if len(devices) == 0:
+    dbg.stdout(_("No Razer devices connected."), dbg.error)
+    exit(1)
+
+if args.list_devices:
+    print("")
+    table = []
+
+    for device in devices:
+        table.append([
+            "{0} - {1}".format(dbg.normal, device["name"]),
+            "{0}{1}".format(dbg.success if device["available"] else dbg.error, device["form_factor"]),
+            "{0}{1}".format(dbg.warning, device["serial"] if device["available"] else "")
+        ])
+
+        if device["available"] == False:
+            found_unsupported = True
+
+    print_column(table)
+
+if args.list_zones:
+    print("")
+    table = []
+
+    for device in devices:
+        if not device["available"]:
+            continue
+
+        device = openrazer.get_device(device["uid"])
+
+        table.append([
+            "- {0}{1}".format(dbg.normal, device["name"]),
+            "{0}{1}".format(dbg.warning, ", ".join(device["zone_supported"].keys()))
+        ])
+
+    print_column(table)
+
+if args.list_status:
+    def _add_row(label, data, error_check=None):
+        columns = []
+        columns.append(dbg.action + label)
+
+        if error_check == True:
+            data_colour = dbg.success
+        elif error_check == False:
+            data_colour = dbg.error
+        else:
+            data_colour = dbg.normal
+
+        columns.append(data_colour + data)
+        return columns
+
+    for device in devices:
+        row = []
+        available = device["available"]
+        details = None
+
+        if available:
+            details = openrazer.get_device(int(device["uid"]))
+        else:
+            found_unsupported = True
+
+        row.append(_add_row(_("Form Factor"), device["form_factor"], available))
+
+        if details:
+            form_factor = device["form_factor_id"]
+
+            row.append(_add_row("VID:PID", "{0}:{1}".format(details["vid"], details["pid"])))
+            row.append(_add_row(_("Serial"), details["serial"]))
+            row.append(_add_row(_("Firmware Version"), details["firmware_version"]))
+
+            chroma_type = _("No")
+            chroma_type_bool = False
+
+            if details["matrix"] == True:
+                chroma_type = _("Yes")
+                chroma_type_bool = True
+
+            if details["matrix"] == True and details["monochromatic"] == True:
+                chroma_type = _("Yes (Mono)")
+                chroma_type_bool = True
+
+            row.append(_add_row(_("Chroma Enabled"), chroma_type, chroma_type_bool))
+            row.append(_add_row(_("Zones"), ", ".join(details["zone_supported"].keys())))
+
+            if form_factor == "keyboard":
+                row.append(_add_row(_("Game Mode"), _("Enabled") if details["game_mode"] == True else _("Disabled"), details["game_mode"]))
+                row.append(_add_row(_("Keyboard Layout"), details["keyboard_layout"]))
+
+            if details["dpi_x"] != None:
+                row.append(_add_row(_("DPI"), "X " + str(details["dpi_x"])))
+                row.append(_add_row("", "Y " + str(details["dpi_y"])))
+                row.append(_add_row(_("DPI Intervals"), ", ".join(str(x) for x in details["dpi_ranges"])))
+
+            if details["poll_rate"] != None:
+                row.append(_add_row(_("Poll Rate"), str(details["poll_rate"])))
+
+            if details["battery_level"] != None:
+                row.append(_add_row(_("Battery"), str(details["battery_level"]) + "%"))
+
+            if details["matrix"] == True:
+                row.append(_add_row(_("Matrix Dimensions"), "{0} {2}, {1} {3}".format(
+                    details["matrix_rows"],
+                    details["matrix_cols"],
+                    common.get_plural(details["matrix_rows"], _("row"), _("rows")),
+                    common.get_plural(details["matrix_cols"], _("column"), _("columns"))
+                )))
+
+            for zone in details["zone_states"]:
+                state = details["zone_states"][zone]
+                supported = details["zone_supported"][zone]
+                zone_name = "(" + details["zone_names"][zone] + ")"
+
+                # Suppress "(main)" to avoid clutter as most devices only have a 'main' lighting zone.
+                if zone == "main":
+                    zone_name = ""
+
+                # Print supported effects
+                supported_effects = []
+                for effect in supported.keys():
+                    if effect not in ["breath_options", "starlight_options", "ripple_options", "brightness_slider", "brightness_toggle"]:
+                        supported_effects.append(effect)
+
+                if len(supported_effects) > 0:
+                    row.append(_add_row("{0} {1}".format(_("Firmware Effects"), zone_name), ", ".join(supported_effects)))
+
+                # Print brightness levels
+                try:
+                    if supported["brightness_slider"]:
+                        row.append(_add_row("{0} {1}".format(_("Current Brightness"), zone_name), "{0}%".format(details["zone_states"][zone]["brightness"]), True if state["brightness"] > 0 else False))
+                except KeyError:
+                    pass
+
+                try:
+                    if supported["brightness_toggle"]:
+                        row.append(_add_row("{0} {1}".format(_("Current Brightness"), zone_name), _("On") if state["brightness"] == 1 else _("Off"), state["brightness"]))
+                except KeyError:
+                    pass
+
+                # Print last effect
+                try:
+                    if state["effect"]:
+                        row.append(_add_row(_("Current Effect"), state["effect"]))
+
+                    if state["colours"]:
+                        row.append(_add_row(_("Last Colour (Primary)"), state["colours"]["primary"]))
+                        row.append(_add_row(_("Last Colour (Secondary)"), state["colours"]["secondary"]))
+                        row.append(_add_row(_("Last Colour (Tertiary)"), state["colours"]["tertiary"]))
+
+                    if state["params_speed"]:
+                        row.append(_add_row(_("Last Speed (Wave/Reactive)"), str(state["params_speed"])))
+
+                    if state["params_direction"]:
+                        row.append(_add_row(_("Last Direction (Wave)"), str(state["params_direction"])))
+
+                except KeyError:
+                    pass
+
+        if not details:
+            row.append(_add_row(_("Backend"), "OpenRazer"))
+
+        dbg.stdout("\n" + device["name"])
+        dbg.stdout("-".join("" for x in range(-1, max(len("".join(row[0])), len("".join(device["name"]))))))
+        print_column(row)
+
+if found_unsupported:
+    dbg.stdout("\n" + _("Some Razer devices cannot be controlled as they haven't registered with the OpenRazer daemon."), dbg.warning)
+    dbg.stdout(_("To diagnose, run: []").replace("[]", dbg.success + "polychromatic-controller --troubleshoot" + dbg.warning), dbg.warning)
+
+# When using a --list-* parameter, exit here as devices won't be manipulated.
+if args.list_devices or args.list_zones or args.list_status:
+    exit()
+
+
+########################################
+# Determine devices and zones to change.
+########################################
+target_devices = []
+target_zones = []
+
+if args.zone and not args.zone == "all":
+    target_zones = [args.zone]
+
 if args.serial:
-    device_obj = common.get_device_list_by_serial(devman.devices, args.serial)
-    if not device_obj:
+    for device in devices:
+        if device["serial"] == args.serial:
+            target_devices.append(device)
+            break
+
+    if len(target_devices) == 0:
         dbg.stdout("Cannot find a device with serial " + args.serial, dbg.error)
         exit(1)
+
     devices_to_change = [device_obj]
+
 elif args.device == "all" or not args.device:
-    devices_to_change += devman.devices
+    target_devices = devices
+
 else:
-    devices_to_change = common.get_device_list_by_type(devman.devices, args.device)
+    for device in devices:
+        if device["form_factor_id"] == args.device:
+            target_devices.append(device)
 
-
-# Prevent going further unless a device is specified
-if len(devices_to_change) == 0:
-    dbg.stdout(_("There are no devices to configure."), dbg.error)
+if len(target_devices) == 0:
+    dbg.stdout(_("No specified Razer devices found."), dbg.error)
     exit(1)
 
 
-# List targets supported by device
-if args.list_targets:
-    for device_obj in devices_to_change:
-        dbg.stdout(_("{name} supports:").format(name=device_obj.name))
-        for source in common.get_supported_lighting_sources(device_obj):
-            dbg.stdout(" - " + source, dbg.action)
-    exit(0)
+# Quit if a device is selected, but there is nothing to do.
+if not args.effect \
+    and not args.game_mode \
+    and not args.dpi \
+    and not args.poll_rate \
+    and not args.brightness:
+        dbg.stdout(_("Please specify an action to perform."), dbg.warning)
+        exit(1)
 
 
-# Determine colours
-primary_colour = [0, 255, 0]
-secondary_colour = [0, 0, 255]
+########################################
+# Update device state
+########################################
+for device in target_devices:
+    if not device["available"]:
+        continue
 
-if args.color:
-    if args.color.startswith("#"):
-        primary_colour = common.hex_to_colour(args.color)
-    else:
-        extracted = args.color.split(",")
-        primary_colour = []
-        for value in extracted:
-            primary_colour.append(int(value))
+    zones = target_zones
+    if len(target_zones) == 0:
+        zones = device["zones"]
 
-        while len(primary_colour) < 3:
-            primary_colour.append(0)
+    details = openrazer.get_device(device["uid"])
 
-if args.color2:
-    if args.color2.startswith("#"):
-        primary_colour = common.hex_to_colour(args.color2)
-    else:
-        extracted = args.color2.split(",")
-        primary_colour = []
-        for value in extracted:
-            primary_colour.append(int(value))
+    for zone in zones:
+        # Brightness
+        if args.brightness:
+            status = openrazer.set_device_state(device["uid"], "brightness", zone, [], [int(args.brightness)])
+            if status == False:
+                dbg.stdout(_("Failed to set brightness for [].").replace("[]", device["name"]), dbg.error)
+            elif type(status) == str:
+                dbg.stdout(_("Request failed. Here's the exception details:"), dbg.error)
+                dbg.stdout(status)
 
-        while len(primary_colour) < 3:
-            primary_colour.append(0)
+        # Effect
+        if args.effect:
+            effect = args.effect
+            effect_params = []
 
-
-# Set brightness
-if args.brightness:
-    brightness = args.brightness
-
-    for device_obj in devices_to_change:
-        for target in target_light_sources:
-            # An AttributeError indicates the function is not supported
-            if target == "main":
-                pretty_source = ""
-            else:
-                pretty_source = "(" + target + ")"
-
-            if target == "main":
-                try:
-                    common.set_brightness(pref, device_obj, "main", brightness)
-                    dbg.stdout(_("{name} brightness set to {value}% {source}").format(name=device_obj.name, value=str(brightness), source=pretty_source), dbg.success, 1)
-                except AttributeError:
-                    continue
-                except Exception:
-                    dbg.stdout(_("Failed to set brightness of {name}").format(name=device_obj.name), dbg.error)
-                    continue
-
-            elif target == "logo":
-                try:
-                    common.set_brightness(pref, device_obj, "logo", brightness)
-                    dbg.stdout(_("{name} brightness set to {value}% {source}").format(name=device_obj.name, value=str(brightness), source=pretty_source), dbg.success, 1)
-                except AttributeError:
-                    continue
-                except Exception:
-                    dbg.stdout(_("Failed to set brightness of {name}").format(name=device_obj.name), dbg.error)
-                    continue
-
-            elif target == "scroll":
-                try:
-                    common.set_brightness(pref, device_obj, "scroll", brightness)
-                    dbg.stdout(_("{name} brightness set to {value}% {source}").format(name=device_obj.name, value=str(brightness), source=pretty_source), dbg.success, 1)
-                except AttributeError:
-                    continue
-                except Exception:
-                    dbg.stdout(_("Failed to set brightness of {name}").format(name=device_obj.name), dbg.error)
-                    continue
-
-            elif target == "backlight":
-                try:
-                    common.set_brightness(pref, device_obj, "backlight", brightness)
-                    dbg.stdout(_("{name} brightness set to {value}% {source}").format(name=device_obj.name, value=str(brightness), source=pretty_source), dbg.success, 1)
-                except AttributeError:
-                    continue
-                except Exception:
-                    dbg.stdout(_("Failed to set brightness of {name}").format(name=device_obj.name), dbg.error)
-                    continue
-
-
-# Set effect
-def apply_effect(device_obj, effect, effect_params=None):
-    """
-    Applys an effect to the lighting sources specified.
-    """
-    for source in target_light_sources:
-        if source in common.get_supported_lighting_sources(device_obj):
-
-            # Only show source label if not the main lighting source
-            if source == "main":
-                pretty_source = ""
-            else:
-                pretty_source = "{" + source + "}"
-
+            # Validate request is possible
             try:
-                common.set_lighting_effect(pref, device_obj, source, effect, effect_params, primary_colour, secondary_colour)
-                dbg.stdout(_("{name} set to {effect} {source}").format(name=device_obj.name, effect=pretty_name, source=pretty_source), dbg.success, 1)
-
-            except Exception as e:
-                # Light source or effect unsupported
-                dbg.stdout(_("{name} does not support {effect} {source}").format(name=device_obj.name, effect=pretty_name, source=pretty_source), dbg.error, 1)
-
-
-if args.effect:
-    effect = args.effect
-    pretty_name = common.get_effect_state_string(effect).lower()
-
-    for device_obj in devices_to_change:
-        if effect == "spectrum":
-            apply_effect(device_obj, "spectrum")
-
-        elif effect == "static":
-            apply_effect(device_obj, "static")
-
-        elif effect == "wave":
-            if args.wave_direction:
-                effect_params = args.wave_direction
-            else:
-                effect_params = 0
-            apply_effect(device_obj, "wave", int(effect_params))
-
-        elif effect == "reactive":
-            if args.reactive_speed:
-                string_to_param = {
-                    "fast": 1,
-                    "medium": 2,
-                    "slow": 3,
-                    "vslow": 4
-                }
-                effect_params = string_to_param[args.reactive_speed]
-            else:
-                effect_params = "1"
-
-            apply_effect(device_obj, "reactive", effect_params)
-
-        elif effect == "breath":
-            if args.breath_type:
-                effect_params = args.breath_type
-            else:
-                effect_params = "single"
-
-            apply_effect(device_obj, "breath", effect_params)
-
-        elif effect == "ripple":
-            if args.ripple_type:
-                effect_params = args.ripple_type
-            else:
-                effect_params = "single"
-
-            apply_effect(device_obj, "ripple", effect_params)
-
-        elif effect == "starlight":
-            if args.starlight_type:
-                effect_params = args.starlight_type
-            else:
-                effect_params = "single"
-
-            apply_effect(device_obj, "starlight", effect_params)
-
-        elif effect == "blinking":
-            apply_effect(device_obj, "blinking")
-
-        elif effect == "pulsate":
-            apply_effect(device_obj, "pulsate")
-
-
-if args.game_mode:
-    for device_obj in devices_to_change:
-        if device_obj.has("game_mode_led") and device_obj.type == "keyboard":
-            if args.game_mode == "on":
-                try:
-                    device_obj.game_mode_led = True
-                    dbg.stdout(_("Game Mode ENABLED for {device}").format(device=device_obj.name), dbg.success)
-                except Exception:
-                    dbg.stdout(_("Failed to change game mode for {device}").format(device=device_obj.name), dbg.error)
-            else:
-                try:
-                    device_obj.game_mode_led = False
-                    dbg.stdout(_("Game Mode DISABLED for {device}").format(device=device_obj.name), dbg.success)
-                except Exception:
-                    dbg.stdout(_("Failed to change game mode for {device}").format(device=device_obj.name), dbg.error)
-
-
-if args.dpi:
-    new_dpi = int(args.dpi)
-    for device_obj in devices_to_change:
-        if device_obj.has("dpi"):
-            max_dpi = device_obj.max_dpi
-
-            if new_dpi < min_dpi:
-                dbg.stdout(_("{value} DPI is too low for {device}. The minimum is {min_value}.").format(value=new_dpi, min_value=max_dpi, device=device_obj.name), dbg.error)
+                details["zone_supported"][zone][effect]
+            except KeyError:
+                dbg.stdout(_("[name]: '[fx]' effect not supported in zone '[zone]'")
+                    .replace("[name]", details["name"])
+                    .replace("[fx]", effect)
+                    .replace("[zone]", zone), dbg.warning)
                 continue
 
-            if new_dpi > max_dpi:
-                dbg.stdout(_("{value} DPI is too high for {device}. The maximum is {max_value}.").format(value=new_dpi, max_value=max_dpi, device=device_obj.name), dbg.error)
+            # Determine parameters
+            # TODO: Read 'zone_states' when params unspecified.
+
+            if effect == "wave":
+                if args.wave_direction:
+                    direction = {
+                        "right": 1,     # Right / Up / Clockwise
+                        "left": 2       # Left / Down / Anti-clockwise
+                    }
+                    effect_params = [direction[args.wave_direction]]
+                else:
+                    # Default
+                    effect_params = [1]
+
+            if effect == "reactive":
+                if args.reactive_speed:
+                    speed = {
+                        "fast": 1,
+                        "medium": 2,
+                        "slow": 3,
+                        "vslow": 4
+                    }
+                    effect_params = [speed[args.reactive_speed]]
+                else:
+                    # Default
+                    effect_params = [2]
+
+            if effect == "breath":
+                if args.breath_type:
+                    effect = "breath_" + args.breath_type
+                else:
+                    # Default
+                    effect = "breath_single"
+
+            if effect == "ripple":
+                if args.ripple_type:
+                    effect = "ripple_" + args.ripple_type
+                else:
+                    # Default
+                    effect = "ripple_single"
+
+                if args.ripple_speed:
+                    effect_params = [args.ripple_speed]
+                else:
+                    effect_params = [0.01]
+
+            if effect == "starlight":
+                if args.starlight_type:
+                    effect = "starlight_" + args.starlight_type
+                else:
+                    # Default
+                    effect = "starlight_single"
+
+            # Determine and validate colours
+            colours = []
+            for hex_value in [args.rgb, args.rgb2, args.rgb3]:
+                if hex_value:
+                    try:
+                        common.hex_to_rgb(hex_value)
+                    except ValueError:
+                        dbg.stdout(_("Invalid 6 digit hex colour: []").replace("[]", args.rgb), dbg.error)
+                        exit(1)
+                colours.append(hex_value)
+
+            status = openrazer.set_device_state(device["uid"], effect, zone, colours, effect_params)
+
+            if status == False:
+                dbg.stdout(_("Failed to set '[fx]' effect for [name].")
+                    .replace("[name]", device["name"])
+                    .replace("[fx]", effect), dbg.error)
+            elif type(status) == str:
+                dbg.stdout(_("Request failed. Here's the exception details:"), dbg.error)
+                dbg.stdout(status)
+
+    # Game Mode
+    if args.game_mode:
+        if details["game_mode"] == None:
+            continue
+
+        state = {
+            "on": True,
+            "off": False
+        }
+        state = state[args.game_mode]
+
+        status = openrazer.set_device_state(device["uid"], "game_mode", "main", [], [state])
+
+        if status == False:
+            dbg.stdout(_("Failed to change for [name].").replace("[name]", device["name"]), dbg.error)
+        elif type(status) == str:
+            dbg.stdout(_("Request failed. Here's the exception details:"), dbg.error)
+            dbg.stdout(status)
+        elif status == True:
+            if state == True:
+                dbg.stdout(_("Game mode /enabled\ for [name]")
+                    .replace("[name]", device["name"])
+                    .replace("/", dbg.success)
+                    .replace("\\", dbg.normal))
+            else:
+                dbg.stdout(_("Game mode /disabled\ for [name]")
+                    .replace("[name]", device["name"])
+                    .replace("/", dbg.error)
+                    .replace("\\", dbg.normal))
+
+    # DPI
+    if args.dpi:
+        if details["dpi_x"] == None:
+            continue
+
+        # Custom X and Y can be specified by adding a comma
+        dpi = args.dpi
+        if dpi.find(",") > 0:
+            dpi_x = dpi.split(",")[0]
+            dpi_y = dpi.split(",")[1]
+        else:
+            dpi_x = dpi
+            dpi_y = dpi
+
+        # Validate DPI is not too low
+        for value in [dpi_x, dpi_y]:
+            if int(value) < min_dpi:
+                dbg.stdout(_("DPI too low: [x]").replace("[x]", value), dbg.error)
                 continue
 
-            try:
-                device_obj.dpi = (new_dpi, new_dpi)
-                dbg.stdout(_("{value} DPI set for {device}").format(value=new_dpi, device=device_obj.name), dbg.success)
-            except Exception:
-                dbg.stdout(_("Daemon threw an exception while setting DPI for {device}").format(device=device_obj.name), dbg.error)
+        status = openrazer.set_device_state(device["uid"], "dpi", "main", [], [dpi_x, dpi_y])
 
+        if status == False:
+            dbg.stdout(_("Failed to set DPI for [name].").replace("[name]", device["name"]), dbg.error)
+        elif type(status) == str:
+            dbg.stdout(_("Request failed. Here's the exception details:"), dbg.error)
+            dbg.stdout(status)
+        elif status == True:
+            dbg.stdout(_("DPI set to [x] for [name]").replace("[name]", device["name"]).replace("[x]", "{0},{1}".format(dpi_x, dpi_y)), dbg.success)
 
-if args.poll_rate:
-    new_poll_rate = int(args.poll_rate)
-    for device_obj in devices_to_change:
-        if device_obj.has("poll_rate"):
-            try:
-                device_obj.poll_rate = new_poll_rate
-                dbg.stdout(_("Poll rate for {device} set to {value} Hz.").format(value=new_poll_rate, device=device_obj.name), dbg.success)
-            except Exception:
-                dbg.stdout(_("Daemon threw an exception while setting poll rate for {device}").format(device=device_obj.name), dbg.error)
+    # Poll Rate
+    if args.poll_rate:
+        if details["poll_rate"] == None:
+            continue
 
+        status = openrazer.set_device_state(device["uid"], "poll_rate", "main", [], [args.poll_rate])
+
+        if status == False:
+            dbg.stdout(_("Failed to set poll rate for [name].").replace("[name]", device["name"]), dbg.error)
+        elif type(status) == str:
+            dbg.stdout(_("Request failed. Here's the exception details:"), dbg.error)
+            dbg.stdout(status)
+        elif status == True:
+            dbg.stdout(_("Poll rate set to [x] for [name]").replace("[name]", device["name"]).replace("[x]", args.poll_rate), dbg.success)

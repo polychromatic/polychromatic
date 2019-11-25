@@ -148,7 +148,7 @@ def get_form_factor(device_type):
         "keypad": _("Keypad"),
         "headset": _("Headset"),
         "gpu": _("External Graphics Enclosure"),
-        "unrecognised": _("Unrecogonised")
+        "unrecognised": _("Unrecognised")
     }
 
     try:

@@ -43,6 +43,7 @@ def get_device_list():
         name = rdevice.name
         serial = str(rdevice.serial)
         form_factor = common.get_form_factor(rdevice.type)
+        zones = _get_supported_zones(rdevice)
 
         try:
             real_image = rdevice.device_image
@@ -60,6 +61,7 @@ def get_device_list():
             "form_factor_id": form_factor.get("id"),
             "icon": form_factor.get("icon"),
             "real_image": real_image,
+            "zones": zones,
             "available": True
         })
 
@@ -77,6 +79,7 @@ def get_device_list():
             "form_factor_id": form_factor.get("id"),
             "icon": form_factor.get("icon"),
             "real_image": "",
+            "zones": zones,
             "available": False
         })
 
@@ -97,6 +100,7 @@ def get_device(uid):
         (str)       Error: Exception details
     """
     try:
+        # TODO: Speed up by initalising DeviceManager() once - param maybe?
         rdevice = rclient.DeviceManager().devices[uid]
     except IndexError:
         return None
@@ -112,21 +116,7 @@ def get_device(uid):
 
     # Determine zones and effects supported by them
     capabilities = rdevice.capabilities
-    zones = []
-
-    if capabilities.get("lighting"):
-        zones.append("main")
-    if capabilities.get("lighting_logo"):
-        zones.append("logo")
-    if capabilities.get("lighting_scroll"):
-        zones.append("scroll")
-    if capabilities.get("lighting_left"):
-        zones.append("left")
-    if capabilities.get("lighting_right"):
-        zones.append("right")
-    if capabilities.get("lighting_backlight"):
-        zones.append("backlight")
-
+    zones = _get_supported_zones(rdevice)
     zone_metadata = common.get_zone_metadata(zones, name)
     zone_names = zone_metadata["names"]
     zone_icons = zone_metadata["icons"]
@@ -260,12 +250,12 @@ def get_device(uid):
         # Brightness (slider)
         if capabilities.get(zone_to_capability[zone] + "_brightness"):
             zone_supported[zone]["brightness_slider"] = True
+            zone_states[zone]["brightness"] = int(zone_to_device[zone].brightness)
 
-            # 'main' brightness is outside the 'fx' class.
-            if zone == "main":
-                zone_states[zone]["brightness"] = int(rdevice.brightness)
-            else:
-                zone_states[zone]["brightness"] = int(zone_to_device[zone].brightness)
+        # 'main' brightness is outside the 'fx' class.
+        elif zone == "main" and capabilities.get("brightness"):
+            zone_supported[zone]["brightness_slider"] = True
+            zone_states[zone]["brightness"] = int(rdevice.brightness)
 
         # OR brightness (toggle) on/off - overrides slider in case device reports both capabilities.
         if capabilities.get(zone_to_capability[zone] + "_active"):
@@ -297,6 +287,7 @@ def get_device(uid):
     if form_factor.get("id") == "mouse":
         battery_level = _get_battery_level_dirty()
 
+    # TODO: Get Polychromatic custom effect data
 
     return {
         "name": name,
@@ -341,9 +332,9 @@ def set_device_state(uid, request, zone, colour_hex, params):
     Params:
         uid         (int)   Numeric ID of device in device list.
         request     (str)   Polychromatic's request, e.g. "brightness", "effect"
-        params      (lst)   If required, a list of parameters to parse. E.g. brightness value or wave direction, etc.
         zone        (str)   If applicable, a valid lighting area, e.g. "logo".
         colour_hex  (lst)   If applicable, a list of strings in format: [#RRGGBB,  #RRGGBB]
+        params      (lst)   If required, a list of parameters to parse. E.g. brightness value or wave direction, etc.
 
     Returns:
         True        Operation successful.
@@ -352,6 +343,7 @@ def set_device_state(uid, request, zone, colour_hex, params):
         (str)       Operation failed. The string of the exception.
     """
     try:
+        # TODO: Speed up by initalising DeviceManager() once - param maybe?
         rdevice = rclient.DeviceManager().devices[uid]
     except KeyError:
         return None
@@ -362,15 +354,19 @@ def set_device_state(uid, request, zone, colour_hex, params):
     zone_to_device = _get_device_zones(rdevice)
 
     # Prepare colours (to RGB values)
+    # TODO: Reuse previous colours
     colour_primary = [0, 255, 0]        # Green
     colour_secondary = [255, 0, 0]      # Red
     colour_tertiary = [0, 0, 255]       # Blue
 
     if colour_hex:
         try:
-            colour_primary = common.hex_to_rgb(colour_hex[0])
-            colour_secondary = common.hex_to_rgb(colour_hex[1])
-            colour_tertiary = common.hex_to_rgb(colour_hex[2])
+            if colour_hex[0]:
+                colour_primary = common.hex_to_rgb(colour_hex[0])
+            if colour_hex[1]:
+                colour_secondary = common.hex_to_rgb(colour_hex[1])
+            if colour_hex[2]:
+                colour_tertiary = common.hex_to_rgb(colour_hex[2])
         except IndexError:
             # Expected, as not all colours may be needed. Use default.
             pass
@@ -406,67 +402,67 @@ def set_device_state(uid, request, zone, colour_hex, params):
         ################################
         elif request == "spectrum":
             # No params.
-            zone_to_device[zone].spectrum()
+            return zone_to_device[zone].spectrum()
 
         elif request == "wave":
             # Params: <direction 1-2>
-            zone_to_device[zone].wave(int(params[0]))
+            return zone_to_device[zone].wave(int(params[0]))
 
         elif request == "reactive":
             # Params: <red> <green> <blue> <speed 1-4>
-            zone_to_device[zone].reactive(colour_primary[0], colour_primary[1], colour_primary[2], int(params[0]))
+            return zone_to_device[zone].reactive(colour_primary[0], colour_primary[1], colour_primary[2], int(params[0]))
 
         elif request == "blinking":
             # Params: <red> <green> <blue>
-            zone_to_device[zone].blinking(colour_primary[0], colour_primary[1], colour_primary[2])
+            return zone_to_device[zone].blinking(colour_primary[0], colour_primary[1], colour_primary[2])
 
         elif request == "breath_random":
             # No params.
-            zone_to_device[zone].breath_random()
+            return zone_to_device[zone].breath_random()
 
         elif request == "breath_single":
             # Params: <red> <green> <blue>
-            zone_to_device[zone].breath_single(colour_primary[0], colour_primary[1], colour_primary[2])
+            return zone_to_device[zone].breath_single(colour_primary[0], colour_primary[1], colour_primary[2])
 
         elif request == "breath_dual":
             # Params: <red1> <green1> <blue1> <red2> <green2> <blue2>
-            zone_to_device[zone].breath_dual(colour_primary[0], colour_primary[1], colour_primary[2],
+            return zone_to_device[zone].breath_dual(colour_primary[0], colour_primary[1], colour_primary[2],
                 colour_secondary[0], colour_secondary[1], colour_secondary[2])
 
         elif request == "breath_triple":
             # Params: <red1> <green1> <blue1> <red2> <green2> <blue2> <red3> <green3> <blue3>
-            zone_to_device[zone].breath_dual(colour_primary[0], colour_primary[1], colour_primary[2],
+            return zone_to_device[zone].breath_triple(colour_primary[0], colour_primary[1], colour_primary[2],
                 colour_secondary[0], colour_secondary[1], colour_secondary[2],
                 colour_tertiary[0], colour_tertiary[1], colour_tertiary[2])
 
         elif request == "pulsate":
             # Params: <red> <green> <blue>
-            zone_to_device[zone].pulsate(colour_primary[0], colour_primary[1], colour_primary[2])
+            return zone_to_device[zone].pulsate(colour_primary[0], colour_primary[1], colour_primary[2])
 
         elif request == "ripple_single":
             # Params: <red> <green> <blue> <speed>
-            zone_to_device[zone].ripple(colour_primary[0], colour_primary[1], colour_primary[2], int(params[0]))
+            return zone_to_device[zone].ripple(colour_primary[0], colour_primary[1], colour_primary[2], float(params[0]))
 
-        elif request == "ripple":
+        elif request == "ripple_random":
             # Params: <red> <green> <blue> <speed>
-            zone_to_device[zone].ripple(int(params[0]))
+            return zone_to_device[zone].ripple_random(float(params[0]))
 
         elif request == "starlight_single":
             # Params: <red> <green> <blue> <speed>
-            zone_to_device[zone].starlight_single(colour_primary[0], colour_primary[1], colour_primary[2], int(params[0]))
+            return zone_to_device[zone].starlight_single(colour_primary[0], colour_primary[1], colour_primary[2], int(params[0]))
 
         elif request == "starlight_dual":
             # Params: <red1> <green1> <blue1> <red2> <green2> <blue2> <speed>
-            zone_to_device[zone].starlight_dual(colour_primary[0], colour_primary[1], colour_primary[2],
+            return zone_to_device[zone].starlight_dual(colour_primary[0], colour_primary[1], colour_primary[2],
                 colour_secondary[0], colour_secondary[1], colour_secondary[2], int(params[0]))
 
         elif request == "starlight_random":
             # Params: <speed>
-            zone_to_device[zone].starlight_random(int(params[0]))
+            return zone_to_device[zone].starlight_random(int(params[0]))
 
         elif request == "static":
             # Params: <red> <green> <blue>
-            zone_to_device[zone].static(colour_primary[0], colour_primary[1], colour_primary[2])
+            return zone_to_device[zone].static(colour_primary[0], colour_primary[1], colour_primary[2])
 
         ################################
         # Other
@@ -519,6 +515,29 @@ def _get_device_zones(rdevice):
         pass
 
     return zone_to_device
+
+
+def _get_supported_zones(rdevice):
+    """
+    Returns a list of zones that are supported by the device.
+    """
+    capabilities = rdevice.capabilities
+    zones = []
+
+    if capabilities.get("lighting"):
+        zones.append("main")
+    if capabilities.get("lighting_logo") or capabilities.get("lighting_logo_active"):
+        zones.append("logo")
+    if capabilities.get("lighting_scroll") or capabilities.get("lighting_scroll_active"):
+        zones.append("scroll")
+    if capabilities.get("lighting_left"):
+        zones.append("left")
+    if capabilities.get("lighting_right"):
+        zones.append("right")
+    if capabilities.get("lighting_backlight"):
+        zones.append("backlight")
+
+    return zones
 
 
 def _get_zone_capability_prefix():
