@@ -21,27 +21,27 @@ dbg = common.Debugging()
 
 class Paths(object):
     # Directories
-    root = os.path.join(os.path.expanduser('~'), '.config', 'polychromatic')
-    profile_folder = os.path.join(root, 'profiles')
-    profile_backups = os.path.join(root, 'backups')
+    root = os.path.join(os.path.expanduser("~"), ".config", "polychromatic")
+    profile_folder = os.path.join(root, "profiles")
+    profile_backups = os.path.join(root, "backups")
     cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
     effects = os.path.join(root, "effects")
 
     # Files
-    preferences = os.path.join(root, 'preferences.json')
-    devicestate = os.path.join(root, 'devicestate.json')
-    colours     = os.path.join(root, 'colours.json')
+    preferences = os.path.join(root, "preferences.json")
+    devicestate = os.path.join(root, "devicestate.json")
+    colours     = os.path.join(root, "colours.json")
 
     # Deprecated
-    old_profiles = os.path.join(root, 'profiles.json')
+    old_profiles = os.path.join(root, "profiles.json")
 
     # Data Source
     @staticmethod
     def get_data_source(program_path):
-        if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(program_path), 'data/'))):
-            path = os.path.abspath(os.path.join(os.path.dirname(program_path), 'data/'))
-        elif os.path.exists('/usr/share/polychromatic/'):
-            path = '/usr/share/polychromatic/'
+        if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(program_path), "data/"))):
+            path = os.path.abspath(os.path.join(os.path.dirname(program_path), "data/"))
+        elif os.path.exists("/usr/share/polychromatic/"):
+            path = "/usr/share/polychromatic/"
         else:
             dbg.stdout("Data directory cannot be located. Exiting.", dbg.error)
             exit(1)
@@ -71,9 +71,9 @@ def load_file(filepath, no_version_check=False):
     # Check configuration version if reading the preferences.
     if filepath == path.preferences and no_version_check == False:
         try:
-            config_version = int(data['config_version'])
+            config_version = int(data["config_version"])
         except KeyError:
-            data['config_version'] = version
+            data["config_version"] = version
             config_version = version
 
         # Is the software newer and the configuration old?
@@ -99,11 +99,11 @@ def save_file(filepath, newdata):
 
     # Write configuration version if the preferences.
     if filepath == path.preferences:
-        newdata['config_version'] = version
+        newdata["config_version"] = version
 
-    # Create file if it doesn't exist.
+    # Create file if it doesn"t exist.
     if not os.path.exists(filepath):
-        open(filepath, 'w').close()
+        open(filepath, "w").close()
 
     # Write new data to specified file.
     if os.access(filepath, os.W_OK):
