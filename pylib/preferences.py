@@ -20,35 +20,25 @@ dbg = common.Debugging()
 
 
 class Paths(object):
-    # Directories
+    # XDG directories
     root = os.path.join(os.path.expanduser("~"), ".config", "polychromatic")
-    profile_folder = os.path.join(root, "profiles")
-    profile_backups = os.path.join(root, "backups")
     cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
+
+    # Subdirectories
     effects = os.path.join(root, "effects")
+    profiles = os.path.join(root, "profiles")
 
     # Files
     preferences = os.path.join(root, "preferences.json")
     devicestate = os.path.join(root, "devicestate.json")
     colours     = os.path.join(root, "colours.json")
 
-    # Deprecated
+    # Deprecated (v0.3.12 and earlier)
     old_profiles = os.path.join(root, "profiles.json")
-
-    # Data Source
-    @staticmethod
-    def get_data_source(program_path):
-        if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(program_path), "data/"))):
-            path = os.path.abspath(os.path.join(os.path.dirname(program_path), "data/"))
-        elif os.path.exists("/usr/share/polychromatic/"):
-            path = "/usr/share/polychromatic/"
-        else:
-            dbg.stdout("Data directory cannot be located. Exiting.", dbg.error)
-            exit(1)
-        return path
+    old_profile_folder = os.path.join(root, "profiles")
+    old_profile_backups = os.path.join(root, "backups")
 
 
-################################################################################
 def load_file(filepath, no_version_check=False):
     """
     Loads a save file from disk.
@@ -258,70 +248,7 @@ def upgrade_old_pref(config_version):
     """
     dbg.stdout("Upgrading configuration from v{0} to v{1}...".format(config_version, version), dbg.action)
 
-    if config_version < 3:
-        # *** "chroma_editor" group now "editor" ***
-        data = load_file(path.preferences, True)
-        data["editor"] = data["chroma_editor"]
-        data.pop("chroma_editor")
-        save_file(path.preferences, data)
-
-        # *** Profiles now indexed, not based on file names. ***
-        import time
-        index = {}
-        for profile in os.listdir(path.profile_folder):
-            uid = int(time.time() * 1000000)
-            old = os.path.join(path.profile_folder, profile)
-            new = os.path.join(path.profile_folder, str(uid))
-            os.rename(old, new)
-            index[str(uid)] = {}
-            index[str(uid)]["name"] = profile
-        save_file(path.old_profiles, index)
-
-        # *** Clear backups ***
-        shutil.rmtree(path.profile_backups)
-        os.mkdir(path.profile_backups)
-
-    if config_version < 4:
-        # *** Convert old serialised profile binary to JSON ***
-        # Thanks to @terrycain for providing the conversion code.
-
-        # Backup the old serialised versions, although they're useless now.
-        if not os.path.exists(path.profile_backups):
-            os.mkdir(path.profile_backups)
-
-        # Load profiles and old index (meta data will now be part of that file)
-        profiles = os.listdir(path.profile_folder)
-        index = load_file(path.old_profiles, True)
-
-        # Import daemon class required for conversion.
-        from razer_daemon.keyboard import KeyboardColour
-
-        for filename in profiles:
-            # Get paths and backup.
-            backup_path = os.path.join(path.profile_backups, filename)
-            old_path = os.path.join(path.profile_folder, filename)
-            new_path = os.path.join(path.profile_folder, filename + '.json')
-            os.rename(old_path, backup_path)
-
-            # Open the serialised format and export to JSON instead.
-            blob = open(backup_path, 'rb').read()
-            rgb_profile_object = KeyboardColour()
-            rgb_profile_object.get_from_total_binary(blob)
-
-            json_structure = {'rows':{}}
-            for row_id, row in enumerate(rgb_profile_object.rows):
-                row_id = str(row_id) # JSON doesn't like numbered keys
-                json_structure['rows'][row_id] = [rgb.get() for rgb in row]
-
-            # Migrate index meta data, and save.
-            uuid = os.path.basename(old_path)
-            json_structure["name"] = index[uuid]["name"]
-            json_structure["icon"] = index[uuid]["icon"]
-            save_file(new_path, json_structure)
-
-        # Delete index file as no longer needed.
-        os.remove(path.old_profiles)
-
+    # v0.3.12
     if config_version < 5:
         # Ensure preferences.json is clean.
         data = load_file(path.preferences, True)
@@ -338,6 +265,7 @@ def upgrade_old_pref(config_version):
 
         save_file(path.preferences, data)
 
+    # v0.4.0 (dev)
     if config_version < 6:
         # Migrate preferences.json to new keys
         old_data = load_file(path.preferences, True)
@@ -411,63 +339,6 @@ def upgrade_old_pref(config_version):
     dbg.stdout("Configuration successfully upgraded.", dbg.success)
 
 
-def set_device_state(serial, source, state, value):
-    """
-    Checks the devicestate file for the status on a device.
-        serial  = Serial number or unique identifer of the device.
-        source  = Light source to check, e.g. "main", "logo", "scroll".
-        state   = Name of state, e.g. "brightness", "effect", "colour_primary", etc.
-    """
-    data = load_file(path.devicestate, True)
-
-    try:
-        data[serial]
-    except KeyError:
-        data[serial] = {}
-
-    try:
-        data[serial][source]
-    except KeyError:
-        data[serial][source] = {}
-
-    data[serial][source][state] = value
-    save_file(path.devicestate, data)
-    if verbose:
-        dbg.stdout("Set device state: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value), dbg.debug)
-
-
-def get_device_state(serial, source, state):
-    """
-    Reads the device state file for a specific state.
-        serial  = Serial number or unique identifer of the device.
-        source  = Light source to check, e.g. "main", "logo", "scroll".
-        state   = Name of state, e.g. "effect", "effect_params", "colour_primary", etc.
-    """
-    data = load_file(path.devicestate, True)
-
-    try:
-        value = data[serial][source][state]
-        return value
-        if verbose:
-            dbg.stdout("Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [Value: {3}]".format(serial, source, state, value), dbg.debug)
-    except KeyError:
-        if verbose:
-            dbg.stdout("Device state recalled: [Serial: {0}] [Source: {1}] [State: {2}] [No value]".format(serial, source, state), dbg.debug)
-        return None
-    except TypeError:
-        dbg.stdout("Device state corrupt:  [Serial: {0}] [Source: {1}] ... Will reset.".format(str(serial), str(source)), dbg.debug)
-        data.pop(serial)
-        save_file(path.devicestate, data)
-        return None
-
-
-def generate_uuid():
-    """
-    Returns a random UUID.
-    """
-    return(str(int(time.time() * 1000000)))
-
-
 # Module Initalization
 def start_initalization():
     """
@@ -489,19 +360,7 @@ def start_initalization():
     ## Default Preferences
     data = load_file(path.preferences, True)
     if len(data) <= 2:
-        default_pref = {
-            "editor": {
-                "live_switch": True,
-                "scaling": 1,
-                "live_preview": True,
-                "activate_on_save": True
-            },
-            "tray_icon": {
-                "type": "builtin",
-                "value": "0"
-            }
-        }
-        save_file(path.preferences, default_pref)
+        save_file(path.preferences, {})
 
     ## Default Colours
     data = load_file(path.colours, True)
