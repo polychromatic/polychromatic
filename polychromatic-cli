@@ -24,28 +24,40 @@ VERSION = "0.5.0"
 
 import argparse
 import signal
+import os
 import sys
 
-try:
-    # Relative copy
-    import pylib.preferences as pref
-    import pylib.common as common
-    from pylib.backends import openrazer
-except ImportError:
-    # Installed to system
-    import polychromatic.preferences as pref
-    import polychromatic.common as common
-    from polychromatic.backends import openrazer
-except Exception as e:
-    print("One or more of Polychromatic's modules could not be imported!")
-    print("Try re-installing the application.")
-    print("\nException:" + str(e))
-    exit(1)
+# Import modules if running relatively.
+if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
+    try:
+        import pylib.preferences as pref
+        import pylib.common as common
+        from pylib.backends import openrazer
+    except (ImportError, Exception) as e:
+        print("Failed to import modules relatively.\n")
+        raise e
 
+# Import modules if installed system.-wide.
+else:
+    try:
+        import polychromatic.preferences as pref
+        import polychromatic.common as common
+        from polychromatic.backends import openrazer
+    except (ImportError, Exception) as e:
+        print("Polychromatic's modules could not be imported.")
+        print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
+        print(str(e))
+        exit(1)
+
+
+########################################
+# Set up variables
+########################################
 dbg = common.Debugging()
 path = pref.Paths()
 _ = common.setup_translations(__file__, "polychromatic")
 signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 
 ########################################
 # Valid Options
@@ -107,7 +119,7 @@ args = parser.parse_args()
 # Was anything passed?
 if not len(sys.argv) > 1:
     dbg.stdout(_("No arguments passed."), dbg.error)
-    dbg.stdout(_("Type polychromatic-cmd --help to see possible combinations."))
+    dbg.stdout(_("Type polychromatic-cli --help to see possible combinations."))
     exit(0)
 
 if args.version:
@@ -220,7 +232,7 @@ if args.list_status:
                 chroma_type = _("Yes (Mono)")
                 chroma_type_bool = True
 
-            row.append(_add_row(_("Chroma Enabled"), chroma_type, chroma_type_bool))
+            row.append(_add_row(_("Chroma"), chroma_type, chroma_type_bool))
             row.append(_add_row(_("Zones"), ", ".join(details["zone_supported"].keys())))
 
             if form_factor == "keyboard":
@@ -233,7 +245,7 @@ if args.list_status:
                 row.append(_add_row(_("DPI Intervals"), ", ".join(str(x) for x in details["dpi_ranges"])))
 
             if details["poll_rate"] != None:
-                row.append(_add_row(_("Poll Rate"), str(details["poll_rate"])))
+                row.append(_add_row(_("Poll Rate"), str(details["poll_rate"]) + " Hz"))
 
             if details["battery_level"] != None:
                 row.append(_add_row(_("Battery"), str(details["battery_level"]) + "%"))
@@ -541,4 +553,4 @@ for device in target_devices:
             dbg.stdout(_("Request failed. Here's the exception details:"), dbg.error)
             dbg.stdout(status)
         elif status == True:
-            dbg.stdout(_("Poll rate set to [x] for [name]").replace("[name]", device["name"]).replace("[x]", args.poll_rate), dbg.success)
+            dbg.stdout(_("Poll rate set to [x] Hz for [name]").replace("[name]", device["name"]).replace("[x]", args.poll_rate), dbg.success)

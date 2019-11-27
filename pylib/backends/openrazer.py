@@ -30,7 +30,10 @@ def get_device_list():
     """
     devices = []
     try:
-        rdevices = rclient.DeviceManager().devices
+        # TODO: Speed up by initalising DeviceManager() once - param maybe?
+        devman = rclient.DeviceManager()
+        devman.sync_effects = False
+        rdevices = devman.devices
     except rclient.DaemonNotFound:
         return -1
     except Exception as e:
@@ -101,7 +104,9 @@ def get_device(uid):
     """
     try:
         # TODO: Speed up by initalising DeviceManager() once - param maybe?
-        rdevice = rclient.DeviceManager().devices[uid]
+        devman = rclient.DeviceManager()
+        devman.sync_effects = False
+        rdevice = devman.devices[uid]
     except IndexError:
         return None
     except Exception as e:
@@ -132,7 +137,7 @@ def get_device(uid):
     monochromatic = False
     macros = False
     game_mode = None
-    matrix = False
+    matrix = False          # Also used to determine if 'chroma' hardware.
 
     # -> Integers
     matrix_rows = None
@@ -236,16 +241,16 @@ def get_device(uid):
                 _create_list_for_key_if_empty(zone_supported[zone], "starlight_options")
                 zone_supported[zone]["starlight_options"].append(effect.replace("starlight_", ""))
 
-            # Daemon's ripple (and options)
-            if capabilities.get(zone_to_capability[zone] + "_ripple") or capabilities.get(zone_to_capability[zone] + "_ripple_random"):
-                zone_supported[zone]["ripple"] = True
-                _create_list_for_key_if_empty(zone_supported[zone], "ripple_options")
+        # Software ripple (provided by daemon)
+        if capabilities.get(zone_to_capability[zone] + "_ripple"):
+            zone_supported[zone]["ripple"] = True
+            _create_list_for_key_if_empty(zone_supported[zone], "ripple_options")
+            zone_supported[zone]["ripple_options"].append("single")
 
-            if capabilities.get(zone_to_capability[zone] + "_ripple"):
-                zone_supported[zone]["ripple_options"].append("single")
-
-            if capabilities.get(zone_to_capability[zone] + "_ripple_random"):
-                zone_supported[zone]["ripple_options"].append("random")
+        if capabilities.get(zone_to_capability[zone] + "_ripple_random"):
+            zone_supported[zone]["ripple"] = True
+            _create_list_for_key_if_empty(zone_supported[zone], "ripple_options")
+            zone_supported[zone]["ripple_options"].append("random")
 
         # Brightness (slider)
         if capabilities.get(zone_to_capability[zone] + "_brightness"):
@@ -344,7 +349,9 @@ def set_device_state(uid, request, zone, colour_hex, params):
     """
     try:
         # TODO: Speed up by initalising DeviceManager() once - param maybe?
-        rdevice = rclient.DeviceManager().devices[uid]
+        devman = rclient.DeviceManager()
+        devman.sync_effects = False
+        rdevice = devman.devices[uid]
     except KeyError:
         return None
     except Exception as e:

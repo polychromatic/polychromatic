@@ -501,7 +501,7 @@ class AppIndicator(object):
         if details["matrix"]:
             submenu[1].append(create_seperator())
 
-            # TODO: Build custom menu
+            # TODO: Add custom effects menu
             create_submenu_item(submenu, _("No custom effects"), False)
 
             submenu[1].append(create_seperator())

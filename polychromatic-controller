@@ -18,9 +18,8 @@
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
 """
-Frontend interface for Polychromatic based on WebKitGTK
+Frontend interface for Polychromatic based on WebKitGTK.
 """
-
 VERSION = "0.5.0"
 
 import argparse
@@ -60,9 +59,6 @@ else:
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
         print(str(e))
         exit(1)
-
-path = pref.Paths()
-setproctitle("polychromatic-controller")
 
 
 class WebView(object):
@@ -369,8 +365,13 @@ def parse_parameters():
 
 
 if __name__ == "__main__":
-    _ = common.setup_translations(__file__, "polychromatic")
+    # Appear as own process.
+    setproctitle("polychromatic-controller")
+
+    # Global variables
+    path = pref.Paths()
     dbg = common.Debugging()
+    _ = common.setup_translations(__file__, "polychromatic")
 
     # Is this a development build?
     if DEV_VERSION:
