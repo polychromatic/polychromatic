@@ -212,15 +212,14 @@ def get_zone_metadata(zones, device_name):
     }
 
 
-
-def get_wave_direction(device):
+def get_wave_direction(form_factor_id):
     """
     Returns a list of localised direction strings according to the device.
     """
-    if get_device_type(device) == "mouse":
+    if form_factor_id == "mouse":
         left = _("Down")
         right = _("Up")
-    elif get_device_type(device) == "mousemat":
+    elif form_factor_id == "mousemat":
         left = _("Clockwise")
         right = _("Anti-clockwise")
     else:
@@ -262,7 +261,7 @@ def set_default_tray_icon(pref):
         pref.set("tray_icon", "value", "0")
 
 
-def get_tray_icon(dbg, pref, path):
+def get_tray_icon(dbg, pref):
     """
     Returns the full path to the icon to use with the tray applet.
     """

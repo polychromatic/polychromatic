@@ -17,6 +17,19 @@
 # Copyright (C) 2015-2016 Terry Cain <terry@terrys-home.co.uk>
 #               2015-2019 Luke Horwell <code@horwell.me>
 #
+"""
+Control devices from the desktop environment's indicator applet or system tray.
+"""
+VERSION = "0.5.0"
+
+import argparse
+import os
+import sys
+import signal
+from setproctitle import setproctitle
+from subprocess import Popen as background_process
+from subprocess import call as foreground_process
+from shutil import which
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -30,48 +43,35 @@ try:
 except:
     indicator_support = False
 
-import argparse
-import os
-import sys
-import signal
-import setproctitle
-from subprocess import Popen as background_process
-from subprocess import call as foreground_process
-from shutil import which
+# Import modules if running relatively.
+if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
+    try:
+        import pylib.preferences as pref
+        import pylib.common as common
+        from pylib.backends import openrazer
+    except (ImportError, Exception) as e:
+        print("Failed to import modules relatively.\n")
+        raise e
 
-# Import OpenRazer
-try:
-    import openrazer.client as rclient
-except Exception as e:
-    print("Failed to import modules for daemon.")
-    print("Exception: " + str(e))
-    exit(1)
-
-try:
-    # Relative copy
-    import pylib.preferences as pref
-    import pylib.common as common
-except ImportError:
-    # Installed to system
-    import polychromatic.preferences as pref
-    import polychromatic.common as common
-except Exception as e:
-    print("One or more of Polychromatic's modules could not be imported!")
-    print("Check your PYTHONPATH or try re-installing.")
-    print("\nException: " + str(e))
-    exit(1)
+# Import modules if installed system-wide.
+else:
+    try:
+        import polychromatic.preferences as pref
+        import polychromatic.common as common
+        from polychromatic.backends import openrazer
+    except (ImportError, Exception) as e:
+        print("Polychromatic's modules could not be imported.")
+        print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
+        print(str(e))
+        exit(1)
 
 path = pref.Paths()
-session_storage = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet")
 
-"""
-GTK-based tray applet to control OpenRazer devices from the desktop environment.
-"""
-
-# Functions for populating the indicator/applet.
 def create_menu_item(label, enabled, function=None, function_params=None, icon_path=None):
     """
     Returns a Gtk menu item for use in menus.
+
+    Params:
         label               str     Text to display to the user.
         enabled             bool    Whether the selection should be highlighted or not.
         function            obj     Callback when button is clicked.
@@ -98,6 +98,7 @@ def create_menu_item(label, enabled, function=None, function_params=None, icon_p
 
     return item
 
+
 def create_submenu_item(submenu, label, enabled, function=None, function_params=None, icon_path=None):
     """
     Appends a Gtk menu item to a submenu list.
@@ -106,6 +107,7 @@ def create_submenu_item(submenu, label, enabled, function=None, function_params=
     """
     submenu[1].append(create_menu_item(label, enabled, function, function_params, icon_path))
     return
+
 
 def create_submenu(label, enabled, icon_path=None):
     """
@@ -136,6 +138,7 @@ def create_submenu(label, enabled, icon_path=None):
 
     return[item, menu]
 
+
 def create_seperator():
     """
     Returns a Gtk seperator object.
@@ -143,6 +146,7 @@ def create_seperator():
     sep = Gtk.SeparatorMenuItem()
     sep.show()
     return sep
+
 
 def get_icon(img_dir, icon):
     """
@@ -158,12 +162,11 @@ class AppIndicator(object):
     Indicator applet that provides quick access to device options from the system tray.
     """
     def __init__(self):
-        self.devman = None
         self.indicator = None
 
     def setup(self):
         """
-        Early stages to initalise the new tray applet.
+        Assemble the tray applet powered by AppIndicator or GTKStatusIcon.
         """
         # User can optionally use 'legacy' GTK status icon.
         if pref.get("tray_icon", "force_fallback", False) == True:
@@ -187,25 +190,17 @@ class AppIndicator(object):
             self._setup_failed(_("OpenRazer Module Missing"), _("Unknown command: openrazer-daemon"))
             return False
 
-        # Initialise OpenRazer
-        try:
-            self.devman = rclient.DeviceManager()
-        except Exception as e:
-            self._setup_failed(_("Daemon Initalization Error"), str(e))
-            return False
-
-        self.devman.sync_effects = False
-
-        # Generate the applet
+        # Build the applet
         self.build_indicator()
         dbg.stdout("Finished setting up applet.", dbg.success, 1)
 
+        # TODO: DBUS listening
 
     def _get_tray_icon(self):
         """
-        Returns path or filename for tray icon.
+        Returns path for tray icon.
         """
-        return common.get_tray_icon(dbg, pref, path)
+        return common.get_tray_icon(dbg, pref)
 
     def _show_menu_cb(self, widget, button, time, data=None):
         """
@@ -218,7 +213,7 @@ class AppIndicator(object):
         """
         A simple menu is displayed when something goes wrong.
         """
-        dbg.stdout("Creating simple fallback applet...", dbg.action, 1)
+        dbg.stdout("Assembling error applet...", dbg.action, 1)
         root = Gtk.Menu()
         root.append(create_menu_item(error_reason, False))
         root.append(create_menu_item(_("Exception:") + ' ' + exception, False))
@@ -256,55 +251,51 @@ class AppIndicator(object):
         dbg.stdout("Creating menus...", dbg.action, 1)
         root = Gtk.Menu()
 
-        devices = self.devman.devices
-        incompatible_list = common.get_incompatible_device_list(dbg, devices)
+        devices = openrazer.get_device_list()
+        apply_all_may_not_work = False
 
         # List devices and their submenus.
         if len(devices) == 0:
-            no_devices_listed = True
+            dbg.stdout("No devices found.", dbg.error, 1)
             root.append(create_menu_item(_("No devices found."), False))
-        else:
-            no_devices_listed = False
-            for device in self.devman.devices:
-                root.append(self.build_device_submenu(device)[0])
-
-        # List any devices that are physically connected, but not registered by the daemon.
-        for device in incompatible_list:
-            dbg.stdout("USB PID {0}:{1} is Razer hardware, but wasn't registered by the daemon.".format(device[0], device[1]), dbg.debug, 1)
-            root.append(create_menu_item("{0}: {1}:{2}".format(_("Unrecognized"), device[0], device[1]), False, None, None, get_icon("devices", "unknown.svg")))
-            if len(self.devman.devices) == 0:
-                no_devices_listed = True
-
-        # If no usable devices found, show options to assist.
-        if no_devices_listed:
-            dbg.stdout("No devices can be configured.", dbg.error, 1)
             root.append(create_seperator())
             root.append(create_menu_item(_("Try again"), True, cb.retry_applet, None, get_icon("fa", "refresh.svg")))
             root.append(create_menu_item(_("Troubleshoot"), True, cb.launch_controller, "troubleshooter", get_icon("fa", "preferences.svg")))
             root.append(create_menu_item(_("Restart OpenRazer Daemon"), True, cb.restart_daemon, None, get_icon("logo", "openrazer-alt.svg")))
+        else:
+            for device in devices:
+                if not device["available"]:
+                    dbg.stdout("{0} is not registered by the OpenRazer daemon.".format(device["name"]), dbg.warning, 1)
+                    root.append(create_menu_item("{0}: {1}".format(_("Unrecognized"), device["name"]), False, None, None, device["icon"]))
+                    continue
 
-        # Show actions that apply to all devices
-        if not no_devices_listed and len(self.devman.devices) > 1:
+                # Get full details about this device and build its submenu.
+                details = openrazer.get_device(device["uid"])
+                root.append(self.build_device_submenu(device, details)[0])
+
+                for zone in details["zone_supported"].keys():
+                    try:
+                        for fx in ["spectrum", "wave", "breath", "reactive", "static"]:
+                            details["zone_supported"][zone][fx]
+                    except KeyError:
+                        apply_all_may_not_work = True
+
+        # When multiple devices are present, show 'apply to all' actions
+        if len(devices) > 1:
             root.append(create_seperator())
             bulk_submenu = create_submenu(_("Apply to All"), True, get_icon("devices", "all.svg"))
 
             # -- Effects
             create_submenu_item(bulk_submenu, _("Effects"), False)
-            unsupported_all_effects = False
-            for device in self.devman.devices:
-                for effect in ["spectrum", "wave", "breath_single", "reactive", "static"]:
-                    if not device.has("lighting_" + effect):
-                        unsupported_all_effects = True
-                        continue
 
-            if unsupported_all_effects:
+            if apply_all_may_not_work:
                 create_submenu_item(bulk_submenu, _("(Not supported by all devices)"), False)
 
-            create_submenu_item(bulk_submenu, _("Spectrum"), True, cb.set_all_effect, "spectrum", get_icon("effects", "spectrum.svg"))
-            create_submenu_item(bulk_submenu, _("Wave"), True, cb.set_all_effect, "wave", get_icon("effects", "wave.svg"))
-            create_submenu_item(bulk_submenu, _("Breath"), True, cb.set_all_effect, "breath", get_icon("effects", "breath.svg"))
-            create_submenu_item(bulk_submenu, _("Reactive"), True, cb.set_all_effect, "reactive", get_icon("effects", "reactive.svg"))
-            create_submenu_item(bulk_submenu, _("Static"), True, cb.set_all_effect, "static", get_icon("effects", "static.svg"))
+            create_submenu_item(bulk_submenu, _("Spectrum"), True, cb.set_all_effect, ["spectrum"], get_icon("effects", "spectrum.svg"))
+            create_submenu_item(bulk_submenu, _("Wave"), True, cb.set_all_effect, ["wave", 1], get_icon("effects", "wave.svg"))
+            create_submenu_item(bulk_submenu, _("Breath"), True, cb.set_all_effect, ["breath_single"], get_icon("effects", "breath.svg"))
+            create_submenu_item(bulk_submenu, _("Reactive"), True, cb.set_all_effect, ["reactive", 1], get_icon("effects", "reactive.svg"))
+            create_submenu_item(bulk_submenu, _("Static"), True, cb.set_all_effect, ["static"], get_icon("effects", "static.svg"))
 
             # -- Brightness
             bulk_submenu[1].append(create_seperator())
@@ -330,187 +321,54 @@ class AppIndicator(object):
             self.menu = root
             self.indicator.connect("popup-menu", self._show_menu_cb)
 
-    def build_device_submenu(self, device):
+    def build_device_submenu(self, device, details):
         """
-        Starts beginning the root menu (and its submenus) to manage a device.
+        Assembles the menu (and submenus) that control an individual device.
         """
         cb = Callback()
-        device_name = device.name
-        multiple_sources = common.has_multiple_sources(device)
-        submenu = create_submenu(device_name, True, common.get_device_image(device, common.DATA_PATH))
-        dbg.stdout("- {0}".format(device_name), dbg.action, 1)
+        submenu = create_submenu(details["name"], True, details["icon"])
+        dbg.stdout("- {0}".format(details["name"]), dbg.action, 1)
 
-        def _get_option_icon(device, source, img_dir, icon):
-            """
-            Returns the source icon if device has multiple sources (e.g. logo = logo),
-            otherwise show an icon representing the menu option, e.g. brightness = bulb.
-            """
-            if multiple_sources:
-                return os.path.join(common.DATA_PATH, "/ui/", common.get_source_icon(device, source))
-            else:
-                return get_icon(img_dir, icon)
+        uid = device["uid"]
+        multiple_zones = False
+        if len(device["zones"]) > 1:
+            multiple_zones = True
 
-        # Effects
-        def _create_effect_submenu(source):
-            """
-            Builds an individual submenu for setting a device's effects.
 
-            source          str     "main", "logo", etc
-            """
-            dbg.stdout("  - Effects", dbg.debug, 1)
-            item_name = _("Effects")
+        for zone in device["zones"]:
+            if multiple_zones:
+                submenu[1].append(create_menu_item(details["zone_names"][zone], False, None, None, details["zone_icons"][zone]))
 
-            if multiple_sources:
-                item_name = common.get_source_name(source, device) + ' ' + item_name
+            # Add effects menu
+            if details["matrix"]:
+                submenu[1].append(self._create_effect_submenu(details, zone)[0])
 
-            submenu = create_submenu(item_name, True, _get_option_icon(device, source, "fa", "effects.svg"))
+            # Add brightness menu
+            if "brightness_slider" in details["zone_supported"][zone].keys():
+                submenu[1].append(self._create_brightness_submenu(details, zone, False)[0])
 
-            if source == "main":
-                prefix = "lighting_"
-            else:
-                prefix = "lighting_" + source + "_"
+            if "brightness_toggle" in details["zone_supported"][zone].keys():
+                submenu[1].append(self._create_brightness_submenu(details, zone, True)[0])
 
-            if device.has(prefix + "spectrum"):
-                create_submenu_item(submenu, _("Spectrum"), True, cb.set_effect, [device, source, "spectrum"], get_icon("effects", "spectrum.svg"))
-
-            if device.has(prefix + "wave"):
-                localised_directions = common.get_wave_direction(device)
-                left = localised_directions[0]
-                right = localised_directions[1]
-
-                wave_menu = create_submenu(_("Wave"), True, get_icon("effects", "wave.svg"))
-                create_submenu_item(wave_menu, left, True, cb.set_effect, [device, source, "wave", 2])
-                create_submenu_item(wave_menu, right, True, cb.set_effect, [device, source, "wave", 1])
-                submenu[1].append(wave_menu[0])
-
-            if device.has(prefix + "reactive"):
-                reactive_menu = create_submenu(_("Reactive"), True, get_icon("effects", "reactive.svg"))
-                create_submenu_item(reactive_menu, _("Very Fast"), True, cb.set_effect, [device, source, "reactive", 0])
-                create_submenu_item(reactive_menu, _("Fast"), True, cb.set_effect, [device, source, "reactive", 1])
-                create_submenu_item(reactive_menu, _("Medium"), True, cb.set_effect, [device, source, "reactive", 2])
-                create_submenu_item(reactive_menu, _("Slow"), True, cb.set_effect, [device, source, "reactive", 3])
-                submenu[1].append(reactive_menu[0])
-
-            if device.has(prefix + "breath_random") or device.has(prefix + "breath_single"):
-                breath_menu = create_submenu(_("Breath"), True, get_icon("effects", "breath.svg"))
-                if device.has(prefix + "breath_random"):
-                    create_submenu_item(breath_menu, _("Random"), True, cb.set_effect, [device, source, "breath", "random"])
-                if device.has(prefix + "breath_single"):
-                    create_submenu_item(breath_menu, _("Single"), True, cb.set_effect, [device, source, "breath", "single"])
-                if device.has(prefix + "breath_dual"):
-                    create_submenu_item(breath_menu, _("Dual"), True, cb.set_effect, [device, source, "breath", "dual"])
-                if device.has(prefix + "breath_triple"):
-                    create_submenu_item(breath_menu, _("Triple"), True, cb.set_effect, [device, source, "breath", "triple"])
-                submenu[1].append(breath_menu[0])
-
-            if device.has(prefix + "starlight_random") or device.has(prefix + "starlight_single"):
-                starlight_menu = create_submenu(_("Starlight"), True, get_icon("effects", "starlight.svg"))
-                if device.has(prefix + "starlight_random"):
-                    create_submenu_item(breath_menu, _("Random"), True, cb.set_effect, [device, source, "starlight", "random"])
-                if device.has(prefix + "starlight_single"):
-                    create_submenu_item(breath_menu, _("Single"), True, cb.set_effect, [device, source, "starlight", "single"])
-                if device.has(prefix + "starlight_dual"):
-                    create_submenu_item(breath_menu, _("Dual"), True, cb.set_effect, [device, source, "starlight", "dual"])
-                if device.has(prefix + "starlight_triple"):
-                    create_submenu_item(breath_menu, _("Triple"), True, cb.set_effect, [device, source, "starlight", "triple"])
-                submenu[1].append(starlight_menu[0])
-
-            if device.has(prefix + "blinking"):
-                create_submenu_item(submenu, _("Blinking"), True, cb.set_effect, [device, source, "blinking"], get_icon("effects", "blinking.svg"))
-
-            if device.has(prefix + "pulsate"):
-                create_submenu_item(submenu, _("Pulsate"), True, cb.set_effect, [device, source, "pulsate"], get_icon("effects", "pulsate.svg"))
-
-            if device.has(prefix + "ripple"):
-                # Use a submenu if device supports both ripple effects.
-                if device.has(prefix + "ripple_random"):
-                    ripple_menu = create_submenu(_("Ripple"), True, get_icon("effects", "ripple.svg"))
-                    create_submenu_item(ripple_menu, _("Single Color"), True, cb.set_effect, [device, source, "ripple", "single"])
-                    create_submenu_item(ripple_menu, _("Random"), True, cb.set_effect, [device, source, "ripple", "random"])
-                    submenu[1].append(ripple_menu[0])
-                else:
-                    # Just support ripple
-                    create_submenu_item(submenu, _("Ripple"), True, cb.set_effect, [device, source, "ripple", "single"], get_icon("effects", "ripple.svg"))
-
-            if device.has(prefix + "static"):
-                create_submenu_item(submenu, _("Static"), True, cb.set_effect, [device, source, "static"], get_icon("effects", "static.svg"))
-
-            if source == "main" and device.has("lighting_led_matrix"):
+            # End of zone-specific options
+            if multiple_zones:
                 submenu[1].append(create_seperator())
 
-                create_submenu_item(submenu, _("Edit Effects..."), True, cb.launch_controller, "effects", get_icon("fa", "edit.svg"))
-
-            return submenu
-
-        if device.has("lighting"):
-            submenu[1].append(_create_effect_submenu("main")[0])
-
-        for source in common.get_supported_lighting_sources(device):
-            if source != "main":
-                submenu[1].append(_create_effect_submenu(source)[0])
-
-        if multiple_sources:
-            submenu[1].append(create_seperator())
-
-        # Brightness
-        def _create_brightness_submenu(source, toggle_only):
-            """
-            Builds an individual submenu for setting a device's brightness.
-
-            source          str     "main", "logo", etc
-            toggle_only     bool    True if this should show "on/off" controls.
-            """
-            dbg.stdout("  - Brightness", dbg.debug, 1)
-            item_name = _("Brightness")
-
-            if multiple_sources:
-                item_name = common.get_source_name(source, device) + ' ' + item_name
-
-            submenu = create_submenu(item_name, True, _get_option_icon(device, source, "fa", "lightbulb.svg"))
-
-            if toggle_only:
-                create_submenu_item(submenu, _("On"), True, cb.set_brightness, [device, source, 1], get_icon("brightness", "100.svg"))
-                create_submenu_item(submenu, _("Off"), True, cb.set_brightness, [device, source, 0], get_icon("brightness", "0.svg"))
-            else:
-                for no in [100, 75, 50, 25, 0]:
-                    create_submenu_item(submenu, str(no) + "%", True, cb.set_brightness, [device, source, no], get_icon("brightness", str(no) + ".svg"))
-
-            return submenu
-
-        if device.has("brightness"):
-            submenu[1].append(_create_brightness_submenu("main", False)[0])
-
-        if device.has("lighting_backlight_brightness") and not device.has("lighting_backlight_active"):
-            submenu[1].append(_create_brightness_submenu("backlight", False)[0])
-        if device.has("lighting_backlight_active") and not device.has("lighting_backlight_brightness"):
-            submenu[1].append(_create_brightness_submenu("backlight", True)[0])
-
-        if device.has("lighting_logo_brightness") and not device.has("lighting_logo_active"):
-            submenu[1].append(_create_brightness_submenu("logo", False)[0])
-        if device.has("lighting_logo_active") and not device.has("lighting_logo_brightness"):
-            submenu[1].append(_create_brightness_submenu("logo", True)[0])
-
-        if device.has("lighting_scroll_brightness") and not device.has("lighting_scroll_active"):
-            submenu[1].append(_create_brightness_submenu("scroll", False)[0])
-        if device.has("lighting_scroll_active") and not device.has("lighting_scroll_brightness"):
-            submenu[1].append(_create_brightness_submenu("scroll", True)[0])
-
-        if multiple_sources:
-            submenu[1].append(create_seperator())
-
         # Game Mode
-        if device.has("game_mode_led"):
+        if details["game_mode"] != None:
+            dbg.stdout("  - Game Mode", dbg.debug, 1)
             game_mode_menu = create_submenu(_("Game Mode"), True, get_icon("general", "game-mode.svg"))
-            create_submenu_item(game_mode_menu, _("On"), True, cb.set_gamemode, [True], get_icon("general", "game-mode.svg"))
-            create_submenu_item(game_mode_menu, _("Off"), True, cb.set_gamemode, [False], get_icon("general", "game-mode-disabled.svg"))
+            create_submenu_item(game_mode_menu, _("On"), True, cb.set_game_mode, [uid, True], get_icon("general", "game-mode.svg"))
+            create_submenu_item(game_mode_menu, _("Off"), True, cb.set_game_mode, [uid, False], get_icon("general", "game-mode-disabled.svg"))
             submenu[1].append(game_mode_menu[0])
 
         # DPI
-        if device.has("dpi"):
+        if details["dpi_x"] != None:
+            dbg.stdout("  - DPI", dbg.debug, 1)
             dpi_menu = create_submenu(_("DPI"), True, get_icon("general", "dpi.svg"))
-            dpi_range = common.get_dpi_range(device)
+            dpi_range = details["dpi_ranges"]
             min_dpi = dpi_range[0]
-            max_dpi = device.max_dpi
+            max_dpi = dpi_range[-1]
 
             for dpi in dpi_range:
                 if dpi == min_dpi:
@@ -519,56 +377,174 @@ class AppIndicator(object):
                     dpi_icon = get_icon("general", "dpi-fast.svg")
                 else:
                     dpi_icon = None
-                create_submenu_item(dpi_menu, str(dpi), True, cb.set_dpi, int(dpi), dpi_icon)
+                create_submenu_item(dpi_menu, str(dpi), True, cb.set_dpi, [uid, int(dpi)], dpi_icon)
             submenu[1].append(dpi_menu[0])
 
         # Polling Rate
-        if device.has("poll_rate"):
+        if details["poll_rate"] != None:
+            dbg.stdout("  - Poll Rate", dbg.debug, 1)
             poll_menu = create_submenu(_("Polling Rate"), True, get_icon("fa", "poll-rate.svg"))
-            create_submenu_item(poll_menu, _("125 Hz (8ms)"), True, cb.set_poll_rate, [125])
-            create_submenu_item(poll_menu, _("500 Hz (2ms)"), True, cb.set_poll_rate, [500])
-            create_submenu_item(poll_menu, _("1000 Hz (1ms)"), True, cb.set_poll_rate, [1000])
+            create_submenu_item(poll_menu, _("125 Hz (8ms)"), True, cb.set_poll_rate, [uid, 125])
+            create_submenu_item(poll_menu, _("500 Hz (2ms)"), True, cb.set_poll_rate, [uid, 500])
+            create_submenu_item(poll_menu, _("1000 Hz (1ms)"), True, cb.set_poll_rate, [uid, 1000])
             submenu[1].append(poll_menu[0])
 
         # Colour (repeats last effect)
-        if not common.is_device_fixed_colour(device):
+        if details["matrix"]:
+            dbg.stdout("  - Colours", dbg.debug, 1)
             colour_menu = create_submenu(_("Change Color"), True, get_icon("fa", "palette.svg"))
-            if common.is_device_greenscale(device):
+
+            if details["monochromatic"]:
                 col_index = common.get_green_shades()
             else:
                 col_index = pref.load_file(path.colours)
-
-            def _get_colour_icon(colour_hex):
-                """
-                Generates a colour block, and gets the path for use as an icon.
-
-                Params:
-                    colour_hex      Hex value, e.g. "#00FF00"
-                """
-                colour_path = os.path.join(session_storage, "{0}.png".format(colour_hex.strip("#")))
-                if not os.path.exists(colour_path):
-                    dbg.stdout("Generating colour bitmap: " + colour_hex, dbg.action, 1)
-                    foreground_process("convert -size 22x22 xc:{0} {1}".format(colour_hex, colour_path), shell=True)
-                if not os.path.exists(colour_path):
-                    dbg.stdout("ERROR: Failed to generate bitmap: " + colour_hex, dbg.error)
-                    return None
-                return colour_path
 
             for pos in range(0, len(col_index)):
                 try:
                     name = col_index[pos]["name"]
                     hex_value = col_index[pos]["hex"]
-                    create_submenu_item(colour_menu, name, True, cb.set_colour, [device, source, hex_value], _get_colour_icon(hex_value))
+                    create_submenu_item(colour_menu, name, True, cb.set_colour, [uid, zone, hex_value], self._get_colour_icon(hex_value))
                 except Exception:
                     dbg.stdout("Ignoring invalid colour data at index position " + str(pos), dbg.error)
 
             colour_menu[1].append(create_seperator())
-            create_submenu_item(colour_menu, _("Open Color Picker"), True, cb.set_custom_colour, [device], get_icon("fa", "palette.svg"))
+            create_submenu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [uid, zone], get_icon("fa", "palette.svg"))
             create_submenu_item(colour_menu, _("Edit Colors..."), True, cb.launch_controller, ["colours"], get_icon("fa", "edit.svg"))
             submenu[1].append(create_seperator())
             submenu[1].append(colour_menu[0])
 
         return submenu
+
+    def _create_effect_submenu(self, details, zone):
+        """
+        Builds an individual submenu that lists the device's effects.
+
+        Params:
+            zone      (str)   "main", "logo", etc
+        """
+        dbg.stdout("  - Effects [{0}]".format(zone), dbg.debug, 1)
+        submenu = create_submenu(_("Effects"), True, get_icon("fa", "effects.svg"))
+        supported_fx = details["zone_supported"][zone].keys()
+        uid = details["uid"]
+
+        if "spectrum" in supported_fx:
+            create_submenu_item(submenu, _("Spectrum"), True, cb.set_effect, [uid, zone, "spectrum"], get_icon("effects", "spectrum.svg"))
+
+        if "wave" in supported_fx:
+            localised_directions = common.get_wave_direction(details["form_factor_id"])
+            left = localised_directions[0]
+            right = localised_directions[1]
+
+            wave_menu = create_submenu(_("Wave"), True, get_icon("effects", "wave.svg"))
+            create_submenu_item(wave_menu, left, True, cb.set_effect, [uid, zone, "wave", 2])
+            create_submenu_item(wave_menu, right, True, cb.set_effect, [uid, zone, "wave", 1])
+            submenu[1].append(wave_menu[0])
+
+        if "reactive" in supported_fx:
+            reactive_menu = create_submenu(_("Reactive"), True, get_icon("effects", "reactive.svg"))
+            create_submenu_item(reactive_menu, _("Fast"), True, cb.set_effect, [uid, zone, "reactive", 1])
+            create_submenu_item(reactive_menu, _("Medium"), True, cb.set_effect, [uid, zone, "reactive", 2])
+            create_submenu_item(reactive_menu, _("Slow"), True, cb.set_effect, [uid, zone, "reactive", 3])
+            create_submenu_item(reactive_menu, _("Very Slow"), True, cb.set_effect, [uid, zone, "reactive", 4])
+            submenu[1].append(reactive_menu[0])
+
+        if "breath" in supported_fx:
+            breath_menu = create_submenu(_("Breath"), True, get_icon("effects", "breath.svg"))
+            breath_supported = details["zone_supported"][zone]["breath_options"]
+
+            if "random" in breath_supported:
+                create_submenu_item(breath_menu, _("Random"), True, cb.set_effect, [uid, zone, "breath_random"])
+            if "single" in breath_supported:
+                create_submenu_item(breath_menu, _("Single"), True, cb.set_effect, [uid, zone, "breath_single"])
+            if "dual" in breath_supported:
+                create_submenu_item(breath_menu, _("Dual"), True, cb.set_effect, [uid, zone, "breath_dual"])
+            if "triple" in breath_supported:
+                create_submenu_item(breath_menu, _("Triple"), True, cb.set_effect, [uid, zone, "breath_triple"])
+
+            submenu[1].append(breath_menu[0])
+
+        if "starlight" in supported_fx:
+            starlight_menu = create_submenu(_("Starlight"), True, get_icon("effects", "starlight.svg"))
+            starlight_supported = details["zone_supported"][zone]["starlight_options"]
+
+            if "random" in starlight_options:
+                create_submenu_item(breath_menu, _("Random"), True, cb.set_effect, [uid, zone, "starlight_random"])
+            if "single" in starlight_options:
+                create_submenu_item(breath_menu, _("Single"), True, cb.set_effect, [uid, zone, "starlight_single"])
+            if "dual" in starlight_options:
+                create_submenu_item(breath_menu, _("Dual"), True, cb.set_effect, [uid, zone, "starlight_dual"])
+
+            submenu[1].append(starlight_menu[0])
+
+        if "blinking" in supported_fx:
+            create_submenu_item(submenu, _("Blinking"), True, cb.set_effect, [uid, zone, "blinking"], get_icon("effects", "blinking.svg"))
+
+        if "pulsate" in supported_fx:
+            create_submenu_item(submenu, _("Pulsate"), True, cb.set_effect, [uid, zone, "pulsate"], get_icon("effects", "pulsate.svg"))
+
+        if "ripple" in supported_fx:
+            ripple_menu = create_submenu(_("Ripple"), True, get_icon("effects", "ripple.svg"))
+            ripple_supported = details["zone_supported"][zone]["ripple_options"]
+
+            # Use a submenu if device supports both ripple effects.
+            if "random" in ripple_supported:
+                create_submenu_item(ripple_menu, _("Single Color"), True, cb.set_effect, [uid, zone, "ripple_single", 0.01])
+                create_submenu_item(ripple_menu, _("Random"), True, cb.set_effect, [uid, zone, "ripple_random", 0.01])
+                submenu[1].append(ripple_menu[0])
+            else:
+                # Just support single colour ripple
+                create_submenu_item(submenu, _("Ripple"), True, cb.set_effect, [uid, zone, "ripple_single"], get_icon("effects", "ripple.svg"))
+
+        if "static" in supported_fx:
+            create_submenu_item(submenu, _("Static"), True, cb.set_effect, [uid, zone, "static"], get_icon("effects", "static.svg"))
+
+        if details["matrix"]:
+            submenu[1].append(create_seperator())
+
+            # TODO: Build custom menu
+            create_submenu_item(submenu, _("No custom effects"), False)
+
+            submenu[1].append(create_seperator())
+            create_submenu_item(submenu, _("Edit Effects..."), True, cb.launch_controller, "effects", get_icon("fa", "edit.svg"))
+
+        return submenu
+
+    # Create brightness menu
+    def _create_brightness_submenu(self, details, zone, toggle_only):
+        """
+        Builds an individual submenu for setting a device's brightness.
+
+        zone          str     "main", "logo", etc
+        toggle_only     bool    True if this should show "on/off" controls.
+        """
+        dbg.stdout("  - Brightness [{0}]".format(zone), dbg.debug, 1)
+        submenu = create_submenu(_("Brightness"), True, get_icon("fa", "lightbulb.svg"))
+        uid = details["uid"]
+
+        if toggle_only:
+            create_submenu_item(submenu, _("On"), True, cb.set_brightness, [uid, zone, 1], get_icon("brightness", "100.svg"))
+            create_submenu_item(submenu, _("Off"), True, cb.set_brightness, [uid, zone, 0], get_icon("brightness", "0.svg"))
+        else:
+            for no in [100, 75, 50, 25, 0]:
+                create_submenu_item(submenu, str(no) + "%", True, cb.set_brightness, [uid, zone, no], get_icon("brightness", str(no) + ".svg"))
+
+        return submenu
+
+    def _get_colour_icon(self, colour_hex):
+        """
+        Generates a colour PNG, and returns the path so it can be used as an icon.
+
+        Params:
+            colour_hex      Hex value, e.g. "#00FF00"
+        """
+        colour_path = os.path.join(session_storage, "{0}.png".format(colour_hex.strip("#")))
+        if not os.path.exists(colour_path):
+            dbg.stdout("Generating colour bitmap: " + colour_hex, dbg.action, 1)
+            foreground_process("convert -size 22x22 xc:{0} {1}".format(colour_hex, colour_path), shell=True)
+        if not os.path.exists(colour_path):
+            dbg.stdout("ERROR: Failed to generate bitmap: " + colour_hex, dbg.error)
+            return None
+        return colour_path
 
 
 class Callback():
@@ -620,28 +596,34 @@ class Callback():
         GTK menu item to set an effect for a device.
 
         Params:
-            attr    [device, source, effect]
+            attr    [uid, zone, effect]
         """
-        device = attr[0]
-        source = attr[1]
+        uid = attr[0]
+        zone = attr[1]
         effect = attr[2]
         try:
-            effect_params = attr[3]
+            params = attr[3]
         except Exception:
-            effect_params = None
-        common.set_lighting_effect(pref, device, source, effect, effect_params)
+            params = None
+
+        dbg.stdout("Setting effect for device ID {0} in zone '{1}' to '{2}'".format(uid, zone, effect), dbg.debug, 1)
+        r = openrazer.set_device_state(uid, effect, zone, None, [params])
+        _verbose_check_status(r)
 
     def set_brightness(cb, item, attr):
         """
         GTK menu item callback to set the brightness of a device.
 
         Params:
-            attr    [device, source, value]
+            attr    [uid, zone, value]
         """
-        device = attr[0]
-        source = attr[1]
+        uid = attr[0]
+        zone = attr[1]
         value = attr[2]
-        common.set_brightness(pref, device, source, value)
+
+        dbg.stdout("Setting brightness for device ID {0} in zone '{1}' to '{2}'".format(uid, zone, value), dbg.debug, 1)
+        r = openrazer.set_device_state(uid, "brightness", zone, None, [value])
+        _verbose_check_status(r)
 
     def set_colour(cb, item, attr):
         """
@@ -649,57 +631,80 @@ class Callback():
         primary colour.
 
         Params:
-            attr    [device, source, hex_string]
+            attr    [uid, zone, hex_string]
         """
-        device = attr[0]
-        source = attr[1]
+        uid = attr[0]
+        zone = attr[1]
         hex_value = attr[2]
-        common.save_colours_to_all_sources(pref, device, "colour_primary", hex_value)
-        common.repeat_last_effect(pref, device)
+
+        dbg.stdout("Setting colour for device ID {0} in zone '{1}' to '{2}'".format(uid, zone, hex_value), dbg.debug, 1)
+        r = openrazer.set_device_colours(uid, zone, [hex_value])
+        _verbose_check_status(r)
 
     def set_dpi(cb, item, attr):
         """
         GTK menu item callback to set the DPI of a device.
 
         Params:
-            attr    [device, new_dpi]
+            attr    [uid, new_dpi]
         """
-        device = attr[0]
+        uid = attr[0]
         new_dpi = attr[1]
-        device.dpi = (new_dpi, new_dpi)
+
+        dbg.stdout("Setting DPI for device ID {0} to '{1}'".format(uid, new_dpi), dbg.debug, 1)
+        r = openrazer.set_device_state(uid, "dpi", None, None, [new_dpi, new_dpi])
+        _verbose_check_status(r)
 
     def set_poll_rate(cb, item, attr):
         """
         GTK menu item callback to set the poll rate of a device.
 
         Params:
-            attr    [device, new_poll_rate]
+            attr    [uid, new_poll_rate]
         """
-        device = attr[0]
+        uid = attr[0]
         new_poll_rate = attr[1]
-        device.poll_rate = new_poll_rate
 
-    def set_gamemode(cb, item, attr):
+        dbg.stdout("Setting poll rate for device ID {0} to '{1}'".format(uid, new_poll_rate), dbg.debug, 1)
+        r = openrazer.set_device_state(uid, "poll_rate", None, None, [new_poll_rate])
+        _verbose_check_status(r)
+
+    def set_game_mode(cb, item, attr):
         """
         GTK menu item callback to set the game mode of a keyboard.
 
         Params:
-            attr    [device, new_state]
+            attr    [uid, new_state]
         """
-        device = attr[0]
+        uid = attr[0]
         state = attr[1]
-        device.game_mode_led = state
 
-    def set_all_effect(cb, item, effect_name):
+        dbg.stdout("Setting game mode for device ID {0} to '{1}'".format(uid, state), dbg.debug, 1)
+        r = openrazer.set_device_state(uid, "game_mode", None, None, [state])
+        _verbose_check_status(r)
+
+    def set_all_effect(cb, item, attr):
         """
         GTK menu item callback to set an effect for all devices (using defaults)
 
         Params:
             effect_name     Internal effect name
         """
-        for device in indicator.devman.devices:
-            for source in common.get_supported_lighting_sources(device):
-                common.set_lighting_effect(pref, device, source, effect_name)
+        request = attr[0]
+        try:
+            params = int(attr[1])
+        except Exception:
+            params = None
+
+        devices = openrazer.get_device_list()
+        dbg.stdout("Setting all devices to '{0}'".format(request), dbg.debug, 1)
+
+        for device in devices:
+            if device["available"] == True:
+                zones = device["zones"]
+                for zone in zones:
+                    r = openrazer.set_device_state(int(device["uid"]), request, zone, None, [params])
+                    _verbose_check_status(r)
 
     def set_all_brightness(cb, item, value):
         """
@@ -709,10 +714,17 @@ class Callback():
         Params:
             value           String representing brightness %
         """
-        value = str(value)
-        for device in indicator.devman.devices:
-            for source in common.get_supported_lighting_sources(device):
-                common.set_brightness(pref, device, source, value)
+        value = int(value)
+
+        devices = openrazer.get_device_list()
+        dbg.stdout("Setting all brightness levels to {0}%".format(str(value)), dbg.debug, 1)
+
+        for device in devices:
+            if device["available"] == True:
+                zones = device["zones"]
+                for zone in zones:
+                    r = openrazer.set_device_state(device["uid"], "brightness", zone, None, [value])
+                    _verbose_check_status(r)
 
     def set_custom_colour(cb, item, attr):
         """
@@ -722,8 +734,10 @@ class Callback():
         Params:
             attr    [device object]
         """
-        device = attr[0]
+        uid = attr[0]
+        zone = attr[1]
 
+        dbg.stdout("Opened GTK colour picker.", dbg.debug, 1)
         color_selection_dlg = Gtk.ColorSelectionDialog(_("Set Primary Color"))
         color_selection_result = color_selection_dlg.run()
 
@@ -732,13 +746,29 @@ class Callback():
             red = int(result_gdk_colour.red_float * 255)
             green = int(result_gdk_colour.green_float * 255)
             blue = int(result_gdk_colour.blue_float * 255)
-            custom_hex = common.rgb_to_hex([red, green, blue])
+            hex_value = common.rgb_to_hex([red, green, blue])
 
-            dbg.stdout("Set custom colour to: {0} ({1}, {2}, {3})".format(custom_hex, str(red), str(green), str(blue)), dbg.debug, 1)
-            common.save_colours_to_all_sources(pref, device, "colour_primary", custom_hex)
-            common.repeat_last_effect(pref, device)
+            dbg.stdout("Set custom colour for device ID {0} to '{1}'".format(uid, hex_value), dbg.debug, 1)
+            r = openrazer.set_device_colours(uid, zone, [hex_value])
+            _verbose_check_status(r)
 
         color_selection_dlg.destroy()
+
+
+def _verbose_check_status(result):
+    """
+    When using the verbose parameter (-v), output details if a request made
+    to the backend (openrazer module) was successful.
+    """
+    if type(result) == str:
+        dbg.stdout("An exception occurred processing this request:", dbg.error, 1)
+        dbg.stdout(result, dbg.normal, 1)
+    elif result == True:
+        dbg.stdout("Request OK", dbg.success, 1)
+    elif result == None:
+        dbg.stdout("Device missing", dbg.warning, 1)
+    elif result == False:
+        dbg.stdout("Request unsuccessful - may be unsupported by the device.", dbg.warning, 1)
 
 
 def parse_parameters():
@@ -769,7 +799,12 @@ def parse_parameters():
 
 if __name__ == "__main__":
     # Appear as its own process.
-    setproctitle.setproctitle("polychromatic-tray-applet")
+    setproctitle("polychromatic-tray-applet")
+
+    # Global variables
+    session_storage = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet")
+    _ = common.setup_translations(__file__, "polychromatic")
+    dbg = common.Debugging()
 
     # Kill the process when CTRL+C'd.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -783,8 +818,6 @@ if __name__ == "__main__":
     f.write(str(os.getpid()))
     f.close()
 
-    _ = common.setup_translations(__file__, "polychromatic")
-    dbg = common.Debugging()
     parse_parameters()
 
     # Initialise the indicator

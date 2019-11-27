@@ -291,7 +291,7 @@ def get_device(uid):
 
     return {
         "name": name,
-        "uid": "{0}{1}".format(vid, pid),
+        "uid": uid,
         "backend": "openrazer",
         "vid": vid,
         "pid": pid,
@@ -494,6 +494,69 @@ def set_device_state(uid, request, zone, colour_hex, params):
 
     return True
 
+
+def set_device_colours(uid, zone, colour_hex):
+    """
+    Replays the active effect on the device, but changes to a new set of colours.
+
+    Params:
+        uid         (int)   Numeric ID of device in device list.
+        zone        (str)   A valid lighting area, e.g. "logo".
+        colour_hex  (lst)   A list of strings in format: [#RRGGBB,  #RRGGBB]
+
+    Returns:
+        True        Operation successful.
+        False       Operation failed, such as an incorrect request.
+        None        Device not found, possibly removed.
+        (str)       Operation failed. The string of the exception.
+    """
+    try:
+        # TODO: Speed up by initalising DeviceManager() once - param maybe?
+        devman = rclient.DeviceManager()
+        devman.sync_effects = False
+        rdevice = devman.devices[uid]
+    except KeyError:
+        return None
+    except Exception as e:
+        return common.get_exception_as_string(e)
+
+    device_zone = _get_device_zones(rdevice)[zone]
+
+    daemon_to_poly_effect = {
+        "blinking": "blinking",
+        "pulsate": "pulsate",
+        "breathSingle": "breath_single",
+        "breathDual": "breath_dual",
+        "breathTriple": "breath_triple",
+        "starlightSingle": "starlight_single",
+        "starlightDual": "starlight_dual",
+        "ripple": "ripple_single",
+        "reactive": "reactive",
+        "static": "static"
+    }
+
+    try:
+        request = daemon_to_poly_effect[str(device_zone.effect)]
+    except KeyError:
+        return False
+
+    try:
+        # Effects that don't require parameters.
+        if request in ["blinking", "breath_single", "breath_dual", "breath_triple", "pulsate", "static"]:
+            set_device_state(uid, request, zone, colour_hex, None)
+
+        # Effects that use the 'speed'
+        elif request in ["starlight_single", "starlight_dual", "reactive"]:
+            set_device_state(uid, request, zone, colour_hex, [int(device_zone.speed)])
+
+        # Ripple data isn't stored as will reset to a default speed
+        elif request in ["ripple_single"]:
+            set_device_state(uid, request, zone, colour_hex, [0.01])
+
+    except Exception as e:
+        return common.get_exception_as_string(e)
+
+    return True
 
 def _get_device_zones(rdevice):
     """
