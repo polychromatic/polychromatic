@@ -79,7 +79,7 @@ def create_menu_item(label, enabled, function=None, function_params=None, icon_p
         icon_path           str     Path to image file.
     """
     if icon_path and os.path.exists(icon_path):
-        item = Gtk.ImageMenuItem(Gtk.STOCK_NEW, label=label)
+        item = Gtk.ImageMenuItem(label=label)
         item.set_sensitive(enabled)
         item.show()
 
@@ -87,7 +87,7 @@ def create_menu_item(label, enabled, function=None, function_params=None, icon_p
         img.set_from_file(icon_path)
         item.set_image(img)
     else:
-        item = Gtk.MenuItem(label)
+        item = Gtk.MenuItem(label=label)
         item.set_sensitive(enabled)
         item.show()
 
@@ -108,7 +108,6 @@ def create_submenu_item(submenu, label, enabled, function=None, function_params=
     submenu[1].append(create_menu_item(label, enabled, function, function_params, icon_path))
     return
 
-
 def create_submenu(label, enabled, icon_path=None):
     """
     Returns a Gtk menu item for sub-menu options.
@@ -120,15 +119,15 @@ def create_submenu(label, enabled, icon_path=None):
         menu                Menu (containing child menu items)
     """
     if icon_path and os.path.exists(icon_path):
-        item = Gtk.ImageMenuItem(Gtk.STOCK_NEW, label=label)
+        item = Gtk.ImageMenuItem(label=label)
         item.set_sensitive(enabled)
         item.show()
 
         img = Gtk.Image()
         img.set_from_file(icon_path)
-        item.set_image(img)
+        item.set_image(img)            # GTK3: Deprecated, no replacement!
     else:
-        item = Gtk.MenuItem(label)
+        item = Gtk.MenuItem(label=label)
         item.set_sensitive(enabled)
         item.show()
 
@@ -244,7 +243,7 @@ class AppIndicator(object):
         """
         # Load the tray icon
         if indicator_support:
-            self.indicator.set_icon(self._get_tray_icon())
+            self.indicator.set_icon_full(self._get_tray_icon(), _("Icon that represents Razer devices"))
         else:
             self.indicator.set_from_file(self._get_tray_icon())
 
