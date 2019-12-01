@@ -1450,7 +1450,7 @@ class Controller(object):
         else:
             self.update_page("#macro-options", "hide")
 
-        if self.active_device.has("lighting_led_matrix") and self.active_device.type == "keyboard":
+        if self.active_device.has("lighting_led_matrix"):
             self.update_page("#matrix-options", "show")
             self.update_page("#keyboard-options-pane", "show")
         else:

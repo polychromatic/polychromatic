@@ -312,13 +312,16 @@ function Keyboard(keyboard_element_id) {
 	 * @param model {string} Keyboard model name
      */
 	this.svg_path = function (model) {
-		var map = "blackwidow-chroma";
+		var map = "blackwidow-chroma-keyboard";
 		switch (model) {
 			case "Razer BlackWidow Elite":
-				map = "blackwidow-elite";
+				map = "blackwidow-elite-keyboard";
+				break;
+            case "Razer Mamba Elite":
+				map = "mamba-elite-mouse";
 				break;
 		}
-		return "../mapping/"+map+"-keyboard-layout.svg";
+		return "../mapping/"+map+"-layout.svg";
 	}
 
     /**
