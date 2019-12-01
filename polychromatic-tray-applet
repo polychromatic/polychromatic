@@ -705,7 +705,7 @@ class AppIndicator(object):
     def _build_app_profile_menu(self):
         dbg.stdout("Building app profiles menu...", dbg.action, 1)
 
-        if not self.active_device.has("lighting_led_matrix") or not str(self.active_device.type) == "keyboard":
+        if not self.active_device.has("lighting_led_matrix"):
             return None
 
         self.profiles = prof.AppProfiles()
