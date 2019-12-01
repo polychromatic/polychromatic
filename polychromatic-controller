@@ -716,9 +716,9 @@ class Controller(object):
             blue = int(params[3])
             source = params[4]
 
-            if source != "null":
-                colour_id_state = colour_id.replace("-", "_")
-                pref.set_device_state(self.active_device.serial, source, colour_id_state, [red, green, blue])
+            #if source != "null":
+            #    colour_id_state = colour_id.replace("-", "_")
+            #    pref.set_device_state(self.active_device.serial, source, colour_id_state, [red, green, blue])
 
             preview_element = "#{0}-{1}-preview".format(colour_id, source)
             self.update_page(preview_element, "css", "background-color", "rgba({0},{1},{2},1)".format(str(red), str(green), str(blue)))
