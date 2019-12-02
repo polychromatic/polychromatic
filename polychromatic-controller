@@ -317,7 +317,7 @@ class AppWindow(object):
             self.window.set_size_request(2500, 1500)
         else:
             self.webkit.set_zoom_level(1)
-            self.window.set_size_request(1000, 600)
+            self.window.set_size_request(1024, 768)
         dbg.stdout("Set scale to: " + str(scale), dbg.success, 1)
 
         # Build an auto expanding box and add the scrolled window
