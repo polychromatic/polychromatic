@@ -305,20 +305,17 @@ class AppWindow(object):
         sw.add(self.webkit)
 
         # Scale the application so it looks good on large displays.
-        scale = float(pref.get("editor", "scaling", 1))
-        if scale == 1.5:
-            self.webkit.set_zoom_level(1.5)
-            self.window.set_size_request(1500, 900)
-        elif scale == 2:
-            self.webkit.set_zoom_level(2)
-            self.window.set_size_request(2000, 1200)
-        elif scale == 2.5:
-            self.webkit.set_zoom_level(2.5)
-            self.window.set_size_request(2500, 1500)
-        else:
-            self.webkit.set_zoom_level(1)
-            self.window.set_size_request(1024, 768)
-        dbg.stdout("Set scale to: " + str(scale), dbg.success, 1)
+        # range 0.125 - 10
+        try:
+            scale = min(10, max(0.125, float(pref.get("editor", "scaling", 1))))
+        except ValueError:
+            scale = 1.0
+
+        width = int(scale*1024)
+        height = width*3/4
+        self.webkit.set_zoom_level(scale)
+        self.window.set_size_request(width, height)
+        dbg.stdout("Set window to {0}x{1} (scale={2})".format(width, height, scale), dbg.success, 1)
 
         # Build an auto expanding box and add the scrolled window
         b = Gtk.VBox(homogeneous=False, spacing=0)
@@ -2284,8 +2281,8 @@ class PageLoaded():
 
             # General UI
             html += UIControls.print_control_category(_("Interface"))
-
-            html += UIControls.print_slider(_("Scale:"), "scaling", "1", "2.5", "0.5", str(pref.get("editor", "scaling", 1)), "editor", "scaling", False,
+            html += UIControls.print_slider(_("Scale:"), "scaling", "0.75", "3", "0.25",
+                                            str(pref.get("editor", "scaling", 1)), "editor", "scaling", False,
                                             _("Scale the application so it looks good on large displays. Requires restart."))
 
             # Advanced
