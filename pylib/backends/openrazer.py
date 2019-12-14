@@ -10,9 +10,11 @@ This module abstracts data between Polychromatic and the OpenRazer daemon.
 import glob
 import os
 import subprocess
+
+# Polychromatic
 from .. import common
 
-# External Imports
+# OpenRazer
 import openrazer.client as rclient
 
 dbg = common.Debugging()
@@ -120,7 +122,6 @@ def get_device(uid):
     real_image = _get_device_image(rdevice)
 
     # Determine zones and effects supported by them
-    capabilities = rdevice.capabilities
     zones = _get_supported_zones(rdevice)
     zone_metadata = common.get_zone_metadata(zones, name)
     zone_names = zone_metadata["names"]
@@ -157,30 +158,30 @@ def get_device(uid):
     zone_states = {}
     zone_supported = {}
 
-    if capabilities.get("firmware_version"):
+    if rdevice.has("firmware_version"):
         firmware_version = rdevice.firmware_version
 
-    if capabilities.get("name"):
+    if rdevice.has("name"):
         name = rdevice.name
 
-    if capabilities.get("serial"):
+    if rdevice.has("serial"):
         serial = str(rdevice.serial)
 
-    if capabilities.get("keyboard_layout"):
+    if rdevice.has("keyboard_layout"):
         keyboard_layout = rdevice.keyboard_layout
 
-    if capabilities.get("game_mode_led"):
+    if rdevice.has("game_mode_led"):
         # Prevent dbus.Boolean()
         game_mode = False
         if rdevice.game_mode_led:
             game_mode = True
 
-    if capabilities.get("lighting_led_matrix"):
+    if rdevice.has("lighting_led_matrix"):
         matrix = True
         matrix_rows = rdevice.fx.advanced.rows
         matrix_cols = rdevice.fx.advanced.cols
 
-    if capabilities.get("dpi"):
+    if rdevice.has("dpi"):
         dpi_x = rdevice.dpi[0]
         dpi_y = rdevice.dpi[1]
         max_dpi = rdevice.max_dpi
@@ -202,10 +203,10 @@ def get_device(uid):
             ]
 
         # DeathAdder 3.5G only supports DPI X (#209)
-        if capabilities.get("available_dpi"):
+        if rdevice.has("available_dpi"):
             dpi_single = True
 
-    if capabilities.get("poll_rate"):
+    if rdevice.has("poll_rate"):
         poll_rate = rdevice.poll_rate
 
     # Determine which effects are supported (and currently set) for each zone.
@@ -224,46 +225,46 @@ def get_device(uid):
 
         # Hardware effects
         for effect in ["spectrum", "wave", "reactive", "static", "pulsate", "blinking"]:
-            if capabilities.get(zone_to_capability[zone] + "_" + effect):
+            if rdevice.has(zone_to_capability[zone] + "_" + effect):
                 zone_supported[zone][effect] = True
 
         # Hardware breath (and options)
         for effect in ["breath_dual", "breath_random", "breath_single", "breath_triple"]:
-            if capabilities.get(zone_to_capability[zone] + "_" + effect):
+            if rdevice.has(zone_to_capability[zone] + "_" + effect):
                 zone_supported[zone]["breath"] = True
                 _create_list_for_key_if_empty(zone_supported[zone], "breath_options")
                 zone_supported[zone]["breath_options"].append(effect.replace("breath_", ""))
 
         # Hardware starlight (and options)
         for effect in ["starlight_dual", "starlight_random", "starlight_single"]:
-            if capabilities.get(zone_to_capability[zone] + "_" + effect):
+            if rdevice.has(zone_to_capability[zone] + "_" + effect):
                 zone_supported[zone]["starlight"] = True
                 _create_list_for_key_if_empty(zone_supported[zone], "starlight_options")
                 zone_supported[zone]["starlight_options"].append(effect.replace("starlight_", ""))
 
         # Software ripple (provided by daemon)
-        if capabilities.get(zone_to_capability[zone] + "_ripple"):
+        if rdevice.has(zone_to_capability[zone] + "_ripple"):
             zone_supported[zone]["ripple"] = True
             _create_list_for_key_if_empty(zone_supported[zone], "ripple_options")
             zone_supported[zone]["ripple_options"].append("single")
 
-        if capabilities.get(zone_to_capability[zone] + "_ripple_random"):
+        if rdevice.has(zone_to_capability[zone] + "_ripple_random"):
             zone_supported[zone]["ripple"] = True
             _create_list_for_key_if_empty(zone_supported[zone], "ripple_options")
             zone_supported[zone]["ripple_options"].append("random")
 
         # Brightness (slider)
-        if capabilities.get(zone_to_capability[zone] + "_brightness"):
+        if rdevice.has(zone_to_capability[zone] + "_brightness"):
             zone_supported[zone]["brightness_slider"] = True
             zone_states[zone]["brightness"] = int(zone_to_device[zone].brightness)
 
         # 'main' brightness is outside the 'fx' class.
-        elif zone == "main" and capabilities.get("brightness"):
+        elif zone == "main" and rdevice.has("brightness"):
             zone_supported[zone]["brightness_slider"] = True
             zone_states[zone]["brightness"] = int(rdevice.brightness)
 
         # OR brightness (toggle) on/off - overrides slider in case device reports both capabilities.
-        if capabilities.get(zone_to_capability[zone] + "_active"):
+        if rdevice.has(zone_to_capability[zone] + "_active"):
             if "brightness_slider" in zone_supported[zone]:
                 del zone_supported[zone]["brightness_slider"]
             zone_supported[zone]["brightness_toggle"] = True
@@ -591,20 +592,19 @@ def _get_supported_zones(rdevice):
     """
     Returns a list of zones that are supported by the device.
     """
-    capabilities = rdevice.capabilities
     zones = []
 
-    if capabilities.get("lighting"):
+    if rdevice.has("lighting"):
         zones.append("main")
-    if capabilities.get("lighting_logo") or capabilities.get("lighting_logo_active"):
+    if rdevice.has("lighting_logo") or rdevice.has("lighting_logo_active"):
         zones.append("logo")
-    if capabilities.get("lighting_scroll") or capabilities.get("lighting_scroll_active"):
+    if rdevice.has("lighting_scroll") or rdevice.has("lighting_scroll_active"):
         zones.append("scroll")
-    if capabilities.get("lighting_left"):
+    if rdevice.has("lighting_left"):
         zones.append("left")
-    if capabilities.get("lighting_right"):
+    if rdevice.has("lighting_right"):
         zones.append("right")
-    if capabilities.get("lighting_backlight"):
+    if rdevice.has("lighting_backlight"):
         zones.append("backlight")
 
     return zones
