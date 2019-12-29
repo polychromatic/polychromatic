@@ -17,6 +17,10 @@ from threading import Thread
 # (excludes Ultimate which supports shades of green)
 fixed_coloured_devices = ["Taipan"]
 
+class CpuThreadData:
+    def __init__(self):
+        self.stop = False
+cpu_thread_data = CpuThreadData()
 
 class Debugging(object):
     """
@@ -137,6 +141,8 @@ def get_effect_state_string(string):
         return _("Pulsate")
     elif string == 'unknown':
         return _("Try one...")
+    elif string == 'cpu':
+        return _("System Monitor")
     else:
         return string
 
@@ -199,6 +205,9 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
         secondary_red = 255
         secondary_green = 0
         secondary_blue = 0
+
+    # Stop the CPU effect thread if it exists.
+    cpu_thread_data.stop = True
 
     # Execute function (only if source is known)
     if fx:
@@ -283,6 +292,14 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
             else:
                 fx.starlight_random(speed)
                 remember_params('random')
+
+        elif effect == "cpu":
+            # This effect isn't a built-in.  Instead we start a thread to monitor CPU
+            # usage and change the lighting on the fly.
+            cpu_thread_data.stop = False
+            thread = Thread(target=cpu_monitor_thread, args=(cpu_thread_data, device_object,))
+            thread.daemon = True
+            thread.start()
 
         elif effect == "static":
             fx.static(primary_red, primary_green, primary_blue)
@@ -463,6 +480,46 @@ def devicestate_monitor_thread(callback_function, file_path):
         except FileNotFoundError:
             _init_devicestate_file()
 
+def cpu_monitor_thread(data, device):
+    import psutil
+    import math
+
+    rows, cols = device.fx.advanced.rows, device.fx.advanced.cols
+
+    # Number of CPU rows is half rounded up
+    cpu_rows = min(rows, math.ceil(rows//2))
+    mem_rows = max(0, rows - cpu_rows)
+
+    cpu_query_time = 0.25 # seconds
+
+    while True:
+        cpu = psutil.cpu_percent(cpu_query_time)
+        mem = psutil.virtual_memory()
+
+        # Scale cpu and memory usage to the number of cols
+        num_light = int(cols*(cpu/100))
+        mem_light = int(cols*(mem.percent/100))
+
+        # CPU
+        for row in range(0, cpu_rows):
+            for col in range(cols):
+                if col <= num_light:
+                    device.fx.advanced.matrix[row, col] = (255, 0, 0)
+                else:
+                    device.fx.advanced.matrix[row, col] = (128, 128, 128)
+
+        # Memory
+        for row in range(cpu_rows, cpu_rows+mem_rows):
+            for col in range(cols):
+                if col <= mem_light:
+                    device.fx.advanced.matrix[row, col] = (0, 255, 0)
+                else:
+                    device.fx.advanced.matrix[row, col] = (128, 128, 128)
+
+        if data.stop:
+            # print('CPU thread shutdown')
+            return
+        device.fx.advanced.draw()
 
 def has_fixed_colour(device_obj):
     """

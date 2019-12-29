@@ -517,6 +517,7 @@ class AppIndicator(object):
             [main_submenu, "lighting_starlight_single", ["main", "starlight", "single"], "starlight", _("Starlight (Single)")],
             [main_submenu, "lighting_starlight_dual", ["main", "starlight", "dual"], "starlight", _("Starlight (Dual)")],
             [main_submenu, "lighting_starlight_random", ["main", "starlight", "random"], "starlight", _("Starlight (Random)")],
+            [main_submenu, "lighting_reactive", ["main", "cpu", "cpu"], "cpu", _("System Monitor")],
             [main_submenu, "lighting_static", ["main", "static"], "static", _("Static")],
 
             # Logo Lighting
