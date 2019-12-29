@@ -294,7 +294,10 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
                 remember_params('random')
 
         elif effect == "cpu":
-            # This effect isn't a built-in.  Instead we start a thread to monitor CPU
+            # Stop any other effect (needed to shutdown Ripple)
+            fx.static(255, 255, 255)
+            
+            # Start a thread to monitor CPU
             # usage and change the lighting on the fly.
             cpu_thread_data.stop = False
             thread = Thread(target=cpu_monitor_thread, args=(cpu_thread_data, device_object,))

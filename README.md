@@ -175,6 +175,7 @@ These packages are required for **running** the application:
 | [gir1.2-webkit2-4.0](https://packages.debian.org/sid/gir1.2-webkit2-4.0) | [webkit2gtk](https://www.archlinux.org/packages/extra/x86_64/webkit2gtk/) | [typelib-1_0-WebKit2-4_0](https://software.opensuse.org/package/typelib-1_0-WebKit2-4_0) |
 | [python3-gi](https://packages.debian.org/sid/python3-gi) | [python-gobject](https://www.archlinux.org/packages/extra/x86_64/python-gobject/) | [python3-gobject](https://software.opensuse.org/package/python3-gobject) |
 | [python3-setproctitle](https://packages.debian.org/sid/python3-setproctitle) | [python-setproctitle](https://www.archlinux.org/packages/community/x86_64/python-setproctitle/) | [python3-setproctitle](https://software.opensuse.org/package/python3-setproctitle) |
+| [python3-psutil](https://packages.debian.org/sid/python3-psutil) | [python-psutil](https://www.archlinux.org/packages/community/x86_64/python-psutil/) | [python3-psutil](https://software.opensuse.org/package/python3-psutil) |
 | [python3-requests](https://packages.debian.org/sid/python3-requests) | [python-requests](https://www.archlinux.org/packages/extra/any/python-requests/) | [python3-requests](https://software.opensuse.org/package/python3-requests) |
 | [imagemagick](https://packages.debian.org/sid/imagemagick) | [imagemagick](https://www.archlinux.org/packages/extra/x86_64/imagemagick/) | [imagemagick](https://software.opensuse.org/package/ImageMagick) |
 
