@@ -1857,6 +1857,10 @@ class Controller(object):
             show_primary = True
             show_secondary = True
 
+        if effect == "cpu":
+            show_primary = True
+            show_secondary = True
+
         if show_primary:
             self.print_colour_options(
                 "colour-primary",

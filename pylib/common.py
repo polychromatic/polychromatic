@@ -12,6 +12,8 @@ import sys
 import gettext
 from time import sleep
 from threading import Thread
+import psutil # For System Monitor effect
+import math
 
 # Devices that do not support RGB at all.
 # (excludes Ultimate which supports shades of green)
@@ -300,7 +302,7 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
             # Start a thread to monitor CPU
             # usage and change the lighting on the fly.
             cpu_thread_data.stop = False
-            thread = Thread(target=cpu_monitor_thread, args=(cpu_thread_data, device_object,))
+            thread = Thread(target=cpu_monitor_thread, args=(cpu_thread_data, device_object, pref, source))
             thread.daemon = True
             thread.start()
 
@@ -483,10 +485,7 @@ def devicestate_monitor_thread(callback_function, file_path):
         except FileNotFoundError:
             _init_devicestate_file()
 
-def cpu_monitor_thread(data, device):
-    import psutil
-    import math
-
+def cpu_monitor_thread(data, device, pref, source):
     rows, cols = device.fx.advanced.rows, device.fx.advanced.cols
 
     # Number of CPU rows is half rounded up
@@ -494,10 +493,33 @@ def cpu_monitor_thread(data, device):
     mem_rows = max(0, rows - cpu_rows)
 
     cpu_query_time = 0.25 # seconds
-
+    serial = device.serial
+    
     while True:
         cpu = psutil.cpu_percent(cpu_query_time)
         mem = psutil.virtual_memory()
+        
+        primary_colours = pref.get_device_state(serial, source, "colour_primary")
+        secondary_colours = pref.get_device_state(serial, source, "colour_secondary")
+
+        if primary_colours:
+            primary_red = primary_colours[0]
+            primary_green = primary_colours[1]
+            primary_blue = primary_colours[2]
+        else:
+            primary_red = 255
+            primary_green = 0
+            primary_blue = 0
+
+        if secondary_colours:
+            secondary_red = secondary_colours[0]
+            secondary_green = secondary_colours[1]
+            secondary_blue = secondary_colours[2]
+        else:
+            secondary_red = 0
+            secondary_green = 255
+            secondary_blue = 0
+            
 
         # Scale cpu and memory usage to the number of cols
         num_light = int(cols*(cpu/100))
@@ -507,7 +529,7 @@ def cpu_monitor_thread(data, device):
         for row in range(0, cpu_rows):
             for col in range(cols):
                 if col <= num_light:
-                    device.fx.advanced.matrix[row, col] = (255, 0, 0)
+                    device.fx.advanced.matrix[row, col] = (primary_red, primary_green, primary_blue)
                 else:
                     device.fx.advanced.matrix[row, col] = (128, 128, 128)
 
@@ -515,12 +537,12 @@ def cpu_monitor_thread(data, device):
         for row in range(cpu_rows, cpu_rows+mem_rows):
             for col in range(cols):
                 if col <= mem_light:
-                    device.fx.advanced.matrix[row, col] = (0, 255, 0)
+                    device.fx.advanced.matrix[row, col] = (secondary_red, secondary_green, secondary_blue)
                 else:
                     device.fx.advanced.matrix[row, col] = (128, 128, 128)
 
         if data.stop:
-            # print('CPU thread shutdown')
+            #print('CPU thread shutdown')
             return
         device.fx.advanced.draw()
 
