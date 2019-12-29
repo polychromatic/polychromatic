@@ -1478,6 +1478,7 @@ class Controller(object):
                     ["lighting_pulsate", "pulsate", _("Pulsate")],
                     ["lighting_ripple", "ripple", _("Ripple")],
                     ["lighting_starlight_random", "starlight", _("Starlight")],
+                    ["lighting_reactive", "cpu", _("System Monitor")],
                     ["lighting_static", "static", _("Static")]
                 ]
 
