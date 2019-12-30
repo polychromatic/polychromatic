@@ -18,6 +18,8 @@ import math
 # (excludes Ultimate which supports shades of green)
 fixed_coloured_devices = ["Taipan"]
 
+system_monitor_thread = None
+
 class Debugging(object):
     """
     Outputs pretty debugging details to the terminal.
@@ -292,9 +294,11 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
             
             # Start a thread to monitor CPU
             # usage and change the lighting on the fly.
-            thread = Thread(target=cpu_monitor_thread, args=(device_object, pref, source))
-            thread.daemon = True
-            thread.start()
+            global system_monitor_thread
+            if system_monitor_thread is None or not system_monitor_thread.isAlive():
+                system_monitor_thread = Thread(target=cpu_monitor_thread, args=(device_object, pref, source))
+                system_monitor_thread.daemon = True
+                system_monitor_thread.start()
 
         elif effect == "static":
             fx.static(primary_red, primary_green, primary_blue)
@@ -485,6 +489,8 @@ def cpu_usage(last_idle, last_total):
     return (utilisation, last_idle, last_total)
 
 def cpu_monitor_thread(device, pref, source):
+    #print('CPU thread start')
+        
     rows, cols = device.fx.advanced.rows, device.fx.advanced.cols
 
     # Number of CPU rows is half rounded up

@@ -481,6 +481,10 @@ class Controller(object):
         # Start watching devicestate index for changes.
         common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
 
+        # If the last selected option was the System Monitor, start the system monitor thread.
+        if pref.get_device_state(self.active_device_serial, "main", "effect") == "system_monitor":
+            common.repeat_last_effect(pref, self.active_device)
+
         dbg.stdout("Application Ready.\n", dbg.action, 2)
         self.show_menu("menu")
 
