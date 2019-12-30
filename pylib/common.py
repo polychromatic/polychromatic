@@ -142,7 +142,7 @@ def get_effect_state_string(string):
         return _("Pulsate")
     elif string == 'unknown':
         return _("Try one...")
-    elif string == 'cpu':
+    elif string == "system_monitor":
         return _("System Monitor")
     else:
         return string
@@ -294,7 +294,7 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
                 fx.starlight_random(speed)
                 remember_params('random')
 
-        elif effect == "cpu":
+        elif effect == "system_monitor":
             # Stop any other effect (needed to shutdown Ripple)
             fx.static(255, 255, 255)
             
