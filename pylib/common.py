@@ -12,7 +12,6 @@ import sys
 import gettext
 from time import sleep
 from threading import Thread
-import psutil # For System Monitor effect
 import math
 
 # Devices that do not support RGB at all.
@@ -485,6 +484,15 @@ def devicestate_monitor_thread(callback_function, file_path):
         except FileNotFoundError:
             _init_devicestate_file()
 
+def cpu_usage(last_idle, last_total):
+    with open('/proc/stat') as f:
+        fields = [float(column) for column in f.readline().strip().split()[1:]]
+    idle, total = fields[3], sum(fields)
+    idle_delta, total_delta = idle - last_idle, total - last_total
+    last_idle, last_total = idle, total
+    utilisation = 100.0 * (1.0 - idle_delta / total_delta)
+    return (utilisation, last_idle, last_total)
+
 def cpu_monitor_thread(data, device, pref, source):
     rows, cols = device.fx.advanced.rows, device.fx.advanced.cols
 
@@ -494,11 +502,20 @@ def cpu_monitor_thread(data, device, pref, source):
 
     cpu_query_time = 0.25 # seconds
     serial = device.serial
+    last_idle = 0
+    last_total = 0
     
     while True:
-        cpu = psutil.cpu_percent(cpu_query_time)
-        mem = psutil.virtual_memory()
+        # If we used psutil, we could get CPU and RAM this way.
+        #cpu = psutil.cpu_percent(cpu_query_time)
+        #mem = psutil.virtual_memory()
+
+        (cpu, last_idle, last_total) = cpu_usage(last_idle, last_total)
         
+        # Get RAM usage
+        tot_m, used_m, free_m = map(int, os.popen('free -t -m').readlines()[-1].split()[1:])
+        mem_percent = 1-(free_m/tot_m)
+
         primary_colours = pref.get_device_state(serial, source, "colour_primary")
         secondary_colours = pref.get_device_state(serial, source, "colour_secondary")
 
@@ -523,7 +540,7 @@ def cpu_monitor_thread(data, device, pref, source):
 
         # Scale cpu and memory usage to the number of cols
         num_light = int(cols*(cpu/100))
-        mem_light = int(cols*(mem.percent/100))
+        mem_light = int(cols*mem_percent)
 
         # CPU
         for row in range(0, cpu_rows):
@@ -545,6 +562,7 @@ def cpu_monitor_thread(data, device, pref, source):
             #print('CPU thread shutdown')
             return
         device.fx.advanced.draw()
+        sleep(cpu_query_time)
 
 def has_fixed_colour(device_obj):
     """

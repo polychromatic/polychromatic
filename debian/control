@@ -13,7 +13,6 @@ Architecture: all
 Depends: python3 (>= 3.4.0),
          python3-gi,
          python3-setproctitle,
-         python3-psutil,
          python3-requests,
          python3-openrazer (>= 2.0.0),
          gir1.2-gtk-3.0,
