@@ -30,6 +30,7 @@ import sys
 import signal
 import gettext
 import setproctitle
+import threading
 from subprocess import Popen as background_process
 from subprocess import call as foreground_process
 from shutil import which
@@ -882,7 +883,20 @@ class Callback():
         for bin_path in possible_paths:
             if os.path.exists(bin_path):
                 dbg.stdout("Executing: " + os.path.realpath(bin_path), dbg.debug, 1)
-                background_process(bin_path)
+
+                # We need to catch the exit of the controller to know if we need to spawn
+                # our own System Monitor thread.
+                def on_exit():
+                    if pref.get_device_state(indicator.active_device.serial, "main", "effect") == "system_monitor":
+                        common.repeat_last_effect(pref, indicator.active_device)
+                def run_process_in_thread(bin_path, on_exit):
+                    proc = background_process(bin_path)
+                    proc.wait()
+                    on_exit()
+                    return
+                thread = threading.Thread(target=run_process_in_thread, args=(bin_path, on_exit))
+                thread.start()
+                
                 return
 
     def quit(cb, item):

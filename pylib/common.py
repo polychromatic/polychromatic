@@ -18,11 +18,6 @@ import math
 # (excludes Ultimate which supports shades of green)
 fixed_coloured_devices = ["Taipan"]
 
-class CpuThreadData:
-    def __init__(self):
-        self.stop = False
-cpu_thread_data = CpuThreadData()
-
 class Debugging(object):
     """
     Outputs pretty debugging details to the terminal.
@@ -207,9 +202,6 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
         secondary_green = 0
         secondary_blue = 0
 
-    # Stop the CPU effect thread if it exists.
-    cpu_thread_data.stop = True
-
     # Execute function (only if source is known)
     if fx:
         if effect == "none":
@@ -300,8 +292,7 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
             
             # Start a thread to monitor CPU
             # usage and change the lighting on the fly.
-            cpu_thread_data.stop = False
-            thread = Thread(target=cpu_monitor_thread, args=(cpu_thread_data, device_object, pref, source))
+            thread = Thread(target=cpu_monitor_thread, args=(device_object, pref, source))
             thread.daemon = True
             thread.start()
 
@@ -493,7 +484,7 @@ def cpu_usage(last_idle, last_total):
     utilisation = 100.0 * (1.0 - idle_delta / total_delta)
     return (utilisation, last_idle, last_total)
 
-def cpu_monitor_thread(data, device, pref, source):
+def cpu_monitor_thread(device, pref, source):
     rows, cols = device.fx.advanced.rows, device.fx.advanced.cols
 
     # Number of CPU rows is half rounded up
@@ -558,7 +549,7 @@ def cpu_monitor_thread(data, device, pref, source):
                 else:
                     device.fx.advanced.matrix[row, col] = (128, 128, 128)
 
-        if data.stop:
+        if pref.get_device_state(serial, source, "effect") != "system_monitor":
             #print('CPU thread shutdown')
             return
         device.fx.advanced.draw()
