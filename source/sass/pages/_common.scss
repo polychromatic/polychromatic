@@ -8,9 +8,25 @@
     margin-bottom: 1em;
 
     #main-image {
-        max-width: 12em;
-        max-height: 6em;
-        padding: 1em;
+        background-size: 7em;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 8em;
+        height: 8em;
+        margin: 0 0.5em;
+    }
+
+    #main-text {
+        display: flex;
+        flex-direction: column;
+
+        h3 {
+            margin-top: auto;
+        }
+
+        *:last-child {
+            margin-bottom: auto;
+        }
     }
 }
 

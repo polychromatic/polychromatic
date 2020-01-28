@@ -286,10 +286,14 @@ class Controller(object):
             variable            Name of variable.
             data                A string, integer, list or dictonary data.
         """
-        dbg.stdout("→ View variable '{0}' set with data: {1}".format(variable, data), dbg.debug, 2)
-        if type(data) == dict:
+        if type(data) in [dict, list]:
             data = json.dumps(data, ensure_ascii=False)
+        elif data == True:
+            data = "true";
+        elif data == False:
+            data = "false";
 
+        dbg.stdout("→ View variable '{0}' changed to: {1}".format(variable, data), dbg.debug, 2)
         self._run_js("{0} = {1};".format(variable, data))
 
     def incoming_request(self, raw):
@@ -305,17 +309,18 @@ class Controller(object):
             return False
 
         try:
-            function = data["request"]
+            request = data["request"]
         except Exception:
             dbg.stdout("Internal Error: Controller received invalid data!", dbg.error)
             dbg.stdout(str(data), dbg.error)
             return False
 
-        # Must run from main thread
-        if function == "quit":
+        # Functions that must run from main thread
+        if request == "quit":
             self.stop_app()
 
-        self.controller.run_function(request, data)
+        # Function that will run on a different thread
+        self.controller.parse_request(request, data)
 
         # WebKit2 quirk - clear "title" so same command can execute again
         self._run_js("document.title = ''")

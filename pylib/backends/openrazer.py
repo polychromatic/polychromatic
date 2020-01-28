@@ -229,14 +229,14 @@ def get_device(uid):
                 zone_supported[zone][effect] = True
 
         # Hardware breath (and options)
-        for effect in ["breath_dual", "breath_random", "breath_single", "breath_triple"]:
+        for effect in ["breath_random", "breath_single", "breath_dual", "breath_triple"]:
             if rdevice.has(zone_to_capability[zone] + "_" + effect):
                 zone_supported[zone]["breath"] = True
                 _create_list_for_key_if_empty(zone_supported[zone], "breath_options")
                 zone_supported[zone]["breath_options"].append(effect.replace("breath_", ""))
 
         # Hardware starlight (and options)
-        for effect in ["starlight_dual", "starlight_random", "starlight_single"]:
+        for effect in ["starlight_random", "starlight_single", "starlight_dual"]:
             if rdevice.has(zone_to_capability[zone] + "_" + effect):
                 zone_supported[zone]["starlight"] = True
                 _create_list_for_key_if_empty(zone_supported[zone], "starlight_options")
@@ -273,21 +273,57 @@ def get_device(uid):
             if not zone == "main":
                 zone_states[zone]["brightness"] = int(zone_to_device[zone].active)
 
-        # Get current status provided by daemon (OpenRazer 2.7.0+)
+        # Get current status provided by daemon (OpenRazer 2.8.0+)
         try:
             # Not applicable to non-Chroma devices (Bug? OpenRazer daemon could return an object)
             if matrix:
-                zone_states[zone]["effect"] = str(zone_to_device[zone].effect)
-                zone_states[zone]["colours"] = _convert_colour_bytes(zone_to_device[zone].colors)
-                zone_states[zone]["params_speed"] = int(zone_to_device[zone].speed)
-                zone_states[zone]["params_direction"] = int(zone_to_device[zone].wave_dir)
+                effect = str(zone_to_device[zone].effect)
+                params = []
+                colours = _convert_colour_bytes(zone_to_device[zone].colors)
+
+                # Extract and convert strings that is understood by Polychromatic.
+                #
+                # For example:
+                # Daemon        Effect          Param
+                # ------------  --------------  --------------
+                # breathSingle  breath          single
+                # wave          wave            1 (wave_dir)
+                # reactive      reactive        2 (direction)
+                # E.g. 'breathSingle' -> breath (effect) and single (param)
+                #      'wave'         -> wave (effect) and 1 (param/direction)
+
+                if effect in ["wave"]:
+                    params = [int(zone_to_device[zone].wave_dir)]
+
+                elif effect in ["reactive"]:
+                    params = [int(zone_to_device[zone].speed)]
+
+                elif effect in ["breathSingle", "breathDual", "breathTriple", "breathRandom"]:
+                    effect = "breath_" + effect.split("breath")[1].lower()
+                    param = [""]
+
+                elif effect in ["starlightSingle", "starlightDual", "starlightRandom"]:
+                    effect = "starlight_" + effect.split("starlight")[1].lower()
+
+                elif effect == "ripple":
+                    effect = "ripple_single"
+
+                elif effect == "rippleRandomColour":
+                    effect = "ripple_random"
+
+                # Save values
+                zone_states[zone]["effect"] = effect
+                zone_states[zone]["params"] = params
+                zone_states[zone]["colour1"] = colours["primary"]
+                zone_states[zone]["colour2"] = colours["secondary"]
+                zone_states[zone]["colour3"] = colours["tertiary"]
+
+
         except Exception as e:
             dbg.stdout("Unable to get device states for " + name, dbg.error)
             dbg.stdout(common.get_exception_as_string(e))
-            dbg.stdout("This probably indicates a bug or improperly specified Chroma device:\n{0} ({1}:{2})".format(name, vid, pid), dbg.warning)
-            for key in ["effect", "colours", "params_speed", "params_direction"]:
-                if key in zone_states[zone]:
-                    del zone_states[zone][key]
+            dbg.stdout("This probably indicates a bug, wrong OpenRazer version or improperly specified Chroma device:\n{0} ({1}:{2})".format(name, vid, pid), dbg.warning)
+
 
     # If this is a mouse, get the current battery level.
     if form_factor.get("id") == "mouse":
@@ -565,6 +601,7 @@ def set_device_colours(uid, zone, colour_hex):
         return common.get_exception_as_string(e)
 
     return True
+
 
 def _get_device_zones(rdevice):
     """

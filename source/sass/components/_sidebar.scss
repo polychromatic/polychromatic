@@ -13,14 +13,14 @@
         background-color: $bg-sidebar;
         overflow-y: auto;
 
-        .item-heading {
+        .sidebar-heading {
             color: $sidebar-heading;
             margin-top: 1em;
             padding: 0.25em;
             border-bottom: 1px solid darken($sidebar-heading, 40%);
         }
 
-        .item {
+        .sidebar-item {
             display: block;
             padding: 0.25em;
             border-bottom: 1px solid darken($sidebar-heading, 40%);
@@ -45,16 +45,32 @@
                 text-decoration: none;
             }
 
+            &.dim {
+                color: $disabled-colour;
+
+                img {
+                    filter: grayscale(1) brightness(0.5);
+                    opacity: 0.5;
+                }
+            }
+
+            /* Current selection */
             &.active {
                 background: $secondary-colour;
+                color: white;
 
                 &:hover,
                 &:focus {
                     color: white;
                     text-decoration: none;
                 }
+
+                img {
+                    filter: brightness(2);
+                }
             }
 
+            /* While clicked */
             &:active {
                 background: $accent-colour;
 
@@ -66,18 +82,10 @@
                     color: black;
                 }
             }
-
-            &.dim {
-                color: $disabled-colour;
-
-                img {
-                    filter: grayscale(1) brightness(0.5);
-                }
-            }
         }
 
-        .item-group {
-            .item {
+        .sidebar-group {
+            .sidebar-item {
                 padding: 0.2em 1em;
             }
         }

@@ -82,3 +82,23 @@
     right: 0.5em;
     top: 1em;
 }
+
+#main-text {
+    .states {
+        display: inline-flex;
+        flex-direction: row;
+    }
+
+    .state {
+        display: inline-block;
+
+        img {
+            max-height: 22px;
+            max-width: 22px;
+        }
+
+        + .state {
+            margin-left: 1em;
+        }
+    }
+}

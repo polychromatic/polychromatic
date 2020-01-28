@@ -223,6 +223,11 @@ select {
 }
 
 /* Checkbox and radio buttons */
+.checkbox-item + .checkbox-item,
+.radio-item + .radio-item {
+    margin-top: 0.5em;
+}
+
 input[type='radio'],
 input[type='checkbox'] {
     -webkit-appearance: none;
