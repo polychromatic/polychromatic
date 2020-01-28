@@ -304,18 +304,19 @@ def upgrade_old_pref(config_version):
         # -- Saved Colours
         new_colours = []
         old_colours = load_file(path.colours)
-        old_ids = list(old_colours.keys())
-        old_ids.sort()
-        for uuid in old_ids:
-            try:
-                new_name = old_colours[uuid]["name"]
-                new_hex = common.rgb_to_hex(old_colours[uuid]["col"])
-                new_colours.append({"name": new_name, "hex": new_hex})
-            except Exception:
-                # Ignore invalid data
-                pass
+        if type(old_colours) != list:
+            old_ids = list(old_colours.keys())
+            old_ids.sort()
+            for uuid in old_ids:
+                try:
+                    new_name = old_colours[uuid]["name"]
+                    new_hex = common.rgb_to_hex(old_colours[uuid]["col"])
+                    new_colours.append({"name": new_name, "hex": new_hex})
+                except Exception:
+                    # Ignore invalid data
+                    pass
 
-        save_file(path.colours, new_colours)
+            save_file(path.colours, new_colours)
 
         # -- Device State
         data = load_file(path.devicestate, True)
