@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2017-2019 Luke Horwell <code@horwell.me>
+# Copyright (C) 2017-2020 Luke Horwell <code@horwell.me>
 #
 """
 Shared functions that are commonly used across Polychromatic's interfaces.
