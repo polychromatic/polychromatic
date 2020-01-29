@@ -50,10 +50,18 @@ class PolychromaticController():
                 "apply_to_all": self._apply_to_all,
                 "set_device_state": self._set_device_state
             }
-            requests[request](data)
         except KeyError:
             dbg.stdout("Unknown Request: " + str(request) + " with data: " + str(data), dbg.error)
             self._internal_error("Internal Error", "<code>{0}</code> is not implemented.".format(request), "serious")
+            return False
+
+        try:
+            requests[request](data)
+        except Exception as e:
+            dbg.stdout("Failed to execute request: " + str(request) + " with data: " + str(data), dbg.error)
+            dbg.stdout(common.get_exception_as_string(e), dbg.error)
+            traceback = common.get_exception_as_string(e)
+            self._internal_error(locales.LOCALES["error_generic_title"], locales.LOCALES["error_generic_text"] + "<br><br><code>{0}</code>".format(traceback), "serious")
 
     def run_function(self, function, data={}):
         """
@@ -187,7 +195,7 @@ class PolychromaticController():
             "backend_request": <string, e.g. 'wave', 'brightness', 'dpi'>
             "zone": <zone name>
             "colour_hex": [<string of primary hex value>, <second hex>, etc]
-            "params": [<if applicable>]
+            "params": [<if applicable>] or empty: []
         }
         """
         uid = int(data["uid"])
@@ -208,7 +216,7 @@ class PolychromaticController():
         elif request == False:
             # Invalid request
             dbg.stdout("Invalid request.", dbg.warning)
-            self._internal_error(locales.LOCALES["error_bad_request_title"], locales.LOCALES["error_bad_request_text"], "serious")
+            self._internal_error(locales.LOCALES["error_bad_request_title"], locales.LOCALES["error_bad_request_text"], "warning")
 
         elif type(request) == str:
             # Daemon exception

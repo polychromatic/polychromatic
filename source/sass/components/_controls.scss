@@ -35,15 +35,6 @@ button {
         }
     }
 
-    &:active {
-        background-color: $active;
-        color: black;
-
-        svg path {
-            fill: black;
-        }
-    }
-
     &.disabled {
         color: $disabled-colour;
         opacity: 0.5;
@@ -58,6 +49,15 @@ button {
 
     &.active {
         background-color: $secondary-colour;
+    }
+
+    &:active {
+        background-color: $active;
+        color: black;
+
+        svg path {
+            fill: black;
+        }
     }
 
     &.inline {

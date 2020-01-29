@@ -146,12 +146,16 @@ LOCALES = {
     "error_device_gone_text": _("The request could not be completed as a device was recently added/removed. Please refresh and try again."),
 
     # Error: Backend returns False (invalid)
-    "error_bad_request_title": _("Backend Error"),
-    "error_bad_request_text": _("The request could not be processed as it is not supported at this time."),
+    "error_bad_request_title": _("Controller Problem"),
+    "error_bad_request_text": _("The request could not be processed as it is invalid or unsupported at this time."),
 
     # Error: Backend throws exception (str)
     "error_backend_title": _("Backend Error"),
     "error_backend_text": _("The request could not be completed as an exception was thrown by the backend:"),
+
+    # Error: Controller throws uncaught exception
+    "error_generic_title": _("Controller Error"),
+    "error_generic_text": _("The request could not be completed due to an error."),
 
     "error_not_ready_title": _("Initialization Error"),
     "error_not_ready_text": _("This device's daemon or Python library could not be initialized. See the exception for details:")

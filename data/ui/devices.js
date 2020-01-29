@@ -15,8 +15,13 @@
  Copyright (C) 2019-2020 Luke Horwell <code@horwell.me>
 */
 
+// Cached responses from controller
+// -- get_device_list() listing all devices.
 var DEVICES = null;
+
+// -- get_device() for current device.
 var DEVICES_TAB_CURRENT_DEVICE = null;
+
 
 function update_device_list(callback) {
     //
@@ -323,7 +328,8 @@ function _get_device_controls(device, onclick) {
             output += group_title(name);
         }
 
-        // IDs for checkboxes are in format: [name]-[zone], which will be used in the specified 'onclick' function.
+        // IDs for checkboxes are in format: [zone]-[request], optionally with "-[param]" too.
+        // IDs are parsed in the 'onclick' function to determine the request name, zone and possibly parameters.
 
         // Brightness
         if (supported.brightness_slider == true) {
@@ -348,7 +354,8 @@ function _get_device_controls(device, onclick) {
                 if (supported[known_fx[f]] == true) {
                     var fx_name = known_fx[f];
                     var fx_request = fx_name;
-                    fx_output += button_large(`${zone}-${fx_name}`, onclick, get_string(fx_name), `img/effects/${fx_name}.svg`, false, fx_name == effect ? true : false);
+                    var fx_id = `${zone}-${fx_name}`;
+                    fx_output += button_large(fx_id, onclick, get_string(fx_name), `img/effects/${fx_name}.svg`, false, fx_name == effect ? true : false);
                 }
             }
 
@@ -368,14 +375,14 @@ function _get_device_controls(device, onclick) {
             switch(effect) {
                 case "wave":
                     var labels = _get_wave_direction(device["form_factor_id"]);
-                    fx_options += radio(`${fx_id}-left`, labels[0], param0 == 2, fx_grp, onclick);
-                    fx_options += radio(`${fx_id}-right`, labels[1], param0 == 1, fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-2`, labels[0], param0 == 2, fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-1`, labels[1], param0 == 1, fx_grp, onclick);
                     break;
                 case "reactive":
-                    fx_options += radio(`${fx_id}-fast`, get_string("fast"), param0 == 1,  fx_grp, onclick);
-                    fx_options += radio(`${fx_id}-medium`, get_string("medium"), param0 == 2, fx_grp, onclick);
-                    fx_options += radio(`${fx_id}-slow`, get_string("slow"), param0 == 3, fx_grp, onclick);
-                    fx_options += radio(`${fx_id}-vslow`, get_string("vslow"), param0 == 4, fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-1`, get_string("fast"), param0 == 1,  fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-2`, get_string("medium"), param0 == 2, fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-3`, get_string("slow"), param0 == 3, fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-4`, get_string("vslow"), param0 == 4, fx_grp, onclick);
                     break;
                 case "ripple":
                 case "breath":
@@ -383,7 +390,7 @@ function _get_device_controls(device, onclick) {
                     var options = supported[`${effect}_options`];
                     for (i = 0; i < Object.keys(options).length; i++) {
                         var option = options[i];
-                        fx_options += radio(`${fx_id}-${option}`, get_string(option), subeffect == option, fx_grp, onclick);
+                        fx_options += radio(`${fx_id}_${option}`, get_string(option), subeffect == option, fx_grp, onclick);
                     }
                     break;
             }
@@ -433,14 +440,14 @@ function _get_device_controls(device, onclick) {
         if (zone == "main") {
             // Game Mode
             if (device["game_mode"] != null) {
-                output += group(get_string("game_mode"), checkbox("game-mode", get_string("enabled"), device["game_mode"], onclick));
+                output += group(get_string("game_mode"), checkbox("main-game_mode", get_string("enabled"), device["game_mode"], onclick));
             }
 
             // DPI
             // TODO: Fancier DPI selector
             if (device["dpi_x"] != null) {
                 var dpiRange = device["dpi_ranges"];
-                output += group(get_string("dpi"), dropdown("dpi", onclick, device["dpi_x"], [
+                output += group(get_string("dpi"), dropdown("main-dpi", onclick, device["dpi_x"], [
                     [dpiRange[0], dpiRange[0]],
                     [dpiRange[1], dpiRange[1]],
                     [dpiRange[2], dpiRange[2]],
@@ -452,7 +459,7 @@ function _get_device_controls(device, onclick) {
 
             // Poll Rate
             if (device["poll_rate"] != null) { // WHY NOT WORKING?!!!
-                output += group(get_string("poll_rate"), dropdown("poll-rate", onclick, device["poll_rate"], [
+                output += group(get_string("poll_rate"), dropdown("main-poll_rate", onclick, device["poll_rate"], [
                     [get_string("poll_rate_125"), 125],
                     [get_string("poll_rate_500"), 500],
                     [get_string("poll_rate_1000"), 1000]
@@ -464,10 +471,172 @@ function _get_device_controls(device, onclick) {
     return output;
 }
 
-function set_device_state(element, backend, uid, request, zone) {
+function set_device_state(element) {
     //
-    // Change the state of a specific device right now. Used on the 'Devices' tab.
+    // Used on the 'Devices' tab to set the state of the device. This will analyze
+    // the control's ID to determine which zone, request and parameters to pass to
+    // the controller to call the actual set_device_state.
     //
+    //  element         'this', the element of the control that was changed.
+    //
+    // These are the parameters to be determined:
+    var uid;
+    var backend;
+    var request;
+    var zone;
+    var colour_hex = [];
+    var params;
+
+    // Parse element ID | See _get_device_controls() = [request]-[zone] and optionally "-[param]"
+
+    var id = $(element).attr("id").split("-");
+    zone = id[0];
+    request = id[1];
+
+    if (id.length >= 3) {
+        params = [id[2]];
+    } else {
+        switch(element.type) {
+            case "checkbox":
+            case "radio":
+                params = [element.checked];
+                break;
+            case "select-one":
+                params = [element.selectedIndex];
+            case "hidden":
+            case "range":
+                params = [element.value];
+                break;
+        }
+    }
+
+    // Get data for current device
+    uid = DEVICES_TAB_CURRENT_DEVICE["uid"]
+    backend = DEVICES_TAB_CURRENT_DEVICE["backend"]
+
+    // Defaults when setting new effect (parameters)
+    switch(request) {
+        case "breath":
+            request = "breath_single";
+            break;
+        case "ripple":
+            request = "ripple_single";
+            params = 0.01;
+            break;
+        case "starlight":
+            request = "starlight_single";
+            params = 0.01;
+            break;
+    }
+
+    if (params == undefined) {
+        switch(request) {
+            case "wave":
+                params = [1];
+                break;
+            case "reactive":
+                params = [2];
+                break;
+            case "ripple_single":
+            case "ripple_random":
+                params = [0.01];
+                break;
+        }
+    }
+
+    if (element.type == "button" || element.type == "submit") {
+        $(element).siblings().removeClass("active");
+        $(element).addClass("active");
+    }
+
+    // Update states - for the top of the page, avoids calling get_device()
+    switch(request) {
+        case "spectrum":
+        case "wave":
+        case "reactive":
+        case "blinking":
+        case "breath_random":
+        case "breath_single":
+        case "breath_dual":
+        case "breath_triple":
+        case "pulsate":
+        case "ripple_single":
+        case "ripple_random":
+        case "starlight_single":
+        case "starlight_dual":
+        case "starlight_random":
+        case "static":
+            DEVICES_TAB_CURRENT_DEVICE["zone_states"][zone]["effect"] = request;
+
+            if (params == undefined) {
+                params = [];
+            }
+
+            DEVICES_TAB_CURRENT_DEVICE["zone_states"][zone]["params"] = params;
+            break;
+
+        case "brightness":
+            var value = params[0];
+            if (value == true) {
+                value = 1;
+            } else if (value == false) {
+                value = 0;
+            }
+
+            DEVICES_TAB_CURRENT_DEVICE["zone_states"][zone]["brightness"] = value;
+            $(`#brightness-${zone}-value`).html(value);
+            break;
+
+        case "game_mode":
+            DEVICES_TAB_CURRENT_DEVICE["game_mode"] = params[0];
+            break;
+
+        case "dpi":
+            DEVICES_TAB_CURRENT_DEVICE["dpi_x"] = params[0];
+            DEVICES_TAB_CURRENT_DEVICE["dpi_y"] = params[0];
+            params[1] = params[0];
+            break;
+
+        case "poll_rate":
+            DEVICES_TAB_CURRENT_DEVICE["poll_rate"] = params[0];
+            break;
+    }
+
+    $(".states").html(_get_state_html(DEVICES_TAB_CURRENT_DEVICE));
+
+    // Obtain colours from page
+    var primary = $(`#${zone}-primary`);
+    var secondary = $(`#${zone}-secondary`);
+    var teritary = $(`#${zone}-teritary`);
+    var state = DEVICES_TAB_CURRENT_DEVICE["zone_states"][zone];
+
+    if (primary.length > 0) {
+        colour_hex[0] = primary.val();
+        state["colour1"] = primary.val();
+    }
+
+    if (secondary.length > 0) {
+        colour_hex[1] = secondary.val();
+        state["colour2"] = secondary.val();
+    }
+
+    if (teritary.length > 0) {
+        colour_hex[2] = teritary.val();
+        state["colour3"] = teritary.val();
+    }
+
+    // Send request to Controller
+    send_data("set_device_state", {
+        "uid": uid,
+        "backend": backend,
+        "backend_request": request,
+        "zone": zone,
+        "colour_hex": colour_hex,
+        "params": params
+    });
+
+    // Update UI controls
+    $("#device-controls").html(_get_device_controls(DEVICES_TAB_CURRENT_DEVICE, "set_device_state(this)"));
 }
 
 }

@@ -60,7 +60,7 @@ def get_exception_as_string(e):
     For when things go wrong, convert an exception object into a human-readable
     output that is normally displayed via the GUI.
     """
-    return traceback.format_exc()
+    return traceback.format_exc().replace("'", '’').replace('"', '’')
 
 
 def get_data_dir_path():
