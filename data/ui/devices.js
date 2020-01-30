@@ -15,17 +15,10 @@
  Copyright (C) 2019-2020 Luke Horwell <code@horwell.me>
 */
 
-// Cached responses from controller
-// -- get_device_list() listing all devices.
-var DEVICES = null;
-
-// -- get_device() for current device.
-var DEVICES_TAB_CURRENT_DEVICE = null;
-
 
 function update_device_list(callback) {
     //
-    // Send request to controller to update the DEVICES variable for the frontend
+    // Send request to controller to update the CACHE_DEVICES variable for the frontend
     // to work with.
     //
     //  Params:
@@ -47,7 +40,7 @@ function set_tab_devices() {
 
 function _set_tab_devices() {
     //
-    // DEVICES variable updated. Ready to populate data for the tab.
+    // CACHE_DEVICES variable updated. Ready to populate data for the tab.
     //
     $(".tab").removeClass("active");
     $("#devices-tab").addClass("active");
@@ -59,16 +52,16 @@ function _set_tab_devices() {
 
     // Controller returns:
     //
-    // DEVICES == -1        Daemon not present
-    // DEVICES == String    Daemon error (not initalised)
-    // DEVICES == Array     Daemon OK. Contains device list.
+    // CACHE_DEVICES == -1        Daemon not present
+    // CACHE_DEVICES == String    Daemon error (not initalised)
+    // CACHE_DEVICES == Array     Daemon OK. Contains device list.
 
     // ------------------------
     // Sidebar
     // ------------------------
-    if (typeof(DEVICES) == "object") {
-        for (d = 0; d < DEVICES.length; d++) {
-            var device = DEVICES[d];
+    if (typeof(CACHE_DEVICES) == "object") {
+        for (d = 0; d < CACHE_DEVICES.length; d++) {
+            var device = CACHE_DEVICES[d];
             var onclick;
             var classes;
 
@@ -92,10 +85,10 @@ function _set_tab_devices() {
         }
 
         // "Apply to All" only appears when there are multiple devices.
-        if (DEVICES.length == 0) {
+        if (CACHE_DEVICES.length == 0) {
             sidebar[0] = {"label": get_string("no-device"), "items": []}
 
-        } else if (DEVICES.length > 1) {
+        } else if (CACHE_DEVICES.length > 1) {
             sidebar[0] = {
                 "label": get_string("tasks"),
                 "items": [
@@ -117,18 +110,18 @@ function _set_tab_devices() {
     // ------------------------
     // Content
     // ------------------------
-    if (typeof(DEVICES) == "string") {
+    if (typeof(CACHE_DEVICES) == "string") {
         // Show the error exception in a dialogue box.
         var body = `<p>${get_string("error_not_ready_text")}</p>
-                       <p><pre>${DEVICES}</pre></p>`;
+                       <p><pre>${CACHE_DEVICES}</pre></p>`;
         open_dialog(get_string("error_not_ready_title"), body, "serious", "18em", "30em");
         content = _device_error("daemon-error");
 
-    } else if (typeof(DEVICES) == "number") {
+    } else if (typeof(CACHE_DEVICES) == "number") {
         content = _device_error("daemon-missing");
 
-    } else if (typeof(DEVICES) == "object") {
-        if (DEVICES.length == 0) {
+    } else if (typeof(CACHE_DEVICES) == "object") {
+        if (CACHE_DEVICES.length == 0) {
             // Show no devices screen
             content = _device_error("no-device");
         }
@@ -137,8 +130,8 @@ function _set_tab_devices() {
     set_layout_split(sidebar, content);
 
     // Open the first device
-    if (typeof(DEVICES) == "object" && DEVICES.length >= 1) {
-        if (DEVICES[0].available == true) {
+    if (typeof(CACHE_DEVICES) == "object" && CACHE_DEVICES.length >= 1) {
+        if (CACHE_DEVICES[0].available == true) {
             open_device($("#device-0"), 0);
         } else {
             open_device_not_avaliable();
@@ -209,7 +202,7 @@ function _open_device(device) {
     //
     set_title(device.name);
 
-    DEVICES_TAB_CURRENT_DEVICE = device;
+    CACHE_CURRENT_DEVICE = device;
 
     // Assemble status (top area) and controls.
     $("#device-content").html(`
@@ -511,8 +504,8 @@ function set_device_state(element) {
     }
 
     // Get data for current device
-    uid = DEVICES_TAB_CURRENT_DEVICE["uid"]
-    backend = DEVICES_TAB_CURRENT_DEVICE["backend"]
+    uid = CACHE_CURRENT_DEVICE["uid"]
+    backend = CACHE_CURRENT_DEVICE["backend"]
 
     // Defaults when setting new effect (parameters)
     switch(request) {
@@ -566,13 +559,13 @@ function set_device_state(element) {
         case "starlight_dual":
         case "starlight_random":
         case "static":
-            DEVICES_TAB_CURRENT_DEVICE["zone_states"][zone]["effect"] = request;
+            CACHE_CURRENT_DEVICE["zone_states"][zone]["effect"] = request;
 
             if (params == undefined) {
                 params = [];
             }
 
-            DEVICES_TAB_CURRENT_DEVICE["zone_states"][zone]["params"] = params;
+            CACHE_CURRENT_DEVICE["zone_states"][zone]["params"] = params;
             break;
 
         case "brightness":
@@ -583,32 +576,32 @@ function set_device_state(element) {
                 value = 0;
             }
 
-            DEVICES_TAB_CURRENT_DEVICE["zone_states"][zone]["brightness"] = value;
+            CACHE_CURRENT_DEVICE["zone_states"][zone]["brightness"] = value;
             $(`#brightness-${zone}-value`).html(value);
             break;
 
         case "game_mode":
-            DEVICES_TAB_CURRENT_DEVICE["game_mode"] = params[0];
+            CACHE_CURRENT_DEVICE["game_mode"] = params[0];
             break;
 
         case "dpi":
-            DEVICES_TAB_CURRENT_DEVICE["dpi_x"] = params[0];
-            DEVICES_TAB_CURRENT_DEVICE["dpi_y"] = params[0];
+            CACHE_CURRENT_DEVICE["dpi_x"] = params[0];
+            CACHE_CURRENT_DEVICE["dpi_y"] = params[0];
             params[1] = params[0];
             break;
 
         case "poll_rate":
-            DEVICES_TAB_CURRENT_DEVICE["poll_rate"] = params[0];
+            CACHE_CURRENT_DEVICE["poll_rate"] = params[0];
             break;
     }
 
-    $(".states").html(_get_state_html(DEVICES_TAB_CURRENT_DEVICE));
+    $(".states").html(_get_state_html(CACHE_CURRENT_DEVICE));
 
     // Obtain colours from page
     var primary = $(`#${zone}-primary`);
     var secondary = $(`#${zone}-secondary`);
     var teritary = $(`#${zone}-teritary`);
-    var state = DEVICES_TAB_CURRENT_DEVICE["zone_states"][zone];
+    var state = CACHE_CURRENT_DEVICE["zone_states"][zone];
 
     if (primary.length > 0) {
         colour_hex[0] = primary.val();
@@ -636,7 +629,7 @@ function set_device_state(element) {
     });
 
     // Update UI controls
-    $("#device-controls").html(_get_device_controls(DEVICES_TAB_CURRENT_DEVICE, "set_device_state(this)"));
+    $("#device-controls").html(_get_device_controls(CACHE_CURRENT_DEVICE, "set_device_state(this)"));
 }
 
 }

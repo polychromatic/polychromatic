@@ -36,6 +36,10 @@ var TRANSITION_SPEED = 300 + 50;
 // Backend status
 var OPENRAZER_READY = false;
 
+// Cached responses from controller
+var CACHE_DEVICE_LIST = null;       // -- get_device_list() listing all devices.
+var CACHE_CURRENT_DEVICE = null;    // -- get_device() for current device.
+
 
 /*****************************
  * Common Functions

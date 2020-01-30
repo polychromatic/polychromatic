@@ -81,10 +81,10 @@ class PolychromaticController():
         self.send_view_variable("LOCALES", locales.LOCALES)
         self.run_function("build_view")
 
-        # View caches device list via the DEVICES variable.
+        # View caches device list via the CACHE_DEVICES variable.
         dbg.stdout("OpenRazer: Getting device list...", dbg.action, 1)
         devices = openrazer.get_device_list()
-        self.send_view_variable("DEVICES", devices)
+        self.send_view_variable("CACHE_DEVICES", devices)
 
         if devices == -1:
             dbg.stdout("OpenRazer: Daemon not running", dbg.error)
@@ -130,7 +130,7 @@ class PolychromaticController():
             "callback": <Name of JavaScript function to run>
         }
         """
-        self.send_view_variable("DEVICES", openrazer.get_device_list())
+        self.send_view_variable("CACHE_DEVICES", openrazer.get_device_list())
         self.run_function(data["callback"])
 
     def _open_device(self, data):
