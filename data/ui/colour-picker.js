@@ -110,11 +110,16 @@ function open_colour_picker(id, title, current_hex, onsaveclick, monochromatic) 
     });
 
     // Saving the colour - "Save" button is the last on the dialogue.
+    var change_btn  =$(`#${id}`).next().find(".change-colour");
     var save_btn = $(".dialog-buttons").find("button").last();
+
     save_btn.click(function() {
         var new_value = picker.getCurColorHex();
         $(`#${id}`).next().find(".current-colour").css("background-color", new_value).attr("title", new_value);
         $(`#${id}`).attr("value", new_value);
+
+        // Update hex colour for the onclick of the "Change..." button if the colour is to be changed again.
+        change_btn.attr("onclick", change_btn.attr("onclick").replace(current_hex, new_value));
     });
 
     // Saving the colour - move the onclick function to a click handler instead.

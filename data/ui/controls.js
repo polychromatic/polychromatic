@@ -142,6 +142,6 @@ function colour_picker(id, onchange, current_hex, title, monochromatic) {
     return `<input id="${id}" type="hidden" value="${current_hex}"/>
             <div class="colour-selector">
                 <div class="current-colour" title="${current_hex}" style="background-color:${current_hex}"></div>
-                <button onclick="open_colour_picker('${id}', '${title}', '${current_hex}', '${onchange}', ${monochromatic})">${get_string("change")}</button>
+                <button class="change-colour" onclick="open_colour_picker('${id}', '${title}', '${current_hex}', '${onchange}', ${monochromatic})">${get_string("change")}</button>
             </div>`;
 }
