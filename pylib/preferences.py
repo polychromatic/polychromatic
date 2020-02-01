@@ -373,11 +373,12 @@ def start_initalization():
             {"name": _("Blue"), "hex": "#0000FF"},
             {"name": _("Aqua"), "hex": "#00FFFF"},
             {"name": _("Orange"), "hex": "#FFA500"},
-            {"name": _("Pink"), "hex": "#FFC0CB"},
-            {"name": _("Purple"), "hex": "#800080"},
+            {"name": _("Pink"), "hex": "#FF00FF"},
+            {"name": _("Purple"), "hex": "#8000FF"},
             {"name": _("Yellow"), "hex": "#FFFF00"},
-            {"name": _("Light Grey"), "hex": "#BFBFBF"},
-            {"name": _("Dark Grey"), "hex": "#7F7F7F"}
+            {"name": _("Light Grey"), "hex": "#C0C0C0"},
+            {"name": _("Dark Grey"), "hex": "#7F7F7F"},
+            {"name": _("Black"), "hex": "#000000"}
         ]
         save_file(path.colours, default_data)
 
