@@ -349,44 +349,47 @@ class AppIndicator(object):
             if "brightness_toggle" in details["zone_supported"][zone].keys():
                 submenu[1].append(self._create_brightness_submenu(details, zone, True)[0])
 
+            # Main
+            if zone == "main":
+                # Game Mode
+                if details["game_mode"] != None:
+                    dbg.stdout("  - Game Mode", dbg.debug, 1)
+                    game_mode_menu = create_submenu(_("Game Mode"), True, get_icon("general", "game-mode.svg"))
+                    create_submenu_item(game_mode_menu, _("On"), True, cb.set_game_mode, [uid, True], get_icon("general", "game-mode.svg"))
+                    create_submenu_item(game_mode_menu, _("Off"), True, cb.set_game_mode, [uid, False], get_icon("general", "game-mode-disabled.svg"))
+                    submenu[1].append(game_mode_menu[0])
+
+                # DPI
+                if details["dpi_x"] != None:
+                    dbg.stdout("  - DPI", dbg.debug, 1)
+                    dpi_menu = create_submenu(_("DPI"), True, get_icon("general", "dpi.svg"))
+                    dpi_range = details["dpi_ranges"]
+                    min_dpi = dpi_range[0]
+                    max_dpi = dpi_range[-1]
+
+                    for dpi in dpi_range:
+                        if dpi == min_dpi:
+                            dpi_icon = get_icon("general", "dpi-slow.svg")
+                        elif dpi == max_dpi:
+                            dpi_icon = get_icon("general", "dpi-fast.svg")
+                        else:
+                            dpi_icon = None
+                        create_submenu_item(dpi_menu, str(dpi), True, cb.set_dpi, [uid, int(dpi)], dpi_icon)
+                    submenu[1].append(dpi_menu[0])
+
+                # Polling Rate
+                if details["poll_rate"] != None:
+                    dbg.stdout("  - Poll Rate", dbg.debug, 1)
+                    poll_menu = create_submenu(_("Polling Rate"), True, get_icon("fa", "poll-rate.svg"))
+                    create_submenu_item(poll_menu, _("125 Hz (8ms)"), True, cb.set_poll_rate, [uid, 125])
+                    create_submenu_item(poll_menu, _("500 Hz (2ms)"), True, cb.set_poll_rate, [uid, 500])
+                    create_submenu_item(poll_menu, _("1000 Hz (1ms)"), True, cb.set_poll_rate, [uid, 1000])
+                    submenu[1].append(poll_menu[0])
+
             # End of zone-specific options
             if multiple_zones:
                 submenu[1].append(create_seperator())
 
-        # Game Mode
-        if details["game_mode"] != None:
-            dbg.stdout("  - Game Mode", dbg.debug, 1)
-            game_mode_menu = create_submenu(_("Game Mode"), True, get_icon("general", "game-mode.svg"))
-            create_submenu_item(game_mode_menu, _("On"), True, cb.set_game_mode, [uid, True], get_icon("general", "game-mode.svg"))
-            create_submenu_item(game_mode_menu, _("Off"), True, cb.set_game_mode, [uid, False], get_icon("general", "game-mode-disabled.svg"))
-            submenu[1].append(game_mode_menu[0])
-
-        # DPI
-        if details["dpi_x"] != None:
-            dbg.stdout("  - DPI", dbg.debug, 1)
-            dpi_menu = create_submenu(_("DPI"), True, get_icon("general", "dpi.svg"))
-            dpi_range = details["dpi_ranges"]
-            min_dpi = dpi_range[0]
-            max_dpi = dpi_range[-1]
-
-            for dpi in dpi_range:
-                if dpi == min_dpi:
-                    dpi_icon = get_icon("general", "dpi-slow.svg")
-                elif dpi == max_dpi:
-                    dpi_icon = get_icon("general", "dpi-fast.svg")
-                else:
-                    dpi_icon = None
-                create_submenu_item(dpi_menu, str(dpi), True, cb.set_dpi, [uid, int(dpi)], dpi_icon)
-            submenu[1].append(dpi_menu[0])
-
-        # Polling Rate
-        if details["poll_rate"] != None:
-            dbg.stdout("  - Poll Rate", dbg.debug, 1)
-            poll_menu = create_submenu(_("Polling Rate"), True, get_icon("fa", "poll-rate.svg"))
-            create_submenu_item(poll_menu, _("125 Hz (8ms)"), True, cb.set_poll_rate, [uid, 125])
-            create_submenu_item(poll_menu, _("500 Hz (2ms)"), True, cb.set_poll_rate, [uid, 500])
-            create_submenu_item(poll_menu, _("1000 Hz (1ms)"), True, cb.set_poll_rate, [uid, 1000])
-            submenu[1].append(poll_menu[0])
 
         # Colour (repeats last effect)
         if details["matrix"]:
