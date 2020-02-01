@@ -79,6 +79,7 @@ class PolychromaticController():
         dbg.stdout("Version " + version, dbg.debug, 1)
 
         self.send_view_variable("LOCALES", locales.LOCALES)
+        self.send_view_variable("COLOURS", pref.load_file(pref.path.colours))
         self.run_function("build_view")
 
         # View caches device list via the CACHE_DEVICES variable.

@@ -415,19 +415,19 @@ function _get_device_controls(device, onclick) {
             case "ripple_single":
             case "starlight_single":
             case "starlight_dual":
-                output += group(get_string("primary_colour"), colour_picker(`${zone}-primary`, onclick, state["colour1"]));
+                output += group(get_string("primary_colour"), colour_picker(`${zone}-primary`, "reapply_device_state()", state["colour1"], get_string("primary_colour"), device["monochromatic"]));
         }
 
         switch(current_effect) {
             case "breath_dual":
             case "breath_triple":
             case "starlight_dual":
-                output += group(get_string("secondary_colour"), colour_picker(`${zone}-secondary`, onclick, state["colour2"]));
+                output += group(get_string("secondary_colour"), colour_picker(`${zone}-secondary`, "reapply_device_state()", state["colour2"], get_string("primary_colour"), device["monochromatic"]));
         }
 
         switch(current_effect) {
             case "breath_triple":
-                output += group(get_string("teritary_colour"), colour_picker(`${zone}-teritary`, onclick, state["colour3"]));
+                output += group(get_string("teritary_colour"), colour_picker(`${zone}-teritary`, "reapply_device_state()", state["colour3"], get_string("primary_colour"), device["monochromatic"]));
         }
 
         if (zone == "main") {
@@ -632,6 +632,48 @@ function set_device_state(element) {
     $("#device-controls").html(_get_device_controls(CACHE_CURRENT_DEVICE, "set_device_state(this)"));
 }
 
+
+function reapply_device_state() {
+    //
+    // Re-apply the current effect(s) for all zones running on the device.
+    // Executed when saving changes to a dialogue picker.
+    //
+    var device = CACHE_CURRENT_DEVICE;
+    for (z = 0; z < Object.keys(device.zone_states).length; z++) {
+        var zone = Object.keys(device.zone_states)[z];
+        var state = device.zone_states[zone];
+        var colour_hex = [];
+
+        // Obtain colours from page
+        var primary = $(`#${zone}-primary`);
+        var secondary = $(`#${zone}-secondary`);
+        var teritary = $(`#${zone}-teritary`);
+
+        if (primary.length > 0) {
+            colour_hex[0] = primary.val();
+            state["colour1"] = primary.val();
+        }
+
+        if (secondary.length > 0) {
+            colour_hex[1] = secondary.val();
+            state["colour2"] = secondary.val();
+        }
+
+        if (teritary.length > 0) {
+            colour_hex[2] = teritary.val();
+            state["colour3"] = teritary.val();
+        }
+
+        send_data("set_device_state", {
+            "uid": device.uid,
+            "backend": device.backend,
+            "backend_request": state.effect,
+            "zone": zone,
+            "colour_hex": colour_hex,
+            "params": state.params
+        });
+    }
+}
 }
 
 function _device_error(id) {

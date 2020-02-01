@@ -18,7 +18,7 @@ function open_dialog(title, body, style, buttons, height, width) {
     button_html = "";
     for (b = 0; b < buttons.length; b++) {
         var label = buttons[b][0];
-        var onclick = "close_dialog();" + buttons[b][1];
+        var onclick = buttons[b][1] + "; close_dialog();";
         button_html += `<button onclick="${onclick}">${label}</button>`;
     }
 
@@ -69,4 +69,3 @@ function close_dialog() {
         $("dialog").remove();
     }, TRANSITION_SPEED);
 }
-

@@ -101,6 +101,8 @@ LOCALES = {
 
     # Buttons
     "ok": _("OK"),
+    "cancel": _("Cancel"),
+    "save": _("Save"),
     "colour": _("Color"),
     "close-app": _("Close Application"),
     "troubleshoot": _("Troubleshoot"),
@@ -117,6 +119,7 @@ LOCALES = {
 
     # Preferences
     "saved_colours": _("Saved Colors"),
+    "colours_gtk": _("Use System Picker"),
     "about": _("About"),
     "general": _("General"),
     "tray-applet": _("Tray Applet"),

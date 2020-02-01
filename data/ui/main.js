@@ -39,6 +39,7 @@ var OPENRAZER_READY = false;
 // Cached responses from controller
 var CACHE_DEVICE_LIST = null;       // -- get_device_list() listing all devices.
 var CACHE_CURRENT_DEVICE = null;    // -- get_device() for current device.
+var COLOURS = null;
 
 
 /*****************************
@@ -142,6 +143,35 @@ function set_layout_split(sidebar, content) {
         </div>`);
 }
 
+
+/*****************************
+ * Colour Conversion
+*****************************/
+// Hex -> RGB
+function hex_to_rgb(hex) {
+    //
+    // Converts from hex to decimal. Outputs [R,G,B].
+    //
+    return [
+        "0x" + hex[1] + hex[2] | 0,
+        "0x" + hex[3] + hex[4] | 0,
+        "0x" + hex[5] + hex[6] | 0
+    ];
+}
+
+function rgb_to_hex(r,g,b) {
+    //
+    // Converts from decimal to hex. Outputs "#RRGGBB".
+    //
+    function _to_hex(input) {
+        input = Number(input);
+        if (input.toString().length < 2) {
+            input = "0" + input;
+        }
+        return input.toString(16);
+    }
+    return "#" + _to_hex(r) + _to_hex(g) + _to_hex(b);
+}
 
 /*****************************
  * Misc
