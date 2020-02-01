@@ -162,7 +162,9 @@ class PolychromaticController():
         Data parameter:
         {
             "type": <str: "string" or "brightness">,
-            "value": <str: effect name> OR <int: brightness value>
+            "value": <str: effect name>
+                     <int: brightness value>
+                     <str: colour hex>
         }
         """
         request_type = data["type"]
@@ -173,17 +175,24 @@ class PolychromaticController():
             "spectrum": None,
             "wave": 1,
             "reactive": 2,
-            "breath_random": None,
+            "breath_single": None,
             "static": None
         }
 
         for device in openrazer.get_device_list():
+            if device["available"] == False:
+                continue
+
             for zone in device["zones"]:
                 if request_type == "effect":
                     param = effect_params[request_value]
                     openrazer.set_device_state(device["uid"], request_value, zone, None, [param])
+
                 elif request_type == "brightness":
                     openrazer.set_device_state(device["uid"], "brightness", zone, None, [request_value])
+
+                elif request_type == "colour":
+                    openrazer.set_device_colours(device["uid"], zone, [request_value])
 
     def _set_device_state(self, data):
         """

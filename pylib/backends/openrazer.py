@@ -585,6 +585,10 @@ def set_device_colours(uid, zone, colour_hex):
         "static": "static"
     }
 
+    # Skip non-Chroma devices.
+    if not rdevice.has("lighting_led_matrix"):
+        return True
+
     try:
         request = daemon_to_poly_effect[str(device_zone.effect)]
     except KeyError:

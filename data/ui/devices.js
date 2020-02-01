@@ -150,6 +150,7 @@ function open_device_to_all() {
 
     var brightness = "";
     var effects = "";
+    var colours = "";
     var output = "";
 
     // Brightness
@@ -162,13 +163,21 @@ function open_device_to_all() {
     // Effects
     effects += button_large("all-spectrum", "apply_to_all('effect', 'spectrum')", get_string("spectrum"), "img/effects/spectrum.svg");
     effects += button_large("all-wave", "apply_to_all('effect', 'wave')", get_string("wave"), "img/effects/wave.svg");
-    effects += button_large("all-breath", "apply_to_all('effect', 'breath_random')", get_string("breath"), "img/effects/breath.svg");
+    effects += button_large("all-breath", "apply_to_all('effect', 'breath_single')", get_string("breath"), "img/effects/breath.svg");
     effects += button_large("all-reactive", "apply_to_all('effect', 'reactive')", get_string("reactive"), "img/effects/reactive.svg");
     effects += button_large("all-static", "apply_to_all('effect', 'static')", get_string("static"), "img/effects/static.svg");
+
+    // Primary Colour
+    for (c = 0; c < COLOURS.length; c++) {
+        var name = COLOURS[c].name;
+        var hex = COLOURS[c].hex;
+        colours += button_colour(`all-${hex.replace("#","")}`, `apply_to_all('colour', '${hex}')`, name, hex);
+    }
 
     output += group_title(get_string("apply-to-all"));
     output += group(get_string("brightness"), brightness);
     output += group(get_string("effects"), effects);
+    output += group(get_string("primary_colour"), colours);
     $("#device-content").html(output);
 }
 
@@ -180,6 +189,13 @@ function apply_to_all(type, value) {
     //  value       Data value to pass to controller, e.g. brightness value or effect name.
     //
     send_data("apply_to_all", {"type": type, "value": value});
+}
+
+function apply_to_all_colour(type, value) {
+    //
+    // Sends a request to the controller to set all devices to a specific primary colour.
+    //
+    send_data("apply_to_all_colour", {"type": type, "value": value});
 }
 
 function open_device(element, uid) {

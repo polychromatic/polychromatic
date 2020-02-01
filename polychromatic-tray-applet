@@ -305,6 +305,19 @@ class AppIndicator(object):
             create_submenu_item(bulk_submenu, " 25%", True, cb.set_all_brightness, "25", get_icon("brightness", "25.svg"))
             create_submenu_item(bulk_submenu, " 0% / " + _("Off"), True, cb.set_all_brightness, "0", get_icon("brightness", "0.svg"))
 
+            # -- Primary Colour
+            bulk_submenu[1].append(create_seperator())
+            colours_submenu = create_submenu(_("Primary Colour"), True, get_icon("fa", "palette.svg"))
+            col_index = pref.load_file(path.colours)
+            for pos in range(0, len(col_index)):
+                try:
+                    name = col_index[pos]["name"]
+                    hex_value = col_index[pos]["hex"]
+                    create_submenu_item(colours_submenu, name, True, cb.set_all_colour, [hex_value], self._get_colour_icon(hex_value))
+                except Exception:
+                    dbg.stdout("Ignoring invalid colour data at index position " + str(pos), dbg.error)
+            bulk_submenu[1].append(colours_submenu[0])
+
             root.append(bulk_submenu[0])
 
         # General Options
@@ -705,6 +718,7 @@ class Callback():
             if device["available"] == True:
                 zones = device["zones"]
                 for zone in zones:
+                    dbg.stdout("- {0} [{1}]".format(device["name"], zone), dbg.action, 1)
                     r = openrazer.set_device_state(int(device["uid"]), request, zone, None, [params])
                     _verbose_check_status(r)
 
@@ -725,7 +739,26 @@ class Callback():
             if device["available"] == True:
                 zones = device["zones"]
                 for zone in zones:
+                    dbg.stdout("- {0} [{1}]".format(device["name"], zone), dbg.action, 1)
                     r = openrazer.set_device_state(device["uid"], "brightness", zone, None, [value])
+                    _verbose_check_status(r)
+
+    def set_all_colour(cb, item, value):
+        """
+        GTK menu item callback to set the primary colour for all supported devices.
+
+        Params:
+            value       (lst)   Hex value
+        """
+        dbg.stdout("Setting all device primary colour to {0}".format(value), dbg.debug, 1)
+
+        devices = openrazer.get_device_list()
+        for device in devices:
+            if device["available"] == True:
+                zones = device["zones"]
+                for zone in zones:
+                    dbg.stdout("- {0} [{1}]".format(device["name"], zone), dbg.action, 1)
+                    r = openrazer.set_device_colours(device["uid"], zone, value)
                     _verbose_check_status(r)
 
     def set_custom_colour(cb, item, attr):
@@ -763,14 +796,14 @@ def _verbose_check_status(result):
     to the backend (openrazer module) was successful.
     """
     if type(result) == str:
-        dbg.stdout("An exception occurred processing this request:", dbg.error, 1)
-        dbg.stdout(result, dbg.normal, 1)
+        dbg.stdout("An exception occurred processing this request:", dbg.error)
+        dbg.stdout(result, dbg.error)
     elif result == True:
         dbg.stdout("Request OK", dbg.success, 1)
     elif result == None:
         dbg.stdout("Device missing", dbg.warning, 1)
     elif result == False:
-        dbg.stdout("Request unsuccessful - may be unsupported by the device.", dbg.warning, 1)
+        dbg.stdout("Request unsuccessful - may be unsupported by the device.", dbg.normal, 1)
 
 
 def parse_parameters():

@@ -116,6 +116,15 @@ function button_large(id, onclick, label, img, disabled, active) {
             </button>`;
 }
 
+function button_colour(id, onclick, label, hex) {
+    //
+    // Create a larger button designed for choosing colours on the Apply yo All page.
+    //
+    return `<button id="${id}" class="effect-btn colour-btn" onclick="${onclick}">
+                <div class="colour-block" style="background-color:${hex}"></div> <span>${label}</span>
+            </button>`;
+}
+
 function dropdown(id, onchange, current_value, item_list, disabled) {
     //
     // Creates a dropdown for toggling options.
