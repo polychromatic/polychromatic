@@ -398,10 +398,16 @@ def set_device_state(uid, request, zone, colour_hex, params):
     zone_to_device = _get_device_zones(rdevice)
 
     # Prepare colours (to RGB values)
-    # TODO: Reuse previous colours
-    colour_primary = [0, 255, 0]        # Green
-    colour_secondary = [255, 0, 0]      # Red
-    colour_tertiary = [0, 0, 255]       # Blue
+    try:
+        last_colours = _convert_colour_bytes(rdevice.fx.colors)
+        colour_primary = common.hex_to_rgb(last_colours["primary"])
+        colour_secondary = common.hex_to_rgb(last_colours["secondary"])
+        colour_tertiary = common.hex_to_rgb(last_colours["tertiary"])
+    except Exception:
+        # Device does not support RGB colours.
+        colour_primary = [0, 255, 0]        # Green
+        colour_secondary = [255, 0, 0]      # Red
+        colour_tertiary = [0, 0, 255]       # Blue
 
     if colour_hex:
         try:

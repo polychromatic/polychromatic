@@ -598,25 +598,8 @@ function set_device_state(element) {
     $(".states").html(_get_state_html(CACHE_CURRENT_DEVICE));
 
     // Obtain colours from page
-    var primary = $(`#${zone}-primary`);
-    var secondary = $(`#${zone}-secondary`);
-    var teritary = $(`#${zone}-teritary`);
     var state = CACHE_CURRENT_DEVICE["zone_states"][zone];
-
-    if (primary.length > 0) {
-        colour_hex[0] = primary.val();
-        state["colour1"] = primary.val();
-    }
-
-    if (secondary.length > 0) {
-        colour_hex[1] = secondary.val();
-        state["colour2"] = secondary.val();
-    }
-
-    if (teritary.length > 0) {
-        colour_hex[2] = teritary.val();
-        state["colour3"] = teritary.val();
-    }
+    var colour_hex = [state["colour1"], state["colour2"], state["colour3"]];
 
     // Send request to Controller
     send_data("set_device_state", {
