@@ -71,6 +71,10 @@ LOCALES = {
     "matrix_size": _("X rows, Y columns"),
     "unsupported": _("Unsupported"),
     "supported": _("Supported"),
+    "debug_matrix": _("Test Matrix"),
+    "debug_matrix_title": _("Test Matrix: []"),
+    "debug_matrix_help": _("Hover over the matrix to test individual addressable LEDs on the hardware."),
+    "debug_matrix_position": _("Position:"),
     "backend": _("Backend"),
 
     # Wave

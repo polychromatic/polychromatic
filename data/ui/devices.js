@@ -733,7 +733,54 @@ function _show_device_info() {
         <pre>${JSON.stringify(device, null, 4)}</pre>
     </div>`;
 
-    open_dialog(get_string("device_info_title").replace("[]", device.name), body, null, [[get_string("close"), ""]], "40em", "40em");
+    // Show a "Test Matrix" button if supported
+    var buttons = [];
+    if (device.matrix == true) {
+        buttons[buttons.length] = [get_string("debug_matrix"), "start_debug_matrix()"];
+    }
+    buttons[buttons.length] = [get_string("close"), ""];
+
+    open_dialog(get_string("device_info_title").replace("[]", device.name), body, null, buttons, "40em", "40em");
+}
+
+function start_debug_matrix() {
+    //
+    // Opens the dialogue to test LEDs in the matrix (custom effect)
+    //
+    var device = CACHE_CURRENT_DEVICE;
+    var rows = device.matrix_rows;
+    var cols = device.matrix_cols;
+
+    // Need to open on a timer as the "Device Info" calls close_dialog() first.
+    setTimeout(function() {
+        var body = `<p>${get_string("debug_matrix_help")}</p>`;
+        body += `<table id="debug-matrix">`;
+        for (r = 0; r < rows; r++) {
+            body += `<tr>`;
+            for (c = 0; c < cols; c++) {
+                body += `<td id="${r}x${c}" class="debug-matrix-led"></td>`;
+            }
+            body += `</tr>`;
+        }
+        body += `</table>`;
+        body += `<p id="debug-cur-position">${get_string("debug_matrix_position")} [<span id="debug-cur-row"></span>, <span id="debug-cur-col"></span>]</p>`;
+
+        open_dialog(get_string("debug_matrix_title").replace("[]", device.name), body, null, [[get_string("close"), ""]], "40em", "40em");
+
+        $(".debug-matrix-led").hover(function() {
+            var id = $(this).attr("id");
+            var row = id.split("x")[0];
+            var col = id.split("x")[1];
+            send_data("debug_matrix", {
+                "uid": device.uid,
+                "backend": device.backend,
+                "position": [row, col]
+            });
+            $("#debug-cur-row").html(row);
+            $("#debug-cur-col").html(col);
+        });
+
+    }, TRANSITION_SPEED + 5);
 }
 
 function _device_error(id) {

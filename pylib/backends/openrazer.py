@@ -863,3 +863,24 @@ def _get_battery_level_dirty():
                         pass
     return None
 
+
+def debug_matrix(uid, row, column):
+    """
+    Highlights a key for the purposes of testing custom frames.
+    """
+    try:
+        # TODO: Speed up by initalising DeviceManager() once - param maybe?
+        devman = rclient.DeviceManager()
+        devman.sync_effects = False
+        rdevice = devman.devices[uid]
+    except IndexError:
+        return None
+    except Exception as e:
+        return common.get_exception_as_string(e)
+
+    try:
+        rdevice.fx.advanced.matrix[row, column] = (255,255,255)
+        rdevice.fx.advanced.draw()
+        return True
+    except Exception as e:
+        return common.get_exception_as_string(e)

@@ -48,7 +48,8 @@ class PolychromaticController():
                 "update_device_list": self._update_device_list,
                 "open_device": self._open_device,
                 "apply_to_all": self._apply_to_all,
-                "set_device_state": self._set_device_state
+                "set_device_state": self._set_device_state,
+                "debug_matrix": self._debug_matrix
             }
         except KeyError:
             dbg.stdout("Unknown Request: " + str(request) + " with data: " + str(data), dbg.error)
@@ -236,6 +237,37 @@ class PolychromaticController():
         elif request == True:
             # Request OK
             dbg.stdout("Successfully executed request", dbg.success, 1)
+
+    def _debug_matrix(self, data):
+        """
+        Allows the user to test custom effect functionality.
+
+        Data parameter:
+        {
+            "uid": <id in backend> (string)
+            "backend": <backend provider> (string)
+            "position": [row, column] (list)
+        }
+        """
+        uid = int(data["uid"])
+        backend = data["backend"]
+        row = data["position"][0]
+        column = data["position"][1]
+
+        request = openrazer.debug_matrix(uid, int(row), int(column))
+
+        if request == None:
+            # Device no longer available
+            self._internal_error(locales.LOCALES["error_device_gone_title"], locales.LOCALES["error_device_gone_text"], "warning")
+
+        elif type(request) == str:
+            # Daemon exception
+            self._internal_error(locales.LOCALES["error_backend_title"], locales.LOCALES["error_backend_text"] + "<pre>{0}</pre>".format(request), "serious")
+            dbg.stdout(request, dbg.error)
+
+        elif request == True:
+            # Request OK
+            dbg.stdout("OK: [{0},{1}]".format(row, column), dbg.success, 1)
 
 
 # Module Initalization

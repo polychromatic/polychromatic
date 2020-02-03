@@ -135,3 +135,27 @@
         overflow-y: scroll;
     }
 }
+
+/* Test Matrix */
+#debug-matrix {
+    margin: 1em;
+    width: calc(100% - 2em);
+
+    td {
+        border: 1px solid gray;
+        width: 20px;
+        height: 20px;
+
+        &:hover {
+            background: white;
+        }
+    }
+
+    + #debug-cur-position {
+        opacity: 0;
+    }
+
+    &:hover + #debug-cur-position {
+        opacity: 1;
+    }
+}
