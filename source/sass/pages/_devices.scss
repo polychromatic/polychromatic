@@ -102,3 +102,36 @@
         }
     }
 }
+
+/* Device Info dialog */
+.device-info {
+    .left {
+        display: inline-block;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 10em;
+        height: 10em;
+        vertical-align: middle;
+    }
+
+    .right {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 1em;
+    }
+
+    code {
+        margin: 0;
+        padding: 0;
+    }
+
+    pre {
+        color: $secondary-colour;
+        overflow: auto;
+        width: 100%;
+        height: 200px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+    }
+}

@@ -230,7 +230,7 @@ function _open_device(device) {
                     ${_get_state_html(device)}
                 </div>
             </div>
-            <button id="more-details-btn" onclick="_show_device_info(${device})">${get_string("device-info")}</button>
+            <button id="more-details-btn" onclick="_show_device_info()">${get_string("device-info")}</button>
         </div>
         <div id="device-controls">
             ${_get_device_controls(device, "set_device_state(this)")}
@@ -673,6 +673,67 @@ function reapply_device_state() {
         });
     }
 }
+
+function _show_device_info() {
+    //
+    // Open a dialog describing the capabilities of a device.
+    //
+    var device = CACHE_CURRENT_DEVICE;
+
+    // Pretty backend names
+    backend_pretty = {
+        "openrazer": "OpenRazer"
+    }
+    var backend = backend_pretty[device.backend];
+    if (backend == undefined) {
+        backend = device.backend;
+    }
+
+    var body = `<div class="device-info">
+        <div class="left" style="background-image: url('${device.real_image}')"></div>
+        <div class="right" style="display:inline-block;">
+            <table class="no-grid">
+                <tbody>
+                    <tr>
+                        <td>${get_string("backend")}</td>
+                        <td>${backend} (ID ${device.uid})</td>
+                    </tr>
+                    <tr>
+                        <td>${get_string("form_factor")}</td>
+                        <td><img src="${device.icon}"> ${device.form_factor}</td>
+                    </tr>
+                    <tr>
+                        <td>VID/PID</td>
+                        <td><code>${device.vid}:${device.pid}</code></td>
+                    </tr>
+                    <tr>
+                        <td>${get_string("serial")}</td>
+                        <td><code>${device.serial}</code></td>
+                    </tr>
+                    <tr>
+                        <td>${get_string("firmware_version")}</td>
+                        <td>${device.firmware_version}</td>
+                    </tr>
+                    <tr style="${device.keyboard_layout != true ? 'display:none' : ''}">
+                        <td>${get_string("keyboard_layout")}</td>
+                        <td>${device.keyboard_layout}</td>
+                    </tr>
+                    <tr>
+                        <td>${get_string("matrix_support")}</td>
+                        <td class="${device.matrix == true ? 'yes' : 'no'}">${device.matrix == true ? get_string("supported") : get_string("unsupported")}</td>
+                    </tr>
+                    <tr style="${device.matrix != true ? 'display:none' : ''}">
+                        <td>${get_string("matrix_dimensions")}</td>
+                        <td class="${device.matrix == true ? 'yes' : 'no'}">${get_string("matrix_size").replace("X", device.matrix_rows).replace("Y", device.matrix_cols)}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <pre>${JSON.stringify(device, null, 4)}</pre>
+    </div>`;
+
+    open_dialog(get_string("device_info_title").replace("[]", device.name), body, null, [[get_string("close"), ""]], "40em", "40em");
 }
 
 function _device_error(id) {

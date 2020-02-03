@@ -62,14 +62,16 @@ LOCALES = {
     "unknown-device": _("Unrecognized: []"),
 
     # Device Info
-    "formfactor": _("Form Factor"),
+    "device_info_title": _("Device Information: []"),
+    "form_factor": _("Form Factor"),
     "serial": _("Serial"),
     "firmware_version": _("Firmware Version"),
-    "macro_support": _("Macro Support"),
-    "matrix_size": _("Matrix Dimensions"),
-    "capability_name": _("Daemon Capability"),
-    "capability_supported": _("Supported?"),
-    "capability_description": _("Description"),
+    "matrix_support": _("Custom Effects"),
+    "matrix_dimensions": _("Matrix Dimensions"),
+    "matrix_size": _("X rows, Y columns"),
+    "unsupported": _("Unsupported"),
+    "supported": _("Supported"),
+    "backend": _("Backend"),
 
     # Wave
     "wave_options": _("Wave Direction"),
@@ -104,6 +106,7 @@ LOCALES = {
     "cancel": _("Cancel"),
     "save": _("Save"),
     "colour": _("Color"),
+    "close": _("Close"),
     "close-app": _("Close Application"),
     "troubleshoot": _("Troubleshoot"),
     "retry": _("Retry"),
