@@ -10,6 +10,7 @@ This module abstracts data between Polychromatic and the OpenRazer daemon.
 import glob
 import os
 import subprocess
+# 'requests' imported on-demand if device images are to be downloaded.
 
 # Polychromatic
 from .. import common
@@ -615,8 +616,7 @@ def set_device_colours(uid, zone, colour_hex):
 
 def _get_device_zones(rdevice):
     """
-    Returns a dictionary referencing the classes used for various zones for a
-    device.
+    Returns a dictionary referencing the classes used for various zones for a device.
     """
     zone_to_device = {
         "main": rdevice.fx,
@@ -765,9 +765,34 @@ def _get_device_image(device):
     except KeyError:
         real_image = ""
 
-    # TODO: Download image in background
+    import requests
+    from .. import preferences as pref
+    device_images_dir = pref.Paths().device_images
+    image_path = os.path.join(device_images_dir, device.name)
+    fallback_path = os.path.join(common.get_data_dir_path(), "ui/img/devices/noimage.svg")
 
-    return real_image
+    if os.path.exists(image_path) and os.stat(image_path).st_size > 8:
+        return image_path
+
+    if not real_image:
+        dbg.stdout("No device image specified for " + device.name, dbg.warning, 1)
+        return fallback_path
+
+    dbg.stdout("Retrieving device image for " + device.name, dbg.warning, 1)
+    try:
+        r = requests.get(real_image)
+        if r.status_code == 200:
+            open(image_path, "wb").write(r.content)
+            return image_path
+        else:
+            dbg.stdout("Unable to retrieve device image for " + device.name, dbg.error)
+            dbg.stdout("    Status Code: " + str(r.status_code), dbg.error)
+            dbg.stdout("    URL: " + real_image, dbg.error)
+            return fallback_path
+    except Exception as e:
+        dbg.stdout("Failed to retrieve device image for " + device.name, dbg.warning)
+        dbg.stdout("Exception: " + str(e), dbg.warning)
+        return fallback_path
 
 
 def _is_device_monochromatic(device):

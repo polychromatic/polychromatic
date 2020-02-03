@@ -27,6 +27,7 @@ class Paths(object):
     # Subdirectories
     effects = os.path.join(root, "effects")
     profiles = os.path.join(root, "profiles")
+    device_images = os.path.join(root, "device_images")
 
     # Files
     preferences = os.path.join(root, "preferences.json")
@@ -346,7 +347,7 @@ def start_initalization():
     Prepares the preferences module for use.
     """
     # Create folders if they do not exist.
-    for folder in [path.root, path.effects, path.profiles, path.cache]:
+    for folder in [path.root, path.effects, path.profiles, path.cache, path.device_images]:
         if not os.path.exists(folder):
             if verbose:
                 dbg.stdout("Configuration folder does not exist. Creating: ", folder, dbg.action)

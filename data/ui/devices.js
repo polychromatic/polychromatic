@@ -223,7 +223,7 @@ function _open_device(device) {
     // Assemble status (top area) and controls.
     $("#device-content").html(`
         <div class="common-info">
-            <div id="main-image" style="background-image:url(${device.real_image});"></div>
+            <div id="main-image" style="background-image:url('${device.real_image}');"></div>
             <div id="main-text">
                 <h3>${device.name}</h3>
                 <div class="states">
