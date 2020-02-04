@@ -159,3 +159,18 @@
         opacity: 1;
     }
 }
+
+/* No device controls to display - tweaks common state area */
+.common-info.error {
+    filter: grayscale(1);
+
+    #main-image {
+        background-size: 5em;
+        width: 6em;
+        opacity: 0.5;
+    }
+
+    ~ p {
+        margin: 1em 2em;
+    }
+}

@@ -198,3 +198,7 @@ function _warn_save_data_version(data) {
 
     open_dialog(get_string("save_data_warning_title"), body, "serious", [[get_string("ok"), ""]], "18em", "40em")
 }
+
+function open_help() {
+    send_data("open_help", {});
+}

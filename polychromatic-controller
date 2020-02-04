@@ -292,6 +292,8 @@ class Controller(object):
             data = "true";
         elif data == False:
             data = "false";
+        elif type(data) == str:
+            data = '"' + data.replace("\n", "<br>") + '"'
 
         dbg.stdout("→ View variable '{0}' changed to: {1}".format(variable, data), dbg.debug, 2)
         self._run_js("{0} = {1};".format(variable, data))

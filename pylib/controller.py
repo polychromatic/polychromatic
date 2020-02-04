@@ -11,6 +11,8 @@ import os
 import json
 import glob
 import gettext
+import webbrowser
+
 from threading import Thread
 from . import common
 from . import locales
@@ -49,7 +51,8 @@ class PolychromaticController():
                 "open_device": self._open_device,
                 "apply_to_all": self._apply_to_all,
                 "set_device_state": self._set_device_state,
-                "debug_matrix": self._debug_matrix
+                "debug_matrix": self._debug_matrix,
+                "open_help": self._open_help
             }
         except KeyError:
             dbg.stdout("Unknown Request: " + str(request) + " with data: " + str(data), dbg.error)
@@ -93,6 +96,7 @@ class PolychromaticController():
 
         elif type(devices) == str:
             dbg.stdout("OpenRazer: Error! Exception: " + str(devices), dbg.error)
+            self._internal_error(locales.LOCALES["error_not_ready_title"], locales.LOCALES["error_not_ready_text"] + "<code>{0}</code>".format(devices), "serious")
 
         else:
             # Daemon OK
@@ -121,7 +125,7 @@ class PolychromaticController():
         """
         Inform the user of event of a serious problem at the Controller layer.
         """
-        self.webview.run_js("open_dialog('{0}', '{1}', '{2}', [['OK', '']], '40em', '80em')".format(title, reason.replace("\n", "<br>"), style));
+        self.webview.run_js("open_dialog(`{0}`, `{1}`, '{2}', [['OK', '']], '40em', '80em')".format(title, reason.replace("\n", "<br>"), style));
 
     def _update_device_list(self, data=None):
         """
@@ -268,6 +272,14 @@ class PolychromaticController():
         elif request == True:
             # Request OK
             dbg.stdout("OK: [{0},{1}]".format(row, column), dbg.success, 1)
+
+    def _open_help(self, data):
+        """
+        Opens the Polychromatic website for help resources.
+
+        Data parameter is empty: {}
+        """
+        webbrowser.open("https://polychromatic.app/docs");
 
 
 # Module Initalization

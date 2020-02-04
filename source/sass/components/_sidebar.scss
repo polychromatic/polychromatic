@@ -47,6 +47,7 @@
 
             &.dim {
                 color: $disabled-colour;
+                opacity: 1;
 
                 img {
                     filter: grayscale(1) brightness(0.5);

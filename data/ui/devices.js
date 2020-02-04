@@ -53,12 +53,14 @@ function _set_tab_devices() {
     // Controller returns:
     //
     // CACHE_DEVICES == -1        Daemon not present
-    // CACHE_DEVICES == String    Daemon error (not initalised)
+    // CACHE_DEVICES == String    Daemon error
     // CACHE_DEVICES == Array     Daemon OK. Contains device list.
 
     // ------------------------
     // Sidebar
     // ------------------------
+    var device_list_is_empty = true;
+
     if (typeof(CACHE_DEVICES) == "object") {
         for (d = 0; d < CACHE_DEVICES.length; d++) {
             var device = CACHE_DEVICES[d];
@@ -85,40 +87,91 @@ function _set_tab_devices() {
         }
 
         // "Apply to All" only appears when there are multiple devices.
-        if (CACHE_DEVICES.length == 0) {
-            sidebar[0] = {"label": get_string("no-device"), "items": []}
+        if (CACHE_DEVICES.length > 1) {
+            device_list_is_empty = false;
+            sidebar = [
+                {
+                    "label": get_string("tasks"),
+                    "items": [
+                        {
+                            "label": get_string("apply-to-all"),
+                            "icon": "img/devices/all.svg",
+                            "onclick": "open_device_to_all()",
+                            "classes": "",
+                            "id": "apply-to-all"
+                        }
+                    ]
+                },
+                {
+                    "label": get_string("devices"),
+                    "items": devices
+                }
+            ]
+        } else if (CACHE_DEVICES.length == 1) {
+            device_list_is_empty = false;
+            sidebar = [
+                {
+                    "label": get_string("devices"),
+                    "items": devices
+                }
+            ]
+        }
+    }
 
-        } else if (CACHE_DEVICES.length > 1) {
-            sidebar[0] = {
+    // No devices, or daemon errors.
+    if (device_list_is_empty === true) {
+        sidebar = [
+            {
                 "label": get_string("tasks"),
                 "items": [
                     {
-                        "label": get_string("apply-to-all"),
-                        "icon": "img/devices/all.svg",
-                        "onclick": "open_device_to_all()",
+                        "icon": "img/fa/refresh.svg",
+                        "label": get_string("refresh"),
+                        "onclick": "set_tab_devices()",
                         "classes": "",
-                        "id": "apply-to-all"
+                        "id": "refresh"
+                    },
+                    {
+                        "icon": "img/fa/preferences.svg",
+                        "label": get_string("troubleshoot"),
+                        "onclick": "start_troubleshooting()",
+                        "classes": "",
+                        "id": "troubleshooter"
+                    },
+                    {
+                        "icon": "img/fa/external.svg",
+                        "label": get_string("open-help"),
+                        "onclick": "open_help()",
+                        "classes": "",
+                        "id": "open-help"
+                    }
+                ]
+            },
+            {
+                "label": get_string("devices"),
+                "items": [
+                    {
+                        "icon": "img/devices/unrecognised.svg",
+                        "label": get_string("no-device"),
+                        "onclick": "",
+                        "classes": "dim disabled",
+                        "id": "no-device"
                     }
                 ]
             }
-            sidebar[1] = {"label": get_string("devices"), "items": devices}
-        } else {
-            sidebar[0] = {"label": get_string("devices"), "items": devices}
-        }
+        ]
     }
 
     // ------------------------
     // Content
     // ------------------------
     if (typeof(CACHE_DEVICES) == "string") {
-        // Show the error exception in a dialogue box.
-        var body = `<p>${get_string("error_not_ready_text")}</p>
-                       <p><pre>${CACHE_DEVICES}</pre></p>`;
-        open_dialog(get_string("error_not_ready_title"), body, "serious", "18em", "30em");
+        // Controller shows the error exception in a dialogue box.
         content = _device_error("daemon-error");
 
     } else if (typeof(CACHE_DEVICES) == "number") {
-        content = _device_error("daemon-missing");
+        // -1 | OpenRazer daemon not found (running)
+        content = _device_error("openrazer-not-running");
 
     } else if (typeof(CACHE_DEVICES) == "object") {
         if (CACHE_DEVICES.length == 0) {
@@ -793,12 +846,53 @@ function _device_error(id) {
     //
     // Returns HTML for a 'pretty' error screen when something is wrong.
     //
+    // Params:
+    //  - id                    Internal polychromatic error string
+    //
+    // IDs:
+    //   daemon-error               Daemon cannot be started.
+    //   openrazer-not-running      Daemon not running.
+    //   no-device                  Daemon running, no devices listed.
+    //   unknown-device             Daemon running, device can't be read.
 
-    // daemon-error         fa/serious
-    // daemon-missing       fa/warning
-    // no-device            devices/accessory
-    // unrecog-device       devices/accessory? (unrecognised)
-    return id;
+    var icons = {
+        "daemon-error": "img/fa/serious.svg",
+        "openrazer-not-running": "img/fa/warning.svg",
+        "no-device": "img/devices/accessory.svg",
+        "unknown-device": "img/devices/unrecognised.svg"
+    }
+
+    var title = get_string(id);
+    var text = get_string(`${id}-help`);
+    var suggestions = "";
+
+    var lines = get_string("suggestions").split("\n");
+    for (i = 0; i < lines.length; i++) {
+        suggestions += lines[i] + "<br>";
+    }
+
+    if (id == "unknown-device") {
+        title = $(".sidebar-container .active span").html();
+        text = text.replace("openrazer-daemon", "<code>openrazer-daemon</code>")
+    }
+
+    var content = `<div class="common-info error">
+            <div id="main-image" style="background-image:url('${icons[id]}');"></div>
+            <div id="main-text">
+                <h3>${title}</h3>
+            </div>
+        </div>
+        <p>${text}</p>
+        <p>
+            <a onclick="$(this).parent().remove(); $('#suggestions').addClass('show');">
+                ${get_string("show-suggestions")}
+            </a>
+        </p>
+        <p id="suggestions" class="start-hidden">
+            ${suggestions}
+        </p>`;
+
+    return content;
 }
 
 function open_device_not_avaliable(element) {
@@ -807,7 +901,7 @@ function open_device_not_avaliable(element) {
     //
     $(".sidebar-item").removeClass("active");
     $(element).addClass("active");
-
+    $(".sidebar-container .right").html(_device_error("unknown-device"));
 }
 
 function _get_wave_direction(form_factor_id) {

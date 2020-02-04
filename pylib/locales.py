@@ -38,7 +38,6 @@ LOCALES = {
 
     # Devices
     "tasks": _("Tasks"),
-    "no-device": _("No devices connected"),
     "device-info": _("Device Info"),
     "brightness": _("Brightness"),
     "effect": _("Effect"),
@@ -53,13 +52,38 @@ LOCALES = {
     "game_mode": _("Game Mode"),
     "enabled": _("Enabled"),
     "disabled": _("Disabled"),
-    "learn_more": _("Learn more"),
     "macros": _("Macros"),
     "dpi": _("DPI"),
     "poll_rate": _("Polling Rate"),
     "apply-to-all": _("Apply to All"),
     "apply-to-all-unsupported": _("Some of your connected devices do not support all of these effects."),
     "unknown-device": _("Unrecognized: []"),
+
+    # Device tab errors for individual devices
+    "unknown-device-help": _("This Razer device may have supported by OpenRazer. Currently, openrazer-daemon is unable to register this device, which could indicate an installation problem or lack of support right now."),
+
+    # Device tab - there are no devices
+    "no-device": _("No devices connected"),
+    "no-device-help": _("Please plug in a compatible device to control its lighting effects and features."),
+
+    # Device tab errors for daemon problems
+    "daemon-error": _("Daemon Error"),
+    "daemon-error-help": _("OpenRazer daemon could not be started."),
+
+    "openrazer-not-running": _("Daemon Not Running"),
+    "openrazer-not-running-help": _("The backend was not started automatically. Please run 'openrazer-daemon' and try again."),
+
+    # OpenRazer specific advise
+    "show-suggestions": _("Show Suggestions"),
+    "suggestions": _("""Suggestions:
+
+        - Check the logged in user is added to the "plugdev" group.
+        - Recently installed? Try restarting the computer.
+        - Check the logs in ~/.config/openrazer.
+        - Check the installed version of OpenRazer supports your hardware's PID.
+        - Check your Python paths.
+
+    Alternately, try running the troubleshooter on the left."""),
 
     # Device Info
     "device_info_title": _("Device Information: []"),
@@ -113,11 +137,13 @@ LOCALES = {
     "close": _("Close"),
     "close-app": _("Close Application"),
     "troubleshoot": _("Troubleshoot"),
+    "open-help": _("Online Help"),
     "retry": _("Retry"),
     "on": _("On"),
     "off": _("Off"),
     "browse": _("Browse"),
     "change": _("Change..."),
+    "refresh": _("Refresh"),
 
     # Poll Rates
     "poll_rate_125": _("125 Hz (8 ms)"),
@@ -153,7 +179,7 @@ LOCALES = {
 
     # Error: Backend returns None (can't set device)
     "error_device_gone_title": _("Device Unavailable"),
-    "error_device_gone_text": _("The request could not be completed as a device was recently added/removed. Please refresh and try again."),
+    "error_device_gone_text": _("The request could not be completed. Please refresh and try again."),
 
     # Error: Backend returns False (invalid)
     "error_bad_request_title": _("Controller Problem"),
@@ -161,12 +187,13 @@ LOCALES = {
 
     # Error: Backend throws exception (str)
     "error_backend_title": _("Backend Error"),
-    "error_backend_text": _("The request could not be completed as an exception was thrown by the backend:"),
+    "error_backend_text": _("The request could not be completed. An error was thrown by the backend:"),
 
     # Error: Controller throws uncaught exception
     "error_generic_title": _("Controller Error"),
     "error_generic_text": _("The request could not be completed due to an error."),
 
+    # Error: Backend not ready
     "error_not_ready_title": _("Initialization Error"),
-    "error_not_ready_text": _("This device's daemon or Python library could not be initialized. See the exception for details:")
+    "error_not_ready_text": _("This device's backend library or daemon could not be initialized."),
 }
