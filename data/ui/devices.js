@@ -311,6 +311,12 @@ function _get_state_html(device) {
         output += _get_state("img/fa/poll-rate.svg", `${poll_rate} Hz`);
     }
 
+    // -- Game Mode
+    var game_mode = device["game_mode"];
+    if (game_mode == true) {
+        output += _get_state("img/general/game-mode.svg", get_string("game_mode"));
+    }
+
     return output;
 }
 
