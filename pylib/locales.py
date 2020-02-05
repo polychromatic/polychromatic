@@ -196,4 +196,27 @@ LOCALES = {
     # Error: Backend not ready
     "error_not_ready_title": _("Initialization Error"),
     "error_not_ready_text": _("This device's backend library or daemon could not be initialized."),
+
+    # Troubleshooter - General
+    "troubleshoot_cannot_run": _("The troubleshooter cannot be started. Please check the OpenRazer Python libraries are installed properly and relaunch Polychromatic."),
+    "troubleshoot_test_complete": _("All checks completed, take a look below for results (and any suggestions)."),
+    "troubleshoot_test_partial": _("Not all of the tests could be performed, here's what was found anyway."),
+
+    # Troubleshooter - OpenRazer checks
+    "troubleshoot_daemon_found": _("Check if daemon is installed"),
+    "troubleshoot_daemon_found_suggestion": _("Install the 'openrazer-meta' package for your distribution."),
+    "troubleshoot_daemon_running": _("Check if daemon is running"),
+    "troubleshoot_daemon_running_suggestion": _("Start the daemon from the terminal. Look out for any errors: $ openrazer-daemon -Fv"),
+    "troubleshoot_dkms_installed_src": _("Check if DKMS sources are installed"),
+    "troubleshoot_dkms_installed_src_suggestion": _("Install the 'openrazer-meta' package for your distribution."),
+    "troubleshoot_dkms_installed_built": _("Check if DKMS module is built for this kernel version"),
+    "troubleshoot_dkms_installed_built_suggestion": _("Ensure your Linux kernel headers are installed, and try re-installing the DKMS module (replacing 2.x.x with the version of OpenRazer installed) $ sudo dkms install -m openrazer-driver/2.x.x"),
+    "troubleshoot_dkms_loaded": _("Check if DKMS module can be loaded"),
+    "troubleshoot_dkms_loaded_suggestion": _("For full error details, run $ sudo modprobe razerkbd"),
+    "troubleshoot_secure_boot": _("Check for secure boot on an EFI system"),
+    "troubleshoot_secure_boot_suggestion": _("OpenRazer's kernel modules are unsigned, so they will not load at boot. Either disable secure boot, or sign the modules yourself."),
+    "troubleshoot_plugdev": _("Check if user account is added to 'plugdev' group"),
+    "troubleshoot_plugdev_suggestion": _("If you've recently installed, you may need to restart the computer. Otherwise, run this command, log out, then log back in to the computer: $ sudo gpasswd -a $USER plugdev"),
+    "troubleshoot_all_supported": _("Check for unsupported hardware"),
+    "troubleshoot_all_supported_suggestion": _("Check the OpenRazer project to confirm your device is listed. To get the device's VID:PID, run $ lsusb | grep Razer")
 }

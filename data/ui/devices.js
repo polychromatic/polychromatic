@@ -134,7 +134,7 @@ function _set_tab_devices() {
                     {
                         "icon": "img/fa/preferences.svg",
                         "label": get_string("troubleshoot"),
-                        "onclick": "start_troubleshooting()",
+                        "onclick": "open_troubleshooter()",
                         "classes": "",
                         "id": "troubleshooter"
                     },

@@ -52,7 +52,8 @@ class PolychromaticController():
                 "apply_to_all": self._apply_to_all,
                 "set_device_state": self._set_device_state,
                 "debug_matrix": self._debug_matrix,
-                "open_help": self._open_help
+                "open_help": self._open_help,
+                "troubleshoot_openrazer": self._troubleshoot_openrazer
             }
         except KeyError:
             dbg.stdout("Unknown Request: " + str(request) + " with data: " + str(data), dbg.error)
@@ -280,6 +281,21 @@ class PolychromaticController():
         Data parameter is empty: {}
         """
         webbrowser.open("https://polychromatic.app/docs");
+
+    def _troubleshoot_openrazer(self, data):
+        """
+        Performs some self checks for common issues with OpenRazer.
+
+        Data parameter is empty: {}
+        """
+        try:
+            dbg.stdout("Running troubleshooter for OpenRazer...", dbg.warning, 1)
+            results = openrazer.troubleshoot()
+            self.run_function("_show_troubleshoot_results", results)
+            dbg.stdout("Troubleshooting finished.", dbg.success, 1)
+        except:
+            dbg.stdout("Troubleshooting encountered an exception.", dbg.error, 1)
+            self._internal_error(locales.LOCALES["troubleshoot"], locales.LOCALES["troubleshoot_cannot_run"], "serious")
 
 
 # Module Initalization
