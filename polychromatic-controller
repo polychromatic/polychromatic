@@ -358,7 +358,7 @@ def parse_parameters():
     args = parser.parse_args()
 
     if args.version:
-        print("Polychromatic v" + version)
+        print("Polychromatic v" + VERSION)
         exit(0)
 
     if args.verbose:
