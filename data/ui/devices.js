@@ -901,7 +901,7 @@ function open_device_not_avaliable(element) {
     //
     $(".sidebar-item").removeClass("active");
     $(element).addClass("active");
-    $(".sidebar-container .right").html(_device_error("unknown-device"));
+    $("#device-content").html(_device_error("unknown-device"));
 }
 
 function _get_wave_direction(form_factor_id) {
