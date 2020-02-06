@@ -125,21 +125,21 @@ function _set_tab_devices() {
                 "label": get_string("tasks"),
                 "items": [
                     {
-                        "icon": "img/fa/refresh.svg",
+                        "icon": "img/general/refresh.svg",
                         "label": get_string("refresh"),
                         "onclick": "set_tab_devices()",
                         "classes": "",
                         "id": "refresh"
                     },
                     {
-                        "icon": "img/fa/preferences.svg",
+                        "icon": "img/general/preferences.svg",
                         "label": get_string("troubleshoot"),
                         "onclick": "open_troubleshooter()",
                         "classes": "",
                         "id": "troubleshooter"
                     },
                     {
-                        "icon": "img/fa/external.svg",
+                        "icon": "img/general/external.svg",
                         "label": get_string("open-help"),
                         "onclick": "open_help()",
                         "classes": "",
@@ -343,7 +343,7 @@ function _get_state_html(device) {
     // -- Current battery
     var battery = device["battery_level"];
     if (battery != undefined) {
-        output += _get_state("img/fa/battery.svg", battery + "%");
+        output += _get_state("img/general/battery.svg", battery + "%");
     }
 
     // -- DPI
@@ -361,7 +361,7 @@ function _get_state_html(device) {
     // -- Poll Rate
     var poll_rate = device["poll_rate"];
     if (poll_rate != null) {
-        output += _get_state("img/fa/poll-rate.svg", `${poll_rate} Hz`);
+        output += _get_state("img/general/poll-rate.svg", `${poll_rate} Hz`);
     }
 
     // -- Game Mode
@@ -856,8 +856,8 @@ function _device_error(id) {
     //   unknown-device             Daemon running, device can't be read.
 
     var icons = {
-        "daemon-error": "img/fa/serious.svg",
-        "openrazer-not-running": "img/fa/warning.svg",
+        "daemon-error": "img/general/serious.svg",
+        "openrazer-not-running": "img/general/warning.svg",
         "no-device": "img/devices/accessory.svg",
         "unknown-device": "img/devices/unrecognised.svg"
     }

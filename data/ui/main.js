@@ -75,11 +75,11 @@ function build_view(data) {
         <h3 id="title"></h3>
         <div id="header-tabs" class="tabs">
             ${_add_header_button("devices", "set_tab_devices()", "img/devices/keyboard.svg", get_string("devices"))}
-            ${_add_header_button("effects", "set_tab_effects()", "img/fa/effects.svg", get_string("effects"))}
-            ${_add_header_button("profiles", "set_tab_profiles()", "img/fa/profiles.svg", get_string("profiles"))}
-            ${_add_header_button("schedule", "set_tab_schedule()", "img/fa/schedule.svg", get_string("schedule"))}
+            ${_add_header_button("effects", "set_tab_effects()", "img/general/effects.svg", get_string("effects"))}
+            ${_add_header_button("profiles", "set_tab_profiles()", "img/general/profiles.svg", get_string("profiles"))}
+            ${_add_header_button("schedule", "set_tab_schedule()", "img/general/schedule.svg", get_string("schedule"))}
             <div class="right">
-                ${_add_header_button("preferences", "set_tab_preferences()", "img/fa/preferences.svg", get_string("preferences"))}
+                ${_add_header_button("preferences", "set_tab_preferences()", "img/general/preferences.svg", get_string("preferences"))}
             </div>
         </div>
     `;
@@ -220,8 +220,8 @@ function _show_troubleshoot_results(data) {
     var results_html = "";
 
     var icons = {
-        false: "img/fa/warning.svg",
-        true: "img/fa/success.svg"
+        false: "img/general/warning.svg",
+        true: "img/general/success.svg"
     }
 
     var colours = {

@@ -217,8 +217,8 @@ class AppIndicator(object):
         root.append(create_menu_item(error_reason, False))
         root.append(create_menu_item(_("Exception:") + ' ' + exception, False))
         root.append(create_seperator())
-        root.append(create_menu_item(_("Try again"), True, cb.retry_applet, None, get_icon("fa", "refresh.svg")))
-        root.append(create_menu_item(_("Troubleshoot"), True, cb.launch_controller, "troubleshoot", get_icon("fa", "preferences.svg")))
+        root.append(create_menu_item(_("Try again"), True, cb.retry_applet, None, get_icon("general", "refresh.svg")))
+        root.append(create_menu_item(_("Troubleshoot"), True, cb.launch_controller, "troubleshoot", get_icon("general", "preferences.svg")))
         root.append(create_menu_item(_("Restart OpenRazer Daemon"), True, cb.restart_daemon, None, get_icon("logo", "openrazer-alt.svg")))
         root.append(create_seperator())
         root.append(create_menu_item(_("Open Controller"), True, cb.launch_controller, None, get_icon("general", "controller.svg")))
@@ -258,8 +258,8 @@ class AppIndicator(object):
             dbg.stdout("No devices found.", dbg.error, 1)
             root.append(create_menu_item(_("No devices found."), False))
             root.append(create_seperator())
-            root.append(create_menu_item(_("Try again"), True, cb.retry_applet, None, get_icon("fa", "refresh.svg")))
-            root.append(create_menu_item(_("Troubleshoot"), True, cb.launch_controller, "troubleshooter", get_icon("fa", "preferences.svg")))
+            root.append(create_menu_item(_("Try again"), True, cb.retry_applet, None, get_icon("general", "refresh.svg")))
+            root.append(create_menu_item(_("Troubleshoot"), True, cb.launch_controller, "troubleshooter", get_icon("general", "preferences.svg")))
             root.append(create_menu_item(_("Restart OpenRazer Daemon"), True, cb.restart_daemon, None, get_icon("logo", "openrazer-alt.svg")))
         else:
             for device in devices:
@@ -307,7 +307,7 @@ class AppIndicator(object):
 
             # -- Primary Colour
             bulk_submenu[1].append(create_seperator())
-            colours_submenu = create_submenu(_("Primary Colour"), True, get_icon("fa", "palette.svg"))
+            colours_submenu = create_submenu(_("Primary Colour"), True, get_icon("general", "palette.svg"))
             col_index = pref.load_file(path.colours)
             for pos in range(0, len(col_index)):
                 try:
@@ -393,7 +393,7 @@ class AppIndicator(object):
                 # Polling Rate
                 if details["poll_rate"] != None:
                     dbg.stdout("  - Poll Rate", dbg.debug, 1)
-                    poll_menu = create_submenu(_("Polling Rate"), True, get_icon("fa", "poll-rate.svg"))
+                    poll_menu = create_submenu(_("Polling Rate"), True, get_icon("general", "poll-rate.svg"))
                     create_submenu_item(poll_menu, _("125 Hz (8ms)"), True, cb.set_poll_rate, [uid, 125])
                     create_submenu_item(poll_menu, _("500 Hz (2ms)"), True, cb.set_poll_rate, [uid, 500])
                     create_submenu_item(poll_menu, _("1000 Hz (1ms)"), True, cb.set_poll_rate, [uid, 1000])
@@ -407,7 +407,7 @@ class AppIndicator(object):
         # Colour (repeats last effect)
         if details["matrix"]:
             dbg.stdout("  - Colours", dbg.debug, 1)
-            colour_menu = create_submenu(_("Change Color"), True, get_icon("fa", "palette.svg"))
+            colour_menu = create_submenu(_("Change Color"), True, get_icon("general", "palette.svg"))
 
             if details["monochromatic"]:
                 col_index = common.get_green_shades()
@@ -423,8 +423,8 @@ class AppIndicator(object):
                     dbg.stdout("Ignoring invalid colour data at index position " + str(pos), dbg.error)
 
             colour_menu[1].append(create_seperator())
-            create_submenu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [uid, zone], get_icon("fa", "palette.svg"))
-            create_submenu_item(colour_menu, _("Edit Colors..."), True, cb.launch_controller, ["colours"], get_icon("fa", "edit.svg"))
+            create_submenu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [uid, zone], get_icon("general", "palette.svg"))
+            create_submenu_item(colour_menu, _("Edit Colors..."), True, cb.launch_controller, ["colours"], get_icon("general", "edit.svg"))
             submenu[1].append(create_seperator())
             submenu[1].append(colour_menu[0])
 
@@ -438,7 +438,7 @@ class AppIndicator(object):
             zone      (str)   "main", "logo", etc
         """
         dbg.stdout("  - Effects [{0}]".format(zone), dbg.debug, 1)
-        submenu = create_submenu(_("Effects"), True, get_icon("fa", "effects.svg"))
+        submenu = create_submenu(_("Effects"), True, get_icon("general", "effects.svg"))
         supported_fx = details["zone_supported"][zone].keys()
         uid = details["uid"]
 
@@ -520,7 +520,7 @@ class AppIndicator(object):
             create_submenu_item(submenu, _("No custom effects"), False)
 
             submenu[1].append(create_seperator())
-            create_submenu_item(submenu, _("Edit Effects..."), True, cb.launch_controller, "effects", get_icon("fa", "edit.svg"))
+            create_submenu_item(submenu, _("Edit Effects..."), True, cb.launch_controller, "effects", get_icon("general", "edit.svg"))
 
         return submenu
 
@@ -533,7 +533,7 @@ class AppIndicator(object):
         toggle_only     bool    True if this should show "on/off" controls.
         """
         dbg.stdout("  - Brightness [{0}]".format(zone), dbg.debug, 1)
-        submenu = create_submenu(_("Brightness"), True, get_icon("fa", "lightbulb.svg"))
+        submenu = create_submenu(_("Brightness"), True, get_icon("general", "lightbulb.svg"))
         uid = details["uid"]
 
         if toggle_only:

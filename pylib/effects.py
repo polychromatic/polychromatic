@@ -178,7 +178,7 @@ class EffectData(object):
                 return cache_path
 
         # No icon available
-        return data_source + "/ui/img/fa/effects.svg"
+        return data_source + "/ui/img/general/effects.svg"
 
     def set_icon_path(self, is_emblem, emblem_or_path):
         """
