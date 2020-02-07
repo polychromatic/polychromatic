@@ -13,6 +13,12 @@
     opacity: 0.5;
 }
 
+/* Unused - too intense, even on powerful hardware.
+.blur {
+    -webkit-filter: blur(5px) brightness(0.5);
+}
+*/
+
 dialog {
     background: transparent;
     display: flex;
@@ -132,17 +138,5 @@ dialog {
     100% {
         transform: scale(1.05);
         opacity: 0;
-    }
-}
-
-@keyframes dialog-glow-green {
-    0% {
-        box-shadow: 0 0 2px $accent-colour;
-    }
-    50% {
-        box-shadow: 0 0 10px $accent-colour;
-    }
-    100% {
-        box-shadow: 0 0 2px $accent-colour;
     }
 }
