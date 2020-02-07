@@ -864,12 +864,6 @@ function _device_error(id) {
 
     var title = get_string(id);
     var text = get_string(`${id}-help`);
-    var suggestions = "";
-
-    var lines = get_string("suggestions").split("\n");
-    for (i = 0; i < lines.length; i++) {
-        suggestions += lines[i] + "<br>";
-    }
 
     if (id == "unknown-device") {
         title = $(".sidebar-container .active span").html();
@@ -884,12 +878,12 @@ function _device_error(id) {
         </div>
         <p>${text}</p>
         <p>
-            <a onclick="$(this).parent().remove(); $('#suggestions').addClass('show');">
-                ${get_string("show-suggestions")}
+            <a onclick="open_troubleshooter()">
+                ${get_string("troubleshoot")}
+            </a> |
+            <a onclick="open_help()">
+                ${get_string("open-help")}
             </a>
-        </p>
-        <p id="suggestions" class="start-hidden">
-            ${suggestions}
         </p>`;
 
     return content;

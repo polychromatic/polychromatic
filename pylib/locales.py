@@ -73,18 +73,6 @@ LOCALES = {
     "openrazer-not-running": _("Daemon Not Running"),
     "openrazer-not-running-help": _("The backend was not started automatically. Please run 'openrazer-daemon' and try again."),
 
-    # OpenRazer specific advise
-    "show-suggestions": _("Show Suggestions"),
-    "suggestions": _("""Suggestions:
-
-        - Check the logged in user is added to the "plugdev" group.
-        - Recently installed? Try restarting the computer.
-        - Check the logs in ~/.config/openrazer.
-        - Check the installed version of OpenRazer supports your hardware's PID.
-        - Check your Python paths.
-
-    Alternately, try running the troubleshooter on the left."""),
-
     # Device Info
     "device_info_title": _("Device Information: []"),
     "form_factor": _("Form Factor"),
