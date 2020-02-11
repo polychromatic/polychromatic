@@ -67,15 +67,14 @@ function radio(id, label, checked, group_id, onchange) {
             </div>`;
 }
 
-function button(id, onclick, label, img, disabled, serious) {
+function button(id, onclick, label, svg_name, disabled, serious) {
     //
     // Creates a generic button.
     //
-    // An icon path can be specified, with the working directory being the "ui" folder.
-    // E.g. "img/effects/wave.svg"
+    // An icon name can be specified to use an SVG icon from the "ui/img/button" directory, e.g. "bin".
     //
     var classes = "";
-    var img_html = "";
+    var svg_html = "";
 
     if (disabled === true)
         classes += "disabled";
@@ -83,12 +82,12 @@ function button(id, onclick, label, img, disabled, serious) {
     if (serious === true)
         classes += "serious";
 
-    if (img != null) {
-        img_html = `<img src="${img}"/>`;
+    if (typeof(svg_name) == "string") {
+        svg_html = BUTTON_SVGS[svg_name];
     }
 
     return `<button id="${id}" class="inline ${classes}" ${disabled ? "disabled" : ""} onclick="${onclick}">
-                ${img_html} <span>${label}</span>
+                ${svg_html} <span>${label}</span>
             </button>`;
 }
 
@@ -97,6 +96,7 @@ function button_large(id, onclick, label, img, disabled, active) {
     // Create a larger button used for iconic selections, like choosing an effect.
     //
     // The parameters are identical to button(), but can also act like radio buttons using 'active'.
+    // The icons are placed inside an <img> tag, as opposed to <svg>.
     //
     var classes = "";
     var img_html = "";

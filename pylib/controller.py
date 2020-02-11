@@ -85,6 +85,7 @@ class PolychromaticController():
 
         self.send_view_variable("LOCALES", locales.LOCALES)
         self.send_view_variable("COLOURS", pref.load_file(pref.path.colours))
+        self.send_view_variable("BUTTON_SVGS", self._get_button_svg_list())
         self.run_function("build_view")
 
         # View caches device list via the CACHE_DEVICES variable.
@@ -127,6 +128,21 @@ class PolychromaticController():
         Inform the user of event of a serious problem at the Controller layer.
         """
         self.webview.run_js("open_dialog(`{0}`, `{1}`, '{2}', [['OK', '']], '40em', '80em')".format(title, reason.replace("\n", "<br>"), style));
+
+    def _get_button_svg_list(self):
+        """
+        Collects all SVGs and stores them into an array so the view can use them
+        when building buttons with icons.
+
+        Instead of an img tag, an svg tag allows manipulation of colours via CSS.
+        """
+        icons = glob.glob(common.get_data_dir_path() + "/ui/img/button/*.svg")
+        output = {}
+        for path in icons:
+            name = path.split("/").pop().replace(".svg", "")
+            with open(path, "r") as f:
+                output[name] = "".join(f.readlines())
+        return output
 
     def _update_device_list(self, data=None):
         """

@@ -29,6 +29,7 @@ function send_data(request, data) {
 *****************************/
 // Strings stored as JSON (passed from Python on app start)
 var LOCALE;
+var BUTTON_SVGS;
 
 // For CSS transitions that are timed in JavaScript.
 var TRANSITION_SPEED = 300 + 50;
