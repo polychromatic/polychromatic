@@ -283,7 +283,7 @@ function _open_device(device) {
                     ${_get_state_html(device)}
                 </div>
             </div>
-            <button id="more-details-btn" onclick="_show_device_info()">${get_string("device-info")}</button>
+            ${button("more-details-btn", "_show_device_info()", get_string("device-info"))}
         </div>
         <div id="device-controls">
             ${_get_device_controls(device, "set_device_state(this)")}
