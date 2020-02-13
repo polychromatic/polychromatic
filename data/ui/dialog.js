@@ -2,6 +2,7 @@
  * Dialogue Boxes
 *****************************/
 DIALOG_OPEN = false;
+DIALOG_TIMEOUT = null;
 
 function open_dialog(title, body, style, buttons, height, width) {
     //
@@ -44,7 +45,8 @@ function open_dialog(title, body, style, buttons, height, width) {
     $("footer").addClass("blur");
     $("dialog").show();
 
-    setTimeout(function() {
+    clearInterval(DIALOG_TIMEOUT);
+    DIALOG_TIMEOUT = setTimeout(function() {
         $(".dialog-box").removeClass("in");
     }, TRANSITION_SPEED);
 
@@ -64,7 +66,7 @@ function close_dialog() {
     $("content").removeClass("blur");
     $("footer").removeClass("blur");
 
-    setTimeout(function() {
+    DIALOG_TIMEOUT = setTimeout(function() {
         $("#modal-overlay").hide();
         $("dialog").remove();
     }, TRANSITION_SPEED);
