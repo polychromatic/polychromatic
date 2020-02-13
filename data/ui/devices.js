@@ -187,7 +187,7 @@ function _set_tab_devices() {
         if (CACHE_DEVICES[0].available == true) {
             open_device($("#device-0"), 0);
         } else {
-            open_device_not_avaliable();
+            open_device_not_avaliable($(".sidebar-item-group").last().find(".sidebar-item").first());
         }
     }
 }
