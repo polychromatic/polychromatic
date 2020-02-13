@@ -12,7 +12,6 @@ import os
 import subprocess
 # 'requests' imported on-demand if device images are to be downloaded.
 # 'shutil' imported on-demand for troubleshooter.
-# 'os' imported on-demand for troubleshooter.
 
 # Polychromatic
 from .. import common
@@ -88,7 +87,7 @@ def get_device_list():
             "form_factor_id": form_factor.get("id"),
             "icon": form_factor.get("icon"),
             "real_image": "",
-            "zones": zones,
+            "zones": "",
             "available": False
         })
 
