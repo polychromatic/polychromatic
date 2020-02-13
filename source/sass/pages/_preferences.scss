@@ -18,31 +18,6 @@
 
 .program-links {
     margin: 0 5em;
-
-    .social-link {
-        display: inline-block;
-        margin: 0 0.25em;
-
-        &:hover,
-        &:focus {
-            img {
-                filter: brightness(0.75);
-            }
-        }
-
-        &:active {
-            background: lime;
-
-            img {
-                filter: brightness(0);
-            }
-        }
-    }
-
-    img {
-        height: 2em;
-        width: 2em;
-    }
 }
 
 #tray-icon-preview {

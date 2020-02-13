@@ -19,6 +19,7 @@ from .. import common
 
 # OpenRazer
 import openrazer.client as rclient
+VERSION = rclient.__version__
 
 dbg = common.Debugging()
 

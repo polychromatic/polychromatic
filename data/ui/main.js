@@ -30,6 +30,11 @@ function send_data(request, data) {
 // Strings stored as JSON (passed from Python on app start)
 var LOCALE;
 var BUTTON_SVGS;
+var ICONS_TRAY;
+var ICONS_EMBLEMS;
+var VERSION;
+var COLOURS;
+var PREFERENCES;
 
 // For CSS transitions that are timed in JavaScript.
 var TRANSITION_SPEED = 300 + 50;
@@ -40,7 +45,6 @@ var OPENRAZER_READY = false;
 // Cached responses from controller
 var CACHE_DEVICE_LIST = null;       // -- get_device_list() listing all devices.
 var CACHE_CURRENT_DEVICE = null;    // -- get_device() for current device.
-var COLOURS = null;
 
 
 /*****************************
@@ -201,7 +205,7 @@ function _warn_save_data_version(data) {
 }
 
 function open_help() {
-    send_data("open_help", {});
+    send_data("open_uri", {uri: "https://polychromatic.app/docs"});
 }
 
 function open_troubleshooter() {

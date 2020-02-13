@@ -65,10 +65,8 @@ content {
     }
 }
 
-/* Used by custom pages */
-.inner-block {
-    margin: 1em 2em;
-    padding: 0 0.4em;
+.group-hint {
+    padding: 0.5em 1.5em;
 }
 
 code {
@@ -84,22 +82,6 @@ code {
 
     &.transparent {
         background: transparent;
-    }
-}
-
-.warning-block {
-    background: $bg-colour-secondary;
-    color: $warning;
-    border: 1px solid $warning;
-    width: calc(100% - 1em);
-    padding: 0.5em;
-
-    img {
-        height: 22px;
-        width: 22px;
-    }
-
-    span, img {
-        vertical-align: middle;
+        margin: -2px 0;
     }
 }

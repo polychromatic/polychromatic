@@ -47,13 +47,20 @@ class PolychromaticController():
         """
         try:
             requests = {
+                # General
+                "open_uri": self._open_uri,
+                "troubleshoot_openrazer": self._troubleshoot_openrazer,
+
+                # Devices tab
                 "update_device_list": self._update_device_list,
                 "open_device": self._open_device,
                 "apply_to_all": self._apply_to_all,
                 "set_device_state": self._set_device_state,
                 "debug_matrix": self._debug_matrix,
-                "open_help": self._open_help,
-                "troubleshoot_openrazer": self._troubleshoot_openrazer
+
+                # Preferences tab
+                "reload_preferences": self._reload_preferences,
+                "set_preference": self._set_preference
             }
         except KeyError:
             dbg.stdout("Unknown Request: " + str(request) + " with data: " + str(data), dbg.error)
@@ -83,9 +90,16 @@ class PolychromaticController():
         self.versions = versions
         dbg.stdout("Version " + version, dbg.debug, 1)
 
+        # Append version information
+        versions["openrazer"] = openrazer.VERSION
+
         self.send_view_variable("LOCALES", locales.LOCALES)
         self.send_view_variable("COLOURS", pref.load_file(pref.path.colours))
+        self.send_view_variable("PREFERENCES", pref.load_file(pref.path.preferences))
+        self.send_view_variable("VERSION", versions)
         self.send_view_variable("BUTTON_SVGS", self._get_button_svg_list())
+        self.send_view_variable("ICONS_TRAY", pref.load_file(common.get_data_dir_path() + "/ui/img/tray/icons.json"))
+        self.send_view_variable("ICONS_EMBLEMS", pref.load_file(common.get_data_dir_path() + "/ui/img/emblems/icons.json"))
         self.run_function("build_view")
 
         # View caches device list via the CACHE_DEVICES variable.
@@ -290,13 +304,22 @@ class PolychromaticController():
             # Request OK
             dbg.stdout("OK: [{0},{1}]".format(row, column), dbg.success, 1)
 
-    def _open_help(self, data):
+    def _open_uri(self, data):
         """
-        Opens the Polychromatic website for help resources.
+        Opens a URI, which could be a file or URL.
 
-        Data parameter is empty: {}
+        Data parameter:
+        {
+            "uri": <URL or file> (string)
+        }
         """
-        webbrowser.open("https://polychromatic.app/docs");
+        uri = data["uri"]
+        if uri.startswith("http"):
+            webbrowser.open(uri);
+        elif uri.startswith("/"):
+            os.system("xdg-open " + uri)
+        else:
+            dbg.stdout("Unknown handler for URI: " + uri, dbg.error)
 
     def _troubleshoot_openrazer(self, data):
         """
@@ -312,6 +335,36 @@ class PolychromaticController():
         except:
             dbg.stdout("Troubleshooting encountered an exception.", dbg.error, 1)
             self._internal_error(locales.LOCALES["troubleshoot"], locales.LOCALES["troubleshoot_cannot_run"], "serious")
+
+    def _reload_preferences(self, data):
+        """
+        Reloads the preferences from file to memory in case the file was changed
+        on the file system.
+
+        Data parameter:
+        {
+            "callback": <Name of JavaScript function to run>
+        }
+        """
+        self.send_view_variable("PREFERENCES", pref.load_file(path.preferences))
+        self.run_function(data["callback"])
+
+    def _set_preference(self, data):
+        """
+        Writes a new value to preferences.json
+
+        Data parameter:
+        {
+            "group": (string)
+            "item": (string)
+            "value": (str, int or bool)
+        }
+        """
+        group = data["group"]
+        item = data["item"]
+        value = data["value"]
+        dbg.stdout("Writing preference: '{0}' -> '{1}' to '{2}".format(group, item, str(value)), dbg.action, 1)
+        pref.set(group, item, value)
 
 
 # Module Initalization

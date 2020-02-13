@@ -1,0 +1,14 @@
+/* Control */
+.icon-selector {
+    .current-icon {
+        background: $bg-colour-secondary;
+        display: inline-block;
+        padding: 4px;
+    }
+
+    .current-icon-preview {
+        max-height: 32px;
+        max-width: 32px;
+    }
+}
+

@@ -24,6 +24,13 @@ function group_title(label) {
             </div>`;
 }
 
+function help_text(text) {
+    //
+    // Creates a help text to describe a group of controls. Normally placed under a group_title.
+    //
+    return `<p class="group-hint">${text}</p>`;
+}
+
 function slider(id, onchange, min, max, step, value, suffix) {
     //
     // Creates a range control.
@@ -152,5 +159,24 @@ function colour_picker(id, onchange, current_hex, title, monochromatic) {
             <div class="colour-selector">
                 <div class="current-colour" title="${current_hex}" style="background-color:${current_hex}"></div>
                 <button class="change-colour" onclick="open_colour_picker('${id}', '${title}', '${current_hex}', '${onchange}', ${monochromatic})">${get_string("change")}</button>
+            </div>`;
+}
+
+function icon_picker(id, icon_set, current_value) {
+    //
+    // Creates a control that allows the user to pick an image from a built-in
+    // collection (e.g. emblems) or optionally choose a custom file.
+    //
+    // id               Element ID of the hidden text field.
+    // icon_set         The variable containing the JSON list of icon paths.
+    // save_as_base64   Boolean whether the selection should be stored as base64 (embedded) or an ID/path.
+    // current_value    Either: a relative path to data dir, absolute path or base64 encoded string.
+    //
+    return `<input id="${id}" type="hidden" value="${current_value}"/>
+            <div class="icon-selector">
+                <div class="current-icon">
+                    <img class="current-icon-preview" src="${current_value}"/>
+                </div>
+                <button class="change-icon" onclick="open_icon_picker('${id}', '${icon_set.join(",")}')">${get_string("change")}</button>
             </div>`;
 }

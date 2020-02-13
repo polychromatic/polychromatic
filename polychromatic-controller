@@ -29,6 +29,7 @@ import re
 import signal
 import threading
 from setproctitle import setproctitle
+from sys import version_info as python_version
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -246,12 +247,15 @@ class Controller(object):
 
         try:
             self.versions = {
+                "polychromatic": VERSION,
+                "polychromatic_pref": pref.version,
                 "gi": gi.__version__,
                 "gtk": "{0}.{1}.{2}".format(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION),
                 "webkit": "{0}.{1}.{2}".format(WebKit2.MAJOR_VERSION, WebKit2.MINOR_VERSION, WebKit2.MICRO_VERSION),
+                "python": "{0}.{1}.{2}".format(python_version.major, python_version.minor, python_version.micro)
             }
         except NameError:
-            self.versions = False
+            self.versions = {}
 
     def _run_js(self, code):
         """
