@@ -249,17 +249,25 @@ def get_green_shades():
 
 def set_default_tray_icon(pref):
     """
-    Determines which tray icon is best suited for the current desktop environment.
+    Determines which tray icon is best suited for the current desktop environment
+    or theme.
     """
     desktop_env = os.environ.get("XDG_CURRENT_DESKTOP")
+    theme_env = os.environ.get("GTK_THEME")
+
+    # Default icon
+    icon_value = "ui/img/tray/light/polychromatic.svg"
 
     # TODO: Detect GTK dark theme.
 
     if desktop_env == "KDE":
-        pref.set("tray", "icon", "ui/img/tray/breeze-light.svg")
-    else:
-        # MATE/Unity/Others
-        pref.set("tray", "icon", "ui/img/tray/light-theme.svg")
+        icon_value = "ui/img/tray/light/breeze.svg"
+
+    # Unity/Ubuntu MATE
+    elif theme_env.startswith("Ambiant") or theme_env.startswith("Ambiance"):
+        icon_value = "ui/img/tray/light/humanity.svg"
+
+    pref.set("tray", "icon", icon_value)
 
 
 def get_tray_icon(dbg, pref):
@@ -277,7 +285,8 @@ def get_tray_icon(dbg, pref):
     if os.path.exists(icon_builtin):
         return icon_builtin
 
-    return os.path.join(get_data_dir_path(), "ui/img/tray/light-theme.svg")
+    dbg.stdout("Tray icon missing: {0}\nUsing fallback icon.".format(icon_value), dbg.warning)
+    return os.path.join(get_data_dir_path(), "ui/img/tray/light/polychromatic.svg")
 
 
 def execute_polychromatic_component(dbg, suffix, current_bin_path, data_source, jump_to):

@@ -339,11 +339,11 @@ def upgrade_old_pref(config_version):
             old_icon_id = data["tray_icon"]["icon_id"]
             try:
                 mapping = {
-                    "0": "ui/img/tray/humanity-light.svg",
-                    "1": "ui/img/tray/humanity-dark.svg",
+                    "0": "ui/img/tray/light/humanity.svg",
+                    "1": "ui/img/tray/dark/humanity.svg",
                     "2": "ui/img/tray/chroma.gif",
-                    "3": "ui/img/tray/breeze-dark.svg",
-                    "4": "ui/img/tray/breeze-light.svg"
+                    "3": "ui/img/tray/light/breeze.svg",
+                    "4": "ui/img/tray/dark/breeze.svg"
                 }
                 new_value = mapping[old_icon_id]
             except KeyError:

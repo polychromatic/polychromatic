@@ -226,10 +226,10 @@ class AppIndicator(object):
 
         if indicator_support:
             self.indicator.set_title("Polychromatic")
-            self.indicator.set_icon(get_icon("../../tray/", "error.svg"))
+            self.indicator.set_icon(get_icon("tray", "error.svg"))
             self.indicator.set_menu(root)
         else:
-            self.indicator.set_from_file(get_icon("../../tray/", "error.svg"))
+            self.indicator.set_from_file(get_icon("tray", "error.svg"))
             self.menu = root
             self.indicator.connect("popup-menu", self._show_menu_cb)
 
