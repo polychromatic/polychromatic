@@ -85,6 +85,30 @@ def load_file(filepath, no_version_check=False):
             dbg.stdout("     Software Config Version: v." + str(version), dbg.error)
             dbg.stdout("")
 
+    # Check preferences contain valid data.
+    def _validate(group, item, data_type, default_value):
+        try:
+            data[group]
+        except KeyError:
+            data[group] = {}
+
+        try:
+            data[group][item]
+        except KeyError:
+            data[group][item] = default_value
+            save_file(path.preferences, data)
+
+        if type(data[group][item]) != data_type:
+            data[group][item] = default_value
+            save_file(path.preferences, data)
+
+    if filepath == path.preferences:
+        _validate("colours", "primary", str, "#00FF00")
+        _validate("colours", "secondary", str, "#FF0000")
+        _validate("effects", "live_preview", bool, True)
+        _validate("tray", "force_legacy_gtk_status", bool, False)
+        _validate("tray", "icon", str, "ui/img/tray/light/polychromatic.svg")
+
     return(data)
 
 
@@ -158,15 +182,9 @@ def get(group, item, default_value="", filepath=None):
         filepath = path.preferences
 
     data = load_file(filepath)
+    value = data[group][item]
+    return value
 
-    # Read data from preferences.
-    try:
-        value = data[group][setting]
-        return value
-    except KeyError:
-        # Should it be non-existent, return a fallback option.
-        set(group, setting, default_value, filepath)
-        return default_value
 
 def exists(group, item, filepath=None):
     """

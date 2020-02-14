@@ -168,7 +168,7 @@ class AppIndicator(object):
         Assemble the tray applet powered by AppIndicator or GTKStatusIcon.
         """
         # User can optionally use 'legacy' GTK status icon.
-        if pref.get("tray", "force_legacy_gtk_status", False) == True:
+        if pref.get("tray", "force_legacy_gtk_status") == True:
             global indicator_support
             indicator_support = False
 
