@@ -19,9 +19,20 @@ dbg = common.Debugging()
 
 
 class Paths(object):
-    # XDG directories
+    # Default directories
     root = os.path.join(os.path.expanduser("~"), ".config", "polychromatic")
     cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
+
+    # XDG directories
+    try:
+        root = os.path.join(os.environ["XDG_CONFIG_HOME"], ".config", "polychromatic")
+    except KeyError:
+        pass
+
+    try:
+        root = os.path.join(os.environ["XDG_CACHE_HOME"], ".cache", "polychromatic")
+    except KeyError:
+        pass
 
     # Subdirectories
     effects = os.path.join(root, "effects")
