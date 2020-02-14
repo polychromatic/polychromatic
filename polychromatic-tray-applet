@@ -168,7 +168,7 @@ class AppIndicator(object):
         Assemble the tray applet powered by AppIndicator or GTKStatusIcon.
         """
         # User can optionally use 'legacy' GTK status icon.
-        if pref.get("tray_icon", "force_fallback", False) == True:
+        if pref.get("tray", "force_legacy_gtk_status", False) == True:
             global indicator_support
             indicator_support = False
 
@@ -243,7 +243,7 @@ class AppIndicator(object):
         """
         # Load the tray icon
         if indicator_support:
-            self.indicator.set_icon_full(self._get_tray_icon(), _("Icon that represents Razer devices"))
+            self.indicator.set_icon_full(self._get_tray_icon(), _("Polychromatic Device Lighting Menu"))
         else:
             self.indicator.set_from_file(self._get_tray_icon())
 

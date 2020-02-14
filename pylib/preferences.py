@@ -13,7 +13,7 @@ import shutil
 import time
 from . import common
 
-version = 6
+version = 7
 verbose = False
 
 dbg = common.Debugging()
@@ -31,13 +31,13 @@ class Paths(object):
 
     # Files
     preferences = os.path.join(root, "preferences.json")
-    devicestate = os.path.join(root, "devicestate.json")
-    colours     = os.path.join(root, "colours.json")
+    colours = os.path.join(root, "colours.json")
 
     # Deprecated (v0.3.12 and earlier)
     old_profiles = os.path.join(root, "profiles.json")
     old_profile_folder = os.path.join(root, "profiles")
     old_profile_backups = os.path.join(root, "backups")
+    old_devicestate = os.path.join(root, "devicestate.json")
 
 
 def load_file(filepath, no_version_check=False):
@@ -319,19 +319,44 @@ def upgrade_old_pref(config_version):
 
             save_file(path.colours, new_colours)
 
-        # -- Device State
-        data = load_file(path.devicestate, True)
-        for serial in data.keys():
-            for source in data[serial].keys():
-                for key in ["colour_primary", "colour_secondary"]:
-                    try:
-                        rgb = data[serial][source][key]
-                        new_hex = common.rgb_to_hex(rgb)
-                        data[serial][source][key] = new_hex
-                    except Exception as e:
-                        # Key non-existant
-                        pass
-        save_file(path.devicestate, data)
+    # v1.0.0 (dev)
+    if config_version < 7:
+        # devicestate.json now obsolete
+        if os.path.exists(path.old_devicestate):
+            os.remove(path.old_devicestate)
+
+        # Migrate "tray_icon" group to "tray"
+        data = load_file(path.preferences, True)
+        data["tray"] = {}
+        data["tray"]["force_legacy_gtk_status"] = data["tray_icon"]["force_fallback"]
+
+        old_type = data["tray_icon"]["type"]
+        if old_type == "gtk":
+            new_value = common.get_path_from_gtk_icon_name(data["tray_icon"]["gtk_icon_name"])
+        elif old_type == "custom":
+            new_value = data["tray_icon"]["custom_image_path"]
+        elif old_type == "builtin":
+            old_icon_id = data["tray_icon"]["icon_id"]
+            try:
+                mapping = {
+                    "0": "ui/img/tray/humanity-light.svg",
+                    "1": "ui/img/tray/humanity-dark.svg",
+                    "2": "ui/img/tray/chroma.gif",
+                    "3": "ui/img/tray/breeze-dark.svg",
+                    "4": "ui/img/tray/breeze-light.svg"
+                }
+                new_value = mapping[old_icon_id]
+            except KeyError:
+                new_value = ""
+
+        data["tray"]["icon"] = new_value
+
+        # Remove obsolete keys
+        del data["tray_icon"]
+        del data["effects"]["activate_on_click"]
+        del data["profiles"]
+
+        save_file(path.preferences, data)
 
     # Write new version number.
     pref_data = load_file(path.preferences, True)

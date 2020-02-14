@@ -252,52 +252,32 @@ def set_default_tray_icon(pref):
     Determines which tray icon is best suited for the current desktop environment.
     """
     desktop_env = os.environ.get("XDG_CURRENT_DESKTOP")
-    pref.set("tray_icon", "type", "builtin")
+
+    # TODO: Detect GTK dark theme.
 
     if desktop_env == "KDE":
-        pref.set("tray_icon", "value", "0")
+        pref.set("tray", "icon", "ui/img/tray/breeze-light.svg")
     else:
         # MATE/Unity/Others
-        pref.set("tray_icon", "value", "0")
+        pref.set("tray", "icon", "ui/img/tray/light-theme.svg")
 
 
 def get_tray_icon(dbg, pref):
     """
     Returns the full path to the icon to use with the tray applet.
     """
+    icon_value = pref.get("tray", "icon")
 
-    # If it's the first time loading, set default icon to desktop environment.
-    if not pref.exists("tray_icon", "type"):
-        set_default_tray_icon(pref)
+    # Check if the icon is absolute - a custom icon
+    if os.path.exists(icon_value):
+        return icon_value
 
-    icon_type = pref.get("tray_icon", "type", "builtin")
-    icon_fallback = os.path.join(DATA_PATH, "tray", "humanity-light.svg")
+    # Check if the icon is relative - a built-in icon
+    icon_builtin = os.path.join(get_data_dir_path(), icon_value)
+    if os.path.exists(icon_builtin):
+        return icon_builtin
 
-    try:
-        if icon_type == "builtin":
-            icon_id = pref.get("tray_icon", "icon_id")
-            icon_index = pref.load_file(os.path.join(DATA_PATH, "tray/icons.json"))
-            return os.path.join(DATA_PATH, "tray", icon_index[icon_id]["path"])
-
-        elif icon_type == "custom":
-            icon_path = pref.get("tray_icon", "custom_image_path")
-            if os.path.exists(icon_path):
-                return icon_path
-            else:
-                dbg.stdout("Icon missing: " + icon_path, dbg.error)
-                dbg.stdout("Using fallback!", dbg.error)
-                return icon_path
-
-        elif icon_type == "gtk":
-            icon_gtk = pref.get("tray_icon", "gtk_icon_name")
-            return get_path_from_gtk_icon_name(icon_gtk)
-
-        else:
-            return icon_fallback
-
-    except Exception:
-        dbg.stdout("Error whlie loading icon, using fallback.", dbg.error)
-        return icon_fallback
+    return os.path.join(get_data_dir_path(), "ui/img/tray/light-theme.svg")
 
 
 def execute_polychromatic_component(dbg, suffix, current_bin_path, data_source, jump_to):
