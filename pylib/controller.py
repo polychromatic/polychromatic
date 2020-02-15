@@ -134,7 +134,19 @@ class PolychromaticController():
         dbg.stdout("Application Ready. Showing window.", dbg.success, 1)
         self.window.show_window()
 
-        self.run_function("_set_tab_devices")
+        # Open landing tab
+        try:
+            landing_tab = pref.get("general", "landing_tab")
+            fn = {
+                "devices": "_set_tab_devices",
+                "effects": "_set_tab_effects",
+                "profiles": "_set_tab_profiles",
+                "preferences": "_set_tab_preferences"
+            }
+            self.run_function(fn[landing_tab])
+        except KeyError:
+            self.run_function("_set_tab_devices")
+
         return True
 
     def _internal_error(self, title, reason, style):

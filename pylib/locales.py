@@ -171,6 +171,7 @@ LOCALES = {
     "configuration": _("Configuration"),
     "logs": _("Logs"),
     "options": _("Options"),
+    "landing_tab": _("Landing Tab"),
 
     # Invalid Save Data Pop-up
     "save_data_warning_title": _("Incompatible Save Data"),

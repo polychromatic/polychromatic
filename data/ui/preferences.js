@@ -129,7 +129,15 @@ function _set_tab_preferences() {
     </div>`;
 
     // -- General [Application]
-    var general = group_title(get_string("effects"));
+    var general = group_title(get_string("application"));
+    general += group(get_string("landing_tab"), dropdown("landing_tab", "change_pref('general', 'landing_tab', this.value)", PREFERENCES["general"]["landing_tab"], [
+        [get_string("devices"), "devices", false],
+        [get_string("effects"), "effects", false],
+        [get_string("profiles"), "profiles", false],
+        [get_string("preferences"), "preferences", false]
+    ], false));
+
+    general += group_title(get_string("effects"));
     general += group(get_string("editor"), checkbox("effect_live_preview", get_string("effect_live_preview"), PREFERENCES["effects"]["live_preview"], "change_pref('effects', 'live_preview', this.checked)"))
 
     // -- Tray Applet [Application]
