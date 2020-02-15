@@ -195,6 +195,7 @@ function _onwheel(event, element) {
             case "select-one":
                 try {
                     $(element).children()[element.selectedIndex + 1].selected = true;
+                    element.onchange();
                 } catch {}
                 break;
             case "range":
@@ -210,6 +211,7 @@ function _onwheel(event, element) {
             case "select-one":
                 try {
                     $(element).children()[element.selectedIndex - 1].selected = true;
+                    element.onchange();
                 } catch {}
                 break;
             case "range":
