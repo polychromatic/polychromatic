@@ -82,7 +82,7 @@ class PolychromaticController():
         """
         self.webview.run_js("{0}({1});".format(function, json.dumps(data)))
 
-    def initalise_app(self, version, versions):
+    def initalise_app(self, version, versions, force_tab=None):
         """
         Starts loading the logic for the application.
         """
@@ -137,6 +137,9 @@ class PolychromaticController():
         # Open landing tab
         try:
             landing_tab = pref.get("general", "landing_tab")
+            if force_tab:
+                landing_tab = force_tab
+
             fn = {
                 "devices": "_set_tab_devices",
                 "effects": "_set_tab_effects",

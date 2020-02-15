@@ -338,7 +338,7 @@ class Controller(object):
         """
         self.window = app.window
         self.webview = app.webview
-        self.controller.initalise_app(self.version, self.versions)
+        self.controller.initalise_app(self.version, self.versions, args.tab)
 
     def stop_app(self):
         """
@@ -355,6 +355,7 @@ def parse_parameters():
     parser.add_argument("--version", help=_("Print program version and exit"), action="store_true")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
     parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
+    parser.add_argument("--tab", help=_("Open a specific tab"), action="store", choices=["devices", "effects", "profiles", "preferences"])
 
     # For front-end debugging (developer tools)
     parser.add_argument("--inspect", help=argparse.SUPPRESS, action="store_true")
@@ -374,6 +375,7 @@ def parse_parameters():
     if args.locale:
         _ = common.setup_translations(__file__, "polychromatic", args.locale)
 
+    return args
 
 if __name__ == "__main__":
     # Appear as own process.
@@ -393,7 +395,7 @@ if __name__ == "__main__":
         dbg.stdout("Failed to start due to missing styling.", dbg.error)
         exit(1)
 
-    parse_parameters()
+    args = parse_parameters()
     webview = WebView()
     win = AppWindow(webview)
     app = Controller(webview, win)
