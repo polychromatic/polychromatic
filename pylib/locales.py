@@ -33,7 +33,7 @@ LOCALES = {
     "devices": _("Devices"),
     "effects": _("Effects"),
     "profiles": _("Profiles"),
-    "schedule": _("Schedule"),
+    "events": _("Events"),
     "preferences": _("Preferences"),
 
     # Devices

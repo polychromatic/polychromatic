@@ -144,6 +144,7 @@ class PolychromaticController():
                 "devices": "_set_tab_devices",
                 "effects": "_set_tab_effects",
                 "profiles": "_set_tab_profiles",
+                "events": "_set_tab_events",
                 "preferences": "_set_tab_preferences"
             }
             self.run_function(fn[landing_tab])

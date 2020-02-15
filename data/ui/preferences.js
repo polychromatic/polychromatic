@@ -134,6 +134,7 @@ function _set_tab_preferences() {
         [get_string("devices"), "devices", false],
         [get_string("effects"), "effects", false],
         [get_string("profiles"), "profiles", false],
+        [get_string("events"), "events", false],
         [get_string("preferences"), "preferences", false]
     ], false));
 

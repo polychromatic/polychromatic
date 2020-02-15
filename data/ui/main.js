@@ -82,7 +82,7 @@ function build_view(data) {
             ${_add_header_button("devices", "set_tab_devices()", "img/devices/keyboard.svg", get_string("devices"))}
             ${_add_header_button("effects", "set_tab_effects()", "img/general/effects.svg", get_string("effects"))}
             ${_add_header_button("profiles", "set_tab_profiles()", "img/general/profiles.svg", get_string("profiles"))}
-            ${_add_header_button("schedule", "set_tab_schedule()", "img/general/schedule.svg", get_string("schedule"))}
+            ${_add_header_button("events", "set_tab_events()", "img/general/events.svg", get_string("events"))}
             <div class="right">
                 ${_add_header_button("preferences", "set_tab_preferences()", "img/general/preferences.svg", get_string("preferences"))}
             </div>
