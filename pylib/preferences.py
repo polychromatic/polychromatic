@@ -50,18 +50,16 @@ class Paths(object):
     old_devicestate = os.path.join(root, "devicestate.json")
 
 
-def load_file(filepath, no_version_check=False):
+def load_file(filepath):
     """
     Loads a JSON file from disk. If empty, it will be created.
 
     Params:
         filepath            String from the Path() object.
-        no_version_check    Optional. preferences.json only. Do not write or process pref version.
 
     Returns:
         {}                  Data (dictionary object)
     """
-    # Does it exist?
     if os.path.exists(filepath):
         try:
             with open(filepath) as stream:
@@ -74,29 +72,8 @@ def load_file(filepath, no_version_check=False):
     else:
         init_config(filepath)
         data = {}
-        no_version_check = True
 
-    # Check configuration version if reading the preferences.
-    if filepath == path.preferences and no_version_check == False:
-        try:
-            config_version = int(data["config_version"])
-        except KeyError:
-            data["config_version"] = version
-            config_version = version
-
-        # Is the software newer and the configuration old?
-        if version > config_version:
-            upgrade_old_pref(config_version)
-
-        # Is the config newer then the software? Wicked time travelling!
-        if config_version > version:
-            dbg.stdout("\nWARNING: Your preferences file is newer then the module!", dbg.error)
-            dbg.stdout("This could corrupt data or cause glitches in Polychromatic. Consider updating the Python modules.", dbg.error)
-            dbg.stdout("     Your Config Version:     v." + str(config_version), dbg.error)
-            dbg.stdout("     Software Config Version: v." + str(version), dbg.error)
-            dbg.stdout("")
-
-    # Check preferences contain valid data.
+    # Check preferences contain valid data and defaults.
     def _validate(group, item, data_type, default_value):
         try:
             data[group]
@@ -235,16 +212,37 @@ def init_config(filepath):
         dbg.stdout("Exception: ", str(e), dbg.error)
 
 
-def upgrade_old_pref(config_version):
+def upgrade_old_pref():
     """
-    Updates the configuration from previous revisions.
+    Checks and updates the configuration from previous revisions.
     """
+    try:
+        with open(path.preferences, "r") as f:
+            data = json.load(f)
+        config_version = int(data["config_version"])
+    except Exception:
+        # Never mind, the parent function should fix this later.
+        return
+
+    # Is the configuration version up-to-date?
+    if version == config_version:
+        return
+
+    # Is the config newer then the software? Wicked time travelling!
+    if config_version > version:
+        dbg.stdout("\nWARNING: Your preferences file is newer then the application!", dbg.error)
+        dbg.stdout("It's likely you're running an older version. This is unsupported.", dbg.error)
+        dbg.stdout("     Current Config Version:   v." + str(config_version), dbg.error)
+        dbg.stdout("     Installed Config Version: v." + str(version), dbg.error)
+        dbg.stdout("")
+        return
+
     dbg.stdout("Upgrading configuration from v{0} to v{1}...".format(config_version, version), dbg.action)
 
     # v0.3.12
     if config_version < 5:
         # Ensure preferences.json is clean.
-        data = load_file(path.preferences, True)
+        data = load_file(path.preferences)
         for key in ["activate_on_save", "live_switch", "live_preview"]:
             try:
                 value = data["editor"][key]
@@ -259,101 +257,105 @@ def upgrade_old_pref(config_version):
         save_file(path.preferences, data)
 
     # v0.4.0 (dev)
-    if config_version < 6:
-        # Migrate preferences.json to new keys
-        old_data = load_file(path.preferences, True)
-        try:
-            old_live_preview = old_data["editor"]["live_preview"]
-            old_tray_type = old_data["tray_icon"]["type"]
-            old_tray_value = old_data["tray_icon"]["value"]
-        except KeyError:
-            old_live_preview = ""
-            old_tray_type = ""
-            old_tray_value = ""
-
-        new_data = {
-            "colours": {
-                "primary": "#00FF00",
-                "secondary": "#00FFFF"
-            },
-            "effects": {
-                "live_preview": old_live_preview
-            },
-            "tray_icon": {
-                "force_fallback": False
-            }
-        }
-
-        if old_tray_type == "builtin":
-            new_data["tray_icon"]["icon_id"] = old_tray_value
-        elif old_tray_type == "gtk":
-            new_data["tray_icon"]["gtk_icon_name"] = old_tray_value
-        elif old_tray_type == "custom":
-            new_data["tray_icon"]["custom_image_path"] = old_tray_value
-
-        save_file(path.preferences, new_data)
-
-        # Migrate colours from RGB lists to HEX strings.
-        # -- Saved Colours
-        new_colours = []
-        old_colours = load_file(path.colours)
-        if type(old_colours) != list:
-            old_ids = list(old_colours.keys())
-            old_ids.sort()
-            for uuid in old_ids:
-                try:
-                    new_name = old_colours[uuid]["name"]
-                    new_hex = common.rgb_to_hex(old_colours[uuid]["col"])
-                    new_colours.append({"name": new_name, "hex": new_hex})
-                except Exception:
-                    # Ignore invalid data
-                    pass
-
-            save_file(path.colours, new_colours)
+    if config_version == 6:
+        # The configuration will be reset.
+        dbg.stdout("Development configuration detected. Preferences have been reset.", dbg.warning)
+        for filepath in [path.preferences, path.colours, path.old_devicestate]:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+        return
 
     # v1.0.0 (dev)
     if config_version < 7:
+        # Migrate preferences.json to new keys
+        old_data = load_file(path.preferences)
+
+        # -- Tray icon is now one key (a relative or absolute path)
+        new_tray_value = ""
+        try:
+            old_type = old_data["tray_icon"]["type"]
+            if old_type == "gtk":
+                new_tray_value = common.get_path_from_gtk_icon_name(old_data["tray_icon"]["value"])
+            elif old_type == "custom":
+                new_tray_value = old_data["tray_icon"]["value"]
+            elif old_type == "builtin":
+                try:
+                    mapping = {
+                        "0": "ui/img/tray/light/humanity.svg",
+                        "1": "ui/img/tray/dark/humanity.svg",
+                        "2": "ui/img/tray/animated/chroma.gif",
+                        "3": "ui/img/tray/light/breeze.svg",
+                        "4": "ui/img/tray/dark/breeze.svg"
+                    }
+                    new_tray_value = mapping[old_data["tray_icon"]["value"]]
+                except KeyError:
+                    # Invalid data, discard.
+                    pass
+        except KeyError:
+            # Invalid data, discard.
+            pass
+
+        try:
+            old_live_preview = old_data["editor"]["live_preview"]
+        except KeyError:
+            old_live_preview = False
+
+        new_data = {
+            "colours": {
+                "primary": "#00FF00",               # New
+                "secondary": "#00FFFF"              # New
+            },
+            "effects": {
+                "live_preview": old_live_preview    # Changed
+            },
+            "tray": {
+                "force_legacy_gtk_status": False,   # New
+                "icon": new_tray_value              # Changed
+            }
+        }
+
+        os.remove(path.preferences)
+        save_file(path.preferences, new_data)
+
         # devicestate.json now obsolete
         if os.path.exists(path.old_devicestate):
             os.remove(path.old_devicestate)
 
-        # Migrate "tray_icon" group to "tray"
-        data = load_file(path.preferences, True)
-        data["tray"] = {}
-        data["tray"]["force_legacy_gtk_status"] = data["tray_icon"]["force_fallback"]
+        # If the colours were unchanged from v0.3.12, reset to new ones.
+        old_colours = load_file(path.colours)
+        old_colour_json = {
+            "1": {"name": "White", "col": [255, 255, 255]},
+            "2": {"name": "Red", "col": [255, 0, 0]},
+            "3": {"name": "Orange", "col": [255, 165, 0]},
+            "4": {"name": "Yellow", "col": [255, 255, 0]},
+            "5": {"name": "Signature Green", "col": [0, 255, 0]},
+            "6": {"name": "Aqua", "col": [0, 255, 255]},
+            "7": {"name": "Blue", "col": [0, 0, 255]},
+            "8": {"name": "Purple", "col": [128, 0, 128]},
+            "9": {"name": "Pink", "col": [255, 0, 255]}
+        }
 
-        old_type = data["tray_icon"]["type"]
-        if old_type == "gtk":
-            new_value = common.get_path_from_gtk_icon_name(data["tray_icon"]["gtk_icon_name"])
-        elif old_type == "custom":
-            new_value = data["tray_icon"]["custom_image_path"]
-        elif old_type == "builtin":
-            old_icon_id = data["tray_icon"]["icon_id"]
-            try:
-                mapping = {
-                    "0": "ui/img/tray/light/humanity.svg",
-                    "1": "ui/img/tray/dark/humanity.svg",
-                    "2": "ui/img/tray/chroma.gif",
-                    "3": "ui/img/tray/light/breeze.svg",
-                    "4": "ui/img/tray/dark/breeze.svg"
-                }
-                new_value = mapping[old_icon_id]
-            except KeyError:
-                new_value = ""
+        if old_colours == old_colour_json:
+            os.remove(path.colours)
+        else:
+            # Migrate colours from RGB lists to HEX strings.
+            new_colours = []
+            if type(old_colours) != list:
+                old_ids = list(old_colours.keys())
+                old_ids.sort()
+                for uuid in old_ids:
+                    new_name = old_colours[uuid]["name"]
+                    new_hex = common.rgb_to_hex(old_colours[uuid]["col"])
+                    new_colours.append({"name": new_name, "hex": new_hex})
 
-        data["tray"]["icon"] = new_value
+                save_file(path.colours, new_colours)
 
-        # Remove obsolete keys
-        del data["tray_icon"]
-        del data["effects"]["activate_on_click"]
-        del data["profiles"]
 
-        save_file(path.preferences, data)
 
     # Write new version number.
-    pref_data = load_file(path.preferences, True)
-    pref_data["config_version"] = version
-    save_file(path.preferences, pref_data)
+    data = load_file(path.preferences)
+    data["config_version"] = version
+    save_file(path.preferences, data)
 
     dbg.stdout("Configuration successfully upgraded.", dbg.success)
 
@@ -374,14 +376,17 @@ def start_initalization():
         if not os.path.exists(json_path):
             init_config(json_path)
 
+    # Check the configuration and software version matches.
+    upgrade_old_pref()
+
     # Populate with defaults if none exists.
     ## Default Preferences
-    data = load_file(path.preferences, True)
+    data = load_file(path.preferences)
     if len(data) <= 2:
         save_file(path.preferences, {})
 
     ## Default Colours
-    data = load_file(path.colours, True)
+    data = load_file(path.colours)
     if len(data) <= 2:
         default_data = [
             {"name": _("White"), "hex": "#FFFFFF"},
@@ -398,6 +403,7 @@ def start_initalization():
             {"name": _("Black"), "hex": "#000000"}
         ]
         save_file(path.colours, default_data)
+
 
 _ = common.setup_translations(__file__, "polychromatic")
 path = Paths()
