@@ -35,7 +35,7 @@ function slider(id, onchange, min, max, step, value, suffix) {
     //
     // Creates a range control.
     //
-    return `<input id="${id}" onchange="${onchange ? onchange : ''}" type="range" min="${min}" max="${max}" step="${step}" value="${value}">
+    return `<input id="${id}" onchange="${onchange ? onchange : ''}" type="range" min="${min}" max="${max}" step="${step}" value="${value}" onwheel="_onwheel(event, this)">
             <span id="${id}-value">${value}</span>${suffix}`;
 }
 
@@ -148,7 +148,7 @@ function dropdown(id, onchange, current_value, item_list, disabled) {
                         </option>`;
     }
 
-    return `<select id="${id}" class="${disabled ? "disabled" : ""}" onchange="${onchange}">${items_html}</select>`;
+    return `<select id="${id}" class="${disabled ? "disabled" : ""}" onchange="${onchange}" onwheel="_onwheel(event, this)">${items_html}</select>`;
 }
 
 function colour_picker(id, onchange, current_hex, title, monochromatic) {
@@ -179,4 +179,46 @@ function icon_picker(id, icon_set, current_value) {
                 </div>
                 <button class="change-icon" onclick="open_icon_picker('${id}', '${icon_set.join(",")}')">${get_string("change")}</button>
             </div>`;
+}
+
+function _onwheel(event, element) {
+    //
+    // Emulate the scrolling behaviour in toolkits like GTK and Qt.
+    //
+    // Supports: <select>, <input> range, .tab, .sidebar-item
+    //
+    var type = element.type;
+    var scroll_down = event.deltaY > 0;
+
+    if (scroll_down === true) {
+        switch(type) {
+            case "select-one":
+                try {
+                    $(element).children()[element.selectedIndex + 1].selected = true;
+                } catch {}
+                break;
+            case "range":
+                element.stepDown();
+                element.onchange();
+                break;
+            case "submit":
+                $(element).parent().find(".active").next().click();
+                break;
+        }
+    } else {
+        switch(type) {
+            case "select-one":
+                try {
+                    $(element).children()[element.selectedIndex - 1].selected = true;
+                } catch {}
+                break;
+            case "range":
+                element.stepUp();
+                element.onchange();
+                break;
+            case "submit":
+                $(element).parent().find(".active").prev().click();
+                break;
+        }
+    }
 }

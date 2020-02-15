@@ -73,7 +73,7 @@ function build_view(data) {
     // Reset the entire application's interactive elements.
     //
     function _add_header_button(id, fn, image, label) {
-        return `<button id="${id}-tab" class="tab" onclick="${fn}"><img src="${image}"/><span>${label}</span></button>`;
+        return `<button id="${id}-tab" class="tab" onclick="${fn}" onwheel="_onwheel(event, this)"><img src="${image}"/><span>${label}</span></button>`;
     }
 
     var header = `
@@ -128,7 +128,7 @@ function set_layout_split(sidebar, content) {
         for (i = 0; i < group.items.length; i++) {
             var item = group.items[i];
 
-            sidebar_html += `<button id="${item.id}" class="sidebar-item ${item.classes}" onclick="${item.onclick}">
+            sidebar_html += `<button id="${item.id}" class="sidebar-item ${item.classes}" onclick="${item.onclick}" onwheel="_onwheel(event, this)">
                     <img src="${item.icon}"/> <span>${item.label}</span>
                 </button>`;
         }
