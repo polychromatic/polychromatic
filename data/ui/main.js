@@ -180,6 +180,20 @@ function rgb_to_hex(r,g,b) {
 }
 
 /*****************************
+ * Behaviours
+*****************************/
+/* Prevent accidental drops onto the window */
+$(document).on({
+    dragover: function() {
+        return false;
+    },
+    drop: function() {
+        return false;
+    }
+});
+
+
+/*****************************
  * Misc
 *****************************/
 function _warn_save_data_version(data) {
