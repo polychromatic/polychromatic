@@ -36,8 +36,8 @@ button {
     }
 
     &.disabled {
+        background-color: transparent;
         color: $disabled-colour;
-        opacity: 0.5;
         pointer-events: none;
 
         svg {

@@ -12,12 +12,17 @@ import json
 import glob
 import gettext
 import webbrowser
+import shutil
 
 from threading import Thread
 from . import common
 from . import locales
 from . import preferences as pref
 from .backends import openrazer
+
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
 
 
 class PolychromaticController():
@@ -50,6 +55,8 @@ class PolychromaticController():
                 # General
                 "open_uri": self._open_uri,
                 "troubleshoot_openrazer": self._troubleshoot_openrazer,
+                "add_custom_icon": self._add_custom_icon,
+                "remove_custom_icon": self._remove_custom_icon,
 
                 # Devices tab
                 "update_device_list": self._update_device_list,
@@ -100,6 +107,8 @@ class PolychromaticController():
         self.send_view_variable("BUTTON_SVGS", self._get_button_svg_list())
         self.send_view_variable("ICONS_TRAY", pref.load_file(common.get_data_dir_path() + "/ui/img/tray/icons.json"))
         self.send_view_variable("ICONS_EMBLEMS", pref.load_file(common.get_data_dir_path() + "/ui/img/emblems/icons.json"))
+        self.send_view_variable("CUSTOM_ICONS", pref.get_custom_icons())
+        self.send_view_variable("CUSTOM_ICON_PATH", pref.path.custom_icons)
         self.run_function("build_view")
 
         # View caches device list via the CACHE_DEVICES variable.
@@ -381,6 +390,110 @@ class PolychromaticController():
         value = data["value"]
         dbg.stdout("Writing preference: '{0}' -> '{1}' to '{2}".format(group, item, str(value)), dbg.action, 1)
         pref.set(group, item, value)
+
+    def _add_custom_icon(self, data):
+        """
+        Shows a file selection dialogue to import a new icon.
+
+        Upon successful selection, this will copy the specified image to
+        ~/.config/custom_icons, intended to prevent broken links.
+
+        Data parameter is empty: {}
+        """
+        win = Gtk.Window(title=locales.LOCALES["add_graphic"])
+        dialog = Gtk.FileChooserDialog(locales.LOCALES["add_graphic"], \
+                    win, \
+                    Gtk.FileChooserAction.OPEN, \
+                    (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+
+        # Filters
+        a = Gtk.FileFilter()
+        a.set_name(locales.LOCALES["filter_all_images"])
+        a.add_mime_type("image/jpeg")
+        a.add_mime_type("image/png")
+        a.add_mime_type("image/gif")
+        a.add_mime_type("image/webp")
+        a.add_mime_type("image/svg+xml")
+        dialog.add_filter(a)
+
+        p = Gtk.FileFilter()
+        p.set_name(locales.LOCALES["filter_png"])
+        p.add_mime_type("image/png")
+        dialog.add_filter(p)
+
+        j = Gtk.FileFilter()
+        j.set_name(locales.LOCALES["filter_jpg"])
+        j.add_mime_type("image/jpeg")
+        dialog.add_filter(j)
+
+        g = Gtk.FileFilter()
+        g.set_name(locales.LOCALES["filter_gif"])
+        g.add_mime_type("image/gif")
+        dialog.add_filter(g)
+
+        w = Gtk.FileFilter()
+        w.set_name(locales.LOCALES["filter_webp"])
+        w.add_mime_type("image/webp")
+        dialog.add_filter(g)
+
+        s = Gtk.FileFilter()
+        s.set_name(locales.LOCALES["filter_svg"])
+        s.add_mime_type("image/svg+xml")
+        dialog.add_filter(s)
+
+        a2 = Gtk.FileFilter()
+        a2.set_name(locales.LOCALES["filter_all_types"])
+        a2.add_pattern("*")
+        dialog.add_filter(a2)
+
+        dbg.stdout("Opening GTK file dialog.", dbg.debug, 1)
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            filename = dialog.get_filename()
+            dialog.destroy()
+            dbg.stdout("GTK file response OK: " + filename, dbg.success, 1)
+        else:
+            dialog.destroy()
+            dbg.stdout("GTK file response cancelled.", dbg.warning, 1)
+            return None
+
+        path_src = filename
+        path_dst = os.path.join(pref.path.custom_icons, os.path.basename(path_src))
+
+        if not os.path.exists(path_src):
+            dbg.stdout("Cannot add non-existant custom icon: " + path_src, dbg.error)
+            self._internal_error(locales.LOCALES["file_error_title"], locales.LOCALES["file_error_missing"], "warning")
+            return False
+
+        shutil.copyfile(path_src, path_dst)
+        self.send_view_variable("CUSTOM_ICONS", pref.get_custom_icons())
+        dbg.stdout("Added custom icon: " + path_dst, dbg.success, 1)
+        self.run_function("_custom_icons_changed", {});
+        return True
+
+    def _remove_custom_icon(self, data):
+        """
+        Deletes a custom image from the config's "custom_icons" folder.
+
+        Data parameter:
+        {
+            "filename": (string)
+        }
+
+        """
+        path = os.path.join(pref.path.custom_icons, data["filename"])
+
+        if not os.path.exists(path):
+            dbg.stdout("Custom icon non-existant: " + path, dbg.error)
+            self._internal_error(locales.LOCALES["file_error_title"], locales.LOCALES["file_error_missing"], "warning")
+            return False
+
+        os.remove(path)
+        dbg.stdout("Deleted custom icon: " + path, dbg.action, 1)
+        self.send_view_variable("CUSTOM_ICONS", pref.get_custom_icons())
+        self.run_function("_custom_icons_changed", {});
+        return True
 
 
 # Module Initalization

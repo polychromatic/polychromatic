@@ -35,6 +35,7 @@ var ICONS_EMBLEMS;
 var VERSION;
 var COLOURS;
 var PREFERENCES;
+var CUSTOM_ICONS;
 
 // For CSS transitions that are timed in JavaScript.
 var TRANSITION_SPEED = 300 + 50;
@@ -55,7 +56,7 @@ function get_string(string) {
 }
 
 function get_svg(name) {
-    return svg[name];
+    return BUTTON_SVGS[name];
 }
 
 function get_random_element_id() {

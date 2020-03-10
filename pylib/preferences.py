@@ -38,6 +38,7 @@ class Paths(object):
     effects = os.path.join(root, "effects")
     profiles = os.path.join(root, "profiles")
     device_images = os.path.join(root, "device_images")
+    custom_icons = os.path.join(root, "custom_icons")
 
     # Files
     preferences = os.path.join(root, "preferences.json")
@@ -359,6 +360,15 @@ def upgrade_old_pref():
     save_file(path.preferences, data)
 
     dbg.stdout("Configuration successfully upgraded.", dbg.success)
+
+
+def get_custom_icons():
+    """
+    Returns a list of all the icons currently stored in the user's "custom icons"
+    folder. This is used by the icon picker. Save data will reference images
+    by a relative file name.
+    """
+    return os.listdir(path.custom_icons)
 
 
 # Module Initalization

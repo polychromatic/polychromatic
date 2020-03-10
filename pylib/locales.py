@@ -223,5 +223,28 @@ LOCALES = {
     "troubleshoot_plugdev": _("Check if user account is added to 'plugdev' group"),
     "troubleshoot_plugdev_suggestion": _("If you've recently installed, you may need to restart the computer. Otherwise, run this command, log out, then log back in to the computer: $ sudo gpasswd -a $USER plugdev"),
     "troubleshoot_all_supported": _("Check for unsupported hardware"),
-    "troubleshoot_all_supported_suggestion": _("Check the OpenRazer project to confirm your device is listed. To get the device's VID:PID, run $ lsusb | grep Razer")
+    "troubleshoot_all_supported_suggestion": _("Check the OpenRazer project to confirm your device is listed. To get the device's VID:PID, run $ lsusb | grep Razer"),
+
+    # Icon Picker
+    "file_error_title": _("File Error"),
+    "file_error_missing": _("The selected file no longer exists."),
+    "icon_picker_title": _("Icon Chooser"),
+    "add_graphic": _("Add a graphic"),
+    "tray": _("Tray"),
+    "emblems": _("Emblems"),
+    "custom": _("Custom"),
+    "choose": _("Choose"),
+    "revert": _("Revert"),
+
+    # File Picker
+    "filter_jpg": _("JPEG image"),
+    "filter_png": _("PNG image"),
+    "filter_gif": _("GIF image"),
+    "filter_webp": _("WebP image"),
+    "filter_svg": _("SVG image"),
+    "filter_all_images": _("All supported images"),
+    "filter_all_types": _("All files"),
+
+    # End
+    "": ""
 }

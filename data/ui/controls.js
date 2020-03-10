@@ -46,14 +46,6 @@ function textbox(id, value, placeholder) {
     return `<input id="${id}" type="text" placeholder="${placeholder}" value="${value}" />`;
 }
 
-function filebox(id, title, accepted_formats, start_path, onchange) {
-    //
-    // Creates a file chooser for selecting files from the filesystem.
-    //
-    // FIXME: Not fully implemented
-    return `<input id="${id}" type="file" accept="image/png, image/jpeg"/>`;
-}
-
 function checkbox(id, label, checked, onchange) {
     //
     // Creates a checkbox for toggling a boolean.
@@ -162,22 +154,22 @@ function colour_picker(id, onchange, current_hex, title, monochromatic) {
             </div>`;
 }
 
-function icon_picker(id, icon_set, current_value) {
+function icon_picker(id, current_value, save_fn, show_tray_tab) {
     //
     // Creates a control that allows the user to pick an image from a built-in
     // collection (e.g. emblems) or optionally choose a custom file.
     //
     // id               Element ID of the hidden text field.
-    // icon_set         The variable containing the JSON list of icon paths.
-    // save_as_base64   Boolean whether the selection should be stored as base64 (embedded) or an ID/path.
-    // current_value    Either: a relative path to data dir, absolute path or base64 encoded string.
+    // current_value    An absolute path, or relative path from "data/" or "~/.config/polychromatic/icons/" dir.
+    // save_fn          Function to evaluate after making a change.
+    // show_tray_tab    Show additional icons when picking a tray icon.
     //
-    return `<input id="${id}" type="hidden" value="${current_value}"/>
+    return `<input id="${id}" type="hidden" value="${current_value}" data-save-fn="${save_fn}"/>
             <div class="icon-selector">
                 <div class="current-icon">
                     <img class="current-icon-preview" src="${current_value}"/>
                 </div>
-                <button class="change-icon" onclick="open_icon_picker('${id}', '${icon_set.join(",")}')">${get_string("change")}</button>
+                <button class="change-icon" onclick="open_icon_picker('${id}', ${show_tray_tab})">${get_string("change")}</button>
             </div>`;
 }
 

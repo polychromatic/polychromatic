@@ -5,6 +5,19 @@
     overflow-y: none;
     white-space: nowrap;
 
+    &.vertical {
+        display: flex;
+        flex-direction: column;
+        width: 6em;
+        height: 100%;
+
+        button {
+            width: 6em;
+            border-bottom: none;
+            border-right: $tab-border-height solid $border-colour;
+        }
+    }
+
     button {
         display: inline-block;
         text-align: center;
@@ -21,19 +34,19 @@
         &:hover,
         &:focus {
             opacity: 0.8;
-            border-bottom-color: $secondary-colour;
+            border-color: $secondary-colour;
         }
 
         &:active {
             opacity: 0.5;
             color: $accent-colour;
-            border-bottom-color: $accent-colour;
+            border-color: $accent-colour;
             filter: grayscale(0.5);
         }
 
         &.active {
             color: $accent-colour;
-            border-bottom-color: $accent-colour;
+            border-color: $accent-colour;
             filter: grayscale(0);
         }
 

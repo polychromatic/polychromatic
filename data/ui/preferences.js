@@ -148,7 +148,7 @@ function _set_tab_preferences() {
     }
 
     var tray = group_title(get_string("appearance"));
-    tray += group(get_string("icon"), icon_picker("tray_icon", ICONS_TRAY, _icon_path));
+    tray += group(get_string("icon"), icon_picker("tray_icon", _icon_path, "change_pref('tray', 'icon', $(&quot;#tray_icon&quot;).val())", true));
 
     tray += group_title(get_string("advanced"));
     tray += group(get_string("compatibility"), checkbox("force_legacy_gtk_status", get_string("force_legacy_gtk_status"), PREFERENCES["tray"]["force_legacy_gtk_status"], "change_pref('tray', 'force_legacy_gtk_status', this.checked)"));
