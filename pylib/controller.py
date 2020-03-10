@@ -388,6 +388,11 @@ class PolychromaticController():
         group = data["group"]
         item = data["item"]
         value = data["value"]
+
+        if type(value) == str and len(value) == 0:
+            dbg.stdout("Refusing to write empty preference: '{0}' -> '{1}'!".format(group, item), dbg.error)
+            return False
+
         dbg.stdout("Writing preference: '{0}' -> '{1}' to '{2}".format(group, item, str(value)), dbg.action, 1)
         pref.set(group, item, value)
 
