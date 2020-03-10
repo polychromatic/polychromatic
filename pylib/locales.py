@@ -184,7 +184,7 @@ LOCALES = {
 
     # Error: Backend returns None (can't set device)
     "error_device_gone_title": _("Device Unavailable"),
-    "error_device_gone_text": _("The request could not be completed. Please refresh and try again."),
+    "error_device_gone_text": _("The request could not be completed due to devices being removed/inserted. Please refresh and try again."),
 
     # Error: Backend returns False (invalid)
     "error_bad_request_title": _("Controller Problem"),
