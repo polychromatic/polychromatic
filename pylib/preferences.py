@@ -377,7 +377,7 @@ def start_initalization():
     Prepares the preferences module for use.
     """
     # Create folders if they do not exist.
-    for folder in [path.root, path.effects, path.profiles, path.cache, path.device_images]:
+    for folder in [path.root, path.effects, path.profiles, path.cache, path.device_images, path.custom_icons]:
         if not os.path.exists(folder):
             dbg.stdout("Configuration folder does not exist. Creating: " + folder, dbg.action)
             os.makedirs(folder)
