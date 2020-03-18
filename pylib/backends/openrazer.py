@@ -944,9 +944,16 @@ def troubleshoot():
         output = modprobe.communicate()[0].decode("utf-8")
         code = modprobe.returncode
         results["dkms_loaded"] = False
-
         if code == 0:
             results["dkms_loaded"] = True
+
+        # Is a Razer DKMS module loaded right now?
+        lsmod = subprocess.Popen(["lsmod"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+        output = lsmod.communicate()[0].decode("utf-8")
+        if output.find("razer") != -1:
+            results["dkms_active"] = True
+        else:
+            results["dkms_active"] = False
 
         # Is secure boot the problem?
         if os.path.exists("/sys/firmware/efi"):
@@ -960,6 +967,16 @@ def troubleshoot():
         results["plugdev"] = False
         if groups.find("plugdev") != -1:
             results["plugdev"] = True
+
+        # Does plugdev have permission to read the files in /sys/?
+        log_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/logs/razer.log")
+        if os.path.exists(log_path):
+            with open(log_path) as f:
+                log = f.readlines()
+            if "".join(log).find("Could not access /sys/") == -1:
+                results["plugdev_perms"] = True
+            else:
+                results["plugdev_perms"] = False
 
         # Supported device in lsusb?
         try:

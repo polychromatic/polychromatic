@@ -357,9 +357,13 @@ class PolychromaticController():
             results = openrazer.troubleshoot()
             self.run_function("_show_troubleshoot_results", results)
             dbg.stdout("Troubleshooting finished.", dbg.success, 1)
-        except:
+        except Exception as e:
             dbg.stdout("Troubleshooting encountered an exception.", dbg.error, 1)
-            self._internal_error(locales.LOCALES["troubleshoot"], locales.LOCALES["troubleshoot_cannot_run"], "serious")
+            exception = common.get_exception_as_string(e)
+            dbg.stdout(exception, dbg.error, 1)
+            self._internal_error(locales.LOCALES["troubleshoot"],
+                locales.LOCALES["troubleshoot_cannot_run"] + "<br><pre>{0}</pre>".format(exception),
+                "serious")
 
     def _reload_preferences(self, data):
         """
