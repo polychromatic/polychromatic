@@ -142,6 +142,7 @@ def get_device(uid):
     macros = False
     game_mode = None
     matrix = False          # Also used to determine if 'chroma' hardware.
+    battery_charging = False
 
     # -> Integers
     matrix_rows = None
@@ -328,9 +329,10 @@ def get_device(uid):
             dbg.stdout("This probably indicates a bug, wrong OpenRazer version or improperly specified Chroma device:\n{0} ({1}:{2})".format(name, vid, pid), dbg.warning)
 
 
-    # If this is a mouse, get the current battery level.
-    if form_factor.get("id") == "mouse":
-        battery_level = _get_battery_level_dirty()
+    # Get battery data if device has a battery.
+    if rdevice.has("battery"):
+        battery_level = rdevice.battery_level
+        battery_charging = rdevice.is_charging
 
     # TODO: Get Polychromatic custom effect data
 
@@ -830,40 +832,6 @@ def _convert_colour_bytes(raw):
         "secondary": "#" + secondary_hex,
         "tertiary": "#" + tertiary_hex
     }
-
-
-def _get_battery_level_dirty():
-    """
-    Read the driver file for the current battery level. The OpenRazer Python
-    library (and/or daemon) does not currently support getting battery information.
-
-    Assumes only one mouse with a battery is present.
-
-    Returns:
-        (int)       Value was successfully read.
-        None        Value cannot be read, or battery not present.
-    """
-    # TODO: Should be added to Python library
-    battery_value = 0
-
-    # Inherits some GPL code from openrazer/scripts/razer_mouse/driver/get_battery.py
-    mouse_dirs = glob.glob(os.path.join("/sys/bus/hid/drivers/razermouse/", "*:*:*.*"))
-    mouse_dirs = glob.glob(os.path.join("/tmp/daemon_test/", "*:*:*.*"))
-
-    for directory in mouse_dirs:
-        for filename in ["charge_level", "get_battery"]:
-            filepath = os.path.join(directory, filename)
-            if os.path.exists(filepath):
-                with open(filepath, "r") as battery_file:
-                    try:
-                        battery_percentage_ns = int(battery_file.read().strip())
-                        battery_value = (100 / 255) * battery_percentage_ns
-                        return int(battery_value)
-                    except ValueError:
-                        pass
-                    except Exception:
-                        pass
-    return None
 
 
 def debug_matrix(uid, row, column):

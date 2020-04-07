@@ -341,9 +341,25 @@ function _get_state_html(device) {
     // TODO: In future, only show current profile (with link)
 
     // -- Current battery
-    var battery = device["battery_level"];
-    if (battery != undefined) {
-        output += _get_state("img/general/battery.svg", battery + "%");
+    var battery_level = device["battery_level"];
+    var battery_charging = device["battery_charging"];
+    if (battery_level != undefined) {
+        var icon;
+        if (battery_level < 10) {
+            icon = "battery-0.svg";
+        } else if (battery_level < 30) {
+            icon = "battery-25.svg";
+        } else if (battery_level < 55) {
+            icon = "battery-50.svg";
+        } else if (battery_level < 90) {
+            icon = "battery-75.svg";
+        } else {
+            icon = "battery-100.svg";
+        }
+        if (battery_charging === true) {
+            icon = "battery-charging.svg";
+        }
+        output += _get_state("img/general/" + icon, battery_level + "%");
     }
 
     // -- DPI
