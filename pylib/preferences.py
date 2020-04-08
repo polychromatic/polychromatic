@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 #
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2015-2020 Luke Horwell <code@horwell.me>

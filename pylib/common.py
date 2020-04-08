@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 #
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2017-2020 Luke Horwell <code@horwell.me>
@@ -445,3 +445,5 @@ _ = setup_translations(__file__, "polychromatic")
 DATA_PATH = get_data_dir_path()
 PID_FILE_TRAY = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
 
+# TODO: Make PID dictionary
+# XDG_RUNTIME_DIR => /run/user/1000  (tray applet too), fallback to /tmp
