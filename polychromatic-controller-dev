@@ -11,7 +11,7 @@ params=$*
 cd "$(dirname "$0")"
 
 # Compile SASS files
-./source/build-sass.sh
+./scripts/build-styles.sh
 if [ $? != 0 ]; then
     exit 1
 fi

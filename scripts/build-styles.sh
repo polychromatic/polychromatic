@@ -7,7 +7,7 @@
 #   - Dart SASS (sass)
 #
 
-cd $(dirname "$0")/sass/
+cd $(dirname "$0")/../source/sass/
 
 # Find an implementation of SASS to use.
 sassc=$(which sassc 2>/dev/null)
