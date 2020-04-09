@@ -172,6 +172,7 @@ LOCALES = {
     "logs": _("Logs"),
     "options": _("Options"),
     "landing_tab": _("Landing Tab"),
+    "unknown": _("Unknown"),
 
     # Invalid Save Data Pop-up
     "save_data_warning_title": _("Incompatible Save Data"),
@@ -203,15 +204,17 @@ LOCALES = {
     "error_not_ready_text": _("This device's backend library or daemon could not be initialized."),
 
     # Troubleshooter - General
-    "troubleshoot_cannot_run": _("The troubleshooter cannot be started. Please check the OpenRazer Python libraries are installed properly and relaunch Polychromatic."),
+    "troubleshoot_cannot_run": _("The troubleshooter cannot be started. Here's the error:"),
     "troubleshoot_test_complete": _("All checks completed."),
-    "troubleshoot_test_partial": _("Not all of the tests could be performed, here's what was found anyway."),
+    "troubleshoot_test_partial": _("Not all of the checks were performed due to errors, here's what was found anyway."),
 
     # Troubleshooter - OpenRazer checks
     "troubleshoot_daemon_found": _("Check if daemon is installed"),
     "troubleshoot_daemon_found_suggestion": _("Install the 'openrazer-meta' package for your distribution."),
     "troubleshoot_daemon_running": _("Check if daemon is running"),
     "troubleshoot_daemon_running_suggestion": _("Start the daemon from the terminal. Look out for any errors: $ openrazer-daemon -Fv"),
+    "troubleshoot_pylib_present": _("Check if Python library is installed"),
+    "troubleshoot_pylib_present_suggestion": _("Install the 'python3-openrazer' package for your distribution."),
     "troubleshoot_dkms_installed_src": _("Check if DKMS sources are installed"),
     "troubleshoot_dkms_installed_src_suggestion": _("Install the 'openrazer-meta' package for your distribution."),
     "troubleshoot_dkms_installed_built": _("Check if DKMS module is built for this kernel version"),

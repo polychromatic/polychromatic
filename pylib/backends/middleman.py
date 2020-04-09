@@ -14,8 +14,6 @@ https://polychromatic.app/docs/
 
 from .. import common
 
-dbg = common.Debugging()
-
 #
 # Avaliable Backends
 #
@@ -185,7 +183,10 @@ def debug_matrix(backend, uid, row, column):
 def troubleshoot():
     """
     Performs a series of automatic troubleshooting steps to identify possible
-    reasons why the OpenRazer daemon is not detecting a device on Linux systems only.
+    reasons why the OpenRazer daemon is not detecting a device (Linux only)
+
+    This function is currently exclusive to OpenRazer, but could potentially
+    expand to other backends if necessary in future.
 
     Dictionary consists of:
     {
@@ -199,10 +200,5 @@ def troubleshoot():
     Returns:
         (dict)      A dictionary describing the checks and status.
     """
-    results = {}
-
-    # TODO: Troubleshooting assumes OpenRazer. Only one backend is supported.
-    if BACKEND_OPENRAZER == True:
-        results = openrazer.troubleshoot()
-
-    return results
+    from . import openrazer_troubleshooter as troubleshooter
+    return troubleshooter.troubleshoot()

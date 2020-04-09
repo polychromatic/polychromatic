@@ -74,7 +74,7 @@ function _set_tab_preferences() {
                     "icon": "img/logo/openrazer.svg",
                     "label": "OpenRazer",
                     "onclick": "show_pref('openrazer')",
-                    "classes": "",
+                    "classes": VERSION.openrazer == undefined ? "dim" : "",
                     "id": "nav-openrazer"
                 }
             ]
@@ -169,7 +169,7 @@ function _set_tab_preferences() {
     </div>`;
 
     openrazer += group_title(get_string("version"));
-    openrazer += group("OpenRazer", `<code class="transparent">${VERSION.openrazer}</code>`, true);
+    openrazer += group("OpenRazer", `<code class="transparent">${VERSION.openrazer == undefined ? get_string("unknown") : VERSION.openrazer}</code>`, true);
 
     openrazer += group_title(get_string("configuration"));
     openrazer += group(get_string("options"), `<a onclick="open_uri('/home/$USER/.config/openrazer/razer.conf')">~/.config/openrazer/razer.conf</a>`, true);

@@ -244,12 +244,14 @@ function _show_troubleshoot_results(data) {
 
     var icons = {
         false: "img/general/warning.svg",
-        true: "img/general/success.svg"
+        true: "img/general/success.svg",
+        null: "img/general/unknown.svg"
     }
 
     var colours = {
         false: "yellow",
-        true: "lime"
+        true: "lime",
+        null: "gray"
     }
 
     for (t = 0; t < tests.length; t++) {
