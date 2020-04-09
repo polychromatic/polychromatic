@@ -18,7 +18,7 @@ from threading import Thread
 from . import common
 from . import locales
 from . import preferences as pref
-from .backends import openrazer
+from .backends import middleman
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -42,9 +42,6 @@ class PolychromaticController():
         # Set later in initalise_app()
         self.version = None
         self.versions = None
-        self.backends = {
-            "openrazer": False
-        }
 
     def parse_request(self, request, data):
         """
@@ -98,7 +95,9 @@ class PolychromaticController():
         dbg.stdout("Version " + version, dbg.debug, 1)
 
         # Append version information
-        versions["openrazer"] = openrazer.VERSION
+        backend_versions = middleman.get_versions()
+        for backend in backend_versions.keys():
+            versions[backend] = backend_versions[backend]
 
         self.send_view_variable("LOCALES", locales.LOCALES)
         self.send_view_variable("COLOURS", pref.load_file(pref.path.colours))
@@ -112,22 +111,17 @@ class PolychromaticController():
         self.run_function("build_view")
 
         # View caches device list via the CACHE_DEVICES variable.
-        dbg.stdout("OpenRazer: Getting device list...", dbg.action, 1)
-        devices = openrazer.get_device_list()
+        dbg.stdout("Getting device list...", dbg.action, 1)
+        devices = middleman.get_device_list()
         self.send_view_variable("CACHE_DEVICES", devices)
 
-        if devices == -1:
-            dbg.stdout("OpenRazer: Daemon not running", dbg.error)
-
-        elif type(devices) == str:
-            dbg.stdout("OpenRazer: Error! Exception: " + str(devices), dbg.error)
+        if type(devices) == str:
+            dbg.stdout("Backend Error. Exception: " + str(devices), dbg.error)
             self._internal_error(locales.LOCALES["error_not_ready_title"], locales.LOCALES["error_not_ready_text"] + "<code>{0}</code>".format(devices), "serious")
 
         else:
-            # Daemon OK
-            dbg.stdout("OpenRazer: Ready", dbg.success, 1)
-            self.send_view_variable("OPENRAZER_READY", True);
-            self.backends["openrazer"] = True
+            dbg.stdout("Backend Ready", dbg.success, 1)
+            self.send_view_variable("BACKEND_OPENRAZER", True);
 
         # Warn if configuration is compatible for this version.
         pref_data = pref.load_file(path.preferences)
@@ -192,7 +186,7 @@ class PolychromaticController():
             "callback": <Name of JavaScript function to run>
         }
         """
-        self.send_view_variable("CACHE_DEVICES", openrazer.get_device_list())
+        self.send_view_variable("CACHE_DEVICES", middleman.get_device_list())
         self.run_function(data["callback"])
 
     def _open_device(self, data):
@@ -201,10 +195,11 @@ class PolychromaticController():
 
         Data parameter:
         {
-            "uid": <id in Razer list>
+            "backend": (str) <backend id>
+            "uid": (int) <id in backend list>
         }
         """
-        data = openrazer.get_device(data["uid"])
+        data = middleman.get_device(data["backend"], data["uid"])
 
         if data == None:
             # Device no longer avaiable (-1)
@@ -240,20 +235,20 @@ class PolychromaticController():
             "static": None
         }
 
-        for device in openrazer.get_device_list():
+        for device in middleman.get_device_list():
             if device["available"] == False:
                 continue
 
             for zone in device["zones"]:
                 if request_type == "effect":
                     param = effect_params[request_value]
-                    openrazer.set_device_state(device["uid"], request_value, zone, None, [param])
+                    middleman.set_device_state(device["backend"], device["uid"], request_value, zone, None, [param])
 
                 elif request_type == "brightness":
-                    openrazer.set_device_state(device["uid"], "brightness", zone, None, [request_value])
+                    middleman.set_device_state(device["backend"], device["uid"], "brightness", zone, None, [request_value])
 
                 elif request_type == "colour":
-                    openrazer.set_device_colours(device["uid"], zone, [request_value])
+                    middleman.set_device_colours(device["backend"], device["uid"], zone, [request_value])
 
     def _set_device_state(self, data):
         """
@@ -276,8 +271,8 @@ class PolychromaticController():
         colour_hex = data["colour_hex"]
         params = data["params"]
 
-        dbg.stdout("Processing request '{2}' for device {0} in backend '{1}'...".format(uid, backend, backend_request), dbg.action, 1)
-        request = openrazer.set_device_state(uid, backend_request, zone, colour_hex, params)
+        dbg.stdout("Processing request '{2}' for {1} device {0}...".format(uid, backend, backend_request), dbg.action, 1)
+        request = middleman.set_device_state(backend, uid, backend_request, zone, colour_hex, params)
 
         if request == None:
             # Device no longer available
@@ -314,7 +309,7 @@ class PolychromaticController():
         row = data["position"][0]
         column = data["position"][1]
 
-        request = openrazer.debug_matrix(uid, int(row), int(column))
+        request = middleman.debug_matrix(backend, uid, int(row), int(column))
 
         if request == None:
             # Device no longer available
@@ -354,7 +349,7 @@ class PolychromaticController():
         """
         try:
             dbg.stdout("Running troubleshooter for OpenRazer...", dbg.warning, 1)
-            results = openrazer.troubleshoot()
+            results = middleman.troubleshoot()
             self.run_function("_show_troubleshoot_results", results)
             dbg.stdout("Troubleshooting finished.", dbg.success, 1)
         except Exception as e:

@@ -68,7 +68,7 @@ function _set_tab_devices() {
             var classes;
 
             if (device.available === true) {
-                onclick = `open_device(this, ${device.uid})`;
+                onclick = `open_device(this, '${device.backend}', ${device.uid})`;
                 classes = "";
                 label = device.name;
             } else {
@@ -185,7 +185,7 @@ function _set_tab_devices() {
     // Open the first device
     if (typeof(CACHE_DEVICES) == "object" && CACHE_DEVICES.length >= 1) {
         if (CACHE_DEVICES[0].available == true) {
-            open_device($("#device-0"), 0);
+            open_device($("#device-0"), CACHE_DEVICES[0].backend, CACHE_DEVICES[0].uid);
         } else {
             open_device_not_avaliable($(".sidebar-item-group").last().find(".sidebar-item").first());
         }
@@ -251,16 +251,20 @@ function apply_to_all_colour(type, value) {
     send_data("apply_to_all_colour", {"type": type, "value": value});
 }
 
-function open_device(element, uid) {
+function open_device(element, backend, uid) {
     //
     // Show the details page for a registered device. This sends a request to
     // the controller to retrieve the device's details.
     //
-    //  uid         ID from OpenRazer backend.
+    //  backend     Internal backend ID
+    //  uid         Internal device ID
     //
     $(".sidebar-item").removeClass("active");
     $(element).addClass("active");
-    send_data("open_device", {"uid": uid});
+    send_data("open_device", {
+        "backend": backend,
+        "uid": uid
+    });
 }
 
 function _open_device(device) {

@@ -254,7 +254,9 @@ class Controller(object):
                 "webkit": "{0}.{1}.{2}".format(WebKit2.MAJOR_VERSION, WebKit2.MINOR_VERSION, WebKit2.MICRO_VERSION),
                 "python": "{0}.{1}.{2}".format(python_version.major, python_version.minor, python_version.micro)
             }
-        except NameError:
+        except NameError as e:
+            dbg.stdout("Could not retrieve version info! Dependency too old or too new?", dbg.error)
+            dbg.stdout(str(e), dbg.error)
             self.versions = {}
 
     def _run_js(self, code):

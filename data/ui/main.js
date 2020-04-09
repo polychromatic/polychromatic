@@ -41,7 +41,7 @@ var CUSTOM_ICONS;
 var TRANSITION_SPEED = 300 + 50;
 
 // Backend status
-var OPENRAZER_READY = false;
+var BACKEND_OPENRAZER = false;
 
 // Cached responses from controller
 var CACHE_DEVICE_LIST = null;       // -- get_device_list() listing all devices.

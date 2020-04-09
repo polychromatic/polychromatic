@@ -4,7 +4,10 @@
 # Copyright (C) 2017-2020 Luke Horwell <code@horwell.me>
 #
 """
-This module abstracts data between Polychromatic and the OpenRazer daemon.
+This module abstracts data from the OpenRazer Python library (and daemon)
+and parses this for Polychromatic to use.
+
+Project URL: https://github.com/openrazer/openrazer
 """
 
 import glob
@@ -25,13 +28,7 @@ dbg = common.Debugging()
 
 def get_device_list():
     """
-    Gathers a device list of devices bound to the device and possible devices that
-    may be supported by OpenRazer at a future date.
-
-    Returns:
-        (list)      Success: List of currently plugged in Razer devices with basic metadata.
-        -1          Error Code -1: Daemon not running.
-        (str)       Error: Daemon threw an exception. Returns string of exception.
+    See: middleman.get_device_list()
     """
     devices = []
     try:
@@ -96,16 +93,7 @@ def get_device_list():
 
 def get_device(uid):
     """
-    Returns a dictonary describing the state of a device. This includes its current
-    settings, the type of lighting it supports, its serial and firmware version.
-
-    Params:
-        uid         (int)   Numeric ID of device in daemon's device list.
-
-    Returns:
-        {}          Success: Dictonary of metadata
-        None        Error: Device no longer available
-        (str)       Error: Exception details
+    See: middleman.get_device(...)
     """
     try:
         # TODO: Speed up by initalising DeviceManager() once - param maybe?
@@ -370,24 +358,7 @@ def get_device(uid):
 
 def set_device_state(uid, request, zone, colour_hex, params):
     """
-    Sends a request to the the device, like setting the brightness, the hardware effect or
-    a hardware property (such as DPI).
-
-    It is expected the parent calling this function has validated the request,
-    e.g. command line validated zone for device.
-
-    Params:
-        uid         (int)   Numeric ID of device in device list.
-        request     (str)   Polychromatic's request, e.g. "brightness", "effect"
-        zone        (str)   If applicable, a valid lighting area, e.g. "logo".
-        colour_hex  (lst)   If applicable, a list of strings in format: [#RRGGBB,  #RRGGBB]
-        params      (lst)   If required, a list of parameters to parse. E.g. brightness value or wave direction, etc.
-
-    Returns:
-        True        Operation successful.
-        False       Operation failed, such as an incorrect request.
-        None        Device not found, possibly removed.
-        (str)       Operation failed. The string of the exception.
+    See: middleman.set_device_state(...)
     """
     try:
         # TODO: Speed up by initalising DeviceManager() once - param maybe?
@@ -552,18 +523,7 @@ def set_device_state(uid, request, zone, colour_hex, params):
 
 def set_device_colours(uid, zone, colour_hex):
     """
-    Replays the active effect on the device, but changes to a new set of colours.
-
-    Params:
-        uid         (int)   Numeric ID of device in device list.
-        zone        (str)   A valid lighting area, e.g. "logo".
-        colour_hex  (lst)   A list of strings in format: [#RRGGBB,  #RRGGBB]
-
-    Returns:
-        True        Operation successful.
-        False       Operation failed, such as an incorrect request.
-        None        Device not found, possibly removed.
-        (str)       Operation failed. The string of the exception.
+    See: middleman.set_device_colours()
     """
     try:
         # TODO: Speed up by initalising DeviceManager() once - param maybe?
@@ -836,7 +796,7 @@ def _convert_colour_bytes(raw):
 
 def debug_matrix(uid, row, column):
     """
-    Highlights a key for the purposes of testing custom frames.
+    See: middleman.debug_matrix()
     """
     try:
         # TODO: Speed up by initalising DeviceManager() once - param maybe?
@@ -858,15 +818,7 @@ def debug_matrix(uid, row, column):
 
 def troubleshoot():
     """
-    Performs a series of automatic troubleshooting steps to identify possible
-    reasons why the OpenRazer daemon is not detecting a device on Linux systems only.
-
-    Returns a dictionary describing the checks and status.
-
-    "test_name" = False (failed)
-                  True (success)
-    "success" = True (all tests complete)
-                False (exception occurred, partial results)
+    See: middleman.troubleshoot()
     """
     import shutil
     import os

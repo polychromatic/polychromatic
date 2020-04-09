@@ -48,7 +48,7 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
     try:
         import pylib.preferences as pref
         import pylib.common as common
-        from pylib.backends import openrazer
+        from pylib.backends import middleman
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -58,7 +58,7 @@ else:
     try:
         import polychromatic.preferences as pref
         import polychromatic.common as common
-        from polychromatic.backends import openrazer
+        from polychromatic.backends import middleman
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
@@ -250,7 +250,7 @@ class AppIndicator(object):
         dbg.stdout("Creating menus...", dbg.action, 1)
         root = Gtk.Menu()
 
-        devices = openrazer.get_device_list()
+        devices = middleman.get_device_list()
         apply_all_may_not_work = False
 
         # List devices and their submenus.
@@ -269,7 +269,7 @@ class AppIndicator(object):
                     continue
 
                 # Get full details about this device and build its submenu.
-                details = openrazer.get_device(device["uid"])
+                details = middleman.get_device(device["backend"], device["uid"])
                 root.append(self.build_device_submenu(device, details)[0])
 
                 for zone in details["zone_supported"].keys():
@@ -341,6 +341,7 @@ class AppIndicator(object):
         submenu = create_submenu(details["name"], True, details["icon"])
         dbg.stdout("- {0}".format(details["name"]), dbg.action, 1)
 
+        backend = device["backend"]
         uid = device["uid"]
         multiple_zones = False
         if len(device["zones"]) > 1:
@@ -368,8 +369,8 @@ class AppIndicator(object):
                 if details["game_mode"] != None:
                     dbg.stdout("  - Game Mode", dbg.debug, 1)
                     game_mode_menu = create_submenu(_("Game Mode"), True, get_icon("general", "game-mode.svg"))
-                    create_submenu_item(game_mode_menu, _("On"), True, cb.set_game_mode, [uid, True], get_icon("general", "game-mode.svg"))
-                    create_submenu_item(game_mode_menu, _("Off"), True, cb.set_game_mode, [uid, False], get_icon("general", "game-mode-disabled.svg"))
+                    create_submenu_item(game_mode_menu, _("On"), True, cb.set_game_mode, [backend, uid, True], get_icon("general", "game-mode.svg"))
+                    create_submenu_item(game_mode_menu, _("Off"), True, cb.set_game_mode, [backend, uid, False], get_icon("general", "game-mode-disabled.svg"))
                     submenu[1].append(game_mode_menu[0])
 
                 # DPI
@@ -387,16 +388,16 @@ class AppIndicator(object):
                             dpi_icon = get_icon("general", "dpi-fast.svg")
                         else:
                             dpi_icon = None
-                        create_submenu_item(dpi_menu, str(dpi), True, cb.set_dpi, [uid, int(dpi)], dpi_icon)
+                        create_submenu_item(dpi_menu, str(dpi), True, cb.set_dpi, [backend, uid, int(dpi)], dpi_icon)
                     submenu[1].append(dpi_menu[0])
 
                 # Polling Rate
                 if details["poll_rate"] != None:
                     dbg.stdout("  - Poll Rate", dbg.debug, 1)
                     poll_menu = create_submenu(_("Polling Rate"), True, get_icon("general", "poll-rate.svg"))
-                    create_submenu_item(poll_menu, _("125 Hz (8ms)"), True, cb.set_poll_rate, [uid, 125])
-                    create_submenu_item(poll_menu, _("500 Hz (2ms)"), True, cb.set_poll_rate, [uid, 500])
-                    create_submenu_item(poll_menu, _("1000 Hz (1ms)"), True, cb.set_poll_rate, [uid, 1000])
+                    create_submenu_item(poll_menu, _("125 Hz (8ms)"), True, cb.set_poll_rate, [backend, uid, 125])
+                    create_submenu_item(poll_menu, _("500 Hz (2ms)"), True, cb.set_poll_rate, [backend, uid, 500])
+                    create_submenu_item(poll_menu, _("1000 Hz (1ms)"), True, cb.set_poll_rate, [backend, uid, 1000])
                     submenu[1].append(poll_menu[0])
 
             # End of zone-specific options
@@ -418,12 +419,12 @@ class AppIndicator(object):
                 try:
                     name = col_index[pos]["name"]
                     hex_value = col_index[pos]["hex"]
-                    create_submenu_item(colour_menu, name, True, cb.set_colour, [uid, zone, hex_value], self._get_colour_icon(hex_value))
+                    create_submenu_item(colour_menu, name, True, cb.set_colour, [backend, uid, zone, hex_value], self._get_colour_icon(hex_value))
                 except Exception:
                     dbg.stdout("Ignoring invalid colour data at index position " + str(pos), dbg.error)
 
             colour_menu[1].append(create_seperator())
-            create_submenu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [uid, zone], get_icon("general", "palette.svg"))
+            create_submenu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [backend, uid, zone], get_icon("general", "palette.svg"))
             create_submenu_item(colour_menu, _("Edit Colors..."), True, cb.launch_controller, ["colours"], get_icon("general", "edit.svg"))
             submenu[1].append(create_seperator())
             submenu[1].append(colour_menu[0])
@@ -440,10 +441,11 @@ class AppIndicator(object):
         dbg.stdout("  - Effects [{0}]".format(zone), dbg.debug, 1)
         submenu = create_submenu(_("Effects"), True, get_icon("general", "effects.svg"))
         supported_fx = details["zone_supported"][zone].keys()
+        backend = details["backend"]
         uid = details["uid"]
 
         if "spectrum" in supported_fx:
-            create_submenu_item(submenu, _("Spectrum"), True, cb.set_effect, [uid, zone, "spectrum"], get_icon("effects", "spectrum.svg"))
+            create_submenu_item(submenu, _("Spectrum"), True, cb.set_effect, [backend, uid, zone, "spectrum"], get_icon("effects", "spectrum.svg"))
 
         if "wave" in supported_fx:
             localised_directions = common.get_wave_direction(details["form_factor_id"])
@@ -451,16 +453,16 @@ class AppIndicator(object):
             right = localised_directions[1]
 
             wave_menu = create_submenu(_("Wave"), True, get_icon("effects", "wave.svg"))
-            create_submenu_item(wave_menu, left, True, cb.set_effect, [uid, zone, "wave", 2])
-            create_submenu_item(wave_menu, right, True, cb.set_effect, [uid, zone, "wave", 1])
+            create_submenu_item(wave_menu, left, True, cb.set_effect, [backend, uid, zone, "wave", 2])
+            create_submenu_item(wave_menu, right, True, cb.set_effect, [backend, uid, zone, "wave", 1])
             submenu[1].append(wave_menu[0])
 
         if "reactive" in supported_fx:
             reactive_menu = create_submenu(_("Reactive"), True, get_icon("effects", "reactive.svg"))
-            create_submenu_item(reactive_menu, _("Fast"), True, cb.set_effect, [uid, zone, "reactive", 1])
-            create_submenu_item(reactive_menu, _("Medium"), True, cb.set_effect, [uid, zone, "reactive", 2])
-            create_submenu_item(reactive_menu, _("Slow"), True, cb.set_effect, [uid, zone, "reactive", 3])
-            create_submenu_item(reactive_menu, _("Very Slow"), True, cb.set_effect, [uid, zone, "reactive", 4])
+            create_submenu_item(reactive_menu, _("Fast"), True, cb.set_effect, [backend, uid, zone, "reactive", 1])
+            create_submenu_item(reactive_menu, _("Medium"), True, cb.set_effect, [backend, uid, zone, "reactive", 2])
+            create_submenu_item(reactive_menu, _("Slow"), True, cb.set_effect, [backend, uid, zone, "reactive", 3])
+            create_submenu_item(reactive_menu, _("Very Slow"), True, cb.set_effect, [backend, uid, zone, "reactive", 4])
             submenu[1].append(reactive_menu[0])
 
         if "breath" in supported_fx:
@@ -468,13 +470,13 @@ class AppIndicator(object):
             breath_supported = details["zone_supported"][zone]["breath_options"]
 
             if "random" in breath_supported:
-                create_submenu_item(breath_menu, _("Random"), True, cb.set_effect, [uid, zone, "breath_random"])
+                create_submenu_item(breath_menu, _("Random"), True, cb.set_effect, [backend, uid, zone, "breath_random"])
             if "single" in breath_supported:
-                create_submenu_item(breath_menu, _("Single"), True, cb.set_effect, [uid, zone, "breath_single"])
+                create_submenu_item(breath_menu, _("Single"), True, cb.set_effect, [backend, uid, zone, "breath_single"])
             if "dual" in breath_supported:
-                create_submenu_item(breath_menu, _("Dual"), True, cb.set_effect, [uid, zone, "breath_dual"])
+                create_submenu_item(breath_menu, _("Dual"), True, cb.set_effect, [backend, uid, zone, "breath_dual"])
             if "triple" in breath_supported:
-                create_submenu_item(breath_menu, _("Triple"), True, cb.set_effect, [uid, zone, "breath_triple"])
+                create_submenu_item(breath_menu, _("Triple"), True, cb.set_effect, [backend, uid, zone, "breath_triple"])
 
             submenu[1].append(breath_menu[0])
 
@@ -483,19 +485,19 @@ class AppIndicator(object):
             starlight_supported = details["zone_supported"][zone]["starlight_options"]
 
             if "random" in starlight_options:
-                create_submenu_item(breath_menu, _("Random"), True, cb.set_effect, [uid, zone, "starlight_random"])
+                create_submenu_item(breath_menu, _("Random"), True, cb.set_effect, [backend, uid, zone, "starlight_random"])
             if "single" in starlight_options:
-                create_submenu_item(breath_menu, _("Single"), True, cb.set_effect, [uid, zone, "starlight_single"])
+                create_submenu_item(breath_menu, _("Single"), True, cb.set_effect, [backend, uid, zone, "starlight_single"])
             if "dual" in starlight_options:
-                create_submenu_item(breath_menu, _("Dual"), True, cb.set_effect, [uid, zone, "starlight_dual"])
+                create_submenu_item(breath_menu, _("Dual"), True, cb.set_effect, [backend, uid, zone, "starlight_dual"])
 
             submenu[1].append(starlight_menu[0])
 
         if "blinking" in supported_fx:
-            create_submenu_item(submenu, _("Blinking"), True, cb.set_effect, [uid, zone, "blinking"], get_icon("effects", "blinking.svg"))
+            create_submenu_item(submenu, _("Blinking"), True, cb.set_effect, [backend, uid, zone, "blinking"], get_icon("effects", "blinking.svg"))
 
         if "pulsate" in supported_fx:
-            create_submenu_item(submenu, _("Pulsate"), True, cb.set_effect, [uid, zone, "pulsate"], get_icon("effects", "pulsate.svg"))
+            create_submenu_item(submenu, _("Pulsate"), True, cb.set_effect, [backend, uid, zone, "pulsate"], get_icon("effects", "pulsate.svg"))
 
         if "ripple" in supported_fx:
             ripple_menu = create_submenu(_("Ripple"), True, get_icon("effects", "ripple.svg"))
@@ -503,15 +505,15 @@ class AppIndicator(object):
 
             # Use a submenu if device supports both ripple effects.
             if "random" in ripple_supported:
-                create_submenu_item(ripple_menu, _("Single Color"), True, cb.set_effect, [uid, zone, "ripple_single", 0.01])
-                create_submenu_item(ripple_menu, _("Random"), True, cb.set_effect, [uid, zone, "ripple_random", 0.01])
+                create_submenu_item(ripple_menu, _("Single Color"), True, cb.set_effect, [backend, uid, zone, "ripple_single", 0.01])
+                create_submenu_item(ripple_menu, _("Random"), True, cb.set_effect, [backend, uid, zone, "ripple_random", 0.01])
                 submenu[1].append(ripple_menu[0])
             else:
                 # Just support single colour ripple
-                create_submenu_item(submenu, _("Ripple"), True, cb.set_effect, [uid, zone, "ripple_single"], get_icon("effects", "ripple.svg"))
+                create_submenu_item(submenu, _("Ripple"), True, cb.set_effect, [backend, uid, zone, "ripple_single"], get_icon("effects", "ripple.svg"))
 
         if "static" in supported_fx:
-            create_submenu_item(submenu, _("Static"), True, cb.set_effect, [uid, zone, "static"], get_icon("effects", "static.svg"))
+            create_submenu_item(submenu, _("Static"), True, cb.set_effect, [backend, uid, zone, "static"], get_icon("effects", "static.svg"))
 
         if details["matrix"]:
             submenu[1].append(create_seperator())
@@ -534,14 +536,15 @@ class AppIndicator(object):
         """
         dbg.stdout("  - Brightness [{0}]".format(zone), dbg.debug, 1)
         submenu = create_submenu(_("Brightness"), True, get_icon("general", "lightbulb.svg"))
+        backend = details["backend"]
         uid = details["uid"]
 
         if toggle_only:
-            create_submenu_item(submenu, _("On"), True, cb.set_brightness, [uid, zone, 1], get_icon("brightness", "100.svg"))
-            create_submenu_item(submenu, _("Off"), True, cb.set_brightness, [uid, zone, 0], get_icon("brightness", "0.svg"))
+            create_submenu_item(submenu, _("On"), True, cb.set_brightness, [backend, uid, zone, 1], get_icon("brightness", "100.svg"))
+            create_submenu_item(submenu, _("Off"), True, cb.set_brightness, [backend, uid, zone, 0], get_icon("brightness", "0.svg"))
         else:
             for no in [100, 75, 50, 25, 0]:
-                create_submenu_item(submenu, str(no) + "%", True, cb.set_brightness, [uid, zone, no], get_icon("brightness", str(no) + ".svg"))
+                create_submenu_item(submenu, str(no) + "%", True, cb.set_brightness, [backend, uid, zone, no], get_icon("brightness", str(no) + ".svg"))
 
         return submenu
 
@@ -611,18 +614,19 @@ class Callback():
         GTK menu item to set an effect for a device.
 
         Params:
-            attr    [uid, zone, effect]
+            attr    [backend, uid, zone, effect]
         """
-        uid = attr[0]
-        zone = attr[1]
-        effect = attr[2]
+        backend = attr[0]
+        uid = attr[1]
+        zone = attr[2]
+        effect = attr[3]
         try:
-            params = attr[3]
-        except Exception:
+            params = attr[4]
+        except IndexError:
             params = None
 
-        dbg.stdout("Setting effect for device ID {0} in zone '{1}' to '{2}'".format(uid, zone, effect), dbg.debug, 1)
-        r = openrazer.set_device_state(uid, effect, zone, None, [params])
+        dbg.stdout("Setting effect for {0} device ID {1} in zone '{2}' to '{3}'".format(backend, uid, zone, effect), dbg.debug, 1)
+        r = middleman.set_device_state(backend, uid, effect, zone, None, [params])
         _verbose_check_status(r)
 
     def set_brightness(cb, item, attr):
@@ -632,12 +636,13 @@ class Callback():
         Params:
             attr    [uid, zone, value]
         """
-        uid = attr[0]
-        zone = attr[1]
-        value = attr[2]
+        backend = attr[0]
+        uid = attr[1]
+        zone = attr[2]
+        value = attr[3]
 
-        dbg.stdout("Setting brightness for device ID {0} in zone '{1}' to '{2}'".format(uid, zone, value), dbg.debug, 1)
-        r = openrazer.set_device_state(uid, "brightness", zone, None, [value])
+        dbg.stdout("Setting brightness for {0} device ID {1} in zone '{2}' to '{3}'".format(backend, uid, zone, value), dbg.debug, 1)
+        r = middleman.set_device_state(backend, uid, "brightness", zone, None, [value])
         _verbose_check_status(r)
 
     def set_colour(cb, item, attr):
@@ -648,12 +653,13 @@ class Callback():
         Params:
             attr    [uid, zone, hex_string]
         """
-        uid = attr[0]
-        zone = attr[1]
-        hex_value = attr[2]
+        backend = attr[0]
+        uid = attr[1]
+        zone = attr[2]
+        hex_value = attr[3]
 
-        dbg.stdout("Setting colour for device ID {0} in zone '{1}' to '{2}'".format(uid, zone, hex_value), dbg.debug, 1)
-        r = openrazer.set_device_colours(uid, zone, [hex_value])
+        dbg.stdout("Setting colour for {0} device ID {1} in zone '{2}' to '{3}'".format(backend, uid, zone, hex_value), dbg.debug, 1)
+        r = middleman.set_device_colours(backend, uid, zone, [hex_value])
         _verbose_check_status(r)
 
     def set_dpi(cb, item, attr):
@@ -663,11 +669,12 @@ class Callback():
         Params:
             attr    [uid, new_dpi]
         """
-        uid = attr[0]
-        new_dpi = attr[1]
+        backend = attr[0]
+        uid = attr[1]
+        new_dpi = attr[2]
 
-        dbg.stdout("Setting DPI for device ID {0} to '{1}'".format(uid, new_dpi), dbg.debug, 1)
-        r = openrazer.set_device_state(uid, "dpi", None, None, [new_dpi, new_dpi])
+        dbg.stdout("Setting DPI for {0} device ID {1} to '{2}'".format(backend, uid, new_dpi), dbg.debug, 1)
+        r = middleman.set_device_state(backend, uid, "dpi", None, None, [new_dpi, new_dpi])
         _verbose_check_status(r)
 
     def set_poll_rate(cb, item, attr):
@@ -677,11 +684,12 @@ class Callback():
         Params:
             attr    [uid, new_poll_rate]
         """
-        uid = attr[0]
-        new_poll_rate = attr[1]
+        backend = attr[0]
+        uid = attr[1]
+        new_poll_rate = attr[2]
 
-        dbg.stdout("Setting poll rate for device ID {0} to '{1}'".format(uid, new_poll_rate), dbg.debug, 1)
-        r = openrazer.set_device_state(uid, "poll_rate", None, None, [new_poll_rate])
+        dbg.stdout("Setting poll rate for {0} device ID {1} to '{2}'".format(backend, uid, new_poll_rate), dbg.debug, 1)
+        r = middleman.set_device_state(backend, uid, "poll_rate", None, None, [new_poll_rate])
         _verbose_check_status(r)
 
     def set_game_mode(cb, item, attr):
@@ -691,11 +699,12 @@ class Callback():
         Params:
             attr    [uid, new_state]
         """
-        uid = attr[0]
-        state = attr[1]
+        backend = attr[0]
+        uid = attr[1]
+        state = attr[2]
 
-        dbg.stdout("Setting game mode for device ID {0} to '{1}'".format(uid, state), dbg.debug, 1)
-        r = openrazer.set_device_state(uid, "game_mode", None, None, [state])
+        dbg.stdout("Setting game mode for {0} device ID {1} to '{1}'".format(backend, uid, state), dbg.debug, 1)
+        r = middleman.set_device_state(backend, uid, "game_mode", None, None, [state])
         _verbose_check_status(r)
 
     def set_all_effect(cb, item, attr):
@@ -711,7 +720,7 @@ class Callback():
         except Exception:
             params = None
 
-        devices = openrazer.get_device_list()
+        devices = middleman.get_device_list()
         dbg.stdout("Setting all devices to '{0}'".format(request), dbg.debug, 1)
 
         for device in devices:
@@ -719,7 +728,7 @@ class Callback():
                 zones = device["zones"]
                 for zone in zones:
                     dbg.stdout("- {0} [{1}]".format(device["name"], zone), dbg.action, 1)
-                    r = openrazer.set_device_state(int(device["uid"]), request, zone, None, [params])
+                    r = middleman.set_device_state(device["backend"], int(device["uid"]), request, zone, None, [params])
                     _verbose_check_status(r)
 
     def set_all_brightness(cb, item, value):
@@ -732,7 +741,7 @@ class Callback():
         """
         value = int(value)
 
-        devices = openrazer.get_device_list()
+        devices = middleman.get_device_list()
         dbg.stdout("Setting all brightness levels to {0}%".format(str(value)), dbg.debug, 1)
 
         for device in devices:
@@ -740,7 +749,7 @@ class Callback():
                 zones = device["zones"]
                 for zone in zones:
                     dbg.stdout("- {0} [{1}]".format(device["name"], zone), dbg.action, 1)
-                    r = openrazer.set_device_state(device["uid"], "brightness", zone, None, [value])
+                    r = middleman.set_device_state(device["backend"], device["uid"], "brightness", zone, None, [value])
                     _verbose_check_status(r)
 
     def set_all_colour(cb, item, value):
@@ -752,13 +761,13 @@ class Callback():
         """
         dbg.stdout("Setting all device primary colour to {0}".format(value), dbg.debug, 1)
 
-        devices = openrazer.get_device_list()
+        devices = middleman.get_device_list()
         for device in devices:
             if device["available"] == True:
                 zones = device["zones"]
                 for zone in zones:
                     dbg.stdout("- {0} [{1}]".format(device["name"], zone), dbg.action, 1)
-                    r = openrazer.set_device_colours(device["uid"], zone, value)
+                    r = middleman.set_device_colours(device["backend"], device["uid"], zone, value)
                     _verbose_check_status(r)
 
     def set_custom_colour(cb, item, attr):
@@ -769,8 +778,9 @@ class Callback():
         Params:
             attr    [device object]
         """
-        uid = attr[0]
-        zone = attr[1]
+        backend = attr[0]
+        uid = attr[1]
+        zone = attr[2]
 
         dbg.stdout("Opened GTK colour picker.", dbg.debug, 1)
         color_selection_dlg = Gtk.ColorSelectionDialog(_("Set Primary Color"))
@@ -783,8 +793,8 @@ class Callback():
             blue = int(result_gdk_colour.blue_float * 255)
             hex_value = common.rgb_to_hex([red, green, blue])
 
-            dbg.stdout("Set custom colour for device ID {0} to '{1}'".format(uid, hex_value), dbg.debug, 1)
-            r = openrazer.set_device_colours(uid, zone, [hex_value])
+            dbg.stdout("Set custom colour for {0} device ID {1} to '{2}'".format(backend, uid, hex_value), dbg.debug, 1)
+            r = middleman.set_device_colours(backend, uid, zone, [hex_value])
             _verbose_check_status(r)
 
         color_selection_dlg.destroy()

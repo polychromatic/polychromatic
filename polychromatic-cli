@@ -32,7 +32,7 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
     try:
         import pylib.preferences as pref
         import pylib.common as common
-        from pylib.backends import openrazer
+        from pylib.backends import middleman
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -42,7 +42,7 @@ else:
     try:
         import polychromatic.preferences as pref
         import polychromatic.common as common
-        from polychromatic.backends import openrazer
+        from polychromatic.backends import middleman
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
@@ -147,7 +147,7 @@ def print_column(data):
 ########################################
 # List devices, zones or current status.
 ########################################
-devices = openrazer.get_device_list()
+devices = middleman.get_device_list()
 found_unsupported = False
 
 if len(devices) == 0:
@@ -178,7 +178,7 @@ if args.list_zones:
         if not device["available"]:
             continue
 
-        device = openrazer.get_device(device["uid"])
+        device = middleman.get_device(device["backend"], device["uid"])
 
         table.append([
             "- {0}{1}".format(dbg.normal, device["name"]),
@@ -208,7 +208,7 @@ if args.list_status:
         details = None
 
         if available:
-            details = openrazer.get_device(int(device["uid"]))
+            details = middleman.get_device(device["backend"], int(device["uid"]))
         else:
             found_unsupported = True
 
@@ -343,7 +343,7 @@ if args.serial:
         dbg.stdout("Cannot find a device with serial " + args.serial, dbg.error)
         exit(1)
 
-    devices_to_change = [device_obj]
+    target_devices = [device]
 
 elif args.device == "all" or not args.device:
     target_devices = devices
@@ -379,12 +379,12 @@ for device in target_devices:
     if len(target_zones) == 0:
         zones = device["zones"]
 
-    details = openrazer.get_device(device["uid"])
+    details = middleman.get_device(device["backend"], device["uid"])
 
     for zone in zones:
         # Brightness
         if args.brightness:
-            status = openrazer.set_device_state(device["uid"], "brightness", zone, [], [int(args.brightness)])
+            status = middleman.set_device_state(device["backend"], device["uid"], "brightness", zone, [], [int(args.brightness)])
             if status == False:
                 dbg.stdout(_("Failed to set brightness for [].").replace("[]", device["name"]), dbg.error)
             elif type(status) == str:
@@ -470,7 +470,7 @@ for device in target_devices:
                         exit(1)
                 colours.append(hex_value)
 
-            status = openrazer.set_device_state(device["uid"], effect, zone, colours, effect_params)
+            status = middleman.set_device_state(device["backend"], device["uid"], effect, zone, colours, effect_params)
 
             if status == False:
                 dbg.stdout(_("Failed to set '[fx]' effect for [name].")
@@ -491,7 +491,7 @@ for device in target_devices:
         }
         state = state[args.game_mode]
 
-        status = openrazer.set_device_state(device["uid"], "game_mode", "main", [], [state])
+        status = middleman.set_device_state(device["backend"], device["uid"], "game_mode", "main", [], [state])
 
         if status == False:
             dbg.stdout(_("Failed to change for [name].").replace("[name]", device["name"]), dbg.error)
@@ -530,7 +530,7 @@ for device in target_devices:
                 dbg.stdout(_("DPI too low: [x]").replace("[x]", value), dbg.error)
                 continue
 
-        status = openrazer.set_device_state(device["uid"], "dpi", "main", [], [dpi_x, dpi_y])
+        status = middleman.set_device_state(device["backend"], device["uid"], "dpi", "main", [], [dpi_x, dpi_y])
 
         if status == False:
             dbg.stdout(_("Failed to set DPI for [name].").replace("[name]", device["name"]), dbg.error)
@@ -545,7 +545,7 @@ for device in target_devices:
         if details["poll_rate"] == None:
             continue
 
-        status = openrazer.set_device_state(device["uid"], "poll_rate", "main", [], [args.poll_rate])
+        status = middleman.set_device_state(device["backend"], device["uid"], "poll_rate", "main", [], [args.poll_rate])
 
         if status == False:
             dbg.stdout(_("Failed to set poll rate for [name].").replace("[name]", device["name"]), dbg.error)
