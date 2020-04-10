@@ -2,9 +2,10 @@
 
 A front-end to customise your Razer perpherials under GNU/Linux. Powered by [OpenRazer](https://openrazer.github.io).
 
+[![CI](https://github.com/polychromatic/polychromatic/workflows/CI/badge.svg?branch=dev-1.0.0&event=push)](https://github.com/polychromatic/polychromatic/actions)
 [![GitHub Release](https://img.shields.io/github/release/polychromatic/polychromatic.svg)](https://github.com/polychromatic/polychromatic/releases)
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/polychromatic/polychromatic/blob/master/LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.5.2-blue.svg)](#)
+[![Python Version](https://img.shields.io/badge/python-3.8.2-blue.svg)](#)
 
 ![Screenshot of Polychromatic's interfaces](.github/screenshot.png)
 
