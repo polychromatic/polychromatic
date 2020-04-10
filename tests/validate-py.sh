@@ -15,19 +15,15 @@ function check_status() {
     fi
 }
 
-options="relative-beyond-top-level"
+pylint --errors-only \
+    --disable="relative-beyond-top-level" \
+    --disable="no-name-in-module" \
+    polychromatic-controller \
+    polychromatic-tray-applet \
+    polychromatic-cli \
+    pylib/*.py \
+    pylib/backends/*.py
 
-pylint --errors-only --disable "$options" polychromatic-controller
-check_status $?
-
-pylint --errors-only --disable "$options" polychromatic-tray-applet
-check_status $?
-
-pylint --errors-only --disable "$options" polychromatic-cli
-check_status $?
-
-cd pylib/
-find . -name "*.py" | xargs pylint --disable "$options" --errors-only
 check_status $?
 
 if [ $errors == true ]; then

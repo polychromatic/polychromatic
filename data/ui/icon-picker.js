@@ -22,8 +22,8 @@ function open_icon_picker(id, show_tray_tab) {
     var content = `
         <div class="icon-picker-container">
             <div class="tabs vertical">
-                <button id="tab-emblems" class="active">${LOCALES["emblems"]}</button>
-                <button id="tab-custom">${LOCALES["custom"]}</button>
+                <button id="tab-emblems" class="active">${LOCALES.emblems}</button>
+                <button id="tab-custom">${LOCALES.custom}</button>
             </div>
             <div id="tab-emblems-content" class="icon-picker-content">
                 ${emblem_icons_html}
@@ -34,12 +34,12 @@ function open_icon_picker(id, show_tray_tab) {
         </div>
     `;
 
-    open_dialog(LOCALES["icon_picker_title"], content, null, [[LOCALES["cancel"], ""], [LOCALES["choose"], ""]], "24em", "24em");
+    open_dialog(LOCALES.icon_picker_title, content, null, [[LOCALES.cancel, ""], [LOCALES.choose, ""]], "24em", "24em");
 
     // Add an additional tab when choosing tray icons.
     if (show_tray_tab === true) {
         var tray_icons_html = _get_builtin_icon_html(ICONS_TRAY);
-        $(".icon-picker-container .tabs").prepend(`<button id="tab-tray">${LOCALES["tray"]}</button>`);
+        $(".icon-picker-container .tabs").prepend(`<button id="tab-tray">${LOCALES.tray}</button>`);
         $(".icon-picker-container").append(`<div id="tab-tray-content" class="icon-picker-content">${tray_icons_html}</div>`);
         $(".icon-picker-container .tabs button").removeClass("active");
         $(".icon-picker-container .tabs #tab-tray").addClass("active");
@@ -79,7 +79,7 @@ function _get_builtin_icon_html(icon_set) {
         output += `<button class="icon" data-path="${path}"><img src="../${path}"/></button>`;
     }
 
-    return output
+    return output;
 }
 
 function _get_custom_icon_html() {
@@ -98,9 +98,9 @@ function _get_custom_icon_html() {
         </button>`;
     }
 
-    output += `<button class="icon add" onclick="add_custom_icon()" title="${LOCALES["add_graphic"]}">${get_svg("plus")}</button>`;
+    output += `<button class="icon add" onclick="add_custom_icon()" title="${LOCALES.add_graphic}">${get_svg("plus")}</button>`;
 
-    return output
+    return output;
 }
 
 function add_custom_icon() {
@@ -143,7 +143,7 @@ function _custom_icons_changed(data) {
         var new_preview;
 
         if (is_custom === "true") {
-            new_preview = "file://" + new_path
+            new_preview = "file://" + new_path;
         } else {
             new_preview = "../" + new_path;
         }

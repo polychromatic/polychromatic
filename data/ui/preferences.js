@@ -79,7 +79,7 @@ function _set_tab_preferences() {
                 }
             ]
         }
-    ]
+    ];
 
     // ------------------------
     // Content
@@ -130,7 +130,7 @@ function _set_tab_preferences() {
 
     // -- General [Application]
     var general = group_title(get_string("application"));
-    general += group(get_string("landing_tab"), dropdown("landing_tab", "change_pref('general', 'landing_tab', this.value)", PREFERENCES["general"]["landing_tab"], [
+    general += group(get_string("landing_tab"), dropdown("landing_tab", "change_pref('general', 'landing_tab', this.value)", PREFERENCES.general.landing_tab, [
         [get_string("devices"), "devices", false],
         [get_string("effects"), "effects", false],
         [get_string("profiles"), "profiles", false],
@@ -139,10 +139,10 @@ function _set_tab_preferences() {
     ], false));
 
     general += group_title(get_string("effects"));
-    general += group(get_string("editor"), checkbox("effect_live_preview", get_string("effect_live_preview"), PREFERENCES["effects"]["live_preview"], "change_pref('effects', 'live_preview', this.checked)"))
+    general += group(get_string("editor"), checkbox("effect_live_preview", get_string("effect_live_preview"), PREFERENCES.effects.live_preview, "change_pref('effects', 'live_preview', this.checked)"));
 
     // -- Tray Applet [Application]
-    var _icon_path = PREFERENCES["tray"]["icon"];
+    var _icon_path = PREFERENCES.tray.icon;
     if (_icon_path.startsWith("ui/") === true) {
         _icon_path = "../" + _icon_path;
     }
@@ -151,13 +151,13 @@ function _set_tab_preferences() {
     tray += group(get_string("icon"), icon_picker("tray_icon", _icon_path, "change_pref('tray', 'icon', $(&quot;#tray_icon&quot;).val())", true));
 
     tray += group_title(get_string("advanced"));
-    tray += group(get_string("compatibility"), checkbox("force_legacy_gtk_status", get_string("force_legacy_gtk_status"), PREFERENCES["tray"]["force_legacy_gtk_status"], "change_pref('tray', 'force_legacy_gtk_status', this.checked)"));
+    tray += group(get_string("compatibility"), checkbox("force_legacy_gtk_status", get_string("force_legacy_gtk_status"), PREFERENCES.tray.force_legacy_gtk_status, "change_pref('tray', 'force_legacy_gtk_status', this.checked)"));
 
     // -- Saved Colours [Application]
     var colours = group_title(get_string("default_colours"));
-    colours += help_text(get_string("about_saved_colours"))
-    colours += group(get_string("primary_colour"), colour_picker("default-primary", "_save_default_colour(0)", PREFERENCES["colours"]["primary"], get_string("primary_colour"), false), true);
-    colours += group(get_string("secondary_colour"), colour_picker("default-secondary", "_save_default_colour(1)", PREFERENCES["colours"]["secondary"], get_string("secondary_colour"), false), true);
+    colours += help_text(get_string("about_saved_colours"));
+    colours += group(get_string("primary_colour"), colour_picker("default-primary", "_save_default_colour(0)", PREFERENCES.colours.primary, get_string("primary_colour"), false), true);
+    colours += group(get_string("secondary_colour"), colour_picker("default-secondary", "_save_default_colour(1)", PREFERENCES.colours.secondary, get_string("secondary_colour"), false), true);
 
     colours += group_title(get_string("saved_colours"));
 
@@ -271,6 +271,6 @@ function _save_default_colour(colour_id) {
     var colours = {
         0: "primary",
         1: "secondary"
-    }
+    };
     change_pref("colours", colours[colour_id], $("#colour-input").val());
 }

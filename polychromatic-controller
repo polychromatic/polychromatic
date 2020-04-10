@@ -28,7 +28,7 @@ import os
 import re
 import signal
 import threading
-from setproctitle import setproctitle
+import setproctitle
 from sys import version_info as python_version
 
 import gi
@@ -381,7 +381,7 @@ def parse_parameters():
 
 if __name__ == "__main__":
     # Appear as own process.
-    setproctitle("polychromatic-controller")
+    setproctitle.setproctitle("polychromatic-controller")
 
     # Global variables
     path = pref.Paths()

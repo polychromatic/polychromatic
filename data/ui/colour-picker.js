@@ -54,7 +54,7 @@ function open_colour_picker(id, title, current_hex, onsaveclick, monochromatic) 
         userEvents: {
             change: function(self) {
                 var rgb = self.getCurColorRgb();
-                var hex = self.getCurColorHex()
+                var hex = self.getCurColorHex();
                 $("#colour-input-red").val(rgb.r);
                 $("#colour-input-green").val(rgb.g);
                 $("#colour-input-blue").val(rgb.b);

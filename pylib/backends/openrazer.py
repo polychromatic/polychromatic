@@ -12,13 +12,14 @@ Project URL: https://github.com/openrazer/openrazer
 
 import os
 import subprocess
+import grp
 # 'requests' imported on-demand if device images are to be downloaded.
 
 # Polychromatic
 from .. import common
 
 # OpenRazer
-import openrazer.client as rclient
+from openrazer import client as rclient
 VERSION = rclient.__version__
 
 dbg = common.Debugging()

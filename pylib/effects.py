@@ -249,13 +249,13 @@ class EffectData(object):
 
         A null hex_value indicates the key isn't to be lit up.
         """
-        self.layers[layer]["matrix"][row][col] = hex_value
+        self.layers[layer]["matrix"][x][y] = hex_value
 
     def set_key_label(self, x, y, value):
         """
         Sets a key label at a given position. Use a null value for no key label.
         """
-        self.key_labels[row][col] = value
+        self.key_labels[x][y] = value
 
     def set_fps(self, value):
         """

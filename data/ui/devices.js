@@ -83,7 +83,7 @@ function _set_tab_devices() {
                 "onclick": onclick,
                 "classes": classes,
                 "id": "device-" + device.uid
-            }
+            };
         }
 
         // "Apply to All" only appears when there are multiple devices.
@@ -106,7 +106,7 @@ function _set_tab_devices() {
                     "label": get_string("devices"),
                     "items": devices
                 }
-            ]
+            ];
         } else if (CACHE_DEVICES.length == 1) {
             device_list_is_empty = false;
             sidebar = [
@@ -114,7 +114,7 @@ function _set_tab_devices() {
                     "label": get_string("devices"),
                     "items": devices
                 }
-            ]
+            ];
         }
     }
 
@@ -159,7 +159,7 @@ function _set_tab_devices() {
                     }
                 ]
             }
-        ]
+        ];
     }
 
     // ------------------------
@@ -317,7 +317,7 @@ function _get_state_html(device) {
         var state = device.zone_states[zone];
 
         // -- Current effect
-        var effect = state["effect"]
+        var effect = state.effect;
 
         if (effect != undefined) {
             effect = effect.split("_")[0];
@@ -325,7 +325,7 @@ function _get_state_html(device) {
         }
 
         // -- Current brightness
-        var brightness = state["brightness"];
+        var brightness = state.brightness;
         if (brightness != undefined) {
             // Is this device have just an on/off switch?
             if (device.zone_supported[zone].brightness_toggle == true) {
@@ -345,31 +345,31 @@ function _get_state_html(device) {
     // TODO: In future, only show current profile (with link)
 
     // -- Current battery
-    var battery_level = device["battery_level"];
-    var battery_charging = device["battery_charging"];
+    var battery_level = device.battery_level;
+    var battery_charging = device.battery_charging;
     if (battery_level != undefined) {
-        var icon;
+        var icon_image;
         if (battery_level < 10) {
-            icon = "battery-0.svg";
+            icon_image = "battery-0.svg";
         } else if (battery_level < 30) {
-            icon = "battery-25.svg";
+            icon_image = "battery-25.svg";
         } else if (battery_level < 55) {
-            icon = "battery-50.svg";
+            icon_image = "battery-50.svg";
         } else if (battery_level < 90) {
-            icon = "battery-75.svg";
+            icon_image = "battery-75.svg";
         } else {
-            icon = "battery-100.svg";
+            icon_image = "battery-100.svg";
         }
         if (battery_charging === true) {
-            icon = "battery-charging.svg";
+            icon_image = "battery-charging.svg";
         }
-        output += _get_state("img/general/" + icon, battery_level + "%");
+        output += _get_state("img/general/" + icon_image, battery_level + "%");
     }
 
     // -- DPI
-    var dpi_x = device["dpi_x"];
-    var dpi_y = device["dpi_y"];
-    var dpi_only_x = device["dpi_single"];
+    var dpi_x = device.dpi_x;
+    var dpi_y = device.dpi_y;
+    var dpi_only_x = device.dpi_single;
     if (dpi_x != null) {
         if (dpi_only_x === true || dpi_x === dpi_y) {
             output += _get_state("img/general/dpi.svg", dpi_x);
@@ -379,13 +379,13 @@ function _get_state_html(device) {
     }
 
     // -- Poll Rate
-    var poll_rate = device["poll_rate"];
+    var poll_rate = device.poll_rate;
     if (poll_rate != null) {
         output += _get_state("img/general/poll-rate.svg", `${poll_rate} Hz`);
     }
 
     // -- Game Mode
-    var game_mode = device["game_mode"];
+    var game_mode = device.game_mode;
     if (game_mode == true) {
         output += _get_state("img/general/game-mode.svg", get_string("game_mode"));
     }
@@ -429,7 +429,7 @@ function _get_device_controls(device, onclick) {
         }
 
         // Effects
-        var current_effect = state["effect"];
+        var current_effect = state.effect;
         var effect;
         var subeffect;
 
@@ -440,9 +440,9 @@ function _get_device_controls(device, onclick) {
             known_fx = ["spectrum", "wave", "reactive", "breath", "ripple", "pulsate", "blinking", "static"];
             for (f = 0; f < known_fx.length; f++) {
                 if (supported[known_fx[f]] == true) {
-                    var fx_name = known_fx[f];
-                    var fx_request = fx_name;
-                    var fx_id = `${zone}-${fx_name}`;
+                    fx_name = known_fx[f];
+                    fx_request = fx_name;
+                    fx_id = `${zone}-${fx_name}`;
                     fx_output += button_large(fx_id, onclick, get_string(fx_name), `img/effects/${fx_name}.svg`, false, fx_name == effect ? true : false);
                 }
             }
@@ -454,7 +454,7 @@ function _get_device_controls(device, onclick) {
 
             var fx_id = `${zone}-${effect}`;
             var fx_grp = `${zone}-${effect}-group`;
-            var params = state["params"];
+            var params = state.params;
             var param0 = "";
             if (params != undefined) {
                 param0 = params[0];
@@ -462,7 +462,7 @@ function _get_device_controls(device, onclick) {
 
             switch(effect) {
                 case "wave":
-                    var labels = _get_wave_direction(device["form_factor_id"]);
+                    var labels = _get_wave_direction(device.form_factor_id);
                     fx_options += radio(`${fx_id}-2`, labels[0], param0 == 2, fx_grp, onclick);
                     fx_options += radio(`${fx_id}-1`, labels[1], param0 == 1, fx_grp, onclick);
                     break;
@@ -510,32 +510,32 @@ function _get_device_controls(device, onclick) {
             case "ripple_single":
             case "starlight_single":
             case "starlight_dual":
-                output += group(get_string("primary_colour"), colour_picker(`${zone}-primary`, "reapply_device_state()", state["colour1"], get_string("primary_colour"), device["monochromatic"]));
+                output += group(get_string("primary_colour"), colour_picker(`${zone}-primary`, "reapply_device_state()", state.colour1, get_string("primary_colour"), device.monochromatic));
         }
 
         switch(current_effect) {
             case "breath_dual":
             case "breath_triple":
             case "starlight_dual":
-                output += group(get_string("secondary_colour"), colour_picker(`${zone}-secondary`, "reapply_device_state()", state["colour2"], get_string("primary_colour"), device["monochromatic"]));
+                output += group(get_string("secondary_colour"), colour_picker(`${zone}-secondary`, "reapply_device_state()", state.colour2, get_string("primary_colour"), device.monochromatic));
         }
 
         switch(current_effect) {
             case "breath_triple":
-                output += group(get_string("teritary_colour"), colour_picker(`${zone}-teritary`, "reapply_device_state()", state["colour3"], get_string("primary_colour"), device["monochromatic"]));
+                output += group(get_string("teritary_colour"), colour_picker(`${zone}-teritary`, "reapply_device_state()", state.colour3, get_string("primary_colour"), device.monochromatic));
         }
 
         if (zone == "main") {
             // Game Mode
-            if (device["game_mode"] != null) {
-                output += group(get_string("game_mode"), checkbox("main-game_mode", get_string("enabled"), device["game_mode"], onclick));
+            if (device.game_mode != null) {
+                output += group(get_string("game_mode"), checkbox("main-game_mode", get_string("enabled"), device.game_mode, onclick));
             }
 
             // DPI
             // TODO: Fancier DPI selector
-            if (device["dpi_x"] != null) {
-                var dpiRange = device["dpi_ranges"];
-                output += group(get_string("dpi"), dropdown("main-dpi", onclick, device["dpi_x"], [
+            if (device.dpi_x != null) {
+                var dpiRange = device.dpi_ranges;
+                output += group(get_string("dpi"), dropdown("main-dpi", onclick, device.dpi_x, [
                     [dpiRange[0], dpiRange[0]],
                     [dpiRange[1], dpiRange[1]],
                     [dpiRange[2], dpiRange[2]],
@@ -546,8 +546,8 @@ function _get_device_controls(device, onclick) {
             }
 
             // Poll Rate
-            if (device["poll_rate"] != null) { // WHY NOT WORKING?!!!
-                output += group(get_string("poll_rate"), dropdown("main-poll_rate", onclick, device["poll_rate"], [
+            if (device.poll_rate != null) {
+                output += group(get_string("poll_rate"), dropdown("main-poll_rate", onclick, device.poll_rate, [
                     [get_string("poll_rate_125"), 125],
                     [get_string("poll_rate_500"), 500],
                     [get_string("poll_rate_1000"), 1000]
@@ -591,6 +591,7 @@ function set_device_state(element) {
                 break;
             case "select-one":
                 params = [element.selectedIndex];
+                break;
             case "hidden":
             case "range":
                 params = [element.value];
@@ -599,8 +600,8 @@ function set_device_state(element) {
     }
 
     // Get data for current device
-    uid = CACHE_CURRENT_DEVICE["uid"]
-    backend = CACHE_CURRENT_DEVICE["backend"]
+    uid = CACHE_CURRENT_DEVICE.uid;
+    backend = CACHE_CURRENT_DEVICE.backend;
 
     // Defaults when setting new effect (parameters)
     switch(request) {
@@ -654,13 +655,13 @@ function set_device_state(element) {
         case "starlight_dual":
         case "starlight_random":
         case "static":
-            CACHE_CURRENT_DEVICE["zone_states"][zone]["effect"] = request;
+            CACHE_CURRENT_DEVICE.zone_states[zone].effect = request;
 
             if (params == undefined) {
                 params = [];
             }
 
-            CACHE_CURRENT_DEVICE["zone_states"][zone]["params"] = params;
+            CACHE_CURRENT_DEVICE.zone_states[zone].params = params;
             break;
 
         case "brightness":
@@ -671,30 +672,30 @@ function set_device_state(element) {
                 value = 0;
             }
 
-            CACHE_CURRENT_DEVICE["zone_states"][zone]["brightness"] = value;
+            CACHE_CURRENT_DEVICE.zone_states[zone].brightness = value;
             $(`#brightness-${zone}-value`).html(value);
             break;
 
         case "game_mode":
-            CACHE_CURRENT_DEVICE["game_mode"] = params[0];
+            CACHE_CURRENT_DEVICE.game_mode = params[0];
             break;
 
         case "dpi":
-            CACHE_CURRENT_DEVICE["dpi_x"] = params[0];
-            CACHE_CURRENT_DEVICE["dpi_y"] = params[0];
+            CACHE_CURRENT_DEVICE.dpi_x = params[0];
+            CACHE_CURRENT_DEVICE.dpi_y = params[0];
             params[1] = params[0];
             break;
 
         case "poll_rate":
-            CACHE_CURRENT_DEVICE["poll_rate"] = params[0];
+            CACHE_CURRENT_DEVICE.poll_rate = params[0];
             break;
     }
 
     $(".states").html(_get_state_html(CACHE_CURRENT_DEVICE));
 
     // Obtain colours from page
-    var state = CACHE_CURRENT_DEVICE["zone_states"][zone];
-    var colour_hex = [state["colour1"], state["colour2"], state["colour3"]];
+    var state = CACHE_CURRENT_DEVICE.zone_states[zone];
+    colour_hex = [state.colour1, state.colour2, state.colour3];
 
     // Send request to Controller
     send_data("set_device_state", {
@@ -729,17 +730,17 @@ function reapply_device_state() {
 
         if (primary.length > 0) {
             colour_hex[0] = primary.val();
-            state["colour1"] = primary.val();
+            state.colour1 = primary.val();
         }
 
         if (secondary.length > 0) {
             colour_hex[1] = secondary.val();
-            state["colour2"] = secondary.val();
+            state.colour2 = secondary.val();
         }
 
         if (teritary.length > 0) {
             colour_hex[2] = teritary.val();
-            state["colour3"] = teritary.val();
+            state.colour3 = teritary.val();
         }
 
         send_data("set_device_state", {
@@ -762,7 +763,7 @@ function _show_device_info() {
     // Pretty backend names
     backend_pretty = {
         "openrazer": "OpenRazer"
-    }
+    };
     var backend = backend_pretty[device.backend];
     if (backend == undefined) {
         backend = device.backend;
@@ -880,14 +881,14 @@ function _device_error(id) {
         "openrazer-not-running": "img/general/warning.svg",
         "no-device": "img/devices/accessory.svg",
         "unknown-device": "img/devices/unrecognised.svg"
-    }
+    };
 
     var title = get_string(id);
     var text = get_string(`${id}-help`);
 
     if (id == "unknown-device") {
         title = $(".sidebar-container .active span").html();
-        text = text.replace("openrazer-daemon", "<code>openrazer-daemon</code>")
+        text = text.replace("openrazer-daemon", "<code>openrazer-daemon</code>");
     }
 
     var content = `<div class="common-info error">

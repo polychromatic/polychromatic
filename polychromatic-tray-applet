@@ -26,7 +26,7 @@ import argparse
 import os
 import sys
 import signal
-from setproctitle import setproctitle
+import setproctitle
 from subprocess import Popen as background_process
 from subprocess import call as foreground_process
 from shutil import which
@@ -484,11 +484,11 @@ class AppIndicator(object):
             starlight_menu = create_submenu(_("Starlight"), True, get_icon("effects", "starlight.svg"))
             starlight_supported = details["zone_supported"][zone]["starlight_options"]
 
-            if "random" in starlight_options:
+            if "random" in starlight_supported:
                 create_submenu_item(breath_menu, _("Random"), True, cb.set_effect, [backend, uid, zone, "starlight_random"])
-            if "single" in starlight_options:
+            if "single" in starlight_supported:
                 create_submenu_item(breath_menu, _("Single"), True, cb.set_effect, [backend, uid, zone, "starlight_single"])
-            if "dual" in starlight_options:
+            if "dual" in starlight_supported:
                 create_submenu_item(breath_menu, _("Dual"), True, cb.set_effect, [backend, uid, zone, "starlight_dual"])
 
             submenu[1].append(starlight_menu[0])
@@ -569,6 +569,7 @@ class Callback():
     """
     Contains functions that run when a menu item is clicked.
     """
+    @staticmethod
     def launch_controller(cb, item, jump_to=None):
         """
         GTK menu item callback to open the Controller application.
@@ -584,6 +585,7 @@ class Callback():
 
         common.execute_polychromatic_component(dbg, "controller", __file__, common.DATA_PATH, jump_to)
 
+    @staticmethod
     def quit(cb, item):
         """
         GTK menu item callback to quit the application.
@@ -591,14 +593,16 @@ class Callback():
         dbg.stdout("Exiting...", dbg.action, 1)
         exit(0)
 
+    @staticmethod
     def retry_applet(cb, item):
         """
         GTK menu item callback to restart the tray applet.
         """
         dbg.stdout("Restarting applet...", dbg.action, 1)
-        os.execv(__file__,  sys.argv)
+        os.execv(__file__, sys.argv)
         exit(0)
 
+    @staticmethod
     def restart_daemon(cb, item):
         """
         GTK menu item callback to restart the OpenRazer daemon.
@@ -606,9 +610,10 @@ class Callback():
         dbg.stdout("=> Restart Daemon", dbg.debug, 1)
         item.set_label(_("Restarting..."))
         item.set_sensitive(False)
-        common.restart_openrazer_daemon(dbg, self.path)
-        self.retry_applet()
+        common.restart_openrazer_daemon(dbg, path)
+        Callback.retry_applet(None, None)
 
+    @staticmethod
     def set_effect(cb, item, attr):
         """
         GTK menu item to set an effect for a device.
@@ -629,6 +634,7 @@ class Callback():
         r = middleman.set_device_state(backend, uid, effect, zone, None, [params])
         _verbose_check_status(r)
 
+    @staticmethod
     def set_brightness(cb, item, attr):
         """
         GTK menu item callback to set the brightness of a device.
@@ -645,6 +651,7 @@ class Callback():
         r = middleman.set_device_state(backend, uid, "brightness", zone, None, [value])
         _verbose_check_status(r)
 
+    @staticmethod
     def set_colour(cb, item, attr):
         """
         GTK menu item callback to replay the current effect but use a different
@@ -662,6 +669,7 @@ class Callback():
         r = middleman.set_device_colours(backend, uid, zone, [hex_value])
         _verbose_check_status(r)
 
+    @staticmethod
     def set_dpi(cb, item, attr):
         """
         GTK menu item callback to set the DPI of a device.
@@ -677,6 +685,7 @@ class Callback():
         r = middleman.set_device_state(backend, uid, "dpi", None, None, [new_dpi, new_dpi])
         _verbose_check_status(r)
 
+    @staticmethod
     def set_poll_rate(cb, item, attr):
         """
         GTK menu item callback to set the poll rate of a device.
@@ -692,6 +701,7 @@ class Callback():
         r = middleman.set_device_state(backend, uid, "poll_rate", None, None, [new_poll_rate])
         _verbose_check_status(r)
 
+    @staticmethod
     def set_game_mode(cb, item, attr):
         """
         GTK menu item callback to set the game mode of a keyboard.
@@ -703,10 +713,11 @@ class Callback():
         uid = attr[1]
         state = attr[2]
 
-        dbg.stdout("Setting game mode for {0} device ID {1} to '{1}'".format(backend, uid, state), dbg.debug, 1)
+        dbg.stdout("Setting game mode for {0} device ID {1} to '{2}'".format(backend, uid, state), dbg.debug, 1)
         r = middleman.set_device_state(backend, uid, "game_mode", None, None, [state])
         _verbose_check_status(r)
 
+    @staticmethod
     def set_all_effect(cb, item, attr):
         """
         GTK menu item callback to set an effect for all devices (using defaults)
@@ -731,6 +742,7 @@ class Callback():
                     r = middleman.set_device_state(device["backend"], int(device["uid"]), request, zone, None, [params])
                     _verbose_check_status(r)
 
+    @staticmethod
     def set_all_brightness(cb, item, value):
         """
         GTK menu item callback to set the brightness for all devices (or
@@ -752,6 +764,7 @@ class Callback():
                     r = middleman.set_device_state(device["backend"], device["uid"], "brightness", zone, None, [value])
                     _verbose_check_status(r)
 
+    @staticmethod
     def set_all_colour(cb, item, value):
         """
         GTK menu item callback to set the primary colour for all supported devices.
@@ -770,6 +783,7 @@ class Callback():
                     r = middleman.set_device_colours(device["backend"], device["uid"], zone, value)
                     _verbose_check_status(r)
 
+    @staticmethod
     def set_custom_colour(cb, item, attr):
         """
         GTK menu item callback to open a GTK dialogue picker to change the colour
@@ -844,7 +858,7 @@ def parse_parameters():
 
 if __name__ == "__main__":
     # Appear as its own process.
-    setproctitle("polychromatic-tray-applet")
+    setproctitle.setproctitle("polychromatic-tray-applet")
 
     # Global variables
     session_storage = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet")

@@ -13,7 +13,8 @@ import subprocess
 import shutil
 
 try:
-    import openrazer.client as rclient
+    from openrazer import client as rclient
+    from .openrazer import _get_incompatible_device_list as get_incompatible_device_list
     PYTHON_LIB_PRESENT = True
 except Exception:
     PYTHON_LIB_PRESENT = False
@@ -111,7 +112,7 @@ def troubleshoot():
         try:
             devman = rclient.DeviceManager()
             rdevices = devman.devices
-            devices = _get_incompatible_device_list(rdevices)
+            devices = get_incompatible_device_list(rdevices)
             if devices != None:
                 results["all_supported"] = True
                 if len(devices) > 0:

@@ -77,7 +77,7 @@ def get_data_dir_path():
     elif os.path.exists("/usr/share/polychromatic/"):
         path = "/usr/share/polychromatic/"
     else:
-        dbg.stdout("Data directory cannot be located. Exiting.", dbg.error)
+        print("Data directory cannot be located. Exiting.")
         exit(1)
 
     return path
@@ -186,7 +186,7 @@ def get_zone_metadata(zones, device_name):
             name = zones_to_string[zone]
             icon = zone
         except KeyError:
-            dbg.stdout("Unimplemented zone name '{0}' (used by device '{1}')".format(zone, device_name), dbg.warning)
+            print("Unimplemented zone name '{0}' (used by device '{1}')".format(zone, device_name))
             name = zone
             icon = "unknown"
 
@@ -336,7 +336,7 @@ def restart_tray_applet(dbg, current_bin_path, data_source):
         dbg.stdout("Tray applet PID not found.", dbg.warning, 1)
         return False
 
-    result = execute_polychromatic_component(dbg, "tray-applet", current_bin_path, data_source)
+    result = execute_polychromatic_component(dbg, "tray-applet", current_bin_path, data_source, None)
     return result
 
 

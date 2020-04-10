@@ -19,7 +19,7 @@
  * Send data to Python
 *****************************/
 function send_data(request, data) {
-    data["request"] = request;
+    data.request = request;
     document.title = JSON.stringify(data);
 }
 
@@ -205,21 +205,18 @@ function _warn_save_data_version(data) {
     //
     // data {} => app_version, pref_version, save_version
     //
-    var app_version = data["app_version"];
-    var pref_version = data["pref_version"];
-    var save_version = data["save_version"];
     var body = `
         <p>${get_string("save_data_warning_text1")}</p>
         <p>${get_string("save_data_warning_text2")}</p>
         <p>
-            <code>${get_string("save_data_warning_app_version")} ${app_version}</code>
+            <code>${get_string("save_data_warning_app_version")} ${data.app_version}</code>
             <br>
-            <code>${get_string("save_data_warning_saved_version")} ${save_version} ${get_string("save_data_warning_pref_version").replace("1", pref_version)}</code>
+            <code>${get_string("save_data_warning_saved_version")} ${data.save_version} ${get_string("save_data_warning_pref_version").replace("1", data.pref_version)}</code>
         </p>
         <p>${get_string("save_data_warning_text3").replace("~/.config/polychromatic", "<code>~/.config/polychromatic</code>")}</p>
     `;
 
-    open_dialog(get_string("save_data_warning_title"), body, "serious", [[get_string("ok"), ""]], "18em", "40em")
+    open_dialog(get_string("save_data_warning_title"), body, "serious", [[get_string("ok"), ""]], "18em", "40em");
 }
 
 function open_help() {
@@ -238,7 +235,7 @@ function _show_troubleshoot_results(data) {
     // Params:
     //    data          See openrazer.py troubleshoot()
     //
-    var full_test = data["success"];
+    var full_test = data.success;
     var tests = Object.keys(data);
     var results_html = "";
 
@@ -246,13 +243,13 @@ function _show_troubleshoot_results(data) {
         false: "img/general/warning.svg",
         true: "img/general/success.svg",
         null: "img/general/unknown.svg"
-    }
+    };
 
     var colours = {
         false: "yellow",
         true: "lime",
         null: "gray"
-    }
+    };
 
     for (t = 0; t < tests.length; t++) {
         var test = tests[t];
@@ -260,7 +257,7 @@ function _show_troubleshoot_results(data) {
         var result = data[test];
         results_html += `<tr>
             <td style="color:${colours[result]}"><img src="${icons[result]}"/> ${get_string("troubleshoot_" + test)}</td>
-        </tr>`
+        </tr>`;
 
         if (result == false) {
             var suggestion = get_string("troubleshoot_" + test + "_suggestion");
@@ -286,5 +283,5 @@ function _show_troubleshoot_results(data) {
             </table>
         </div>`;
 
-    open_dialog(get_string("troubleshoot"), body, null, [[get_string("open-help"), "open_help()"], [get_string("close"), ""]], "80vh", "40em")
+    open_dialog(get_string("troubleshoot"), body, null, [[get_string("open-help"), "open_help()"], [get_string("close"), ""]], "80vh", "40em");
 }

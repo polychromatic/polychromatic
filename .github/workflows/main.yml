@@ -21,23 +21,23 @@ jobs:
 
     - name: Validate SCSS
       run: |
-        apt-get install sassc
+        sudo apt-get install sassc
         ./tests/validate-scss.sh
 
     - name: Validate JS
       run: |
-        apt-get install npm
-        npm install -g jshint
+        sudo apt-get install npm
+        sudo npm install -g jshint
         ./tests/validate-js.sh
 
     - name: Validate Python
       run: |
-        apt-get install pylint
+        sudo apt-get install pylint
         ./tests/validate-py.sh
 
     - name: Validate man (scdoc)
       run: |
         # scdoc not in bionic (18.04)
         wget http://archive.ubuntu.com/ubuntu/pool/universe/s/scdoc/scdoc_1.10.1-1_amd64.deb
-        dpkg -i scdoc_1.10.1-1_amd64.deb
+        sudo dpkg -i scdoc_1.10.1-1_amd64.deb
         ./tests/validate-scdoc.sh
