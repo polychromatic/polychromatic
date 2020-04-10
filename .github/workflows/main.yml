@@ -15,29 +15,44 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
+    - name: Install dependencies
+      run: |
+        # SCSS
+        sudo apt-get install sassc
+
+        # JS
+        sudo apt-get install npm
+        sudo npm install -g jshint
+
+        # Python
+        sudo apt-get install pylint3
+        alias pylint=pylint3
+
+        # Man
+        # scdoc not in bionic (18.04)
+        wget http://archive.ubuntu.com/ubuntu/pool/universe/s/scdoc/scdoc_1.10.1-1_amd64.deb
+        sudo dpkg -i scdoc_1.10.1-1_amd64.deb
+
+        # Additional modules (dependencies)
+        sudo add-apt-repository ppa:openrazer/daily
+        sudo apt install python3-setproctitle python3-requests python3-openrazer gir1.2-gtk-3.0 gir1.2-webkit2-4.0 gir1.2-appindicator3-0.1
+
     - name: Validate JSON
       run: |
         ./tests/validate-json.py
 
     - name: Validate SCSS
       run: |
-        sudo apt-get install sassc
         ./tests/validate-scss.sh
 
     - name: Validate JS
       run: |
-        sudo apt-get install npm
-        sudo npm install -g jshint
         ./tests/validate-js.sh
 
     - name: Validate Python
       run: |
-        sudo apt-get install pylint
         ./tests/validate-py.sh
 
     - name: Validate man (scdoc)
       run: |
-        # scdoc not in bionic (18.04)
-        wget http://archive.ubuntu.com/ubuntu/pool/universe/s/scdoc/scdoc_1.10.1-1_amd64.deb
-        sudo dpkg -i scdoc_1.10.1-1_amd64.deb
         ./tests/validate-scdoc.sh
