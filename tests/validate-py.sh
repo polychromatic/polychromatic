@@ -3,8 +3,14 @@
 # Validates Python files for errors. Uses 'pylint'.
 #
 
-if [ -z "$(which pylint)" ]; then
-    echo "'pylint' not installed."
+# Package used by CI (Ubuntu 18.04) is still the python2 version.
+pylint="pylint"
+if [ "$1" == "--ubuntu" ]; then
+    pylint="pylint3"
+fi
+
+if [ -z "$(which $pylint)" ]; then
+    echo "'$pylint' not installed."
     exit 1
 fi
 
@@ -15,7 +21,7 @@ function check_status() {
     fi
 }
 
-pylint --errors-only \
+$pylint --errors-only \
     --disable="relative-beyond-top-level" \
     --disable="no-name-in-module" \
     polychromatic-controller \

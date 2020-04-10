@@ -51,7 +51,7 @@ jobs:
 
     - name: Validate Python
       run: |
-        ./tests/validate-py.sh
+        ./tests/validate-py.sh --ubuntu
 
     - name: Validate man (scdoc)
       run: |
