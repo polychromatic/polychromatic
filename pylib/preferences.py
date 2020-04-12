@@ -163,7 +163,7 @@ def set(group, item, value, filepath=None):
         dbg.stdout("{3}: Write error! '{0}' for item '{1}' in group '{2}'".format(value, item, group, filepath), dbg.error)
 
 
-def get(group, item, default_value="", filepath=None):
+def get(group, item, filepath=None):
     """
     Read data from memory.
     """
@@ -185,8 +185,6 @@ def exists(group, item, filepath=None):
         filepath = path.preferences
 
     data = load_file(filepath)
-
-    # Read data from preferences.
     try:
         value = data[group][item]
         return True
