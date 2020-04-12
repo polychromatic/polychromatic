@@ -15,7 +15,7 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Install dependencies
+    - name: Install Dependencies
       run: |
         # SCSS
         sudo apt-get install sassc
@@ -26,12 +26,14 @@ jobs:
 
         # Python
         sudo apt-get install pylint3
-        alias pylint=pylint3
 
         # Man
         # scdoc not in bionic (18.04)
         wget http://archive.ubuntu.com/ubuntu/pool/universe/s/scdoc/scdoc_1.10.1-1_amd64.deb
         sudo dpkg -i scdoc_1.10.1-1_amd64.deb
+
+        # Build
+        sudo apt-get install meson
 
         # Additional modules (dependencies)
         sudo add-apt-repository ppa:openrazer/daily
