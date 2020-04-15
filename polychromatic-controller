@@ -188,13 +188,13 @@ class AppWindow(object):
         dbg.stdout("Initalising Window...", dbg.action, 1)
         self.webview.build_webview()
 
-        self.window = Gtk.Window(title=_("Polychromatic Controller"))
+        self.window = Gtk.Window(title=_("Polychromatic"))
         self.window.set_position(Gtk.WindowPosition.CENTER)
         self.window.set_size_request(1000, 600)
         self.window.connect("delete-event", Gtk.main_quit)
 
         try:
-            self.window.set_icon_from_file(os.path.join(common.DATA_PATH, "ui/img/general/controller.svg"))
+            self.window.set_icon_from_file(os.path.join(common.DATA_PATH, "ui/img/logo/polychromatic.svg"))
         except Exception:
             dbg.stdout("Failed to set window icon.", dbg.warning, 0)
 
@@ -381,7 +381,7 @@ def parse_parameters():
 
 if __name__ == "__main__":
     # Appear as own process.
-    setproctitle.setproctitle("polychromatic-controller")
+    setproctitle.setproctitle("polychromatic")
 
     # Global variables
     path = pref.Paths()
