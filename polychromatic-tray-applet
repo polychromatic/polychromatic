@@ -570,7 +570,7 @@ class Callback():
     Contains functions that run when a menu item is clicked.
     """
     @staticmethod
-    def launch_controller(cb, item, jump_to=None):
+    def launch_controller(item, jump_to=None):
         """
         GTK menu item callback to open the Controller application.
 
@@ -586,7 +586,7 @@ class Callback():
         common.execute_polychromatic_component(dbg, "controller", __file__, common.DATA_PATH, jump_to)
 
     @staticmethod
-    def quit(cb, item):
+    def quit(item):
         """
         GTK menu item callback to quit the application.
         """
@@ -594,7 +594,7 @@ class Callback():
         exit(0)
 
     @staticmethod
-    def retry_applet(cb, item):
+    def retry_applet(item):
         """
         GTK menu item callback to restart the tray applet.
         """
@@ -603,7 +603,7 @@ class Callback():
         exit(0)
 
     @staticmethod
-    def restart_daemon(cb, item):
+    def restart_daemon(item):
         """
         GTK menu item callback to restart the OpenRazer daemon.
         """
@@ -614,7 +614,7 @@ class Callback():
         Callback.retry_applet(None, None)
 
     @staticmethod
-    def set_effect(cb, item, attr):
+    def set_effect(item, attr):
         """
         GTK menu item to set an effect for a device.
 
@@ -635,7 +635,7 @@ class Callback():
         _verbose_check_status(r)
 
     @staticmethod
-    def set_brightness(cb, item, attr):
+    def set_brightness(item, attr):
         """
         GTK menu item callback to set the brightness of a device.
 
@@ -652,7 +652,7 @@ class Callback():
         _verbose_check_status(r)
 
     @staticmethod
-    def set_colour(cb, item, attr):
+    def set_colour(item, attr):
         """
         GTK menu item callback to replay the current effect but use a different
         primary colour.
@@ -670,7 +670,7 @@ class Callback():
         _verbose_check_status(r)
 
     @staticmethod
-    def set_dpi(cb, item, attr):
+    def set_dpi(item, attr):
         """
         GTK menu item callback to set the DPI of a device.
 
@@ -686,7 +686,7 @@ class Callback():
         _verbose_check_status(r)
 
     @staticmethod
-    def set_poll_rate(cb, item, attr):
+    def set_poll_rate(item, attr):
         """
         GTK menu item callback to set the poll rate of a device.
 
@@ -702,7 +702,7 @@ class Callback():
         _verbose_check_status(r)
 
     @staticmethod
-    def set_game_mode(cb, item, attr):
+    def set_game_mode(item, attr):
         """
         GTK menu item callback to set the game mode of a keyboard.
 
@@ -718,7 +718,7 @@ class Callback():
         _verbose_check_status(r)
 
     @staticmethod
-    def set_all_effect(cb, item, attr):
+    def set_all_effect(item, attr):
         """
         GTK menu item callback to set an effect for all devices (using defaults)
 
@@ -743,7 +743,7 @@ class Callback():
                     _verbose_check_status(r)
 
     @staticmethod
-    def set_all_brightness(cb, item, value):
+    def set_all_brightness(item, value):
         """
         GTK menu item callback to set the brightness for all devices (or
         on/off if unsupported)
@@ -765,7 +765,7 @@ class Callback():
                     _verbose_check_status(r)
 
     @staticmethod
-    def set_all_colour(cb, item, value):
+    def set_all_colour(item, value):
         """
         GTK menu item callback to set the primary colour for all supported devices.
 
@@ -784,7 +784,7 @@ class Callback():
                     _verbose_check_status(r)
 
     @staticmethod
-    def set_custom_colour(cb, item, attr):
+    def set_custom_colour(item, attr):
         """
         GTK menu item callback to open a GTK dialogue picker to change the colour
         of a device.
