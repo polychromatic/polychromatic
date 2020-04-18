@@ -611,7 +611,7 @@ class Callback():
         item.set_label(_("Restarting..."))
         item.set_sensitive(False)
         common.restart_openrazer_daemon(dbg, path)
-        Callback.retry_applet(None, None)
+        Callback.retry_applet(None)
 
     @staticmethod
     def set_effect(item, attr):
