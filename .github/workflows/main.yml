@@ -35,6 +35,9 @@ jobs:
         # Build
         sudo apt-get install meson
 
+        # Debian Packaging
+        sudo apt-get install debhelper devscripts
+
         # Additional modules (dependencies)
         sudo add-apt-repository ppa:openrazer/daily
         sudo apt install python3-setproctitle python3-requests python3-openrazer gir1.2-gtk-3.0 gir1.2-webkit2-4.0 gir1.2-appindicator3-0.1
@@ -59,8 +62,35 @@ jobs:
       run: |
         ./tests/validate-scdoc.sh
 
-    - name: Test Build
+    - name: Create Package Build
       run: |
-        meson build
-        sudo ninja -C build install
+        meson build --prefix=/tmp/pkg/
+        ninja -C build install
+        cd /tmp/pkg/
+        tar -czf /tmp/polychromatic-install-${{github.ref}}-dev-${{github.sha}}.tar.gz .
 
+    - name: Upload Artifact - Package Build
+      uses: actions/upload-artifact@v2
+      with:
+        name: Package Build
+        path: /tmp/polychromatic-install-${{github.ref}}-dev-${{github.sha}}.tar.gz
+
+    - name: Create Test Build
+      run: |
+        ./scripts/create-files-for-opt.sh /tmp/dist
+        cd /tmp/dist/
+        tar -czf /tmp/polychromatic-${{github.ref}}-dev-${{github.sha}}.tar.gz .
+
+    - name: Upload Artifact - Test Build
+      uses: actions/upload-artifact@v2
+      with:
+        name: Testing Build
+        path: /tmp/polychromatic-${{github.ref}}-dev-${{github.sha}}.tar.gz
+
+    - name: Test Debian Package
+      run: |
+        git clean -df
+        git checkout .
+        sed -i "s#) xenial#-UNRELEASED) xenial#g" debian/changelog
+        dpkg-buildpackage -S -us -uc -d
+        lintian --suppress-tags bad-distribution-in-changes-file
