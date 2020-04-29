@@ -761,10 +761,14 @@ def _get_device_image(device):
 def _is_device_monochromatic(device):
     """
     Returns a boolean to state whether the device is Chroma powered but
-    does not show RGB.
+    only has 'green' from RGB.
     """
-    if not device.has("lighting_led_matrix") or device.name.find("Ultimate") != -1:
+    if not device.has("lighting_led_matrix"):
         return True
+
+    if str(device.name).find("Ultimate") != -1:
+        return True
+
     return False
 
 
