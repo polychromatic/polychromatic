@@ -66,26 +66,22 @@ jobs:
       run: |
         meson build --prefix=/tmp/pkg/
         ninja -C build install
-        cd /tmp/pkg/
-        tar -czf /tmp/polychromatic-install-${{github.sha}}.tar.gz .
 
     - name: 'Create Build: Testing'
       run: |
         ./scripts/create-files-for-opt.sh /tmp/dist
-        cd /tmp/dist/
-        tar -czf /tmp/polychromatic-${{github.sha}}.tar.gz .
 
     - name: 'Upload Build: Packaging'
       uses: actions/upload-artifact@v2
       with:
-        name: Package Build
-        path: /tmp/polychromatic-install-${{github.sha}}.tar.gz
+        name: polychromatic-install-pkg-${{github.sha}}.tar.gz
+        path: /tmp/dist/
 
     - name: 'Upload Build: Testing'
       uses: actions/upload-artifact@v2
       with:
-        name: Testing Build
-        path: /tmp/polychromatic-${{github.sha}}.tar.gz
+        name: polychromatic-${{github.sha}}.tar.gz
+        path: /tmp/dist/
 
     - name: Test Debian Package
       run: |
