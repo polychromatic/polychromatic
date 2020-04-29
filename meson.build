@@ -40,11 +40,8 @@ install_subdir('pylib',
 install_subdir('source/hicolor',
                install_dir : join_paths(get_option('datadir'), 'icons'))
 
-install_data('source/launchers/polychromatic-controller.desktop',
-             'source/launchers/polychromatic-tray-applet.desktop',
+install_data('source/launchers/polychromatic.desktop',
              install_dir : join_paths(get_option('datadir'), 'applications'))
 
-install_data('source/launchers/polychromatic-tray-applet.desktop',
-             install_dir : join_paths(get_option('sysconfdir'), 'xdg/autostart'))
 
 subdir('locale')
