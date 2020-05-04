@@ -62,22 +62,16 @@ jobs:
       run: |
         ./tests/validate-scdoc.sh
 
-    - name: 'Create Build: Packaging'
+    - name: 'Test Meson/Ninja Build'
       run: |
         meson build --prefix=/tmp/pkg/
         ninja -C build install
 
-    - name: 'Create Build: Testing'
+    - name: Create Build
       run: |
         ./scripts/create-files-for-opt.sh /tmp/dist
 
-    - name: 'Upload Build: Packaging'
-      uses: actions/upload-artifact@v2
-      with:
-        name: polychromatic-install-pkg-${{github.sha}}.tar.gz
-        path: /tmp/dist/
-
-    - name: 'Upload Build: Testing'
+    - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
         name: polychromatic-${{github.sha}}.tar.gz
