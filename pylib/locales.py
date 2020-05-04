@@ -58,6 +58,7 @@ LOCALES = {
     "apply-to-all": _("Apply to All"),
     "apply-to-all-unsupported": _("Some of your connected devices do not support all of these effects."),
     "unknown-device": _("Unrecognized: []"),
+    "no-config-options": _("Sorry, this application has no configurable options for this device."),
 
     # Device tab errors for individual devices
     "unknown-device-help": _("This device may work with OpenRazer. Currently, openrazer-daemon is unable to register this device, which could indicate an installation problem or lack of support right now."),
@@ -228,7 +229,7 @@ LOCALES = {
     "troubleshoot_plugdev": _("Check if user account is added to 'plugdev' group"),
     "troubleshoot_plugdev_suggestion": _("If you've recently installed, you may need to restart the computer. Otherwise, run this command, log out, then log back in to the computer: $ sudo gpasswd -a $USER plugdev"),
     "troubleshoot_plugdev_perms": _("Check OpenRazer log for plugdev permission errors"),
-    "troubleshoot_plugdev_perms_suggestion": _("Restarting usually fixes the problem. Clear the log to reset this message."),
+    "troubleshoot_plugdev_perms_suggestion": _("Restarting (or replugging) usually fixes the problem. Clear the log to reset this message."),
     "troubleshoot_all_supported": _("Check for unsupported hardware"),
     "troubleshoot_all_supported_suggestion": _("Check the OpenRazer project to confirm your device is listed. To get the device's VID:PID, run $ lsusb | grep Razer"),
 

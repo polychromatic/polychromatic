@@ -264,10 +264,10 @@ def get_device(uid):
             if not zone == "main":
                 zone_states[zone]["brightness"] = int(zone_to_device[zone].active)
 
-        # Get current status provided by daemon (OpenRazer 2.8.0+)
+        # Get current status provided by daemon (OpenRazer 2.9.0+)
         try:
-            # Not applicable to non-Chroma devices (Bug? OpenRazer daemon could return an object)
-            if matrix:
+            # Only applicable to matrixed devices and those that have lighting effects for that zone.
+            if matrix and len(zone_supported[zone]) > 0:
                 effect = str(zone_to_device[zone].effect)
                 params = []
                 colours = _convert_colour_bytes(zone_to_device[zone].colors)
@@ -313,7 +313,7 @@ def get_device(uid):
         except Exception as e:
             dbg.stdout("Unable to get device states for " + name, dbg.error)
             dbg.stdout(common.get_exception_as_string(e))
-            dbg.stdout("This probably indicates a bug, wrong OpenRazer version or improperly specified Chroma device:\n{0} ({1}:{2})".format(name, vid, pid), dbg.warning)
+            dbg.stdout("This probably indicates a bug, wrong OpenRazer version or improperly spec'd Chroma device:\n{0} ({1}:{2})".format(name, vid, pid), dbg.warning)
 
 
     # Get battery data if device has a battery.

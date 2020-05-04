@@ -372,9 +372,9 @@ function _get_state_html(device) {
     var dpi_only_x = device.dpi_single;
     if (dpi_x != null) {
         if (dpi_only_x === true || dpi_x === dpi_y) {
-            output += _get_state("img/general/dpi.svg", dpi_x);
+            output += _get_state("img/general/dpi.svg", `${dpi_x} DPI`);
         } else if (dpi_x !== dpi_y) {
-            output += _get_state("img/general/dpi.svg", `${dpi_x}, ${dpi_y}`);
+            output += _get_state("img/general/dpi.svg", `${dpi_x}, ${dpi_y} DPI`);
         }
     }
 
@@ -556,6 +556,10 @@ function _get_device_controls(device, onclick) {
         }
     }
 
+    if (output.length == 0) {
+        output = `<p class="device-simple-msg">${get_string("no-config-options")}</p>`;
+    }
+
     return output;
 }
 
@@ -590,7 +594,7 @@ function set_device_state(element) {
                 params = [element.checked];
                 break;
             case "select-one":
-                params = [element.selectedIndex];
+                params = [element.value];
                 break;
             case "hidden":
             case "range":

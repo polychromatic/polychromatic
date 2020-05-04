@@ -35,6 +35,14 @@
             }
 
             span {
+                display: inline-block;
+                height: 20px;
+                width: calc(100% - 40px);
+                vertical-align: middle;
+                line-height: 20px;
+                text-overflow: ellipsis;
+                white-space: pre;
+                overflow: hidden;
                 padding: 0 0.1em;
             }
 
