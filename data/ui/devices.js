@@ -614,11 +614,11 @@ function set_device_state(element) {
             break;
         case "ripple":
             request = "ripple_single";
-            params = 0.01;
+            params = [0.01];
             break;
         case "starlight":
             request = "starlight_single";
-            params = 0.01;
+            params = [0.01];
             break;
     }
 
@@ -722,8 +722,8 @@ function reapply_device_state() {
     // Executed when saving changes to a dialogue picker.
     //
     var device = CACHE_CURRENT_DEVICE;
-    for (z = 0; z < Object.keys(device.zone_states).length; z++) {
-        var zone = Object.keys(device.zone_states)[z];
+    for (z = 0; z < Object.keys(device.zone_chroma).length; z++) {
+        var zone = Object.keys(device.zone_chroma)[z];
         var state = device.zone_states[zone];
         var colour_hex = [];
 

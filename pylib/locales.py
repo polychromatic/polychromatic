@@ -47,6 +47,8 @@ LOCALES = {
     "reactive": _("Reactive"),
     "breath": _("Breath"),
     "ripple": _("Ripple"),
+    "pulsate": _("Pulsate"),
+    "blinking": _("Blink"),
     "static": _("Static"),
     "starlight": _("Starlight"),
     "game_mode": _("Game Mode"),

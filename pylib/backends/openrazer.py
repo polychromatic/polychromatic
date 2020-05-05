@@ -125,10 +125,10 @@ def get_device(uid):
     keyboard_layout = None
 
     # -> Booleans
-    monochromatic = False
-    macros = False
+    monochromatic = False       # Supports 'Chroma' effects but only 'G' in RGB.
+    macros = False              # Supports key rebinding
     game_mode = None
-    matrix = False          # Also used to determine if 'chroma' hardware.
+    matrix = False              # Supports custom effects (per-key lighting)
     battery_charging = False
 
     # -> Integers
@@ -143,11 +143,12 @@ def get_device(uid):
 
     # -> Lists
     dpi_ranges = []
-    poll_rate_ranges = [250, 500, 1000] # Always static
+    poll_rate_ranges = [250, 500, 1000] # Cannot be changed
 
     # -> Dict
     zone_states = {}
     zone_supported = {}
+    zone_chroma = {}            # Zone supports hardware 'Chroma' effects
 
     if rdevice.has("firmware_version"):
         firmware_version = rdevice.firmware_version
@@ -218,6 +219,7 @@ def get_device(uid):
         for effect in ["spectrum", "wave", "reactive", "static", "pulsate", "blinking"]:
             if rdevice.has(zone_to_capability[zone] + "_" + effect):
                 zone_supported[zone][effect] = True
+                zone_chroma[zone] = True
 
         # Hardware breath (and options)
         for effect in ["breath_random", "breath_single", "breath_dual", "breath_triple"]:
@@ -266,8 +268,7 @@ def get_device(uid):
 
         # Get current status provided by daemon (OpenRazer 2.9.0+)
         try:
-            # Only applicable to matrixed devices and those that have lighting effects for that zone.
-            if matrix and len(zone_supported[zone]) > 0:
+            if zone in zone_chroma.keys():
                 effect = str(zone_to_device[zone].effect)
                 params = []
                 colours = _convert_colour_bytes(zone_to_device[zone].colors)
@@ -351,6 +352,7 @@ def get_device(uid):
         "zone_icons": zone_icons,
         "zone_states": zone_states,
         "zone_supported": zone_supported,
+        "zone_chroma": zone_chroma,
         "available": True
     }
 
@@ -763,9 +765,6 @@ def _is_device_monochromatic(device):
     Returns a boolean to state whether the device is Chroma powered but
     only has 'green' from RGB.
     """
-    if not device.has("lighting_led_matrix"):
-        return True
-
     if str(device.name).find("Ultimate") != -1:
         return True
 
