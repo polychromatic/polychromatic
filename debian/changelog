@@ -1,4 +1,10 @@
-polychromatic (0.3.12-xenial) xenial; urgency=low
+polychromatic (1.0.0-UNRELEASED) focal; urgency=low
+
+  * TBA
+
+ -- Luke Horwell <code@horwell.me>  Tue, 05 May 2020 10:27:16 +0100
+
+polychromatic (0.3.12) xenial; urgency=low
 
   * The DPI/Poll Rate labels were hard to read.
   * Daemon screen in Preferences came up blank.
@@ -7,13 +13,13 @@ polychromatic (0.3.12-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Thu, 19 Apr 2018 23:21:11 +0100
 
-polychromatic (0.3.11.2-xenial) xenial; urgency=low
+polychromatic (0.3.11.2) xenial; urgency=low
 
   * Fix profile editor never being displayed.
 
  -- Luke Horwell <code@horwell.me>  Sat, 30 Sep 2017 20:14:52 +0100
 
-polychromatic (0.3.11.1-xenial) xenial; urgency=low
+polychromatic (0.3.11.1) xenial; urgency=low
 
   * Update dependencies for OpenRazer. Please use ppa:openrazer/stable instead.
   * Update error screens when initialization errors occur.
@@ -22,7 +28,7 @@ polychromatic (0.3.11.1-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Wed, 06 Sep 2017 21:00:00 +0100
 
-polychromatic (0.3.10-xenial) xenial; urgency=low
+polychromatic (0.3.10) xenial; urgency=low
 
   * Catch more exceptions.
   * Clean up how booleans are stored interally.
@@ -33,20 +39,20 @@ polychromatic (0.3.10-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Thu, 10 Aug 2017 21:24:39 +0100
 
-polychromatic (0.3.9.3-xenial) xenial; urgency=low
+polychromatic (0.3.9.3) xenial; urgency=low
 
   * Daemon configuration paths updated.
   * Beginnings of some code refactoring.
 
  -- Luke Horwell <code@horwell.me>  Sat, 01 Jul 2017 23:29:21 +0100
 
-polychromatic (0.3.9.2-xenial) xenial; urgency=low
+polychromatic (0.3.9.2) xenial; urgency=low
 
   * Daemon has renamed razer-service to razer-daemon.
 
  -- Luke Horwell <code@horwell.me>  Sun, 11 Jun 2017 17:40:05 +0100
 
-polychromatic (0.3.9.1-xenial) xenial; urgency=low
+polychromatic (0.3.9.1) xenial; urgency=low
 
   * Re-licensed as GPL3.
   * Add German translation.
@@ -55,7 +61,7 @@ polychromatic (0.3.9.1-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Mon, 29 May 2017 16:38:59 +0100
 
-polychromatic (0.3.9-xenial) xenial; urgency=low
+polychromatic (0.3.9) xenial; urgency=low
 
   * Fix wrong colour for green shade variants.
   * Fix corrupt screen when choosing an application.
@@ -69,7 +75,7 @@ polychromatic (0.3.9-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Wed, 03 May 2017 18:36:48 +0100
 
-polychromatic (0.3.8-xenial) xenial; urgency=low
+polychromatic (0.3.8) xenial; urgency=low
 
   * Internal code clean-ups.
   * Prevent an exception when creating a new profile.
@@ -84,7 +90,7 @@ polychromatic (0.3.8-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Tue, 04 Apr 2017 23:18:22 +0100
 
-polychromatic (0.3.7.1-xenial) xenial; urgency=low
+polychromatic (0.3.7.1) xenial; urgency=low
 
   * Fix regression when editing profiles.
   * Fix regression with wave effect in header.
@@ -96,13 +102,13 @@ polychromatic (0.3.7.1-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Thu, 16 Mar 2017 22:07:28 +0100
 
-polychromatic (0.3.7-1-xenial) xenial; urgency=low
+polychromatic (0.3.7-1) xenial; urgency=low
 
   * Repackaged for Launchpad.
 
  -- Luke Horwell <code@horwell.me>  Thu, 09 Mar 2017 22:12:49 +0100
 
-polychromatic (0.3.7-xenial) xenial; urgency=low
+polychromatic (0.3.7) xenial; urgency=low
 
   * Add support for logo and scroll wheel.
   * Add options for mouse DPI.
@@ -121,13 +127,13 @@ polychromatic (0.3.7-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Tue, 07 Mar 2017 21:41:13 +0100
 
-polychromatic (0.3.6.1-xenial) xenial; urgency=low
+polychromatic (0.3.6.1) xenial; urgency=low
 
   * Revert WebKit2 workaround as regression is fixed in WebKitGTK 2.14.3.
 
  -- Luke Horwell <code@horwell.me>  Tue, 17 Jan 2017 21:15:42 +0100
 
-polychromatic (0.3.6-xenial) xenial; urgency=low
+polychromatic (0.3.6) xenial; urgency=low
 
   * Add button to gracefully stop the daemon.
   * Add images for headsets and keypads.
@@ -143,7 +149,7 @@ polychromatic (0.3.6-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Sat, 14 Jan 2017 17:20:58 +0100
 
-polychromatic (0.3.5-xenial) xenial; urgency=low
+polychromatic (0.3.5) xenial; urgency=low
 
   * Prevent crash when device serial returned null.
   * Correct logic for showing "No Devices Found" screen.
@@ -154,7 +160,7 @@ polychromatic (0.3.5-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Wed, 13 Dec 2016 20:53:04 +0100
 
-polychromatic (0.3.4-xenial) xenial; urgency=low
+polychromatic (0.3.4) xenial; urgency=low
 
   * Detect when a Razer product is connected.
   * Track and retain device states.
@@ -164,7 +170,7 @@ polychromatic (0.3.4-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Sat, 02 Oct 2016 21:26:22 +0100
 
-polychromatic (0.3.3-xenial) xenial; urgency=low
+polychromatic (0.3.3) xenial; urgency=low
 
   * Ensure FN/Space keys are enabled for keyboards that support it.
   * Add tabs to preferences.
@@ -180,7 +186,7 @@ polychromatic (0.3.3-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Sat, 02 Oct 2016 21:26:22 +0100
 
-polychromatic (0.3.2-xenial) xenial; urgency=low
+polychromatic (0.3.2) xenial; urgency=low
 
   * Add keyboard navigation support.
   * Dropdown menus are themed.
@@ -190,7 +196,7 @@ polychromatic (0.3.2-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Sun, 02 Oct 2016 21:26:22 +0100
 
-polychromatic (0.3.1-xenial) xenial; urgency=low
+polychromatic (0.3.1) xenial; urgency=low
 
   * Display error message on daemon initialisation failures.
   * Set process title earlier to prevent muddled process name.
@@ -201,7 +207,7 @@ polychromatic (0.3.1-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Sun, 25 Sep 2016 17:34:26 +0100
 
-polychromatic (0.3.0-xenial) xenial; urgency=low
+polychromatic (0.3.0) xenial; urgency=low
 
   * Migrate to the new daemon.
   * Implement multi-device support.
@@ -219,14 +225,14 @@ polychromatic (0.3.0-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Sun, 18 Sep 2016 09:51:32 +0100
 
-polychromatic (0.2.3-xenial) xenial; urgency=low
+polychromatic (0.2.3) xenial; urgency=low
 
   * Add autostart entry.
   * Show warning when ran under DaemonV2.
 
  -- Luke Horwell <code@horwell.me>  Sun, 14 Aug 2016 22:16:12 +0100
 
-polychromatic (0.2.2-xenial) xenial; urgency=low
+polychromatic (0.2.2) xenial; urgency=low
 
   * New application logo.
   * Upgraded profile format.
@@ -242,7 +248,7 @@ polychromatic (0.2.2-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Sun, 31 Jul 2016 20:49:00 +0100
 
-polychromatic (0.2.1-xenial) xenial; urgency=low
+polychromatic (0.2.1) xenial; urgency=low
 
   * New dialogue prompts for profile creation/deletion.
   * Add translation support.
@@ -252,7 +258,7 @@ polychromatic (0.2.1-xenial) xenial; urgency=low
  -- Luke Horwell <code@horwell.me>  Thu, 7 Jul 2016 17:15:00 +0100
 
 
-polychromatic (0.2.0-xenial2) xenial; urgency=low
+polychromatic (0.2.02) xenial; urgency=low
 
   * Migrated to WebKit2.
   * Internal project restructure.
@@ -261,7 +267,7 @@ polychromatic (0.2.0-xenial2) xenial; urgency=low
  -- Luke Horwell <code@horwell.me>  Sun, 12 Jun 2016 14:38:00 +0100
 
 
-polychromatic (0.1.0-xenial) xenial; urgency=low
+polychromatic (0.1.0) xenial; urgency=low
 
   * Initial Release
 

@@ -5,6 +5,4 @@
 
 override_dh_prep:
 	rm -rf pylib/__pycache__/
-	rm -rf pylib/screens/__pycache__/
-	rm -rf pylib/screens/main/__pycache__/
-
+	rm -rf pylib/backends/__pycache__/

@@ -83,4 +83,4 @@ jobs:
         git checkout .
         sed -i "s#) xenial#-UNRELEASED) xenial#g" debian/changelog
         dpkg-buildpackage -S -us -uc -d
-        lintian --suppress-tags bad-distribution-in-changes-file
+        lintian --suppress-tags bad-distribution-in-changes-file --no-tag-display-limit
