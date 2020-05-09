@@ -468,10 +468,14 @@ def set_device_state(uid, request, zone, colour_hex, params):
 
         elif request == "ripple_single":
             # Params: <red> <green> <blue> <speed>
+            if not params[0]:
+                params = [0.01]
             return zone_to_device[zone].ripple(colour_primary[0], colour_primary[1], colour_primary[2], float(params[0]))
 
         elif request == "ripple_random":
             # Params: <red> <green> <blue> <speed>
+            if not params[0]:
+                params = [0.01]
             return zone_to_device[zone].ripple_random(float(params[0]))
 
         elif request == "starlight_single":
