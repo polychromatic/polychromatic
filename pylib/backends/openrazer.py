@@ -827,21 +827,20 @@ def restart_daemon():
     Immediately restart the daemon process.
     """
     import time
+    dbg = common.Debugging()
 
     # Stop any process running
-    print("Running: openrazer-daemon -s")
+    dbg.stdout("Running: openrazer-daemon -s", dbg.action)
     os.system("openrazer-daemon -s")
 
     # Give chance to stop, but kill to be sure.
-    print("Waiting for openrazer-daemon to stop (2s)...")
+    dbg.stdout("Waiting for openrazer-daemon to stop (2s)...", dbg.action)
     time.sleep(2)
     os.system("killall openrazer-daemon")
 
     # Start again
-    print("Running: openrazer-daemon")
+    dbg.stdout("Running: openrazer-daemon", dbg.action)
     os.system("openrazer-daemon")
 
-    print("Waiting for openrazer-daemon to start (2s)...")
+    dbg.stdout("Waiting for openrazer-daemon to start (2s)...", dbg.action)
     time.sleep(2)
-
-    return True

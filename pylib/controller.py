@@ -515,6 +515,8 @@ class PolychromaticController():
         Force all compatible backends to restart their daemon processes (if applicable).
         """
         middleman.restart_backends()
+        self.run_function("close_dialog", {})
+        self.run_function("set_tab_devices", {})
 
 
 # Module Initalization

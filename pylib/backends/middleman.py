@@ -210,3 +210,5 @@ def restart_backends():
     """
     if BACKEND_OPENRAZER:
         openrazer.restart_daemon()
+
+    return True
