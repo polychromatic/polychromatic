@@ -463,14 +463,14 @@ function _get_device_controls(device, onclick) {
             switch(effect) {
                 case "wave":
                     var labels = _get_wave_direction(device.form_factor_id);
-                    fx_options += radio(`${fx_id}-2`, labels[0], param0 == 2, fx_grp, onclick);
-                    fx_options += radio(`${fx_id}-1`, labels[1], param0 == 1, fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-2`, labels[0], param0 == 2, 2, fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-1`, labels[1], param0 == 1, 1, fx_grp, onclick);
                     break;
                 case "reactive":
-                    fx_options += radio(`${fx_id}-1`, get_string("fast"), param0 == 1,  fx_grp, onclick);
-                    fx_options += radio(`${fx_id}-2`, get_string("medium"), param0 == 2, fx_grp, onclick);
-                    fx_options += radio(`${fx_id}-3`, get_string("slow"), param0 == 3, fx_grp, onclick);
-                    fx_options += radio(`${fx_id}-4`, get_string("vslow"), param0 == 4, fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-1`, get_string("fast"), param0 == 1, 1, fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-2`, get_string("medium"), param0 == 2, 2, fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-3`, get_string("slow"), param0 == 3, 3, fx_grp, onclick);
+                    fx_options += radio(`${fx_id}-4`, get_string("vslow"), param0 == 4, 4, fx_grp, onclick);
                     break;
                 case "ripple":
                 case "breath":
@@ -478,7 +478,7 @@ function _get_device_controls(device, onclick) {
                     var options = supported[`${effect}_options`];
                     for (i = 0; i < Object.keys(options).length; i++) {
                         var option = options[i];
-                        fx_options += radio(`${fx_id}_${option}`, get_string(option), subeffect == option, fx_grp, onclick);
+                        fx_options += radio(`${fx_id}_${option}`, get_string(option), subeffect == option, option, fx_grp, onclick);
                     }
                     break;
             }
@@ -590,8 +590,10 @@ function set_device_state(element) {
     } else {
         switch(element.type) {
             case "checkbox":
-            case "radio":
                 params = [element.checked];
+                break;
+            case "radio":
+                params = [$(`input[name='${element.group}']:checked`).val()];
                 break;
             case "select-one":
                 params = [element.value];

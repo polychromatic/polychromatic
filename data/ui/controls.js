@@ -56,12 +56,12 @@ function checkbox(id, label, checked, onchange) {
             </div>`;
 }
 
-function radio(id, label, checked, group_id, onchange) {
+function radio(id, label, checked, value, group_id, onchange) {
     //
     // Creates a radio button for choosing from a set of options.
     //
     return `<div class="radio-item">
-                <input id="${id}" type="radio" ${checked ? "checked" : ""} name="${group_id}" onchange="${onchange ? onchange : ""}"/>
+                <input id="${id}" type="radio" ${checked ? "checked" : ""} name="${group_id}" value="${value}" onchange="${onchange ? onchange : ""}"/>
                 <label for="${id}">${label}</label>
             </div>`;
 }
