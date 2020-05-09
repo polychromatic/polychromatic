@@ -35,6 +35,7 @@ function set_tab_devices() {
     $("#devices-tab").addClass("active");
     set_title(get_string("devices"));
 
+    cursor_wait_background();
     send_data("update_device_list", {"callback": "_set_tab_devices"});
 }
 
@@ -45,6 +46,7 @@ function _set_tab_devices() {
     $(".tab").removeClass("active");
     $("#devices-tab").addClass("active");
     set_title(get_string("devices"));
+    cursor_normal();
 
     var sidebar = [];
     var content = `<div id="device-content"></div>`;
@@ -272,6 +274,7 @@ function open_device(element, backend, uid) {
         "backend": backend,
         "uid": uid
     });
+    cursor_wait_background();
 }
 
 function _open_device(device) {
@@ -281,6 +284,7 @@ function _open_device(device) {
     //  data        JSON data returned from Controller describing the device.
     //
     set_title(device.name);
+    cursor_normal();
 
     CACHE_CURRENT_DEVICE = device;
 
@@ -950,7 +954,9 @@ function _get_wave_direction(form_factor_id) {
 }
 
 function open_troubleshooter() {
-    send_data("troubleshoot_openrazer", {});
+    modal_loading(get_string("troubleshooting"));
+    setTimeout(send_data, TRANSITION_SPEED + 10, "troubleshoot_openrazer", {});
+    cursor_wait_foreground();
 }
 
 function _show_troubleshoot_results(data) {
@@ -964,6 +970,7 @@ function _show_troubleshoot_results(data) {
     var full_test = data.success;
     var tests = Object.keys(data);
     var results_html = "";
+    cursor_normal();
 
     var icons = {
         false: "img/general/warning.svg",

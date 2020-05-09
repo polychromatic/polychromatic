@@ -20,6 +20,7 @@ function set_tab_preferences() {
     // Open the tab for configuring the application's options.
     //
     send_data("reload_preferences", {"callback": "_set_tab_preferences"});
+    cursor_wait_background();
 }
 
 function _set_tab_preferences() {
@@ -29,6 +30,7 @@ function _set_tab_preferences() {
     $(".tab").removeClass("active");
     $("#preferences-tab").addClass("active");
     set_title(get_string("preferences"));
+    cursor_normal();
 
     // ------------------------
     // Sidebar

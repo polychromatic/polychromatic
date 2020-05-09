@@ -51,6 +51,7 @@ function open_dialog(title, body, style, buttons, height, width) {
     }, TRANSITION_SPEED);
 
     DIALOG_OPEN = true;
+    cursor_normal();
 }
 
 function close_dialog() {

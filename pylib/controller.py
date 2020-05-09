@@ -73,12 +73,20 @@ class PolychromaticController():
             return False
 
         try:
-            requests[request](data)
+            thread = Thread(target=self._execute_request, args=(requests, request, data))
+            thread.start()
         except Exception as e:
             dbg.stdout("Failed to execute request: " + str(request) + " with data: " + str(data), dbg.error)
             dbg.stdout(common.get_exception_as_string(e), dbg.error)
             traceback = common.get_exception_as_string(e)
             self._internal_error(locales.LOCALES["error_generic_title"], locales.LOCALES["error_generic_text"] + "<br><br><code>{0}</code>".format(traceback), "serious")
+
+    def _execute_request(self, requests, request, data):
+        """
+        Actually execute the request (which happens in a different thread to
+        prevent the UI from locking up)
+        """
+        return requests[request](data)
 
     def run_function(self, function, data={}):
         """

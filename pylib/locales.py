@@ -212,6 +212,7 @@ LOCALES = {
     "troubleshoot_test_partial": _("Not all of the checks were performed due to errors, here's what was found anyway."),
     "restart_backends": _("Restart Daemon"),
     "restarting_backends": _("Restarting the OpenRazer daemon..."),
+    "troubleshooting": _("Troubleshooting..."),
 
     # Troubleshooter - OpenRazer checks
     "troubleshoot_daemon_found": _("Check if daemon is installed"),
