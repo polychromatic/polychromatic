@@ -821,3 +821,27 @@ def debug_matrix(uid, row, column):
     except Exception as e:
         return common.get_exception_as_string(e)
 
+
+def restart_daemon():
+    """
+    Immediately restart the daemon process.
+    """
+    import time
+
+    # Stop any process running
+    print("Running: openrazer-daemon -s")
+    os.system("openrazer-daemon -s")
+
+    # Give chance to stop, but kill to be sure.
+    print("Waiting for openrazer-daemon to stop (2s)...")
+    time.sleep(2)
+    os.system("killall openrazer-daemon")
+
+    # Start again
+    print("Running: openrazer-daemon")
+    os.system("openrazer-daemon")
+
+    print("Waiting for openrazer-daemon to start (2s)...")
+    time.sleep(2)
+
+    return True

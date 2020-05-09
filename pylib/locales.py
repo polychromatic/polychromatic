@@ -63,7 +63,7 @@ LOCALES = {
     "no-config-options": _("Sorry, this application has no configurable options for this device."),
 
     # Device tab errors for individual devices
-    "unknown-device-help": _("This device may work with OpenRazer. Currently, openrazer-daemon is unable to register this device, which could indicate an installation problem or lack of support right now."),
+    "unknown-device-help": _("This device may work with OpenRazer. Currently, openrazer-daemon hasn't registered this device, which could indicate an installation problem or lack of support right now."),
 
     # Device tab - there are no devices
     "no-device": _("No devices connected"),
@@ -210,6 +210,8 @@ LOCALES = {
     "troubleshoot_cannot_run": _("The troubleshooter cannot be started. Here's the error:"),
     "troubleshoot_test_complete": _("All checks completed."),
     "troubleshoot_test_partial": _("Not all of the checks were performed due to errors, here's what was found anyway."),
+    "restart_backends": _("Restart Daemon"),
+    "restarting_backends": _("Restarting the OpenRazer daemon..."),
 
     # Troubleshooter - OpenRazer checks
     "troubleshoot_daemon_found": _("Check if daemon is installed"),

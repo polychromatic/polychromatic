@@ -373,3 +373,12 @@ input[type='text'] {
         opacity: 0;
     }
 }
+
+/* Cursors */
+.cursor-bg {
+    cursor: progress !important;
+}
+
+.cursor-fg {
+    cursor: wait !important;
+}

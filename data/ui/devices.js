@@ -139,6 +139,13 @@ function _set_tab_devices() {
                         "id": "troubleshooter"
                     },
                     {
+                        "icon": "img/general/refresh.svg",
+                        "label": get_string("restart_backends"),
+                        "onclick": "restart_backends()",
+                        "classes": "",
+                        "id": "restart"
+                    },
+                    {
                         "icon": "img/general/external.svg",
                         "label": get_string("open-help"),
                         "onclick": "open_help()",
@@ -905,12 +912,15 @@ function _device_error(id) {
         </div>
         <p>${text}</p>
         <p>
-            <a onclick="open_troubleshooter()">
+            <button onclick="open_troubleshooter()">
                 ${get_string("troubleshoot")}
-            </a> |
-            <a onclick="open_help()">
+            </button>
+            <button onclick="restart_backends()">
+                ${get_string("restart_backends")}
+            </button>
+            <button onclick="open_help()">
                 ${get_string("open-help")}
-            </a>
+            </button>
         </p>`;
 
     return content;
@@ -937,4 +947,81 @@ function _get_wave_direction(form_factor_id) {
     }
 
     return [get_string("left"), get_string("right")];
+}
+
+function open_troubleshooter() {
+    send_data("troubleshoot_openrazer", {});
+}
+
+function _show_troubleshoot_results(data) {
+    //
+    // Issued by Controller. Opens a dialog showing the results and suggestions
+    // for the user to try.
+    //
+    // Params:
+    //    data          See openrazer.py troubleshoot()
+    //
+    var full_test = data.success;
+    var tests = Object.keys(data);
+    var results_html = "";
+
+    var icons = {
+        false: "img/general/warning.svg",
+        true: "img/general/success.svg",
+        null: "img/general/unknown.svg"
+    };
+
+    var colours = {
+        false: "yellow",
+        true: "lime",
+        null: "gray"
+    };
+
+    for (t = 0; t < tests.length; t++) {
+        var test = tests[t];
+        if (test == "success") continue;
+        var result = data[test];
+        results_html += `<tr>
+            <td style="color:${colours[result]}"><img src="${icons[result]}"/> ${get_string("troubleshoot_" + test)}</td>
+        </tr>`;
+
+        if (result == false) {
+            var suggestion = get_string("troubleshoot_" + test + "_suggestion");
+
+            // Place a '$' before a command to apply code formatting (until end of line)
+            if (suggestion.search("$") != -1) {
+                suggestion = suggestion.replace("$ ", "<code>") + "</code>";
+            }
+            results_html += `<tr>
+                <td style="opacity:0.75; padding:0.25em 2.5em 1em">${suggestion}</td>
+            </tr>`;
+        }
+    }
+
+    var body = `<p style="margin:0.5em 6em 1em 0">
+            ${ full_test ? get_string("troubleshoot_test_complete") : get_string("troubleshoot_test_partial")}
+        </p>
+        <div style="height:50vh; overflow:auto">
+            <table class="no-grid">
+                <tbody>
+                    ${results_html}
+                </tbody>
+            </table>
+        </div>`;
+
+    var buttons = [
+        [get_string("open-help"), "open_help()"],
+        [get_string("restart_backends"), `close_dialog(); setTimeout(restart_backends, ${TRANSITION_SPEED + 10})`],
+        [get_string("close"), ""]
+    ];
+    open_dialog(get_string("troubleshoot"), body, null, buttons, "80vh", "40em");
+}
+
+function restart_backends() {
+    //
+    // Restart backends. This may help resolve immediate issues.
+    //
+    modal_loading(get_string("restarting_backends"));
+    setTimeout(send_data, TRANSITION_SPEED + 10, "restart_backends", {});
+    cursor_wait_foreground();
 }

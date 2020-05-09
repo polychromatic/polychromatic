@@ -71,3 +71,35 @@ function close_dialog() {
         $("dialog").remove();
     }, TRANSITION_SPEED);
 }
+
+function modal_loading(title) {
+    //
+    // Opens a dialogue box dedicated to modal loading.
+    //
+    // This should only be used when a request requires the user to wait
+    // before the request can continue.
+    //
+    DIALOG_OPEN = true;
+
+    $("dialog").remove();
+    $("body").append(`
+        <dialog style="display:none">
+            <div class="dialog-box loading in">
+                <div class="dialog-loading-spinner">${BUTTON_SVGS["loading"]}</div>
+                <div class="dialog-loading-text">${title}</div>
+            </div>
+        </dialog>
+    `);
+
+    // Blur background
+    $("#modal-overlay").show();
+    $("header").addClass("blur");
+    $("content").addClass("blur");
+    $("footer").addClass("blur");
+    $("dialog").show();
+
+    clearInterval(DIALOG_TIMEOUT);
+    DIALOG_TIMEOUT = setTimeout(function() {
+        $(".dialog-box").removeClass("in");
+    }, TRANSITION_SPEED);
+}

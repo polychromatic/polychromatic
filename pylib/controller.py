@@ -61,6 +61,7 @@ class PolychromaticController():
                 "apply_to_all": self._apply_to_all,
                 "set_device_state": self._set_device_state,
                 "debug_matrix": self._debug_matrix,
+                "restart_backends": self._restart_backends,
 
                 # Preferences tab
                 "reload_preferences": self._reload_preferences,
@@ -500,6 +501,12 @@ class PolychromaticController():
         self.send_view_variable("CUSTOM_ICONS", pref.get_custom_icons())
         self.run_function("_custom_icons_changed", {});
         return True
+
+    def _restart_backends(self, data):
+        """
+        Force all compatible backends to restart their daemon processes (if applicable).
+        """
+        middleman.restart_backends()
 
 
 # Module Initalization

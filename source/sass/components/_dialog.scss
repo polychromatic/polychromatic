@@ -41,7 +41,7 @@ dialog {
     }
 
     &.out {
-        animation: dialog-out $dialogue-speed ease-in-out forwards;
+        animation: dialog-out $dialogue-speed ease-in-out forwards !important;
     }
 }
 
@@ -139,4 +139,51 @@ dialog {
         transform: scale(1.05);
         opacity: 0;
     }
+}
+
+/* Loading */
+.dialog-box.loading {
+    height: 2em;
+    width: 24em;
+    padding: 1em;
+    color: $text-colour;
+    display: flex;
+    flex-direction: row;
+    animation: loading-border 2.5s infinite linear;
+}
+
+.dialog-loading-spinner {
+    svg path {
+        fill: $text-colour;
+        animation: loading 2.5s infinite linear;
+        transform-origin: center;
+    }
+}
+
+@keyframes loading {
+    0% { fill: $text-colour; transform: rotate(0deg); }
+    12.5% { fill: $spectrum1; }
+    25% { fill: $spectrum2; }
+    37.5% { fill: $spectrum3; transform: rotate(359deg); }
+    50% { fill: $spectrum4; }
+    62.5% { fill: $spectrum5; transform: rotate(719deg); }
+    75% { fill: $spectrum6; }
+    87.5% { fill: $spectrum7; }
+    100% { fill: $text-colour; transform: rotate(1079deg); }
+}
+
+@keyframes loading-border {
+    0% { border-color: $text-colour; }
+    12.5% { border-color: $spectrum1; }
+    25% { border-color: $spectrum2; }
+    37.5% { border-color: $spectrum3; }
+    50% { border-color: $spectrum4; }
+    62.5% { border-color: $spectrum5; }
+    75% { border-color: $spectrum6; }
+    87.5% { border-color: $spectrum7; }
+    100% { border-color: $text-colour; }
+}
+
+.dialog-loading-text {
+    margin: auto 0.5em;
 }

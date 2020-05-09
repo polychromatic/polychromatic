@@ -202,3 +202,11 @@ def troubleshoot():
     """
     from . import openrazer_troubleshooter as troubleshooter
     return troubleshooter.troubleshoot()
+
+
+def restart_backends():
+    """
+    Restarts the daemon processes for all compatible backends.
+    """
+    if BACKEND_OPENRAZER:
+        openrazer.restart_daemon()

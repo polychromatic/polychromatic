@@ -216,3 +216,18 @@ function _onwheel(event, element) {
         }
     }
 }
+
+/*****************************
+ * Cursors
+*****************************/
+function cursor_normal() {
+    $("body").removeClass();
+}
+
+function cursor_wait_background() {
+    $("body").addClass("cursor-bg");
+}
+
+function cursor_wait_foreground() {
+    $("body").addClass("cursor-fg");
+}
