@@ -239,7 +239,9 @@ class PolychromaticController():
             if device["available"] == False:
                 continue
 
-            for zone in device["zones"]:
+            details = middleman.get_device(device["backend"], device["uid"])
+
+            for zone in details["zone_chroma"]:
                 if request_type == "effect":
                     param = effect_params[request_value]
                     middleman.set_device_state(device["backend"], device["uid"], request_value, zone, None, [param])
