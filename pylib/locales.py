@@ -111,20 +111,20 @@ LOCALES = {
     # Breath/Ripple
     "breath_options": _("Breath Type"),
     "ripple_options": _("Ripple Type"),
-    "random": _("Random Colors"),
-    "single": _("Single Color"),
-    "dual": _("Dual Colors"),
+    "random": _("Random Colours"),
+    "single": _("Single Colour"),
+    "dual": _("Dual Colours"),
 
     # Colours
-    "primary_colour": _("Primary Color"),
-    "secondary_colour": _("Secondary Color"),
-    "teritary_colour": _("Teritary Color"),
+    "primary_colour": _("Primary Colour"),
+    "secondary_colour": _("Secondary Colour"),
+    "teritary_colour": _("Teritary Colour"),
 
     # Buttons
     "ok": _("OK"),
     "cancel": _("Cancel"),
     "save": _("Save"),
-    "colour": _("Color"),
+    "colour": _("Colour"),
     "close": _("Close"),
     "close-app": _("Close Application"),
     "troubleshoot": _("Troubleshoot"),
@@ -148,7 +148,7 @@ LOCALES = {
     "about": _("About"),
     "general": _("General"),
     "tray_applet": _("Tray Applet"),
-    "saved_colours": _("Saved Colors"),
+    "saved_colours": _("Saved Colours"),
     "default_colours": _("Default Colours"),
     "view_source_code": _("View Source Code"),
     "whats_new": _("What's New?"),

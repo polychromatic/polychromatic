@@ -408,7 +408,7 @@ class AppIndicator(object):
         # Colour (repeats last effect)
         if details["matrix"]:
             dbg.stdout("  - Colours", dbg.debug, 1)
-            colour_menu = create_submenu(_("Change Color"), True, get_icon("general", "palette.svg"))
+            colour_menu = create_submenu(_("Change Colour"), True, get_icon("general", "palette.svg"))
 
             if details["monochromatic"]:
                 col_index = common.get_green_shades()
@@ -425,7 +425,7 @@ class AppIndicator(object):
 
             colour_menu[1].append(create_seperator())
             create_submenu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [backend, uid, zone], get_icon("general", "palette.svg"))
-            create_submenu_item(colour_menu, _("Edit Colors..."), True, cb.launch_controller, ["colours"], get_icon("general", "edit.svg"))
+            create_submenu_item(colour_menu, _("Edit Colours..."), True, cb.launch_controller, ["colours"], get_icon("general", "edit.svg"))
             submenu[1].append(create_seperator())
             submenu[1].append(colour_menu[0])
 
@@ -505,7 +505,7 @@ class AppIndicator(object):
 
             # Use a submenu if device supports both ripple effects.
             if "random" in ripple_supported:
-                create_submenu_item(ripple_menu, _("Single Color"), True, cb.set_effect, [backend, uid, zone, "ripple_single", 0.01])
+                create_submenu_item(ripple_menu, _("Single Colour"), True, cb.set_effect, [backend, uid, zone, "ripple_single", 0.01])
                 create_submenu_item(ripple_menu, _("Random"), True, cb.set_effect, [backend, uid, zone, "ripple_random", 0.01])
                 submenu[1].append(ripple_menu[0])
             else:
@@ -797,7 +797,7 @@ class Callback():
         zone = attr[2]
 
         dbg.stdout("Opened GTK colour picker.", dbg.debug, 1)
-        color_selection_dlg = Gtk.ColorSelectionDialog(_("Set Primary Color"))
+        color_selection_dlg = Gtk.ColourSelectionDialog(_("Set Primary Colour"))
         color_selection_result = color_selection_dlg.run()
 
         if color_selection_result == Gtk.ResponseType.OK:
