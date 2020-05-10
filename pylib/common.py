@@ -289,35 +289,53 @@ def get_tray_icon(dbg, pref):
     return os.path.join(get_data_dir_path(), "ui/img/tray/light/polychromatic.svg")
 
 
-def execute_polychromatic_component(dbg, suffix, current_bin_path, data_source, jump_to):
+def execute_polychromatic_component(dbg, component, tab=None):
     """
     Starts a Polychromatic application relative to its location or system-wide
     if installed.
 
     Params:
-        suffix              e.g. "controller" would run "polychromatic-controller"
-        current_bin_path    Application's __file__
-        data_source         Data directory, e.g. /usr/share/polychromatic
-        jump_to             (Optional - Controller only) Opens a specific tab.
+        component   e.g. "controller" would run "polychromatic-controller"
+        tab         (Optional - Controller only) Opens a specific tab.
     """
+    data_dir = get_data_dir_path()
+    exec_name = "polychromatic-" + component
+
     possible_paths = [
-        os.path.join(data_source, "../polychromatic-" + suffix),
-        os.path.join(os.path.dirname(current_bin_path), "polychromatic-" + suffix),
-        "/usr/bin/polychromatic-" + suffix
+        # Relative copy #1
+        os.path.join(data_dir, "../" + exec_name),
+
+        # Relative copy #2
+        os.path.join(os.path.dirname(__file__), exec_name),
+
+        # Relative system-wide (e.g. /usr/share/polychromatic)
+        os.path.join(data_dir, "../../bin/" + exec_name),
+
+        # Relative system-wide (e.g. /usr/share/polychromatic)
+        os.path.join(os.path.dirname(__file__), "../" + exec_name),
+
+        # Absolute system-wide
+        "/usr/bin/" + exec_name
     ]
 
     for bin_path in possible_paths:
+        args = [bin_path]
+
+        if tab:
+            args.append("--tab")
+            args.append(tab)
+
         if os.path.exists(bin_path):
-            dbg.stdout("Executing: " + os.path.realpath(bin_path), dbg.debug, 1)
+            dbg.stdout("Executing: " + os.path.realpath(" ".join(args)), dbg.debug, 1)
             try:
-                subprocess.Popen(bin_path) # Add jump_to here
+                subprocess.Popen(args)
             except Exception:
                 pass
             return True
     return False
 
 
-def restart_tray_applet(dbg, current_bin_path, data_source):
+def restart_tray_applet(dbg, current_bin_path): #TODO: restart_polychromatic_component
     """
     Restarts the tray applet if an instance is running in the background.
     Returns True/False depending on success.
@@ -325,7 +343,6 @@ def restart_tray_applet(dbg, current_bin_path, data_source):
     Params:
         dbg                 Debugging() object
         current_bin_path    Application's __file__
-        data_source         Data directory, e.g. /usr/share/polychromatic
     """
     dbg.stdout("Restarting tray applet...", dbg.action, 1)
 
@@ -336,8 +353,7 @@ def restart_tray_applet(dbg, current_bin_path, data_source):
         dbg.stdout("Tray applet PID not found.", dbg.warning, 1)
         return False
 
-    result = execute_polychromatic_component(dbg, "tray-applet", current_bin_path, data_source, None)
-    return result
+    return execute_polychromatic_component(dbg, "tray-applet")
 
 
 def restart_openrazer_daemon(dbg, devman):

@@ -219,7 +219,6 @@ class AppIndicator(object):
         root.append(create_seperator())
         root.append(create_menu_item(_("Try again"), True, cb.retry_applet, None, get_icon("general", "refresh.svg")))
         root.append(create_menu_item(_("Troubleshoot"), True, cb.launch_controller, "troubleshoot", get_icon("general", "preferences.svg")))
-        root.append(create_menu_item(_("Restart OpenRazer Daemon"), True, cb.restart_daemon, None, get_icon("logo", "openrazer-alt.svg")))
         root.append(create_seperator())
         root.append(create_menu_item(_("Open Controller"), True, cb.launch_controller, None, get_icon("general", "controller.svg")))
         root.append(create_menu_item(_("Quit"), True, cb.quit))
@@ -259,8 +258,7 @@ class AppIndicator(object):
             root.append(create_menu_item(_("No devices found."), False))
             root.append(create_seperator())
             root.append(create_menu_item(_("Try again"), True, cb.retry_applet, None, get_icon("general", "refresh.svg")))
-            root.append(create_menu_item(_("Troubleshoot"), True, cb.launch_controller, "troubleshooter", get_icon("general", "preferences.svg")))
-            root.append(create_menu_item(_("Restart OpenRazer Daemon"), True, cb.restart_daemon, None, get_icon("logo", "openrazer-alt.svg")))
+            root.append(create_menu_item(_("Troubleshoot"), True, cb.launch_controller, "troubleshoot", get_icon("general", "preferences.svg")))
         else:
             for device in devices:
                 if not device["available"]:
@@ -425,7 +423,7 @@ class AppIndicator(object):
 
             colour_menu[1].append(create_seperator())
             create_submenu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [backend, uid, zone], get_icon("general", "palette.svg"))
-            create_submenu_item(colour_menu, _("Edit Colours..."), True, cb.launch_controller, ["colours"], get_icon("general", "edit.svg"))
+            create_submenu_item(colour_menu, _("Edit Colours..."), True, cb.launch_controller, "colours", get_icon("general", "edit.svg"))
             submenu[1].append(create_seperator())
             submenu[1].append(colour_menu[0])
 
@@ -570,20 +568,19 @@ class Callback():
     Contains functions that run when a menu item is clicked.
     """
     @staticmethod
-    def launch_controller(item, jump_to=None):
+    def launch_controller(item, tab=None):
         """
         GTK menu item callback to open the Controller application.
 
         Params:
-            jump_to     (Optional) Opens a specific tab in the Controller (see
-                        polychromatic-controller args for options)
+            tab     (Optional) Open a specific tab in the Controller
         """
-        if jump_to:
-            dbg.stdout("=> Launch Controller to '{0}' UI".format(jump_to))
+        if tab:
+            dbg.stdout("=> Launching Controller to '{0}' tab/section...".format(tab), dbg.action, 1)
         else:
-            dbg.stdout("=> Launch Controller", dbg.debug, 1)
+            dbg.stdout("=> Launching Controller...", dbg.action, 1)
 
-        common.execute_polychromatic_component(dbg, "controller", __file__, common.DATA_PATH, jump_to)
+        common.execute_polychromatic_component(dbg, "controller", tab)
 
     @staticmethod
     def quit(item):
@@ -601,17 +598,6 @@ class Callback():
         dbg.stdout("Restarting applet...", dbg.action, 1)
         os.execv(__file__, sys.argv)
         exit(0)
-
-    @staticmethod
-    def restart_daemon(item):
-        """
-        GTK menu item callback to restart the OpenRazer daemon.
-        """
-        dbg.stdout("=> Restart Daemon", dbg.debug, 1)
-        item.set_label(_("Restarting..."))
-        item.set_sensitive(False)
-        common.restart_openrazer_daemon(dbg, path)
-        Callback.retry_applet(None)
 
     @staticmethod
     def set_effect(item, attr):
