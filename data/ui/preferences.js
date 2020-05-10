@@ -276,3 +276,12 @@ function _save_default_colour(colour_id) {
     };
     change_pref("colours", colours[colour_id], $("#colour-input").val());
 }
+
+function set_tab_colours() {
+    //
+    // Using the --tab parameter or via the tray applet, the user may jump
+    // straight to the colour editor section.
+    //
+    _set_tab_preferences();
+    show_pref("colours");
+}

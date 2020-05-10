@@ -155,9 +155,11 @@ class PolychromaticController():
             fn = {
                 "devices": "_set_tab_devices",
                 "effects": "_set_tab_effects",
-                "profiles": "_set_tab_profiles",
-                "events": "_set_tab_events",
-                "preferences": "_set_tab_preferences"
+                "presets": "_set_tab_presets",
+                "triggers": "_set_tab_triggers",
+                "preferences": "_set_tab_preferences",
+                "colours": "set_tab_colours",
+                "troubleshoot": "open_troubleshooter_from_cli"
             }
             self.run_function(fn[landing_tab])
         except KeyError:

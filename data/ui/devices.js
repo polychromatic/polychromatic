@@ -959,6 +959,11 @@ function open_troubleshooter() {
     cursor_wait_foreground();
 }
 
+function open_troubleshooter_from_cli() {
+    _set_tab_devices();
+    open_troubleshooter();
+}
+
 function _show_troubleshoot_results(data) {
     //
     // Issued by Controller. Opens a dialog showing the results and suggestions
