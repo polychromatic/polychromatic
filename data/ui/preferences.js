@@ -98,7 +98,9 @@ function _set_tab_preferences() {
         return `<p><a onclick="open_uri('${url}')" title="${url}">${name}</a></p>`;
     }
 
-    // -- About [Application]
+    // -----------------------------------------------------
+    // About
+    // -----------------------------------------------------
     var about = "";
     about += `${_program_logo("img/logo/polychromatic.svg", "polychromatic")}
     <div class="program-links">
@@ -130,7 +132,9 @@ function _set_tab_preferences() {
         <p><a onclick="open_license_notices()">${get_string("license_notices")}</a></p>
     </div>`;
 
-    // -- General [Application]
+    // -----------------------------------------------------
+    // General
+    // -----------------------------------------------------
     var general = group_title(get_string("application"));
     general += group(get_string("landing_tab"), dropdown("landing_tab", "change_pref('general', 'landing_tab', this.value)", PREFERENCES.general.landing_tab, [
         [get_string("devices"), "devices", false],
@@ -143,7 +147,9 @@ function _set_tab_preferences() {
     general += group_title(get_string("effects"));
     general += group(get_string("editor"), checkbox("effect_live_preview", get_string("effect_live_preview"), PREFERENCES.effects.live_preview, "change_pref('effects', 'live_preview', this.checked)"));
 
-    // -- Tray Applet [Application]
+    // -----------------------------------------------------
+    // Tray Applet
+    // -----------------------------------------------------
     var _icon_path = PREFERENCES.tray.icon;
     if (_icon_path.startsWith("ui/") === true) {
         _icon_path = "../" + _icon_path;
@@ -155,15 +161,24 @@ function _set_tab_preferences() {
     tray += group_title(get_string("advanced"));
     tray += group(get_string("compatibility"), checkbox("force_legacy_gtk_status", get_string("force_legacy_gtk_status"), PREFERENCES.tray.force_legacy_gtk_status, "change_pref('tray', 'force_legacy_gtk_status', this.checked)"));
 
-    // -- Saved Colours [Application]
+    // -----------------------------------------------------
+    // Saved Colours
+    // -----------------------------------------------------
     var colours = group_title(get_string("default_colours"));
-    colours += help_text(get_string("about_saved_colours"));
+    colours += help_text(get_string("about_default_colours"));
     colours += group(get_string("primary_colour"), colour_picker("default-primary", "_save_default_colour(0)", PREFERENCES.colours.primary, get_string("primary_colour"), false), true);
     colours += group(get_string("secondary_colour"), colour_picker("default-secondary", "_save_default_colour(1)", PREFERENCES.colours.secondary, get_string("secondary_colour"), false), true);
 
     colours += group_title(get_string("saved_colours"));
+    colours += help_text(get_string("about_saved_colours"));
+    colours += `<div style="margin: 0 2em;">
+        ${button("saved-colours-manual", "_open_saved_colours_picker()", get_string("change"), "edit")}
+        ${button("saved-colours-reset", "_reset_saved_colours()", get_string("restore_defaults"), "reset")}
+    </div>`;
 
-    // -- OpenRazer [Backends]
+    // -----------------------------------------------------
+    // OpenRazer
+    // -----------------------------------------------------
     var openrazer = "";
     openrazer += `${_program_logo("img/logo/openrazer.svg", "OpenRazer")}
     <div class="program-links">
@@ -183,7 +198,9 @@ function _set_tab_preferences() {
         ${button("whats-new-2", "open_uri('https://github.com/openrazer/openrazer/releases/latest')", get_string("whats_new"), "external")}
     </div>`;
 
+    // -----------------------------------------------------
     // Put it all together
+    // -----------------------------------------------------
     var content = `<div id="preferences-content">
         <div id="section-about" class="section" style="display:none">${about}</div>
         <div id="section-general" class="section" style="display:none">${general}</div>
@@ -277,6 +294,35 @@ function _save_default_colour(colour_id) {
     change_pref("colours", colours[colour_id], $("#colour-input").val());
 }
 
+function _open_saved_colours_picker() {
+    //
+    // Opens the colour picker for the purposes of re-organising saved colours.
+    //
+    open_colour_picker("saved-colours", get_string("saved_colours"), "#000000", null, false);
+}
+
+function _reset_saved_colours() {
+    //
+    // Confirms with the user if they are sure about resetting their saved colours.
+    //
+    buttons = [
+        [get_string("cancel"), ""],
+        [get_string("reset"), "_reset_saved_colours_confirmed()"]
+    ];
+    open_dialog(get_string("reset_saved_colours_title"), get_string("reset_saved_colours_body"), "warning", buttons, "10em", "30em");
+}
+
+function _reset_saved_colours_confirmed() {
+    //
+    // User confirms destructive question. Saved colours to be reset.
+    //
+    send_data("set_custom_colour", {
+        "operation": "reset",
+        "name": "",
+        "hex": ""
+    });
+}
+
 function set_tab_colours() {
     //
     // Using the --tab parameter or via the tray applet, the user may jump
@@ -284,4 +330,5 @@ function set_tab_colours() {
     //
     _set_tab_preferences();
     show_pref("colours");
+    _open_saved_colours_picker();
 }

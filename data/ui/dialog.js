@@ -86,7 +86,7 @@ function modal_loading(title) {
     $("body").append(`
         <dialog style="display:none">
             <div class="dialog-box loading in">
-                <div class="dialog-loading-spinner">${BUTTON_SVGS.loading}</div>
+                <div class="dialog-loading-spinner">${get_svg("loading")}</div>
                 <div class="dialog-loading-text">${title}</div>
             </div>
         </dialog>

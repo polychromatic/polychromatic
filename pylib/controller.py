@@ -65,7 +65,8 @@ class PolychromaticController():
 
                 # Preferences tab
                 "reload_preferences": self._reload_preferences,
-                "set_preference": self._set_preference
+                "set_preference": self._set_preference,
+                "set_custom_colour": self._set_custom_colour
             }
         except KeyError:
             dbg.stdout("Unknown Request: " + str(request) + " with data: " + str(data), dbg.error)
@@ -497,7 +498,6 @@ class PolychromaticController():
         {
             "filename": (string)
         }
-
         """
         path = os.path.join(pref.path.custom_icons, data["filename"])
 
@@ -519,6 +519,47 @@ class PolychromaticController():
         middleman.restart_backends()
         self.run_function("close_dialog", {})
         self.run_function("set_tab_devices", {})
+
+    def _set_custom_colour(self, data):
+        """
+        Adds or deletes a saved colour from the colour picker.
+
+        Data parameter:
+        {
+            "operation": (string)
+            "name": (string)
+            "hex": (string)
+        }
+        """
+        operation = data["operation"]
+        colour_name = data["name"]
+        colour_hex = data["hex"]
+
+        if operation == "add":
+            colours = pref.load_file(path.colours)
+            colours.append({"name": colour_name, "hex": colour_hex})
+            pref.save_file(path.colours, colours)
+            self.send_view_variable("COLOURS", colours)
+            dbg.stdout("Added '{0}' ({1}) to saved colours.".format(colour_name, colour_hex), dbg.success, 1)
+
+        elif operation == "del":
+            colours = pref.load_file(path.colours)
+            i = -1
+            for col in colours:
+                i += 1
+                if col["name"] == colour_name:
+                    colours.pop(i)
+                    break
+            pref.save_file(path.colours, colours)
+            self.send_view_variable("COLOURS", colours)
+            dbg.stdout("Removed '{0}' from saved colours.".format(colour_name), dbg.success, 1)
+
+        elif operation == "reset":
+            os.remove(path.colours)
+            pref.start_initalization()
+            dbg.stdout("Reset all saved colours to defaults.", dbg.success, 1)
+            colours = pref.load_file(path.colours)
+            self.send_view_variable("COLOURS", colours)
 
 
 # Module Initalization

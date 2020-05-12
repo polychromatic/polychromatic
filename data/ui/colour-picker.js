@@ -13,6 +13,9 @@ function open_colour_picker(id, title, current_hex, onsaveclick, monochromatic) 
     //  onsaveclick     Function to run when new colour is chosen. Runs before close_dialog().
     //  monochromatic   true for devices that only support RGB green.
     //
+    // Special cases:
+    //  onsaveclick == null     Just show a "close" button. Used for managing saved colours.
+    //
     var rgb = hex_to_rgb(current_hex);
     var colours_html = "";
 
@@ -39,6 +42,12 @@ function open_colour_picker(id, title, current_hex, onsaveclick, monochromatic) 
                 <div class="saved-colours-list">
                     ${colours_html}
                 </div>
+                <div class="saved-colours-editor">
+                    <img class="save-icon" src="img/general/save.svg"/>
+                    <input id="new-colour-name" type="text"/>
+                    <button id="new-colour-save" class="disabled">${get_svg("plus")}</button>
+                    <button id="new-colour-del" class="serious disabled">${get_svg("bin")}</button>
+                </div>
             </div>
         </div>`;
 
@@ -59,10 +68,15 @@ function open_colour_picker(id, title, current_hex, onsaveclick, monochromatic) 
                 $("#colour-input-green").val(rgb.g);
                 $("#colour-input-blue").val(rgb.b);
                 $("#colour-input-system").val(hex);
+                $("#new-colour-name").val("");
+                $("#new-colour-save").addClass("disabled");
+                $("#new-colour-del").addClass("disabled");
                 $(".colour-btn").each(function() {
                     $(this).removeClass("active");
                     if (hex.toLowerCase() === $(this).attr("data-value").toLowerCase()) {
                         $(this).addClass("active");
+                        $("#new-colour-name").val($(this).find(".colour-name").html());
+                        $("#new-colour-del").removeClass("disabled");
                     }
                 });
             }
@@ -90,11 +104,109 @@ function open_colour_picker(id, title, current_hex, onsaveclick, monochromatic) 
         $(this).change();
     });
 
+    // Add/remove colours buttons
+    var name_textbox = $("#new-colour-name");
+    var name_save_btn = $("#new-colour-save");
+    var name_del_btn = $("#new-colour-del");
+
     // Clicking on a saved colour
-    $(".saved-colours-list > button").click(function() {
+    function _colour_clicked() {
         picker.setColorByHex($(this).attr("data-value"));
         $(this).siblings().removeClass("active");
         $(this).addClass("active");
+        name_textbox.val($(this).find(".colour-name").html());
+        name_save_btn.addClass("disabled");
+        name_del_btn.removeClass("disabled");
+    }
+
+    $(".saved-colours-list > button").click(_colour_clicked);
+
+    // Add/remove colours to the custom list
+    function _colour_name_update() {
+        var can_delete = false;
+        var can_save = false;
+        var new_name = name_textbox.val();
+        var current_hex = $("#colour-input").val();
+
+        // Only save colours with names
+        if (name_textbox.val().length > 0) {
+            can_save = true;
+        }
+
+        for (c = 0; c < COLOURS.length; c++) {
+            var colour_name = COLOURS[c].name;
+            var colour_hex = COLOURS[c].hex;
+
+            // Only delete a listed colour name.
+            if (colour_name == new_name) {
+                can_delete = true;
+                can_save = false;
+            }
+
+            // Cannot save a colour name/hex that already exists.
+            if (colour_hex == current_hex) {
+                can_save = false;
+            }
+        }
+
+        name_save_btn.addClass("disabled");
+        name_del_btn.addClass("disabled");
+
+        if (can_delete === true) {
+            name_del_btn.removeClass("disabled");
+        }
+
+        if (can_save === true) {
+            name_save_btn.removeClass("disabled");
+        }
+    }
+
+    name_textbox.keyup(_colour_name_update);
+
+    name_save_btn.click(function() {
+        var colour_hex =  $("#colour-input").val();
+        var colour_name = name_textbox.val();
+
+        name_save_btn.addClass("disabled");
+        name_del_btn.removeClass("disabled");
+
+        // Write to file
+        send_data("set_custom_colour", {
+            "operation": "add",
+            "name": colour_name,
+            "hex": colour_hex
+        });
+
+        // Update memory: Add button
+        var new_btn = `<button class="colour-btn" data-value="${colour_hex}">
+            <div class="colour-box" style="background-color:${colour_hex}"></div>
+            <div class="colour-name">${colour_name}</div>
+        </button>`;
+        $(".saved-colours-list").append(new_btn);
+        $(".saved-colours-list").find("button").last().click(_colour_clicked);
+    });
+
+    name_del_btn.click(function() {
+        var colour_name = name_textbox.val();
+
+        name_save_btn.removeClass("disabled");
+        name_del_btn.addClass("disabled");
+
+        // Write to file
+        send_data("set_custom_colour", {
+            "operation": "del",
+            "name": colour_name,
+            "hex": ""
+        });
+
+        // Update memory: Remove button
+        var saved_col_buttons = $(".saved-colours-list").children();
+        for (c = 0; c < saved_col_buttons.length; c++) {
+            var button = saved_col_buttons[c];
+            if ($(button).find(".colour-name").html() == colour_name) {
+                $(button).remove();
+            }
+        }
     });
 
     // Replace the default button onclick for "Use system picker", which is the first button.
@@ -110,8 +222,9 @@ function open_colour_picker(id, title, current_hex, onsaveclick, monochromatic) 
     });
 
     // Saving the colour - "Save" button is the last on the dialogue.
-    var change_btn  =$(`#${id}`).next().find(".change-colour");
+    var change_btn = $(`#${id}`).next().find(".change-colour");
     var save_btn = $(".dialog-buttons").find("button").last();
+    var cancel_btn = save_btn.prev();
 
     save_btn.click(function() {
         var new_value = picker.getCurColorHex();
@@ -128,4 +241,10 @@ function open_colour_picker(id, title, current_hex, onsaveclick, monochromatic) 
         eval(save_btn_onclick);
     });
     save_btn.attr("onclick", "");
+
+    // Special case: Just managing the colours, no saving required.
+    if (onsaveclick == null) {
+        save_btn.hide();
+        cancel_btn.html(get_string("close"));
+    }
 }

@@ -57,6 +57,7 @@ LOCALES = {
     "macros": _("Macros"),
     "dpi": _("DPI"),
     "poll_rate": _("Polling Rate"),
+    "apply": _("Apply"),
     "apply-to-all": _("Apply to All"),
     "apply-to-all-unsupported": _("Some of your connected devices do not support all of these effects."),
     "unknown-device": _("Unrecognized: []"),
@@ -124,6 +125,7 @@ LOCALES = {
     "ok": _("OK"),
     "cancel": _("Cancel"),
     "save": _("Save"),
+    "reset": _("Reset"),
     "colour": _("Colour"),
     "close": _("Close"),
     "close-app": _("Close Application"),
@@ -150,6 +152,7 @@ LOCALES = {
     "tray_applet": _("Tray Applet"),
     "saved_colours": _("Saved Colours"),
     "default_colours": _("Default Colours"),
+    "restore_defaults": _("Restore Defaults"),
     "view_source_code": _("View Source Code"),
     "whats_new": _("What's New?"),
     "dependencies": _("Dependencies"),
@@ -170,12 +173,17 @@ LOCALES = {
     "force_legacy_gtk_status": _("Force GTK Status Icon instead of AppIndicator"),
     "apply_changes": _("Apply Changes"),
     "restart_tray_applet": _("Restart Tray Applet"),
-    "about_saved_colours": _("These colours will be used when setting effects from 'Apply to All' or the tray applet."),
+    "about_default_colours": _("These colours will be used when setting effects from 'Apply to All' or the tray applet."),
+    "about_saved_colours": _("Configure your favourite and frequent colours here."),
     "configuration": _("Configuration"),
     "logs": _("Logs"),
     "options": _("Options"),
     "landing_tab": _("Landing Tab"),
     "unknown": _("Unknown"),
+
+    # Reset Saved Colours Confirmation
+    "reset_saved_colours_title": _("Reset Saved Colours?"),
+    "reset_saved_colours_body": _("These settings will be reset to their defaults. There is no undo!"),
 
     # Invalid Save Data Pop-up
     "save_data_warning_title": _("Incompatible Save Data"),
