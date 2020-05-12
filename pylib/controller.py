@@ -74,8 +74,16 @@ class PolychromaticController():
             return False
 
         try:
-            thread = Thread(target=self._execute_request, args=(requests, request, data))
-            thread.start()
+            # Requests that MUST be run on the main thread
+            not_thread_safe = [
+                "add_custom_icon"
+            ]
+
+            if request in not_thread_safe:
+                self._execute_request(requests, request, data)
+            else:
+                thread = Thread(target=self._execute_request, args=(requests, request, data))
+                thread.start()
         except Exception as e:
             dbg.stdout("Failed to execute request: " + str(request) + " with data: " + str(data), dbg.error)
             dbg.stdout(common.get_exception_as_string(e), dbg.error)
@@ -452,7 +460,7 @@ class PolychromaticController():
         w = Gtk.FileFilter()
         w.set_name(locales.LOCALES["filter_webp"])
         w.add_mime_type("image/webp")
-        dialog.add_filter(g)
+        dialog.add_filter(w)
 
         s = Gtk.FileFilter()
         s.set_name(locales.LOCALES["filter_svg"])
