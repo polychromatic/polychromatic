@@ -150,6 +150,7 @@ LOCALES = {
     "about": _("About"),
     "general": _("General"),
     "tray_applet": _("Tray Applet"),
+    "tray_applet_gif_note": _("Heads up! Animated GIFs may not be supported by all desktop environments."),
     "saved_colours": _("Saved Colours"),
     "default_colours": _("Default Colours"),
     "restore_defaults": _("Restore Defaults"),

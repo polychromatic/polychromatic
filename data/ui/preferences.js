@@ -156,7 +156,10 @@ function _set_tab_preferences() {
     }
 
     var tray = group_title(get_string("appearance"));
-    tray += group(get_string("icon"), icon_picker("tray_icon", _icon_path, "change_pref('tray', 'icon', $(&quot;#tray_icon&quot;).val())", true));
+    tray += group(get_string("icon"), icon_picker("tray_icon", _icon_path, "change_pref('tray', 'icon', $(&quot;#tray_icon&quot;).val())", true) +
+        `<div id="tray-applet-gif" style="${_icon_path.endsWith(".gif") ? "" : "display:none"}">
+            <p style="margin:1em 0">${get_string("tray_applet_gif_note")}</p>
+        </div>`);
 
     tray += group_title(get_string("advanced"));
     tray += group(get_string("compatibility"), checkbox("force_legacy_gtk_status", get_string("force_legacy_gtk_status"), PREFERENCES.tray.force_legacy_gtk_status, "change_pref('tray', 'force_legacy_gtk_status', this.checked)"));
@@ -242,6 +245,13 @@ function change_pref(group, item, value) {
         "item": item,
         "value": value
     });
+
+    // When updating the tray applet icon, inform the user about animated GIFs.
+    if (PREFERENCES.tray.icon.endsWith(".gif") === true) {
+        $("#tray-applet-gif").show();
+    } else {
+        $("#tray-applet-gif").hide();
+    }
 }
 
 function open_uri(uri) {
