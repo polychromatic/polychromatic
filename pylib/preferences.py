@@ -13,7 +13,7 @@ import shutil
 import time
 from . import common
 
-version = 7
+VERSION = 7
 
 dbg = common.Debugging()
 
@@ -116,7 +116,7 @@ def save_file(filepath, newdata):
     """
     # The preferences file stores the configuration version.
     if filepath == path.preferences:
-        newdata["config_version"] = version
+        newdata["config_version"] = VERSION
 
     # Create file if it doesn't exist.
     if not os.path.exists(filepath):
@@ -225,19 +225,19 @@ def upgrade_old_pref():
         return
 
     # Is the configuration version up-to-date?
-    if version == config_version:
+    if VERSION == config_version:
         return
 
     # Is the config newer then the software? Wicked time travelling!
-    if config_version > version:
+    if config_version > VERSION:
         dbg.stdout("\nWARNING: Your preferences file is newer then the application!", dbg.error)
         dbg.stdout("It's likely you're running an older version. This is unsupported.", dbg.error)
         dbg.stdout("     Current Config Version:   v." + str(config_version), dbg.error)
-        dbg.stdout("     Installed Config Version: v." + str(version), dbg.error)
+        dbg.stdout("     Installed Config Version: v." + str(VERSION), dbg.error)
         dbg.stdout("")
         return
 
-    dbg.stdout("Upgrading configuration from v{0} to v{1}...".format(config_version, version), dbg.action)
+    dbg.stdout("Upgrading configuration from v{0} to v{1}...".format(config_version, VERSION), dbg.action)
 
     # v0.3.12
     if config_version < 5:
@@ -354,7 +354,7 @@ def upgrade_old_pref():
 
     # Write new version number.
     data = load_file(path.preferences)
-    data["config_version"] = version
+    data["config_version"] = VERSION
     save_file(path.preferences, data)
 
     dbg.stdout("Configuration successfully upgraded.", dbg.success)

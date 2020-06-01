@@ -248,7 +248,7 @@ class Controller(object):
         try:
             self.versions = {
                 "polychromatic": VERSION,
-                "polychromatic_pref": pref.version,
+                "polychromatic_pref": pref.VERSION,
                 "gi": gi.__version__,
                 "gtk": "{0}.{1}.{2}".format(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION),
                 "webkit": "{0}.{1}.{2}".format(WebKit2.MAJOR_VERSION, WebKit2.MINOR_VERSION, WebKit2.MICRO_VERSION),

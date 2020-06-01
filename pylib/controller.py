@@ -143,7 +143,7 @@ class PolychromaticController():
 
         # Warn if configuration is compatible for this version.
         pref_data = pref.load_file(path.preferences)
-        pref_version = pref.version
+        pref_version = pref.VERSION
         save_version = pref_data["config_version"]
         if save_version > pref_version:
             self.run_function("_warn_save_data_version", {
