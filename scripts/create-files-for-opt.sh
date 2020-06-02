@@ -7,7 +7,7 @@
 #
 # Dependencies must be installed to use the application. See README for details.
 #
-# Parameters: <install path>
+# Parameters: <install path> [--overwrite]
 #
 
 if [ -z "$1" ]; then
@@ -22,15 +22,34 @@ DEST="$1"
 cd "$SOURCE"
 ./scripts/build-styles.sh
 
-if [ ! -d "$DEST" ]; then
-    mkdir "$DEST"
+# Prepare destination directory
+if [ -d "$DEST" ] && [ "$2" != "--overwrite" ]; then
+    echo "Output directory already exists! Pass --overwrite as second parameter to delete."
+    exit 1
 fi
+
+if [ "$2" == "--overwrite" ]; then
+    rm -rf "$DEST"
+fi
+
+mkdir "$DEST"
 
 # Copy required files
 cd "$DEST"
 cp -vr "$SOURCE/data" "$DEST/data"
-cp -vr "$SOURCE/locale" "$DEST/locale"
 cp -vr "$SOURCE/pylib" "$DEST/pylib"
 cp -vr "$SOURCE/LICENSE" "$DEST/"
 cp -vr "$SOURCE/polychromatic-"* "$DEST/"
 rm "$DEST/polychromatic-controller-dev"
+
+# Clean up
+find "$DEST" -name "__pycache__" -type d -exec rm -rf {} +
+
+# Prepare locales
+mkdir "$DEST/locale"
+for file in $(ls "$SOURCE/locale/"*.po)
+do
+    locale=$(basename ${file%.*})
+    mkdir -p "$DEST/locale/$locale/LC_MESSAGES/"
+    msgfmt "$SOURCE/locale/$locale.po" -o "testing/$locale/LC_MESSAGES/polychromatic.mo"
+done

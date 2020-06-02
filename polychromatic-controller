@@ -44,6 +44,7 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
     try:
         import pylib.preferences as pref
         import pylib.common as common
+        import pylib.locales as locales
         from pylib.controller import PolychromaticController as controller
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
@@ -54,6 +55,7 @@ else:
     try:
         import polychromatic.preferences as pref
         import polychromatic.common as common
+        import polychromatic.locales as locales
         from polychromatic.controller import PolychromaticController as controller
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
@@ -386,9 +388,10 @@ def parse_parameters():
         dbg.verbose_level = 2
 
     if args.locale:
-        _ = common.setup_translations(__file__, "polychromatic", args.locale)
+        _ = locales.reload_locales(locales, __file__, args.locale)
 
     return args
+
 
 if __name__ == "__main__":
     # Appear as own process.
@@ -397,7 +400,7 @@ if __name__ == "__main__":
     # Global variables
     path = pref.Paths()
     dbg = common.Debugging()
-    _ = common.setup_translations(__file__, "polychromatic")
+    _ = locales._
 
     # Is this a development build?
     if DEV_VERSION:

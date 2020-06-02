@@ -16,5 +16,8 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
+# Compile locales for testing
+./scripts/build-locales-for-testing.sh
+
 # Start!
 ./polychromatic-controller --verbose $params

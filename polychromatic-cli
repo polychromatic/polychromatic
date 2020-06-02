@@ -32,6 +32,7 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
     try:
         import pylib.preferences as pref
         import pylib.common as common
+        import pylib.locales as locales
         from pylib.backends import middleman
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
@@ -42,6 +43,7 @@ else:
     try:
         import polychromatic.preferences as pref
         import polychromatic.common as common
+        import polychromatic.locales as locales
         from polychromatic.backends import middleman
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
@@ -55,7 +57,7 @@ else:
 ########################################
 dbg = common.Debugging()
 path = pref.Paths()
-_ = common.setup_translations(__file__, "polychromatic")
+_ = locales._
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
@@ -113,6 +115,7 @@ parser.add_argument("--poll-rate", help=_("How frequent the CPU polls the mouse"
 # Misc
 parser.add_argument("--version", help=_("Print version and exit"), action="store_true")
 parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
+parser.add_argument("--locale", help=_("Force a specific language, e.g. de_DE"), action="store")
 
 args = parser.parse_args()
 
@@ -125,6 +128,10 @@ if not len(sys.argv) > 1:
 if args.version:
     dbg.stdout(_("Version") + " " + VERSION)
     exit(0)
+
+if args.locale:
+    _ = locales.reload_locales(locales, __file__, args.locale)
+
 
 ########################################
 # Pretty columns

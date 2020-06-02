@@ -88,7 +88,7 @@ class PolychromaticController():
             dbg.stdout("Failed to execute request: " + str(request) + " with data: " + str(data), dbg.error)
             dbg.stdout(common.get_exception_as_string(e), dbg.error)
             traceback = common.get_exception_as_string(e)
-            self._internal_error(locales.LOCALES["error_generic_title"], locales.LOCALES["error_generic_text"] + "<br><br><code>{0}</code>".format(traceback), "serious")
+            self._internal_error(locales.get("error_generic_title"), locales.get("error_generic_text") + "<br><br><code>{0}</code>".format(traceback), "serious")
 
     def _execute_request(self, requests, request, data):
         """
@@ -117,7 +117,7 @@ class PolychromaticController():
         for backend in backend_versions.keys():
             versions[backend] = backend_versions[backend]
 
-        self.send_view_variable("LOCALES", locales.LOCALES)
+        self.send_view_variable("LOCALES", locales.get_strings())
         self.send_view_variable("COLOURS", pref.load_file(pref.path.colours))
         self.send_view_variable("PREFERENCES", pref.load_file(pref.path.preferences))
         self.send_view_variable("VERSION", versions)
@@ -135,7 +135,7 @@ class PolychromaticController():
 
         if type(devices) == str:
             dbg.stdout("Backend Error. Exception: " + str(devices), dbg.error)
-            self._internal_error(locales.LOCALES["error_not_ready_title"], locales.LOCALES["error_not_ready_text"] + "<code>{0}</code>".format(devices), "serious")
+            self._internal_error(locales.get("error_not_ready_title"), locales.get("error_not_ready_text") + "<code>{0}</code>".format(devices), "serious")
 
         else:
             dbg.stdout("Backend Ready", dbg.success, 1)
@@ -199,7 +199,7 @@ class PolychromaticController():
 
     def _update_device_list(self, data=None):
         """
-        Sends an updated device list/integer to the controler.
+        Sends an updated device list/integer to the controller.
 
         Data parameter:
         {
@@ -299,16 +299,16 @@ class PolychromaticController():
         if request == None:
             # Device no longer available
             dbg.stdout("Device not found in backend", dbg.warning)
-            self._internal_error(locales.LOCALES["error_device_gone_title"], locales.LOCALES["error_device_gone_text"], "warning")
+            self._internal_error(locales.get("error_device_gone_title"), locales.get("error_device_gone_text"), "warning")
 
         elif request == False:
             # Invalid request
             dbg.stdout("Invalid request.", dbg.warning)
-            self._internal_error(locales.LOCALES["error_bad_request_title"], locales.LOCALES["error_bad_request_text"], "warning")
+            self._internal_error(locales.get("error_bad_request_title"), locales.get("error_bad_request_text"), "warning")
 
         elif type(request) == str:
             # Daemon exception
-            self._internal_error(locales.LOCALES["error_backend_title"], locales.LOCALES["error_backend_text"] + "<pre>{0}</pre>".format(request), "serious")
+            self._internal_error(locales.get("error_backend_title"), locales.get("error_backend_text") + "<pre>{0}</pre>".format(request), "serious")
             dbg.stdout(request, dbg.error)
 
         elif request == True:
@@ -335,11 +335,11 @@ class PolychromaticController():
 
         if request == None:
             # Device no longer available
-            self._internal_error(locales.LOCALES["error_device_gone_title"], locales.LOCALES["error_device_gone_text"], "warning")
+            self._internal_error(locales.get("error_device_gone_title"), locales.get("error_device_gone_text"), "warning")
 
         elif type(request) == str:
             # Daemon exception
-            self._internal_error(locales.LOCALES["error_backend_title"], locales.LOCALES["error_backend_text"] + "<pre>{0}</pre>".format(request), "serious")
+            self._internal_error(locales.get("error_backend_title"), locales.get("error_backend_text") + "<pre>{0}</pre>".format(request), "serious")
             dbg.stdout(request, dbg.error)
 
         elif request == True:
@@ -378,8 +378,8 @@ class PolychromaticController():
             dbg.stdout("Troubleshooting encountered an exception.", dbg.error, 1)
             exception = common.get_exception_as_string(e)
             dbg.stdout(exception, dbg.error, 1)
-            self._internal_error(locales.LOCALES["troubleshoot"],
-                locales.LOCALES["troubleshoot_cannot_run"] + "<br><pre>{0}</pre>".format(exception),
+            self._internal_error(locales.get("troubleshoot"),
+                locales.get("troubleshoot_cannot_run") + "<br><pre>{0}</pre>".format(exception),
                 "serious")
 
     def _reload_preferences(self, data):
@@ -426,15 +426,15 @@ class PolychromaticController():
 
         Data parameter is empty: {}
         """
-        win = Gtk.Window(title=locales.LOCALES["add_graphic"])
-        dialog = Gtk.FileChooserDialog(locales.LOCALES["add_graphic"], \
+        win = Gtk.Window(title=locales.get("add_graphic"))
+        dialog = Gtk.FileChooserDialog(locales.get("add_graphic"), \
                     win, \
                     Gtk.FileChooserAction.OPEN, \
                     (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
 
         # Filters
         a = Gtk.FileFilter()
-        a.set_name(locales.LOCALES["filter_all_images"])
+        a.set_name(locales.get("filter_all_images"))
         a.add_mime_type("image/jpeg")
         a.add_mime_type("image/png")
         a.add_mime_type("image/gif")
@@ -443,32 +443,32 @@ class PolychromaticController():
         dialog.add_filter(a)
 
         p = Gtk.FileFilter()
-        p.set_name(locales.LOCALES["filter_png"])
+        p.set_name(locales.get("filter_png"))
         p.add_mime_type("image/png")
         dialog.add_filter(p)
 
         j = Gtk.FileFilter()
-        j.set_name(locales.LOCALES["filter_jpg"])
+        j.set_name(locales.get("filter_jpg"))
         j.add_mime_type("image/jpeg")
         dialog.add_filter(j)
 
         g = Gtk.FileFilter()
-        g.set_name(locales.LOCALES["filter_gif"])
+        g.set_name(locales.get("filter_gif"))
         g.add_mime_type("image/gif")
         dialog.add_filter(g)
 
         w = Gtk.FileFilter()
-        w.set_name(locales.LOCALES["filter_webp"])
+        w.set_name(locales.get("filter_webp"))
         w.add_mime_type("image/webp")
         dialog.add_filter(w)
 
         s = Gtk.FileFilter()
-        s.set_name(locales.LOCALES["filter_svg"])
+        s.set_name(locales.get("filter_svg"))
         s.add_mime_type("image/svg+xml")
         dialog.add_filter(s)
 
         a2 = Gtk.FileFilter()
-        a2.set_name(locales.LOCALES["filter_all_types"])
+        a2.set_name(locales.get("filter_all_types"))
         a2.add_pattern("*")
         dialog.add_filter(a2)
 
@@ -489,7 +489,7 @@ class PolychromaticController():
 
         if not os.path.exists(path_src):
             dbg.stdout("Cannot add non-existant custom icon: " + path_src, dbg.error)
-            self._internal_error(locales.LOCALES["file_error_title"], locales.LOCALES["file_error_missing"], "warning")
+            self._internal_error(locales.get("file_error_title"), locales.get("file_error_missing"), "warning")
             return False
 
         shutil.copyfile(path_src, path_dst)
@@ -511,7 +511,7 @@ class PolychromaticController():
 
         if not os.path.exists(path):
             dbg.stdout("Custom icon non-existant: " + path, dbg.error)
-            self._internal_error(locales.LOCALES["file_error_title"], locales.LOCALES["file_error_missing"], "warning")
+            self._internal_error(locales.get("file_error_title"), locales.get("file_error_missing"), "warning")
             return False
 
         os.remove(path)
@@ -573,4 +573,3 @@ class PolychromaticController():
 # Module Initalization
 dbg = common.Debugging()
 path = pref.Paths()
-_ = common.setup_translations(__file__, "polychromatic")

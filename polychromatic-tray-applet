@@ -48,6 +48,7 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
     try:
         import pylib.preferences as pref
         import pylib.common as common
+        import pylib.locales as locales
         from pylib.backends import middleman
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
@@ -58,6 +59,7 @@ else:
     try:
         import polychromatic.preferences as pref
         import polychromatic.common as common
+        import polychromatic.locales as locales
         from polychromatic.backends import middleman
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
@@ -443,6 +445,7 @@ class AppIndicator(object):
         uid = details["uid"]
 
         if "spectrum" in supported_fx:
+            # TODO: Use locales.py
             create_submenu_item(submenu, _("Spectrum"), True, cb.set_effect, [backend, uid, zone, "spectrum"], get_icon("effects", "spectrum.svg"))
 
         if "wave" in supported_fx:
@@ -835,7 +838,7 @@ def parse_parameters():
         dbg.stdout(_("Verbose enabled"), dbg.debug, 1)
 
     if args.locale:
-        _ = common.setup_translations(__file__, "polychromatic", args.locale)
+        _ = locales.reload_locales(locales, __file__, args.locale)
 
     if args.force_fallback:
         global indicator_support
@@ -848,7 +851,7 @@ if __name__ == "__main__":
 
     # Global variables
     session_storage = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet")
-    _ = common.setup_translations(__file__, "polychromatic")
+    _ = locales._
     dbg = common.Debugging()
 
     # Kill the process when CTRL+C'd.

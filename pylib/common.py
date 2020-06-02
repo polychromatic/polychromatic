@@ -9,7 +9,6 @@ Shared functions that are commonly used across Polychromatic's interfaces.
 
 import os
 import sys
-import gettext
 import subprocess
 import grp
 import time
@@ -19,6 +18,8 @@ from threading import Thread
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
+
+from . import locales
 
 
 class Debugging(object):
@@ -83,33 +84,6 @@ def get_data_dir_path():
     return path
 
 
-def setup_translations(bin_path, i18n_app, locale_override=None):
-    """
-    Initalises translations for the application.
-
-    bin_path = __file__ of the application that is being executed.
-    i18n_app = Name of the application's locales.
-
-    Returns a gettext object used for performing translations.
-    """
-    whereami = os.path.abspath(os.path.join(os.path.dirname(bin_path)))
-
-    if os.path.exists(os.path.join(whereami, 'locale/')):
-        # Using relative path
-        locale_path = os.path.join(whereami, 'locale/')
-    else:
-        # Using system path or en_US if none found
-        locale_path = '/usr/share/locale/'
-
-    if locale_override:
-        t = gettext.translation(i18n_app, localedir=locale_path, fallback=True, languages=[locale_override])
-    else:
-        t = gettext.translation(i18n_app, localedir=locale_path, fallback=True)
-
-    # This is set as the app's global variable: _
-    return t.gettext
-
-
 def get_form_factor(device_type):
     """
     Reads a string provided by a backend and returns data that is used to refer
@@ -141,14 +115,14 @@ def get_form_factor(device_type):
     }
 
     form_factor_labels = {
-        "accessory": _("USB Accessory"),
-        "keyboard": _("Keyboard"),
-        "mouse": _("Mouse"),
-        "mousemat": _("Mousemat"),
-        "keypad": _("Keypad"),
-        "headset": _("Headset"),
-        "gpu": _("External Graphics Enclosure"),
-        "unrecognised": _("Unrecognised")
+        "accessory": locales.get("accessory"),
+        "keyboard": locales.get("keyboard"),
+        "mouse": locales.get("mouse"),
+        "mousemat": locales.get("mousemat"),
+        "keypad": locales.get("keypad"),
+        "headset": locales.get("headset"),
+        "gpu": locales.get("gpu"),
+        "unrecognised": locales.get("unrecognised")
     }
 
     try:
@@ -173,12 +147,12 @@ def get_zone_metadata(zones, device_name):
     zone_icons = {}
 
     zones_to_string = {
-        "main": _("Main"),
-        "logo": _("Logo"),
-        "scroll": _("Scroll Wheel"),
-        "backlight": _("Backlight"),
-        "left": _("Left"),
-        "right": _("Right")
+        "main": locales.get("main"),
+        "logo": locales.get("logo"),
+        "scroll": locales.get("scroll"),
+        "backlight": locales.get("backlight"),
+        "left": locales.get("left"),
+        "right": locales.get("right")
     }
 
     for zone in zones:
@@ -191,11 +165,11 @@ def get_zone_metadata(zones, device_name):
             icon = "unknown"
 
         if zone == "logo" and device_name == "Razer Nex":
-            name = _("Hex Ring")
+            name = locales.get("naga-hex-ring")
             icon = "naga-hex-ring"
 
         if zone == "logo" and device_name.startswith("Razer Blade"):
-            name = _("Laptop Lid")
+            name = locales.get("laptop-lid")
             icon = "blade-logo"
 
         icon_path = os.path.abspath(os.path.join(DATA_PATH, "ui/img/zones/" + icon + ".svg"))
@@ -217,16 +191,12 @@ def get_wave_direction(form_factor_id):
     Returns a list of localised direction strings according to the device.
     """
     if form_factor_id == "mouse":
-        left = _("Down")
-        right = _("Up")
-    elif form_factor_id == "mousemat":
-        left = _("Clockwise")
-        right = _("Anti-clockwise")
-    else:
-        left = _("Left")
-        right = _("Right")
+        return [locales.get("down"), locales.get("up")]
 
-    return [left, right]
+    elif form_factor_id == "mousemat":
+        return [locales.get("clock"), locales.get("anticlock")]
+
+    return [locales.get("left"), locales.get("right")]
 
 
 def get_green_shades():
@@ -234,17 +204,15 @@ def get_green_shades():
     Returns a custom colours.json for use with non-RGB keyboards,
     like the Razer BlackWidow Ultimate.
     """
-    return [
-        {"name": _("Green") + " 1", "hex": "#00FF00"},
-        {"name": _("Green") + " 2", "hex": "#00E100"},
-        {"name": _("Green") + " 3", "hex": "#00C800"},
-        {"name": _("Green") + " 4", "hex": "#00AF00"},
-        {"name": _("Green") + " 5", "hex": "#009600"},
-        {"name": _("Green") + " 6", "hex": "#007D00"},
-        {"name": _("Green") + " 7", "hex": "#006400"},
-        {"name": _("Green") + " 8", "hex": "#004B00"},
-        {"name": _("Green") + " 9", "hex": "#003200"}
-    ]
+    colours = []
+    count = 0
+    for shade in ["#00FF00", "#00E100", "#00C800", "#00AF00", "#009600", "#007D00", "#006400", "#004B00", "#003200"]:
+        count += 1
+        colours.append({
+            "name": "{0} {1}".format(locales.get("green"), str(count)),
+            "hex": shade
+        })
+    return colours
 
 
 def set_default_tray_icon(pref):
@@ -457,7 +425,6 @@ def get_plural(integer, non_plural, plural):
 
 
 # Module Initalization
-_ = setup_translations(__file__, "polychromatic")
 DATA_PATH = get_data_dir_path()
 PID_FILE_TRAY = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
 
