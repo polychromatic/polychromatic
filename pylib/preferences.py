@@ -14,6 +14,7 @@ import time
 from . import common
 from . import locales
 
+# Also set in effects.py
 VERSION = 7
 
 dbg = common.Debugging()
@@ -37,7 +38,10 @@ class Paths(object):
 
     # Subdirectories
     effects = os.path.join(root, "effects")
-    profiles = os.path.join(root, "profiles")
+    effects_keyframed = os.path.join(effects, "keyframed")
+    effects_scripted = os.path.join(effects, "scripted")
+    effects_cache = os.path.join(cache, "effects")
+    presets = os.path.join(root, "presets")
     device_images = os.path.join(root, "device_images")
     custom_icons = os.path.join(root, "custom_icons")
 
@@ -376,7 +380,7 @@ def start_initalization():
     Prepares the preferences module for use.
     """
     # Create folders if they do not exist.
-    for folder in [path.root, path.effects, path.profiles, path.cache, path.device_images, path.custom_icons]:
+    for folder in [path.root, path.effects, path.effects_keyframed, path.effects_scripted, path.effects_cache, path.presets, path.cache, path.device_images, path.custom_icons]:
         if not os.path.exists(folder):
             dbg.stdout("Configuration folder does not exist. Creating: " + folder, dbg.action)
             os.makedirs(folder)

@@ -77,12 +77,6 @@
     }
 }
 
-#more-details-btn {
-    position: absolute;
-    right: 0.5em;
-    top: 1em;
-}
-
 #main-text {
     .states {
         display: inline-flex;
@@ -100,6 +94,18 @@
         + .state {
             margin-left: 1em;
         }
+    }
+}
+
+#main-buttons {
+    position: absolute;
+    right: 1em;
+    top: 1em;
+    display: flex;
+    flex-direction: column;
+
+    button + button {
+        margin-top: 0.1em;
     }
 }
 

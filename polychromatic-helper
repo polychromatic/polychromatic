@@ -1,0 +1,148 @@
+#!/usr/bin/python3
+#
+# Polychromatic is free software: you can redistribute it and/or modify
+# it under the temms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Polychromatic is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Polychromatic. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright (C) 2020 Luke Horwell <code@horwell.me>
+#
+
+"""
+A multipurpose "helper" process that runs in the background to control separate
+operations of Polychromatic, such as:
+
+- Playback of custom effects on specific hardware.
+- Monitor and process automatic rules (triggers)
+- Autostart the tray applet and resume previous custom effects.
+
+The helper intends to be as lightweight and minimal as possible as there could
+be multple helper processes running simutantlously. It also is designed to be
+'terminated' without fuss as Polychromatic will record PIDs for the components.
+"""
+VERSION = "0.5.0"
+
+import argparse
+import setproctitle
+import os
+
+# Import modules if running relatively.
+if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
+    try:
+        import pylib.preferences as pref
+        import pylib.common as common
+    except (ImportError, Exception) as e:
+        print("Failed to import modules relatively.\n")
+        raise e
+
+# Import modules if installed system-wide.
+else:
+    try:
+        import polychromatic.preferences as pref
+        import polychromatic.common as common
+    except (ImportError, Exception) as e:
+        print("Polychromatic's modules could not be imported.")
+        print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
+        print(str(e))
+        exit(1)
+
+
+class Helpers():
+    """
+    Stores helper functions.
+    """
+    def autostart():
+        """
+        Intended to run at login.
+
+        - If enabled, start the tray applet.
+        - If configured, activate any 'welcome' and/or 'login' triggers.
+        - If a custom effect was last played, but the device isn't bound to a 'login' trigger, run it again.
+        - If triggers are set up, start the process and monitor for changes.
+
+        This instance will exit as soon as the checks have completed.
+        """
+        # FIXME: Stub!
+        pass
+
+    def monitor_triggers():
+        """
+        Triggers may monitor different entities (e.g. time, a file or event)
+        and this process will switch to a different preset when the conditions
+        match.
+
+        This process should always be running when there is at least one trigger set.
+        """
+        # FIXME: Stub!
+        pass
+
+    def play_custom_effect():
+        """
+        Playback a custom effect by sending frames to the keyboard.
+
+        This process should be running until the custom effect reaches the end,
+        or indefinity if it's on a loop.
+        """
+        # FIXME: Stub!
+        pass
+
+
+def parse_parameters():
+    """
+    Parse the parameters of what this helper has been summoned to do.
+    """
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument("--version", action="store_true")
+
+    # Operations
+    parser.add_argument("--autostart", action="store_true")
+    parser.add_argument("--monitor-triggers", action="store_true")
+    parser.add_argument("--play-custom-effect", action="store_true")
+
+    # For playing custom effects
+    parser.add_argument("--filepath", action="store")
+    parser.add_argument("--device-backend", action="store")
+    parser.add_argument("--device-uid", action="store")
+
+    args = parser.parse_args()
+
+    if args.version:
+        dbg.stdout("Version " + VERSION)
+        exit()
+
+    if args.verbose:
+        dbg.verbose_level = 1
+        dbg.stdout("Verbose enabled", dbg.action, 1)
+
+    return args
+
+
+if __name__ == "__main__":
+
+    # Appear as its own process.
+    setproctitle.setproctitle("polychromatic-helper")
+
+    dbg = common.Debugging()
+    args = parse_parameters()
+
+    if args.autostart:
+        Helpers.autostart()
+
+    elif args.monitor_triggers:
+        Helpers.monitor_triggers()
+
+    elif args.play_custom_effect:
+        Helpers.play_custom_effect()
+
+    else:
+        dbg.stdout("This executable is intended to be invoked by another Polychromatic process.", dbg.warning)
+        exit(1)

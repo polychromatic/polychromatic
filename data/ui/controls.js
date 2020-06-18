@@ -72,20 +72,20 @@ function button(id, onclick, label, svg_name, disabled, serious) {
     //
     // An icon name can be specified to use an SVG icon from the "ui/img/button" directory, e.g. "bin".
     //
-    var classes = "";
+    var classes = [];
     var svg_html = "";
 
     if (disabled === true)
-        classes += "disabled";
+        classes[classes.length] = "disabled";
 
     if (serious === true)
-        classes += "serious";
+        classes[classes.length] = "serious";
 
     if (typeof(svg_name) == "string") {
         svg_html = BUTTON_SVGS[svg_name];
     }
 
-    return `<button id="${id}" class="inline ${classes}" ${disabled ? "disabled" : ""} onclick="${onclick}">
+    return `<button id="${id}" class="inline ${classes.join(' ')}" ${disabled ? "disabled" : ""} onclick="${onclick}">
                 ${svg_html} <span>${label}</span>
             </button>`;
 }

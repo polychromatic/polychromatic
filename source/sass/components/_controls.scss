@@ -35,18 +35,6 @@ button {
         }
     }
 
-    &.disabled {
-        background-color: transparent;
-        color: $disabled-colour;
-        pointer-events: none;
-
-        svg {
-            path {
-                fill: $disabled-colour;
-            }
-        }
-    }
-
     &.active {
         background-color: $secondary-colour;
     }
@@ -130,6 +118,18 @@ button {
                 path {
                     fill: white;
                 }
+            }
+        }
+    }
+
+    &.disabled {
+        background-color: transparent;
+        color: $disabled-colour;
+        pointer-events: none;
+
+        svg {
+            path {
+                fill: $disabled-colour !important;
             }
         }
     }

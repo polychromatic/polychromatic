@@ -427,6 +427,3 @@ def get_plural(integer, non_plural, plural):
 # Module Initalization
 DATA_PATH = get_data_dir_path()
 PID_FILE_TRAY = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
-
-# TODO: Make PID dictionary
-# XDG_RUNTIME_DIR => /run/user/1000  (tray applet too), fallback to /tmp

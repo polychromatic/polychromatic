@@ -16,6 +16,7 @@ import shutil
 
 from threading import Thread
 from . import common
+from . import effects
 from . import locales
 from . import preferences as pref
 from .backends import middleman
@@ -62,6 +63,12 @@ class PolychromaticController():
                 "set_device_state": self._set_device_state,
                 "debug_matrix": self._debug_matrix,
                 "restart_backends": self._restart_backends,
+
+                # Effects tab
+                "get_effect_list": self._get_effect_list,
+                "get_effect": self._get_effect,
+                "edit_effect": self._edit_effect,
+                "render_effect": self._render_effect,
 
                 # Preferences tab
                 "reload_preferences": self._reload_preferences,
@@ -126,6 +133,7 @@ class PolychromaticController():
         self.send_view_variable("ICONS_EMBLEMS", pref.load_file(common.get_data_dir_path() + "/ui/img/emblems/icons.json"))
         self.send_view_variable("CUSTOM_ICONS", pref.get_custom_icons())
         self.send_view_variable("CUSTOM_ICON_PATH", pref.path.custom_icons)
+        self.send_view_variable("CACHE_EFFECTS", effects.get_effect_list())
         self.run_function("build_view")
 
         # View caches device list via the CACHE_DEVICES variable.
@@ -568,6 +576,101 @@ class PolychromaticController():
             dbg.stdout("Reset all saved colours to defaults.", dbg.success, 1)
             colours = pref.load_file(path.colours)
             self.send_view_variable("COLOURS", colours)
+
+    def _get_effect_list(self, data=None):
+        """
+        Updates the list of effects in the view's cache.
+
+        Data parameter:
+        {
+            "callback": <str - Name of JavaScript function to run>
+        }
+        """
+        self.send_view_variable("CACHE_EFFECTS", effects.get_effect_list())
+        self.run_function(data["callback"])
+
+    def _get_effect(self, data=None):
+        """
+        Retrieves the metadata for a requested effect. This data allows the effect
+        to be edited in the view editor. An error is shown if the effect is
+        corrupt or no longer exists.
+
+        The JSON is directly loaded into memory, with a 'ui' variable that holds
+        some "rendered" variables in memory, such as effect type, and i18n values.
+
+        Data parameter:
+        {
+            "callback": <str - Name of JavaScript function to run>,
+            "filepath": <str>
+        }
+        """
+        filepath = data["filepath"]
+
+        effect = effects.get_effect(filepath)
+
+        if effect in [None, False]:
+            self._internal_error(locales.get("read_error_title"), locales.get("read_error_text"), "serious")
+            self.run_function("_open_effect_error")
+            return
+
+        self.send_view_variable("CACHE_CURRENT_EFFECT", effect)
+        self.run_function(data["callback"], effect)
+
+    def _edit_effect(self, data=None):
+        """
+        Write new data for a specified effect to disk.
+
+        Data parameter:
+        {
+            "callback": <str - Name of JavaScript function to run>,
+            "filepath": <str>,
+            "data": <str>
+        }
+        """
+        filepath = data["filepath"]
+
+        effect = effects.get_effect(filepath)
+
+        if effect in [None, False]:
+            self._internal_error(locales.get("read_error_title"), locales.get("read_error_text"), "serious")
+            self.run_function("_open_effect_error")
+            return
+
+        self.send_view_variable("CACHE_CURRENT_EFFECT", effect)
+        self.run_function(data["callback"], effect)
+
+    def _render_effect(self, data=None):
+        """
+        Requests for an effect to be rendered on supported form factors.
+
+        Data parameter:
+        {
+            "render_mode": "software" or "hardware"
+            "filepath": <str>,
+            "device_list": <list with dicts in format: [{"<backend>", <uid>}, {...{]>,
+            "callback": <str of JavaScript function>
+        }
+        """
+        render_mode = data["render_mode"]
+        filepath = data["filepath"]
+        device_list = data["device_list"]
+
+        if render_mode == "software":
+            # FIXME: Stub!
+            pass
+
+        elif render_mode == "hardware":
+            for device in device_list:
+                backend = device["backend"]
+                uid = str(device["uid"])
+                dbg.stdout("Playing custom effect '{0}' to {1} device {2}".format(filepath, backend, uid), dbg.action, 1)
+
+                status = effects.play_effect_hardware(filepath, backend, uid)
+
+                if status:
+                    self.run_function(data["callback"])
+                else:
+                    self._internal_error(locales.get("error_not_ready_title"), locales.get("error_spawn_process_text"), "serious")
 
 
 # Module Initalization

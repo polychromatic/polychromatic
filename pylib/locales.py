@@ -334,6 +334,9 @@ def get_strings():
         "error_not_ready_title": _("Initialization Error"),
         "error_not_ready_text": _("This device's backend library or daemon could not be initialized."),
 
+        # Error: Could not spawn process
+        "error_spawn_process_text": _("Polychromatic was unable to start the helper process. Try re-installing the application and/or checking your PATH variable."),
+
         # Troubleshooter - General
         "troubleshoot_cannot_run": _("The troubleshooter cannot be started. Here's the error:"),
         "troubleshoot_test_complete": _("All checks completed."),
@@ -386,6 +389,27 @@ def get_strings():
         "filter_all_images": _("All supported images"),
         "filter_all_types": _("All files"),
 
+        # Common
+        "tasks": _("Tasks"),
+
+        # Effects
+        "new_effect": _("New Effect"),
+        "import": _("Import..."),
+        "keyframed": _("Keyframed"),
+        "scripted": _("Script"),
+        "play": _("Play"),
+        "playing": _("Playing"),
+        "edit": _("Edit"),
+        "delete": _("Delete"),
+
+        # Effects Overview
+        "multiple": _("(Multiple)"),
+        "tampered": _("Tampered"),
+
+        # Read Error (Effects/Presets)
+        "read_error_title": _("Corrupt Data"),
+        "read_error_text": _("The data integrity of this file is invalid. Run the application in the Terminal for more details."),
+        "read_error_aftermath_effect": _("This effect cannot be opened as the JSON structure is damaged. For technical details, run this application via the Terminal."),
         # End
         "": ""
     }

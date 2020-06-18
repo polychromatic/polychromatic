@@ -44,8 +44,10 @@ var TRANSITION_SPEED = 300 + 50;
 var BACKEND_OPENRAZER = false;
 
 // Cached responses from controller
-var CACHE_DEVICE_LIST = null;       // -- get_device_list() listing all devices.
+var CACHE_DEVICES = null;           // -- get_device_list() listing all devices.
 var CACHE_CURRENT_DEVICE = null;    // -- get_device() for current device.
+var CACHE_EFFECTS = null;           // -- get_effect_list() listing all effects.
+var CACHE_CURRENT_EFFECT = null;    // -- get_effect() for the metadata for an effect.
 
 
 /*****************************
@@ -81,9 +83,9 @@ function build_view(data) {
         <h3 id="title"></h3>
         <div id="header-tabs" class="tabs">
             ${_add_header_button("devices", "set_tab_devices()", "img/devices/keyboard.svg", get_string("devices"))}
+            ${_add_header_button("effects", "set_tab_effects()", "img/general/effects.svg", get_string("effects"))}
             <!--
                 FIXME: Features not present. Requires further development.
-            ${_add_header_button("effects", "set_tab_effects()", "img/general/effects.svg", get_string("effects"))}
             ${_add_header_button("profiles", "set_tab_profiles()", "img/general/profiles.svg", get_string("profiles"))}
             ${_add_header_button("events", "set_tab_events()", "img/general/events.svg", get_string("events"))}
             -->

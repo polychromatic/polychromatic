@@ -283,10 +283,9 @@ function _open_device(device) {
     //
     //  data        JSON data returned from Controller describing the device.
     //
+    CACHE_CURRENT_DEVICE = device;
     set_title(device.name);
     cursor_normal();
-
-    CACHE_CURRENT_DEVICE = device;
 
     // Assemble status (top area) and controls.
     $("#device-content").html(`
@@ -298,7 +297,9 @@ function _open_device(device) {
                     ${_get_state_html(device)}
                 </div>
             </div>
-            ${button("more-details-btn", "_show_device_info()", get_string("device-info"))}
+            <div id="main-buttons">
+                ${button("more-details-btn", "_show_device_info()", get_string("device-info"))}
+            </div>
         </div>
         <div id="device-controls">
             ${_get_device_controls(device, "set_device_state(this)")}
@@ -407,7 +408,7 @@ function _get_state_html(device) {
 function _get_device_controls(device, onclick) {
     //
     // Returns HTML of all the possible controls for a device. This code is common
-    // across the devices tab (instant changes) as well as profiles (defining controls)
+    // across the devices tab (instant changes) as well as presets (defining controls)
     //
     //  device          JSON data describing the device.
     //  onclick         Function to call when setting a box. This is expected to parse the controls.
