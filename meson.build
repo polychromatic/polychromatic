@@ -43,5 +43,7 @@ install_subdir('source/hicolor',
 install_data('source/launchers/polychromatic.desktop',
              install_dir : join_paths(get_option('datadir'), 'applications'))
 
+install_data('source/launchers/polychromatic-autostart.desktop',
+             install_dir : join_paths(get_option('sysconfdir'), 'xdg/autostart'))
 
 subdir('locale')
