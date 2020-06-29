@@ -75,7 +75,7 @@ class WebView(object):
         webkit = WebKit2
         webview = webkit.WebView
         context = webkit.WebContext
-        dataman = webkit.WebsiteDataManager(base_cache_directory=path.cache, base_data_directory=path.cache, disk_cache_directory=path.cache)
+        dataman = webkit.WebsiteDataManager(base_cache_directory=path.cache_webkit, base_data_directory=path.cache_webkit, disk_cache_directory=path.cache_webkit)
         context = context.new_with_website_data_manager(dataman)
         self.webview = webview.new_with_context(context)
 

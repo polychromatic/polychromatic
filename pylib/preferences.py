@@ -21,20 +21,16 @@ dbg = common.Debugging()
 
 
 class Paths(object):
-    # Default directories
-    root = os.path.join(os.path.expanduser("~"), ".config", "polychromatic")
-    cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
-
-    # XDG directories
+    # Config/cache (XDG) directories
     try:
         root = os.path.join(os.environ["XDG_CONFIG_HOME"], ".config", "polychromatic")
     except KeyError:
-        pass
+        root = os.path.join(os.path.expanduser("~"), ".config", "polychromatic")
 
     try:
-        root = os.path.join(os.environ["XDG_CACHE_HOME"], ".cache", "polychromatic")
+        cache = os.path.join(os.environ["XDG_CACHE_HOME"], ".cache", "polychromatic")
     except KeyError:
-        pass
+        cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
 
     # Subdirectories
     effects = os.path.join(root, "effects")
@@ -44,6 +40,9 @@ class Paths(object):
     presets = os.path.join(root, "presets")
     device_images = os.path.join(root, "device_images")
     custom_icons = os.path.join(root, "custom_icons")
+
+    # Libraries
+    cache_webkit = os.path.join(cache, "webkitgtk")
 
     # Files
     preferences = os.path.join(root, "preferences.json")
