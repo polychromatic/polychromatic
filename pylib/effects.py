@@ -13,11 +13,14 @@ import glob
 import os
 import json
 import hashlib
+import importlib
+import sys
 
 from . import common
 from . import locales
 from . import preferences as pref
-from . import procpid as procpid
+from . import procpid
+from . import fx
 
 # Also set in preferences.py
 VERSION = 7
@@ -289,6 +292,28 @@ def get_effect(filepath):
     return effect
 
 
+def play_effect_hardware(filepath, backend, device_uid):
+    """
+    Play the effect directly onto a device that supports individual key lighting.
+    This will spawn the 'helper' process, which will be dedicated to the processing
+    of the effect.
+
+    Returns:
+        (bool)          Indicate whether execution succeeded or failed.
+
+    Params:
+        filepath        Name of the effect.
+        backend         Device's backend ID
+        device_uid      Backend ID for device
+    """
+    return procpid.start_component("helper", [
+        "--play-custom-effect",
+        "--filepath", filepath,
+        "--device-backend", backend,
+        "--device-uid", device_uid
+    ])
+
+
 def render_keyframes(filepath):
     """
     Generates a dictionary consisting of "flattened" matrixes for each frame.
@@ -312,26 +337,169 @@ def render_keyframes(filepath):
         return cache_path
 
     # TODO: Stub!
+    print("stub:render_keyframes")
 
     return cache_path
 
-def play_effect_hardware(filepath, backend, device_uid):
     """
-    Play the effect directly onto a device that supports individual key lighting.
-
-    Returns:
-        (bool)          Indicate whether execution succeeded or failed.
 
     Params:
-        filepath        Name of the effect.
-        backend         Device's backend ID
-        device_uid      Backend ID for device
-    """
-    return procpid.start_component("helper", [
-        "--play-custom-effect",
-        "--filepath", filepath,
-        "--device-backend", backend,
-        "--device-uid", device_uid
-    ])
     """
     pass
+def send_effect_frames(frames, fps, device):
+    """
+    Use the devuce object to send a series of frames to the hardware.
+    This should be spawned by the helper process.
+
+    Params:
+        frames      (dict)  Dictionary containing the files
+        fps         (int)   Desired number of frames per second.
+        device      (str)   middleman.get_device_object() object
+    """
+    fx_obj = fx.FX(device)
+    procpid.set_as_device_custom_fx(device["serial"])
+
+    # FIXME: Stub!
+    print("stub:send_effect_frames")
+
+
+def send_effect_custom(script_path, device, params):
+    """
+    Use the device object and execute a custom effect script.
+    This should be spawned by the helper process.
+
+    Params:
+        script_path (str)   Path to Python script
+        device      (str)   middleman.get_device_object() object
+    """
+    fx_obj = fx.FX(device)
+    try:
+        script_dir = os.path.dirname(script_path)
+        script_name = os.path.basename(script_path).replace(".py", "")
+        sys.path.append(script_dir)
+        custom_script = importlib.import_module(script_name)
+    except Exception as e:
+        dbg.stdout("Failed to import custom effect script: " + script_path, dbg.error)
+        dbg.stdout(common.get_exception_as_string(e), dbg.error)
+        exit(1)
+
+    try:
+        procpid.set_as_device_custom_fx(device["serial"])
+        custom_script.run(fx_obj, params)
+    except KeyboardInterrupt:
+        exit(0)
+
+
+def check_environment(effect, device):
+    """
+    Check this system's environment to ensure the custom effect will run as intended.
+
+    Scripted effects can be restricted by:
+      - OS
+      - Form Factors
+      - Python Modules
+
+    Params:
+        effect          (dict)  Raw effect data
+        device          (str)   middleman.get_device_object() object
+
+    Returns
+        True        Environment compatible.
+        False       Incompatibility detected. Will be printed to stdout.
+    """
+    dbg.stdout("Checking environment...", dbg.action, 1)
+    passed = True
+
+    # Load effect dependency data
+    form_factors = effect["depends"]["form_factor"]
+    supported_os = effect["depends"]["OS"]
+    py_dependencies = effect["depends"]["py_dependencies"]
+
+    # Verify form factor
+    form_factor = device["form_factor"]
+    if form_factors != ["any"]:
+        if not form_factor in form_factors:
+            dbg.stdout("Effect only supported one these devices: " + ", ".join(form_factors), dbg.error)
+            dbg.stdout("This device is a '{0}'.".format(form_factor), dbg.warning)
+            passed = False
+
+    # Verify OS
+    if supported_os != ["any"]:
+        # TODO: OS detection unused
+        # Stored as: ["linux", "windows", "osx"],
+        # os.sys.platform() => linux, linux2, win32, cygwin, msys, darwin
+        dbg.stdout("Skipping OS checking as unused.", dbg.warning)
+
+    # Check Python dependencies are importable (without actually importing them)
+    if len(py_dependencies) > 0:
+        for module_name in py_dependencies:
+            found = importlib.util.find_spec(module_name) is not None
+
+            if not found:
+                dbg.stdout("Python module cannot be imported: " + module_name, dbg.warning)
+                passed = False
+
+    if passed:
+        return True
+
+    dbg.stdout("Failed to play custom effect.\nIt's incompatible with the device or a required Python module is missing.", dbg.error)
+    return False
+
+
+def compute_script_parameters(effect):
+    """
+    Validate the parameters for a scripted effect and return the parameters to use
+    for this session.
+
+    Params:
+        effect      (dict)  Raw effect data
+
+    Returns:
+        (dict)      Parameter values for each key
+
+    A parameter in the effect file consists of:
+
+        "var": (str)            # Internal variable name
+        "label": (str)          # Label to show in interface. i18n supported.
+        "type": "colour"        # "colour", "list", "number" or "text"
+        "value": null           # Currently set value.
+        "default": (str)        # Default value.
+        "options": (list)       # Options to show in the interface (list type only)
+
+    """
+    effect_params = effect["parameters"]
+    computed_params = {}
+
+    for param in effect_params:
+        var = param["var"]
+        ptype = param["type"]
+        value = param["value"]
+        default = param["default"]
+
+        if not value:
+            value = default
+
+        # Valid data types
+        if ptype == "colour":
+            if len(value) not in [7, 4]: #RRGGBB or #RGB
+                value = default
+
+        elif ptype == "list":
+            if value not in param["options"]:
+                value = default
+
+        elif ptype == "number":
+            if type(value) != int:
+                value = default
+
+        elif ptype == "text":
+            if type(value) != str:
+                value = default
+
+        else:
+            dbg.stdout("Skipping unknown data type: " + ptype, dbg.warning)
+            continue
+
+        computed_params[var] = value
+
+    return computed_params

@@ -19,20 +19,25 @@ class FX(object):
     """
     The class that provides the object 'fx' used in custom effect scripts.
     """
-    def __init__(self):
+    def __init__(self, device):
         """
         Initalise variables used by the custom effect.
-        """
-        # User
-        self.rows = 0
-        self.cols = 0
-        self.name = "Unknown"
-        self.backend = "unknown"
-        self.form_factor = "unknown"
-        self.matrix = {}
 
-        # Internal
-        self._device = None
+        Params:
+            device      (obj)       middleman.get_device_object()
+        """
+        self._device = device
+        self.rows = device["rows"]
+        self.cols = device["cols"]
+        self.name = device["name"]
+        self.backend = device["backend"]
+        self.form_factor = device["form_factor"]
+
+        # Functions
+        self.set = device["set"]
+        self.draw = device["draw"]
+        self.clear = device["clear"]
+        self.brightness = device["brightness"]
 
     def rgb_to_hex(self, red, green, blue):
         """
@@ -43,29 +48,11 @@ class FX(object):
         """
         pass
 
-    def hex_to_rgb(self, red, green, blue):
+    def hex_to_rgb(self, value):
         """
         Converts a HEX colour string to a RGB string.
 
         Input:  "#FF0000"
         Output: (255, 0, 0)
-        """
-        pass
-
-    def set_brightness_by_value(self, value):
-        """
-        Set the brightness of the entire device using a value between 0 and 255.
-        """
-        pass
-
-    def set_brightness_by_percent(self, percent):
-        """
-        Set the brightness of the entire device passing an integer between 0 and 100.
-        """
-        pass
-
-    def draw(self):
-        """
-        Send the frames to the hardware.
         """
         pass

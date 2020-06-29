@@ -357,6 +357,23 @@ def get_device(uid):
     }
 
 
+def get_device_form_factor(uid):
+    """
+    See: middleman.get_device_form_factor(...)
+    """
+    try:
+        # TODO: Speed up by initalising DeviceManager() once - param maybe?
+        devman = rclient.DeviceManager()
+        devman.sync_effects = False
+        rdevice = devman.devices[uid]
+    except KeyError:
+        return None
+    except Exception as e:
+        return None
+
+    return common.get_form_factor(rdevice.type)
+
+
 def set_device_state(uid, request, zone, colour_hex, params):
     """
     See: middleman.set_device_state(...)
@@ -797,6 +814,43 @@ def _convert_colour_bytes(raw):
         "primary": "#" + primary_hex,
         "secondary": "#" + secondary_hex,
         "tertiary": "#" + tertiary_hex
+    }
+
+
+def get_device_object(uid):
+    """
+    See: middleman.get_device_object()
+    """
+    try:
+        # TODO: Speed up by initalising DeviceManager() once - param maybe?
+        devman = rclient.DeviceManager()
+        devman.sync_effects = False
+        rdevice = devman.devices[uid]
+    except IndexError:
+        return None
+    except Exception as e:
+        return None
+
+    if not rdevice.has("lighting_led_matrix"):
+        return None
+
+    def _set(x, y, red, green, blue):
+        rdevice.fx.advanced.matrix[x,y] = (red, green, blue)
+
+    def _brightness(percent):
+        rdevice.brightness = percent
+
+    return {
+        "rows": int(rdevice.fx.advanced.rows),
+        "cols": int(rdevice.fx.advanced.cols),
+        "name": str(rdevice.name),
+        "backend": "openrazer",
+        "serial": str(rdevice.serial),
+        "form_factor": common.get_form_factor(rdevice.type)["id"],
+        "set": _set,
+        "draw": rdevice.fx.advanced.draw,
+        "clear": rdevice.fx.advanced.matrix.reset,
+        "brightness": _brightness
     }
 
 

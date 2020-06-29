@@ -23,6 +23,8 @@ def _get_pid_dir():
     if not os.path.exists(pid_dir):
         os.makedirs(pid_dir)
 
+    return pid_dir
+
 
 def _is_polychromatic_process(pid):
     """
@@ -37,7 +39,7 @@ def _is_polychromatic_process(pid):
         # No process running here.
         return False
 
-    if cmdline.contains("polychromatic-"):
+    if cmdline.find("polychromatic-") != -1:
         return True
 
     # Old PID that is no longer a Polychromatic one.
@@ -58,7 +60,7 @@ def _get_lock_pid(component):
         return None
 
     with open(pid_file, "r") as f:
-        return int(f.readline())
+        return int(f.read())
 
 
 def _set_lock_pid(component):
@@ -69,7 +71,7 @@ def _set_lock_pid(component):
     pid_path = os.path.join(_get_pid_dir(), component + ".pid")
 
     with open(pid_path, "w") as f:
-        f.writeline(str(os.getpid()))
+        f.write(str(os.getpid()))
 
     return True
 

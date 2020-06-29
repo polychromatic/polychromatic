@@ -62,6 +62,7 @@ def get_versions():
 
     return versions
 
+
 def get_device_list():
     """
     Gathers a device list of supported devices, including devices that
@@ -109,6 +110,25 @@ def get_device(backend, uid):
         return None
 
     return BACKEND_ID[backend].get_device(uid)
+
+
+def get_device_form_factor(backend, uid):
+    """
+    Returns the output of common.get_form_factor() for the specified device.
+    This is to avoid processing the entire get_effect() function.
+
+    Params:
+        backend     (str)   Backend ID
+        uid         (int)   Device ID for that backend.
+
+    Returns:
+        {}                  Success: Dictionary of metadata
+        None                Failed: Requested device no longer available
+    """
+    if not BACKEND_ID[backend]:
+        return None
+
+    return BACKEND_ID[backend].get_device_form_factor(uid)
 
 
 def set_device_state(backend, uid, request, zone, colour_hex, params):
@@ -212,3 +232,34 @@ def restart_backends():
         openrazer.restart_daemon()
 
     return True
+
+
+def get_device_object(backend, uid):
+    """
+    Returns a 'device' object that can be used for drawing frames to a device
+    that supports individual addressable LEDs ("matrix")
+
+    Params:
+        backend     (str)       Device backend ID
+        uid         (int)       Device ID for backend
+
+    Returns:
+        None        Device not found, backend unavailable or other error.
+        (dict)      Consisting of:
+        {
+            "rows": (int)           // Length of Y axis
+            "cols": (int)           // Length of X axis
+            "name": (str)           // Human readable name
+            "serial": (str)         // Device's serial number
+            "form_factor": (str)    // Polychromatic processed 'form factor' ID
+            "set": (obj)            // Function to set matrix state.
+                                    // Should accept: (x,y,r,g,b)
+            "draw": (obj)           // Function to 'draw' function for backend
+            "clear": (obj)          // Function to 'clear' function for backend
+            "brightness": (obj)     // Function to set brightness (0-100%)
+        }
+    """
+    if backend == "openrazer" and BACKEND_OPENRAZER:
+        return openrazer.get_device_object(uid)
+
+    return None
