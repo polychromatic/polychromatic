@@ -394,7 +394,7 @@ def parse_parameters():
 
 if __name__ == "__main__":
     # Appear as own process.
-    setproctitle.setproctitle("polychromatic")
+    setproctitle.setproctitle("polychromatic-controller")
 
     # Global variables
     path = pref.Paths()

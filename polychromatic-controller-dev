@@ -20,4 +20,4 @@ fi
 ./scripts/build-locales-for-testing.sh
 
 # Start!
-./polychromatic-controller --verbose $params
+exec ./polychromatic-controller --verbose $params
