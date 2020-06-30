@@ -109,6 +109,7 @@ class Helpers():
         if effect_type == "keyframed":
             # Showtime!
             frames = effects.render_keyframes(filepath)
+            procpid.set_effect_state(device["serial"], effect["ui"]["name"], effect["ui"]["icon"])
             effects.send_effect_frames(frames, effect["data"]["fps"], device)
 
         elif effect_type == "scripted":
@@ -129,6 +130,7 @@ class Helpers():
             params = effects.compute_script_parameters(effect)
 
             # Showtime!
+            procpid.set_effect_state(device["serial"], effect["ui"]["name"], effect["ui"]["icon"])
             effects.send_effect_custom(script_path, device, params)
 
         else:

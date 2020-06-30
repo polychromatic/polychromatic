@@ -110,8 +110,8 @@ def get_strings():
         # Tabs
         "devices": _("Devices"),
         "effects": _("Effects"),
-        "profiles": _("Profiles"), # rename to 'presets'
-        "events": _("Events"),     # rename to 'triggers'
+        "presets": _("Presets"),
+        "triggers": _("Triggers"),
         "preferences": _("Preferences"),
 
         # Form Factors

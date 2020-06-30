@@ -331,7 +331,11 @@ function _get_state_html(device) {
         // -- Current effect
         var effect = state.effect;
 
-        if (effect != undefined) {
+        if (device.custom_effect_busy == true) {
+            var fx_name = device.custom_effect.name;
+            var fx_icon = device.custom_effect.icon ? device.custom_effect.icon : "img/general/effects.svg";
+            output += _get_state(fx_icon, fx_name);
+        } else if (effect != undefined) {
             effect = effect.split("_")[0];
             output += _get_state(`img/effects/${effect}.svg`, get_string(effect));
         }
@@ -353,8 +357,6 @@ function _get_state_html(device) {
             output += _get_state(icon, brightness);
         }
     }
-
-    // TODO: In future, only show current profile (with link)
 
     // -- Current battery
     var battery_level = device.battery_level;
@@ -402,6 +404,11 @@ function _get_state_html(device) {
         output += _get_state("img/general/game-mode.svg", get_string("game_mode"));
     }
 
+    // If device state reflects a preset, show this underneath states.
+    if (device.preset != null) {
+        output += _get_state("img/general/presets.svg", device.preset);
+    }
+
     return output;
 }
 
@@ -444,6 +451,10 @@ function _get_device_controls(device, onclick) {
         var current_effect = state.effect;
         var effect;
         var subeffect;
+
+        if (device.custom_effect_busy == true) {
+            current_effect = "custom";
+        }
 
         if (current_effect != undefined) {
             [effect, subeffect] = current_effect.split("_");
@@ -680,6 +691,10 @@ function set_device_state(element) {
             }
 
             CACHE_CURRENT_DEVICE.zone_states[zone].params = params;
+
+            // If a custom effect is running, it will be stopped.
+            CACHE_CURRENT_DEVICE.custom_effect_busy = false;
+            CACHE_CURRENT_DEVICE.custom_effect = null;
             break;
 
         case "brightness":
@@ -709,6 +724,10 @@ function set_device_state(element) {
             break;
     }
 
+    // State likely no longer matches the preset.
+    CACHE_CURRENT_DEVICE.preset = null;
+
+    // Update states
     $(".states").html(_get_state_html(CACHE_CURRENT_DEVICE));
 
     // Obtain colours from page

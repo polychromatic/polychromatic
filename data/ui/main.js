@@ -86,8 +86,8 @@ function build_view(data) {
             ${_add_header_button("effects", "set_tab_effects()", "img/general/effects.svg", get_string("effects"))}
             <!--
                 FIXME: Features not present. Requires further development.
-            ${_add_header_button("profiles", "set_tab_profiles()", "img/general/profiles.svg", get_string("profiles"))}
-            ${_add_header_button("events", "set_tab_events()", "img/general/events.svg", get_string("events"))}
+            ${_add_header_button("presets", "set_tab_presets()", "img/general/presets.svg", get_string("presets"))}
+            ${_add_header_button("triggers", "set_tab_triggers()", "img/general/triggers.svg", get_string("triggers"))}
             -->
             <div class="right">
                 ${_add_header_button("preferences", "set_tab_preferences()", "img/general/preferences.svg", get_string("preferences"))}

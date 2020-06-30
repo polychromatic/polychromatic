@@ -136,8 +136,6 @@ def stop_device_custom_fx(serial):
     if pid:
         _terminate_process_pid(pid, serial)
 
-    """
-
 
 def start_component(name, parameters=[]):
     """
@@ -169,3 +167,99 @@ def start_component(name, parameters=[]):
     print(" - " + path_relative)
     print(" - " + path_system)
     return False
+
+
+def is_custom_effect_in_use(serial):
+    """
+    Returns a boolean to indicate if the specified device is 'locked' for custom effects.
+    """
+    pid = _get_lock_pid(serial)
+
+    if pid:
+        if _is_polychromatic_process(pid):
+            return True
+
+    return False
+
+
+def get_preset_state(serial):
+    """
+    Returns the name of the preset that represents this device's current status.
+
+    This will return None if a preset is not responsible for the device's state.
+    """
+    tmp_file = os.path.join(_get_pid_dir(), serial + "-preset")
+
+    if os.path.exists(tmp_file):
+        with open(tmp_file, "r") as f:
+            return str(f.readline().strip())
+
+    return None
+
+
+def reset_preset_state(serial):
+    """
+    This device is no longer under the control of a preset.
+    """
+    tmp_file = os.path.join(_get_pid_dir(), serial + "-preset")
+
+    if os.path.exists(tmp_file):
+        os.remove(tmp_file)
+
+
+def set_preset_state(serial, preset_name):
+    """
+    Set the name of the preset that is now representing this device's state.
+    This is to inform the user that this preset caused the current conditions.
+    """
+    tmp_file = os.path.join(_get_pid_dir(), serial + "-preset")
+
+    with open(tmp_file, "w") as f:
+        f.write(preset_name)
+
+
+def get_effect_state(serial):
+    """
+    Get the name and icon of the custom effect that is controlling this device,
+    if applicable.
+
+    Returns dict: {name, icon} if applicable, otherwise None.
+    """
+    name_file = os.path.join(_get_pid_dir(), serial + "-custom-fx-name")
+    icon_file = os.path.join(_get_pid_dir(), serial + "-custom-fx-icon")
+    name = None
+    icon = None
+
+    if os.path.exists(name_file):
+        with open(name_file, "r") as f:
+            name = str(f.readline().strip())
+
+    if os.path.exists(icon_file):
+        with open(icon_file, "r") as f:
+            icon = str(f.readline().strip())
+
+        if not os.path.exists(icon):
+            icon = None
+
+    if name:
+        return {
+            "name": name,
+            "icon": icon
+        }
+
+    return None
+
+
+def set_effect_state(serial, effect_name, effect_icon):
+    """
+    Set the name and icon of the custom effect that is controlling this device.
+    This is to inform the user.
+    """
+    fx_name = os.path.join(_get_pid_dir(), serial + "-custom-fx-name")
+    fx_icon = os.path.join(_get_pid_dir(), serial + "-custom-fx-icon")
+
+    with open(fx_name, "w") as f:
+        f.write(effect_name)
+
+    with open(fx_icon, "w") as f:
+        f.write(effect_icon)

@@ -110,7 +110,18 @@ def get_device(backend, uid):
     if not BACKEND_ID[backend]:
         return None
 
-    return BACKEND_ID[backend].get_device(uid)
+    device = BACKEND_ID[backend].get_device(uid)
+
+    # In case of error, return immediately
+    if type(device) in [None, str]:
+        return device
+
+    # Get effect/preset states
+    device["custom_effect_busy"] = procpid.is_custom_effect_in_use(device["serial"])
+    device["custom_effect"] = procpid.get_effect_state(device["serial"])
+    device["preset"] = procpid.get_preset_state(device["serial"])
+
+    return device
 
 
 def get_device_form_factor(backend, uid):
@@ -183,8 +194,10 @@ def set_device_state(backend, uid, request, zone, colour_hex, params):
         return None
 
     # Stop Polychromatic software effect helper for this device if running
-    serial = get_device_serial(backend, uid)
-    procpid.stop_device_custom_fx(serial)
+    if request not in ["brightness", "game_mode", "dpi", "poll_rate"]:
+        serial = get_device_serial(backend, uid)
+        procpid.stop_device_custom_fx(serial)
+        procpid.reset_preset_state(serial)
 
     return BACKEND_ID[backend].set_device_state(uid, request, zone, colour_hex, params)
 
