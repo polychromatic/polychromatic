@@ -392,12 +392,13 @@ def send_effect_custom(script_path, device, params):
 
 def check_environment(effect, device):
     """
-    Check this system's environment to ensure the custom effect will run as intended.
+    Check this system's environment to ensure the scripted effect will run as intended.
 
     Scripted effects can be restricted by:
       - OS
       - Form Factors
       - Python Modules
+      - Checksum Mismatch
 
     Params:
         effect          (dict)  Raw effect data
@@ -420,7 +421,7 @@ def check_environment(effect, device):
     if form_factors != ["any"]:
         if not form_factor in form_factors:
             dbg.stdout("Effect only supported one these devices: " + ", ".join(form_factors), dbg.error)
-            dbg.stdout("This device is a '{0}'.".format(form_factor), dbg.warning)
+            dbg.stdout("This device '{0}' is a '{1}'".format(device["name"], form_factor), dbg.warning)
             passed = False
 
     # Verify OS
@@ -439,10 +440,24 @@ def check_environment(effect, device):
                 dbg.stdout("Python module cannot be imported: " + module_name, dbg.warning)
                 passed = False
 
+    # Check the checksum in the metadata matches that of the actual file.
+    # This is a basic line of defense against external tampering.
+    last_checksum = effect["checksum_md5"]
+    current_checksum = _get_md5_checksum(effect["ui"]["filepath"].replace(".json", ".py"))
+
+    if last_checksum != current_checksum:
+        dbg.stdout("\nChecksum mismatch! Script was tampered externally.", dbg.warning)
+        dbg.stdout("  As a precaution, this effect will not be run.", dbg.warning)
+        dbg.stdout("  To fix this, open the script in the Controller, review the code and save.\n", dbg.warning)
+        passed = False
+
     if passed:
         return True
 
-    dbg.stdout("Failed to play custom effect.\nIt's incompatible with the device or a required Python module is missing.", dbg.error)
+    dbg.stdout("Failed to play scripted effect '{0}' due to one (or more) reasons:".format(effect["ui"]["name"]), dbg.error)
+    dbg.stdout("- It is not designed to run with the requested device form factor.", dbg.error)
+    dbg.stdout("- A required Python module is missing.", dbg.error)
+    dbg.stdout("- It was externally modified.", dbg.error)
     return False
 
 
