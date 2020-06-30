@@ -13,6 +13,7 @@ https://polychromatic.app/docs/
 """
 
 from .. import common
+from .. import procpid
 
 #
 # Avaliable Backends
@@ -115,7 +116,8 @@ def get_device(backend, uid):
 def get_device_form_factor(backend, uid):
     """
     Returns the output of common.get_form_factor() for the specified device.
-    This is to avoid processing the entire get_effect() function.
+
+    This avoids processing the entire get_effect() function.
 
     Params:
         backend     (str)   Backend ID
@@ -129,6 +131,28 @@ def get_device_form_factor(backend, uid):
         return None
 
     return BACKEND_ID[backend].get_device_form_factor(uid)
+
+
+def get_device_serial(backend, uid):
+    """
+    Returns the device serial number for the specified device. The serial number
+    is used for Polychromatic's PID files to determine if the device is 'locked'
+    and running a custom effect.
+
+    This avoids processing the entire get_effect() function.
+
+    Params:
+        backend     (str)   Backend ID
+        uid         (int)   Device ID for that backend.
+
+    Returns:
+        (str)               Success: Device serial string
+        None                Failed: Requested device no longer available
+    """
+    if not BACKEND_ID[backend]:
+        return None
+
+    return BACKEND_ID[backend].get_device_serial(uid)
 
 
 def set_device_state(backend, uid, request, zone, colour_hex, params):
@@ -157,6 +181,10 @@ def set_device_state(backend, uid, request, zone, colour_hex, params):
     """
     if not BACKEND_ID[backend]:
         return None
+
+    # Stop Polychromatic software effect helper for this device if running
+    serial = get_device_serial(backend, uid)
+    procpid.stop_device_custom_fx(serial)
 
     return BACKEND_ID[backend].set_device_state(uid, request, zone, colour_hex, params)
 

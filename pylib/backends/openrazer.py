@@ -374,6 +374,23 @@ def get_device_form_factor(uid):
     return common.get_form_factor(rdevice.type)
 
 
+def get_device_serial(uid):
+    """
+    See: middleman.get_device_serial(...)
+    """
+    try:
+        # TODO: Speed up by initalising DeviceManager() once - param maybe?
+        devman = rclient.DeviceManager()
+        devman.sync_effects = False
+        rdevice = devman.devices[uid]
+    except KeyError:
+        return None
+    except Exception as e:
+        return None
+
+    return str(rdevice.serial)
+
+
 def set_device_state(uid, request, zone, colour_hex, params):
     """
     See: middleman.set_device_state(...)

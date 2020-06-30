@@ -76,7 +76,7 @@ def _set_lock_pid(component):
     return True
 
 
-def _terminate_process_pid(pid):
+def _terminate_process_pid(pid, component):
     """
     Stops the execution of another Polychromatic process.
 
@@ -86,7 +86,26 @@ def _terminate_process_pid(pid):
     """
     if _is_polychromatic_process(pid):
         os.kill(pid, 9)
+
+        pid_path = os.path.join(_get_pid_dir(), component + ".pid")
+        os.remove(pid_path)
+
         return True
+    return False
+
+
+def is_another_instance_running(component):
+    """
+    Returns the PID of a process if the specified component is running in another
+    instance.
+
+    Returns:
+        (int)       Process PID (if applicable)
+        False       Process not running
+    """
+    existing_pid = _get_lock_pid(component)
+    if existing_pid:
+        return existing_pid
     return False
 
 
@@ -98,7 +117,7 @@ def set_as_device_custom_fx(serial):
     """
     existing_pid = _get_lock_pid(serial)
     if existing_pid:
-        success = _terminate_process_pid(existing_pid)
+        success = _terminate_process_pid(existing_pid, serial)
 
         if not success:
             return False
@@ -107,17 +126,18 @@ def set_as_device_custom_fx(serial):
     return True
 
 
-def unset_as_device_custom_fx(serial):
+def stop_device_custom_fx(serial):
     """
-    The current process PID is no longer playing custom effects for this device.
-
-    This will be used by the Controller, which can preview effects in the editor.
+    Stop the process playing custom effects for this device. This may happen if
+    the user changes the current effect to a hardware one.
     """
-    pid_file = os.path.join(_get_pid_dir(), serial + ".pid")
+    pid = _get_lock_pid(serial)
 
-    if os.path.exists(pid_file):
-        os.remove(pid_file)
-        return True
+    if pid:
+        _terminate_process_pid(pid, serial)
+
+    """
+
 
 def start_component(name, parameters=[]):
     """

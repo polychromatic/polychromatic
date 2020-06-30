@@ -98,7 +98,7 @@ class Helpers():
         This process should be running until the custom effect reaches the end,
         or if it's looped, indefinity until interrupted.
         """
-        effect = effects._read_file(filepath)
+        effect = effects.get_effect(filepath)
         if not effect:
             dbg.stdout("\nUnable to render on device {0} on backend '{1}'!".format(uid, backend), dbg.error)
             exit(1)
