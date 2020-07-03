@@ -151,9 +151,6 @@ function _set_tab_preferences() {
     // Tray Applet
     // -----------------------------------------------------
     var _icon_path = PREFERENCES.tray.icon;
-    if (_icon_path.startsWith("ui/") === true) {
-        _icon_path = "../" + _icon_path;
-    }
 
     var tray = group_title(get_string("appearance"));
     tray += group(get_string("icon"), icon_picker("tray_icon", _icon_path, "change_pref('tray', 'icon', $(&quot;#tray_icon&quot;).val())", true) +

@@ -46,6 +46,13 @@ function textbox(id, value, placeholder) {
     return `<input id="${id}" type="text" placeholder="${placeholder}" value="${value}" />`;
 }
 
+function textarea(id, content) {
+    //
+    // Creates a text area for multiple line input.
+    //
+    return `<textarea id="${id}">${content}</textarea>`;
+}
+
 function checkbox(id, label, checked, onchange) {
     //
     // Creates a checkbox for toggling a boolean.
@@ -54,6 +61,18 @@ function checkbox(id, label, checked, onchange) {
                 <input id="${id}" type="checkbox" ${checked ? "checked" : ""} onchange="${onchange ? onchange : ''}"/>
                 <label for="${id}">${label}</label>
             </div>`;
+}
+
+function checkbox_grid(list_of_checkboxes) {
+    //
+    // Creates a grid of checkboxes to save screen space.
+    //
+    var output = `<div class="checkbox-grid">`;
+    for (c = 0; c < list_of_checkboxes.length; c++) {
+        output += list_of_checkboxes[c];
+    }
+    output += `</div>`;
+    return output;
 }
 
 function radio(id, label, checked, value, group_id, onchange) {
@@ -164,10 +183,16 @@ function icon_picker(id, current_value, save_fn, show_tray_tab) {
     // save_fn          Function to evaluate after making a change.
     // show_tray_tab    Show additional icons when picking a tray icon.
     //
+    var preview_icon_path = current_value;
+
+    if (preview_icon_path.startsWith("ui/") != -1) {
+        preview_icon_path = current_value.replace("ui/", "");
+    }
+
     return `<input id="${id}" type="hidden" value="${current_value}" data-save-fn="${save_fn}"/>
             <div class="icon-selector">
                 <div class="current-icon">
-                    <img class="current-icon-preview" src="${current_value}"/>
+                    <img class="current-icon-preview" src="${preview_icon_path}"/>
                 </div>
                 <button class="change-icon" onclick="open_icon_picker('${id}', ${show_tray_tab})">${get_string("change")}</button>
             </div>`;
@@ -230,4 +255,31 @@ function cursor_wait_background() {
 
 function cursor_wait_foreground() {
     $("body").addClass("cursor-fg");
+}
+
+/*****************************
+ * Tabs
+*****************************/
+function disable_tabs() {
+    //
+    // Disable the tabs for selection - used when going to a 'deeper' UI level.
+    //
+    $("#header-tabs").addClass("disabled");
+}
+
+function enable_tabs() {
+    //
+    // Disable the tabs for selection - used when leaving a 'deeper' UI level.
+    //
+    $("#header-tabs").removeClass("disabled");
+}
+
+/*****************************
+ * Footer
+*****************************/
+function footer_separator() {
+    //
+    // Allows items on the footer to the aligned to the left as well as the right.
+    //
+    return `<div class="footer-separator"></div>`;
 }

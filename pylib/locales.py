@@ -410,6 +410,27 @@ def get_strings():
         "read_error_title": _("Corrupt Data"),
         "read_error_text": _("The data integrity of this file is invalid. Run the application in the Terminal for more details."),
         "read_error_aftermath_effect": _("This effect cannot be opened as the JSON structure is damaged. For technical details, run this application via the Terminal."),
+
+        # Editor (Common)
+        "sections": _("Sections"),
+        "properties": _("Properties"),
+        "editor": _("Editor"),
+        "save-exit": _("Save & Exit"),
+        "name": _("Name"),
+        "author": _("Author"),
+        "summary": _("Summary"),
+        "designed_form_factors": _("Only run on:"),
+
+        # Script Editor
+        "script_editor_title": _("Script Editor: []"),
+        "parameters": _("Parameters"),
+        "save_revision": _("Revision"),
+        "script_editor": _("Python Editor"),
+        "open_external_editor": _("Open in External Text Editor"),
+
+        "revert_prompt_title": _("Revert Changes?"),
+        "revert_prompt_text": _("All changes will be lost. Discard these modifications?"),
+
         # End
         "": ""
     }

@@ -294,6 +294,19 @@ input[type='checkbox'] {
     }
 }
 
+.checkbox-grid {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin: -2.5px 0;
+    max-width: 600px;
+
+    .checkbox-item {
+        flex: 50%;
+        margin: 5px 0;
+    }
+}
+
 /* Ranges (aka. sliders) */
 input[type='range'] {
     -webkit-appearance: none;
@@ -316,16 +329,36 @@ input[type='range'] {
     }
 }
 
+/* Text Area */
+textarea {
+    background: $bg-colour;
+    border: 2px solid $border-colour;
+    color: $text-colour;
+    width: 90%;
+    margin: 0;
+    min-height: 100px;
+
+    &:hover,
+    &:focus {
+        background-color: lighten($bg-colour, 5%);
+    }
+}
+
 /* Icons next to controls */
 img {
     vertical-align: middle;
 }
 
 /* Focus for keyboard navigation - each element has a distinct hover/focus state */
-input, a, button, select {
+input, a, button, select, textarea {
     &:focus {
         outline: 0;
     }
+}
+
+::selection {
+    background-color: $secondary-colour;
+    color: white;
 }
 
 /* Text box */

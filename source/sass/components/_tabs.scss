@@ -84,3 +84,12 @@
     min-height: 6em;
     margin-top: 1px;
 }
+
+.tabs.disabled {
+    cursor: not-allowed;
+
+    button {
+        pointer-events: none;
+        opacity: 0.25;
+    }
+}

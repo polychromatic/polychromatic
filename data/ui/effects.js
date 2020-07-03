@@ -166,7 +166,7 @@ function _open_effect(effect) {
             </div>
             <div id="main-buttons">
                 ${button("effect-play", "play_current_effect()", get_string("play"), "play")}
-                ${button("effect-edit", "edit_current_effect()", get_string("edit"), "edit", true)}
+                ${button("effect-edit", "edit_current_effect()", get_string("edit"), "edit")}
                 ${button("effect-del", "delete_current_effect()", get_string("delete"), "bin", true, true)}
             </div>
         </div>
@@ -243,8 +243,16 @@ function edit_current_effect() {
     //
     // Opens the effect editor for the currently loaded effect data.
     //
-    // FIXME: Stub!
-    console.error("not yet implemented");
+    var effect_type = CACHE_CURRENT_EFFECT.type;
+
+    switch(effect_type) {
+        case "keyframed":
+            open_keyframe_editor(CACHE_CURRENT_EFFECT);
+            break;
+        case "scripted":
+            open_script_editor();
+            break;
+    }
 }
 
 function delete_current_effect() {
@@ -252,5 +260,132 @@ function delete_current_effect() {
     // Confirms whether the currently loaded effect should be deleted.
     //
     // FIXME: Stub!
+    console.error("not yet implemented");
+}
+
+function open_script_editor() {
+    //
+    // Requests the Controller to open the current scripted effect.
+    //
+    send_data("get_effect_script", {
+        "callback": "_open_script_editor",
+        "filepath": CACHE_CURRENT_EFFECT.ui.filepath
+    });
+}
+
+function _open_script_editor(data) {
+    //
+    // Callback when the script is loaded, or an error occurred.
+    //
+    var effect = CACHE_CURRENT_EFFECT;
+    disable_tabs();
+    set_title(get_string("script_editor_title").replace("[]", effect.ui.name));
+
+    var sidebar = [
+        {
+            "label": get_string("sections"),
+            "items": [
+                {
+                    "label": get_string("properties"),
+                    "icon": "img/editor/properties.svg",
+                    "onclick": "_open_fx_properties_pane()",
+                    "classes": "",
+                    "id": "properties-btn"
+                },
+                {
+                    "label": get_string("editor"),
+                    "icon": "img/emblems/code.svg",
+                    "onclick": "_open_fx_editor_pane()",
+                    "classes": "",
+                    "id": "editor-btn"
+                }
+            ]
+        }
+    ]
+
+    // Unlike main tabs, the content is always visible, but hidden behind a togglable sidebar.
+    var content = "";
+
+    // -----------------------
+    // Properties
+    // -----------------------
+
+    content += `<div id="fx-properties-pane" style="display:none">`;
+
+    content += group_title(get_string("properties"));
+    content += group(get_string("name"), textbox("name", effect.name, null), true);
+    // TODO: i18n fields for name
+    content += group(get_string("author"), textbox("author", effect.author, null), true);
+    content += group(get_string("summary"), textbox("summary", effect.summary, null), true);
+    // TODO: i18n fields for summary
+    content += group(get_string("icon"), icon_picker("icon", effect.icon, ""), true);
+
+    // Form Factors
+    var ff_options = ["accessory", "keyboard", "mouse", "mousemat", "keypad", "headset", "gpu"];
+    var ff_checkboxes = "";
+    for (f = 0; f < ff_options.length; f++) {
+        var option_name = ff_options[f];
+        ff_checkboxes += checkbox(option_name, get_string(option_name), effect.depends.form_factor.includes(option_name), "") + "<br>";
+    }
+    content += group(get_string("designed_form_factors"), checkbox_grid(ff_checkboxes));
+
+    // Parameters
+    content += group(get_string("parameters"), textarea("parameters", JSON.stringify(effect.parameters)), true);
+
+    // Read only
+    content += group(get_string("save_revision"), effect.revision, true);
+
+    content += "</div>";
+
+    content += `<div id="fx-editor-pane">`;
+    content += group_title(get_string("script_editor"));
+    content += textarea("script-editor", data.join(""));
+    content += "</div>";
+
+    // ------------------------
+    // Content
+    // ------------------------
+    set_layout_split(sidebar, content);
+
+    $("#editor-btn").addClass("active");
+
+    $("footer").html(`
+
+        ${button("open-external", "", get_string("open_external_editor"), "external")}
+        ${footer_separator()}
+        ${button("revert-btn", "", get_string("revert"), "remove")}
+        ${button("save-btn", "", get_string("save"), "save")}
+        ${button("save-quit-btn", "", get_string("save-exit"), "exit")}
+    `);
+
+    $("#revert-btn").on("click", function() {
+        open_dialog(get_string("revert_prompt_title"), get_string("revert_prompt_text"), "warning", [[get_string("cancel"), ""], [get_string("revert"), "_exit_editor_nosave()"]], "10em", "24em");
+    });
+function _open_fx_properties_pane() {
+    //
+    // Swap view to the properties list.
+    //
+    $(".sidebar-item").removeClass("active");
+    $("#properties-btn").addClass("active");
+
+    $("#fx-properties-pane").show();
+    $("#fx-editor-pane").hide();
+}
+
+function _open_fx_editor_pane() {
+    //
+    // Swap view to the effect editor (keyframed or scripted).
+    //
+    $(".sidebar-item").removeClass("active");
+    $("#editor-btn").addClass("active");
+
+    $("#fx-properties-pane").hide();
+    $("#fx-editor-pane").show();
+}
+
+function _exit_editor_nosave() {
+    //
+    // User wants to leave the editor discarding changes.
+    //
     console.error("not yet implemented");
 }

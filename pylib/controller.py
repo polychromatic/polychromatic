@@ -67,6 +67,7 @@ class PolychromaticController():
                 # Effects tab
                 "get_effect_list": self._get_effect_list,
                 "get_effect": self._get_effect,
+                "get_effect_script": self._get_effect_script,
                 "edit_effect": self._edit_effect,
                 "render_effect": self._render_effect,
 
@@ -615,6 +616,37 @@ class PolychromaticController():
 
         self.send_view_variable("CACHE_CURRENT_EFFECT", effect)
         self.run_function(data["callback"], effect)
+
+    def _get_effect_script(self, data=None):
+        """
+        Retrieves the script for a requested 'scripted' effect. This allows the
+        effect to be edited in the view editor. An error is shown if the effect is
+        corrupt or no longer exists.
+
+        The data is directly loaded into a JS variable list with each new line as
+        a separate item.
+
+        Data parameter:
+        {
+            "callback": <str - Name of JavaScript function to run>,
+            "filepath": <str>
+        }
+        """
+        filepath = data["filepath"]
+
+        effect = effects.get_effect(filepath)
+
+        if effect in [None, False]:
+            self._internal_error(locales.get("read_error_title"), locales.get("read_error_text"), "serious")
+            self.run_function("_open_effect_error")
+            return
+
+        # Load script file
+        script_data = []
+        with open(filepath.replace(".json", ".py"), "r") as f:
+            script_data = f.readlines()
+
+        self.run_function(data["callback"], script_data)
 
     def _edit_effect(self, data=None):
         """
