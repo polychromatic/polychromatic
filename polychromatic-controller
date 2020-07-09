@@ -17,9 +17,9 @@
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
 """
-Frontend interface for Polychromatic based on WebKitGTK.
+The primary "Controller" GUI for Polychromatic based on PyQt5.
 """
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 
 import argparse
 import json

@@ -28,7 +28,7 @@ The helper intends to be as lightweight and minimal as possible as there could
 be multple helper processes running simultaneously. It also is designed to be
 'terminated' without fuss as Polychromatic will record PIDs for the components.
 """
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 
 import argparse
 import setproctitle
