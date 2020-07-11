@@ -28,34 +28,29 @@ import re
 import signal
 import threading
 import setproctitle
-from sys import version_info as python_version
+import sys
 
-import gi
-gi.require_version("Gtk", "3.0")
-gi.require_version("Gdk", "3.0")
-gi.require_version("WebKit2", "4.0")
-from gi.repository import GLib, Gtk, Gdk, WebKit2
+from PyQt5 import uic, QtCore
+from PyQt5.QtGui import QIcon, QPalette, QColor, QFontMetrics, QPixmap
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QProxyStyle, QStyle, QPushButton, QToolButton, QMessageBox, QListWidget, QTreeWidget, QTabBar, QTabWidget, QLabel, QComboBox
 
 # Import modules if running relatively.
-DEV_VERSION = False
-if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
-    DEV_VERSION = True
+if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
     try:
         import pylib.preferences as pref
         import pylib.common as common
         import pylib.locales as locales
-        from pylib.controller import PolychromaticController as controller
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
 
-# Import modules if installed system.-wide.
+# Import modules if installed system-wide.
 else:
     try:
         import polychromatic.preferences as pref
         import polychromatic.common as common
         import polychromatic.locales as locales
-        from polychromatic.controller import PolychromaticController as controller
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
@@ -63,294 +58,95 @@ else:
         exit(1)
 
 
-class WebView(object):
+VERSIONS = {
+    "pref": pref.VERSION,
+    "qt": QtCore.PYQT_VERSION_STR,
+    "python": "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
+}
+
+
+class MainWindow(QMainWindow):
     """
-    WebKit renders the user interface using web technologies.
+    The main window is the first window the user will use and interact with.
     """
     def __init__(self):
-        """
-        Initalises WebView, a component of WebKit2.
-        """
-        # Ensure WebKit's cache is the same folder as ours.
-        webkit = WebKit2
-        webview = webkit.WebView
-        context = webkit.WebContext
-        dataman = webkit.WebsiteDataManager(base_cache_directory=path.cache_webkit, base_data_directory=path.cache_webkit, disk_cache_directory=path.cache_webkit)
-        context = context.new_with_website_data_manager(dataman)
-        self.webview = webview.new_with_context(context)
+        super(MainWindow, self).__init__()
+        uic.loadUi(os.path.join(DATA_PATH, "ui", "main.ui"), self)
 
-    def build_webview(self):
-        """
-        Sets up the WebView object and loads the page.
-        """
-        dbg.stdout("Initalising WebView...", dbg.action, 1)
+        # Tabs - the custom design and native tabs
+        self.MainTabWidget = self.findChild(QTabWidget, "MainTabWidget")
+        self.MainTabs = self.findChild(QWidget, "MainTabs")
 
-        # Match background colour with page.
-        self.webview.set_background_color(Gdk.RGBA(0, 0, 0, 1))
+        # Custom tab design
+        self.DevicesTabButton = self.findChild(QToolButton, "DevicesTabButton")
+        self.EffectsTabButton = self.findChild(QToolButton, "EffectsTabButton")
+        self.PresetsTabButton = self.findChild(QToolButton, "PresetsTabButton")
+        self.TriggersTabButton = self.findChild(QToolButton, "TriggersTabButton")
+        self.PreferencesTabButton = self.findChild(QToolButton, "PreferencesTabButton")
 
-        # Post-actions after pages fully load.
-        self.webview.connect("load-changed", self.load_changed_cb)
-        self.webview.connect("notify::title", self.title_changed_cb)
-        self.webview.connect("context-menu", self.context_menu_cb)
+        # The real tabs
+        self.DevicesTab = self.findChild(QWidget, "DevicesTab")
+        self.EffectsTab = self.findChild(QWidget, "EffectsTab")
+        self.PresetsTab = self.findChild(QWidget, "PresetsTab")
+        self.TriggersTab = self.findChild(QWidget, "TriggersTab")
+        self.PreferencesTab = self.findChild(QWidget, "PreferencesTab")
 
-        # Allow local SVG files to load.
-        self.webview.get_settings().set_allow_file_access_from_file_urls(True)
-        self.webview.get_settings().set_allow_universal_access_from_file_urls(True)
+        # Load Polychromatic Qt theme
+        if USE_POLY_QT_THEME:
+            ui_palette = QPalette()
+            black = QColor(0, 0, 0)
+            white = QColor(255, 255, 255)
+            primary = QColor(0, 255, 0)
+            ui_palette.setColor(QPalette.Window, QColor(0, 0, 0))
+            ui_palette.setColor(QPalette.WindowText, white)
+            ui_palette.setColor(QPalette.Base, QColor(25, 25, 25))
+            ui_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+            ui_palette.setColor(QPalette.ToolTipBase, white)
+            ui_palette.setColor(QPalette.ToolTipText, white)
+            ui_palette.setColor(QPalette.Text, white)
+            ui_palette.setColor(QPalette.Button, QColor(50, 50, 50)) #323232
+            ui_palette.setColor(QPalette.ButtonText, white)
+            ui_palette.setColor(QPalette.Link, primary)
+            ui_palette.setColor(QPalette.Highlight, primary)
+            ui_palette.setColor(QPalette.HighlightedText, black)
+            self.setPalette(ui_palette)
 
-        # Print console log errors to stdout if verbose
-        if dbg.verbose_level >= 1:
-            self.webview.get_settings().set_enable_write_console_messages_to_stdout(True)
+            with open(os.path.join(DATA_PATH, "qt", "style.qss"), "r") as f:
+                self.setStyleSheet(f.read().replace("[data]", DATA_PATH))
 
-        # Accessibility - keyboard navigation
-        self.webview.get_settings().set_enable_spatial_navigation(True)
-        self.webview.get_settings().set_enable_caret_browsing(True)
+            # Hide the native tab 'buttons', use custom design widget.
+            self.MainTabWidget.tabBar().hide()
+        else:
+            # Hide the custom design tab, use native tabs.
+            self.Header.hide()
+            self.MainTabs.hide()
 
-        # Enable web inspector for debugging
-        if dbg.verbose_level == 2:
-            self.webview.get_settings().set_property("enable-developer-extras", True)
+        # Set window attributes
+        self.setWindowIcon(QIcon(os.path.join(DATA_PATH, "ui", "img", "general", "controller.svg")))
+        self.setWindowTitle("Polychromatic")
 
-        # Load the base page structure
-        self.webview.load_uri("file://" + os.path.join(common.DATA_PATH, "ui/controller.html"))
-        dbg.stdout("WebView Initialised", dbg.success, 1)
+        # Set background for header/tabs
+        self.Header = self.findChild(QWidget, "Header")
+        self.MainTabs = self.findChild(QWidget, "MainTabs")
+        self.Header.setStyleSheet("{0} #Header {{ background-image: url({1}) }}".format(self.Header.styleSheet(), os.path.join(DATA_PATH, "ui", "img", "bg", "header.png")));
+        self.MainTabs.setStyleSheet("{0} #MainTabs {{ background-image: url({1}) }}".format(self.MainTabs.styleSheet(), os.path.join(DATA_PATH, "ui", "img", "bg", "tabs.png")))
 
-    def run_js(self, code):
-        """
-        Runs JavaScript code on the page, regardless of which thread it is called from.
-        GTK+ operations must be performed on the same thread to prevent crashes.
-        """
-        GLib.idle_add(self._run_js, code)
-
-    def _run_js(self, code):
-        """
-        Private function for running JavaScript code on the page when invoked from run_js()
-        """
-        self.webview.run_javascript(code)
-        return GLib.SOURCE_REMOVE
-
-    def title_changed_cb(self, view, frame):
-        """
-        Callback: Title changed
-
-        This is where the frontend has set document.title, which is used for
-        sending/recieving requests to the "controller" layer.
-        """
-        title = self.webview.get_title()
-        if title not in ["null", None, "", " "]:
-            app.incoming_request(title)
-
-    def context_menu_cb(self, view, menu, event, htr):
-        """
-        Callback: Disables the context menu.
-        """
-        return True
-
-    def load_changed_cb(self, view, frame):
-        """
-        Callback: Page changed
-
-        Intended to be called when the initial page has finished loading.
-        """
-        dbg.stdout("WebView still loading...", dbg.debug, 2)
-        if not self.webview.is_loading():
-            dbg.stdout("Page loaded", dbg.success, 1)
-            thread = threading.Thread(target=app.start_app, args=([]))
-            thread.start()
+        self.DeviceSidebarTree = self.findChild(QTreeWidget, "DeviceSidebarTree")
+        self.DeviceSidebarTree.expandAll()
 
 
-class AppWindow(object):
-    """
-    Main application class for building the skeleton of the GTK application window.
-    """
-    def __init__(self, _webview):
-        """
-        Prepares variables to be set later.
-        """
-        self.window = None
-        self.webview = _webview
+        # Close app
+        def _quit_app(button):
+            exit()
 
-    def show_window(self):
-        """
-        Opens the GTK+ window after the runtime has initialised. This is to prevent
-        the window flashing colours as the window and WebKit initialises.
-        """
-        GLib.idle_add(self._show_window)
+        self.CloseButton = self.findChild(QPushButton, "CloseApp")
+        self.CloseButton.clicked.connect(_quit_app)
 
-    def _show_window(self):
-        """
-        Private function to actually show the window.
-        """
-        self.window.show_all()
-        return GLib.SOURCE_REMOVE
-
-    def run(self):
-        """
-        Assembles the main application window.
-        """
-        dbg.stdout("Initalising Window...", dbg.action, 1)
-        self.webview.build_webview()
-
-        self.window = Gtk.Window(title=_("Polychromatic"))
-        self.window.set_position(Gtk.WindowPosition.CENTER)
-        self.window.set_size_request(1000, 600)
-        self.window.connect("delete-event", Gtk.main_quit)
-
-        try:
-            self.window.set_icon_from_file(os.path.join(common.DATA_PATH, "ui/img/logo/polychromatic.svg"))
-        except Exception:
-            dbg.stdout("Failed to set window icon.", dbg.warning, 0)
-
-        # Create scrolled window (containing WebKit) to be part of a horz. pane
-        sw = Gtk.ScrolledWindow()
-        sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        sw.add(self.webview.webview)
-        pane = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
-
-        # GTK Window -> Paned -> ScrolledWindow -> WebKit + Inspector (debugging)
-        pane.add(sw)
-        self.window.add(pane)
-
-        # When debugging, re-position window.
-        if dbg.verbose_level == 2:
-            def dummy(webview):
-                return True
-
-            inspector = self.webview.webview.get_inspector()
-            inspector.connect("open-window", dummy)
-            inspector.show()
-            inspector_webview = inspector.get_web_view()
-            pane.add(inspector_webview)
-            pane.set_position(1000)
-            self.window.set_size_request(1920, 600)
-            self.window.set_position(Gtk.WindowPosition.CENTER)
-
-        # Kills process when CTRL+C'd.
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-        # Showtime!
-        dbg.stdout("Initialised Window", dbg.success, 1)
-        Gtk.main()
-
-
-class Controller(object):
-    """
-    The main application runtime. Responsive for relaying user interactions to/from
-    the view and 'actual' controller.
-    """
-    def __init__(self, webview, window):
-        """
-        Variables that are necessary for running the application.
-        """
-        self.webview = webview
-        self.window = window
-        self.controller = controller(self, self.window, self.webview, dbg)
-        self.version = VERSION
-        self.versions = {}
-
-        try:
-            self.versions = {
-                "polychromatic": VERSION,
-                "polychromatic_pref": pref.VERSION,
-                "gi": gi.__version__,
-                "gtk": "{0}.{1}.{2}".format(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION),
-                "webkit": "{0}.{1}.{2}".format(WebKit2.MAJOR_VERSION, WebKit2.MINOR_VERSION, WebKit2.MICRO_VERSION),
-                "python": "{0}.{1}.{2}".format(python_version.major, python_version.minor, python_version.micro)
-            }
-        except NameError as e:
-            dbg.stdout("Could not retrieve version info! Dependency too old or too new?", dbg.error)
-            dbg.stdout(str(e), dbg.error)
-            self.versions = {}
-
-    def _run_js(self, code):
-        """
-        Sends JavaScript code to the page.
-        """
-        self.webview.run_js(code)
-
-    def send_view_data(self, callback_fn, raw):
-        """
-        Send a response (or request) to the view. This normally updates the UI
-        in some way.
-
-        Params:
-            callback_fn         Name of function to run.
-            data                Python dictonary containing the data.
-        """
-        dbg.stdout("→ View: " + str(raw), dbg.debug, 1)
-
-        try:
-            data = json.dumps(raw, ensure_ascii=False)
-            self._run_js("{0}({1});".format(callback_fn, data))
-            return True
-        except Exception:
-            dbg.stdout("Internal Error: Cannot parse data for function: " + callback_fn, dbg.error)
-            return False
-
-    def send_view_variable(self, variable, data):
-        """
-        Update a variable in the view's global scope.
-
-        Params:
-            variable            Name of variable.
-            data                A string, integer, list or dictonary data.
-        """
-        if type(data) in [dict, list]:
-            data = json.dumps(data, ensure_ascii=False)
-        elif data == True:
-            data = "true";
-        elif data == False:
-            data = "false";
-        elif type(data) == str:
-            data = '"' + data.replace("\n", "<br>") + '"'
-
-        dbg.stdout("→ View variable '{0}' updated.".format(variable), dbg.debug, 2)
-        self._run_js("{0} = {1};".format(variable, data))
-
-    def incoming_request(self, raw):
-        """
-        Process a request issued from the frontend for the page.
-        """
-        dbg.stdout("→ Controller: " + str(raw), dbg.debug, 1)
-
-        try:
-            data = json.loads(raw)
-        except Exception:
-            dbg.stdout("Internal Error: Controller cannot parse data!", dbg.error)
-            return False
-
-        try:
-            request = data["request"]
-        except Exception:
-            dbg.stdout("Internal Error: Controller received invalid data!", dbg.error)
-            dbg.stdout(str(data), dbg.error)
-            return False
-
-        # Functions that must run from main thread
-        if request == "quit":
-            self.stop_app()
-
-        # Function that will run on a different thread
-        self.controller.parse_request(request, data)
-
-        # WebKit2 quirk - clear "title" so same command can execute again
-        self._run_js("document.title = ''")
-
-    def start_app(self):
-        """
-        Asynchronous thread to start loading the application's UI and save data
-        in the application's 'actual' controller.
-        """
-        self.window = app.window
-        self.webview = app.webview
-        self.controller.initalise_app(self.version, self.versions, args.tab)
-
-    def stop_app(self):
-        """
-        Stop execution of the program.
-        """
-        exit(0)
-
-
+        self.show()
 def parse_parameters():
+    """
+    Process the parameters passed to the application.
+    """
     global _
 
     tab_choices = [
@@ -371,20 +167,16 @@ def parse_parameters():
     parser.add_argument("--locale", help=_("Force a specific language, e.g. de_DE"), action="store")
     parser.add_argument("--tab", help=_("Open a specific tab or section"), action="store", choices=tab_choices)
 
-    # For front-end debugging (developer tools)
-    parser.add_argument("--inspect", help=argparse.SUPPRESS, action="store_true")
-
     args = parser.parse_args()
 
     if args.version:
-        print("Polychromatic v" + VERSION)
+        print("Polychromatic v{0}".format(VERSION))
+        print("Qt " + VERSIONS["qt"])
+        print("Python " + VERSIONS["python"])
         exit(0)
 
     if args.verbose:
         dbg.verbose_level = 1
-
-    if args.inspect:
-        dbg.verbose_level = 2
 
     if args.locale:
         _ = locales.reload_locales(locales, __file__, args.locale)
@@ -393,25 +185,28 @@ def parse_parameters():
 
 
 if __name__ == "__main__":
-    # Appear as own process.
     setproctitle.setproctitle("polychromatic-controller")
 
-    # Global variables
+    DATA_PATH = common.get_data_dir_path()
+    HIDPI = False
+
     path = pref.Paths()
     dbg = common.Debugging()
     _ = locales._
 
-    # Is this a development build?
-    if DEV_VERSION:
-        VERSION = VERSION + "-dev"
+    parse_parameters()
+    USE_POLY_QT_THEME = True
 
-    # Verify styling is present.
-    if not os.path.exists(os.path.join(common.DATA_PATH, "ui/controller.css")):
-        dbg.stdout("Failed to start due to missing styling.", dbg.error)
-        exit(1)
+    if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
+        QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+        HIDPI = True
 
-    args = parse_parameters()
-    webview = WebView()
-    win = AppWindow(webview)
-    app = Controller(webview, win)
-    win.run()
+    if hasattr(QtCore.Qt, "AA_UseHighDpiPixmaps"):
+        QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
+    app = QApplication(sys.argv)
+    if USE_POLY_QT_THEME:
+        app.setStyle("Fusion")
+
+    window = MainWindow()
+    app.exec_()

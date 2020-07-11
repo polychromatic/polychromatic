@@ -10,7 +10,7 @@ fi
 
 errors=false
 
-for file in $(ls data/ui/*.js)
+for file in $(ls data/webview/*.js)
 do
     jshint -c "`realpath $(dirname "$0")/_jshint.json`" $file
     if [ $? != 0 ]; then

@@ -19,11 +19,24 @@ if [ -z "$sass" ] && [ -z "$sassc" ]; then
     exit 1
 fi
 
+cp ./qt-style.css ../../data/qt/style.qss
+
 if [ ! -z "$sassc" ]; then
-    echo "Compiling styling... (sassc)"
-    sassc ./controller.scss ../../data/ui/controller.css --sass --style compressed
+    echo -n "Compiling Qt theme using 'sassc'..."
+    sassc ./qt-style.scss ../../data/qt/style.css.tmp --sass --style compressed
+    result=$?
 
 elif [ ! -z "$sass" ]; then
-    echo "Compiling styling... (sass)"
-    sass ./controller.scss ../../data/ui/controller.css --style=compressed --no-source-map
+    echo "Compiling Qt theme using 'sass'..."
+    sass ./qt-style.scss ../../data/qt/style.css.tmp --style=compressed --no-source-map
+    result=$?
 fi
+
+if [ "$result" != 0 ]; then
+    exit 1
+fi
+
+cat ../../data/qt/style.css.tmp >> ../../data/qt/style.qss
+rm ../../data/qt/style.css.tmp
+
+echo " done!"

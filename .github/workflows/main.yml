@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - dev-1.0.0
+      - dev-1.0.0-pyqt5
   pull_request:
     branches:
-      - dev-1.0.0
+      - dev-1.0.0-pyqt5
 
 jobs:
   build:
@@ -41,6 +41,7 @@ jobs:
         # Additional modules (dependencies)
         sudo add-apt-repository ppa:openrazer/daily
         sudo apt install python3-setproctitle python3-requests python3-openrazer gir1.2-gtk-3.0 gir1.2-webkit2-4.0 gir1.2-appindicator3-0.1
+        sudo apt install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtwebengine
 
     - name: Validate JSON
       run: |
