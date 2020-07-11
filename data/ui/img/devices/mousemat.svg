@@ -1,102 +1,18 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   viewBox="0 0 24 23.999999"
-   version="1.1"
-   width="24"
-   height="24"
-   id="svg2">
-  <title
-     id="title4854">Polychromatic Mouse Mat</title>
-  <defs
-     id="defs4">
-    <linearGradient
-       x1="47.922"
-       y1="923.41"
-       x2="221.9"
-       gradientUnits="userSpaceOnUse"
-       y2="923.41"
-       id="linearGradient4219">
-      <stop
-         offset="0"
-         style="stop-color:#ff0000"
-         id="stop4618" />
-      <stop
-         offset=".25"
-         style="stop-color:#ffff00"
-         id="stop4620" />
-      <stop
-         offset=".5"
-         style="stop-color:#00ffff"
-         id="stop4622" />
-      <stop
-         offset=".75"
-         style="stop-color:#0000ff"
-         id="stop4624" />
-      <stop
-         offset="1"
-         style="stop-color:#ff00ff"
-         id="stop4626" />
+<svg width="48" height="48" version="1.1" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <title>Polychromatic Mouse Mat</title>
+  <defs>
+    <linearGradient id="linearGradient4219" x1="47.922" x2="221.9" y1="923.41" y2="923.41" gradientUnits="userSpaceOnUse">
+      <stop style="stop-color:#ff0000" offset="0"/>
+      <stop style="stop-color:#ffff00" offset=".25"/>
+      <stop style="stop-color:#00ffff" offset=".5"/>
+      <stop style="stop-color:#0000ff" offset=".75"/>
+      <stop style="stop-color:#ff00ff" offset="1"/>
     </linearGradient>
   </defs>
-  <metadata
-     id="metadata7">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>Polychromatic Mouse Mat</dc:title>
-        <cc:license
-           rdf:resource="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html" />
-        <dc:date />
-        <dc:creator>
-          <cc:Agent>
-            <dc:title>Luke Horwell</dc:title>
-          </cc:Agent>
-        </dc:creator>
-        <dc:rights>
-          <cc:Agent>
-            <dc:title />
-          </cc:Agent>
-        </dc:rights>
-        <dc:description />
-        <dc:contributor>
-          <cc:Agent>
-            <dc:title />
-          </cc:Agent>
-        </dc:contributor>
-        <dc:subject>
-          <rdf:Bag />
-        </dc:subject>
-        <dc:coverage />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     transform="translate(-35.092 -847.07)"
-     id="layer1">
-    <g
-       transform="matrix(1.2519 0 0 1.2519 -22.749 -360.21)"
-       style="stroke:url(#linearGradient4219)"
-       id="g4839">
-      <path
-         d="m63.236 968.83-14.936.0307.04703 10.218 14.929-.0528-.03606-10.2"
-         style="stroke-linejoin:round;stroke:#00ff00;stroke-linecap:round;stroke-width:1.4658;fill:none"
-         id="path4222" />
-      <rect
-         x="52.356"
-         y="968.13"
-         width="7.239"
-         height="2.8279"
-         ry="1.4139"
-         style="paint-order:markers fill stroke;fill:#00ff00;stroke-width:1.00007988;stroke-miterlimit:4;stroke-dasharray:none;stroke:none;stroke-opacity:1"
-         id="rect957" />
+  <g transform="matrix(2.2348 0 0 2.2348 -81.241 -1895.9)">
+    <g transform="matrix(1.2519,0,0,1.2519,-22.749,-360.21)" style="stroke:url(#linearGradient4219)">
+      <path d="m63.236 968.83-14.936.0307.04703 10.218 14.929-.0528-.03606-10.2" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.4658;stroke:#00ff00"/>
+      <rect x="52.356" y="968.13" width="7.239" height="2.8279" ry="1.4139" style="fill:#00ff00;paint-order:markers fill stroke;stroke:none"/>
     </g>
   </g>
 </svg>
