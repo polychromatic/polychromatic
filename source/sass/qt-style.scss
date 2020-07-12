@@ -34,6 +34,7 @@ QScrollArea QLabel:disabled {
     color: $text-disabled;
 }
 
+
 /**********************************************************
   Tooltips
 **********************************************************/
@@ -111,7 +112,8 @@ QPushButton:focus,
 QPushButton:hover,
 QToolButton:focus,
 QToolButton:hover {
-    color: $secondary;
+    background-color: lighten($bg-primary, 5%);
+    color: #fff;
 }
 
 QPushButton:pressed,
@@ -386,6 +388,12 @@ QComboBox {
     min-width: 6em;
 }
 
+QComboBox:focus,
+QComboBox:hover {
+    background-color: lighten($bg-primary, 5%);
+    color: #fff;
+}
+
 QComboBox:on {
     background: $secondary;
     color: #fff;
@@ -478,6 +486,14 @@ QDateTimeEdit {
     border: 0;
 }
 
+QSpinBox:focus,
+QSpinBox:hover,
+QDateTimeEdit:focus,
+QDateTimeEdit:hover {
+    background-color: lighten($bg-primary, 5%);
+    color: #fff;
+}
+
 QSpinBox::up-arrow,
 QSpinBox::down-arrow,
 QDateTimeEdit::up-arrow,
@@ -544,3 +560,16 @@ QDateTimeEdit::down-arrow:disabled {
    border-image: url([data]/qt/assets/spin-down-disabled.svg);
 }
 
+
+/**********************************************************
+  Status Bar
+**********************************************************/
+/*
+QStatusBar {
+    background: brown;
+}
+
+QStatusBar::item {
+    border: 1px solid red;
+    border-radius: 3px;
+}*/
