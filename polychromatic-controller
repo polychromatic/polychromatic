@@ -24,16 +24,15 @@ VERSION = "0.6.0"
 import argparse
 import json
 import os
-import re
 import signal
 import threading
 import setproctitle
 import sys
 
 from PyQt5 import uic, QtCore
-from PyQt5.QtGui import QIcon, QPalette, QColor, QFontMetrics, QPixmap
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QProxyStyle, QStyle, QPushButton, QToolButton, QMessageBox, QListWidget, QTreeWidget, QTabBar, QTabWidget, QLabel, QComboBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QToolButton, QTabWidget, QAction
 
 # Import modules if running relatively.
 if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
@@ -41,6 +40,9 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
         import pylib.preferences as pref
         import pylib.common as common
         import pylib.locales as locales
+        import pylib.controller as controller
+        import pylib.effects as effects
+        import pylib.backends.middleman as middleman
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -51,6 +53,9 @@ else:
         import polychromatic.preferences as pref
         import polychromatic.common as common
         import polychromatic.locales as locales
+        import polychromatic.controller as controller
+        import polychromatic.effects as effects
+        import polychromatic.backends.middleman as middleman
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
@@ -65,84 +70,153 @@ VERSIONS = {
 }
 
 
+class ApplicationData(object):
+    """
+    Shared data that is globally accessible throughout the application.
+    This includes save data variables and objects for each tab.
+    """
+    def __init__(self, qapp, dbg, _, path, data_path, hidpi):
+        """
+        Prepare the object.
+        """
+        self.main_window = None
+        self.main_app = qapp
+        self.dbg = dbg
+        self._ = _
+        self.path = path
+        self.data_path = data_path
+        self.hidpi = hidpi
+        self.custom_qt_theme = True
+
+    def load(self):
+        """
+        Load the application's tab, save data and session data.
+        """
+        self.main_window = MainWindow()
+
+        # Settings
+        dbg.stdout("Loading preferences...", dbg.action, 1)
+        self.preferences = pref.load_file(self.path.preferences)
+
+        # Tabs
+        self.tab_devices = controller.devices.DevicesTab(self)
+        self.tab_effects = controller.effects.EffectsTab(self)
+        self.tab_presets = controller.presets.PresetsTab(self)
+        self.tab_triggers = controller.triggers.TriggersTab(self)
+        self.tab_preferences = controller.preferences.PreferencesTab(self)
+
+        # Session Data
+        dbg.stdout("Getting device list...", dbg.action, 1)
+        self.device_list = middleman.get_device_list()
+        self.current_device = None
+
+        dbg.stdout("Getting effect list...", dbg.action, 1)
+        self.effect_list = effects.get_effect_list()
+
+        self.main_window.load()
+
+
 class MainWindow(QMainWindow):
     """
     The main window is the first window the user will use and interact with.
     """
     def __init__(self):
+        dbg.stdout("Initalising application...", dbg.action, 1)
         super(MainWindow, self).__init__()
         uic.loadUi(os.path.join(DATA_PATH, "ui", "main.ui"), self)
 
-        # Tabs - the custom design and native tabs
-        self.MainTabWidget = self.findChild(QTabWidget, "MainTabWidget")
-        self.MainTabs = self.findChild(QWidget, "MainTabs")
+        controller.shared.load_qt_theme(app, qapp, self)
 
-        # Custom tab design
-        self.DevicesTabButton = self.findChild(QToolButton, "DevicesTabButton")
-        self.EffectsTabButton = self.findChild(QToolButton, "EffectsTabButton")
-        self.PresetsTabButton = self.findChild(QToolButton, "PresetsTabButton")
-        self.TriggersTabButton = self.findChild(QToolButton, "TriggersTabButton")
-        self.PreferencesTabButton = self.findChild(QToolButton, "PreferencesTabButton")
+        header = self.findChild(QWidget, "Header")
+        tabs = self.findChild(QWidget, "MainTabWidget")
+        tabs_custom = self.findChild(QWidget, "MainTabCustom")
 
-        # The real tabs
-        self.DevicesTab = self.findChild(QWidget, "DevicesTab")
-        self.EffectsTab = self.findChild(QWidget, "EffectsTab")
-        self.PresetsTab = self.findChild(QWidget, "PresetsTab")
-        self.TriggersTab = self.findChild(QWidget, "TriggersTab")
-        self.PreferencesTab = self.findChild(QWidget, "PreferencesTab")
-
-        # Load Polychromatic Qt theme
-        if USE_POLY_QT_THEME:
-            ui_palette = QPalette()
-            black = QColor(0, 0, 0)
-            white = QColor(255, 255, 255)
-            primary = QColor(0, 255, 0)
-            ui_palette.setColor(QPalette.Window, QColor(0, 0, 0))
-            ui_palette.setColor(QPalette.WindowText, white)
-            ui_palette.setColor(QPalette.Base, QColor(25, 25, 25))
-            ui_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-            ui_palette.setColor(QPalette.ToolTipBase, white)
-            ui_palette.setColor(QPalette.ToolTipText, white)
-            ui_palette.setColor(QPalette.Text, white)
-            ui_palette.setColor(QPalette.Button, QColor(50, 50, 50)) #323232
-            ui_palette.setColor(QPalette.ButtonText, white)
-            ui_palette.setColor(QPalette.Link, primary)
-            ui_palette.setColor(QPalette.Highlight, primary)
-            ui_palette.setColor(QPalette.HighlightedText, black)
-            self.setPalette(ui_palette)
-
-            with open(os.path.join(DATA_PATH, "qt", "style.qss"), "r") as f:
-                self.setStyleSheet(f.read().replace("[data]", DATA_PATH))
-
-            # Hide the native tab 'buttons', use custom design widget.
-            self.MainTabWidget.tabBar().hide()
+        # Custom Qt theme uses a different tab design. Hide native tabs.
+        if app.custom_qt_theme:
+            tabs.tabBar().hide()
         else:
-            # Hide the custom design tab, use native tabs.
-            self.Header.hide()
-            self.MainTabs.hide()
+            # User prefers own Qt theme, use native tabs.
+            header.hide()
+            tabs_custom.hide()
 
         # Set window attributes
         self.setWindowIcon(QIcon(os.path.join(DATA_PATH, "ui", "img", "general", "controller.svg")))
         self.setWindowTitle("Polychromatic")
 
         # Set background for header/tabs
-        self.Header = self.findChild(QWidget, "Header")
-        self.MainTabs = self.findChild(QWidget, "MainTabs")
-        self.Header.setStyleSheet("{0} #Header {{ background-image: url({1}) }}".format(self.Header.styleSheet(), os.path.join(DATA_PATH, "ui", "img", "bg", "header.png")));
-        self.MainTabs.setStyleSheet("{0} #MainTabs {{ background-image: url({1}) }}".format(self.MainTabs.styleSheet(), os.path.join(DATA_PATH, "ui", "img", "bg", "tabs.png")))
-
-        self.DeviceSidebarTree = self.findChild(QTreeWidget, "DeviceSidebarTree")
-        self.DeviceSidebarTree.expandAll()
+        header.setStyleSheet("{0} #Header {{ background-image: url({1}) }}".format(header.styleSheet(), os.path.join(DATA_PATH, "ui", "img", "bg", "header.png")));
+        tabs_custom.setStyleSheet("{0} #MainTabCustom {{ background-image: url({1}) }}".format(tabs_custom.styleSheet(), os.path.join(DATA_PATH, "ui", "img", "bg", "tabs.png")))
 
 
         # Close app
-        def _quit_app(button):
-            exit()
+        def _quit_app(a=None, b=None):
+            """
+            Gracefully closes the application.
+            """
+            dbg.stdout("Goodbye!", dbg.success, 1)
+            qapp.quit()
+
+        # CTRL+C'd
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self.CloseButton = self.findChild(QPushButton, "CloseApp")
         self.CloseButton.clicked.connect(_quit_app)
 
+    def load(self):
+        """
+        Objects initalised. Continue loading the main application window
+        containing all the tabs.
+        """
+        # Tab objects - custom design and native tabs
+        tabs = self.findChild(QTabWidget, "MainTabWidget")
+
+        # Prepare events when clicking on custom tabs or real tabs:
+        tab_buttons = [
+            self.findChild(QToolButton, "DevicesTabButton"),
+            self.findChild(QToolButton, "EffectsTabButton"),
+            self.findChild(QToolButton, "PresetsTabButton"),
+            self.findChild(QToolButton, "TriggersTabButton"),
+            self.findChild(QToolButton, "PreferencesTabButton")
+        ]
+
+
+        # Code for each tab is stored in a separate module
+        tab_objects = [
+            app.tab_devices,
+            app.tab_effects,
+            app.tab_presets,
+            app.tab_triggers,
+            app.tab_preferences
+        ]
+
+        def _change_tab():
+            index = tabs.currentIndex()
+            dbg.stdout("Opening tab: " + str(index), dbg.debug, 1)
+
+            for button in tab_buttons:
+                button.setChecked(False)
+            tab_buttons[index].setChecked(True)
+            tab_objects[index].set_tab()
+
+        def _change_tab_proxy(b, i):
+            tabs.setCurrentIndex(i)
+            _change_tab()
+
+        tabs.currentChanged.connect(_change_tab)
+
+        tab_buttons[0].clicked.connect(lambda a: _change_tab_proxy(a, 0))
+        tab_buttons[1].clicked.connect(lambda a: _change_tab_proxy(a, 1))
+        tab_buttons[2].clicked.connect(lambda a: _change_tab_proxy(a, 2))
+        tab_buttons[3].clicked.connect(lambda a: _change_tab_proxy(a, 3))
+        tab_buttons[4].clicked.connect(lambda a: _change_tab_proxy(a, 4))
+
+        # Open the default tab
+        landing_tab = app.preferences["general"]["landing_tab"]
+        if landing_tab >= 0 and landing_tab <= 4:
+            _change_tab_proxy(None, landing_tab)
+
         self.show()
+
 def parse_parameters():
     """
     Process the parameters passed to the application.
@@ -188,15 +262,14 @@ if __name__ == "__main__":
     setproctitle.setproctitle("polychromatic-controller")
 
     DATA_PATH = common.get_data_dir_path()
-    HIDPI = False
-
     path = pref.Paths()
     dbg = common.Debugging()
     _ = locales._
 
     parse_parameters()
-    USE_POLY_QT_THEME = True
 
+    # Improve resolution for HiDPI displays
+    HIDPI = False
     if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
         QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
         HIDPI = True
@@ -204,9 +277,7 @@ if __name__ == "__main__":
     if hasattr(QtCore.Qt, "AA_UseHighDpiPixmaps"):
         QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
-    app = QApplication(sys.argv)
-    if USE_POLY_QT_THEME:
-        app.setStyle("Fusion")
-
-    window = MainWindow()
-    app.exec_()
+    qapp = QApplication(sys.argv)
+    app = ApplicationData(qapp, dbg, _, path, DATA_PATH, HIDPI)
+    app.load()
+    qapp.exec_()

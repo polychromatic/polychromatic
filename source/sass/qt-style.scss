@@ -161,21 +161,21 @@ QTabBar::tab:selected {
   Header/Tabs
 **********************************************************/
 /* #Header CSS embedded in Qt Designer */
-#MainTabs {
+#MainTabCustom {
     background-color: $bg-secondary;
     /* background-image: img/bg/tabs.png (set via app) */
     background-position: right top;
     background-repeat: no-repeat;
 }
 
-#MainTabs > QToolButton,
-#MainTabs > QSpacerItem {
+#MainTabCustom > QToolButton,
+#MainTabCustom > QSpacerItem {
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
 }
 
-#MainTabs QToolButton {
+#MainTabCustom QToolButton {
     color: $text-colour;
     padding: 4px;
     padding-left: 8px;
@@ -183,12 +183,12 @@ QTabBar::tab:selected {
     height: 16px;
 }
 
-#MainTabs QToolButton:hover {
+#MainTabCustom QToolButton:hover {
     border-bottom-color: lighten($border-colour, 20%);
     color: lighten($text-colour, 10%);
 }
 
-#MainTabs QToolButton::checked {
+#MainTabCustom QToolButton::checked {
     border-bottom-color: $primary;
     color: $primary;
 }

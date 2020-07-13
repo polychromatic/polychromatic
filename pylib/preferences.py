@@ -99,7 +99,7 @@ def load_file(filepath):
         _validate("colours", "primary", str, "#00FF00")
         _validate("colours", "secondary", str, "#FF0000")
         _validate("effects", "live_preview", bool, True)
-        _validate("general", "landing_tab", str, "devices")
+        _validate("general", "landing_tab", int, 0)
         _validate("tray", "force_legacy_gtk_status", bool, False)
         _validate("tray", "icon", str, "ui/img/tray/light/polychromatic.svg")
 
@@ -269,7 +269,7 @@ def upgrade_old_pref():
                 os.remove(filepath)
         return
 
-    # v1.0.0 (dev)
+    # v0.5.0 (dev)
     if config_version < 7:
         # Migrate preferences.json to new keys
         old_data = load_file(path.preferences)
