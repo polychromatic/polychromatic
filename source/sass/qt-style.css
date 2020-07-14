@@ -1,0 +1,8 @@
+/**********************************************************
+  Polychromatic Qt stylesheet - a custom dark theme using
+  the accent colours on top of the 'Fusion' style.
+**********************************************************/
+/* Background for the scroll area */
+QScrollArea > QWidget > QWidget {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(50, 50, 50, 255));
+}
