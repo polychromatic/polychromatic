@@ -86,17 +86,18 @@ class ApplicationData(object):
         self.path = path
         self.data_path = data_path
         self.hidpi = hidpi
-        self.custom_qt_theme = True
+
+        # Settings
+        dbg.stdout("Loading preferences...", dbg.action, 1)
+        self.preferences = pref.load_file(self.path.preferences)
+        self.system_qt_theme = self.preferences["controller"]["system_qt_theme"]
+        self.show_menu_bar = self.preferences["controller"]["show_menu_bar"]
 
     def load(self):
         """
         Load the application's tab, save data and session data.
         """
         self.main_window = MainWindow()
-
-        # Settings
-        dbg.stdout("Loading preferences...", dbg.action, 1)
-        self.preferences = pref.load_file(self.path.preferences)
 
         # Tabs
         self.tab_devices = controller.devices.DevicesTab(self)
@@ -127,40 +128,33 @@ class MainWindow(QMainWindow):
 
         controller.shared.load_qt_theme(app, qapp, self)
 
+        menubar = self.menuBar
         header = self.findChild(QWidget, "Header")
         tabs = self.findChild(QWidget, "MainTabWidget")
         tabs_custom = self.findChild(QWidget, "MainTabCustom")
 
-        # Custom Qt theme uses a different tab design. Hide native tabs.
-        if app.custom_qt_theme:
-            tabs.tabBar().hide()
-        else:
+        if app.system_qt_theme:
             # User prefers own Qt theme, use native tabs.
             header.hide()
             tabs_custom.hide()
+        else:
+            # Custom Qt theme uses a different tab design. Hide native tabs.
+            tabs.tabBar().hide()
 
         # Set window attributes
         self.setWindowIcon(QIcon(os.path.join(DATA_PATH, "ui", "img", "general", "controller.svg")))
         self.setWindowTitle("Polychromatic")
 
-        # Set background for header/tabs
-        header.setStyleSheet("{0} #Header {{ background-image: url({1}) }}".format(header.styleSheet(), os.path.join(DATA_PATH, "ui", "img", "bg", "header.png")));
-        tabs_custom.setStyleSheet("{0} #MainTabCustom {{ background-image: url({1}) }}".format(tabs_custom.styleSheet(), os.path.join(DATA_PATH, "ui", "img", "bg", "tabs.png")))
 
-
-        # Close app
-        def _quit_app(a=None, b=None):
-            """
-            Gracefully closes the application.
-            """
-            dbg.stdout("Goodbye!", dbg.success, 1)
-            qapp.quit()
+        # Prepare Menu Bar
+        if not app.preferences["controller"]["show_menu_bar"]:
+            self.menuBar.hide()
 
         # CTRL+C'd
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self.CloseButton = self.findChild(QPushButton, "CloseApp")
-        self.CloseButton.clicked.connect(_quit_app)
+        self.CloseButton.clicked.connect(self._quit_app)
 
     def load(self):
         """
@@ -179,6 +173,14 @@ class MainWindow(QMainWindow):
             self.findChild(QToolButton, "PreferencesTabButton")
         ]
 
+        # Also in the menu bar
+        tab_menu_items = [
+            self.findChild(QAction, "actionDevices"),
+            self.findChild(QAction, "actionEffects"),
+            self.findChild(QAction, "actionPresets"),
+            self.findChild(QAction, "actionTriggers"),
+            self.findChild(QAction, "actionPreferences")
+        ]
 
         # Code for each tab is stored in a separate module
         tab_objects = [
@@ -195,7 +197,11 @@ class MainWindow(QMainWindow):
 
             for button in tab_buttons:
                 button.setChecked(False)
+            for item in tab_menu_items:
+                item.setChecked(False)
+
             tab_buttons[index].setChecked(True)
+            tab_menu_items[index].setChecked(True)
             tab_objects[index].set_tab()
 
         def _change_tab_proxy(b, i):
@@ -204,18 +210,44 @@ class MainWindow(QMainWindow):
 
         tabs.currentChanged.connect(_change_tab)
 
+        # FIXME: Use a loop!
         tab_buttons[0].clicked.connect(lambda a: _change_tab_proxy(a, 0))
         tab_buttons[1].clicked.connect(lambda a: _change_tab_proxy(a, 1))
         tab_buttons[2].clicked.connect(lambda a: _change_tab_proxy(a, 2))
         tab_buttons[3].clicked.connect(lambda a: _change_tab_proxy(a, 3))
         tab_buttons[4].clicked.connect(lambda a: _change_tab_proxy(a, 4))
+        tab_menu_items[0].triggered.connect(lambda a: _change_tab_proxy(a, 0))
+        tab_menu_items[1].triggered.connect(lambda a: _change_tab_proxy(a, 1))
+        tab_menu_items[2].triggered.connect(lambda a: _change_tab_proxy(a, 2))
+        tab_menu_items[3].triggered.connect(lambda a: _change_tab_proxy(a, 3))
+        tab_menu_items[4].triggered.connect(lambda a: _change_tab_proxy(a, 4))
 
         # Open the default tab
-        landing_tab = app.preferences["general"]["landing_tab"]
+        landing_tab = app.preferences["controller"]["landing_tab"]
         if landing_tab >= 0 and landing_tab <= 4:
             _change_tab_proxy(None, landing_tab)
 
+        # Bind actions to menu bar
+        self.findChild(QAction, "actionQuitApp").triggered.connect(self._quit_app)
+
+        # Showtime!
         self.show()
+
+    @staticmethod
+    def _quit_app(a=None, b=None):
+        """
+        Gracefully closes the application.
+        """
+        dbg.stdout("Goodbye!", dbg.success, 1)
+        qapp.quit()
+
+    def keyPressEvent(self, e):
+        """
+        Pressing 'Alt' will reveal the menu bar.
+        """
+        if e.key() == QtCore.Qt.Key_Alt:
+            self.menuBar.show()
+
 
 def parse_parameters():
     """

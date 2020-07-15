@@ -195,6 +195,65 @@ QTabBar::tab:selected {
 
 
 /**********************************************************
+  Menu Bar
+**********************************************************/
+QMenuBar {
+    background-color: $bg-secondary;
+    background-image: url([data]/ui/img/bg/menubar.png);
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    spacing: 0;
+    color: $text-colour;
+}
+
+QMenuBar::item {
+    background-color: transparent;
+    color: lighten($text-colour, 10%);
+    padding: 5px 10px;
+    margin: 0;
+}
+
+QMenuBar::item:selected {
+    background-color: lighten($bg-primary, 5%);
+    color: #fff;
+}
+
+QMenuBar::item:pressed {
+    background-color: $secondary;
+    color: #fff;
+}
+
+QMenu {
+    background: $bg-secondary;
+    border: 1px solid $border-colour;
+}
+
+QMenu::item {
+    background-color: $bg-secondary;
+    color: $text-colour;
+}
+
+QMenu::item:selected {
+    background-color: lighten($bg-secondary, 20%);
+    color: #fff;
+}
+
+QMenu::item:checked {
+    background-color: darken($secondary, 10%);
+}
+
+QMenu::separator {
+    height: 1px;
+    margin: 3px 0;
+    background: $bg-primary;
+}
+
+QMenu::item:disabled {
+    color: darken($text-colour, 50%);
+}
+
+
+/**********************************************************
   Sidebar
 **********************************************************/
 QTreeView {

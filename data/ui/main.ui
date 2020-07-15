@@ -779,6 +779,83 @@
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1000</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionNewEffect"/>
+    <addaction name="actionNew_Preset_from_Existing_Devices"/>
+    <addaction name="actionNew_Preset_from_Current_Devices"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuitApp"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="actionDevices"/>
+    <addaction name="actionEffects"/>
+    <addaction name="actionPresets"/>
+    <addaction name="actionTriggers"/>
+    <addaction name="actionPreferences"/>
+    <addaction name="separator"/>
+    <addaction name="actionHide_Menu_Bar"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionOnlineHelp"/>
+    <addaction name="actionPolychromaticWebsite"/>
+    <addaction name="actionWhat_s_New"/>
+    <addaction name="actionReportBug"/>
+    <addaction name="actionDonate"/>
+    <addaction name="separator"/>
+    <addaction name="actionAboutPolychromatic"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <widget class="QMenu" name="menuOpenRazer">
+     <property name="title">
+      <string>OpenRazer</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>img/logo/openrazer.svg</normaloff>img/logo/openrazer.svg</iconset>
+     </property>
+     <addaction name="actionOpenRazerWebsite_2"/>
+     <addaction name="actionOpenRazerReportBug"/>
+     <addaction name="actionOpenRazerReleaseNotes"/>
+     <addaction name="separator"/>
+     <addaction name="actionOpenRazerTroubleshoot"/>
+     <addaction name="actionOpenRazerConfigure"/>
+     <addaction name="actionOpenRazerRestartDaemon"/>
+     <addaction name="separator"/>
+     <addaction name="actionOpenRazerOpenLog"/>
+     <addaction name="separator"/>
+     <addaction name="actionOpenRazerAbout"/>
+    </widget>
+    <addaction name="menuOpenRazer"/>
+    <addaction name="separator"/>
+    <addaction name="actionRestartTrayApplet"/>
+    <addaction name="actionRestartHelper"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
+  </widget>
   <action name="actionNew_Effect">
    <property name="text">
     <string>New Effect...</string>
@@ -826,6 +903,288 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionNewEffect">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/tabs/active/effects.svg</normaloff>img/tabs/active/effects.svg</iconset>
+   </property>
+   <property name="text">
+    <string>New Effect...</string>
+   </property>
+  </action>
+  <action name="actionDevices">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>img/tabs/active/devices.svg</normaloff>img/tabs/active/devices.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Devices</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="actionEffects">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>img/tabs/active/effects.svg</normaloff>img/tabs/active/effects.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Effects</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="actionPresets">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>img/tabs/active/presets.svg</normaloff>img/tabs/active/presets.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Presets</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="actionTriggers">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>img/tabs/active/triggers.svg</normaloff>img/tabs/active/triggers.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Triggers</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>img/tabs/active/preferences.svg</normaloff>img/tabs/active/preferences.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+5</string>
+   </property>
+  </action>
+  <action name="actionOnlineHelp">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/general/external.svg</normaloff>img/general/external.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Online Help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
+  <action name="actionReportBug">
+   <property name="text">
+    <string>Report a Bug</string>
+   </property>
+  </action>
+  <action name="actionHide_Menu_Bar">
+   <property name="text">
+    <string>Hide Menu Bar</string>
+   </property>
+  </action>
+  <action name="actionDonate">
+   <property name="text">
+    <string>Donate</string>
+   </property>
+  </action>
+  <action name="actionAboutOpenRazer">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/logo/openrazer.svg</normaloff>img/logo/openrazer.svg</iconset>
+   </property>
+   <property name="text">
+    <string>About OpenRazer</string>
+   </property>
+  </action>
+  <action name="actionOpenRazerWebsite">
+   <property name="text">
+    <string>OpenRazer Website</string>
+   </property>
+  </action>
+  <action name="actionPolychromaticWebsite">
+   <property name="text">
+    <string>Website</string>
+   </property>
+  </action>
+  <action name="actionAboutPolychromatic">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/logo/polychromatic.svg</normaloff>img/logo/polychromatic.svg</iconset>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionQuitApp">
+   <property name="icon">
+    <iconset theme="application-exit">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
+   </property>
+  </action>
+  <action name="actionTroubleshoot">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/emblems/utility.svg</normaloff>img/emblems/utility.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Troubleshoot...</string>
+   </property>
+  </action>
+  <action name="actionRestart_Daemon">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/general/refresh.svg</normaloff>img/general/refresh.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Restart Daemon</string>
+   </property>
+  </action>
+  <action name="actionOpen_Log_File">
+   <property name="text">
+    <string>Open Log File</string>
+   </property>
+  </action>
+  <action name="actionEdit_Configuration">
+   <property name="text">
+    <string>Edit Configuration</string>
+   </property>
+  </action>
+  <action name="actionWhat_s_New">
+   <property name="text">
+    <string>What's New?</string>
+   </property>
+  </action>
+  <action name="actionOpenRazerWebsite_2">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/general/external.svg</normaloff>img/general/external.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Website</string>
+   </property>
+  </action>
+  <action name="actionOpenRazerTroubleshoot">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/emblems/utility.svg</normaloff>img/emblems/utility.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Troubleshoot...</string>
+   </property>
+  </action>
+  <action name="actionOpenRazerReportBug">
+   <property name="text">
+    <string>Report a Bug</string>
+   </property>
+  </action>
+  <action name="actionOpenRazerReleaseNotes">
+   <property name="text">
+    <string>What's New?</string>
+   </property>
+  </action>
+  <action name="actionOpenRazerRestartDaemon">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/general/refresh.svg</normaloff>img/general/refresh.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Restart Daemon</string>
+   </property>
+  </action>
+  <action name="actionOpenRazerOpenLog">
+   <property name="text">
+    <string>Open Log...</string>
+   </property>
+  </action>
+  <action name="actionOpenRazerConfigure">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/general/edit.svg</normaloff>img/general/edit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Configure...</string>
+   </property>
+  </action>
+  <action name="actionOpenRazerAbout">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/logo/openrazer.svg</normaloff>img/logo/openrazer.svg</iconset>
+   </property>
+   <property name="text">
+    <string>About OpenRazer</string>
+   </property>
+  </action>
+  <action name="actionNew_Preset_from_Existing_Devices">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/tabs/active/presets.svg</normaloff>img/tabs/active/presets.svg</iconset>
+   </property>
+   <property name="text">
+    <string>New Preset...</string>
+   </property>
+  </action>
+  <action name="actionNew_Preset_from_Current_Devices">
+   <property name="text">
+    <string>New Preset from Current Settings</string>
+   </property>
+  </action>
+  <action name="actionRestartTrayApplet">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/general/tray-applet.svg</normaloff>img/general/tray-applet.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Restart Tray Applet</string>
+   </property>
+  </action>
+  <action name="actionRestartHelper">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/general/refresh.svg</normaloff>img/general/refresh.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Restart Background Tasks</string>
    </property>
   </action>
  </widget>
