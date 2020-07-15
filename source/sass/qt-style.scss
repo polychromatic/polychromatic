@@ -34,6 +34,10 @@ QScrollArea QLabel:disabled {
     color: $text-disabled;
 }
 
+QScrollArea * {
+    selection-background-color: $secondary;
+    selection-color: #fff;
+}
 
 /**********************************************************
   Tooltips
@@ -160,12 +164,19 @@ QTabBar::tab:selected {
 /**********************************************************
   Header/Tabs
 **********************************************************/
-/* #Header CSS embedded in Qt Designer */
+#Header {
+    background-color: $bg-secondary;
+    background-image: url([data]/ui/img/bg/header.png);
+    background-position: right bottom;
+    background-repeat: no-repeat;
+}
+
 #MainTabCustom {
     background-color: $bg-secondary;
-    /* background-image: img/bg/tabs.png (set via app) */
+    background-image: url([data]/ui/img/bg/tabs.png);
     background-position: right top;
     background-repeat: no-repeat;
+    border-bottom: 2px solid $border-colour;
 }
 
 #MainTabCustom > QToolButton,
@@ -177,7 +188,7 @@ QTabBar::tab:selected {
 
 #MainTabCustom QToolButton {
     color: $text-colour;
-    padding: 4px;
+    padding: 5px 4px;
     padding-left: 8px;
     padding-right: 2px;
     height: 16px;
@@ -271,7 +282,7 @@ QTreeView::item {
     background: transparent;
     border: none;
     color: $text-colour;
-    padding: 4px;
+    padding: 2px 4px;
 }
 
 QTreeView::item:hover {

@@ -10,6 +10,12 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>Play</family>
+    <pointsize>11</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Polychromatic</string>
   </property>
@@ -52,7 +58,7 @@
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">#Header { background-color: #000; background-position: right bottom; background-repeat: no-repeat; }</string>
+       <string notr="true"/>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="leftMargin">
