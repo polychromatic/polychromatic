@@ -4,7 +4,8 @@
 # Copyright (C) 2017-2020 Luke Horwell <code@horwell.me>
 #
 """
-Shared functions that are commonly used across Polychromatic's interfaces.
+Shared functions that are commonly used across Polychromatic's interfaces
+and some backends.
 """
 
 import os
@@ -16,6 +17,17 @@ import traceback
 from threading import Thread
 
 from . import locales
+
+FORM_FACTORS = [
+    "accessory",
+    "keyboard",
+    "mouse",
+    "mousemat",
+    "keypad",
+    "headset",
+    "gpu",
+    "unrecognised"
+]
 
 
 class Debugging(object):
@@ -80,105 +92,27 @@ def get_data_dir_path():
     return path
 
 
-def get_form_factor(device_type):
+def get_form_factor(form_factor_id):
     """
     Reads a string provided by a backend and returns data that is used to refer
     to the device ("form factor") throughout the application.
 
     Params:
-        device_type         String from a backend (e.g. OpenRazer)
+        form_factor_id      (str)   One string from FORM_FACTORS.
 
     Returns:
         {id, icon, label}   A dictionary consisting of:
-                                id          The resulting 'form factor'
-                                icon        Absolute path to form factor icon
+                                id          Form Factor ID
+                                icon        Absolute path to icon
                                 label       Human-readable name of form factor
     """
-    type_to_form_factor = {
-        # Razer
-        "firefly": "mousemat",
-        "tartarus": "keypad",
-        "core": "gpu",
-        "mug": "accessory",
-
-        # Generic
-        "keyboard": "keyboard",
-        "mouse": "mouse",
-        "mousemat": "mousemat",
-        "keypad": "keypad",
-        "headset": "headset",
-        "unrecognised": "unrecognised",
-    }
-
-    form_factor_labels = {
-        "accessory": locales.get("accessory"),
-        "keyboard": locales.get("keyboard"),
-        "mouse": locales.get("mouse"),
-        "mousemat": locales.get("mousemat"),
-        "keypad": locales.get("keypad"),
-        "headset": locales.get("headset"),
-        "gpu": locales.get("gpu"),
-        "unrecognised": locales.get("unrecognised")
-    }
-
-    try:
-        form_factor = type_to_form_factor[device_type]
-    except KeyError:
-        form_factor = "accessory"
+    if form_factor_id not in FORM_FACTORS:
+        form_factor_id = "unrecognised"
 
     return {
-        "id": form_factor,
-        "icon": os.path.abspath(os.path.join(DATA_PATH, "ui/img/devices/" + form_factor + ".svg")),
-        "label": form_factor_labels[form_factor]
-    }
-
-
-def get_zone_metadata(zones, device_name):
-    """
-    Returns human readable strings and icons for a device's lighting areas.
-
-    For example, "logo" could refer to the hex ring on a Razer Hex.
-    """
-    zone_names = {}
-    zone_icons = {}
-
-    zones_to_string = {
-        "main": locales.get("main"),
-        "logo": locales.get("logo"),
-        "scroll": locales.get("scroll"),
-        "backlight": locales.get("backlight"),
-        "left": locales.get("left"),
-        "right": locales.get("right")
-    }
-
-    for zone in zones:
-        try:
-            name = zones_to_string[zone]
-            icon = zone
-        except KeyError:
-            print("Unimplemented zone name '{0}' (used by device '{1}')".format(zone, device_name))
-            name = zone
-            icon = "unknown"
-
-        if zone == "logo" and device_name == "Razer Nex":
-            name = locales.get("naga-hex-ring")
-            icon = "naga-hex-ring"
-
-        if zone == "logo" and device_name.startswith("Razer Blade"):
-            name = locales.get("laptop-lid")
-            icon = "blade-logo"
-
-        icon_path = os.path.abspath(os.path.join(DATA_PATH, "ui/img/zones/" + icon + ".svg"))
-
-        if not os.path.exists(icon_path):
-            icon_path = os.path.abspath(os.path.join(DATA_PATH, "ui/img/devices/unrecognised.svg"))
-
-        zone_names[zone] = name
-        zone_icons[zone] = icon_path
-
-    return {
-        "names": zone_names,
-        "icons": zone_icons
+        "id": form_factor_id,
+        "icon": os.path.abspath(os.path.join(DATA_PATH, "ui/img/devices/" + form_factor_id + ".svg")),
+        "label": locales.get(form_factor_id)
     }
 
 
@@ -422,4 +356,3 @@ def get_plural(integer, non_plural, plural):
 
 # Module Initalization
 DATA_PATH = get_data_dir_path()
-PID_FILE_TRAY = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")

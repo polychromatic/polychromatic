@@ -38,11 +38,7 @@ class Paths(object):
     effects_scripted = os.path.join(effects, "scripted")
     effects_cache = os.path.join(cache, "effects")
     presets = os.path.join(root, "presets")
-    device_images = os.path.join(root, "device_images")
     custom_icons = os.path.join(root, "custom_icons")
-
-    # Libraries
-    cache_webkit = os.path.join(cache, "webkitgtk")
 
     # Files
     preferences = os.path.join(root, "preferences.json")
@@ -381,7 +377,7 @@ def start_initalization():
     Prepares the preferences module for use.
     """
     # Create folders if they do not exist.
-    for folder in [path.root, path.effects, path.effects_keyframed, path.effects_scripted, path.effects_cache, path.presets, path.cache, path.device_images, path.custom_icons]:
+    for folder in [path.root, path.effects, path.effects_keyframed, path.effects_scripted, path.effects_cache, path.presets, path.cache, path.custom_icons]:
         if not os.path.exists(folder):
             dbg.stdout("Configuration folder does not exist. Creating: " + folder, dbg.action)
             os.makedirs(folder)
