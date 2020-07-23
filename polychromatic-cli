@@ -22,6 +22,7 @@ Control Razer devices from the command line. Useful for commamd line users or ba
 VERSION = "0.6.0"
 
 import argparse
+import colorama
 import signal
 import os
 import sys
@@ -135,19 +136,65 @@ if args.locale:
 ########################################
 # Pretty columns
 ########################################
-def print_column(data):
+def print_columns(data, print_header=False):
     """
     Prints a basic 'pretty' table ensuring each column has enough room.
 
     Params:
-        data = ["One", "2", "Item Three"]
-
-    Output:
-        "One         2           Item Three"
+        data = [
+            ["Row 1 Column 2", "Row 1 Column 2", "Row 1 Column 3"]
+            ["Row 2 Column 2", "Row 2 Column 2", "Row 2 Column 3"]
+        ]
     """
-    max_col_width = max(len(col) for row in data for col in row) + 2
+    total_cols = 0
+    col_widths = {}
+    col_pos = {}
+
+    def _back_to_start():
+        # Move cursor to beginning of line
+        for i in range(0, total_cols * 10):
+            print(colorama.Cursor.BACK(), end="")
+
+    def _jump_to_pos(x):
+        # Move cursor to specified position
+        _back_to_start()
+        for i in range(0, x):
+            print(colorama.Cursor.FORWARD(), end="")
+
+    # Calculate the columns dimensions before printing
     for row in data:
-        print("".join(col.ljust(max_col_width) for col in row))
+        for index, col in enumerate(row):
+            line = col
+
+            # Strip formatting characters from calculation
+            for char in [dbg.error, dbg.success, dbg.grey, dbg.normal]:
+                line = line.replace(char, "")
+
+            # Make note of largest width and total columns.
+            try:
+                if len(line) > col_widths[index]:
+                    col_widths[index] = len(line)
+            except KeyError:
+                col_widths[index] = len(line)
+            total_cols = total_cols + col_widths[index]
+
+    for index, col in enumerate(row):
+        # Precalculate the column positions
+        col_pos[index] = 0
+        for i in range(0, index):
+            col_pos[index] += col_widths[i] + 2
+
+    # Print the actual data
+    for index, row in enumerate(data):
+        # Print header background
+        if print_header and index == 0:
+            print(colorama.Back.WHITE + colorama.Fore.BLACK, end="")
+
+        # Print aligned columns
+        for index, col in enumerate(row):
+            _jump_to_pos(col_pos[index])
+            print(col,end="")
+        print(colorama.Style.RESET_ALL)
 
 
 ########################################

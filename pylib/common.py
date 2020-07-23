@@ -8,6 +8,7 @@ Shared functions that are commonly used across Polychromatic's interfaces
 and some backends.
 """
 
+import colorama
 import os
 import sys
 import subprocess
@@ -36,16 +37,20 @@ class Debugging(object):
     """
     def __init__(self):
         self.verbose_level = 0
+        colorama.init()
 
         # Colours for stdout
-        self.error = '\033[91m'
-        self.success = '\033[92m'
-        self.warning = '\033[93m'
-        self.action = '\033[93m'
-        self.debug = '\033[96m'
-        self.normal = '\033[0m'
+        self.error = colorama.Fore.RED
+        self.success = colorama.Fore.GREEN
+        self.warning = colorama.Fore.YELLOW
+        self.action = colorama.Fore.LIGHTYELLOW_EX
+        self.blue = colorama.Fore.BLUE
+        self.magenta = colorama.Fore.MAGENTA
+        self.debug = colorama.Fore.CYAN
+        self.grey = colorama.Fore.LIGHTBLACK_EX
+        self.normal = colorama.Fore.RESET
 
-    def stdout(self, msg, colour_code='\033[0m', verbosity=0, overwritable=False):
+    def stdout(self, msg, colour_code=colorama.Fore.RESET, verbosity=0, overwritable=False):
         # msg           String containing message for stdout.
         # color         stdout code (e.g. '\033[92m')
         # verbosity     0 = Always shown
