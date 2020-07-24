@@ -253,7 +253,7 @@ class Backend(_backend.Backend):
                 brightness_control = {
                     "id": "brightness",
                     "type": "toggle",
-                    "value": True if rzone.active else False
+                    "active": True if rzone.active else False
                 }
 
             # Some devices may erroneously have both 'brightness' and 'active',
@@ -312,6 +312,7 @@ class Backend(_backend.Backend):
                                 "active": current_state["effect"] == "ripple",
                                 "colours": 1
                             })
+                            effect_option["colour_1"] = current_state["colour_1"]
 
                         if _device_has_zone_capability("ripple_random"):
                             effect_option["parameters"].append({
@@ -349,9 +350,13 @@ class Backend(_backend.Backend):
                                 "colours": 1
                             }
                         ]
+                        effect_option["colour_1"] = current_state["colour_1"]
 
                     elif effect in "static":
                         effect_option["colours"] = 1
+                        effect_option["colour_1"] = current_state["colour_1"]
+
+                    effect_option["active"] = True if effect.startswith(current_state["effect"]) else False
 
                     options.append(effect_option)
 
@@ -366,14 +371,16 @@ class Backend(_backend.Backend):
                 }
 
                 _colour_count = 0
-                for data in ["random", "single", "dual", "triple"]:
-                    if _device_has_zone_capability(effect + "_random"):
+                for param in ["random", "single", "dual", "triple"]:
+                    if _device_has_zone_capability(effect + "_" + param):
                         effect_option["parameters"].append({
-                            "id": data,
-                            "data": data,
-                            "active": current_state["effect"].endswith(data.capitalize()),
+                            "id": param,
+                            "data": param,
+                            "active": current_state["effect"].endswith(param.capitalize()),
                             "colours": _colour_count
                         })
+                        for i in range(1, _colour_count + 1):
+                            effect_option["colour_" + str(i)] = current_state["colour_" + str(i)]
                     _colour_count += 1
 
                 return effect_option
@@ -391,30 +398,31 @@ class Backend(_backend.Backend):
 
             # DPI is a special control, variables have been populated earlier.
 
-            # Other hardware features
-            if _device_has_zone_capability("game_mode_led"):
-                options.append({
-                    "id": "game_mode",
-                    "type": "toggle",
-                    "active": True if rdevice.game_mode_led else False
-                })
-
-            if _device_has_zone_capability("poll_rate"):
-                params = []
-                for rate in poll_rate_ranges:
-                    params.append({
-                        "id": "{0} Hz".format(rate),
-                        "data": rate,
-                        "active": poll_rate == rate
-                    })
-                options.append({
-                    "id": "poll_rate",
-                    "type": "multichoice",
-                    "parameters": params
-                })
-
             # Finished building options list
             zone_options[zone] = options
+
+        # Other hardware features
+        if rdevice.has("game_mode_led"):
+            zone_options["main"].append({
+                "id": "game_mode",
+                "type": "toggle",
+                "active": True if rdevice.game_mode_led else False
+            })
+
+        if rdevice.has("poll_rate"):
+            params = []
+            for rate in poll_rate_ranges:
+                params.append({
+                    "id": "{0}Hz".format(rate),
+                    "data": rate,
+                    "active": poll_rate == rate
+                })
+            zone_options["main"].append({
+                "id": "poll_rate",
+                "type": "multichoice",
+                "parameters": params,
+                "active": True          # Always a poll rate
+            })
 
         # Prepare summary of device.
         summary = []
@@ -583,7 +591,10 @@ class Backend(_backend.Backend):
 
         try:
             # Brightness (slider)
-            if option_id == "brightness" and type(option_data) == int:
+            if option_id == "brightness" and type(option_data) == int and zone == "main":
+                rdevice.brightness = int(option_data)
+
+            if option_id == "brightness" and type(option_data) == int and zone != "main":
                 rzone.brightness = int(option_data)
 
             # Brightness (toggle)

@@ -28,12 +28,12 @@ import os
 import sys
 
 # Import modules if running relatively.
-if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
+if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
     try:
         import pylib.preferences as pref
         import pylib.common as common
         import pylib.locales as locales
-        from pylib.backends import middleman
+        import pylib.middleman as middleman_module
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -44,7 +44,7 @@ else:
         import polychromatic.preferences as pref
         import polychromatic.common as common
         import polychromatic.locales as locales
-        from polychromatic.backends import middleman
+        import polychromatic.middleman as middleman_module
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
@@ -59,21 +59,15 @@ dbg = common.Debugging()
 path = pref.Paths()
 _ = locales._
 signal.signal(signal.SIGINT, signal.SIG_DFL)
+verbose = False
 
 
 ########################################
 # Valid Options
 ########################################
-possible_devices = ["all", "keyboard", "mouse", "mousemat", "keypad", "headset", "gpu", "accessory"]
+possible_form_factors = ["all", "keyboard", "mouse", "mousemat", "keypad", "headset", "gpu", "accessory"]
 possible_effects = ["static", "wave", "spectrum", "reactive", "breath", "ripple", "starlight", "blinking", "pulsate"]
-possible_wave_params = ["left", "right"]
-possible_reactive_params = ["fast", "medium", "slow", "vslow"]
-possible_breath_params = ["random", "single", "dual", "triple"]
-possible_starlight_params = ["random", "single", "dual"]
-possible_ripple_params = ["random", "single"]
-possible_lighting_zones = ["main", "logo", "scroll", "backlight", "left", "right"]
 possible_poll_rates = ["125", "500", "1000"]
-min_dpi = 400
 
 ########################################
 # Parse arguments
@@ -81,41 +75,28 @@ min_dpi = 400
 parser = argparse.ArgumentParser(add_help=False)
 parser._optionals.title = _("These arguments can be specified")
 
-# Device selection
-parser.add_argument("-d", "--device", help=_("Select device(s) by its form factor. Default is all devices."), action="store", choices=possible_devices)
-parser.add_argument("-s", "--serial", help=_("Select device by its serial number"), action="store")
-parser.add_argument("-z", "--zone", help=_("Make change to specific zone. Defaults to 'all'."), action="store", choices=["all"] + possible_lighting_zones)
+# Select a device
+parser.add_argument("-d", "--device", help=_("Select device(s) by form factor. Default is 'all'."), action="store", choices=possible_form_factors)
+parser.add_argument("--serial", help=_("Select device by its serial number"), action="store")
 
-parser.add_argument("-l", "--list-devices", help=_("List connected Razer device(s)"), action="store_true")
-parser.add_argument("--list-zones", help=_("Lists the zones available for device(s)"), action="store_true")
-parser.add_argument("--list-status", help=_("Show information about device(s)"), action="store_true")
+# Output details only
+parser.add_argument("-l", "--list-devices", help=_("List connected device(s) and their zones"), action="store_true")
+parser.add_argument("-k", "--list-options", help=_("List supported parameters for selected device(s)"), action="store_true")
 
-# Brightness
-parser.add_argument("-b", "--brightness", help=_("Set brightness (between 0-100 or 0-1 for devices that only support on/off)"), action="store")
+# Device manipulation
+parser.add_argument("-z", "--zone", help=_("Make change to specific zone. Default is 'all'"))
+parser.add_argument("-o", "--option", help=_("Change a device's state"), action="store")
+parser.add_argument("-p", "--parameter", help=_("Set parameter for effect"), action="store")
+parser.add_argument("-c", "--colours", help=_("Set colours in hex format. Comma separated."))
 
-# Effects and parameters
-parser.add_argument("-e", "--effect", help=_("Set a specific type of effect"), action="store", choices=possible_effects)
-parser.add_argument("--wave-direction", help=_("For wave effect only"), choices=possible_wave_params)
-parser.add_argument("--reactive-speed", help=_("For reactive effect only"), choices=possible_reactive_params)
-parser.add_argument("--breath-type", help=_("For breath effect only"), choices=possible_breath_params)
-parser.add_argument("--ripple-type", help=_("For ripple effect only"), choices=possible_ripple_params)
-parser.add_argument("--ripple-speed", help=_("Ripple refresh rate. Default: 0.01"), action="store")
-parser.add_argument("--starlight-type", help=_("For starlight effect only"), choices=possible_ripple_params)
-
-# Colours
-parser.add_argument("--rgb", help=_("Set the primary colour (e.g. '#00FF00' or 0,255,0)"))
-parser.add_argument("--rgb2", help=_("Set the secondary colour (e.g. '#FF0000' or 255,0,0)"))
-parser.add_argument("--rgb3", help=_("Set the tertiary colour (e.g. '#0000FF' or 0,0,255)"))
-
-# Device-specific
-parser.add_argument("--game-mode", help=_("Disable keys for uninterrupted gaming"), action="store", choices=["on", "off"])
-parser.add_argument("--dpi", help=_("How fast the cursor moves. Example: 1800 or 1800,800"), action="store")
-parser.add_argument("--poll-rate", help=_("How frequent the CPU polls the mouse"), action="store", choices=possible_poll_rates)
+# Special handling
+parser.add_argument("--dpi", help=_("Set how fast the cursor moves. Example: 1800 or 1800,800"), action="store")
 
 # Misc
 parser.add_argument("--version", help=_("Print version and exit"), action="store_true")
 parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
 parser.add_argument("--locale", help=_("Force a specific language, e.g. de_DE"), action="store")
+parser.add_argument("-v", "--verbose", help=_("Output verbose messages for debugging"), action="store_true")
 
 args = parser.parse_args()
 
@@ -131,6 +112,10 @@ if args.version:
 
 if args.locale:
     _ = locales.reload_locales(locales, __file__, args.locale)
+
+if args.verbose:
+    dbg.verbose_level = 1
+    verbose = True
 
 
 ########################################
@@ -200,180 +185,213 @@ def print_columns(data, print_header=False):
 ########################################
 # List devices, zones or current status.
 ########################################
-devices = middleman.get_device_list()
-found_unsupported = False
+middleman = middleman_module.Middleman(dbg, common)
+middleman.init()
 
-if len(devices) == 0:
-    dbg.stdout(_("No Razer devices connected."), dbg.error)
+if verbose:
+    dbg.stdout("Loaded {0} backend(s):".format(len(middleman.backends)), dbg.success)
+    for backend in middleman.backends:
+        dbg.stdout(" - {0}".format(middleman_module.BACKEND_ID_NAMES[backend.backend_id]), dbg.success)
+
+    if len(middleman.not_installed) > 0:
+        dbg.stdout("Not imported: " + ", ".join(middleman.not_installed), dbg.debug)
+
+    if len(middleman.import_errors) > 0:
+        dbg.stdout("Errors:", dbg.warning)
+        for error in middleman.import_errors:
+            dbg.stdout(" - {0}".format(error), dbg.warning)
+
+if len(middleman.backends) == 0:
+    dbg.stdout(_("No backends avaliable."), dbg.error)
+    exit(1)
+
+device_list = middleman.get_device_list()
+unsupported_list = middleman.get_unsupported_devices()
+
+if len(device_list) == 0:
+    dbg.stdout(_("No devices connected."), dbg.error)
     exit(1)
 
 if args.list_devices:
-    print("")
-    table = []
+    dbg.stdout("Connected Devices:", dbg.success)
+    table = [[
+        _("Name"),
+        _("Form Factor"),
+        _("Serial"),
+        _("Zones")
+    ]]
 
-    for device in devices:
+    for device in device_list:
         table.append([
-            "{0} - {1}".format(dbg.normal, device["name"]),
-            "{0}{1}".format(dbg.success if device["available"] else dbg.error, device["form_factor"]),
-            "{0}{1}".format(dbg.warning, device["serial"] if device["available"] else "")
+            "{0}{1}".format(dbg.normal, device["name"]),
+            "{0}{1}".format(dbg.blue, device["form_factor"]["id"]),
+            "{0}{1}".format(dbg.warning, device["serial"]),
+            "{0}{1}".format(dbg.magenta, ", ".join(device["zones"]))
         ])
 
-        if device["available"] == False:
-            found_unsupported = True
+    for device in unsupported_list:
+        table.append([
+            "{0}{2}: {1}".format(dbg.error, device["name"], middleman_module.BACKEND_ID_NAMES[device["backend"]])
+        ])
 
-    print_column(table)
+    print_columns(table, True)
 
-if args.list_zones:
-    print("")
-    table = []
+if args.list_options:
+    for device in device_list:
+        print("")
+        details = middleman.get_device(device["backend"], int(device["uid"]))
+        rows = []
 
-    for device in devices:
-        if not device["available"]:
+        if details == None:
             continue
 
-        device = middleman.get_device(device["backend"], device["uid"])
+        elif details == str:
+            dbg.stdout(_("Could not retrieve device information:") + '\n' + details)
+            rows.append([_("Backend"), middleman_module.BACKEND_ID_NAMES[device["backend"]]])
+            dbg.stdout(details, dbg.error)
+            continue
 
-        table.append([
-            "- {0}{1}".format(dbg.normal, device["name"]),
-            "{0}{1}".format(dbg.warning, ", ".join(device["zone_supported"].keys()))
-        ])
+        dbg.stdout("[{0}]".format(details["name"]), dbg.action)
 
-    print_column(table)
+        # Print device information
+        def _add_row(label, value, colour):
+            rows.append([colour + label, colour + value])
 
-if args.list_status:
-    def _add_row(label, data, error_check=None):
-        columns = []
-        columns.append(dbg.action + label)
+        if verbose:
+            if details["vid"] and details["pid"]:
+                _add_row("VID:PID", "{0}:{1}".format(details["vid"], details["pid"]), dbg.grey)
 
-        if error_check == True:
-            data_colour = dbg.success
-        elif error_check == False:
-            data_colour = dbg.error
-        else:
-            data_colour = dbg.normal
+            if details["serial"]:
+                _add_row(_("Serial"), details["serial"], dbg.grey)
 
-        columns.append(data_colour + data)
-        return columns
+            if details["firmware_version"]:
+                _add_row(_("Firmware Version"), details["firmware_version"], dbg.grey)
 
-    for device in devices:
-        row = []
-        available = device["available"]
-        details = None
+            if details["keyboard_layout"]:
+                _add_row(_("Keyboard Layout"), details["keyboard_layout"], dbg.grey)
 
-        if available:
-            details = middleman.get_device(device["backend"], int(device["uid"]))
-        else:
-            found_unsupported = True
+            if details["matrix"]:
+                dimensions = "{0} {2}, {1} {3}".format(details["matrix_rows"], details["matrix_cols"], _("rows"), _("columns"))
+            else:
+                _add_row(_("Custom Effects"), _("Not supported"), dbg.error)
 
-        row.append(_add_row(_("Form Factor"), device["form_factor"], available))
+            if details["matrix"] and not details["monochromatic"]:
+                _add_row(_("Custom Effects"), "{0} ({1})".format(_("Yes"), dimensions), dbg.success)
 
-        if details:
-            form_factor = device["form_factor_id"]
+            if details["matrix"] and details["monochromatic"]:
+                _add_row(_("Custom Effects"), "{0} ({1})".format(_("Yes (Limited RGB)"), dimensions), dbg.success)
 
-            row.append(_add_row("VID:PID", "{0}:{1}".format(details["vid"], details["pid"])))
-            row.append(_add_row(_("Serial"), details["serial"]))
-            row.append(_add_row(_("Firmware Version"), details["firmware_version"]))
+            # Space between details and next table
+            _add_row("", "", dbg.normal)
+            print_columns(rows)
 
-            chroma_type = _("No")
-            chroma_type_bool = False
+        # Print options and their parameter/colour inputs
+        rows = [[
+            _("Zone") + " (-z)",
+            _("Option") + " (-o)",
+            _("Parameter") + " (-p)",
+            _("Colours") + " (-c)"
+        ]]
 
-            if details["matrix"] == True:
-                chroma_type = _("Yes")
-                chroma_type_bool = True
+        def _add_row():
+            rows.append([col_zone, col_option, col_param, col_colours])
 
-            if details["matrix"] == True and details["monochromatic"] == True:
-                chroma_type = _("Yes (Mono)")
-                chroma_type_bool = True
+        def _list_colours(colour_count, control):
+            if colour_count == 0:
+                return dbg.grey + "-"
+            cur_colours = []
+            listed = 1
+            while listed <= colour_count:
+                cur_colours.append(control["colour_" + str(listed)].upper())
+                listed += 1
+            return "{0} ({1})".format(colour_count, ", ".join(cur_colours))
 
-            row.append(_add_row(_("Chroma"), chroma_type, chroma_type_bool))
-            row.append(_add_row(_("Zones"), ", ".join(details["zone_supported"].keys())))
+        for zone in details["zone_options"]:
+            for control in details["zone_options"][zone]:
+                col_zone = dbg.normal + zone
+                col_option = dbg.normal + control["id"]
+                col_colours = dbg.grey + "-"
+                col_param = dbg.grey + "-"
 
-            if form_factor == "keyboard":
-                row.append(_add_row(_("Game Mode"), _("Enabled") if details["game_mode"] == True else _("Disabled"), details["game_mode"]))
-                row.append(_add_row(_("Keyboard Layout"), details["keyboard_layout"]))
-
-            if details["dpi_x"] != None:
-                row.append(_add_row(_("DPI"), "X " + str(details["dpi_x"])))
-                row.append(_add_row("", "Y " + str(details["dpi_y"])))
-                row.append(_add_row(_("DPI Intervals"), ", ".join(str(x) for x in details["dpi_ranges"])))
-
-            if details["poll_rate"] != None:
-                row.append(_add_row(_("Poll Rate"), str(details["poll_rate"]) + " Hz"))
-
-            if details["battery_level"] != None:
-                row.append(_add_row(_("Battery"), str(details["battery_level"]) + "%"))
-
-            if details["matrix"] == True:
-                row.append(_add_row(_("Matrix Dimensions"), "{0} {2}, {1} {3}".format(
-                    details["matrix_rows"],
-                    details["matrix_cols"],
-                    common.get_plural(details["matrix_rows"], _("row"), _("rows")),
-                    common.get_plural(details["matrix_cols"], _("column"), _("columns"))
-                )))
-
-            for zone in details["zone_states"]:
-                state = details["zone_states"][zone]
-                supported = details["zone_supported"][zone]
-                zone_name = "(" + details["zone_names"][zone] + ")"
-
-                # Suppress "(main)" to avoid clutter as most devices only have a 'main' lighting zone.
-                if zone == "main":
-                    zone_name = ""
-
-                # Print supported effects
-                supported_effects = []
-                for effect in supported.keys():
-                    if effect not in ["breath_options", "starlight_options", "ripple_options", "brightness_slider", "brightness_toggle"]:
-                        supported_effects.append(effect)
-
-                if len(supported_effects) > 0:
-                    row.append(_add_row("{0} {1}".format(_("Firmware Effects"), zone_name), ", ".join(supported_effects)))
-
-                # Print brightness levels
+                type = control["type"]
                 try:
-                    if supported["brightness_slider"]:
-                        row.append(_add_row("{0} {1}".format(_("Current Brightness"), zone_name), "{0}%".format(details["zone_states"][zone]["brightness"]), True if state["brightness"] > 0 else False))
+                    params = control["parameters"]
                 except KeyError:
-                    pass
+                    params = []
 
                 try:
-                    if supported["brightness_toggle"]:
-                        row.append(_add_row("{0} {1}".format(_("Current Brightness"), zone_name), _("On") if state["brightness"] == 1 else _("Off"), state["brightness"]))
+                    colours = control["colours"]
                 except KeyError:
-                    pass
+                    colours = 0
 
-                # Print last effect
-                try:
-                    if state["effect"]:
-                        row.append(_add_row(_("Current Effect"), state["effect"]))
+                if colours > 0:
+                    col_colours = _list_colours(colours, control)
 
-                    if state["colours"]:
-                        row.append(_add_row(_("Last Colour (Primary)"), state["colours"]["primary"]))
-                        row.append(_add_row(_("Last Colour (Secondary)"), state["colours"]["secondary"]))
-                        row.append(_add_row(_("Last Colour (Tertiary)"), state["colours"]["tertiary"]))
+                if type == "slider":
+                    col_param = str(control["value"])
+                    if control["value"] > 0:
+                        col_zone = dbg.success + zone
+                        col_option = dbg.success + control["id"]
+                        col_param = dbg.success + col_param
+                    else:
+                        col_zone = dbg.error + zone
+                        col_option = dbg.error + control["id"]
+                        col_param = dbg.error + col_param
+                    _add_row()
 
-                    if state["params_speed"]:
-                        row.append(_add_row(_("Last Speed (Wave/Reactive)"), str(state["params_speed"])))
+                elif type == "toggle":
+                    if control["active"]:
+                        col_zone = dbg.success + zone
+                        col_option = dbg.success + control["id"]
+                        col_param = dbg.success + _("On") + " (1)"
+                    else:
+                        col_zone = dbg.error + zone
+                        col_option = dbg.error + control["id"]
+                        col_param = dbg.error + _("Off") + " (0)"
+                    _add_row()
 
-                    if state["params_direction"]:
-                        row.append(_add_row(_("Last Direction (Wave)"), str(state["params_direction"])))
+                elif type in ["multichoice", "effect"] and len(params) == 0:
+                    if colours > 0:
+                        col_colours = _list_colours(colours, control)
 
-                except KeyError:
-                    pass
+                    if control["active"]:
+                        col_zone = dbg.success + zone
+                        col_option = dbg.success + control["id"]
+                        col_param = dbg.success + "-"
+                        col_colours = dbg.success + col_colours
+                    else:
+                        col_colours = dbg.normal + col_colours
+                    _add_row()
 
-        if not details:
-            row.append(_add_row(_("Backend"), "OpenRazer"))
+                elif type in ["multichoice", "effect"] and len(params) > 0:
+                    for param in control["parameters"]:
+                        col_zone = dbg.normal + zone
+                        col_option = dbg.normal + control["id"]
+                        col_colours = dbg.grey + "-"
+                        col_param = param["id"]
 
-        dbg.stdout("\n" + device["name"])
-        dbg.stdout("-".join("" for x in range(-1, max(len("".join(row[0])), len("".join(device["name"]))))))
-        print_column(row)
+                        try:
+                            if param["active"] and control["active"]:
+                                col_zone = dbg.success + zone
+                                col_option = dbg.success + control["id"]
+                                col_param = dbg.success + col_param
+                                col_colours = dbg.success + col_colours
+                        except KeyError:
+                            pass
 
-if found_unsupported:
-    dbg.stdout("\n" + _("Some Razer devices cannot be controlled as they haven't registered with the OpenRazer daemon."), dbg.warning)
-    dbg.stdout(_("To diagnose, run: []").replace("[]", dbg.success + "polychromatic-controller --troubleshoot" + dbg.warning), dbg.warning)
+                        try:
+                            colours = param["colours"]
+                            if colours > 0:
+                                col_colours = _list_colours(colours, control)
+                        except KeyError:
+                            pass
 
-# When using a --list-* parameter, exit here as devices won't be manipulated.
-if args.list_devices or args.list_zones or args.list_status:
+                        _add_row()
+
+        print_columns(rows, True)
+
+# After using a --list-* parameter, exit here as devices won't be manipulated.
+if args.list_devices or args.list_options:
     exit()
 
 
@@ -387,7 +405,7 @@ if args.zone and not args.zone == "all":
     target_zones = [args.zone]
 
 if args.serial:
-    for device in devices:
+    for device in device_list:
         if device["serial"] == args.serial:
             target_devices.append(device)
             break
@@ -399,15 +417,15 @@ if args.serial:
     target_devices = [device]
 
 elif args.device == "all" or not args.device:
-    target_devices = devices
+    target_devices = device_list
 
 else:
-    for device in devices:
+    for device in device_list:
         if device["form_factor_id"] == args.device:
             target_devices.append(device)
 
 if len(target_devices) == 0:
-    dbg.stdout(_("No specified Razer devices found."), dbg.error)
+    dbg.stdout(_("No specified devices found."), dbg.error)
     exit(1)
 
 

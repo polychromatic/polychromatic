@@ -150,9 +150,9 @@ class Backend(object):
                                 "colours": 3    (int)   This parameter inputs this amount of colours.
                             }
                         ],
-                        "colours": 3,           (int)   This effect (no params) inputs this amount of colours.
-                        "colour_1"              (str)   Current hex value for colour 1 in format "#RRGGBB"
-                        "colour_2" (...)        (str)   Current hex value for colour 2 and so forth,
+                        "colours": 3,           (int)   * Only for "effect" type when no params present.
+                        "colour_1": "#RRGGBB"   (str)   Current hex value for colour 1.
+                        "colour_2": "#RRGGBB"   (str)   Current hex value for colour 2 and so forth.
                         "active": true          (bool)  * Effect/feature is currently in use. Only for "effect" and "toggle" type.
                         "value": 50             (int)   * Current value. Only for "slider" type.
                     }

@@ -26,7 +26,7 @@ class Middleman(object):
     The 'middleman' that processes the data between Polychromatic's applications
     by blending all the backends together.
     """
-    def __self__(self, dbg, common):
+    def __init__(self, dbg, common):
         """
         Stores variables for the sessions.
         """
@@ -47,7 +47,7 @@ class Middleman(object):
         Imports the modules and initalises the backend objects.
         """
         try:
-            from backends import openrazer as openrazer
+            from .backends import openrazer as openrazer
             self.backends.append(openrazer.Backend(self._dbg, self._common))
         except (ImportError, ModuleNotFoundError):
             self.not_installed.append("openrazer")
