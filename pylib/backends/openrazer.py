@@ -59,7 +59,7 @@ class Backend(_backend.Backend):
             self.devices = self.devman.devices
             return True
         except Exception as e:
-            return e
+            return self.common.get_exception_as_string(e)
 
     def get_device_list(self):
         """
@@ -115,7 +115,7 @@ class Backend(_backend.Backend):
         except IndexError:
             return None
         except Exception as e:
-            return e
+            return self.common.get_exception_as_string(e)
 
         form_factor = self._get_form_factor(rdevice.type)
         real_image = self._get_device_image(rdevice)
@@ -567,7 +567,7 @@ class Backend(_backend.Backend):
         except IndexError:
             return None
         except Exception as e:
-            return e
+            return self.common.get_exception_as_string(e)
 
         rzone = self._get_zone_as_object(rdevice, zone)
 
@@ -590,11 +590,16 @@ class Backend(_backend.Backend):
                 pass
 
         try:
+            # Brightness - CLI passes as a string
+            if option_id == "brightness" and type(option_data) == str:
+                option_data = int(option_data)
+
             # Brightness (slider)
             if option_id == "brightness" and type(option_data) == int and zone == "main":
-                rdevice.brightness = int(option_data)
+                if rdevice.has("brightness"):
+                    rdevice.brightness = int(option_data)
 
-            if option_id == "brightness" and type(option_data) == int and zone != "main":
+            elif option_id == "brightness" and type(option_data) == int and zone != "main":
                 rzone.brightness = int(option_data)
 
             # Brightness (toggle)
@@ -1052,7 +1057,7 @@ class Backend(_backend.Backend):
         except IndexError:
             return None
         except Exception as e:
-            return e
+            return self.common.get_exception_as_string(e)
 
         if not rdevice.has("lighting_led_matrix"):
             return "Device does not support 'lighting_led_matrix'"

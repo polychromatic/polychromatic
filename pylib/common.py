@@ -40,8 +40,8 @@ class Debugging(object):
         colorama.init()
 
         # Colours for stdout
-        self.error = colorama.Fore.RED
-        self.success = colorama.Fore.GREEN
+        self.error = colorama.Fore.LIGHTRED_EX
+        self.success = colorama.Fore.LIGHTGREEN_EX
         self.warning = colorama.Fore.YELLOW
         self.action = colorama.Fore.LIGHTYELLOW_EX
         self.blue = colorama.Fore.BLUE

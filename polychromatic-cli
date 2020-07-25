@@ -69,18 +69,18 @@ parser = argparse.ArgumentParser(add_help=False)
 parser._optionals.title = _("These arguments can be specified")
 
 # Select a device
-parser.add_argument("-d", "--device", help=_("Select device(s) by form factor. Default is 'all'."), action="store", choices=common.FORM_FACTORS)
-parser.add_argument("--serial", help=_("Select device by its serial number"), action="store")
+parser.add_argument("-d", "--device", help=_("Select device(s) by form factor. If omitted, select all devices."), action="store", choices=common.FORM_FACTORS)
+parser.add_argument("--serial", help=_("Select a device by its serial number"), action="store")
 
 # Output details only
 parser.add_argument("-l", "--list-devices", help=_("List connected device(s) and their zones"), action="store_true")
 parser.add_argument("-k", "--list-options", help=_("List supported parameters for selected device(s)"), action="store_true")
 
 # Device manipulation
-parser.add_argument("-z", "--zone", help=_("Make change to specific zone. Default is 'all'"))
-parser.add_argument("-o", "--option", help=_("Change a device's state"), action="store")
-parser.add_argument("-p", "--parameter", help=_("Set parameter for effect"), action="store")
-parser.add_argument("-c", "--colours", help=_("Set colours in hex format. Comma separated."))
+parser.add_argument("-z", "--zone", help=_("Make change to specific zone. If omitted, use all available zones"))
+parser.add_argument("-o", "--option", help=_("Change a feature on the device"), action="store")
+parser.add_argument("-p", "--parameter", help=_("Set parameter for the option (if applicable)"), action="store")
+parser.add_argument("-c", "--colours", help=_("Set colours in hex format. Comma separated. If omitted, use last colours"))
 
 # Special handling
 parser.add_argument("--dpi", help=_("Set how fast the cursor moves. Example: 1800 or 1800,800"), action="store")
@@ -404,186 +404,113 @@ if args.list_devices or args.list_options:
 ########################################
 # Set device state
 ########################################
-for device in target_devices:
-    if not device["available"]:
-        continue
+apply_zone = args.zone
+apply_option = args.option
+apply_param = args.parameter
+if args.colours:
+    apply_colours = args.colours.split(",")
+else:
+    apply_colours = []
 
-    zones = target_zones
-    if len(target_zones) == 0:
-        zones = device["zones"]
+for device_item in device_list:
+    device = middleman.get_device(device_item["backend"], device_item["uid"])
+    zones = device["zone_options"].keys()
 
-    details = middleman.get_device(device["backend"], device["uid"])
+    # Check an option was specified
+    if not apply_option:
+        dbg.stdout(_("Please specify an option (-o). Use --list-options (-k) to view available options."), dbg.error)
+        exit(1)
+
+    # If a zone was specified, does it match this device?
+    if apply_zone:
+        if apply_zone in zones:
+            zones = [apply_zone]
+        else:
+            dbg.stdout(_("Skipping: [device] - No such zone '[z]'").replace("[z]", apply_zone).replace("[device]", device["name"]), dbg.warning)
+            continue
+
+    # Validate the request has the required parameters and colours
+    valid = False
+    user_colours_count = len(apply_colours)
+    device_name = device["name"]
 
     for zone in zones:
-        # Brightness
-        if args.brightness:
-            status = middleman.set_device_state(device["backend"], device["uid"], "brightness", zone, [], [int(args.brightness)])
-            if status == False:
-                dbg.stdout(_("Failed to set brightness for [].").replace("[]", device["name"]), dbg.error)
-            elif type(status) == str:
-                dbg.stdout(_("Request failed. Here's the exception details:"), dbg.error)
-                dbg.stdout(status)
+        for option in device["zone_options"][zone]:
+            if option["id"] == apply_option:
 
-        # Effect
-        if args.effect:
-            effect = args.effect
-            effect_params = []
+                # Does this option require parameters?
+                try:
+                    params = option["parameters"]
+                except KeyError:
+                    # Not an effect or multichoice type.
+                    params = []
+                if len(params) > 0 and not apply_param:
+                    dbg.stdout(_("Skipping: [device] - Missing a required parameter.").replace("[device]", device_name), dbg.warning)
+                    continue
 
-            # Validate request is possible
-            try:
-                details["zone_supported"][zone][effect]
-            except KeyError:
-                dbg.stdout(_("[name]: '[fx]' effect not supported in zone '[zone]'")
-                    .replace("[name]", details["name"])
-                    .replace("[fx]", effect)
-                    .replace("[zone]", zone), dbg.warning)
-                continue
+                elif len(params) > 0:
+                    valid_param = False
 
-            # Determine parameters
-            # TODO: Read 'zone_states' when params unspecified.
+                    # Is a valid parameter listed here?
+                    for param in params:
+                        # -p may accept 'raw' data as well as the string 'ID'
+                        #   E.g. OpenRazer uses 1 or 2 for 'wave', but ID isn't interchangable between devices.
+                        #   left/right = mouse, or anticlock/clock = mousemat
+                        if str(param["data"]) == str(apply_param):
+                            valid_param = True
+                            if type(param["data"]) == int:
+                                apply_param = int(param["data"])
+                            else:
+                                apply_param = param["data"]
+                            break
 
-            if effect == "wave":
-                if args.wave_direction:
-                    direction = {
-                        "right": 1,     # Right / Up / Clockwise
-                        "left": 2       # Left / Down / Anti-clockwise
-                    }
-                    effect_params = [direction[args.wave_direction]]
-                else:
-                    # Default
-                    effect_params = [1]
+                        elif param["id"] == apply_param:
+                            valid_param = True
+                            apply_param = param["data"]
+                            break
 
-            if effect == "reactive":
-                if args.reactive_speed:
-                    speed = {
-                        "fast": 1,
-                        "medium": 2,
-                        "slow": 3,
-                        "vslow": 4
-                    }
-                    effect_params = [speed[args.reactive_speed]]
-                else:
-                    # Default
-                    effect_params = [2]
+                    if not valid_param:
+                        dbg.stdout(_("Skipping: [device] - This parameter is not supported.").replace("[device]", device_name), dbg.warning)
+                        continue
 
-            if effect == "breath":
-                if args.breath_type:
-                    effect = "breath_" + args.breath_type
-                else:
-                    # Default
-                    effect = "breath_single"
-
-            if effect == "ripple":
-                if args.ripple_type:
-                    effect = "ripple_" + args.ripple_type
-                else:
-                    # Default
-                    effect = "ripple_single"
-
-                if args.ripple_speed:
-                    effect_params = [args.ripple_speed]
-                else:
-                    effect_params = [0.01]
-
-            if effect == "starlight":
-                if args.starlight_type:
-                    effect = "starlight_" + args.starlight_type
-                else:
-                    # Default
-                    effect = "starlight_single"
-
-            # Determine and validate colours
-            colours = []
-            for hex_value in [args.rgb, args.rgb2, args.rgb3]:
-                if hex_value:
+                    # Do we have all the colours required?
                     try:
-                        common.hex_to_rgb(hex_value)
-                    except ValueError:
-                        dbg.stdout(_("Invalid 6 digit hex colour: []").replace("[]", args.rgb), dbg.error)
-                        exit(1)
-                colours.append(hex_value)
+                        required_colour_count = param["colours"]
 
-            status = middleman.set_device_state(device["backend"], device["uid"], effect, zone, colours, effect_params)
+                        if required_colour_count > user_colours_count:
+                            dbg.stdout(_("Skipping: [device] - Requires [1] colour(s) but only [2] specified.").replace("[device]", device_name).replace("[1]", str(required_colour_count)).replace("[2]", str(user_colours_count)), dbg.warning)
+                            continue
+                    except KeyError:
+                        if verbose:
+                            dbg.stdout("Colours not used for this parameter", dbg.debug)
 
-            if status == False:
-                dbg.stdout(_("Failed to set '[fx]' effect for [name].")
-                    .replace("[name]", device["name"])
-                    .replace("[fx]", effect), dbg.error)
-            elif type(status) == str:
-                dbg.stdout(_("Request failed. Here's the exception details:"), dbg.error)
-                dbg.stdout(status)
+                    valid = True
 
-    # Game Mode
-    if args.game_mode:
-        if details["game_mode"] == None:
-            continue
+                elif len(params) == 0:
+                    try:
+                        if option["colours"] > len(apply_colours):
+                            dbg.stdout(_("Skipping: [device] - Requires [1] colour(s) but only [2] specified.").replace("[device]", device_name).replace("[1]", str(option["colours"])).replace("[2]", str(len(apply_colours))), dbg.warning)
+                            continue
+                    except KeyError:
+                        if verbose:
+                            dbg.stdout("Colours not used for this option", dbg.debug)
 
-        state = {
-            "on": True,
-            "off": False
-        }
-        state = state[args.game_mode]
+                    valid = True
 
-        status = middleman.set_device_state(device["backend"], device["uid"], "game_mode", "main", [], [state])
+    if not valid:
+        dbg.stdout(_("Skipping: [device] - This option is not supported.").replace("[device]", device_name), dbg.warning)
+        continue
 
-        if status == False:
-            dbg.stdout(_("Failed to change for [name].").replace("[name]", device["name"]), dbg.error)
-        elif type(status) == str:
-            dbg.stdout(_("Request failed. Here's the exception details:"), dbg.error)
-            dbg.stdout(status)
-        elif status == True:
-            if state == True:
-                dbg.stdout(_("Game mode /enabled\ for [name]")
-                    .replace("[name]", device["name"])
-                    .replace("/", dbg.success)
-                    .replace("\\", dbg.normal))
-            else:
-                dbg.stdout(_("Game mode /disabled\ for [name]")
-                    .replace("[name]", device["name"])
-                    .replace("/", dbg.error)
-                    .replace("\\", dbg.normal))
+    for zone in zones:
+        result = middleman.set_device_state(device["backend"], device["uid"], device["serial"], zone, apply_option, apply_param, apply_colours)
 
-    # DPI
-    if args.dpi:
-        if details["dpi_x"] == None:
-            continue
+        if result == False:
+            # This shouldn't really happen, since the input was validated.
+            dbg.stdout(_("Error: [device] - Invalid request!").replace("[device]", device_name), dbg.error)
+        elif result == True and verbose:
+            dbg.stdout("Successfully executed request.", dbg.success)
+        elif type(result) == str:
+            dbg.stdout(_("Error: [device] - Backend threw exception:").replace("[device]", device_name), dbg.error)
+            dbg.stdout(result, dbg.error)
 
-        # Custom X and Y can be specified by adding a comma
-        dpi = args.dpi
-        if dpi.find(",") > 0:
-            dpi_x = dpi.split(",")[0]
-            dpi_y = dpi.split(",")[1]
-        else:
-            dpi_x = dpi
-            dpi_y = dpi
-
-        # Validate DPI is not too low
-        for value in [dpi_x, dpi_y]:
-            if int(value) < min_dpi:
-                dbg.stdout(_("DPI too low: [x]").replace("[x]", value), dbg.error)
-                continue
-
-        status = middleman.set_device_state(device["backend"], device["uid"], "dpi", "main", [], [dpi_x, dpi_y])
-
-        if status == False:
-            dbg.stdout(_("Failed to set DPI for [name].").replace("[name]", device["name"]), dbg.error)
-        elif type(status) == str:
-            dbg.stdout(_("Request failed. Here's the exception details:"), dbg.error)
-            dbg.stdout(status)
-        elif status == True:
-            dbg.stdout(_("DPI set to [x] for [name]").replace("[name]", device["name"]).replace("[x]", "{0},{1}".format(dpi_x, dpi_y)), dbg.success)
-
-    # Poll Rate
-    if args.poll_rate:
-        if details["poll_rate"] == None:
-            continue
-
-        status = middleman.set_device_state(device["backend"], device["uid"], "poll_rate", "main", [], [args.poll_rate])
-
-        if status == False:
-            dbg.stdout(_("Failed to set poll rate for [name].").replace("[name]", device["name"]), dbg.error)
-        elif type(status) == str:
-            dbg.stdout(_("Request failed. Here's the exception details:"), dbg.error)
-            dbg.stdout(status)
-        elif status == True:
-            dbg.stdout(_("Poll rate set to [x] Hz for [name]").replace("[name]", device["name"]).replace("[x]", args.poll_rate), dbg.success)
+exit(0)

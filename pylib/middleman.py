@@ -83,6 +83,17 @@ class Middleman(object):
                 devices = devices + m_devices
         return devices
 
+    def get_filtered_device_list(self, form_factor):
+        """
+        Returns a list of connected devices filtered by a form factor.
+        """
+        new_list = []
+        devices = self.get_device_list()
+        for device in devices:
+            if device["form_factor"]["id"] == form_factor:
+                new_list.append(device)
+        return new_list
+
     def get_unsupported_devices(self):
         """
         Returns a list of connected devices that cannot be controlled by their backend.
@@ -117,7 +128,7 @@ class Middleman(object):
 
         return device
 
-    def set_device_state(self, backend, uid, serial, zone, identifier, value, colour_hex):
+    def set_device_state(self, backend, uid, serial, zone, option_id, option_data, colour_hex):
         """
         Sends a request to the the device, like setting the brightness, the hardware
         effect or a hardware property (such as DPI).
@@ -125,13 +136,13 @@ class Middleman(object):
         See _backend.Backend.set_device_state() for parameters and data types.
         """
         # Stop Polychromatic software effect helper for this device if changing an effect
-        if identifier == "effect":
+        if option_id == "effect":
             procpid.stop_device_custom_fx(serial)
             procpid.reset_preset_state(serial)
 
         for module in self.backends:
             if module.backend_id == backend:
-                return module.set_device_state(uid, zone, identifier, value, colour_hex)
+                return module.set_device_state(uid, zone, option_id, option_data, colour_hex)
 
     def get_device_object(self, backend, uid):
         """
