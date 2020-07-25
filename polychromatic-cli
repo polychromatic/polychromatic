@@ -63,20 +63,13 @@ verbose = False
 
 
 ########################################
-# Valid Options
-########################################
-possible_form_factors = ["all", "keyboard", "mouse", "mousemat", "keypad", "headset", "gpu", "accessory"]
-possible_effects = ["static", "wave", "spectrum", "reactive", "breath", "ripple", "starlight", "blinking", "pulsate"]
-possible_poll_rates = ["125", "500", "1000"]
-
-########################################
 # Parse arguments
 ########################################
 parser = argparse.ArgumentParser(add_help=False)
 parser._optionals.title = _("These arguments can be specified")
 
 # Select a device
-parser.add_argument("-d", "--device", help=_("Select device(s) by form factor. Default is 'all'."), action="store", choices=possible_form_factors)
+parser.add_argument("-d", "--device", help=_("Select device(s) by form factor. Default is 'all'."), action="store", choices=common.FORM_FACTORS)
 parser.add_argument("--serial", help=_("Select device by its serial number"), action="store")
 
 # Output details only
@@ -181,9 +174,8 @@ def print_columns(data, print_header=False):
             print(col,end="")
         print(colorama.Style.RESET_ALL)
 
-
 ########################################
-# List devices, zones or current status.
+# Select devices
 ########################################
 middleman = middleman_module.Middleman(dbg, common)
 middleman.init()
@@ -205,13 +197,27 @@ if len(middleman.backends) == 0:
     dbg.stdout(_("No backends avaliable."), dbg.error)
     exit(1)
 
-device_list = middleman.get_device_list()
+if args.device:
+    device_list = middleman.get_filtered_device_list(args.device)
+else:
+    device_list = middleman.get_device_list()
+
+if args.serial:
+    for device in device_list:
+        if device["serial"] == str(args.serial):
+            device_list = [device]
+            break
+
 unsupported_list = middleman.get_unsupported_devices()
 
 if len(device_list) == 0:
     dbg.stdout(_("No devices connected."), dbg.error)
     exit(1)
 
+
+########################################
+# List devices, zones or current status.
+########################################
 if args.list_devices:
     dbg.stdout("Connected Devices:", dbg.success)
     table = [[
@@ -396,51 +402,7 @@ if args.list_devices or args.list_options:
 
 
 ########################################
-# Determine devices and zones to change.
-########################################
-target_devices = []
-target_zones = []
-
-if args.zone and not args.zone == "all":
-    target_zones = [args.zone]
-
-if args.serial:
-    for device in device_list:
-        if device["serial"] == args.serial:
-            target_devices.append(device)
-            break
-
-    if len(target_devices) == 0:
-        dbg.stdout("Cannot find a device with serial " + args.serial, dbg.error)
-        exit(1)
-
-    target_devices = [device]
-
-elif args.device == "all" or not args.device:
-    target_devices = device_list
-
-else:
-    for device in device_list:
-        if device["form_factor_id"] == args.device:
-            target_devices.append(device)
-
-if len(target_devices) == 0:
-    dbg.stdout(_("No specified devices found."), dbg.error)
-    exit(1)
-
-
-# Quit if a device is selected, but there is nothing to do.
-if not args.effect \
-    and not args.game_mode \
-    and not args.dpi \
-    and not args.poll_rate \
-    and not args.brightness:
-        dbg.stdout(_("Please specify an action to perform."), dbg.warning)
-        exit(1)
-
-
-########################################
-# Update device state
+# Set device state
 ########################################
 for device in target_devices:
     if not device["available"]:
