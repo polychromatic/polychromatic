@@ -174,6 +174,7 @@ def print_columns(data, print_header=False):
             print(col,end="")
         print(colorama.Style.RESET_ALL)
 
+
 ########################################
 # Select devices
 ########################################
@@ -394,11 +395,75 @@ if args.list_options:
 
                         _add_row()
 
+        # DPI data
+        if details["dpi_x"] or details["dpi_y"]:
+            col_zone = dbg.grey + "-"
+            col_option = dbg.success + "dpi"
+            col_param = dbg.success
+            col_colours = dbg.grey + "-"
+
+            if details["dpi_single"]:
+                col_param += "{0}".format(details["dpi_x"])
+            else:
+                col_param += "{0},{1}".format(details["dpi_x"], details["dpi_y"])
+
+            col_param += " ({0}-{1})".format(details["dpi_min"], details["dpi_max"])
+        _add_row()
+
         print_columns(rows, True)
 
 # After using a --list-* parameter, exit here as devices won't be manipulated.
 if args.list_devices or args.list_options:
     exit()
+
+
+########################################
+# Set DPI
+########################################
+if args.dpi:
+    for device_item in device_list:
+        if device_item["form_factor"]["id"] != "mouse":
+            continue
+
+        device = middleman.get_device(device_item["backend"], device_item["uid"])
+
+        device_name = device["name"]
+        dpi_values = args.dpi.split(",")
+        both_x_y = len(dpi_values) >= 2
+        dpi_min = device["dpi_min"]
+        dpi_max = device["dpi_max"]
+
+        if both_x_y:
+            dpi_values = [int(dpi_values[0]), int(dpi_values[1])]
+        else:
+            dpi_values = [int(dpi_values[0]), int(dpi_values[0])]
+
+        for i in range(0, 1):
+            dpi = dpi_values[i]
+            axis = "X" if 1 else "Y"
+
+            if dpi > dpi_max:
+                dbg.stdout(_("DPI X too high for [device]: [1] (Maximum is [2])").replace("[1]", str(dpi)).replace("[2]", str(dpi_max)).replace("[device]", device_name).replace("X", axis))
+                exit(1)
+
+            if dpi < dpi_min:
+                dbg.stdout(_("DPI X too low for [device]: [1] (Minimum is [2])").replace("[1]", str(dpi)).replace("[2]", str(dpi_min)).replace("[device]", device_name).replace("X", axis))
+                exit(1)
+
+        if verbose:
+            dbg.stdout("Setting DPI for {0}: {1}".format(device_name, dpi_values))
+
+        result = middleman.set_device_state(device["backend"], device["uid"], device["serial"], None, "dpi", dpi_values, [])
+
+        if result == False:
+            dbg.stdout(_("Error: [device] - Invalid request!").replace("[device]", device_name), dbg.error)
+        elif result == True and verbose:
+            dbg.stdout("Successfully executed request.", dbg.success)
+        elif type(result) == str:
+            dbg.stdout(_("Error: [device] - Backend threw exception:").replace("[device]", device_name), dbg.error)
+            dbg.stdout(result, dbg.error)
+
+    exit(0)
 
 
 ########################################
