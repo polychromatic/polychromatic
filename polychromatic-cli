@@ -63,55 +63,6 @@ verbose = False
 
 
 ########################################
-# Parse arguments
-########################################
-parser = argparse.ArgumentParser(add_help=False)
-parser._optionals.title = _("These arguments can be specified")
-
-# Select a device
-parser.add_argument("-d", "--device", help=_("Select device(s) by form factor. If omitted, select all devices."), action="store", choices=common.FORM_FACTORS)
-parser.add_argument("--serial", help=_("Select a device by its serial number"), action="store")
-
-# Output details only
-parser.add_argument("-l", "--list-devices", help=_("List connected device(s) and their zones"), action="store_true")
-parser.add_argument("-k", "--list-options", help=_("List supported parameters for selected device(s)"), action="store_true")
-
-# Device manipulation
-parser.add_argument("-z", "--zone", help=_("Make change to specific zone. If omitted, use all available zones"))
-parser.add_argument("-o", "--option", help=_("Change a feature on the device"), action="store")
-parser.add_argument("-p", "--parameter", help=_("Set parameter for the option (if applicable)"), action="store")
-parser.add_argument("-c", "--colours", help=_("Set colours in hex format. Comma separated. If omitted, use last colours"))
-
-# Special handling
-parser.add_argument("--dpi", help=_("Set how fast the cursor moves. Example: 1800 or 1800,800"), action="store")
-
-# Misc
-parser.add_argument("--version", help=_("Print version and exit"), action="store_true")
-parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
-parser.add_argument("--locale", help=_("Force a specific language, e.g. de_DE"), action="store")
-parser.add_argument("-v", "--verbose", help=_("Output verbose messages for debugging"), action="store_true")
-
-args = parser.parse_args()
-
-# Was anything passed?
-if not len(sys.argv) > 1:
-    dbg.stdout(_("No arguments passed."), dbg.error)
-    dbg.stdout(_("Type polychromatic-cli --help to see possible combinations."))
-    exit(0)
-
-if args.version:
-    dbg.stdout(_("Version") + " " + VERSION)
-    exit(0)
-
-if args.locale:
-    _ = locales.reload_locales(locales, __file__, args.locale)
-
-if args.verbose:
-    dbg.verbose_level = 1
-    verbose = True
-
-
-########################################
 # Pretty columns
 ########################################
 def print_columns(data, print_header=False):
@@ -176,6 +127,123 @@ def print_columns(data, print_header=False):
 
 
 ########################################
+# Parse arguments
+########################################
+parser = argparse.ArgumentParser(add_help=False)
+parser._optionals.title = _("These arguments can be specified")
+
+# Select a device
+parser.add_argument("-d", "--device", action="store", choices=common.FORM_FACTORS)
+parser.add_argument("--serial", action="store")
+
+# Output details only
+parser.add_argument("-l", "--list-devices", action="store_true")
+parser.add_argument("-k", "--list-options", action="store_true")
+
+# Device manipulation
+parser.add_argument("-z", "--zone", action="store")
+parser.add_argument("-o", "--option", action="store")
+parser.add_argument("-p", "--parameter", action="store")
+parser.add_argument("-c", "--colours", action="store")
+
+# Special handling
+parser.add_argument("--dpi", action="store")
+
+# Misc
+parser.add_argument("--version", action="store_true")
+parser.add_argument("-h", "--help", action="store_true")
+parser.add_argument("--locale", action="store")
+parser.add_argument("-v", "--verbose", action="store_true")
+
+args = parser.parse_args()
+
+if not len(sys.argv) > 1:
+    dbg.stdout(_("No arguments passed."), dbg.error)
+    dbg.stdout(_("Type polychromatic-cli --help to see possible combinations."))
+    exit(0)
+
+if args.version:
+    dbg.stdout(_("Version") + " " + VERSION)
+    exit(0)
+
+if args.locale:
+    _ = locales.reload_locales(locales, __file__, args.locale)
+
+if args.verbose:
+    dbg.verbose_level = 1
+    verbose = True
+
+if args.help:
+    rows = [
+        [
+            dbg.action + "  -d, --device" + dbg.warning + " {form_factor}",
+            dbg.normal + _("Select device(s) by form factor. If omitted, select all devices")
+        ],
+        [
+            "",
+            dbg.action + "[{0}]".format(", ".join(common.FORM_FACTORS))
+        ],
+        [
+            dbg.action + "  --serial" + dbg.warning + " {serial}",
+            dbg.normal + _("Select a device by its serial number")
+        ],
+        ["", ""],
+        [
+            dbg.action + "  -l, --list-devices",
+            dbg.normal + _("List connected device(s) and their zone(s)")
+        ],
+        [
+            dbg.action + "  -k, --list-options",
+            dbg.normal + _("List supported parameters for selected device(s)")
+        ],
+        ["", ""],
+        [
+            dbg.action + "  -z, --zone" + dbg.warning + " {name}",
+            dbg.normal + _("Make change to specified zone. If omitted, use all available zones")
+        ],
+        [
+            dbg.action + "  -o, --option" + dbg.warning + " {name}",
+            dbg.normal + _("Change an option on the device")
+        ],
+        [
+            dbg.action + "  -p, --parameter" + dbg.warning + " {name}",
+            dbg.normal + _("Set parameter for the option (if applicable)")
+        ],
+        [
+            dbg.action + "  -c, --colours" + dbg.warning + " {hex1,hex2}",
+            dbg.normal + _("Set colours in hex format (#RRGGBB). Comma separated")
+        ],
+        [
+            dbg.action + "  --dpi" + dbg.warning + " {X}[,Y]",
+            dbg.normal + _("Set how fast the cursor moves. Example: 1800 or 1800,800")
+        ],
+        ["", ""],
+        [
+            dbg.action + "  --version",
+            dbg.normal + _("Print version and exit")
+        ],
+        [
+            dbg.action + "  -h, --help",
+            dbg.normal + _("Show this help message and exit")
+        ],
+        [
+            dbg.action + "  --locale" + dbg.warning + " {code}",
+            dbg.normal + _("Force a specific language, e.g. de_DE")
+        ],
+        [
+            dbg.action + "  -v, --verbose",
+            dbg.normal + _("Output additional data and debug messages")
+        ],
+        ["",""]
+    ]
+
+    dbg.stdout(_("Avaliable Options"))
+    dbg.stdout("---------------------------")
+    print_columns(rows)
+    exit(0)
+
+
+########################################
 # Select devices
 ########################################
 middleman = middleman_module.Middleman(dbg, common)
@@ -231,7 +299,7 @@ if args.list_devices:
     for device in device_list:
         table.append([
             "{0}{1}".format(dbg.normal, device["name"]),
-            "{0}{1}".format(dbg.blue, device["form_factor"]["id"]),
+            "{0}{1}".format(dbg.action, device["form_factor"]["id"]),
             "{0}{1}".format(dbg.warning, device["serial"]),
             "{0}{1}".format(dbg.magenta, ", ".join(device["zones"]))
         ])
