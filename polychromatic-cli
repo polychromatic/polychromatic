@@ -134,7 +134,7 @@ parser._optionals.title = _("These arguments can be specified")
 
 # Select a device
 parser.add_argument("-d", "--device", action="store", choices=common.FORM_FACTORS)
-parser.add_argument("--serial", action="store")
+parser.add_argument("-s", "--serial", action="store")
 
 # Output details only
 parser.add_argument("-l", "--list-devices", action="store_true")
@@ -184,7 +184,7 @@ if args.help:
             dbg.action + "[{0}]".format(", ".join(common.FORM_FACTORS))
         ],
         [
-            dbg.action + "  --serial" + dbg.warning + " {serial}",
+            dbg.action + "  -s, --serial" + dbg.warning + " {serial}",
             dbg.normal + _("Select a device by its serial number")
         ],
         ["", ""],
