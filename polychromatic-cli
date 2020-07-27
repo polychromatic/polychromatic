@@ -134,6 +134,7 @@ parser._optionals.title = _("These arguments can be specified")
 
 # Select a device
 parser.add_argument("-d", "--device", action="store", choices=common.FORM_FACTORS)
+parser.add_argument("-n", "--name", action="store")
 parser.add_argument("-s", "--serial", action="store")
 
 # Output details only
@@ -176,12 +177,16 @@ if args.verbose:
 if args.help:
     rows = [
         [
-            dbg.action + "  -d, --device" + dbg.warning + " {form_factor}",
+            dbg.action + "  -d, --device" + dbg.warning + " {id}",
             dbg.normal + _("Select device(s) by form factor. If omitted, select all devices")
         ],
         [
             "",
             dbg.action + "[{0}]".format(", ".join(common.FORM_FACTORS))
+        ],
+        [
+            dbg.action + "  -n, --name" + dbg.warning + " {name}",
+            dbg.normal + _("Select a device by its name")
         ],
         [
             dbg.action + "  -s, --serial" + dbg.warning + " {serial}",
@@ -271,6 +276,12 @@ if args.device:
 else:
     device_list = middleman.get_device_list()
 
+if args.name:
+    for device in device_list:
+        if device["name"] == str(args.name):
+            device_list = [device]
+            break
+
 if args.serial:
     for device in device_list:
         if device["serial"] == str(args.serial):
@@ -290,9 +301,9 @@ if len(device_list) == 0:
 if args.list_devices:
     dbg.stdout("Connected Devices:", dbg.success)
     table = [[
-        _("Name"),
-        _("Form Factor"),
-        _("Serial"),
+        _("Name") + " (-n)",
+        _("Form Factor") + " (-d)",
+        _("Serial") + " (-s)",
         _("Zones")
     ]]
 
