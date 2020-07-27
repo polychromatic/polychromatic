@@ -142,7 +142,7 @@ class Backend(_backend.Backend):
         dpi_single = False          # E.g. DeathAdder 3.5G only inputs X, Y = -1
         dpi_ranges = []
         poll_rate = None
-        poll_rate_ranges = [250, 500, 1000] # Cannot be changed
+        poll_rate_ranges = [125, 500, 1000] # Cannot be changed
 
         # Retrieve device variables
         if rdevice.has("name"):
@@ -235,7 +235,12 @@ class Backend(_backend.Backend):
                 brightness_control = {
                     "id": "brightness",
                     "type": "slider",
-                    "value": int(rzone.brightness)
+                    "value": int(rzone.brightness),
+                    "min": 0,
+                    "max": 100,
+                    "step": 5,
+                    "suffix": "%",
+                    "colours": 0 # n/a
                 }
 
             # -- Except that the 'main' brightness isn't called 'lighting_brightness'
@@ -244,7 +249,12 @@ class Backend(_backend.Backend):
                 brightness_control = {
                     "id": "brightness",
                     "type": "slider",
-                    "value": int(rdevice.brightness)
+                    "value": int(rdevice.brightness),
+                    "min": 0,
+                    "max": 100,
+                    "step": 5,
+                    "suffix": "%",
+                    "colours": 0 # n/a
                 }
 
             # -- Or this device uses a on/off toggle (main does not have this)
@@ -253,7 +263,8 @@ class Backend(_backend.Backend):
                 brightness_control = {
                     "id": "brightness",
                     "type": "toggle",
-                    "active": True if rzone.active else False
+                    "active": True if rzone.active else False,
+                    "colours": 0 # n/a
                 }
 
             # Some devices may erroneously have both 'brightness' and 'active',
@@ -406,7 +417,8 @@ class Backend(_backend.Backend):
             zone_options["main"].append({
                 "id": "game_mode",
                 "type": "toggle",
-                "active": True if rdevice.game_mode_led else False
+                "active": True if rdevice.game_mode_led else False,
+                "colours": 0 # n/a
             })
 
         if rdevice.has("poll_rate"):
@@ -415,13 +427,15 @@ class Backend(_backend.Backend):
                 params.append({
                     "id": "{0}Hz".format(rate),
                     "data": rate,
-                    "active": poll_rate == rate
+                    "active": poll_rate == rate,
+                    "colours": 0 # n/a
                 })
             zone_options["main"].append({
                 "id": "poll_rate",
                 "type": "multichoice",
                 "parameters": params,
-                "active": True          # Always a poll rate
+                "active": True,         # Always a poll rate
+                "colours": 0 # n/a
             })
 
         # Prepare summary of device.
@@ -568,6 +582,10 @@ class Backend(_backend.Backend):
             return None
         except Exception as e:
             return self.common.get_exception_as_string(e)
+
+        # DPI may not associated with a zone (CLI only)
+        if not zone:
+            zone = "main"
 
         rzone = self._get_zone_as_object(rdevice, zone)
 

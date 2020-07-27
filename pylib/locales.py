@@ -259,9 +259,9 @@ def get_strings():
         "colours_gtk": _("Use System Picker"),
 
         # Poll Rates
-        "poll_rate_125": _("125 Hz (8 ms)"),
-        "poll_rate_500": _("500 Hz (2 ms)"),
-        "poll_rate_1000": _("1000 Hz (1 ms)"),
+        "125Hz": _("125 Hz (8 ms)"),
+        "500Hz": _("500 Hz (2 ms)"),
+        "1000Hz": _("1000 Hz (1 ms)"),
 
         # Preferences
         "application": _("Application"),

@@ -140,21 +140,34 @@ class Backend(object):
             "zone_options": {   (dict)  Tells Polychromatic how to present the options.
                 "main": [       (dict)  Keys for each zone.
                     {
-                        "id": "spectrum",       (str)   ID to identify later. Used for string.
-                        "type": "effect",       (str)   One of: "effect", "slider", "toggle", "multichoice"
-                        "parameters": [         (list)  * Only for "effect" and "multichoice" types.
+                        # Required
+
+                        "id":                   (str)   ID to identify later. Used for string/icon.
+                        "type":                 (str)   "effect", "slider", "toggle" or "multichoice"
+                        "parameters": [         (list)  Parameters for "effect" and "multichoice".
                             {
-                                "id": "left",   (str)   ID to identify later. Used for string.
-                                "data": 0,      (any)   Any data type according to the backend's needs.
-                                "active": true  (bool)  This parameter is currently in use.
-                                "colours": 3    (int)   This parameter inputs this amount of colours.
+                                "id":           (str)   ID to identify later. Used for string.
+                                "data":         (any)   Any data type according to the backend's needs.
+                                "active":       (bool)  This parameter is currently in use.
+                                "colours":      (int)   This parameter inputs this amount of colours.
                             }
                         ],
-                        "colours": 3,           (int)   * Only for "effect" type when no params present.
+                        "colours":              (int)   This option inputs this amount of colours.
+                                                        Ignored when parameters are present.
                         "colour_1": "#RRGGBB"   (str)   Current hex value for colour 1.
                         "colour_2": "#RRGGBB"   (str)   Current hex value for colour 2 and so forth.
-                        "active": true          (bool)  * Effect/feature is currently in use. Only for "effect" and "toggle" type.
-                        "value": 50             (int)   * Current value. Only for "slider" type.
+
+                        # Only for effect and toggle
+
+                        "active":               (bool)  Effect/option in use?
+
+                        # Only for slider
+
+                        "value":                (int)   Current value
+                        "min":                  (int)   Start of range, e.g. 0
+                        "max":                  (int)   End of range, e.g. 100
+                        "step":                 (int)   Range intervals, e.g. 5
+                        "suffix":               (str)   String to appear at the end in GUIs
                     }
                 ],
             }
