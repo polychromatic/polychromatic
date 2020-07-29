@@ -10,7 +10,6 @@ This module is responsible for loading/saving persistent data used by Polychroma
 import os
 import json
 import shutil
-import time
 from . import common
 from . import locales
 
@@ -44,7 +43,7 @@ class Paths(object):
     preferences = os.path.join(root, "preferences.json")
     colours = os.path.join(root, "colours.json")
 
-    # Deprecated (v0.3.12 and earlier)
+    # Legacy (v0.3.12 and earlier)
     old_profiles = os.path.join(root, "profiles.json")
     old_profile_folder = os.path.join(root, "profiles")
     old_profile_backups = os.path.join(root, "backups")
@@ -117,15 +116,13 @@ def save_file(filepath, newdata):
         True                Save successful.
         False               Save failed.
     """
-    # The preferences file stores the configuration version.
+    # The preferences file always stores the configuration version.
     if filepath == path.preferences:
         newdata["config_version"] = VERSION
 
-    # Create file if it doesn't exist.
     if not os.path.exists(filepath):
         open(filepath, "w").close()
 
-    # Write new data to file.
     if os.access(filepath, os.W_OK):
         f = open(filepath, "w+")
         f.write(json.dumps(newdata, sort_keys=True, indent=4))
@@ -167,7 +164,7 @@ def upgrade_old_pref():
         # Never mind, the parent function should fix this later.
         return
 
-    # Is the configuration version up-to-date?
+    # Is the configuration version already up-to-date?
     if VERSION == config_version:
         return
 
@@ -280,7 +277,7 @@ def upgrade_old_pref():
         if old_colours == old_colour_json:
             os.remove(path.colours)
         else:
-            # Migrate colours from RGB lists to HEX strings.
+            # Migrate colours from RGB lists to hex strings.
             new_colours = []
             if type(old_colours) != list:
                 old_ids = list(old_colours.keys())
@@ -311,10 +308,9 @@ def get_custom_icons():
     return os.listdir(path.custom_icons)
 
 
-# Module Initalization
 def start_initalization():
     """
-    Prepares the preferences module for use.
+    Prepares the preferences module.
     """
     # Create folders if they do not exist.
     for folder in [path.root, path.effects, path.effects_keyframed, path.effects_scripted, path.effects_cache, path.presets, path.cache, path.custom_icons]:
@@ -330,13 +326,10 @@ def start_initalization():
     # Check the configuration and software version matches.
     upgrade_old_pref()
 
-    # Populate with defaults if none exists.
-    ## Default Preferences
+    # Validate preferences with defaults if non-existant.
     data = load_file(path.preferences)
-    if len(data) <= 2:
-        save_file(path.preferences, {})
 
-    ## Default Colours
+    # Generate colours with defaults if non-existant.
     data = load_file(path.colours)
     if len(data) <= 2:
         default_data = [
