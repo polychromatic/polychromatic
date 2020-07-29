@@ -61,16 +61,16 @@ def load_file(filepath):
     Returns:
         {}                  Data (dictionary object)
     """
-    if os.path.exists(filepath):
-        try:
-            with open(filepath) as stream:
-                data = json.load(stream)
-        except Exception as e:
-            dbg.stdout(filepath + ": Read error!", dbg.error)
-            dbg.stdout("Exception:\n" + common.get_exception_as_string(e), dbg.error)
-            init_config(filepath)
-            data = {}
-    else:
+    if not os.path.exists(filepath):
+        init_config(filepath)
+        data = {}
+
+    try:
+        with open(filepath) as stream:
+            data = json.load(stream)
+    except Exception as e:
+        dbg.stdout(filepath + ": Read error!", dbg.error)
+        dbg.stdout("Exception:\n" + common.get_exception_as_string(e), dbg.error)
         init_config(filepath)
         data = {}
 
@@ -98,6 +98,7 @@ def load_file(filepath):
         _validate("controller", "landing_tab", int, 0)
         _validate("controller", "show_menu_bar", bool, True)
         _validate("controller", "system_qt_theme", bool, False)
+        _validate("tray", "mode", int, 0)
         _validate("tray", "force_legacy_gtk_status", bool, False)
         _validate("tray", "icon", str, "ui/img/tray/light/polychromatic.svg")
 
@@ -131,66 +132,6 @@ def save_file(filepath, newdata):
         f.close()
         return True
     else:
-        return False
-
-
-def set(group, item, value, filepath=None):
-    """
-    Commits a new preference value, then saves it to disk.
-    A different file can be optionally specified.
-    """
-    # If haven't explicitly stated which file, assume preferences.
-    if filepath == None:
-        filepath = path.preferences
-
-    data = load_file(filepath)
-
-    # In case a boolean was incorrectly passed as a string, correct the data type.
-    if value == "true":
-        value = True
-    if value == "false":
-        value = False
-
-    # Create group if non-existent.
-    try:
-        data[group]
-    except:
-        data[group] = {}
-
-    # Write new setting and save.
-    try:
-        data[group][item] = value
-        save_file(filepath, data)
-    except Exception:
-        dbg.stdout("{3}: Write error! '{0}' for item '{1}' in group '{2}'".format(value, item, group, filepath), dbg.error)
-
-
-def get(group, item, filepath=None):
-    """
-    Read data from memory.
-    """
-    # If no file explicitly stated, assume preferences.
-    if filepath == None:
-        filepath = path.preferences
-
-    data = load_file(filepath)
-    value = data[group][item]
-    return value
-
-
-def exists(group, item, filepath=None):
-    """
-    Returns a boolean whether preference exists or not.
-    """
-    # If no file explicitly stated, assume preferences.
-    if filepath == None:
-        filepath = path.preferences
-
-    data = load_file(filepath)
-    try:
-        value = data[group][item]
-        return True
-    except:
         return False
 
 
@@ -311,7 +252,6 @@ def upgrade_old_pref():
                 "live_preview": old_live_preview    # Changed
             },
             "tray": {
-                "force_legacy_gtk_status": False,   # New
                 "icon": new_tray_value              # Changed
             }
         }

@@ -173,17 +173,19 @@ def set_default_tray_icon(pref):
     pref.set("tray", "icon", icon_value)
 
 
-def get_tray_icon(dbg, pref):
+def get_tray_icon(dbg, icon_value):
     """
     Returns the full path to the icon to use with the tray applet.
-    """
-    icon_value = pref.get("tray", "icon")
 
-    # Check if the icon is absolute - a custom icon
+    Params:
+        dbg             (obj)   Application's "dbg" object
+        icon_value      (str)   Preference value of ["tray"]["icon"]
+    """
+    # Check if the icon is absolute -> a custom icon
     if os.path.exists(icon_value):
         return icon_value
 
-    # Check if the icon is relative - a built-in icon
+    # Check if the icon is relative -> a built-in icon
     icon_builtin = os.path.join(get_data_dir_path(), icon_value)
     if os.path.exists(icon_builtin):
         return icon_builtin

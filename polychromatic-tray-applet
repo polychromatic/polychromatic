@@ -19,15 +19,14 @@
 """
 Control devices from the desktop environment's indicator applet or system tray.
 
-Powered by AppIndicator (GTK) or GTK Status Icon.
+Works as an AppIndicator (GTK) or GTK Status Icon.
 """
 import argparse
 import os
 import sys
 import signal
 import setproctitle
-from subprocess import Popen as background_process
-from subprocess import call as foreground_process
+import subprocess
 from shutil import which
 
 import gi
@@ -38,9 +37,9 @@ from gi.repository import Gtk, Gdk
 try:
     gi.require_version("AppIndicator3", "0.1")
     from gi.repository import AppIndicator3 as appindicator
-    indicator_support = True
+    APPINDICATOR = True
 except:
-    indicator_support = False
+    APPINDICATOR = False
 
 VERSION = "0.6.0"
 
@@ -68,124 +67,176 @@ else:
         print(str(e))
         exit(1)
 
-path = pref.Paths()
-
-def create_menu_item(label, enabled, function=None, function_params=None, icon_path=None):
-    """
-    Returns a Gtk menu item for use in menus.
-
-    Params:
-        label               (str)   Text to display to the user.
-        enabled             (bool)  Whether the selection should be highlighted or not.
-        function            (obj)   Callback when button is clicked.
-        function_params     (obj)   Functions to pass the callback function.
-        icon_path           (str)   Path to image file.
-    """
-    if icon_path and os.path.exists(icon_path):
-        item = Gtk.ImageMenuItem(label=label)
-        item.set_sensitive(enabled)
-        item.show()
-
-        img = Gtk.Image()
-        img.set_from_file(icon_path)
-        item.set_image(img)
-    else:
-        item = Gtk.MenuItem(label=label)
-        item.set_sensitive(enabled)
-        item.show()
-
-    if function and not function_params:
-        item.connect("activate", function)
-    elif function and function_params:
-        item.connect("activate", function, function_params)
-
-    return item
-
-def create_submenu_item(submenu, label, enabled, function=None, function_params=None, icon_path=None):
-    """
-    Appends a Gtk menu item to a submenu list.
-        submenu             lst     Submenu created by create_submenu()
-        <inherits create_menu_item parameters>
-    """
-    submenu[1].append(create_menu_item(label, enabled, function, function_params, icon_path))
-    return
-
-def create_submenu(label, enabled, icon_path=None):
-    """
-    Returns a Gtk menu item for sub-menu options.
-        label               str     Text to display to the user.
-        enabled             bool    Whether the selection should be highlighted or not.
-
-    Returns list of objects:
-        item                MenuItem (for parent menu)
-        menu                Menu (containing child menu items)
-    """
-    if icon_path and os.path.exists(icon_path):
-        item = Gtk.ImageMenuItem(label=label)
-        item.set_sensitive(enabled)
-        item.show()
-
-        img = Gtk.Image()
-        img.set_from_file(icon_path)
-        item.set_image(img)            # GTK3: Deprecated, no replacement!
-    else:
-        item = Gtk.MenuItem(label=label)
-        item.set_sensitive(enabled)
-        item.show()
-
-    menu = Gtk.Menu()
-    menu.show()
-    item.set_submenu(menu)
-
-    return[item, menu]
-
-def create_seperator():
-    """
-    Returns a Gtk seperator object.
-    """
-    sep = Gtk.SeparatorMenuItem()
-    sep.show()
-    return sep
-
-def get_icon(img_dir, icon):
-    """
-    Returns the path for a Polychromatic icon.
-        img_dir = Folder inside "ui/img", e.g. "effects"
-        icon    = Filename excluding the extension.
-    """
-    icon_path = os.path.join(common.DATA_PATH, "ui" ,"img", img_dir, icon + ".svg")
-    if os.path.exists(icon_path):
-        return icon_path
-
-
-class AppIndicator(object):
-    """
-    Indicator applet that provides quick access to device options from the system tray.
-    """
+class Indicator(object):
     def __init__(self):
+        """
+        List of technologies that can power the indicator/applet/tray icon.
+
+        For naming, this will be internally referred to as "indicator"
+        """
         self.indicator = None
+        self.root_menu = None
+        self.mode = prefs["tray"]["mode"]
 
-    def setup(self):
-        """
-        Assemble the tray applet powered by AppIndicator or GTK Status Icon.
-        """
-        if pref.get("tray", "force_legacy_gtk_status") == True:
-            global indicator_support
-            indicator_support = False
+        # 0 will use the default, unless it is unavailable.
+        if self.mode == 0:
+            self.mode = 1
 
-        # Create an indicator or status icon depending on support.
-        if indicator_support:
-            self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", self._get_tray_icon(), appindicator.IndicatorCategory.APPLICATION_STATUS)
+        self.appindicator = 1
+        self.gtk_status_icon = 2
+        self.names = {
+            self.appindicator: "AppIndicator",
+            self.gtk_status_icon: "GTKStatusIcon"
+        }
+
+        # Checks the specified mode is available.
+        if self.mode == self.appindicator and not APPINDICATOR:
+            dbg.stdout("AppIndicator is not available, falling back to GTKStatusIcon...", dbg.warning)
+            self.mode = self.gtk_status_icon
+
+    def setup(self, icon_path):
+        """
+        Creates the object, depending on backend in use.
+
+        Params:
+            icon_path       (str)       Absolute path to the icon
+        """
+        dbg.stdout("Initializing " + self.names[self.mode], dbg.action, 1)
+
+        if self.mode == self.appindicator:
+            self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", icon_path, appindicator.IndicatorCategory.APPLICATION_STATUS)
             self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
-            dbg.stdout(_("Initialised AppIndicator."), dbg.success, 1)
-        else:
+
+        elif self.mode == self.gtk_status_icon:
             self.indicator = Gtk.StatusIcon()
             self.indicator.set_name("polychromatic-tray-applet")
-            self.indicator.set_from_file(self._get_tray_icon())
+            self.indicator.set_from_file(icon_path)
             self.indicator.set_visible(True)
-            dbg.stdout(_("Initialised GTK Status Icon (fallback)."), dbg.success, 1)
 
-        # Output error if backends
+        dbg.stdout("Initialized " + self.names[self.mode], dbg.success, 1)
+
+    def create_menu(self):
+        """
+        Returns the root menu object.
+        """
+        if self.mode in [self.appindicator, self.gtk_status_icon]:
+            self.root_menu = Gtk.Menu()
+            return self.root_menu
+
+    def create_menu_item(self, menu, label, enabled, function=None, function_params=None, icon_path=None):
+        """
+        Returns a menu item object for appending into a menu.
+
+        Params:
+            menu                (obj)   create_menu() or create_submenu() object
+            label               (str)   Text to display to the user.
+            enabled             (bool)  Whether the selection should be highlighted or not.
+            function            (obj)   Callback when button is clicked.
+            function_params     (list)  Functions to pass the callback function.
+            icon_path           (str)   Path to image file.
+        """
+        if self.mode in [self.appindicator, self.gtk_status_icon]:
+            if icon_path and os.path.exists(icon_path):
+                item = Gtk.ImageMenuItem(label=label)
+                item.set_sensitive(enabled)
+                item.show()
+
+                img = Gtk.Image()
+                img.set_from_file(icon_path)
+                item.set_image(img)
+            else:
+                item = Gtk.MenuItem(label=label)
+                item.set_sensitive(enabled)
+                item.show()
+
+            if function and not function_params:
+                item.connect("activate", function)
+            elif function and function_params:
+                item.connect("activate", function, function_params)
+
+            menu.append(item)
+
+    def add_menu_item(self, menu, menu_item):
+        """
+        Add a menu item to the specified menu.
+        """
+        menu.append(menu_item)
+
+    def create_submenu(self, label, enabled, icon_path=None):
+        """
+        Create a submenu object, one to add to the parent menu, and the other
+        containing the new menu object itself.
+
+        Params:
+            label               (str)   Text to display to the user.
+            enabled             (bool)  Whether the selection should be highlighted or not.
+
+        Returns list of objects:
+            menu                Menu object (to contain new child menu items)
+            item                Menu item object (for appending to parent menu)
+        """
+        if self.mode in [self.appindicator, self.gtk_status_icon]:
+            if icon_path and os.path.exists(icon_path):
+                item = Gtk.ImageMenuItem(label=label)
+                item.set_sensitive(enabled)
+                item.show()
+
+                img = Gtk.Image()
+                img.set_from_file(icon_path)
+                item.set_image(img)            # GTK3: Deprecated, no replacement!
+            else:
+                item = Gtk.MenuItem(label=label)
+                item.set_sensitive(enabled)
+                item.show()
+
+            menu = Gtk.Menu()
+            menu.show()
+            item.set_submenu(menu)
+
+            return[menu, item]
+
+    def create_seperator(self, menu):
+        """
+        Returns a seperator object.
+
+        Params:
+            menu                (obj)   create_menu() or create_submenu() object.
+        """
+        if self.mode in [self.appindicator, self.gtk_status_icon]:
+            sep = Gtk.SeparatorMenuItem()
+            sep.show()
+            self.add_menu_item(menu, sep)
+
+    def finalize(self):
+        """
+        Connects the event for when the menu is opened/clicked.
+        """
+        if self.mode == self.appindicator:
+            self.indicator.set_title("Polychromatic")
+            self.indicator.set_menu(self.root_menu)
+
+        elif self.gtk_status_icon:
+            def _show_menu_cb(self, widget, button, time, data=None):
+                self.root_menu.show_all()
+                self.root_menu.popup(None, None, Gtk.StatusIcon.position_menu, self.indicator, button, time)
+
+            self.menu = self.root_menu
+            self.indicator.connect("popup-menu", _show_menu_cb)
+
+
+class PolychromaticTrayApplet():
+    """
+    Provides the logic for providing quick access to device options from the
+    system tray or notification area.
+    """
+    def __init__(self):
+        pass
+
+    def start(self):
+        """
+        Begin execution of the tray applet.
+        """
+        # Show error if no backends are available
         if len(middleman.backends) == 0:
             self._setup_failed(_("No backends available"), _("Please check the installation and try again"))
             return False
@@ -194,47 +245,43 @@ class AppIndicator(object):
         self.build_indicator()
         dbg.stdout("Finished setting up applet.", dbg.success, 1)
 
-        # TODO: Reload list on device changes
+    def _get_icon(self, img_dir, icon):
+        """
+        Returns the path for a Polychromatic icon.
+
+        Params:
+            img_dir         (str)   Folder inside "ui/img", e.g. "effects"
+            icon            (str)   Filename excluding the extension.
+        """
+        icon_path = os.path.join(common.DATA_PATH, "ui", "img", img_dir, icon + ".svg")
+        if os.path.exists(icon_path):
+            return icon_path
 
     def _get_tray_icon(self):
         """
         Returns path for tray icon.
         """
-        return common.get_tray_icon(dbg, pref)
-
-    def _show_menu_cb(self, widget, button, time, data=None):
-        """
-        Shows the non-indicator "legacy" implementation of the menu.
-        """
-        self.menu.show_all()
-        self.menu.popup(None, None, Gtk.StatusIcon.position_menu, self.indicator, button, time)
+        return common.get_tray_icon(dbg, prefs["tray"]["icon"])
 
     def _setup_failed(self, error_reason, exception=None):
         """
         A simple menu is displayed when something goes wrong.
         """
         dbg.stdout("Assembling error applet...", dbg.action, 1)
-        root = Gtk.Menu()
-        root.append(create_menu_item(error_reason, False))
+        menu = indicator.create_menu()
+        indicator.create_menu_item(menu, error_reason, False)
         if exception:
-            root.append(create_menu_item(_("Exception:") + ' ' + exception, False))
-        root.append(create_seperator())
-        root.append(create_menu_item(_("Refresh"), True, cb.retry_applet, None, get_icon("general", "refresh")))
-        root.append(create_menu_item(_("Troubleshoot"), True, cb.launch_controller, "troubleshoot", get_icon("general", "preferences")))
-        root.append(create_seperator())
-        root.append(create_menu_item(_("Open Controller"), True, cb.launch_controller, None, get_icon("general", "controller")))
-        root.append(create_menu_item(_("Quit"), True, cb.quit))
+            indicator.create_menu_item(menu, _("Exception:") + ' ' + exception, False)
+        indicator.create_seperator(menu)
+        indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
+        indicator.create_menu_item(menu, _("Troubleshoot"), True, cb.launch_controller, "troubleshoot", self._get_icon("general", "preferences"))
+        indicator.create_seperator(menu)
+        indicator.create_menu_item(menu, _("Open Controller"), True, cb.launch_controller, None, self._get_icon("general", "controller"))
+        indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
 
-        if indicator_support:
-            self.indicator.set_title("Polychromatic")
-            self.indicator.set_icon(get_icon("tray", "error"))
-            self.indicator.set_menu(root)
-        else:
-            self.indicator.set_from_file(get_icon("tray", "error"))
-            self.menu = root
-            self.indicator.connect("popup-menu", self._show_menu_cb)
+        indicator.finalize()
 
-        dbg.stdout("ERROR: " + error_reason, dbg.error)
+        dbg.stdout(error_reason, dbg.error)
         if exception:
             dbg.stdout("Exception: " + exception, dbg.error)
 
@@ -242,32 +289,26 @@ class AppIndicator(object):
         """
         Populates the menu for the tray applet.
         """
-        # Load the tray icon
-        if indicator_support:
-            self.indicator.set_icon_full(self._get_tray_icon(), _("Polychromatic Lighting Menu"))
-        else:
-            self.indicator.set_from_file(self._get_tray_icon())
+        indicator.setup(self._get_tray_icon())
 
         dbg.stdout("Loading device data...", dbg.action, 1)
         devices = middleman.get_device_all()
 
         dbg.stdout("Creating menus...", dbg.action, 1)
-        root = Gtk.Menu()
+        menu = indicator.create_menu()
 
         # List devices and their submenus.
         if len(devices) == 0:
             dbg.stdout("No devices found.", dbg.error, 1)
-            root.append(create_menu_item(_("No devices found."), False))
-            root.append(create_seperator())
-            root.append(create_menu_item(_("Refresh"), True, cb.retry_applet, None, get_icon("general", "refresh")))
-            root.append(create_menu_item(_("Troubleshoot"), True, cb.launch_controller, "troubleshoot", get_icon("general", "preferences")))
+            indicator.create_menu_item(menu, _("No devices found."), False)
+            indicator.create_seperator(menu)
+            indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
+            indicator.create_menu_item(menu, _("Troubleshoot"), True, cb.launch_controller, "troubleshoot", self._get_icon("general", "preferences"))
 
         for device in devices:
-            root.append(self.build_device_submenu(device)[0])
+            indicator.add_menu_item(menu, self.build_device_submenu(device))
 
         # When multiple devices are present, show 'apply to all' actions
-        if len(devices) > 1:
-            root.append(create_seperator())
 
             # -- Effects
 
@@ -277,30 +318,22 @@ class AppIndicator(object):
 
 
         # General Options
-        root.append(create_seperator())
-        root.append(create_menu_item(_("Open Controller"), True, cb.launch_controller, None, get_icon("general", "controller")))
-        root.append(create_menu_item(_("Quit"), True, cb.quit))
 
-        # Finalise tray applet.
-        if indicator_support:
-            self.indicator.set_title("Polychromatic")
-            self.indicator.set_menu(root)
-        else:
-            self.menu = root
-            self.indicator.connect("popup-menu", self._show_menu_cb)
+        indicator.create_seperator(menu)
+        indicator.create_menu_item(menu, _("Open Controller"), True, cb.launch_controller, None, self._get_icon("general", "controller"))
+        indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
+        indicator.finalize()
 
     def build_device_submenu(self, device):
         """
         Assembles the menu (and submenus) that control an individual device_item.
         """
-        backend = device["backend"] # FIXME unused?
-        uid = device["uid"] # FIXME unused?
         device_name = device["name"]
         device_icon = device["form_factor"]["icon"]
         multiple_zones = len(device["zone_options"]) > 1
         can_set_colours = False
 
-        submenu = create_submenu(device_name, True, device_icon)
+        submenu, submenu_item = indicator.create_submenu(device_name, True, device_icon)
         dbg.stdout("- " + device_name, dbg.action, 1)
 
         for zone in device["zone_options"].keys():
@@ -309,13 +342,13 @@ class AppIndicator(object):
 
             # Create label when multiple zones are present
             if multiple_zones:
-                submenu[1].append(create_menu_item(zone_name, False, None, None, zone_icon))
+                indicator.create_menu_item(submenu, zone_name, False, None, None, zone_icon)
 
             # Add options
             for option in device["zone_options"][zone]:
                 option_id = option["id"]
                 option_label = locales.get(option_id)
-                option_icon = get_icon("options", option_id)
+                option_icon = self._get_icon("options", option_id)
 
                 # Show 'Edit Colours' later if supported
                 if option["colours"] > 0:
@@ -325,10 +358,10 @@ class AppIndicator(object):
                 if option["type"] in ["effect", "multichoice"]:
                     # Option does not accept parameters, just a button
                     if len(option["parameters"]) == 0:
-                        submenu[1].append(create_menu_item(option_label, True, cb.set_option, [device, zone, option_id, None], option_icon))
+                        indicator.create_menu_item(submenu, option_label, True, cb.set_option, [device, zone, option_id, None], option_icon)
                     else:
                         # Create a submenu for effects
-                        submenu[1].append(self.create_parameters_menu(device, zone, option)[0])
+                        indicator.add_menu_item(submenu, self.create_parameters_menu(device, zone, option))
 
                         for param in option["parameters"]:
                             if param["colours"] > 0:
@@ -336,39 +369,38 @@ class AppIndicator(object):
 
                 # Option is a slider, for values between 0 and 100.
                 elif option["type"] == "slider":
-                    submenu[1].append(self.create_slider_menu(device, zone, option)[0])
+                    indicator.add_menu_item(submenu, self.create_slider_menu(device, zone, option))
 
                 elif option["type"] == "toggle":
-                    submenu[1].append(self.create_toggle_menu(device, zone, option)[0])
+                    indicator.add_menu_item(submenu, self.create_toggle_menu(device, zone, option))
 
             # Add DPI
             if zone == "main" and device["dpi_x"]:
-                dpi_menu = create_submenu(_("DPI"), True, get_icon("general", "dpi"))
+                dpi_menu, dpi_menu_item = indicator.create_submenu(_("DPI"), True, self._get_icon("general", "dpi"))
                 for item, dpi in enumerate(device["dpi_ranges"]):
                     icon = None
                     if item == 0:
-                        icon = get_icon("general", "dpi-slow")
+                        icon = self._get_icon("general", "dpi-slow")
                     elif item == 5:
-                        icon = get_icon("general", "dpi-fast")
-                    create_submenu_item(dpi_menu, str(dpi), True, cb.set_dpi, [device, dpi], icon)
-                submenu[1].append(dpi_menu[0])
+                        icon = self._get_icon("general", "dpi-fast")
+                    indicator.create_menu_item(dpi_menu, str(dpi), True, cb.set_dpi, [device, dpi], icon)
+                indicator.add_menu_item(submenu, dpi_menu_item)
 
             # Create seperator if there was a zone label
             if multiple_zones:
-                submenu[1].append(create_seperator())
+                indicator.create_seperator(submenu)
 
         if device["matrix"]:
-            submenu[1].append(create_seperator())
+            indicator.create_seperator(submenu)
 
-            #TODO: Add custom effects menu
-            create_submenu_item(submenu, _("Effects not yet implemented"), False)
+            # TODO: Add custom effects menu
+            indicator.create_menu_item(submenu, _("Effects not yet implemented"), False)
+            indicator.create_menu_item(submenu, _("Edit Effects..."), True, cb.launch_controller, "effects", self._get_icon("general", "edit"))
 
-            submenu[1].append(create_seperator())
-            create_submenu_item(submenu, _("Edit Effects..."), True, cb.launch_controller, "effects", get_icon("general", "edit"))
 
         # Colour (repeats last effect)
         if can_set_colours:
-            colour_menu = create_submenu(_("Change Colour"), True, get_icon("general", "palette"))
+            colour_menu, colour_menu_item = indicator.create_submenu(_("Change Colour"), True, self._get_icon("general", "palette"))
 
             if device["monochromatic"]:
                 col_index = common.get_green_shades()
@@ -379,17 +411,17 @@ class AppIndicator(object):
                 try:
                     name = col_index[pos]["name"]
                     hex_value = col_index[pos]["hex"]
-                    create_submenu_item(colour_menu, name, True, cb.set_colour, [backend, uid, zone, hex_value], self._get_colour_icon(hex_value))
+                    indicator.create_menu_item(colour_menu, name, True, cb.set_colour, [device, zone, hex_value], self._get_colour_icon(hex_value))
                 except Exception:
                     dbg.stdout("Ignoring invalid colour data at index position " + str(pos), dbg.error)
 
-            colour_menu[1].append(create_seperator())
-            create_submenu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [backend, uid, zone], get_icon("general", "palette"))
-            create_submenu_item(colour_menu, _("Edit Colours..."), True, cb.launch_controller, "colours", get_icon("general", "edit"))
-            submenu[1].append(create_seperator())
-            submenu[1].append(colour_menu[0])
+            indicator.create_seperator(colour_menu)
+            indicator.create_menu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [device, zone], self._get_icon("general", "palette"))
+            indicator.create_menu_item(colour_menu, _("Edit Colours..."), True, cb.launch_controller, "colours", self._get_icon("general", "edit"))
+            indicator.create_seperator(submenu)
+            indicator.add_menu_item(submenu, colour_menu_item)
 
-        return submenu
+        return submenu_item
 
     def create_parameters_menu(self, device, zone, option):
         """
@@ -397,7 +429,7 @@ class AppIndicator(object):
         choice or effect list.
         """
         option_id = option["id"]
-        submenu = create_submenu(locales.get(option_id), True, get_icon("options", option_id))
+        submenu, submenu_item = indicator.create_submenu(locales.get(option_id), True, self._get_icon("options", option_id))
 
         for param in option["parameters"]:
             param_id = param["id"]
@@ -406,9 +438,9 @@ class AppIndicator(object):
             # Some IDs have submenu icons
             icon = None
 
-            create_submenu_item(submenu, locales.get(param_id), True, cb.set_option, [device, zone, option_id, param_data], icon)
+            indicator.create_menu_item(submenu, locales.get(param_id), True, cb.set_option, [device, zone, option_id, param_data], icon)
 
-        return submenu
+        return submenu_item
 
     def create_slider_menu(self, device, zone, option):
         """
@@ -416,7 +448,7 @@ class AppIndicator(object):
         create five calculated intervals (e.g. 0-100 -> 0,25,50,75,100)
         """
         option_id = option["id"]
-        submenu = create_submenu(locales.get(option_id), True, get_icon("options", option_id))
+        submenu, submenu_item = indicator.create_submenu(locales.get(option_id), True, self._get_icon("options", option_id))
 
         suffix = option["suffix"]
         min = int(option["min"])
@@ -426,33 +458,33 @@ class AppIndicator(object):
             # Some IDs have submenu icons
             icon = None
             if option_id == "brightness":
-                icon = get_icon("options", str(no))
+                icon = self._get_icon("options", str(no))
 
-            create_submenu_item(submenu, str(no) + suffix, True, cb.set_option, [device, zone, option_id, int(no)], icon)
+            indicator.create_menu_item(submenu, str(no) + suffix, True, cb.set_option, [device, zone, option_id, int(no)], icon)
 
-        return submenu
+        return submenu_item
 
     def create_toggle_menu(self, device, zone, option):
         """
         Creates the submenu for an option that is either on/off.
         """
         option_id = option["id"]
-        submenu = create_submenu(locales.get(option_id), True, get_icon("options", option_id))
+        submenu, submenu_item = indicator.create_submenu(locales.get(option_id), True, self._get_icon("options", option_id))
 
         # Some IDs have submenu icons
         icon_on = None
         icon_off = None
         if option_id == "game_mode":
-            icon_on = get_icon("options", "game_mode")
-            icon_off = get_icon("options", "game_mode_disabled")
+            icon_on = self._get_icon("options", "game_mode")
+            icon_off = self._get_icon("options", "game_mode_disabled")
         elif option_id == "brightness":
-            icon_on = get_icon("options", "100")
-            icon_off = get_icon("options", "0")
+            icon_on = self._get_icon("options", "100")
+            icon_off = self._get_icon("options", "0")
 
-        create_submenu_item(submenu, _("On"), True, cb.set_option, [device, zone, option_id, True], icon_on)
-        create_submenu_item(submenu, _("Off"), True, cb.set_option, [device, zone, option_id, False], icon_off)
+        indicator.create_menu_item(submenu, _("On"), True, cb.set_option, [device, zone, option_id, True], icon_on)
+        indicator.create_menu_item(submenu, _("Off"), True, cb.set_option, [device, zone, option_id, False], icon_off)
 
-        return submenu
+        return submenu_item
 
     def _get_colour_icon(self, colour_hex):
         """
@@ -464,7 +496,7 @@ class AppIndicator(object):
         colour_path = os.path.join(session_storage, "{0}.png".format(colour_hex.strip("#")))
         if not os.path.exists(colour_path):
             dbg.stdout("Generating colour bitmap: " + colour_hex, dbg.action, 1)
-            foreground_process("convert -size 22x22 xc:{0} {1}".format(colour_hex, colour_path), shell=True)
+            subprocess.call("convert -size 22x22 xc:{0} {1}".format(colour_hex, colour_path), shell=True)
         if not os.path.exists(colour_path):
             dbg.stdout("ERROR: Failed to generate bitmap: " + colour_hex, dbg.error)
             return None
@@ -478,7 +510,7 @@ class Callback():
     @staticmethod
     def launch_controller(item, tab=None):
         """
-        GTK menu item callback to open the Controller application.
+        Option clicked to open the Controller application.
 
         Params:
             tab     (Optional) Open a specific tab in the Controller
@@ -493,7 +525,7 @@ class Callback():
     @staticmethod
     def quit(item):
         """
-        GTK menu item callback to quit the application.
+        Option clicked to quit the application.
         """
         dbg.stdout("Exiting...", dbg.action, 1)
         exit(0)
@@ -501,7 +533,7 @@ class Callback():
     @staticmethod
     def retry_applet(item):
         """
-        GTK menu item callback to restart the tray applet.
+        Option clicked to restart the tray applet.
         """
         dbg.stdout("Restarting applet...", dbg.action, 1)
         os.execv(__file__, sys.argv)
@@ -510,7 +542,7 @@ class Callback():
     @staticmethod
     def set_option(item, attr):
         """
-        GTK menu item to set an effect for a device.
+        Option clicked to set an effect for a device.
 
         Params:
             attr    [device, zone, option_id, option_data]
@@ -550,8 +582,7 @@ class Callback():
     @staticmethod
     def set_colour(item, attr):
         """
-        GTK menu item callback to replay the current effect but use a different
-        primary colour.
+        Option clicked to choose a different primary colour.
 
         Params:
             attr    [uid, zone, hex_string]
@@ -570,7 +601,7 @@ class Callback():
     @staticmethod
     def set_dpi(item, attr):
         """
-        GTK menu item callback to set the DPI of a device.
+        Option clicked to set the DPI of a device.
 
         Params:
             attr    [device, dpi_x]
@@ -588,7 +619,7 @@ class Callback():
     @staticmethod
     def set_all_effect(item, attr):
         """
-        GTK menu item callback to set an effect for all devices (using defaults)
+        Option clicked to set an effect for all devices (using defaults)
 
         Params:
             option_id       ID of effect to set
@@ -759,7 +790,9 @@ if __name__ == "__main__":
 
     # Initialise the indicator
     cb = Callback()
-    indicator = AppIndicator()
-    indicator.setup()
+    prefs = pref.load_file(path.preferences)
+    indicator = Indicator()
+    app = PolychromaticTrayApplet()
+    app.start()
 
     Gtk.main()
