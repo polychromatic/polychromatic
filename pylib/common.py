@@ -157,7 +157,7 @@ def set_default_tray_icon(pref):
     elif theme_env.startswith("Ambiant") or theme_env.startswith("Ambiance"):
         icon_value = "ui/img/tray/light/humanity.svg"
 
-    pref.set("tray", "icon", icon_value)
+    return icon_value
 
 
 def get_tray_icon(dbg, icon_value):
