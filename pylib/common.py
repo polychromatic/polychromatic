@@ -304,23 +304,6 @@ def restart_openrazer_daemon(dbg, devman):
     os.execv(__file__, sys.argv)
 
 
-def get_path_from_gtk_icon_name(icon_name):
-    """
-    Returns an image path determined by a GTK icon name, if there is one.
-    """
-    theme = Gtk.IconTheme.get_default()
-    info = theme.lookup_icon(icon_name, 22, 0)
-    try:
-        filename = info.get_filename()
-    except Exception:
-        filename= None
-
-    if filename:
-        return filename
-    else:
-        return ""
-
-
 def run_thread(target_function, args=()):
     """
     Executes a function that will run outside the main thread.

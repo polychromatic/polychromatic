@@ -98,7 +98,6 @@ def load_file(filepath):
         _validate("controller", "show_menu_bar", bool, True)
         _validate("controller", "system_qt_theme", bool, False)
         _validate("tray", "mode", int, 0)
-        _validate("tray", "force_legacy_gtk_status", bool, False)
         _validate("tray", "icon", str, "ui/img/tray/light/polychromatic.svg")
 
     return(data)
@@ -212,10 +211,34 @@ def upgrade_old_pref():
 
         # -- Tray icon is now one key (a relative or absolute path)
         new_tray_value = ""
+
+        def get_path_from_gtk_icon_name(icon_name):
+            """
+            Returns an image path determined by a GTK icon name, if there is one.
+
+            This is a legacy feature as the tray icon is a relative/absolute path,
+            but remains so users upgrading from v0.3.12.
+            """
+            import gi
+            gi.require_version("Gtk", "3.0")
+            from gi.repository import Gtk
+
+            theme = Gtk.IconTheme.get_default()
+            info = theme.lookup_icon(icon_name, 22, 0)
+            try:
+                filename = info.get_filename()
+            except Exception:
+                filename= None
+
+            if filename:
+                return filename
+            else:
+                return ""
+
         try:
             old_type = old_data["tray_icon"]["type"]
             if old_type == "gtk":
-                new_tray_value = common.get_path_from_gtk_icon_name(old_data["tray_icon"]["value"])
+                new_tray_value = get_path_from_gtk_icon_name(old_data["tray_icon"]["value"])
             elif old_type == "custom":
                 new_tray_value = old_data["tray_icon"]["value"]
             elif old_type == "builtin":
