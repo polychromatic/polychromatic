@@ -121,19 +121,6 @@ def get_form_factor(form_factor_id):
     }
 
 
-def get_wave_direction(form_factor_id):
-    """
-    Returns a list of localised direction strings according to the device.
-    """
-    if form_factor_id == "mouse":
-        return [locales.get("down"), locales.get("up")]
-
-    elif form_factor_id == "mousemat":
-        return [locales.get("clock"), locales.get("anticlock")]
-
-    return [locales.get("left"), locales.get("right")]
-
-
 def get_green_shades():
     """
     Returns a custom colours.json for use with non-RGB keyboards,
@@ -238,70 +225,6 @@ def execute_polychromatic_component(dbg, component, tab=None):
                 pass
             return True
     return False
-
-
-def restart_tray_applet(dbg, current_bin_path): #TODO: restart_polychromatic_component
-    """
-    Restarts the tray applet if an instance is running in the background.
-    Returns True/False depending on success.
-
-    Params:
-        dbg                 Debugging() object
-        current_bin_path    Application's __file__
-    """
-    dbg.stdout("Restarting tray applet...", dbg.action, 1)
-
-    try:
-        pid = int(subprocess.check_output(["pidof", "polychromatic-tray-applet"]))
-        os.kill(pid, 9)
-    except Exception:
-        dbg.stdout("Tray applet PID not found.", dbg.warning, 1)
-        return False
-
-    return execute_polychromatic_component(dbg, "tray-applet")
-
-
-def restart_openrazer_daemon(dbg, devman):
-    """
-    Restarts the OpenRazer daemon.
-    Returns True/False depending on success.
-    """
-    dbg.stdout("Restarting OpenRazer daemon...", dbg.action, 1)
-
-    # Try gracefully via OpenRazer Python library.
-    try:
-        dbg.stdout("-- Stopping via DeviceManager...", dbg.action, 1)
-        devman.stop_daemon()
-        dbg.stdout("-- OK!", dbg.success, 1)
-    except Exception as e:
-        dbg.stdout("-- Error!", dbg.error, 1)
-
-    # Check process is still running
-    try:
-        daemon_pid = int(subprocess.check_output(["pidof", "openrazer-daemon"]))
-        still_running = True
-    except subprocess.CalledProcessError:
-        # Returns 1 if
-        still_running = False
-
-    # Kill the daemon if still not ended
-    if still_running:
-        dbg.stdout("-- Killing process PID {0}...".format(str(daemon_pid)), dbg.action, 1)
-        os.kill(daemon_pid, 9)
-
-    # Ensure a clean log
-    dbg.stdout("-- Archiving razer.log...", dbg.action, 1)
-    log_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log")
-    log_bak = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log.bak")
-    if os.path.exists(log_path):
-        os.rename(log_path, log_bak)
-
-    # Wait for daemon to start again
-    dbg.stdout("-- Starting openrazer-daemon...", dbg.action, 1)
-    subprocess.Popen("openrazer-daemon", shell=True)
-
-    # Running application must restart.
-    os.execv(__file__, sys.argv)
 
 
 def run_thread(target_function, args=()):
