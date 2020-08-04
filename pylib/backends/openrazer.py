@@ -207,77 +207,41 @@ class Backend(_backend.Backend):
         zone_icons = self._get_zone_icons(_zones, name)
         zone_options = {}
 
-        zone_to_capability = {
-            "main": "lighting",
-            "logo": "lighting_logo",
-            "scroll": "lighting_scroll",
-            "backlight": "lighting_backlight",
-            "left": "lighting_left",
-            "right": "lighting_right"
-        }
-
         def _device_has_zone_capability(capability):
-            return rdevice.has(zone_to_capability[zone] + "_" + capability)
-
-        _has_effect = False
-        _has_brightness = False
+            return self._device_has_zone_capability(rdevice, zone, capability)
 
         for zone in _zones:
             options = []
             rzone = self._get_zone_as_object(rdevice, zone)
 
-            # Brightness Controls
-            brightness_control = None
+            # Brightness - toggle or slider?
+            brightness_parent, brightness_type = self._get_device_brightness(rdevice, zone)
 
-            # -- Device uses a variable (0-100)
-            if _device_has_zone_capability("brightness") and not zone == "main":
-                _has_brightness = True
-                brightness_control = {
+            if brightness_type == int:
+                options.append({
                     "id": "brightness",
                     "type": "slider",
-                    "value": int(rzone.brightness),
+                    "value": int(brightness_parent.brightness),
                     "min": 0,
                     "max": 100,
                     "step": 5,
                     "suffix": "%",
                     "colours": 0 # n/a
-                }
+                })
 
-            # -- Except that the 'main' brightness isn't called 'lighting_brightness'
-            elif rdevice.has("brightness") and zone == "main":
-                _has_brightness = True
-                brightness_control = {
-                    "id": "brightness",
-                    "type": "slider",
-                    "value": int(rdevice.brightness),
-                    "min": 0,
-                    "max": 100,
-                    "step": 5,
-                    "suffix": "%",
-                    "colours": 0 # n/a
-                }
-
-            # -- Or this device uses a on/off toggle (main does not have this)
-            if _device_has_zone_capability("active") and not zone == "main":
-                _has_brightness = True
-                brightness_control = {
+            elif brightness_type == bool:
+                options.append({
                     "id": "brightness",
                     "type": "toggle",
-                    "active": True if rzone.active else False,
+                    "active": True if brightness_parent.active else False,
                     "colours": 0 # n/a
-                }
-
-            # Some devices may erroneously have both 'brightness' and 'active',
-            # so make sure the toggle is priority.
-            if brightness_control:
-                options.append(brightness_control)
+                })
 
             # Hardware Effects
             current_state = self._read_persistence_storage(rdevice, zone)
 
             for effect in ["spectrum", "wave", "reactive", "ripple", "static", "pulsate", "blinking"]:
                 if _device_has_zone_capability(effect):
-                    _has_effect = True
                     effect_option = {
                         "id": effect,
                         "type": "effect",
@@ -323,7 +287,6 @@ class Backend(_backend.Backend):
                                 "active": current_state["effect"] == "ripple",
                                 "colours": 1
                             })
-                            effect_option["colour_1"] = current_state["colour_1"]
 
                         if _device_has_zone_capability("ripple_random"):
                             effect_option["parameters"].append({
@@ -361,13 +324,16 @@ class Backend(_backend.Backend):
                                 "colours": 1
                             }
                         ]
-                        effect_option["colour_1"] = current_state["colour_1"]
 
                     elif effect in "static":
                         effect_option["colours"] = 1
-                        effect_option["colour_1"] = current_state["colour_1"]
 
                     effect_option["active"] = True if effect.startswith(current_state["effect"]) else False
+
+                    # Always store the last used colours (same for each zone per device)
+                    effect_option["colour_1"] = current_state["colour_1"]
+                    effect_option["colour_2"] = current_state["colour_2"]
+                    effect_option["colour_3"] = current_state["colour_3"]
 
                     options.append(effect_option)
 
@@ -608,21 +574,16 @@ class Backend(_backend.Backend):
                 pass
 
         try:
-            # Brightness - CLI passes as a string
-            if option_id == "brightness" and type(option_data) == str:
-                option_data = int(option_data)
+            # Brightness or active?
+            brightness_parent, brightness_type = self._get_device_brightness(rdevice, zone)
 
-            # Brightness (slider)
-            if option_id == "brightness" and type(option_data) == int and zone == "main":
-                if rdevice.has("brightness"):
-                    rdevice.brightness = int(option_data)
+            if option_id == "brightness":
+                # Slider value or CLI string
+                if brightness_type in [int, str]:
+                    brightness_parent.brightness = int(option_data)
 
-            elif option_id == "brightness" and type(option_data) == int and zone != "main":
-                rzone.brightness = int(option_data)
-
-            # Brightness (toggle)
-            elif option_id == "brightness" and type(option_data) == bool:
-                rzone.active = option_data
+                elif brightness_type == bool:
+                    brightness_parent.active = option_data
 
             # Effects and their parameters
             elif option_id == "spectrum":
@@ -783,6 +744,22 @@ class Backend(_backend.Backend):
             pass
 
         return zone_to_device[zone]
+
+    def _device_has_zone_capability(self, rdevice, zone, capability):
+        """
+        Returns a boolean whether the capability is available for the specified zone.
+
+        For example, "active" for zone "logo" will check "lighting_logo_active"
+        """
+        zone_to_capability = {
+            "main": "lighting",
+            "logo": "lighting_logo",
+            "scroll": "lighting_scroll",
+            "backlight": "lighting_backlight",
+            "left": "lighting_left",
+            "right": "lighting_right"
+        }
+        return rdevice.has(zone_to_capability[zone] + "_" + capability)
 
     def _get_supported_zones(self, rdevice):
         """
@@ -964,6 +941,42 @@ class Backend(_backend.Backend):
             return True
 
         return False
+
+    def _get_device_brightness(self, rdevice, zone):
+        """
+        Returns both the object and data type required for setting the brightness
+        of the specified zone.
+
+        OpenRazer has two kinds of adjusting lighting:
+            .brightness = a variable between 0 and 100.
+            .active = an on/off state.
+
+        Returns None if brightness is unsupported for the zone.
+
+        Returns a list:
+            (object)        The parent object to reference 'brightness' or 'active'
+            (data type)     The data type expected by this object.
+
+        Example returns:
+            - [a.fx, int]               for main 'brightness'
+            - [a.fx.misc.logo, bool]    for logo 'active'
+        """
+        # -- Device uses a variable (0-100) and it's 'main' so use the root element
+        if rdevice.has("brightness") and zone == "main":
+            return [rdevice, int]
+
+        rzone = self._get_zone_as_object(rdevice, zone)
+
+        # -- Device is a 'brightness' nested under the zone object
+        if self._device_has_zone_capability(rdevice, zone, "brightness"):
+            return [rzone, int]
+
+        # -- Device uses an on/off state (zones only)
+        if self._device_has_zone_capability(rdevice, zone, "active"):
+            return [rzone, bool]
+
+        # -- Device does not support brightness/toggle options
+        return [None, None]
 
     def _convert_colour_bytes(self, raw):
         """

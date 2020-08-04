@@ -128,6 +128,19 @@ class Middleman(object):
 
         return device
 
+    def get_device_all(self):
+        """
+        Returns a list containing every get_device() dictionary. Devices that
+        encounter an error are skipped.
+        """
+        device_list = self.get_device_list()
+        devices = []
+        for device_item in device_list:
+            device = self.get_device(device_item["backend"], device_item["uid"])
+            if type(device) == dict:
+                devices.append(device)
+        return devices
+
     def set_device_state(self, backend, uid, serial, zone, option_id, option_data, colour_hex):
         """
         Sends a request to the the device, like setting the brightness, the hardware
@@ -169,3 +182,155 @@ class Middleman(object):
         for module in self.backends:
             if module.backend_id == backend:
                 return module.restart()
+
+    def _get_current_device_option(self, device):
+        """
+        Return the currently 'active' option, its parameter and colour(s), if applicable.
+        Usually this would be an effect.
+
+        Params:
+            device          (dict)      middleman.get_device() object
+
+        Returns list:
+        [option_id, option_data, colour_hex]
+        """
+        option_id = None
+        option_data = None
+        colour_hex = []
+        colour_count = 0
+        found_option = None
+
+        for zone in device["zone_options"].keys():
+            for option in device["zone_options"][zone]:
+                if not "active" in option.keys():
+                    continue
+
+                if not option["type"] == "effect":
+                    continue
+
+                if option["active"] == True:
+                    found_option = option
+                    option_id = option["id"]
+                    colour_count = option["colours"]
+
+                    try:
+                        if len(option["parameters"]) == 0:
+                            break
+                        else:
+                            for param in option["parameters"]:
+                                if param["active"] == True:
+                                    option_data = param["id"]
+                                    colour_count = param["colours"]
+                                    break
+                    except KeyError:
+                        # Toggle or slider do not have a 'parameters' key
+                        pass
+
+        for i in range(1, colour_count + 1):
+            colour_hex.append(found_option["colour_" + str(i)])
+
+        return [option_id, option_data, colour_hex]
+
+    def set_device_colour_1(self, device, zone, hex_value):
+        """
+        Replays the currently selected effect (option_id) with the same parameters
+        (option_data) but with a different primary colour.
+
+        The return code is the same as set_device_state()
+        """
+        option_id, option_data, colour_hex = self._get_current_device_option(device)
+        colour_hex[0] = hex_value
+        return self.set_device_state(device["backend"], device["uid"], device["serial"], zone, option_id, option_data, colour_hex)
+
+    def set_bulk_option(self, option_id, option_data, colours_needed):
+        """
+        The "Apply to All" function that will set all of the devices to the specified
+        effect (option ID and option parameter), such as "breath" and "single", or
+        "static" and None.
+
+        The colour for the device will be re-used from a previous selection.
+
+        Params:
+            option_id           (str)
+            option_data         (str)
+            colours_needed      (int)
+
+        Parameters may be determined by the common.get_bulk_apply_options() function.
+
+        Return is null.
+        """
+        self._dbg.stdout("Setting all devices to '{0}' (parameter: {1})".format(option_id, option_data), self._dbg.action, 1)
+
+        devices = self.get_device_all()
+        for device in devices:
+            name = device["name"]
+            backend = device["backend"]
+            uid = device["uid"]
+            serial = device["serial"]
+            colour_hex = []
+
+            for zone in device["zone_options"].keys():
+                # Skip if the device's zone/options doesn't support this request
+                skip = True
+                for option in device["zone_options"][zone]:
+                    if option["id"] == option_id:
+                        skip = False
+
+                        for i in range(1, colours_needed + 1):
+                            colour_hex.append(option["colour_" + str(i)])
+
+                        break
+
+                if skip:
+                    continue
+
+                self._dbg.stdout("- {0} [{1}]".format(name, zone), self._dbg.action, 1)
+                result = self.set_device_state(backend, uid, serial, zone, option_id, option_data, colour_hex)
+                if result == True:
+                    self._dbg.stdout("Request OK", self._dbg.success, 1)
+                elif result == False:
+                    self._dbg.stdout("Bad request!", self._dbg.error, 1)
+                else:
+                    self._dbg.stdout("Error: " + str(result), self._dbg.error, 1)
+
+    def set_bulk_colour(self, new_colour_hex):
+        """
+        The "Apply to All" function that will set all of the devices to the specified
+        primary colour. Some devices may not be playing an effect that uses a colour
+        (e.g. wave, spectrum) and as such, this will cause no effect.
+
+        Params:
+            new_colour_hex      (str)
+
+        Return is null.
+        """
+        self._dbg.stdout("Setting all primary colours to {0}".format(new_colour_hex), self._dbg.action, 1)
+
+        devices = self.get_device_all()
+        for device in devices:
+            option_id, option_data, colour_hex = self._get_current_device_option(device)
+            name = device["name"]
+            backend = device["backend"]
+            uid = device["uid"]
+            serial = device["serial"]
+
+            for zone in device["zone_options"].keys():
+
+                # Skip if the device's zone/options doesn't support this request
+                skip = True
+                for option in device["zone_options"][zone]:
+                    if option["id"] == option_id:
+                        skip = False
+                        break
+
+                if skip:
+                    continue
+
+                self._dbg.stdout("- {0} [{1}]".format(name, zone), self._dbg.action, 1)
+                result = self.set_device_colour_1(device, zone, new_colour_hex)
+                if result == True:
+                    self._dbg.stdout("Request OK", self._dbg.success, 1)
+                elif result == False:
+                    self._dbg.stdout("Bad request!", self._dbg.error, 1)
+                else:
+                    self._dbg.stdout("Error: " + str(result), self._dbg.error, 1)

@@ -154,8 +154,8 @@ class Backend(object):
                         ],
                         "colours":              (int)   This option inputs this amount of colours.
                                                         Ignored when parameters are present.
-                        "colour_1": "#RRGGBB"   (str)   Current hex value for colour 1.
-                        "colour_2": "#RRGGBB"   (str)   Current hex value for colour 2 and so forth.
+                        "colour_1": "#RRGGBB"   (str)   Currently saved hex value for primary colour.
+                        "colour_2": "#RRGGBB"   (str)   Currently saved hex value for secondary colour (etc)
 
                         # Only for effect and toggle
 

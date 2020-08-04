@@ -293,6 +293,7 @@ class PolychromaticTrayApplet():
 
         dbg.stdout("Loading device data...", dbg.action, 1)
         devices = middleman.get_device_all()
+        unknown_devices = middleman.get_unsupported_devices()
 
         dbg.stdout("Creating menus...", dbg.action, 1)
         menu = indicator.create_menu()
@@ -308,17 +309,65 @@ class PolychromaticTrayApplet():
         for device in devices:
             indicator.add_menu_item(menu, self.build_device_submenu(device))
 
+        for device in unknown_devices:
+            indicator.create_menu_item(menu, "{0} {1}".format(_("Unrecognised:"), device["name"]), False, None, None, device["form_factor"]["icon"])
+
         # When multiple devices are present, show 'apply to all' actions
+        if len(devices) > 1:
+            bulk_menu, bulk_menu_item = indicator.create_submenu(_("Apply to All"), True, self._get_icon("devices", "all"))
+            bulk = common.get_bulk_apply_options(devices)
 
-            # -- Effects
+            effects = bulk["effects"]
+            brightnesses = bulk["brightness"][::-1]
 
+            # -- Brightness
+            if len(brightnesses) > 0:
+                indicator.create_menu_item(bulk_menu, _("Brightness"), False, None, None, self._get_icon("options", "brightness"))
 
+            for brightness in brightnesses:
+                option_id = brightness["option_id"]
+                option_data = brightness["option_data"]
 
+                label = str(option_data) + "%"
+                icon = self._get_icon("options", str(option_data))
 
+                indicator.create_menu_item(bulk_menu, label, True, cb.set_bulk_option, [option_id, option_data, 0], icon)
 
+            # -- Options
+            if len(effects) > 0:
+                # Separate from brightness, if necessary
+                if len(brightnesses) > 0:
+                    indicator.create_seperator(bulk_menu)
+
+                indicator.create_menu_item(bulk_menu, _("Effects"), False, None, None, self._get_icon("options", "ripple"))
+
+            for option in bulk["effects"]:
+                option_id = option["option_id"]
+                option_data = option["option_data"]
+                colours_needed = option["colours"]
+
+                label = locales.get(option_id)
+                icon = self._get_icon("options", str(option_id))
+
+                indicator.create_menu_item(bulk_menu, label, True, cb.set_bulk_option, [option_id, option_data, colours_needed], icon)
+
+            # -- Colours
+            if len(effects) > 0:
+                indicator.create_seperator(bulk_menu)
+                colour_menu, colour_menu_item = indicator.create_submenu(_("Primary Colour"), True, self._get_icon("general", "palette"))
+
+                for colour in colours:
+                    label = colour["name"]
+                    data = colour["hex"]
+                    icon = self._get_colour_icon(data)
+
+                    indicator.create_menu_item(colour_menu, label, True, cb.set_bulk_colour, [data], icon)
+                indicator.add_menu_item(bulk_menu, colour_menu_item)
+
+            indicator.create_seperator(menu)
+            indicator.add_menu_item(menu, bulk_menu_item)
 
         # General Options
-
         indicator.create_seperator(menu)
         indicator.create_menu_item(menu, _("Open Controller"), True, cb.launch_controller, None, self._get_icon("general", "controller"))
         indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
@@ -400,18 +449,18 @@ class PolychromaticTrayApplet():
 
         # Colour (repeats last effect)
         if can_set_colours:
-            colour_menu, colour_menu_item = indicator.create_submenu(_("Change Colour"), True, self._get_icon("general", "palette"))
+            colour_menu, colour_menu_item = indicator.create_submenu(_("Primary Colour"), True, self._get_icon("general", "palette"))
 
             if device["monochromatic"]:
-                col_index = common.get_green_shades()
+                index = colours_mono
             else:
-                col_index = pref.load_file(path.colours)
+                index = colours
 
-            for pos in range(0, len(col_index)):
+            for pos in range(0, len(index)):
                 try:
-                    name = col_index[pos]["name"]
-                    hex_value = col_index[pos]["hex"]
-                    indicator.create_menu_item(colour_menu, name, True, cb.set_colour, [device, zone, hex_value], self._get_colour_icon(hex_value))
+                    name = index[pos]["name"]
+                    hex_value = index[pos]["hex"]
+                    indicator.create_menu_item(colour_menu, name, True, cb.set_colour_primary, [device, hex_value], self._get_colour_icon(hex_value))
                 except Exception:
                     dbg.stdout("Ignoring invalid colour data at index position " + str(pos), dbg.error)
 
@@ -545,58 +594,60 @@ class Callback():
         Option clicked to set an effect for a device.
 
         Params:
-            attr    [device, zone, option_id, option_data]
+            attr        [device, zone, option_id, option_data]
+            colour_hex  Used in set_colour() only
         """
-        backend = attr[0]
-        uid = attr[1]
-        zone = attr[2]
-        effect = attr[3]
-        try:
-            params = attr[4]
-        except IndexError:
-            params = None
-        print("stub:cb.set_option")
-        return
+        device, zone, option_id, option_data = attr
 
-        dbg.stdout("Setting effect for {0} device ID {1} in zone '{2}' to '{3}'".format(backend, uid, zone, effect), dbg.debug, 1)
-        r = middleman.set_device_state(backend, uid, effect, zone, None, [params])
+        backend = device["backend"]
+        uid = device["uid"]
+        name = device["name"]
+        serial = device["serial"]
+
+        # Re-use previously selected colours
+        required_colours = 0
+        colour_hex = []
+        for option in device["zone_options"][zone]:
+            if option["id"] == option_id and int(option["colours"]) > 0:
+                required_colours = option["colours"]
+                break
+
+            try:
+                if option["parameters"]:
+                    for param in option["parameters"]:
+                        if param["id"] == option_data and int(param["colours"]) > 0:
+                            required_colours = param["colours"]
+                            break
+            except KeyError:
+                # No parameters for sliders or toggles
+                pass
+
+        for i in range(1, required_colours + 1):
+            colour_hex.append(option["colour_" + str(i)])
+
+        dbg.stdout("Setting option '{0}' (data: {1}) for {2} in zone '{3}'".format(option_id, option_data, name, zone), dbg.action, 1)
+        dbg.stdout("Re-using colours: {0}".format(", ".join(colour_hex)), dbg.debug, 1)
+        r = middleman.set_device_state(backend, uid, serial, zone, option_id, option_data, colour_hex)
         _verbose_check_status(r)
 
     @staticmethod
-    def set_brightness(item, attr):
-        """
-        GTK menu item callback to set the brightness of a device.
-
-        Params:
-            attr    [uid, zone, value]
-        """
-        backend = attr[0]
-        uid = attr[1]
-        zone = attr[2]
-        value = attr[3]
-
-        dbg.stdout("Setting brightness for {0} device ID {1} in zone '{2}' to '{3}'".format(backend, uid, zone, value), dbg.debug, 1)
-        r = middleman.set_device_state(backend, uid, "brightness", zone, None, [value])
-        _verbose_check_status(r)
-
-    @staticmethod
-    def set_colour(item, attr):
+    def set_colour_primary(item, attr):
         """
         Option clicked to choose a different primary colour.
 
         Params:
-            attr    [uid, zone, hex_string]
+            attr    [device, hex_string]
         """
-        print("stub:cb.set_colour")
-        return
-        backend = attr[0]
-        uid = attr[1]
-        zone = attr[2]
-        hex_value = attr[3]
+        device, hex_value = attr
 
-        dbg.stdout("Setting colour for {0} device ID {1} in zone '{2}' to '{3}'".format(backend, uid, zone, hex_value), dbg.debug, 1)
-        r = middleman.set_device_colours(backend, uid, zone, [hex_value])
-        _verbose_check_status(r)
+        backend = device["backend"]
+        uid = device["uid"]
+        name = device["name"]
+
+        for zone in device["zone_options"].keys():
+            dbg.stdout("Setting '{2}' colour to '{0}' for {1}".format(hex_value, name, zone), dbg.action, 1)
+            r = middleman.set_device_colour_1(device, zone, hex_value)
+            _verbose_check_status(r)
 
     @staticmethod
     def set_dpi(item, attr):
@@ -606,96 +657,49 @@ class Callback():
         Params:
             attr    [device, dpi_x]
         """
-        print("stub:cb.set_dpi")
-        return
-        backend = attr[0]
-        uid = attr[1]
-        new_dpi = attr[2]
+        device, new_dpi = attr
 
-        dbg.stdout("Setting DPI for {0} device ID {1} to '{2}'".format(backend, uid, new_dpi), dbg.debug, 1)
-        r = middleman.set_device_state(backend, uid, "dpi", None, None, [new_dpi, new_dpi])
+        backend = device["backend"]
+        uid = device["uid"]
+        name = device["name"]
+        serial = device["serial"]
+
+        dbg.stdout("Setting DPI for {0} to {1}".format(name, new_dpi), dbg.action, 1)
+
+        r = middleman.set_device_state(backend, uid, serial, "main", "dpi", [new_dpi, new_dpi], [])
         _verbose_check_status(r)
 
     @staticmethod
-    def set_all_effect(item, attr):
+    def set_bulk_option(item, attr):
         """
-        Option clicked to set an effect for all devices (using defaults)
+        Option clicked to set an effect for all devices (where supported)
 
         Params:
-            option_id       ID of effect to set
+            attr    [option_id, option_data, colours]
         """
-        print("stub:set_all_effect")
-        return
-        request = attr[0]
-        try:
-            params = int(attr[1])
-        except Exception:
-            params = None
-
-        devices = middleman.get_device_list()
-        dbg.stdout("Setting all devices to '{0}'".format(request), dbg.debug, 1)
-
-        for device in devices:
-            if device["available"] == True:
-                zones = device["zones"]
-                for zone in zones:
-                    dbg.stdout("- {0} [{1}]".format(device["name"], zone), dbg.action, 1)
-                    r = middleman.set_device_state(device["backend"], int(device["uid"]), request, zone, None, [params])
-                    _verbose_check_status(r)
+        option_id, option_data, colours_needed = attr
+        middleman.set_bulk_option(option_id, option_data, colours_needed)
 
     @staticmethod
-    def set_all_brightness(item, value):
+    def set_bulk_colour(item, attr):
         """
-        GTK menu item callback to set the brightness for all devices (or
-        on/off if unsupported)
+        Option clicked to set the primary colour for the current effect across
+        all connected devices.
 
         Params:
-            value           String representing brightness %
+            attr    [hex_value]
         """
-        print("stub:set_all_brightness")
-        return
-        value = int(value)
-
-        devices = middleman.get_device_list()
-        dbg.stdout("Setting all brightness levels to {0}%".format(str(value)), dbg.debug, 1)
-
-        for device in devices:
-            if device["available"] == True:
-                zones = device["zones"]
-                for zone in zones:
-                    dbg.stdout("- {0} [{1}]".format(device["name"], zone), dbg.action, 1)
-                    r = middleman.set_device_state(device["backend"], device["uid"], "brightness", zone, None, [value])
-                    _verbose_check_status(r)
-
-    @staticmethod
-    def set_all_colour(item, value):
-        """
-        GTK menu item callback to set the primary colour for all supported devices.
-
-        Params:
-            value       (lst)   Hex value
-        """
-        dbg.stdout("Setting all device primary colour to {0}".format(value), dbg.debug, 1)
-        print("stub:set_all_colour")
-        return
-
-        devices = middleman.get_device_list()
-        for device in devices:
-            if device["available"] == True:
-                zones = device["zones"]
-                for zone in zones:
-                    dbg.stdout("- {0} [{1}]".format(device["name"], zone), dbg.action, 1)
-                    r = middleman.set_device_colours(device["backend"], device["uid"], zone, value)
-                    _verbose_check_status(r)
+        new_colour_hex = attr[0]
+        middleman.set_bulk_colour(new_colour_hex)
 
     @staticmethod
     def set_custom_colour(item, attr):
         """
-        GTK menu item callback to open a GTK dialogue picker to change the colour
-        of a device.
+        Option clicked to open a colour picker to choose any colour for the
+        specified device.
 
         Params:
-            attr    [device object]
+            attr    [device]
         """
         print("stub:set_custom_colour")
         return
@@ -788,9 +792,13 @@ if __name__ == "__main__":
     middleman.init()
     device_list = middleman.get_device_list()
 
+    # Load data into memory
+    prefs = pref.load_file(path.preferences)
+    colours = pref.load_file(path.colours)
+    colours_mono = common.get_green_shades()
+
     # Initialise the indicator
     cb = Callback()
-    prefs = pref.load_file(path.preferences)
     indicator = Indicator()
     app = PolychromaticTrayApplet()
     app.start()

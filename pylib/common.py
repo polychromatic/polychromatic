@@ -361,5 +361,80 @@ def get_plural(integer, non_plural, plural):
         return plural
 
 
+def get_bulk_apply_options(devices):
+    """
+    Return a dictionary describing a list of IDs for the interface to build
+    buttons to quickly apply common options to all connected devices.
+
+    The output is currently biased to OpenRazer IDs and should be
+    reworked to work with other backends if they use different IDs. Currently,
+    this will return options if at least one device supports them.
+
+    Params:
+        devices         (list)      List of get_device() dicts
+
+    Returns:
+    {
+        "brightness", "effects": [
+            {
+                "option_id": "<id>"
+                "option_data": <data>
+                "colours": <int>
+            }
+        ]
+    }
+    """
+    output = {"brightness": [], "effects": []}
+
+    # Brightness
+    for x in range(0, 125, 25):
+        output["brightness"].append({
+            "option_id": "brightness",
+            "option_data": x,
+            "icon": os.path.join(DATA_PATH, "ui", "img", "options", str(x) + ".svg")
+        })
+
+    # Options
+    effects = {
+        "spectrum": False,
+        "wave": False,
+        "breath": False,
+        "reactive": False,
+        "static": False
+    }
+
+    effects_params = {
+        "spectrum": None,
+        "wave": 2,
+        "breath": "single",
+        "reactive": 2,
+        "static": None
+    }
+
+    effects_colours = {
+        "spectrum": 0,
+        "wave": 0,
+        "breath": 1,
+        "reactive": 1,
+        "static": 1
+    }
+
+    for option_id in effects.keys():
+        for device in devices:
+            for zone in device["zone_options"].keys():
+                for option in device["zone_options"][zone]:
+                    if option["id"] == option_id:
+                        effects[option_id] = True
+
+    for effect in effects.keys():
+        output["effects"].append({
+            "option_id": effect,
+            "option_data": effects_params[effect],
+            "colours": effects_colours[effect]
+        })
+
+    return output
+
+
 # Module Initalization
 DATA_PATH = get_data_dir_path()
