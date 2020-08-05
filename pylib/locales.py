@@ -4,7 +4,8 @@
 # Copyright (C) 2017-2020 Luke Horwell <code@horwell.me>
 #
 """
-This module contains the locale strings for Polychromatic.
+This module contains shared locale strings for Polychromatic. Usually used
+when referenced by the backend module.
 """
 
 import os
@@ -344,30 +345,6 @@ def get_strings():
         "restart_backends": _("Restart Daemon"),
         "restarting_backends": _("Restarting the OpenRazer daemon..."),
         "troubleshooting": _("Troubleshooting..."),
-
-        # Troubleshooter - OpenRazer checks
-        "troubleshoot_daemon_found": _("Check if daemon is installed"),
-        "troubleshoot_daemon_found_suggestion": _("Install the 'openrazer-meta' package for your distribution."),
-        "troubleshoot_daemon_running": _("Check if daemon is running"),
-        "troubleshoot_daemon_running_suggestion": _("Start the daemon from the terminal. Look out for any errors: $ openrazer-daemon -Fv"),
-        "troubleshoot_pylib_present": _("Check if Python library is installed"),
-        "troubleshoot_pylib_present_suggestion": _("Install the 'python3-openrazer' package for your distribution."),
-        "troubleshoot_dkms_installed_src": _("Check if DKMS sources are installed"),
-        "troubleshoot_dkms_installed_src_suggestion": _("Install the 'openrazer-meta' package for your distribution."),
-        "troubleshoot_dkms_installed_built": _("Check if DKMS module is built for this kernel version"),
-        "troubleshoot_dkms_installed_built_suggestion": _("Ensure your Linux kernel headers are installed, and try re-installing the DKMS module (replacing 2.x.x with the version of OpenRazer installed) $ sudo dkms install -m openrazer-driver/2.x.x"),
-        "troubleshoot_dkms_loaded": _("Check if DKMS module can be loaded"),
-        "troubleshoot_dkms_loaded_suggestion": _("For full error details, run $ sudo modprobe razerkbd"),
-        "troubleshoot_dkms_active": _("Check if DKMS module is currently loaded"),
-        "troubleshoot_dkms_active_suggestion": _("For full error details, run $ sudo modprobe razerkbd"),
-        "troubleshoot_secure_boot": _("Check for secure boot on an EFI system"),
-        "troubleshoot_secure_boot_suggestion": _("OpenRazer's kernel modules are unsigned, so they will not load at boot. Either disable secure boot, or sign the modules yourself."),
-        "troubleshoot_plugdev": _("Check if user account is added to 'plugdev' group"),
-        "troubleshoot_plugdev_suggestion": _("If you've recently installed, you may need to restart the computer. Otherwise, run this command, log out, then log back in to the computer: $ sudo gpasswd -a $USER plugdev"),
-        "troubleshoot_plugdev_perms": _("Check OpenRazer log for plugdev permission errors"),
-        "troubleshoot_plugdev_perms_suggestion": _("Restarting (or replugging) usually fixes the problem. Clear the log to reset this message."),
-        "troubleshoot_all_supported": _("Check for unsupported hardware"),
-        "troubleshoot_all_supported_suggestion": _("Check the OpenRazer project to confirm your device is listed. To get the device's VID:PID, run $ lsusb | grep Razer"),
 
         # Icon Picker
         "file_error_title": _("File Error"),

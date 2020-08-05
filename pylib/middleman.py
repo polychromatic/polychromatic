@@ -39,6 +39,9 @@ class Middleman(object):
         # List of IDs for modules that are not present.
         self.not_installed = []
 
+        # Keys referencing troubleshoot() functions, if available.
+        self.troubleshooters = {}
+
         # Keys containing human readable strings for modules that failed to import.
         self.import_errors = {}
 
@@ -53,6 +56,9 @@ class Middleman(object):
             self.not_installed.append("openrazer")
         except Exception as e:
             self.import_errors["openrazer"] = self._common.get_exception_as_string(e)
+
+        from .troubleshoot import openrazer as openrazer_troubleshoot
+        self.troubleshooters["openrazer"] = openrazer_troubleshoot.troubleshoot
 
     def get_backends(self):
         """
@@ -166,14 +172,25 @@ class Middleman(object):
             if module.backend_id == backend:
                 return module.get_device_object(uid)
 
-    def troubleshoot(self, backend):
+    def troubleshoot(self, backend, i18n):
         """
         Performs a series of troubleshooting steps to identify possible
         reasons why a particular backend is non-functional.
+
+        Params:
+            backend         (str)       ID of backend to check
+            i18n            (obj)       _ function for translating strings
+
+        Returns:
+            (list)          Results from the troubleshooter
+            None            Troubleshooter not avaliable
+            False           Troubleshooter failed
         """
-        for module in self.backends:
-            if module.backend_id == backend:
-                return module.troubleshoot()
+        try:
+            return self.troubleshooters[backend](i18n)
+        except KeyError:
+            # Troubleshooter not available for this backend
+            return None
 
     def restart(self, backend):
         """

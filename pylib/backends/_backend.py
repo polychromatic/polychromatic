@@ -247,6 +247,8 @@ class Backend(object):
 
         If the backend is simple in nature, then this may not be needed.
 
+        This should be implemented in pylib/troubleshoot/<backend>.py.
+
         Accepted return data types:
             (list)              Completed. Dictionary of results in format below.
             False               Failed to run troubleshooting.
@@ -255,9 +257,9 @@ class Backend(object):
         Expected data:
         [
             {
-                "id":           (str)   String ID of test name
-                "suggestion":   (str)   String ID of suggestion on failure.
-                "success":      (bool)  Test passed. None if undetermined.
+                "test_name":    (str)   i18n enabled string describing the test
+                "suggestion":   (str)   i18n enabled string describing what to do on failure.
+                "passed":       (bool)  No problems found. None if undetermined.
             },
             {...}
         ]
