@@ -137,7 +137,7 @@ def get_green_shades():
     return colours
 
 
-def set_default_tray_icon(pref):
+def get_default_tray_icon():
     """
     Determines which tray icon is best suited for the current desktop environment
     or theme.
