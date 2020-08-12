@@ -1359,7 +1359,7 @@ class Controller(object):
                         if not current_colour:
                             current_colour = [0, 255, 0]
 
-                        if current_effect in ["spectrum", "wave"]:
+                        if current_effect in ["spectrum", "wave", "moon"]:
                             class_effects = current_effect
                         else:
                             class_effects = None
@@ -1473,6 +1473,7 @@ class Controller(object):
                     ["lighting_none", "none", _("None")],
                     ["lighting_spectrum", "spectrum", _("Spectrum")],
                     ["lighting_wave", "wave", _("Wave")],
+                    ["lighting_moon", "moon", _("Moon")],
                     ["lighting_reactive", "reactive", _("Reactive")],
                     ["lighting_breath_single", "breath", _("Breath")],
                     ["lighting_pulsate", "pulsate", _("Pulsate")],

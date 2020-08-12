@@ -283,6 +283,9 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
             else:
                 fx.starlight_random(speed)
                 remember_params('random')
+        elif effect == "moon":
+            fx.moon()
+            remember_params('random')
 
         elif effect == "static":
             fx.static(primary_red, primary_green, primary_blue)
