@@ -20,6 +20,7 @@ $text-colour: #D6D6D6;
 $text-disabled: darken($text-colour, 50%);
 $button-colour: #DED9CB;
 $border-colour: #2D2D2D;
+$border-group-colour: #4D4D4D;
 $text-colour-sidebar-heading: #969696;
 
 
@@ -630,6 +631,27 @@ QDateTimeEdit::down-arrow:disabled {
    border-image: url([data]/qt/assets/spin-down-disabled.svg);
 }
 
+
+/**********************************************************
+  Group Box
+**********************************************************/
+QGroupBox {
+    background: transparent;
+    border: 0;
+    border-top: 1px solid $border-group-colour;
+    border-radius: 0px;
+    margin-top: 8px;
+    padding: 10px;
+}
+
+QGroupBox::title {
+    color: $text-colour;
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 10px;
+    padding: 0 4px;
+    text-align: left;
+}
 
 /**********************************************************
   Status Bar

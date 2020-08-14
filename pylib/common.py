@@ -181,6 +181,26 @@ def get_tray_icon(dbg, icon_value):
     return os.path.join(get_data_dir_path(), "ui/img/tray/light/polychromatic.svg")
 
 
+def get_icon(folder, name):
+    """
+    Returns the absolute path to a Polychromatic provided icon from the data
+    folder.
+
+    Example:
+        "general", "battery-75" returns "/usr/share/polychromatic/ui/img/general/battery-75.svg"
+
+    Returns:
+        (str)       Absolute path to icon
+        None        Icon does not exist
+    """
+    for ext in [".svg", ".png"]:
+        icon_path = os.path.join(DATA_PATH, "ui", "img", folder, name + ext)
+        if os.path.exists(icon_path):
+            return icon_path
+
+    return None
+
+
 def execute_polychromatic_component(dbg, component, tab=None):
     """
     Starts a Polychromatic application relative to its location or system-wide

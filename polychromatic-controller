@@ -19,8 +19,6 @@
 """
 The primary "Controller" GUI for Polychromatic based on PyQt5.
 """
-VERSION = "0.6.0"
-
 import argparse
 import json
 import os
@@ -34,6 +32,8 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QToolButton, QTabWidget, QAction
 
+VERSION = "0.6.0"
+
 # Import modules if running relatively.
 if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
     try:
@@ -42,7 +42,7 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
         import pylib.locales as locales
         import pylib.controller as controller
         import pylib.effects as effects
-        import pylib.backends.middleman as middleman
+        import pylib.middleman as middleman
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -55,7 +55,7 @@ else:
         import polychromatic.locales as locales
         import polychromatic.controller as controller
         import polychromatic.effects as effects
-        import polychromatic.backends.middleman as middleman
+        import polychromatic.middleman as middleman
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
@@ -82,6 +82,7 @@ class ApplicationData(object):
         self.main_window = None
         self.main_app = qapp
         self.dbg = dbg
+        self.locales = locales
         self._ = _
         self.path = path
         self.data_path = data_path
@@ -108,7 +109,9 @@ class ApplicationData(object):
 
         # Session Data
         dbg.stdout("Getting device list...", dbg.action, 1)
-        self.device_list = middleman.get_device_list()
+        self.middleman = middleman.Middleman(dbg, common)
+        self.middleman.init()
+        self.device_list = self.middleman.get_device_list()
         self.current_device = None
 
         dbg.stdout("Getting effect list...", dbg.action, 1)
@@ -202,7 +205,18 @@ class MainWindow(QMainWindow):
 
             tab_buttons[index].setChecked(True)
             tab_menu_items[index].setChecked(True)
-            tab_objects[index].set_tab()
+            try:
+                tab_objects[index].set_tab()
+            except Exception as e:
+                traceback = common.get_exception_as_string(e)
+                print(traceback)
+                widgets = controller.shared.PolychromaticWidgets(app.data_path)
+                widgets.open_dialog(widgets.dialog_error,
+                                    _("Controller Error"),
+                                    _("Eeks! An uncaught exception was thrown while loading the tab.") + '\n\n' + \
+                                    _("The application will attempt to continue, but get ready in case something breaks again!"),
+                                    _("This may be reported as a bug on the project's issue tracker."),
+                                    traceback=traceback)
 
         def _change_tab_proxy(b, i):
             tabs.setCurrentIndex(i)
@@ -210,7 +224,6 @@ class MainWindow(QMainWindow):
 
         tabs.currentChanged.connect(_change_tab)
 
-        # FIXME: Use a loop!
         tab_buttons[0].clicked.connect(lambda a: _change_tab_proxy(a, 0))
         tab_buttons[1].clicked.connect(lambda a: _change_tab_proxy(a, 1))
         tab_buttons[2].clicked.connect(lambda a: _change_tab_proxy(a, 2))

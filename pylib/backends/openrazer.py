@@ -43,10 +43,6 @@ class Backend(_backend.Backend):
         self.ripple_speed = 0.01
         self.starlight_speed = 0.01
 
-        success = self._reinit_device_manager()
-        if success != True:
-            return success
-
     def _reinit_device_manager(self):
         """
         OpenRazer uses a "Device Manager" containing devices connected. It needs
@@ -67,6 +63,11 @@ class Backend(_backend.Backend):
         """
         devices = []
         uid = -1
+
+        if not self.devices:
+            success = self._reinit_device_manager()
+            if success != True:
+                return success
 
         for rdevice in self.devices:
             uid += 1
@@ -422,49 +423,52 @@ class Backend(_backend.Backend):
                     _brightness.append(option["value"])
 
                 if option["id"] == "brightness" and "active" in option.keys():
-                    if option["active"] == True:
-                        _brightness.append(option["active"])
+                     _brightness.append(option["active"])
+
+        def is_same(items):
+            return all(x == items[0] for x in items)
 
         # -- Effects
         if len(_effects) > 0:
-            if all(_effects):
+            if is_same(_effects):
                 summary.append({
-                    "icon": "ui/img/effects/{0}.svg".format(_effects[0]),
+                    "icon": self.common.get_icon("options", _effects[0]),
                     "string_id": _effects[0]
                 })
             else:
                 summary.append({
-                    "icon": "ui/img/effects/static.svg",
+                    "icon": self.common.get_icon("options", "static"),
                     "string_id": "multiple"
                 })
 
         # -- Brightness
         if len(_brightness) > 0:
-            if all(_brightness):
-                if _brightness[0] > 99:
-                    icon = "100.svg"
-                elif _brightness[0] >= 75:
-                    icon = "75.svg"
-                elif _brightness[0] >= 50:
-                    icon = "50.svg"
-                elif _brightness[0] >= 25:
-                    icon = "25.svg"
-                else:
-                    icon = "0.svg"
+            # Only show % suffix for integers
+            if not is_same(_brightness):
                 summary.append({
-                    "icon": "ui/img/brightness/" + icon,
-                    "string": "{0}%".format(_brightness[0])
-                })
-            else:
-                summary.append({
-                    "icon": "ui/img/brightness/100.svg",
+                    "icon": self.common.get_icon("options", "75"),
                     "string_id": "multiple"
+                })
+            elif _brightness[0] == True:
+                summary.append({
+                    "icon": self.common.get_icon("options", "100"),
+                    "string_id": "on"
+                })
+            elif _brightness[0] in [False, 0]:
+                summary.append({
+                    "icon": self.common.get_icon("options", "50"),
+                    "string_id": "off"
+                })
+            elif type(_brightness[0]) in [int, float]:
+                summary.append({
+                    "icon": self.common.get_icon("options", "100"),
+                    "string": "{0}%".format(_brightness[0])
                 })
 
         # -- Game Mode
         if game_mode:
             summary.append({
-                "icon": "ui/img/general/game-mode.svg",
+                "icon": self.common.get_icon("options", "game_mode"),
                 "string_id": "game_mode"
             })
 
@@ -472,40 +476,40 @@ class Backend(_backend.Backend):
         if dpi_x or dpi_y:
             if dpi_x == dpi_y or dpi_single:
                 summary.append({
-                    "icon": "ui/img/general/dpi.svg",
+                    "icon": self.common.get_icon("general", "dpi"),
                     "string": "{0} DPI".format(dpi_x)
                 })
             else:
                 summary.append({
-                    "icon": "ui/img/general/dpi.svg",
+                    "icon": self.common.get_icon("general", "dpi"),
                     "string": "{0}, {1} DPI".format(dpi_x, dpi_y)
                 })
 
         # -- Poll Rate
         if poll_rate:
             summary.append({
-                "icon": "ui/img/general/poll-rate.svg",
+                "icon": self.common.get_icon("options", "poll_rate"),
                 "string": "{0} Hz".format(poll_rate)
             })
 
         # -- Battery Status
         if battery_level:
             if battery_charging:
-                icon = "battery-charging.svg"
+                icon = "battery-charging"
             else:
                 if battery_level < 10:
-                    icon = "battery-0.svg"
+                    icon = "battery-0"
                 elif battery_level < 30:
-                    icon = "battery-25.svg"
+                    icon = "battery-25"
                 elif battery_level < 55:
-                    icon = "battery-50.svg"
+                    icon = "battery-50"
                 elif battery_level < 90:
-                    icon = "battery-75.svg"
+                    icon = "battery-75"
                 else:
-                    icon = "battery-100.svg"
+                    icon = "battery-100"
 
             summary.append({
-                "icon": "ui/img/general/" + icon,
+                "icon": self.common.get_icon("general", icon),
                 "string": "{0}%".format(battery_level)
             })
 
@@ -792,11 +796,11 @@ class Backend(_backend.Backend):
 
         for zone in zones:
             if zone == "logo" and device_name.startswith("Razer Nex"):
-                icon = "ui/img/zones/naga-hex-ring.svg"
+                icon = self.common.get_icon("zones", "naga-hex-ring")
             elif zone == "logo" and device_name.startswith("Razer Blade"):
-                icon = "ui/img/zones/blade-logo.svg"
+                icon = self.common.get_icon("zones", "blade-logo")
             else:
-                icon = "ui/img/zones/{0}.svg".format(zone)
+                icon = self.common.get_icon("zones", zone)
 
             zone_icons[zone] = icon
 
@@ -827,9 +831,10 @@ class Backend(_backend.Backend):
                     pass
 
         # Get VIDs and PIDs of current devices to exclude them.
-        for device in self.devices:
-            vidpid = self._get_device_vid_pid(device)
-            reg_ids.append([vidpid.get("vid"), vidpid.get("pid")])
+        if self.devices:
+            for device in self.devices:
+                vidpid = self._get_device_vid_pid(device)
+                reg_ids.append([vidpid.get("vid"), vidpid.get("pid")])
 
         # Identify Razer VIDs that are not registered in the daemon
         for usb in all_usb_ids:

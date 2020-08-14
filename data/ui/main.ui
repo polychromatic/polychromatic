@@ -310,7 +310,7 @@
         <height>20</height>
        </size>
       </property>
-      <widget class="QWidget" name="DevicesTab">
+      <widget class="QWidget" name="TabDevices">
        <attribute name="icon">
         <iconset>
          <normaloff>img/tabs/inactive/devices.svg</normaloff>
@@ -393,7 +393,7 @@
              </property>
              <column>
               <property name="text">
-               <string>Devices</string>
+               <string>Sidebar</string>
               </property>
              </column>
              <item>
@@ -420,16 +420,6 @@
               <property name="flags">
                <set>ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
               </property>
-              <item>
-               <property name="text">
-                <string>Example 1</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Example 2</string>
-               </property>
-              </item>
              </item>
             </widget>
            </item>
@@ -459,228 +449,10 @@
              <x>0</x>
              <y>0</y>
              <width>721</width>
-             <height>428</height>
+             <height>397</height>
             </rect>
            </property>
-           <widget class="QPushButton" name="pushButton">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>190</x>
-              <y>80</y>
-              <width>121</width>
-              <height>34</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>PushButton</string>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </widget>
-           <widget class="QToolButton" name="toolButton">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>110</x>
-              <y>80</y>
-              <width>71</width>
-              <height>71</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>...</string>
-            </property>
-           </widget>
-           <widget class="QRadioButton" name="radioButton">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>110</x>
-              <y>160</y>
-              <width>105</width>
-              <height>22</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>RadioButton</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-           <widget class="QCheckBox" name="checkBox">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>110</x>
-              <y>190</y>
-              <width>88</width>
-              <height>22</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-           <widget class="QComboBox" name="comboBox">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>110</x>
-              <y>230</y>
-              <width>87</width>
-              <height>32</height>
-             </rect>
-            </property>
-           </widget>
-           <widget class="QDateTimeEdit" name="dateTimeEdit">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>110</x>
-              <y>280</y>
-              <width>194</width>
-              <height>32</height>
-             </rect>
-            </property>
-           </widget>
-           <widget class="QPushButton" name="pushButton_2">
-            <property name="geometry">
-             <rect>
-              <x>320</x>
-              <y>80</y>
-              <width>88</width>
-              <height>34</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>PushButton</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-           <widget class="QScrollBar" name="horizontalScrollBar">
-            <property name="geometry">
-             <rect>
-              <x>110</x>
-              <y>370</y>
-              <width>251</width>
-              <height>16</height>
-             </rect>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-           <widget class="QSlider" name="horizontalSlider">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>300</x>
-              <y>30</y>
-              <width>160</width>
-              <height>20</height>
-             </rect>
-            </property>
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="singleStep">
-             <number>5</number>
-            </property>
-            <property name="value">
-             <number>50</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="tickPosition">
-             <enum>QSlider::TicksBelow</enum>
-            </property>
-           </widget>
-           <widget class="QSlider" name="verticalSlider">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>410</x>
-              <y>160</y>
-              <width>20</width>
-              <height>160</height>
-             </rect>
-            </property>
-            <property name="value">
-             <number>25</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="invertedAppearance">
-             <bool>false</bool>
-            </property>
-            <property name="invertedControls">
-             <bool>false</bool>
-            </property>
-            <property name="tickPosition">
-             <enum>QSlider::NoTicks</enum>
-            </property>
-           </widget>
-           <widget class="QLabel" name="label">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>110</x>
-              <y>30</y>
-              <width>121</width>
-              <height>21</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>Brightness</string>
-            </property>
-           </widget>
-           <widget class="QSpinBox" name="spinBox">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>310</x>
-              <y>280</y>
-              <width>52</width>
-              <height>32</height>
-             </rect>
-            </property>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_2"/>
           </widget>
          </widget>
         </item>
@@ -695,6 +467,159 @@
        <attribute name="title">
         <string>Effects</string>
        </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QWidget" name="EffectSidebar" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>250</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTreeWidget" name="EffectSidebarTree">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="horizontalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>22</width>
+               <height>22</height>
+              </size>
+             </property>
+             <property name="rootIsDecorated">
+              <bool>false</bool>
+             </property>
+             <property name="headerHidden">
+              <bool>true</bool>
+             </property>
+             <property name="expandsOnDoubleClick">
+              <bool>false</bool>
+             </property>
+             <column>
+              <property name="text">
+               <string>Sidebar</string>
+              </property>
+             </column>
+             <item>
+              <property name="text">
+               <string>Tasks</string>
+              </property>
+              <property name="flags">
+               <set>ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+              </property>
+              <item>
+               <property name="text">
+                <string>New Effect</string>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>img/general/new.svg</normaloff>img/general/new.svg</iconset>
+               </property>
+               <property name="flags">
+                <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable</set>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Import Effect</string>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>img/general/import.svg</normaloff>img/general/import.svg</iconset>
+               </property>
+               <property name="flags">
+                <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable</set>
+               </property>
+              </item>
+             </item>
+             <item>
+              <property name="text">
+               <string>Effects</string>
+              </property>
+              <property name="flags">
+               <set>ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QScrollArea" name="EffectScrollArea">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOn</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="EffectContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>721</width>
+             <height>397</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_3"/>
+          </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="TabPresets">
        <attribute name="icon">
@@ -815,6 +740,7 @@
     <addaction name="actionOnlineHelp"/>
     <addaction name="actionPolychromaticWebsite"/>
     <addaction name="actionWhat_s_New"/>
+    <addaction name="separator"/>
     <addaction name="actionReportBug"/>
     <addaction name="actionDonate"/>
     <addaction name="separator"/>
@@ -837,10 +763,10 @@
      <addaction name="actionOpenRazerReleaseNotes"/>
      <addaction name="separator"/>
      <addaction name="actionOpenRazerTroubleshoot"/>
-     <addaction name="actionOpenRazerConfigure"/>
-     <addaction name="actionOpenRazerRestartDaemon"/>
      <addaction name="separator"/>
+     <addaction name="actionOpenRazerConfigure"/>
      <addaction name="actionOpenRazerOpenLog"/>
+     <addaction name="actionOpenRazerRestartDaemon"/>
      <addaction name="separator"/>
      <addaction name="actionOpenRazerAbout"/>
     </widget>
@@ -1131,6 +1057,10 @@
    </property>
   </action>
   <action name="actionOpenRazerOpenLog">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/general/folder.svg</normaloff>img/general/folder.svg</iconset>
+   </property>
    <property name="text">
     <string>Open Log...</string>
    </property>
@@ -1138,10 +1068,10 @@
   <action name="actionOpenRazerConfigure">
    <property name="icon">
     <iconset>
-     <normaloff>img/general/edit.svg</normaloff>img/general/edit.svg</iconset>
+     <normaloff>img/tabs/active/preferences.svg</normaloff>img/tabs/active/preferences.svg</iconset>
    </property>
    <property name="text">
-    <string>Configure...</string>
+    <string>Settings</string>
    </property>
   </action>
   <action name="actionOpenRazerAbout">

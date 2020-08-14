@@ -120,9 +120,9 @@ class Backend(object):
             "keyboard_layout":  (str)   Keyboard layout in format "en_GB"
             "summary": [        (list)  List overview current status. Examples:
                 {
-                    "icon": "ui/img/general/dpi.svg"    (str) Path to icon, relative to data dir
-                    "string_id": "dpi"                  (str) Show string ID next to icon
-                    "string": "1800 DPI"                (str) OR show this exact text
+                    "icon": "/path/to/icon.svg"     (str) Absolute path to icon
+                    "string_id": "dpi"              (str) Show string ID next to icon
+                    "string": "1800 DPI"            (str) OR show this exact text
                 }
             ],
             "dpi_x":            (int)   Device's DPI X value
