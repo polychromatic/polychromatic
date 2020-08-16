@@ -226,8 +226,11 @@ class Indicator(object):
                 self.root_menu.show_all()
                 self.root_menu.popup(None, None, Gtk.StatusIcon.position_menu, self.indicator, button, time)
 
+            def _click_menu_cb(widget):
+                cb.launch_controller(None)
             self.menu = self.root_menu
             self.indicator.connect("popup-menu", _show_menu_cb)
+            self.indicator.connect("activate", _click_menu_cb)
 
 
 class PolychromaticTrayApplet():
