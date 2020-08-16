@@ -143,6 +143,7 @@ class AppIndicator(object):
         self.menu_devices = None
         self.menu_effects = None
         self.menu_brightness = None
+        self.menu_fan_control = None
         self.menu_app_profiles = None
         self.menu_colours = None
         self.menu_dpi = None
@@ -203,6 +204,7 @@ class AppIndicator(object):
         self.menu_devices = self._build_device_menu()
         self.menu_effects = self._build_effect_menu()
         self.menu_brightness = self._build_brightness_menu()
+        self.menu_fan_control = self._build_fan_menu()
         self.menu_app_profiles = self._build_app_profile_menu()
         self.menu_dpi = self._build_dpi_menu()
         self.menu_poll_rate = self._build_poll_rate_menu()
@@ -330,6 +332,28 @@ class AppIndicator(object):
                         root.append(create_menu_item(_("Scroll Wheel") + ": " + _("Off"), False))
                 except Exception as e:
                     print("Skipping lighting_scroll_active due to exception:\n" + str(e))
+
+            root.append(create_seperator())
+
+        if self.menu_fan_control:
+            root.append(self.menu_fan_control)
+
+            if self.active_device.has("fan_speed"):
+                try:
+                    state = self._get_device_state("main","fan_speed")
+                    state_string = common.get_fan_state_string(state)
+                except Exception:
+                    state_string = "---%"
+
+                root.append(create_menu_item(state_string, False))
+
+            if self.active_device.has("fan_mode"):
+                try:
+                    state = self._get_device_state("main","fan_mode")
+                    state_string = common.get_fan_state_string(state)
+                    root.append(create_menu_item(_("Fan Control") + ": " + state_string , False))
+                except Exception as e:
+                    print("Skipping fan_mode to exception:\n" + str(e))
 
             root.append(create_seperator())
 
@@ -701,6 +725,25 @@ class AppIndicator(object):
             root_submenu[1].append(scroll_submenu[0])
 
         return root_submenu[0]
+    
+    def _build_fan_menu(self):
+        dbg.stdout("Building fan_control menu...", dbg.action, 1)
+
+        if self.active_device.has("fan_mode") or self.active_device.has("fan_speed"):
+            root_submenu = create_submenu("Fan Control", True)
+
+            root_submenu[1].append(create_menu_item(common.get_fan_state_string(100), True, cb.set_fan_speed, ["main", 100]))
+            root_submenu[1].append(create_menu_item(common.get_fan_state_string(90), True, cb.set_fan_speed, ["main", 90]))
+            root_submenu[1].append(create_menu_item(common.get_fan_state_string(80), True, cb.set_fan_speed, ["main", 80]))
+            root_submenu[1].append(create_menu_item(common.get_fan_state_string(70), True, cb.set_fan_speed, ["main", 70]))
+            root_submenu[1].append(create_menu_item(common.get_fan_state_string(60), True, cb.set_fan_speed, ["main", 60]))
+            root_submenu[1].append(create_menu_item(common.get_fan_state_string(50), True, cb.set_fan_speed, ["main", 50]))
+
+            root_submenu[1].append(create_seperator())
+
+            root_submenu[1].append(create_menu_item(common.get_fan_state_string(0x01), True, cb.set_fan_mode, ["main", 0x01]))
+            root_submenu[1].append(create_menu_item(common.get_fan_state_string(0x00), True, cb.set_fan_mode, ["main", 0x00]))
+        return root_submenu[0]
 
     def _build_app_profile_menu(self):
         dbg.stdout("Building app profiles menu...", dbg.action, 1)
@@ -937,6 +980,20 @@ class Callback():
         source = attr[0]
         value = attr[1]
         common.set_brightness_toggle(pref, indicator.active_device, source, value)
+        indicator.rebuild_all_submenus()
+        indicator.rebuild_root_menu()
+
+    def set_fan_speed(cb, item, attr):
+        source = attr[0]
+        value = attr[1]
+        common.set_fan_speed(pref, indicator.active_device, source, value)
+        indicator.rebuild_all_submenus()
+        indicator.rebuild_root_menu()
+
+    def set_fan_mode(cb, item, attr):
+        source = attr[0]
+        value = attr[1]
+        common.set_fan_mode(pref, indicator.active_device, source, value)
         indicator.rebuild_all_submenus()
         indicator.rebuild_root_menu()
 

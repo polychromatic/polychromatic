@@ -141,6 +141,19 @@ def get_effect_state_string(string):
         return string
 
 
+def get_fan_state_string(string):
+    STRINGS = {
+        100: _("Full (100%)"),
+        90: _("Gale (90%)"),
+        80: _("Tempest (80%)"),
+        70: _("Squall (70%)"),
+        60: _("Breeze (60%)"),
+        50: _("Half (50%)"),
+         1: _("Manual"),
+         0: _("Automatic"),
+    }
+    return STRINGS[string]
+
 def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
     """
     Function to set a effect for a specific area of the device.
@@ -286,7 +299,19 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
         elif effect == "moon":
             fx.moon()
             remember_params('random')
-
+        elif effect == 'extended_custom_demo':
+            fx.extended_custom_frame(0,1,15,[0xff,0,0]*16)
+            fx.extended_custom(0)
+            fx.extended_custom_frame(0,7,15,[0x0,0xff,0]*9)
+            fx.extended_custom(0)
+            fx.extended_custom_frame(0,12,15,[0x0,0x0,0xff]*4)
+            fx.extended_custom(0)
+        elif effect == "extended_custom":
+            fx.extended_custom()
+            remember_params('random')
+        elif effect == "extended_custom_frame":
+            fx.extended_custom_frame()
+            remember_params('random')
         elif effect == "static":
             fx.static(primary_red, primary_green, primary_blue)
 
@@ -358,6 +383,37 @@ def set_brightness_toggle(pref, device_object, source, state):
             source_obj.active = 1
     else:
         source_obj.active = state
+
+
+
+
+def set_fan_speed(pref, device_object, source, value):
+    """
+    Function to set the speed for a fan.
+    RANGE was observed from usb traces on BLADE_EARLY_2020_BASE
+    
+    """
+    RANGE = 0x36 - 0x2b
+    P_RANGE= 100-50
+    res=int(0x2b + (RANGE/P_RANGE)* (value - P_RANGE))
+
+    device_object.set_fan_speed(0, int(res))
+    device_object.set_fan_mode(0, 0x01)
+
+    pref.set_device_state(device_object.serial, source, "fan_speed", value)
+    pref.set_device_state(device_object.serial, source, "fan_mode", 0x01)
+
+
+def set_fan_mode(pref, device_object, source, value):
+    """
+    Function to turn on or off manual fan control
+
+    state = True/False/"toggle"
+    """
+
+    device_object.set_fan_mode(0, int(value))
+
+    pref.set_device_state(device_object.serial, source, "fan_mode", int(value))
 
 
 def repeat_last_effect(pref, device_object):

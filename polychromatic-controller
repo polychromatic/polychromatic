@@ -1479,7 +1479,9 @@ class Controller(object):
                     ["lighting_pulsate", "pulsate", _("Pulsate")],
                     ["lighting_ripple", "ripple", _("Ripple")],
                     ["lighting_starlight_random", "starlight", _("Starlight")],
-                    ["lighting_static", "static", _("Static")]
+                    ["lighting_static", "static", _("Static")],
+                    ["lighting_extended_custom", "extended_custom", _("Fx Extended")],
+                    ["lighting_extended_custom_frame", "extended_custom_frame", _("set custom frame")]
                 ]
 
                 for fx in fx_list:
