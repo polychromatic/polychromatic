@@ -89,6 +89,12 @@ class Indicator(object):
             self.gtk_status_icon: "GTKStatusIcon"
         }
 
+        # User may pass a parameter to force a different indicator.
+        if args.force_appindicator:
+            self.mode = self.appindicator
+        elif args.force_gtk_status:
+            self.mode = self.gtk_status_icon
+
         # Checks the specified mode is available.
         if self.mode == self.appindicator and not APPINDICATOR:
             dbg.stdout("AppIndicator is not available, falling back to GTKStatusIcon...", dbg.warning)
@@ -216,7 +222,7 @@ class Indicator(object):
             self.indicator.set_menu(self.root_menu)
 
         elif self.gtk_status_icon:
-            def _show_menu_cb(self, widget, button, time, data=None):
+            def _show_menu_cb(widget, button, time, data=None):
                 self.root_menu.show_all()
                 self.root_menu.popup(None, None, Gtk.StatusIcon.position_menu, self.indicator, button, time)
 
@@ -752,7 +758,8 @@ def parse_parameters():
     parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
     parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
-    parser.add_argument("--force-fallback", help=_("Force GTK Status Icon instead of AppIndicator"), action="store_true")
+    parser.add_argument("--force-appindicator", help=_("Use AppIndicator for rendering"), action="store_true")
+    parser.add_argument("--force-gtk-status", help=_("Use legacy GTK Status Icon for rendering"), action="store_true")
 
     args = parser.parse_args()
 
@@ -763,9 +770,7 @@ def parse_parameters():
     if args.locale:
         _ = locales.reload_locales(locales, __file__, args.locale)
 
-    if args.force_fallback:
-        global indicator_support
-        indicator_support = False
+    return args
 
 
 if __name__ == "__main__":
@@ -785,7 +790,7 @@ if __name__ == "__main__":
     if not os.path.exists(session_storage):
         os.makedirs(session_storage)
 
-    parse_parameters()
+    args = parse_parameters()
 
     # Initalise devices
     middleman = middleman_mod.Middleman(dbg, common)
