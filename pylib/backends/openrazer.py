@@ -904,7 +904,7 @@ class Backend(_backend.Backend):
         if not os.path.exists(device_images_dir):
             self.debug("Creating folder for device images: " + device_images_dir)
             os.makedirs(device_images_dir)
-
+        image_url = (image_url and image_url)  or ""
         image_path = os.path.join(device_images_dir, rdevice.name + "." + image_url.split(".")[-1])
 
         # Image already cached?

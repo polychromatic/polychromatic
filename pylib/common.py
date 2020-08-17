@@ -154,9 +154,10 @@ def get_default_tray_icon():
         icon_value = "ui/img/tray/light/breeze.svg"
 
     # Unity/Ubuntu MATE
-    elif theme_env.startswith("Ambiant") or theme_env.startswith("Ambiance"):
+    elif (theme_env is not None) and (theme_env.startswith("Ambiant") or theme_env.startswith("Ambiance")):
         icon_value = "ui/img/tray/light/humanity.svg"
-
+    else: 
+        icon_value = "ui/img/tray/light/humanity.svg"
     return icon_value
 
 
