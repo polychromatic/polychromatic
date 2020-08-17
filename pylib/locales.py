@@ -408,6 +408,10 @@ def get_strings():
         "revert_prompt_title": _("Revert Changes?"),
         "revert_prompt_text": _("All changes will be lost. Discard these modifications?"),
 
+        #Fan Control
+        "fan_speed" : _("Fan Speed"),
+        "fan_mode" : _("Fan Mode"),
+
         # End
         "": ""
     }

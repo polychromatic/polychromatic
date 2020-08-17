@@ -143,6 +143,8 @@ class Backend(_backend.Backend):
         dpi_ranges = []
         poll_rate = None
         poll_rate_ranges = [125, 500, 1000] # Cannot be changed
+        fan_mode = 0x00
+        fan_speed = 50
 
         # Retrieve device variables
         if rdevice.has("name"):
@@ -201,6 +203,10 @@ class Backend(_backend.Backend):
         if rdevice.has("battery"):
             battery_level = rdevice.battery_level
             battery_charging = rdevice.is_charging
+
+        if rdevice.has("set_fan_speed"):
+            fan_speed = rdevice.fan_speed
+            fan_mode = rdevice.fan_mode
 
         # Build an index of zones, parameters and what's currently set.
         _zones = self._get_supported_zones(rdevice)
@@ -403,6 +409,27 @@ class Backend(_backend.Backend):
                 "active": True,         # Always a poll rate
                 "colours": 0 # n/a
             })
+
+        if "set_fan_speed" in dir(rdevice):
+            options.append({
+                    "id": "fan_speed",
+                    "type": "slider",
+                    "value": int(fan_speed),
+                    "min": 50,
+                    "max": 100,
+                    "step": 5,
+                    "suffix": "%",
+                    "colours": 0 # n/a
+                })
+
+        if "set_fan_mode" in dir(rdevice):
+            options.append({
+                    "id": "fan_mode",
+                    "type": "toggle",
+                    "value": int(fan_mode),
+                    "active": True if fan_mode == 0x01 else False,
+                    "colours": 0 # n/a
+                })
 
         # Prepare summary of device.
         summary = []
@@ -698,6 +725,25 @@ class Backend(_backend.Backend):
             elif option_id == "poll_rate":
                 # Params: (int)
                 rdevice.poll_rate = int(option_data)
+
+            elif option_id == "fan_speed":
+                FAN_MODE_AUTOAMTIC = 0x00
+                FAN_MODE_MANUAL = 0x01
+                FIRST_FAN = 0x00
+           
+                rdevice.set_fan_speed(FIRST_FAN, option_data)
+                rdevice.set_fan_mode(FIRST_FAN, FAN_MODE_MANUAL)
+                self._write_persistence_storage_fallback(rdevice, zone, rzone, "fan_speed", option_data)
+                self._write_persistence_storage_fallback(rdevice, zone, rzone, "fan_mode", FAN_MODE_MANUAL)
+
+            elif option_id == "fan_mode":
+                FAN_MODE_AUTOAMTIC = 0x00
+                FAN_MODE_MANUAL = 0x01
+                FIRST_FAN = 0x00
+
+                rdevice.set_fan_mode(FIRST_FAN, option_data)
+                self._write_persistence_storage_fallback(rdevice, zone, rzone, "fan_mode", option_data)
+
 
             else:
                 return False
