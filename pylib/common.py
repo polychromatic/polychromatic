@@ -150,12 +150,14 @@ def get_default_tray_icon():
 
     # TODO: Detect GTK dark theme.
 
-    if desktop_env == "KDE":
-        icon_value = "ui/img/tray/light/breeze.svg"
+    if desktop_env:
+        if desktop_env == "KDE":
+            icon_value = "ui/img/tray/light/breeze.svg"
 
-    # Unity/Ubuntu MATE
-    elif theme_env.startswith("Ambiant") or theme_env.startswith("Ambiance"):
-        icon_value = "ui/img/tray/light/humanity.svg"
+    elif theme_env:
+        # Unity/Ubuntu MATE
+        if theme_env.startswith("Ambiant") or theme_env.startswith("Ambiance"):
+            icon_value = "ui/img/tray/light/humanity.svg"
 
     return icon_value
 
