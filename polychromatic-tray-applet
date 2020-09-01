@@ -276,6 +276,10 @@ class PolychromaticTrayApplet():
         A simple menu is displayed when something goes wrong.
         """
         dbg.stdout("Assembling error applet...", dbg.action, 1)
+
+        error_icon = common.get_tray_icon(dbg, "ui/img/tray/error.svg")
+        indicator.setup(error_icon)
+
         menu = indicator.create_menu()
         indicator.create_menu_item(menu, error_reason, False)
         if exception:
