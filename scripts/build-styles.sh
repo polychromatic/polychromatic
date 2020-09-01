@@ -19,7 +19,8 @@ if [ -z "$sass" ] && [ -z "$sassc" ]; then
     exit 1
 fi
 
-cp ./qt-style.css ../../data/qt/style.qss
+# SASS cannot compile Qt gradients, so concatenate them
+cp ./_gradient.css ../../data/qt/style.qss
 
 if [ ! -z "$sassc" ]; then
     echo -n "Compiling Qt theme using 'sassc'..."

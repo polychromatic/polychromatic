@@ -4,5 +4,4 @@
 	dh $@
 
 override_dh_prep:
-	rm -rf pylib/__pycache__/
-	rm -rf pylib/backends/__pycache__/
+	find . -name "__pycache__" -delete

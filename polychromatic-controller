@@ -59,8 +59,7 @@ else:
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
-        print(str(e))
-        exit(1)
+        raise e
 
 
 VERSIONS = {

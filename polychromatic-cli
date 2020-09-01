@@ -38,7 +38,7 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
         print("Failed to import modules relatively.\n")
         raise e
 
-# Import modules if installed system.-wide.
+# Import modules if installed system-wide.
 else:
     try:
         import polychromatic.preferences as pref
@@ -48,8 +48,7 @@ else:
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
-        print(str(e))
-        exit(1)
+        raise e
 
 
 ########################################
