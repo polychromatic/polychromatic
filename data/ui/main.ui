@@ -716,8 +716,8 @@
      <string>&amp;File</string>
     </property>
     <addaction name="actionNewEffect"/>
-    <addaction name="actionNew_Preset_from_Existing_Devices"/>
-    <addaction name="actionNew_Preset_from_Current_Devices"/>
+    <addaction name="actionNewPreset"/>
+    <addaction name="actionNewPresetNow"/>
     <addaction name="separator"/>
     <addaction name="actionQuitApp"/>
    </widget>
@@ -731,20 +731,21 @@
     <addaction name="actionTriggers"/>
     <addaction name="actionPreferences"/>
     <addaction name="separator"/>
-    <addaction name="actionHide_Menu_Bar"/>
+    <addaction name="actionReinstateMenuBar"/>
+    <addaction name="actionHideMenuBar"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>&amp;Help</string>
     </property>
     <addaction name="actionOnlineHelp"/>
-    <addaction name="actionPolychromaticWebsite"/>
-    <addaction name="actionWhat_s_New"/>
+    <addaction name="actionWebsite"/>
+    <addaction name="actionReleaseNotes"/>
     <addaction name="separator"/>
     <addaction name="actionReportBug"/>
     <addaction name="actionDonate"/>
     <addaction name="separator"/>
-    <addaction name="actionAboutPolychromatic"/>
+    <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -758,24 +759,30 @@
       <iconset>
        <normaloff>img/logo/openrazer.svg</normaloff>img/logo/openrazer.svg</iconset>
      </property>
-     <addaction name="actionOpenRazerWebsite_2"/>
+     <addaction name="actionOpenRazerWebsite"/>
      <addaction name="actionOpenRazerReportBug"/>
      <addaction name="actionOpenRazerReleaseNotes"/>
-     <addaction name="separator"/>
-     <addaction name="actionOpenRazerTroubleshoot"/>
      <addaction name="separator"/>
      <addaction name="actionOpenRazerConfigure"/>
      <addaction name="actionOpenRazerOpenLog"/>
      <addaction name="actionOpenRazerRestartDaemon"/>
-     <addaction name="separator"/>
      <addaction name="actionOpenRazerAbout"/>
     </widget>
     <addaction name="menuOpenRazer"/>
+    <addaction name="actionTroubleshoot"/>
     <addaction name="separator"/>
     <addaction name="actionRestartTrayApplet"/>
     <addaction name="actionRestartHelper"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionDuplicate"/>
+    <addaction name="actionDelete"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
@@ -799,11 +806,6 @@
   <action name="actionReport_a_Bug">
    <property name="text">
     <string>Report a Bug...</string>
-   </property>
-  </action>
-  <action name="actionTroubleshoot_OpenRazer">
-   <property name="text">
-    <string>Troubleshoot OpenRazer...</string>
    </property>
   </action>
   <action name="actionAbout_OpenRazer">
@@ -830,6 +832,9 @@
    </property>
   </action>
   <action name="actionNewEffect">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normaloff>img/tabs/active/effects.svg</normaloff>img/tabs/active/effects.svg</iconset>
@@ -930,7 +935,7 @@
     <string>Report a Bug</string>
    </property>
   </action>
-  <action name="actionHide_Menu_Bar">
+  <action name="actionHideMenuBar">
    <property name="text">
     <string>Hide Menu Bar</string>
    </property>
@@ -949,17 +954,12 @@
     <string>About OpenRazer</string>
    </property>
   </action>
-  <action name="actionOpenRazerWebsite">
-   <property name="text">
-    <string>OpenRazer Website</string>
-   </property>
-  </action>
-  <action name="actionPolychromaticWebsite">
+  <action name="actionWebsite">
    <property name="text">
     <string>Website</string>
    </property>
   </action>
-  <action name="actionAboutPolychromatic">
+  <action name="actionAbout">
    <property name="icon">
     <iconset>
      <normaloff>img/logo/polychromatic.svg</normaloff>img/logo/polychromatic.svg</iconset>
@@ -1014,12 +1014,12 @@
     <string>Edit Configuration</string>
    </property>
   </action>
-  <action name="actionWhat_s_New">
+  <action name="actionReleaseNotes">
    <property name="text">
     <string>What's New?</string>
    </property>
   </action>
-  <action name="actionOpenRazerWebsite_2">
+  <action name="actionOpenRazerWebsite">
    <property name="icon">
     <iconset>
      <normaloff>img/general/external.svg</normaloff>img/general/external.svg</iconset>
@@ -1083,7 +1083,10 @@
     <string>About OpenRazer</string>
    </property>
   </action>
-  <action name="actionNew_Preset_from_Existing_Devices">
+  <action name="actionNewPreset">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normaloff>img/tabs/active/presets.svg</normaloff>img/tabs/active/presets.svg</iconset>
@@ -1092,7 +1095,10 @@
     <string>New Preset...</string>
    </property>
   </action>
-  <action name="actionNew_Preset_from_Current_Devices">
+  <action name="actionNewPresetNow">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>New Preset from Current Settings</string>
    </property>
@@ -1113,6 +1119,44 @@
    </property>
    <property name="text">
     <string>Restart Background Tasks</string>
+   </property>
+  </action>
+  <action name="actionReinstateMenuBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="window-pin"/>
+   </property>
+   <property name="text">
+    <string>Keep the Menu Bar</string>
+   </property>
+  </action>
+  <action name="actionDuplicate">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="edit-duplicate">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Duplicate</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="edit-delete">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Delete</string>
    </property>
   </action>
  </widget>

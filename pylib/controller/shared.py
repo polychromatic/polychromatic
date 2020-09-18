@@ -16,19 +16,20 @@ from PyQt5 import uic
 from PyQt5.QtCore import Qt, QThread, QRunnable, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QIcon, QPalette, QColor, QFont, QFontDatabase, QPixmap
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QApplication, QMainWindow, \
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QWidget, QMessageBox, QGridLayout, \
-                            QLabel, QPushButton, QToolButton, QGroupBox, QListWidget, \
-                            QHBoxLayout, QSizePolicy, QSpacerItem
+                            QLabel, QPushButton, QToolButton, QGroupBox, \
+                            QListWidget, QHBoxLayout, QSizePolicy, QSpacerItem, \
+                            QDialog
 
-def load_qt_theme(app, qapp, main_window):
+def load_qt_theme(app, qapp, window):
     """
     Apply the Polychromatic Qt theme for the main window if enabled by the user.
 
     Params:
         app             ApplicationData() object
         qapp            QApplication() object
-        main_window     QMainWindow() object
+        window          QMainWindow() or QDialog() object
     """
     if app.system_qt_theme:
         return
@@ -37,8 +38,14 @@ def load_qt_theme(app, qapp, main_window):
     QFontDatabase.addApplicationFont(os.path.join(app.data_path, "qt", "fonts", "Play_regular.ttf"))
     font = QFont("Play", 10, 1)
     qapp.setFont(font)
-    main_window.menuBar.setFont(font)
-    main_window.findChild(QWidget, "MainTabCustom").setFont(font)
+
+    menu_bar = window.findChild(QMenuBar, "menuBar")
+    if menu_bar:
+        menu_bar.setFont(font)
+
+    custom_tabs = window.findChild(QWidget, "MainTabCustom")
+    if custom_tabs:
+        custom_tabs.setFont(font)
 
     # Load basic colour palettes
     ui_palette = QPalette()
@@ -58,27 +65,34 @@ def load_qt_theme(app, qapp, main_window):
     ui_palette.setColor(QPalette.Link, primary)
     ui_palette.setColor(QPalette.Highlight, secondary)
     ui_palette.setColor(QPalette.HighlightedText, white)
-    main_window.setPalette(ui_palette)
+    window.setPalette(ui_palette)
 
     # Load QSS (essentially CSS) with Polychromatic's design
     with open(os.path.join(app.data_path, "qt", "style.qss"), "r") as f:
-        main_window.setStyleSheet(f.read().replace("[data]", app.data_path))
+        window.setStyleSheet(f.read().replace("[data]", app.data_path))
 
 
-def get_ui_widget(appdata, name):
+def get_ui_widget(appdata, name, q_toplevel=QWidget):
     """
     Returns a QWidget object for the specified .ui file.
 
     Params:
         appdata         ApplicationData() object
         name            Name of UI file (in ui/ folder) without .ui extension
+        q_toplevel      Top-level object class, e.g. QWidget() or QDialog()
     """
     ui_file = os.path.join(appdata.data_path, "ui", name + ".ui")
     if not os.path.exists(ui_file):
         print("Missing UI file: " + ui_file)
         return None
 
-    widget = uic.loadUi(ui_file, QWidget())
+    widget = uic.loadUi(ui_file, q_toplevel())
+
+    # TODO: Process i18n strings
+
+    # If a dialog, apply the styles
+    if q_toplevel == QDialog:
+        load_qt_theme(appdata, appdata.main_app, widget)
 
     return widget
 
@@ -353,6 +367,7 @@ class PolychromaticWidgets(object):
         msgbox.setWindowTitle(title)
         msgbox.setText(text)
         msgbox.setIcon(dialog_type)
+        load_qt_theme(self.appdata, self.appdata.main_app, msgbox)
 
         if info_text:
             msgbox.setInformativeText(info_text);

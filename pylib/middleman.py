@@ -60,6 +60,15 @@ class Middleman(object):
         from .troubleshoot import openrazer as openrazer_troubleshoot
         self.troubleshooters["openrazer"] = openrazer_troubleshoot.troubleshoot
 
+    def get_backend(self, backend_id):
+        """
+        Returns a specific backend. If not loaded, returns None.
+        """
+        for module in self.backends:
+            if module.backend_id == backend_id:
+                return module
+        return None
+
     def get_backends(self):
         """
         Returns a list of backend IDs that are currently running.

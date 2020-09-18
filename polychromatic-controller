@@ -62,11 +62,12 @@ else:
         raise e
 
 
-VERSIONS = {
-    "pref": pref.VERSION,
-    "qt": QtCore.PYQT_VERSION_STR,
-    "python": "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
-}
+VERSIONS = [
+    ["Application", VERSION],
+    ["Save Data", str(pref.VERSION)],
+    ["Qt", QtCore.PYQT_VERSION_STR],
+    ["Python", "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)]
+]
 
 
 class ApplicationData(object):
@@ -86,6 +87,8 @@ class ApplicationData(object):
         self.path = path
         self.data_path = data_path
         self.hidpi = hidpi
+        self.version = VERSION
+        self.versions = VERSIONS
 
         # Settings
         dbg.stdout("Loading preferences...", dbg.action, 1)
@@ -106,6 +109,9 @@ class ApplicationData(object):
         self.tab_triggers = controller.triggers.TriggersTab(self)
         self.tab_preferences = controller.preferences.PreferencesTab(self)
 
+        # Misc
+        self.menubar = controller.menubar.MenuBar(self)
+
         # Session Data
         dbg.stdout("Getting device list...", dbg.action, 1)
         self.middleman = middleman.Middleman(dbg, common)
@@ -115,6 +121,15 @@ class ApplicationData(object):
 
         dbg.stdout("Getting effect list...", dbg.action, 1)
         self.effect_list = effects.get_effect_list()
+
+        # Disable inactive backends in menu bar
+        if "openrazer" in self.middleman.not_installed:
+            for action in ["actionOpenRazerConfigure",
+                           "actionOpenRazerReportBug",
+                           "actionOpenRazerOpenLog",
+                           "actionOpenRazerRestartDaemon",
+                           "actionOpenRazerAbout"]:
+                self.main_window.findChild(QAction, action).setEnabled(False)
 
         self.main_window.load()
 
@@ -149,8 +164,10 @@ class MainWindow(QMainWindow):
 
 
         # Prepare Menu Bar
+        self.findChild(QAction, "actionReinstateMenuBar").setVisible(False)
         if not app.preferences["controller"]["show_menu_bar"]:
             self.menuBar.hide()
+            self.findChild(QAction, "actionReinstateMenuBar").setVisible(True)
 
         # CTRL+C'd
         signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -209,7 +226,7 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 traceback = common.get_exception_as_string(e)
                 print(traceback)
-                widgets = controller.shared.PolychromaticWidgets(app.data_path)
+                widgets = controller.shared.PolychromaticWidgets(app)
                 widgets.open_dialog(widgets.dialog_error,
                                     _("Controller Error"),
                                     _("Eeks! An uncaught exception was thrown while loading the tab.") + '\n\n' + \
