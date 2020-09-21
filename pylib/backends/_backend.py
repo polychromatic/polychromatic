@@ -251,7 +251,7 @@ class Backend(object):
 
         Accepted return data types:
             (list)              Completed. Dictionary of results in format below.
-            False               Failed to run troubleshooting.
+            (e)                 Exception details: Failed to run troubleshooting.
             None                Not applicable.
 
         Expected data:

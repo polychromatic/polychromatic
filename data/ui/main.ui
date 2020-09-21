@@ -768,8 +768,18 @@
      <addaction name="actionOpenRazerRestartDaemon"/>
      <addaction name="actionOpenRazerAbout"/>
     </widget>
+    <widget class="QMenu" name="menuTroubleshoot">
+     <property name="title">
+      <string>Troubleshoot...</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>img/emblems/utility.svg</normaloff>img/emblems/utility.svg</iconset>
+     </property>
+     <addaction name="actionTroubleshootOpenRazer"/>
+    </widget>
     <addaction name="menuOpenRazer"/>
-    <addaction name="actionTroubleshoot"/>
+    <addaction name="menuTroubleshoot"/>
     <addaction name="separator"/>
     <addaction name="actionRestartTrayApplet"/>
     <addaction name="actionRestartHelper"/>
@@ -986,15 +996,6 @@
     <enum>QAction::QuitRole</enum>
    </property>
   </action>
-  <action name="actionTroubleshoot">
-   <property name="icon">
-    <iconset>
-     <normaloff>img/emblems/utility.svg</normaloff>img/emblems/utility.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Troubleshoot...</string>
-   </property>
-  </action>
   <action name="actionRestart_Daemon">
    <property name="icon">
     <iconset>
@@ -1157,6 +1158,15 @@
    </property>
    <property name="text">
     <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionTroubleshootOpenRazer">
+   <property name="icon">
+    <iconset>
+     <normaloff>img/logo/openrazer.svg</normaloff>img/logo/openrazer.svg</iconset>
+   </property>
+   <property name="text">
+    <string>OpenRazer Driver/Daemon</string>
    </property>
   </action>
  </widget>

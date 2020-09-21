@@ -16,6 +16,7 @@ The future of OpenRazer (3.0) aims to move to userspace, which will eliminate
 a lot of these issues.
 """
 
+import glob
 import os
 import subprocess
 import shutil
@@ -46,7 +47,7 @@ def troubleshoot(_):
 
         # Can openrazer-daemon be found?
         results.append({
-            "test_name": _("Check the daemon is installed"),
+            "test_name": _("Daemon is installed"),
             "suggestion": _("Install the 'openrazer-meta' package for your distribution."),
             "passed": True if shutil.which("openrazer-daemon") != None else False
         })
@@ -60,15 +61,15 @@ def troubleshoot(_):
                 daemon_running = True
 
         results.append({
-            "test_name": _("Check the daemon is running"),
+            "test_name": _("Daemon is running"),
             "suggestion": _("Start the daemon from the terminal. Look out for any errors: $ openrazer-daemon -Fv"),
             "passed": daemon_running
         })
 
         # Are the Python libraries working?
         results.append({
-            "test_name": _("Check the Python library is installed"),
-            "suggestion": _("Install the 'python3-openrazer' package for your distribution, or check your PYTHONPATH is correct."),
+            "test_name": _("Python library is installed"),
+            "suggestion": _("Install the 'python3-openrazer' package for your distribution. Check your PYTHONPATH is correct."),
             "passed": PYTHON_LIB_PRESENT
         })
 
@@ -88,14 +89,14 @@ def troubleshoot(_):
             dkms_installed_built = None
 
         results.append({
-            "test_name": _("Check the DKMS sources are installed"),
+            "test_name": _("DKMS sources are installed"),
             "suggestion": _("Install the 'openrazer-meta' package for your distribution."),
             "passed": dkms_installed_src
         })
 
         results.append({
-            "test_name": _("Check the DKMS module has been built for this kernel version"),
-            "suggestion": _("Ensure the correct Linux kernel headers are installed, and try re-installing the DKMS module (replacing 2.x.x with the version of OpenRazer installed) $ sudo dkms install -m openrazer-driver/2.x.x"),
+            "test_name": _("DKMS module has been built for this kernel version"),
+            "suggestion": _("Ensure the correct Linux kernel headers are installed. Try re-installing the DKMS module (replacing 2.x.x with the version of OpenRazer installed) $ sudo dkms install -m openrazer-driver/2.x.x"),
             "passed": dkms_installed_built
         })
 
@@ -105,7 +106,7 @@ def troubleshoot(_):
         code = modprobe.returncode
 
         results.append({
-            "test_name": _("Check the DKMS module can be loaded"),
+            "test_name": _("DKMS module can be loaded"),
             "suggestion": _("For full error details, run $ sudo modprobe razerkbd"),
             "passed": True if code == 0 else False
         })
@@ -115,23 +116,32 @@ def troubleshoot(_):
         output = lsmod.communicate()[0].decode("utf-8")
 
         results.append({
-            "test_name": _("Check the DKMS module is currently loaded"),
+            "test_name": _("DKMS module is currently loaded"),
             "suggestion": _("For full error details, run $ sudo modprobe razerkbd"),
             "passed": True if output.find("razer") != -1 else False
         })
 
         # Is secure boot the problem?
         if os.path.exists("/sys/firmware/efi"):
+            sb_sysfile = glob.glob("/sys/firmware/efi/efivars/SecureBoot*")
+            if len(sb_sysfile) > 0:
+                # The last digit of this sys file indicates whether secure boot is enabled
+                secureboot = subprocess.Popen(["od", "--address-radix=n", "--format=u1", sb_sysfile[0]], stdout=subprocess.PIPE)
+                status = secureboot.communicate()[0].decode("utf-8").split(" ")[-1].strip()
+            else:
+                # Likely secure boot is not present
+                status = 1
+
             results.append({
-                "test_name": _("Check whether secure boot is preventing the module from loading"),
-                "suggestion": _("OpenRazer's kernel modules are unsigned, so they will not load at boot. Either disable secure boot in the EFI firmware settings, or sign the modules yourself."),
-                "passed": True if output.find("Required key") != -1 else False
+                "test_name": _("Check Secure Boot (EFI) status"),
+                "suggestion": _("Secure boot is currently enabled. OpenRazer's kernel modules are unsigned, so these cannot be loaded while Secure Boot is enabled. Either disable Secure Boot in the EFI firmware settings, or sign the modules yourself."),
+                "passed": True if int(status) == 0 else False
             })
 
         # Is user in plugdev group?
         groups = subprocess.Popen(["groups"], stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
         results.append({
-            "test_name": _("Check the user account has been added to 'plugdev' group"),
+            "test_name": _("User account has been added to the 'plugdev' group"),
             "suggestion": _("If you've recently installed, you may need to restart the computer. Otherwise, run this command, log out, then log back in to the computer: $ sudo gpasswd -a $USER plugdev"),
             "passed": True if groups.find("plugdev") != -1 else False
         })
@@ -143,7 +153,7 @@ def troubleshoot(_):
                 log = f.readlines()
 
             results.append({
-                "test_name": _("Check the OpenRazer log for plugdev permission errors"),
+                "test_name": _("Check OpenRazer log for plugdev permission errors"),
                 "suggestion": _("Restarting (or replugging) usually fixes the problem. Clear the log to reset this message."),
                 "passed": True if "".join(log).find("Could not access /sys/") == -1 else False
             })
@@ -165,7 +175,7 @@ def troubleshoot(_):
             try:
                 lsusb = subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
             except FileNotFoundError:
-                self.debug("'lsusb' not available, unable to determine if product is connected.")
+                print("'lsusb' not available, unable to determine if product is connected.")
                 return None
 
             for usb in lsusb.split("\n"):
@@ -211,12 +221,13 @@ def troubleshoot(_):
 
         results.append({
             "test_name": _("Check for unsupported hardware"),
-            "suggestion": _("Check the OpenRazer project (and stable/master branches) to confirm your device is supported."),
+            "suggestion": _("Review the OpenRazer repository to confirm support for your device. Ensure you have the latest version installed and this version does include support for your device."),
             "passed": found_unsupported_device == False
         })
 
     except Exception as e:
         print("Troubleshooter failed to complete!")
-        raise e
+        from .. import common
+        return common.get_exception_as_string(e)
 
     return results

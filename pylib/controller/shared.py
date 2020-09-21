@@ -13,7 +13,7 @@ from .. import preferences as pref
 
 import os
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, QThread, QRunnable, QThreadPool, pyqtSlot
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPalette, QColor, QFont, QFontDatabase, QPixmap
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \

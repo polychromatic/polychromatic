@@ -15,11 +15,11 @@ from .. import common
 from .. import preferences
 from . import shared
 
-from PyQt5.QtCore import Qt, QAbstractTableModel
+from PyQt5.QtCore import Qt, QThread
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 from PyQt5.QtWidgets import QWidget, QMenuBar, QAction, QLabel, QDialog, \
                             QPushButton, QTreeWidget, QTreeWidgetItem, \
-                            QTextEdit, QButtonGroup
+                            QTextEdit, QButtonGroup, QProgressBar
 
 
 class MenuBar(object):
@@ -30,7 +30,10 @@ class MenuBar(object):
         self.appdata = appdata
         self.mainwindow = self.appdata.main_window
         self.menubar = self.mainwindow.findChild(QMenuBar, "menuBar")
-        self.openrazer = MenuBarOpenRazer(appdata)
+        self.widgets = shared.PolychromaticWidgets(appdata)
+
+        # Classes per backend
+        self.openrazer = MenuBarOpenRazer(appdata, self.widgets)
 
         # Bind global menu bar items to their events
         # -- File
@@ -43,7 +46,6 @@ class MenuBar(object):
         self._bind_item("actionReinstateMenuBar", self.reinstate_menu_bar)
 
         # -- Tools
-        self._bind_item("actionTroubleshoot", self.troubleshooter)
         self._bind_item("actionRestartTrayApplet", self.restart_tray_applet)
         self._bind_item("actionRestartHelper", self.restart_helper)
 
@@ -55,6 +57,9 @@ class MenuBar(object):
         self._bind_item("actionOpenRazerOpenLog", self.openrazer.open_log)
         self._bind_item("actionOpenRazerRestartDaemon", self.openrazer.restart)
         self._bind_item("actionOpenRazerAbout", self.openrazer.about)
+
+        # -- Tools > Troubleshooter
+        self._bind_item("actionTroubleshootOpenRazer", self.openrazer.troubleshoot)
 
         # -- Help
         self._bind_item("actionOnlineHelp", self.online_help)
@@ -87,6 +92,90 @@ class MenuBar(object):
         self.mainwindow.findChild(QAction, "actionReinstateMenuBar").setVisible(False)
         self.appdata.preferences["controller"]["show_menu_bar"] = True
         preferences.save_file(self.appdata.path.preferences, self.appdata.preferences)
+
+    def _run_troubleshooter(self, backend):
+        """
+        Run the troubleshooter and shows the results in a dialog box.
+        """
+        _ = self.appdata._
+        dbg = self.appdata.dbg
+
+        dbg.stdout("Running Troubleshooter for {0}...".format(backend), dbg.action, 1)
+        self.loading = shared.get_ui_widget(self.appdata, "loading", QDialog)
+
+        label = self.loading.findChild(QLabel, "Label")
+        label.setText(_("Running troubleshooter..."))
+        bar = self.loading.findChild(QProgressBar, "ProgressBar")
+        bar.setRange(0,0)
+
+        self.loading.setWindowTitle(_("Troubleshooting..."))
+        self.loading.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
+        self.loading.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
+        self.loading.open()
+
+        def _troubleshoot_complete():
+            _ = self.appdata._
+            results = self.thread.result
+            self.loading.close()
+
+            if results == None:
+                self.widgets.open_dialog(self.widgets.dialog_warning,
+                                         _("Troubleshooting Failed"),
+                                         _("The troubleshooter for this backend is not avaliable for this operating system."))
+                return
+            elif results == str:
+                self.widgets.open_dialog(self.widgets.dialog_error,
+                                         _("Troubleshooting Failed"),
+                                         _("The troubleshooter was not expecting that! The process failed as an exception was thrown."),
+                                         None,
+                                         results)
+                return
+
+            self.result_window = shared.get_ui_widget(self.appdata, "troubleshooter", QDialog)
+            label = self.result_window.findChild(QLabel, "Title")
+            tree = self.result_window.findChild(QTreeWidget, "Results")
+            column = tree.invisibleRootItem()
+
+            all_passed = True
+            for result in results:
+                item = QTreeWidgetItem()
+                item.setText(0, _("Passed") if result["passed"] else _("Failed"))
+                item.setText(1, result["test_name"])
+                item.setIcon(0, QIcon(common.get_icon("general", "success")))
+
+                # Provide suggestions on failures
+                if not result["passed"]:
+                    item.setIcon(0, QIcon(common.get_icon("general", "serious")))
+                    all_passed = False
+
+                    suggestion = result["suggestion"].split(". ")
+                    for line in suggestion:
+                        subitem = QTreeWidgetItem()
+                        subitem.setText(1, "• " + line)
+                        subitem.setToolTip(1, line)
+                        item.addChild(subitem)
+                column.addChild(item)
+
+            def _close_troubleshooter():
+                self.result_window.close()
+            self.result_window.findChild(QPushButton, "Close").clicked.connect(_close_troubleshooter)
+
+            tree.expandAll()
+            self.result_window.setWindowTitle(_("Troubleshooter for []").replace("[]", self.human_name))
+            if all_passed:
+                label.setText(_("Everything appears to be in working order!"))
+            self.result_window.open()
+
+        class TroubleshootThread(QThread):
+            def run(self):
+                self.result = self.appdata.middleman.troubleshoot(backend, self.appdata._)
+
+        # Run in separate thread just in case this takes longer on some systems
+        self.thread = TroubleshootThread()
+        self.thread.appdata = self.appdata
+        self.thread.result = []
+        self.thread.finished.connect(_troubleshoot_complete)
+        self.thread.start()
 
     def online_help(self):
         webbrowser.open("https://polychromatic.app/docs/")
@@ -208,8 +297,10 @@ class MenuBarOpenRazer(MenuBar):
     Options for the OpenRazer backend under the Tools menu. When the backend is
     not present, there may be a limited set of options.
     """
-    def __init__(self, appdata):
+    def __init__(self, appdata, widgets):
+        self.human_name = "OpenRazer"
         self.appdata = appdata
+        self.widgets = widgets
         self.module = None
         self.running = None
         self.url_website = "https://openrazer.github.io"
@@ -270,6 +361,9 @@ class MenuBarOpenRazer(MenuBar):
         except Exception:
             dbg.stdout("Unable to get DKMS version! Ignoring...", dbg.warning)
             return "[Unknown]"
+
+    def troubleshoot(self):
+        self._run_troubleshooter("openrazer")
 
     def about(self):
         self._refresh()
