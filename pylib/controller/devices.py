@@ -78,7 +78,7 @@ class DevicesTab(object):
 
         devices_branch.sortChildren(0, Qt.AscendingOrder)
 
-        for device_item in self.appdata.middleman.get_unsupported_devices():
+        for device_item in unknown_device_list:
             item = QTreeWidgetItem()
             item.setText(0, device_item["name"])
             item.setIcon(0, QIcon(device_item["form_factor"]["icon"]))
@@ -93,7 +93,7 @@ class DevicesTab(object):
             tasks_branch.setHidden(True)
 
         # Backends loaded, but no usable devices
-        if len(self.appdata.device_list) == 0 and len(unknown_device_list) >= 0:
+        if len(self.appdata.device_list) == 0 and len(unknown_device_list) > 0:
             devices_branch.child(0).setSelected(True)
             self.open_unknown_device(devices_branch.child(0).backend)
 
@@ -106,7 +106,7 @@ class DevicesTab(object):
             self._open_no_backend_found(2)
 
         # Backends present, but no devices listed
-        elif len(self.appdata.middleman.backends) == 0:
+        elif len(self.appdata.device_list) == 0:
             self._open_no_backend_found(0)
 
         # Open the first device initially
