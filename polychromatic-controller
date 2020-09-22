@@ -306,9 +306,7 @@ def parse_parameters():
     args = parser.parse_args()
 
     if args.version:
-        print("Polychromatic v{0}".format(VERSION))
-        print("Qt " + VERSIONS["qt"])
-        print("Python " + VERSIONS["python"])
+        print("polychromatic {0}".format(VERSION))
         exit(0)
 
     if args.verbose:
