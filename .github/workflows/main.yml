@@ -17,6 +17,8 @@ jobs:
 
     - name: Install Dependencies
       run: |
+        sudo apt-get update
+
         # SCSS
         sudo apt-get install sassc
 
