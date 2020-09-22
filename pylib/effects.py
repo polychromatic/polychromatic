@@ -357,7 +357,7 @@ def send_effect_frames(frames, fps, device):
         device      (str)   middleman.get_device_object() object
     """
     fx_obj = fx.FX(device)
-    procpid.set_as_device_custom_fx(device["serial"])
+    #procpid.set_as_device_custom_fx(device["serial"]) # FIXME
 
     # FIXME: Stub!
     print("stub:send_effect_frames")
@@ -384,7 +384,7 @@ def send_effect_custom(script_path, device, params):
         exit(1)
 
     try:
-        procpid.set_as_device_custom_fx(device["serial"])
+        #procpid.set_as_device_custom_fx(device["serial"]) # FIXME
         custom_script.run(fx_obj, params)
     except KeyboardInterrupt:
         exit(0)

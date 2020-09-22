@@ -136,10 +136,6 @@ class Middleman(object):
         if type(device) in [None, str]:
             return device
 
-        # Append state data
-        device["custom_effect_busy"] = procpid.is_custom_effect_in_use(device["serial"])
-        device["custom_effect"] = procpid.get_effect_state(device["serial"])
-        device["preset"] = procpid.get_preset_state(device["serial"])
 
         return device
 
@@ -164,9 +160,6 @@ class Middleman(object):
         See _backend.Backend.set_device_state() for parameters and data types.
         """
         # Stop Polychromatic software effect helper for this device if changing an effect
-        if option_id == "effect":
-            procpid.stop_device_custom_fx(serial)
-            procpid.reset_preset_state(serial)
 
         for module in self.backends:
             if module.backend_id == backend:

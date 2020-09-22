@@ -21,6 +21,8 @@ Control devices from the desktop environment's indicator applet or system tray.
 
 Works as an AppIndicator (GTK) or GTK Status Icon.
 """
+
+import atexit
 import argparse
 import os
 import sys
@@ -50,6 +52,7 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
         import pylib.common as common
         import pylib.locales as locales
         import pylib.middleman as middleman_mod
+        import pylib.procpid as procpid
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -61,10 +64,12 @@ else:
         import polychromatic.common as common
         import polychromatic.locales as locales
         import polychromatic.middleman as middleman_mod
+        import polychromatic.procpid as procpid
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
         raise e
+
 
 class Indicator(object):
     def __init__(self):
@@ -588,7 +593,6 @@ class Callback():
         """
         Option clicked to quit the application.
         """
-        dbg.stdout("Exiting...", dbg.action, 1)
         exit(0)
 
     @staticmethod
@@ -788,8 +792,26 @@ if __name__ == "__main__":
     _ = locales._
     dbg = common.Debugging()
 
-    # Kill the process when CTRL+C'd.
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    # Handle signals sent to process
+    def _restart_applet(num, frame):
+        dbg.stdout("Received USR2 signal. Reloading...", dbg.action, 1)
+        procpid.start_component("tray-applet")
+        _stop_applet()
+
+    def _stop_applet(num=None, frame=None):
+        dbg.stdout("Received INT or USR1 signal. Exiting...", dbg.action, 1)
+        procpid.release_component_pid("tray-applet")
+        exit(0)
+
+    signal.signal(signal.SIGINT, _stop_applet)
+    signal.signal(signal.SIGUSR1, _restart_applet)
+    signal.signal(signal.SIGUSR2, _stop_applet)
+    atexit.register(_stop_applet)
+
+    # Only run one tray applet at a time - if one is running, replace it.
+    if procpid.is_another_instance_is_running("tray-applet"):
+        procpid.stop_component("tray-applet")
+    procpid.set_component_pid("tray-applet")
 
     # Prepare cache directory
     session_storage = os.path.join(path.cache, "tray")

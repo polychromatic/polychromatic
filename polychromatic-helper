@@ -40,9 +40,9 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
     try:
         import pylib.common as common
         import pylib.effects as effects
-        import pylib.preferences as pref
+        import pylib.preferences as preferences
         import pylib.procpid as procpid
-        import pylib.backends.middleman as middleman
+        import pylib.middleman as middleman
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -54,87 +54,86 @@ else:
         import polychromatic.effects as effects
         import polychromatic.preferences as pref
         import polychromatic.procpid as procpid
-        import polychromatic.backends.middleman as middleman
+        import polychromatic.middleman as middleman
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
         raise e
 
 
-class Helpers():
+def autostart():
     """
-    Stores helper functions.
+    Intended to run at login.
+
+    - If enabled, start the tray applet.
+    - If configured, activate any 'welcome' and/or 'login' triggers.
+    - If a custom effect was last played, but the device isn't bound to a 'login' trigger, run it again.
+    - If triggers are set up, start the process and monitor for changes.
+
+    This instance will exit as soon as the checks have completed.
     """
-    def autostart():
-        """
-        Intended to run at login.
+    if prefs["tray"]["enabled"]:
+        procpid.start_component("tray-applet")
 
-        - If enabled, start the tray applet.
-        - If configured, activate any 'welcome' and/or 'login' triggers.
-        - If a custom effect was last played, but the device isn't bound to a 'login' trigger, run it again.
-        - If triggers are set up, start the process and monitor for changes.
+    print("stub:Helpers.autostart")
 
-        This instance will exit as soon as the checks have completed.
-        """
-        # FIXME: Stub!
-        pass
 
-    def monitor_triggers():
-        """
-        Triggers may monitor different entities (e.g. time, a file or event)
-        and this process will switch to a different preset when the conditions
-        match.
+def monitor_triggers():
+    """
+    Triggers may monitor different entities (e.g. time, a file or event)
+    and this process will switch to a different preset when the conditions
+    match.
 
-        This process should always be running when there is at least one trigger set.
-        """
-        # FIXME: Stub!
-        pass
+    This process should always be running when there is at least one trigger set.
+    """
+    print("stub:Helpers.monitor_triggers")
 
-    def play_custom_effect(filepath, backend, uid):
-        """
-        Playback a custom effect by sending frames to the specified device.
 
-        This process should be running until the custom effect reaches the end,
-        or if it's looped, indefinity until interrupted.
-        """
-        effect = effects.get_effect(filepath)
-        if not effect:
-            dbg.stdout("\nUnable to render on device {0} on backend '{1}'!".format(uid, backend), dbg.error)
+def play_custom_effect(filepath, backend, uid):
+    """
+    Playback a custom effect by sending frames to the specified device.
+
+    This process should be running until the custom effect reaches the end,
+    or if it's looped, indefinity until interrupted.
+    """
+    effect = effects.get_effect(filepath)
+    if not effect:
+        dbg.stdout("\nUnable to render on device {0} on backend '{1}'!".format(uid, backend), dbg.error)
+        exit(1)
+
+    device = middleman.get_device_object(backend, int(uid))
+    effect_type = effect["type"]
+
+    if effect_type == "keyframed":
+        # Showtime!
+        frames = effects.render_keyframes(filepath)
+        procpid.set_effect_state(device["serial"], effect["ui"]["name"], effect["ui"]["icon"])
+        effects.send_effect_frames(frames, effect["data"]["fps"], device)
+
+    elif effect_type == "scripted":
+        # Determine scirpt path and check it exists alongside metadata.
+        script_filename = os.path.basename(filepath).replace(".json", ".py")
+        script_dir = os.path.dirname(filepath)
+        script_path = os.path.join(script_dir, script_filename)
+
+        if not os.path.exists(script_path):
+            dbg.stdout("Metadata found, but script missing: " + script_path, dbg.error)
             exit(1)
 
-        device = middleman.get_device_object(backend, int(uid))
-        effect_type = effect["type"]
-
-        if effect_type == "keyframed":
-            # Showtime!
-            frames = effects.render_keyframes(filepath)
-            procpid.set_effect_state(device["serial"], effect["ui"]["name"], effect["ui"]["icon"])
-            effects.send_effect_frames(frames, effect["data"]["fps"], device)
-
-        elif effect_type == "scripted":
-            # Determine scirpt path and check it exists alongside metadata.
-            script_filename = os.path.basename(filepath).replace(".json", ".py")
-            script_dir = os.path.dirname(filepath)
-            script_path = os.path.join(script_dir, script_filename)
-
-            if not os.path.exists(script_path):
-                dbg.stdout("Metadata found, but script missing: " + script_path, dbg.error)
-                exit(1)
-
-            # Validate custom effect environment and parameters.
-            if not effects.check_environment(effect, device):
-                # This function will output errors to stdout.
-                exit(1)
-
-            params = effects.compute_script_parameters(effect)
-
-            # Showtime!
-            procpid.set_effect_state(device["serial"], effect["ui"]["name"], effect["ui"]["icon"])
-            effects.send_effect_custom(script_path, device, params)
-
-        else:
-            dbg.stdout("Unknown effect type: " + effect_type, dbg.error)
+        # Validate custom effect environment and parameters.
+        if not effects.check_environment(effect, device):
+            # This function will output errors to stdout.
             exit(1)
+
+        params = effects.compute_script_parameters(effect)
+
+        # Showtime!
+        procpid.set_effect_state(device["serial"], effect["ui"]["name"], effect["ui"]["icon"])
+        effects.send_effect_custom(script_path, device, params)
+
+    else:
+        dbg.stdout("Unknown effect type: " + effect_type, dbg.error)
+        exit(1)
 
 
 def parse_parameters():
@@ -169,6 +168,8 @@ def parse_parameters():
 
 
 if __name__ == "__main__":
+    path = preferences.Paths()
+    prefs = preferences.load_file(path.preferences)
 
     # Appear as its own process.
     setproctitle.setproctitle("polychromatic-helper")
@@ -177,13 +178,13 @@ if __name__ == "__main__":
     args = parse_parameters()
 
     if args.autostart:
-        Helpers.autostart()
+        autostart()
 
     elif args.monitor_triggers:
-        Helpers.monitor_triggers()
+        monitor_triggers()
 
     elif args.play_custom_effect:
-        Helpers.play_custom_effect(args.filepath, args.device_backend, args.device_uid)
+        play_custom_effect(args.filepath, args.device_backend, args.device_uid)
 
     else:
         dbg.stdout("This executable is intended to be invoked by another Polychromatic process.", dbg.warning)

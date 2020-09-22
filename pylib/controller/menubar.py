@@ -13,6 +13,7 @@ import webbrowser
 
 from .. import common
 from .. import preferences
+from .. import procpid
 from . import shared
 
 from PyQt5.QtCore import Qt, QThread
@@ -176,6 +177,12 @@ class MenuBar(object):
         self.thread.result = []
         self.thread.finished.connect(_troubleshoot_complete)
         self.thread.start()
+
+    def restart_tray_applet(self):
+        procpid.start_component("tray-applet")
+
+    def restart_helper(self):
+        print("stub:restart_helper")
 
     def online_help(self):
         webbrowser.open("https://polychromatic.app/docs/")

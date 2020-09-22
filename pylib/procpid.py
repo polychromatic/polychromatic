@@ -8,6 +8,7 @@ This module is responsible for managing other Polychromatic processes.
 """
 
 import os
+import signal
 from subprocess import Popen
 
 
@@ -26,9 +27,16 @@ def _get_pid_dir():
     return pid_dir
 
 
-def _is_polychromatic_process(pid):
+def _get_pid_file(component):
     """
-    Verify that the specified PID is actually a Polychromatic process.
+    Returns the path to a PID file.
+    """
+    return os.path.join(_get_pid_dir(), component + ".pid")
+
+
+def _is_polychromatic_process(component, pid):
+    """
+    Verify that the specified PID is actually an alive Polychromatic process.
     """
     cmdline_file = "/proc/{0}/cmdline".format(pid)
 
@@ -36,105 +44,101 @@ def _is_polychromatic_process(pid):
         with open(cmdline_file, "r") as f:
             cmdline = f.readline()
     else:
-        # No process running here.
+        # No process running here!
         return False
 
     if cmdline.find("polychromatic-") != -1:
         return True
 
-    # Old PID that is no longer a Polychromatic one.
+    # This PID is old and no longer belongs to Polychromatic
+    pid_file = os.path.join(_get_pid_dir(), component + ".pid")
+    os.remove(_get_pid_file(component))
     return False
 
 
-def _get_lock_pid(component):
+def get_component_pid(component):
     """
-    Returns the PID of a process that has 'locked' a component.
+    Returns the PID of either a running Polychromatic process, or the process
+    that has 'locked' the device.
 
     Returns:
-        (int)       Integer to the process.
-        None        No lock is in place.
+        (int)       Process ID
+        None        Process is not running
     """
-    pid_file = os.path.join(_get_pid_dir(), component + ".pid")
+    pid_file = _get_pid_file(component)
 
     if not os.path.exists(pid_file):
         return None
 
     with open(pid_file, "r") as f:
-        return int(f.read())
+        pid = int(f.read())
+
+    if _is_polychromatic_process(component, pid):
+        return pid
+
+    return None
 
 
-def _set_lock_pid(component):
+def set_component_pid(component):
     """
-    Assign the PID of the running process to a component, indicating a 'locked'
-    state to avoid multiple instances.
-    """
-    pid_path = os.path.join(_get_pid_dir(), component + ".pid")
+    Assign the PID of the running process to a component or device, indicating
+    a 'locked' state to avoid multiple instances.
 
-    with open(pid_path, "w") as f:
+    If the component is already running, it will be stopped.
+    """
+    pid_file = _get_pid_file(component)
+
+    if os.path.exists(pid_file):
+        stop_component(component)
+
+    with open(pid_file, "w") as f:
         f.write(str(os.getpid()))
 
     return True
 
 
-def _terminate_process_pid(pid, component):
+def release_component_pid(component):
     """
-    Stops the execution of another Polychromatic process.
-
-    Returns:
-        True        Process was terminated.
-        False       Process does not exist or cannot be terminated.
+    Unassign the PID of the running process from a component or device.
     """
-    if _is_polychromatic_process(pid):
-        os.kill(pid, 9)
+    pid_file = _get_pid_file(component)
+    pid = get_component_pid(component)
+    if pid == os.getpid():
+        os.remove(pid_file)
 
-        pid_path = os.path.join(_get_pid_dir(), component + ".pid")
-        os.remove(pid_path)
 
+def is_another_instance_is_running(component):
+    """
+    Return a boolean to indicate whether this component is already running.
+    """
+    pid = get_component_pid(component)
+    if pid:
         return True
     return False
 
-
-def is_another_instance_running(component):
+def stop_component(component):
     """
-    Returns the PID of a process if the specified component is running in another
-    instance.
+    Unassign the PID to the running process, allowing it to be used by
+    another Polychromatic process.
 
-    Returns:
-        (int)       Process PID (if applicable)
-        False       Process not running
+    This sends the USR2 signal.
     """
-    existing_pid = _get_lock_pid(component)
-    if existing_pid:
-        return existing_pid
-    return False
-
-
-def set_as_device_custom_fx(serial):
-    """
-    The current process PID will play custom effects for this device. This
-    will stop the other process (if necessary) so only one device is controlled
-    by one process at a time.
-    """
-    existing_pid = _get_lock_pid(serial)
-    if existing_pid:
-        success = _terminate_process_pid(existing_pid, serial)
-
-        if not success:
-            return False
-
-    _set_lock_pid(serial)
-    return True
-
-
-def stop_device_custom_fx(serial):
-    """
-    Stop the process playing custom effects for this device. This may happen if
-    the user changes the current effect to a hardware one.
-    """
-    pid = _get_lock_pid(serial)
-
+    pid_file = _get_pid_file(component)
+    pid = get_component_pid(component)
     if pid:
-        _terminate_process_pid(pid, serial)
+        os.kill(pid, signal.SIGUSR2)
+
+
+def restart_component(component):
+    """
+    Send a request to the process to reload itself.
+
+    This sends the USR1 signal.
+    """
+    pid_file = _get_pid_file(component)
+    pid = get_component_pid(component)
+    if pid:
+        os.kill(pid, signal.SIGUSR1)
 
 
 def start_component(name, parameters=[]):
@@ -146,7 +150,7 @@ def start_component(name, parameters=[]):
     """
     bin_filename = "polychromatic-" + name
 
-    # this __file__ = pylib folder
+    # __file__ = procpid.py
     path_relative = os.path.abspath(os.path.join(os.path.dirname(__file__), "../", bin_filename))
     path_system = "/usr/bin/" + bin_filename
 
@@ -169,17 +173,8 @@ def start_component(name, parameters=[]):
     return False
 
 
-def is_custom_effect_in_use(serial):
-    """
-    Returns a boolean to indicate if the specified device is 'locked' for custom effects.
-    """
-    pid = _get_lock_pid(serial)
 
-    if pid:
-        if _is_polychromatic_process(pid):
-            return True
 
-    return False
 
 
 def get_preset_state(serial):
