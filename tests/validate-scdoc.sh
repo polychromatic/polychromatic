@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Validates Python files for errors. Uses 'pylint'.
+# Checks the scdocs can be compiled.
 #
 
 if [ -z "$(which scdoc)" ]; then

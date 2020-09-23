@@ -61,9 +61,9 @@ jobs:
       run: |
         ./tests/validate-py.sh --ubuntu
 
-#    - name: Validate man (scdoc)
-#      run: |
-#        ./tests/validate-scdoc.sh
+    - name: Validate man (scdoc)
+      run: |
+        ./tests/validate-scdoc.sh
 
     - name: 'Test Meson/Ninja Build'
       run: |
