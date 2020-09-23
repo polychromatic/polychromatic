@@ -10,6 +10,7 @@ Copyright: 2015-2020, Luke Horwell <code@horwell.me>
 License: GPL-3+
 
 Files: polychromatic-cli
+       polychromatic-helper
 Copyright: 2017-2020, Luke Horwell <code@horwell.me>
 License: GPL-3+
 
@@ -22,11 +23,13 @@ Files: data/*
        debian/*
        man/*
        meson.build
+       meson_options.txt
        polychromatic-controller-dev
        pylib/*
        scripts/*
        source/*
        tests/*
+       .*
 Copyright: 2015-2020, Luke Horwell <code@horwell.me>
 License: GPL-3+
 

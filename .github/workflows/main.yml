@@ -38,7 +38,7 @@ jobs:
         sudo apt-get install meson
 
         # Debian Packaging
-        sudo apt-get install debhelper devscripts
+        sudo apt-get install debhelper devscripts python3-polib
 
         # Additional modules (dependencies)
         sudo add-apt-repository ppa:openrazer/daily
@@ -77,13 +77,14 @@ jobs:
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
-        name: polychromatic-${{github.sha}}.tar.gz
+        name: polychromatic-${{github.sha}}
         path: /tmp/dist/
 
-    - name: Test Debian Package
+    - name: Test Debian Packaging
       run: |
         git clean -df
         git checkout .
-        sed -i "s#) xenial#-UNRELEASED) xenial#g" debian/changelog
+        sed -i "s/focal/UNRELEASED/g" debian/changelog
         dpkg-buildpackage -S -us -uc -d
-        lintian --suppress-tags bad-distribution-in-changes-file --no-tag-display-limit
+        lintian --no-tag-display-limit
+        debuild -b
