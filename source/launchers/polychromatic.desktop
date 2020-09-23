@@ -13,15 +13,15 @@ Actions=devices;effects;tray-applet;
 
 [Desktop Action devices]
 Name=Configure Devices
-Icon=/usr/share/polychromatic/ui/img/general/controller.svg
+Icon=/usr/share/polychromatic/img/general/controller.svg
 Exec=polychromatic-controller --tab devices
 
 [Desktop Action effects]
 Name=Edit Effects
-Icon=/usr/share/polychromatic/ui/img/general/effects.svg
+Icon=/usr/share/polychromatic/img/general/effects.svg
 Exec=polychromatic-controller --tab effects
 
 [Desktop Action tray-applet]
 Name=Tray Applet
-Icon=/usr/share/polychromatic/ui/img/general/tray-applet.svg
+Icon=/usr/share/polychromatic/img/general/tray-applet.svg
 Exec=polychromatic-tray-applet

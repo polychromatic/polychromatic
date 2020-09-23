@@ -116,7 +116,7 @@ def get_form_factor(form_factor_id):
 
     return {
         "id": form_factor_id,
-        "icon": os.path.abspath(os.path.join(DATA_PATH, "ui/img/devices/" + form_factor_id + ".svg")),
+        "icon": get_icon("devices", form_factor_id),
         "label": locales.get(form_factor_id)
     }
 
@@ -141,23 +141,26 @@ def get_default_tray_icon():
     """
     Determines which tray icon is best suited for the current desktop environment
     or theme.
+
+    The path is intentionally relative as this is saved to preferences.json.
+    A relative path will look up the icon in Polychromatic's data folders.
     """
     desktop_env = os.environ.get("XDG_CURRENT_DESKTOP")
     theme_env = os.environ.get("GTK_THEME")
 
     # Default icon
-    icon_value = "ui/img/tray/light/polychromatic.svg"
+    icon_value = "img/tray/light/polychromatic.svg"
 
     # TODO: Detect GTK dark theme.
 
     if desktop_env:
         if desktop_env == "KDE":
-            icon_value = "ui/img/tray/light/breeze.svg"
+            icon_value = "img/tray/light/breeze.svg"
 
     elif theme_env:
         # Unity/Ubuntu MATE
         if theme_env.startswith("Ambiant") or theme_env.startswith("Ambiance"):
-            icon_value = "ui/img/tray/light/humanity.svg"
+            icon_value = "img/tray/light/humanity.svg"
 
     return icon_value
 
@@ -180,7 +183,7 @@ def get_tray_icon(dbg, icon_value):
         return icon_builtin
 
     dbg.stdout("Tray icon missing: {0}\nUsing fallback icon.".format(icon_value), dbg.warning)
-    return os.path.join(get_data_dir_path(), "ui/img/tray/light/polychromatic.svg")
+    return get_icon("tray/light", "polychromatic")
 
 
 def get_icon(folder, name):
@@ -189,14 +192,14 @@ def get_icon(folder, name):
     folder.
 
     Example:
-        "general", "battery-75" returns "/usr/share/polychromatic/ui/img/general/battery-75.svg"
+        ("general", "battery-75") returns "/usr/share/polychromatic/img/general/battery-75.svg"
 
     Returns:
         (str)       Absolute path to icon
         None        Icon does not exist
     """
     for ext in [".svg", ".png"]:
-        icon_path = os.path.join(DATA_PATH, "ui", "img", folder, name + ext)
+        icon_path = os.path.join(DATA_PATH, "img", folder, name + ext)
         if os.path.exists(icon_path):
             return icon_path
 
@@ -319,7 +322,7 @@ def get_bulk_apply_options(devices):
         output["brightness"].append({
             "option_id": "brightness",
             "option_data": x,
-            "icon": os.path.join(DATA_PATH, "ui", "img", "options", str(x) + ".svg")
+            "icon": get_icon("options", str(x))
         })
 
     # Options

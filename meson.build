@@ -29,8 +29,8 @@ i18n = import('i18n')
 
 # Shared files - common (or required) for all Polychromatic interfaces
 if build_shared_files == true
-    install_subdir('data/ui/img',
-        install_dir : join_paths(get_option('datadir'), 'polychromatic', 'ui', 'img'),
+    install_subdir('data/img',
+        install_dir : join_paths(get_option('datadir'), 'polychromatic', 'img'),
         strip_directory : true)
 
     install_data(['pylib/__init__.py',
@@ -69,9 +69,9 @@ if build_controller == true
     sass = find_program('sassc')
     run_command('scripts/build-styles.sh')
 
-    install_data(['data/ui/main.ui',
-                  'data/ui/widget-summary.ui'],
-        install_dir : join_paths(get_option('datadir'), 'polychromatic', 'ui'))
+    install_subdir(['data/ui'],
+        install_dir : join_paths(get_option('datadir'), 'polychromatic', 'ui'),
+        strip_directory : true)
 
     install_subdir('data/qt',
         install_dir : join_paths(get_option('datadir'), 'polychromatic', 'qt'),

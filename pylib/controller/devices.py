@@ -141,7 +141,7 @@ class DevicesTab(object):
         # Show the device's name, image and a summarised status
         real_image = device["real_image"]
         if not device["real_image"]:
-            real_image = os.path.join(self.appdata.data_path, "ui", "img", "devices", "noimage.svg")
+            real_image = common.get_icon("devices", "noimage")
 
         indicators = []
         for item in device["summary"]:
@@ -391,7 +391,7 @@ class DevicesTab(object):
             0: [
                 {
                     "label": self._("Troubleshoot"),
-                    "icon": os.path.join(self.appdata.data_path, "ui", "img", "tabs", "inactive", "preferences.svg"),
+                    "icon": common.get_icon("tab_inactive", "preferences"),
                     "action": self._start_troubleshooter
                 }
             ],
@@ -403,7 +403,7 @@ class DevicesTab(object):
                 },
                 {
                     "label": self._("Troubleshoot"),
-                    "icon": os.path.join(self.appdata.data_path, "ui", "img", "tabs", "inactive", "preferences.svg"),
+                    "icon": common.get_icon("tab_inactive", "preferences"),
                     "action": self._start_troubleshooter
                 }
             ]
@@ -464,7 +464,7 @@ class DevicesTab(object):
                 },
                 {
                     "label": self._("Troubleshoot"),
-                    "icon": os.path.join(self.appdata.data_path, "ui", "img", "tabs", "inactive", "preferences.svg"),
+                    "icon": common.get_icon("tab_inactive", "preferences"),
                     "action": self._start_troubleshooter
                 },
                 {

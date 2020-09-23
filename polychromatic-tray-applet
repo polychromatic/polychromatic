@@ -263,12 +263,10 @@ class PolychromaticTrayApplet():
         Returns the path for a Polychromatic icon.
 
         Params:
-            img_dir         (str)   Folder inside "ui/img", e.g. "effects"
+            img_dir         (str)   Folder inside img, e.g. "effects"
             icon            (str)   Filename excluding the extension.
         """
-        icon_path = os.path.join(common.DATA_PATH, "ui", "img", img_dir, icon + ".svg")
-        if os.path.exists(icon_path):
-            return icon_path
+        return common.get_icon(img_dir, icon)
 
     def _get_tray_icon(self):
         """
@@ -282,7 +280,7 @@ class PolychromaticTrayApplet():
         """
         dbg.stdout("Assembling error applet...", dbg.action, 1)
 
-        error_icon = common.get_tray_icon(dbg, "ui/img/tray/error.svg")
+        error_icon = common.get_tray_icon(dbg, "img/tray/error.svg")
         indicator.setup(error_icon)
 
         menu = indicator.create_menu()

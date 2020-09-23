@@ -28,7 +28,7 @@ class Backend(object):
         # Backend ID
         self.backend_id = "unknown"
 
-        # Logo should be stored in data/ui/img/logo
+        # Logo should be stored in data/img/logo
         self.logo = "example.svg"
 
         # Should be the version of the backend itself.
@@ -135,7 +135,7 @@ class Backend(object):
             "matrix_rows":      (int)   Total rows in LED matrix
             "matrix_cols":      (int)   Total columns in LED matrix
             "zone_icons": {     (dict)  Graphic to visually represent each zone
-                "main":         (str)   Name of icon as seen in {data}/ui/img/zones/
+                "main":         (str)   Name of icon as seen in {data}/img/zones/
             }
             "zone_options": {   (dict)  Tells Polychromatic how to present the options.
                 "main": [       (dict)  Keys for each zone.

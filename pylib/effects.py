@@ -79,12 +79,12 @@ def _get_icon_path(icon):
     if os.path.exists(icon):
         return icon
 
-    if icon.startswith("ui/"):
+    if icon.startswith("img/"):
         absolute_builtin_icon = os.path.join(common.get_data_dir_path(), icon)
         if os.path.exists(absolute_builtin_icon):
             return absolute_builtin_icon
 
-    return os.path.join(common.get_data_dir_path(), "/ui/img/effects/layer-middle.svg")
+    return common.get_icon("effects", "layer-middle")
 
 
 def _get_md5_checksum(path):

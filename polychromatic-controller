@@ -160,9 +160,8 @@ class MainWindow(QMainWindow):
             tabs.tabBar().hide()
 
         # Set window attributes
-        self.setWindowIcon(QIcon(os.path.join(DATA_PATH, "ui", "img", "general", "controller.svg")))
+        self.setWindowIcon(QIcon(common.get_icon("general", "controller.svg")))
         self.setWindowTitle("Polychromatic")
-
 
         # Prepare Menu Bar
         self.findChild(QAction, "actionReinstateMenuBar").setVisible(False)

@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>img/general/controller.svg</normaloff>img/general/controller.svg</iconset>
+    <normaloff>../img/general/controller.svg</normaloff>../img/general/controller.svg</iconset>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -131,8 +131,8 @@
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>img/tabs/inactive/devices.svg</normaloff>
-           <normalon>img/tabs/active/devices.svg</normalon>img/tabs/inactive/devices.svg</iconset>
+           <normaloff>../img/tab_inactive/devices.svg</normaloff>
+           <normalon>../img/tab_active/devices.svg</normalon>../img/tab_inactive/devices.svg</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -158,8 +158,8 @@
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>img/tabs/inactive/effects.svg</normaloff>
-           <normalon>img/tabs/active/effects.svg</normalon>img/tabs/inactive/effects.svg</iconset>
+           <normaloff>../img/tab_inactive/effects.svg</normaloff>
+           <normalon>../img/tab_active/effects.svg</normalon>../img/tab_inactive/effects.svg</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -191,8 +191,8 @@
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>img/tabs/inactive/presets.svg</normaloff>
-           <normalon>img/tabs/active/presets.svg</normalon>img/tabs/inactive/presets.svg</iconset>
+           <normaloff>../img/tab_inactive/presets.svg</normaloff>
+           <normalon>../img/tab_active/presets.svg</normalon>../img/tab_inactive/presets.svg</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -224,8 +224,8 @@
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>img/tabs/inactive/triggers.svg</normaloff>
-           <normalon>img/tabs/active/triggers.svg</normalon>img/tabs/inactive/triggers.svg</iconset>
+           <normaloff>../img/tab_inactive/triggers.svg</normaloff>
+           <normalon>../img/tab_active/triggers.svg</normalon>../img/tab_inactive/triggers.svg</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -270,8 +270,8 @@
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>img/tabs/inactive/preferences.svg</normaloff>
-           <normalon>img/tabs/active/preferences.svg</normalon>img/tabs/inactive/preferences.svg</iconset>
+           <normaloff>../img/tab_inactive/preferences.svg</normaloff>
+           <normalon>../img/tab_active/preferences.svg</normalon>../img/tab_inactive/preferences.svg</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -313,8 +313,8 @@
       <widget class="QWidget" name="TabDevices">
        <attribute name="icon">
         <iconset>
-         <normaloff>img/tabs/inactive/devices.svg</normaloff>
-         <normalon>img/tabs/active/devices.svg</normalon>img/tabs/inactive/devices.svg</iconset>
+         <normaloff>../img/tab_inactive/devices.svg</normaloff>
+         <normalon>../img/tab_active/devices.svg</normalon>../img/tab_inactive/devices.svg</iconset>
        </attribute>
        <attribute name="title">
         <string>Devices</string>
@@ -409,7 +409,7 @@
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/devices/all.svg</normaloff>img/devices/all.svg</iconset>
+                 <normaloff>../img/devices/all.svg</normaloff>../img/devices/all.svg</iconset>
                </property>
               </item>
              </item>
@@ -461,8 +461,8 @@
       <widget class="QWidget" name="TabEffects">
        <attribute name="icon">
         <iconset>
-         <normaloff>img/tabs/inactive/effects.svg</normaloff>
-         <normalon>img/tabs/active/effects.svg</normalon>img/tabs/inactive/effects.svg</iconset>
+         <normaloff>../img/tab_inactive/effects.svg</normaloff>
+         <normalon>../img/tab_active/effects.svg</normalon>../img/tab_inactive/effects.svg</iconset>
        </attribute>
        <attribute name="title">
         <string>Effects</string>
@@ -557,7 +557,7 @@
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/general/new.svg</normaloff>img/general/new.svg</iconset>
+                 <normaloff>../img/general/new.svg</normaloff>../img/general/new.svg</iconset>
                </property>
                <property name="flags">
                 <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable</set>
@@ -569,7 +569,7 @@
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/general/import.svg</normaloff>img/general/import.svg</iconset>
+                 <normaloff>../img/general/import.svg</normaloff>../img/general/import.svg</iconset>
                </property>
                <property name="flags">
                 <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable</set>
@@ -624,8 +624,8 @@
       <widget class="QWidget" name="TabPresets">
        <attribute name="icon">
         <iconset>
-         <normaloff>img/tabs/inactive/presets.svg</normaloff>
-         <normalon>img/tabs/active/presets.svg</normalon>img/tabs/inactive/presets.svg</iconset>
+         <normaloff>../img/tab_inactive/presets.svg</normaloff>
+         <normalon>../img/tab_active/presets.svg</normalon>../img/tab_inactive/presets.svg</iconset>
        </attribute>
        <attribute name="title">
         <string>Presets</string>
@@ -634,8 +634,8 @@
       <widget class="QWidget" name="TabTriggers">
        <attribute name="icon">
         <iconset>
-         <normaloff>img/tabs/inactive/triggers.svg</normaloff>
-         <normalon>img/tabs/active/triggers.svg</normalon>img/tabs/inactive/triggers.svg</iconset>
+         <normaloff>../img/tab_inactive/triggers.svg</normaloff>
+         <normalon>../img/tab_active/triggers.svg</normalon>../img/tab_inactive/triggers.svg</iconset>
        </attribute>
        <attribute name="title">
         <string>Triggers</string>
@@ -644,8 +644,8 @@
       <widget class="QWidget" name="TabPreferences">
        <attribute name="icon">
         <iconset>
-         <normaloff>img/tabs/inactive/preferences.svg</normaloff>
-         <normalon>img/tabs/active/preferences.svg</normalon>img/tabs/inactive/preferences.svg</iconset>
+         <normaloff>../img/tab_inactive/preferences.svg</normaloff>
+         <normalon>../img/tab_active/preferences.svg</normalon>../img/tab_inactive/preferences.svg</iconset>
        </attribute>
        <attribute name="title">
         <string>Preferences</string>
@@ -757,7 +757,7 @@
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>img/logo/openrazer.svg</normaloff>img/logo/openrazer.svg</iconset>
+       <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>
      </property>
      <addaction name="actionOpenRazerWebsite"/>
      <addaction name="actionOpenRazerReportBug"/>
@@ -774,7 +774,7 @@
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>img/emblems/utility.svg</normaloff>img/emblems/utility.svg</iconset>
+       <normaloff>../img/emblems/utility.svg</normaloff>../img/emblems/utility.svg</iconset>
      </property>
      <addaction name="actionTroubleshootOpenRazer"/>
     </widget>
@@ -847,7 +847,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>img/tabs/active/effects.svg</normaloff>img/tabs/active/effects.svg</iconset>
+     <normaloff>../img/tab_active/effects.svg</normaloff>../img/tab_active/effects.svg</iconset>
    </property>
    <property name="text">
     <string>New Effect...</string>
@@ -859,7 +859,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>img/tabs/active/devices.svg</normaloff>img/tabs/active/devices.svg</iconset>
+     <normaloff>../img/tab_active/devices.svg</normaloff>../img/tab_active/devices.svg</iconset>
    </property>
    <property name="text">
     <string>Devices</string>
@@ -874,7 +874,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>img/tabs/active/effects.svg</normaloff>img/tabs/active/effects.svg</iconset>
+     <normaloff>../img/tab_active/effects.svg</normaloff>../img/tab_active/effects.svg</iconset>
    </property>
    <property name="text">
     <string>Effects</string>
@@ -889,7 +889,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>img/tabs/active/presets.svg</normaloff>img/tabs/active/presets.svg</iconset>
+     <normaloff>../img/tab_active/presets.svg</normaloff>../img/tab_active/presets.svg</iconset>
    </property>
    <property name="text">
     <string>Presets</string>
@@ -904,7 +904,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>img/tabs/active/triggers.svg</normaloff>img/tabs/active/triggers.svg</iconset>
+     <normaloff>../img/tab_active/triggers.svg</normaloff>../img/tab_active/triggers.svg</iconset>
    </property>
    <property name="text">
     <string>Triggers</string>
@@ -919,7 +919,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>img/tabs/active/preferences.svg</normaloff>img/tabs/active/preferences.svg</iconset>
+     <normaloff>../img/tab_active/preferences.svg</normaloff>../img/tab_active/preferences.svg</iconset>
    </property>
    <property name="text">
     <string>Preferences</string>
@@ -931,7 +931,7 @@
   <action name="actionOnlineHelp">
    <property name="icon">
     <iconset>
-     <normaloff>img/general/external.svg</normaloff>img/general/external.svg</iconset>
+     <normaloff>../img/general/external.svg</normaloff>../img/general/external.svg</iconset>
    </property>
    <property name="text">
     <string>Online Help</string>
@@ -958,7 +958,7 @@
   <action name="actionAboutOpenRazer">
    <property name="icon">
     <iconset>
-     <normaloff>img/logo/openrazer.svg</normaloff>img/logo/openrazer.svg</iconset>
+     <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>
    </property>
    <property name="text">
     <string>About OpenRazer</string>
@@ -972,7 +972,7 @@
   <action name="actionAbout">
    <property name="icon">
     <iconset>
-     <normaloff>img/logo/polychromatic.svg</normaloff>img/logo/polychromatic.svg</iconset>
+     <normaloff>../img/logo/polychromatic.svg</normaloff>../img/logo/polychromatic.svg</iconset>
    </property>
    <property name="text">
     <string>About</string>
@@ -999,7 +999,7 @@
   <action name="actionRestart_Daemon">
    <property name="icon">
     <iconset>
-     <normaloff>img/general/refresh.svg</normaloff>img/general/refresh.svg</iconset>
+     <normaloff>../img/general/refresh.svg</normaloff>../img/general/refresh.svg</iconset>
    </property>
    <property name="text">
     <string>Restart Daemon</string>
@@ -1023,7 +1023,7 @@
   <action name="actionOpenRazerWebsite">
    <property name="icon">
     <iconset>
-     <normaloff>img/general/external.svg</normaloff>img/general/external.svg</iconset>
+     <normaloff>../img/general/external.svg</normaloff>../img/general/external.svg</iconset>
    </property>
    <property name="text">
     <string>Website</string>
@@ -1032,7 +1032,7 @@
   <action name="actionOpenRazerTroubleshoot">
    <property name="icon">
     <iconset>
-     <normaloff>img/emblems/utility.svg</normaloff>img/emblems/utility.svg</iconset>
+     <normaloff>../img/emblems/utility.svg</normaloff>../img/emblems/utility.svg</iconset>
    </property>
    <property name="text">
     <string>Troubleshoot...</string>
@@ -1051,7 +1051,7 @@
   <action name="actionOpenRazerRestartDaemon">
    <property name="icon">
     <iconset>
-     <normaloff>img/general/refresh.svg</normaloff>img/general/refresh.svg</iconset>
+     <normaloff>../img/general/refresh.svg</normaloff>../img/general/refresh.svg</iconset>
    </property>
    <property name="text">
     <string>Restart Daemon</string>
@@ -1060,7 +1060,7 @@
   <action name="actionOpenRazerOpenLog">
    <property name="icon">
     <iconset>
-     <normaloff>img/general/folder.svg</normaloff>img/general/folder.svg</iconset>
+     <normaloff>../img/general/folder.svg</normaloff>../img/general/folder.svg</iconset>
    </property>
    <property name="text">
     <string>Open Log...</string>
@@ -1069,7 +1069,7 @@
   <action name="actionOpenRazerConfigure">
    <property name="icon">
     <iconset>
-     <normaloff>img/tabs/active/preferences.svg</normaloff>img/tabs/active/preferences.svg</iconset>
+     <normaloff>../img/tab_active/preferences.svg</normaloff>../img/tab_active/preferences.svg</iconset>
    </property>
    <property name="text">
     <string>Settings</string>
@@ -1078,7 +1078,7 @@
   <action name="actionOpenRazerAbout">
    <property name="icon">
     <iconset>
-     <normaloff>img/logo/openrazer.svg</normaloff>img/logo/openrazer.svg</iconset>
+     <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>
    </property>
    <property name="text">
     <string>About OpenRazer</string>
@@ -1090,7 +1090,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>img/tabs/active/presets.svg</normaloff>img/tabs/active/presets.svg</iconset>
+     <normaloff>../img/tab_active/presets.svg</normaloff>../img/tab_active/presets.svg</iconset>
    </property>
    <property name="text">
     <string>New Preset...</string>
@@ -1107,7 +1107,7 @@
   <action name="actionRestartTrayApplet">
    <property name="icon">
     <iconset>
-     <normaloff>img/general/tray-applet.svg</normaloff>img/general/tray-applet.svg</iconset>
+     <normaloff>../img/general/tray-applet.svg</normaloff>../img/general/tray-applet.svg</iconset>
    </property>
    <property name="text">
     <string>Restart Tray Applet</string>
@@ -1116,7 +1116,7 @@
   <action name="actionRestartHelper">
    <property name="icon">
     <iconset>
-     <normaloff>img/general/refresh.svg</normaloff>img/general/refresh.svg</iconset>
+     <normaloff>../img/general/refresh.svg</normaloff>../img/general/refresh.svg</iconset>
    </property>
    <property name="text">
     <string>Restart Background Tasks</string>
@@ -1163,7 +1163,7 @@
   <action name="actionTroubleshootOpenRazer">
    <property name="icon">
     <iconset>
-     <normaloff>img/logo/openrazer.svg</normaloff>img/logo/openrazer.svg</iconset>
+     <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>
    </property>
    <property name="text">
     <string>OpenRazer Driver/Daemon</string>

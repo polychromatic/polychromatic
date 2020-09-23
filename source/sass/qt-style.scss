@@ -167,14 +167,14 @@ QTabBar::tab:selected {
 **********************************************************/
 #Header {
     background-color: $bg-secondary;
-    background-image: url([data]/ui/img/bg/header.png);
+    background-image: url([data]/img/bg/header.png);
     background-position: right bottom;
     background-repeat: no-repeat;
 }
 
 #MainTabCustom {
     background-color: $bg-secondary;
-    background-image: url([data]/ui/img/bg/tabs.png);
+    background-image: url([data]/img/bg/tabs.png);
     background-position: right top;
     background-repeat: no-repeat;
     border-bottom: 2px solid $border-colour;
@@ -211,7 +211,7 @@ QTabBar::tab:selected {
 **********************************************************/
 QMenuBar {
     background-color: $bg-secondary;
-    background-image: url([data]/ui/img/bg/menubar.png);
+    background-image: url([data]/img/bg/menubar.png);
     background-position: right bottom;
     background-repeat: no-repeat;
     spacing: 0;

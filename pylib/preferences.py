@@ -245,11 +245,11 @@ def upgrade_old_pref():
             elif old_type == "builtin":
                 try:
                     mapping = {
-                        "0": "ui/img/tray/light/humanity.svg",
-                        "1": "ui/img/tray/dark/humanity.svg",
-                        "2": "ui/img/tray/animated/chroma.gif",
-                        "3": "ui/img/tray/light/breeze.svg",
-                        "4": "ui/img/tray/dark/breeze.svg"
+                        "0": "img/tray/light/humanity.svg",
+                        "1": "img/tray/dark/humanity.svg",
+                        "2": "img/tray/animated/chroma.gif",
+                        "3": "img/tray/light/breeze.svg",
+                        "4": "img/tray/dark/breeze.svg"
                     }
                     new_tray_value = mapping[old_data["tray_icon"]["value"]]
                 except KeyError:
