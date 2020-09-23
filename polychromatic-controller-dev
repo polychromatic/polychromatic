@@ -10,14 +10,17 @@ params=$*
 
 cd "$(dirname "$0")"
 
+function abort_on_error() {
+    if [ $1 != 0 ]; then exit 1; fi
+}
+
 # Compile SASS files
 ./scripts/build-styles.sh
-if [ $? != 0 ]; then
-    exit 1
-fi
+abort_on_error $?
 
-# Compile locales for testing
-./scripts/build-locales-for-testing.sh
+# Compile locales
+./scripts/build-locales.sh "$(realpath ./locale/dist/)"
+abort_on_error $?
 
 # Start!
 exec ./polychromatic-controller --verbose $params

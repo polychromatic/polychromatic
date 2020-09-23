@@ -42,14 +42,7 @@ cp -vr "$SOURCE/LICENSE" "$DEST/"
 cp -vr "$SOURCE/polychromatic-"* "$DEST/"
 rm "$DEST/polychromatic-controller-dev"
 
+"$SOURCE/scripts/build-locales.sh" "$DEST/locale/"
+
 # Clean up
 find "$DEST" -name "__pycache__" -type d -exec rm -rf {} +
-
-# Prepare locales
-mkdir "$DEST/locale"
-for file in $(ls "$SOURCE/locale/"*.po)
-do
-    locale=$(basename ${file%.*})
-    mkdir -p "$DEST/locale/$locale/LC_MESSAGES/"
-    msgfmt "$SOURCE/locale/$locale.po" -o "testing/$locale/LC_MESSAGES/polychromatic.mo"
-done

@@ -24,9 +24,9 @@ def setup_translations(bin_path, force_locale=None):
     """
     whereami = os.path.abspath(os.path.join(os.path.dirname(bin_path)))
 
-    if os.path.exists(os.path.join(whereami, "locale/testing")):
+    if os.path.exists(os.path.join(whereami, "locale/dist")):
         # Using relative path (development build)
-        locale_path = os.path.join(whereami, "locale/testing/")
+        locale_path = os.path.join(whereami, "locale/dist/")
     elif os.path.exists(os.path.join(whereami, "locale/")):
         # Using relative path (/opt build)
         locale_path = os.path.join(whereami, "locale/")
