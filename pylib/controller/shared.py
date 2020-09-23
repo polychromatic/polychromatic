@@ -81,7 +81,7 @@ def get_ui_widget(appdata, name, q_toplevel=QWidget):
         name            Name of UI file (in ui/ folder) without .ui extension
         q_toplevel      Top-level object class, e.g. QWidget() or QDialog()
     """
-    ui_file = os.path.join(appdata.data_path, "ui", name + ".ui")
+    ui_file = os.path.join(appdata.data_path, "qt", name + ".ui")
     if not os.path.exists(ui_file):
         print("Missing UI file: " + ui_file)
         return None

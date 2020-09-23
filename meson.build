@@ -69,10 +69,6 @@ if build_controller == true
     sass = find_program('sassc')
     run_command('scripts/build-styles.sh')
 
-    install_subdir(['data/ui'],
-        install_dir : join_paths(get_option('datadir'), 'polychromatic', 'ui'),
-        strip_directory : true)
-
     install_subdir('data/qt',
         install_dir : join_paths(get_option('datadir'), 'polychromatic', 'qt'),
         strip_directory : true)
