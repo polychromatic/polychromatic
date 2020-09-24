@@ -34,6 +34,7 @@ class MenuBar(object):
         self.widgets = shared.PolychromaticWidgets(appdata)
 
         # Classes per backend
+        self.human_name = None
         self.openrazer = MenuBarOpenRazer(appdata, self.widgets)
 
         # Bind global menu bar items to their events

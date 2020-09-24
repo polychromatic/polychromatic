@@ -22,7 +22,7 @@ import subprocess
 import shutil
 
 try:
-    import openrazer.client as rclient
+    from openrazer import client as rclient
     PYTHON_LIB_PRESENT = True
 except Exception:
     PYTHON_LIB_PRESENT = False

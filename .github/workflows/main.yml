@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
@@ -30,9 +30,7 @@ jobs:
         sudo apt-get install pylint3
 
         # Man
-        # scdoc not in bionic (18.04)
-        wget http://archive.ubuntu.com/ubuntu/pool/universe/s/scdoc/scdoc_1.10.1-1_amd64.deb
-        sudo dpkg -i scdoc_1.10.1-1_amd64.deb
+        sudo apt-get install scdoc
 
         # Build
         sudo apt-get install meson
@@ -59,7 +57,7 @@ jobs:
 
     - name: Validate Python
       run: |
-        ./tests/validate-py.sh --ubuntu
+        ./tests/validate-py.sh
 
     - name: Validate man (scdoc)
       run: |
