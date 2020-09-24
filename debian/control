@@ -17,7 +17,7 @@ Vcs-Browser: https://github.com/polychromatic/polychromatic
 Package: polychromatic
 Architecture: all
 Depends: polychromatic-common,
-         polychromatic-qt,
+         polychromatic-controller,
          polychromatic-tray-applet,
          polychromatic-cli,
          ${misc:Depends},
@@ -44,7 +44,7 @@ Description: RGB lighting utility (common files)
  This package contains shared data files, backend modules and a background
  userspace helper application required to use Polychromatic.
 
-Package: polychromatic-qt
+Package: polychromatic-controller
 Architecture: all
 Depends: polychromatic-common,
          python3,

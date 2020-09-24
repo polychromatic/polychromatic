@@ -24,9 +24,10 @@ function check_status() {
 $pylint --errors-only \
     --disable="relative-beyond-top-level" \
     --disable="no-name-in-module" \
-    polychromatic-controller \
-    polychromatic-tray-applet \
     polychromatic-cli \
+    polychromatic-controller \
+    polychromatic-helper \
+    polychromatic-tray-applet \
     pylib/*.py \
     pylib/backends/*.py
 
