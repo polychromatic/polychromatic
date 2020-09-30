@@ -402,7 +402,7 @@ class PolychromaticTrayApplet():
 
         for zone in device["zone_options"].keys():
             zone_name = locales.get(zone)
-            zone_icon = os.path.join(common.DATA_PATH, device["zone_icons"][zone])
+            zone_icon = common.get_icon("zones", zone)
 
             # Create label when multiple zones are present
             if multiple_zones:

@@ -154,6 +154,9 @@ class Backend(_backend.Backend):
 
         if rdevice.has("serial"):
             serial = str(rdevice.serial)
+            if not type(serial) == str or len(serial) <= 2:
+                self.debug("Got bad serial for {0}!".format(name))
+                serial = "0"
         else:
             self.debug("Device {0} doesn't have a valid serial!".format(uid))
             name = "invalid_device_" + str(uid)
@@ -222,7 +225,7 @@ class Backend(_backend.Backend):
                 options.append({
                     "id": "brightness",
                     "type": "slider",
-                    "value": int(brightness_parent.brightness),
+                    "value": round(brightness_parent.brightness),
                     "min": 0,
                     "max": 100,
                     "step": 5,
@@ -248,39 +251,49 @@ class Backend(_backend.Backend):
                         "type": "effect",
                         "parameters": [],
                         "colours": 0,
-                        "active": True if effect.startswith(current_state["effect"]) else False
+                        "active": current_state["effect"].startswith(effect)
                     }
 
                     # Add parameters and determine what is in use
                     if effect == "wave":
                         # Change label IDs depending on orientation.
-                        direction_1 = "left"
-                        direction_2 = "right"
+                        direction_1 = "right"
+                        direction_2 = "left"
 
                         if rdevice.type == "mouse":
-                            direction_1 = "down"
-                            direction_2 = "up"
+                            direction_1 = "up"
+                            direction_2 = "down"
 
                         elif rdevice.type == "mousemat":
-                            direction_1 = "clock"
-                            direction_2 = "anticlock"
+                            direction_1 = "anticlock"
+                            direction_2 = "clock"
 
                         effect_option["parameters"] = [
-                            {
-                                "id": direction_1,
-                                "data": 1,
-                                "active": current_state["wave_dir"] == 1,
-                                "colours": 0
-                            },
                             {
                                 "id": direction_2,
                                 "data": 2,
                                 "active": current_state["wave_dir"] == 2,
                                 "colours": 0
+                            },
+                            {
+                                "id": direction_1,
+                                "data": 1,
+                                "active": current_state["wave_dir"] == 1,
+                                "colours": 0
                             }
                         ]
 
                     elif effect == "ripple":
+                        # FIXME: Random colour does not appear in Controller UI!
+                        if _device_has_zone_capability("ripple_random"):
+                            effect_option["parameters"].append({
+                                "id": "random",
+                                "data": "random",
+                                "active": current_state["effect"] == "rippleRandomColour",
+                                "colours": 0
+                            })
+                            current_state["active"] = current_state["effect"] == "rippleRandomColour"
+
                         if _device_has_zone_capability("ripple"):
                             effect_option["parameters"].append({
                                 "id": "single",
@@ -289,15 +302,8 @@ class Backend(_backend.Backend):
                                 "colours": 1
                             })
 
-                        if _device_has_zone_capability("ripple_random"):
-                            effect_option["parameters"].append({
-                                "id": "random",
-                                "data": "random",
-                                "active": current_state["effect"] == "rippleRandomColour",
-                                "colours": 0
-                            })
-
                     elif effect == "reactive":
+                        # FIXME: Primary colour not appearing!
                         effect_option["colours"] = 1
                         effect_option["parameters"] = [
                             {
@@ -345,21 +351,20 @@ class Backend(_backend.Backend):
                     "type": "effect",
                     "parameters": [],
                     "colours": 0,
-                    "active": True if effect.startswith(current_state["effect"]) else False
+                    "active": current_state["effect"].startswith(effect)
                 }
 
-                _colour_count = 0
-                for param in ["random", "single", "dual", "triple"]:
+                for _colour_count, param in enumerate(["random", "single", "dual", "triple"]):
                     if _device_has_zone_capability(effect + "_" + param):
-                        effect_option["parameters"].append({
+                        param_key = {
                             "id": param,
                             "data": param,
                             "active": current_state["effect"].endswith(param.capitalize()),
                             "colours": _colour_count
-                        })
-                        for i in range(1, _colour_count + 1):
-                            effect_option["colour_" + str(i)] = current_state["colour_" + str(i)]
-                    _colour_count += 1
+                        }
+                        for c in range(1, _colour_count + 1):
+                            param_key["colour_" + str(c)] = current_state["colour_" + str(c)]
+                        effect_option["parameters"].append(param_key)
 
                 return effect_option
 
@@ -380,7 +385,12 @@ class Backend(_backend.Backend):
             zone_options[zone] = options
 
         # Other hardware features
+        def _init_main_if_empty():
+            if "main" not in zone_options.keys():
+                zone_options["main"] = []
+
         if rdevice.has("game_mode_led"):
+            _init_main_if_empty()
             zone_options["main"].append({
                 "id": "game_mode",
                 "type": "toggle",
@@ -389,6 +399,7 @@ class Backend(_backend.Backend):
             })
 
         if rdevice.has("poll_rate"):
+            _init_main_if_empty()
             params = []
             for rate in poll_rate_ranges:
                 params.append({
@@ -604,8 +615,8 @@ class Backend(_backend.Backend):
                 # Params: <red> <green> <blue> <speed 1-4>
                 rzone.reactive(colour_1[0], colour_1[1], colour_1[2], int(option_data))
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "reactive")
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "speed", option_data)
+                self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
 
             elif option_id == "blinking":
                 # Params: <red> <green> <blue>
@@ -650,7 +661,7 @@ class Backend(_backend.Backend):
             elif option_id == "ripple" and option_data == "single":
                 # Params: <red> <green> <blue> <speed>
                 rzone.ripple(colour_1[0], colour_1[1], colour_1[2], self.ripple_speed)
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "rippleSingle")
+                self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "ripple")
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
 
             elif option_id == "ripple" and option_data == "random":
@@ -662,17 +673,17 @@ class Backend(_backend.Backend):
                 # Params: <red> <green> <blue> <speed>
                 rzone.starlight_single(colour_1[0], colour_1[1], colour_1[2], self.starlight_speed)
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "starlightSingle")
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "speed", option_data)
+                self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
 
             elif option_id == "starlight" and option_data == "dual":
                 # Params: <red1> <green1> <blue1> <red2> <green2> <blue2> <speed>
                 rzone.starlight_dual(colour_1[0], colour_1[1], colour_1[2],
                     colour_2[0], colour_2[1], colour_2[2], self.starlight_speed)
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "starlightDual")
+                self._write_persistence_storage_fallback(rdevice, zone, rzone, "speed", option_data)
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_2", colour_hex[1])
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "speed", option_data)
 
             elif option_id == "starlight" and option_data == "random":
                 # Params: <speed>
@@ -1009,9 +1020,9 @@ class Backend(_backend.Backend):
 
     def _read_persistence_storage(self, rdevice, zone):
         """
-        OpenRazer 2.9.0+ may feature persistence storage (#1149) to track
-        the last effect, colours and parameters. If this is not supported or
-        fails, proceed with a file-based fallback.
+        OpenRazer 2.9.0+ uses persistence storage (#1149) to track
+        the last effect, colours and parameters. If this version does not have
+        this or fails, proceed with a file-based fallback.
         """
         try:
             rzone = self._get_zone_as_object(rdevice, zone)
@@ -1034,9 +1045,9 @@ class Backend(_backend.Backend):
         Prepare the 'fallback' persistence storage if the daemon's is unavailable.
         """
         try:
-            storage_dir = os.path.join(os.environ["XDG_CONFIG_HOME"], "polychromatic", "backends", "openrazer", "persistence_fallback")
+            storage_dir = os.path.join(os.environ["XDG_CONFIG_HOME"], "polychromatic", "backends", "openrazer", "persistence")
         except KeyError:
-            storage_dir = os.path.join(os.path.expanduser("~"), ".config", "polychromatic", "backends", "openrazer", "persistence_fallback")
+            storage_dir = os.path.join(os.path.expanduser("~"), ".config", "polychromatic", "backends", "openrazer", "persistence")
 
         if not os.path.exists(storage_dir):
             os.makedirs(storage_dir)
@@ -1050,11 +1061,12 @@ class Backend(_backend.Backend):
         """
         storage_dir = self._get_persistence_storage_fallback_path()
         key_name_suffix = "{0}_{1}".format(rdevice.serial, zone)
+
         def _get_data(data_name, data_type, default_value):
             file_path = os.path.join(storage_dir, key_name_suffix + "_" + data_name)
             if not os.path.exists(file_path):
                 return default_value
-            with open(os.path.join(storage_dir, key_name_suffix + "_" + data_name)) as f:
+            with open(file_path) as f:
                 return data_type(f.readline())
 
         return {
@@ -1072,13 +1084,13 @@ class Backend(_backend.Backend):
         then write to files instead.
         """
         if hasattr(rzone, "effect"):
-            # No need, it's working!
+            # No need, daemon supports persistence
             return
 
         storage_dir = self._get_persistence_storage_fallback_path()
         key_name_suffix = "{0}_{1}_{2}".format(rdevice.serial, zone, key)
-
-        with open(os.path.join(storage_dir, key_name_suffix), "w") as f:
+        file_path = os.path.join(storage_dir, key_name_suffix)
+        with open(file_path, "w") as f:
             f.write(str(value))
 
     def get_device_object(self, uid):
