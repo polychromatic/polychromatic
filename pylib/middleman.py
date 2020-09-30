@@ -15,6 +15,7 @@ https://polychromatic.app/docs/
 """
 
 from . import procpid
+from . import common
 
 BACKEND_ID_NAMES = {
 #   "backend ID": "human readable string"
@@ -130,7 +131,10 @@ class Middleman(object):
 
         for module in self.backends:
             if module.backend_id == backend:
-                device = module.get_device(uid)
+                try:
+                    device = module.get_device(uid)
+                except Exception as e:
+                    device = common.get_exception_as_string(e)
 
         # In case of error, return immediately
         if type(device) in [None, str]:
@@ -218,6 +222,7 @@ class Middleman(object):
         colour_hex = []
         colour_count = 0
         found_option = None
+        param = None
 
         for zone in device["zone_options"].keys():
             for option in device["zone_options"][zone]:
@@ -240,13 +245,15 @@ class Middleman(object):
                                 if param["active"] == True:
                                     option_data = param["id"]
                                     colour_count = param["colours"]
-                                    break
+                                    for c in range(1, colour_count + 1):
+                                        colour_hex.append(param["colour_" + str(c)])
                     except KeyError:
                         # Toggle or slider do not have a 'parameters' key
                         pass
 
-        for i in range(1, colour_count + 1):
-            colour_hex.append(found_option["colour_" + str(i)])
+        if not param:
+            for c in range(1, colour_count + 1):
+                colour_hex.append(found_option["colour_" + str(c)])
 
         return [option_id, option_data, colour_hex]
 

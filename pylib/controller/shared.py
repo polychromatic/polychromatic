@@ -13,14 +13,14 @@ from .. import preferences as pref
 
 import os
 from PyQt5 import uic
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QMargins
 from PyQt5.QtGui import QIcon, QPalette, QColor, QFont, QFontDatabase, QPixmap
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QWidget, QMessageBox, QGridLayout, \
                             QLabel, QPushButton, QToolButton, QGroupBox, \
-                            QListWidget, QHBoxLayout, QSizePolicy, QSpacerItem, \
-                            QDialog
+                            QListWidget, QHBoxLayout, QVBoxLayout, QFormLayout, \
+                            QSizePolicy, QSpacerItem, QDialog
 
 def load_qt_theme(app, qapp, window):
     """
@@ -164,7 +164,7 @@ class PolychromaticWidgets(object):
         buttons_widget = summary.findChild(QWidget, "SummaryButtons")
 
         title_widget.setText(title)
-        title_widget.setStyleSheet("QLabel { color: lime }")
+        title_widget.setStyleSheet("QLabel { color: lime; font-size: 17px; }")
 
         # Populate Image
         if os.path.exists(icon_path):
@@ -233,30 +233,36 @@ class PolychromaticWidgets(object):
         group.layout().setAlignment(Qt.AlignTop)
         return group
 
-    def create_row_widget(self, label_text, widgets=[]):
+    def create_row_widget(self, label_text, widgets=[], vertical=False):
         """
         Returns a widget for use when presenting controls for a particular option.
 
         Params:
             label_text      (str)   Human readable control label
             widgets         (list)  List of widgets to display
+            vertical        (bool)  Use a vertical layout instead of horizontal
 
         Returns: QWidget()
         """
         widget = QWidget()
-        widget.setLayout(QHBoxLayout())
+        widget.setLayout(QFormLayout())
         layout = widget.layout()
+        layout.setRowWrapPolicy(QFormLayout.WrapLongRows)
+        layout.setContentsMargins(QMargins(30, 5, 30, 5))
 
-        # Add the label (left)
+        # Left - Add label
         label = QLabel()
         label.setText(label_text)
-        layout.addWidget(label)
-        layout.addStretch()
+        label.setMinimumWidth(150)
 
-        # Add the elements on the right
+        # Right - Add controls
+        inner_widget = QWidget()
+        inner_widget.setLayout(QVBoxLayout() if vertical else QHBoxLayout())
         for w in widgets:
-            layout.addWidget(w)
-        layout.addStretch()
+            inner_widget.layout().addWidget(w)
+
+        layout.addRow(label, inner_widget)
+
         return widget
 
     def populate_empty_state(self, layout, icon_path, title, subtitle, buttons=[]):
@@ -315,35 +321,34 @@ class PolychromaticWidgets(object):
                 layout.addWidget(widget)
         layout.addStretch()
 
-    def open_colour_picker(self, callback_fn):
+    def create_colour_control(self, current_hex, callback_fn):
         """
-        Spawns a colour picker dialog for the user to choose a saved colour.
+        Create a colour picker control for the user to set a colour. Setting
+        the colour will open a dialog.
 
         When a colour is saved, the callback_fn will be executed passing the new
         hex colour as a parameter.
 
         Params:
-            appdata         ApplicationData() object
+            current_hex     String of the current hex value in use.
             callback_fn     Function to run after saving changes
         """
-        print("stub:open_colour_picker")
-        pass
+        print("stub:create_colour_control")
 
-    def open_icon_picker(self, callback_fn):
+    def create_icon_picker_control(self, callback_fn):
         """
-        Spawns a icon picker dialog for the user to choose or manage their saved
-        icon list.
+        Create an icon picker control for the user to choose an icon from a list
+        of built-in icons, user-imported icons ("custom icons") or an application
+        installed on the file system.
 
-        When an icon is saved, the callback_fn will be executed passing the relative
-        (or built-in) or absolute (for custom images) path as a parameter for the
-        function to save.
+        When an icon is saved, the callback_fn will be executed returning the
+        relative path (for a built-in icon) or an absolute path (for custom images)
+        as a parameter for the function that will process the new selection.
 
         Params:
-            appdata         ApplicationData() object
             callback_fn     Function to run after saving changes
         """
-        print("stub:open_icon_picker")
-        pass
+        print("stub:create_icon_picker_control")
 
     def open_dialog(self, dialog_type, title, text, info_text="", traceback="", buttons=[], default_button=None, actions={}):
         """

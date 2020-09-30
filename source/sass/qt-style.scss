@@ -127,6 +127,28 @@ QToolButton:pressed {
     color: #000;
 }
 
+/* Checked */
+QPushButton:checked,
+QToolButton:checked {
+    background: $secondary;
+    color: #fff;
+}
+
+QPushButton:checked:focus,
+QPushButton:checked:hover,
+QToolButton:checked:focus,
+QToolButton:checked:hover {
+    background-color: lighten($secondary, 5%);
+    color: #fff;
+}
+
+QPushButton:checked:pressed,
+QToolButton:checked:pressed {
+    background-color: darken($primary, 5%);
+    color: #000;
+}
+
+/* Disabled */
 QPushButton:disabled,
 QToolButton:disabled {
     background: $bg-disabled;

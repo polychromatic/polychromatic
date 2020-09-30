@@ -16,13 +16,13 @@ from . import shared
 
 import os
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \
                             QPushButton, QToolButton, QMessageBox, QListWidget, \
                             QTreeWidget, QTreeWidgetItem, QLabel, QComboBox, \
                             QSpacerItem, QSizePolicy, QSlider, QCheckBox, \
-                            QHBoxLayout
+                            QButtonGroup, QRadioButton
 
 class DevicesTab(object):
     """
@@ -37,6 +37,7 @@ class DevicesTab(object):
         # Session
         self.current_backend = None
         self.current_uid = None
+        self.current_serial = None
 
         # UI Elements
         self.Contents = self.appdata.main_window.findChild(QWidget, "DeviceContents")
@@ -131,9 +132,22 @@ class DevicesTab(object):
         Show details and controls to instant change the current parameters for
         the specified device.
         """
+        device = self.appdata.middleman.get_device(backend, uid)
+
+        if type(device) in [None, str]:
+            _ = self.appdata._
+            backend_name = middleman.BACKEND_ID_NAMES[backend]
+
+            msg1 = _("An error occurred while reading this device. This could be either be a bug in Polychromatic or the [] backend.").replace("[]", backend_name)
+            msg2 = _("Try switching to this device again. If this keeps happening, raise an issue on the relevant project's repository.")
+
+            self.widgets.open_dialog(self.widgets.dialog_error, _("Backend Error"), msg1, msg2, device)
+            self.open_bad_device(msg1, msg2, device)
+            return
+
         self.current_backend = backend
         self.current_uid = uid
-        device = self.appdata.middleman.get_device(backend, uid)
+        self.current_serial = device["serial"]
 
         layout = self.Contents.layout()
         shared.clear_layout(layout)
@@ -176,27 +190,41 @@ class DevicesTab(object):
             widgets = []
 
             # Effect options will be collected and presented as a group of buttons
+            options = device["zone_options"][zone]
             effect_options = []
 
-            for option in device["zone_options"][zone]:
+            # Show brightness first (if present)
+            for option in options:
+                if option["id"] == "brightness":
+                    widgets.append(self._create_row_control(device, zone, option))
+
+            # Effects
+            for option in options:
                 if option["type"] == "effect":
                     effect_options.append(option)
                     continue
 
-                widgets.append(self._create_row_control(device, zone, option))
-
-            # Effects
             if len(effect_options) > 0:
-                widgets.append(self._create_effect_controls(effect_options))
+                effect_controls = self._create_effect_controls(zone, effect_options)
+                param_controls = self._create_effect_parameter_controls(zone, current_id, effect_options)
+                if effect_controls:
+                    widgets.append(effect_controls)
+                if param_controls:
+                    widgets.append(param_controls)
+
+            # Colours
+            if len(current_colours) > 0:
+                for colour_no, colour_hex in enumerate(current_colours):
+                    widgets.append(self._create_colour_control(colour_no, colour_hex, current_id, current_data))
+
+            # Other controls (e.g. brightness, poll rate)
+            for option in options:
+                if not option["type"] == "effect" and not option["id"] == "brightness":
+                    widgets.append(self._create_row_control(device, zone, option))
 
             # DPI
             if zone == "main" and device["dpi_x"]:
                 self._create_dpi_control(device)
-
-            # Colours
-            if len(current_colours) > 0:
-                for colour_hex in current_colours:
-                    widgets.append(self._create_colour_control(colour_hex, current_id, current_data))
 
             # Group controls if there are multiple zones
             if multiple_zones:
@@ -209,6 +237,12 @@ class DevicesTab(object):
                     layout.addWidget(widget)
 
         layout.addStretch()
+
+    def reload_device(self):
+        """
+        Reloads the current device page.
+        """
+        self.open_device(self.current_backend, self.current_uid)
 
     def _create_row_control(self, device, zone, option):
         """
@@ -237,6 +271,7 @@ class DevicesTab(object):
         #slider.setTracking(False) # ???
         slider.setSingleStep(option["step"])
         slider.setPageStep(option["step"] * 2)
+        slider.setMaximumWidth(150)
 
         # Qt bug: Ticks won't appear with stylesheet
         slider.setTickPosition(QSlider.TicksBelow)
@@ -297,19 +332,137 @@ class DevicesTab(object):
         combo.currentIndexChanged.connect(_current_index_changed)
         return [combo]
 
-    def _create_effect_controls(self, effect_options):
+    def _create_effect_controls(self, zone, effect_options):
         """
         Groups all options with the "effect" type and present them as larger buttons.
         """
-        print("stub:_create_effect_controls")
-        return self.widgets.create_row_widget(self._("Effects"), [])
+        widgets = []
+        self.fx_btn_grp = QButtonGroup()
 
-    def _create_colour_control(self, colour_hex, current_id, current_data):
+        for effect in effect_options:
+            fx_id = effect["id"]
+            fx_params = effect["parameters"]
+            fx_string = self.appdata.locales.get(fx_id)
+            fx_active = effect["active"]
+            fx_colours = effect["colours"]
+
+            button = QToolButton()
+            button.setText(fx_string)
+            button.setCheckable(True)
+            button.setIconSize(QSize(40, 40))
+            button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            button.setIcon(QIcon(common.get_icon("options", fx_id)))
+            button.setMinimumHeight(70)
+            button.setMinimumWidth(70)
+            button.effect = effect
+            button.zone = zone
+            self.fx_btn_grp.addButton(button)
+
+            if fx_active:
+                button.setChecked(True)
+
+            widgets.append(button)
+
+        def _clicked_effect_button(button):
+            effect = button.effect
+            param_count = len(effect["parameters"])
+            zone = button.zone
+            option_id = effect["id"]
+            option_data = None
+            colour_hex = []
+
+            # Use saved colour, if available for this effect
+            if len(effect["parameters"]) == 0:
+                for c in range(1, effect["colours"]):
+                    colour_hex.append(effect["colour_" + str(c)])
+
+            # For effects with parameters, the second one will be used as the first may be 'random' or 'off'.
+            if param_count > 0:
+                if param_count == 1:
+                    param = effect["parameters"][0]
+                elif param_count >= 2:
+                    param = effect["parameters"][1]
+
+                option_data = param["data"]
+                for c in range(1, param["colours"]):
+                    colour_hex.append(param["colour_" + str(c)])
+
+            self.appdata.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, zone, option_id, option_data, colour_hex)
+            self.reload_device()
+
+        self.fx_btn_grp.buttonClicked.connect(_clicked_effect_button)
+
+        if not widgets:
+            return None
+
+        return self.widgets.create_row_widget(self._("Effect"), widgets)
+
+    def _create_effect_parameter_controls(self, zone, effect_id, effect_options):
+        """
+        Creates a set of radio buttons for changing the current effect's parameter.
+        """
+        widgets = []
+
+        def _clicked_param_button():
+            for radio in self.radio_params:
+                if not radio.isChecked():
+                    continue
+
+                self.appdata.dbg.stdout("Setting parameter {} for {} on {} device {} (zone: {}, colours: {})".format(radio.option_data, radio.option_id, self.current_backend, self.current_uid, zone, str(radio.colour_hex)), self.appdata.dbg.action, 1)
+                self.appdata.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, radio.zone, radio.option_id, radio.option_data, radio.colour_hex)
+                self.reload_device()
+
+        for effect in effect_options:
+            if not effect["id"] == effect_id:
+                continue
+
+            for param in effect["parameters"]:
+                label = self.appdata.locales.get(param["id"])
+
+                radio = QRadioButton()
+                radio.setText(label)
+                radio.clicked.connect(_clicked_param_button)
+
+                radio.option_id = effect_id
+                radio.option_data = param["data"]
+                radio.zone = zone
+                radio.colour_hex = []
+
+                for c in range(1, param["colours"]):
+                    radio.colour_hex.append(param["colour_" + str(c)])
+
+                if param["active"]:
+                    radio.setChecked(True)
+
+                widgets.append(radio)
+
+        if not widgets:
+            return None
+
+        self.radio_params = widgets
+        return self.widgets.create_row_widget(self._("Effect Mode"), widgets, vertical=True)
+
+    def _create_colour_control(self, colour_no, colour_hex, current_id, current_data):
         """
         Creates a row control for setting the current colour.
+
+        colour_no is 0-based. 0 = Primary, 1 = Secondary, etc
         """
-        print("stub:_create_colour_control")
-        return self.widgets.create_row_widget(self._("Colour 1"), [])
+        pretty_labels = {
+            0: self._("Primary Colour"),
+            1: self._("Secondary Colour"),
+            2: self._("Tertiary Colour")
+        }
+        try:
+            label = pretty_labels[colour_no]
+        except KeyError:
+            label = self._("Colour []").replace("[]", str(colour_no))
+
+        def _set_new_colour(new_hex):
+            print(new_hex)
+            print("stub:_set_new_colour")
+
+        return self.widgets.create_row_widget(label, [self.widgets.create_colour_control(colour_hex, _set_new_colour)])
 
     def _create_dpi_control(self, device):
         """
@@ -422,7 +575,7 @@ class DevicesTab(object):
         Opens the documentation online to learn more about Polychromatic's device
         functionality.
         """
-        print("stub:_open_online_help")
+        self.appdata.menubar.online_help()
 
     def _start_troubleshooter(self):
         """
@@ -430,13 +583,25 @@ class DevicesTab(object):
         backend available, or shows a prompt for the user to choose the backend
         to troubleshoot.
         """
-        print("stub:_start_troubleshooter")
+        # TODO: Prompt not implemented as only one backend (OpenRazer)
+        self.appdata.menubar.openrazer.troubleshoot()
 
     def _open_backend_exception(self):
         """
         Opens a dialog showing the details of an exception for one of the backends.
         """
-        print("stub:_open_backend_exception")
+        dbg = self.appdata.dbg
+        _ = self.appdata._
+
+        for backend_id in self.appdata.middleman.import_errors.keys():
+            backend_name = middleman.BACKEND_ID_NAMES[backend_id]
+            exception = self.appdata.middleman.import_errors[backend_id].strip()
+            dbg.stdout("{0}\n------------------------------\n{1}".format(backend_name, exception), dbg.error)
+            self.widgets.open_dialog(self.widgets.dialog_generic,
+                                    _("Backend Error: []").replace("[]", backend_name),
+                                    _("The last line of the exception was:") + "\n\n" + exception.split("\n")[-1],
+                                    None,
+                                    exception)
 
     def open_unknown_device(self, backend):
         """
@@ -472,6 +637,27 @@ class DevicesTab(object):
                     "icon": common.get_icon("general", "external"),
                     "action": self._open_online_help
                 },
+            ])
+
+    def open_bad_device(self, msg1, msg2, exception):
+        """
+        Show a page to inform the user the device could not be opened. Possibly
+        due to a temporary glitch or unsupported feature.
+        """
+        layout = self.Contents.layout()
+        shared.clear_layout(layout)
+
+        def _view_details():
+            _ = self.appdata._
+            self.widgets.open_dialog(self.widgets.dialog_generic, _("Error Details"), msg1, msg2, exception)
+
+        self.widgets.populate_empty_state(layout, common.get_icon("empty", "nobackend"), self._("Something went wrong!"), "",
+            [
+                {
+                    "label": self._("View Details"),
+                    "icon": common.get_icon("emblems", "software"),
+                    "action": _view_details
+                }
             ])
 
     def open_apply_to_all(self):

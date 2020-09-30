@@ -91,6 +91,13 @@ class ApplicationData(object):
         self.version = VERSION
         self.versions = VERSIONS
 
+        # Assigned in load() later
+        self.middleman = None
+        self.menubar = None
+        self.device_list = []
+        self.current_device = None
+        self.effect_list = None
+
         # Settings
         dbg.stdout("Loading preferences...", dbg.action, 1)
         self.preferences = pref.load_file(self.path.preferences)
@@ -213,6 +220,7 @@ class MainWindow(QMainWindow):
         def _change_tab():
             index = tabs.currentIndex()
             dbg.stdout("Opening tab: " + str(index), dbg.debug, 1)
+            self.setCursor(QtCore.Qt.WaitCursor)
 
             for button in tab_buttons:
                 button.setChecked(False)
@@ -233,6 +241,7 @@ class MainWindow(QMainWindow):
                                     _("The application will attempt to continue, but get ready in case something breaks again!"),
                                     _("This may be reported as a bug on the project's issue tracker."),
                                     traceback=traceback)
+            self.unsetCursor()
 
         def _change_tab_proxy(b, i):
             tabs.setCurrentIndex(i)
