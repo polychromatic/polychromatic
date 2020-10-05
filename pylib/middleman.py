@@ -257,15 +257,15 @@ class Middleman(object):
 
         return [option_id, option_data, colour_hex]
 
-    def set_device_colour_1(self, device, zone, hex_value):
+    def set_device_colour(self, device, zone, hex_value, colour_pos=0):
         """
         Replays the currently selected effect (option_id) with the same parameters
-        (option_data) but with a different primary colour.
+        (option_data) but with a different (0-based) colour.
 
         The return code is the same as set_device_state()
         """
         option_id, option_data, colour_hex = self._get_current_device_option(device)
-        colour_hex[0] = hex_value
+        colour_hex[colour_pos] = hex_value
         return self.set_device_state(device["backend"], device["uid"], device["serial"], zone, option_id, option_data, colour_hex)
 
     def set_bulk_option(self, option_id, option_data, colours_needed):
@@ -353,7 +353,7 @@ class Middleman(object):
                     continue
 
                 self._dbg.stdout("- {0} [{1}]".format(name, zone), self._dbg.action, 1)
-                result = self.set_device_colour_1(device, zone, new_colour_hex)
+                result = self.set_device_colour(device, zone, new_colour_hex)
                 if result == True:
                     self._dbg.stdout("Request OK", self._dbg.success, 1)
                 elif result == False:

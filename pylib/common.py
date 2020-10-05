@@ -205,6 +205,24 @@ def get_icon(folder, name):
 
     return None
 
+def generate_colour_bitmap(dbg, path, colour_hex, size="22x22"):
+    """
+    Generates a small bitmap of a colour and returns the path. Used for some UI controls
+    that cannot use stylesheets.
+
+    The file is cached to speed up future retrievals of the colour.
+    """
+    colour_path = os.path.join(path.colours_cache, "{name}-{size}.png".format(name=colour_hex.strip("#"), size=size))
+
+    if not os.path.exists(colour_path):
+        dbg.stdout("Generating colour bitmap: " + colour_hex, dbg.action, 1)
+        subprocess.call("convert -size {size} xc:{hex} {path}".format(hex=colour_hex, path=colour_path, size=size), shell=True)
+
+    if not os.path.exists(colour_path):
+        dbg.stdout("ERROR: Failed to generate bitmap: " + colour_hex, dbg.error)
+        return None
+
+    return colour_path
 
 def execute_polychromatic_component(dbg, component, tab=None):
     """

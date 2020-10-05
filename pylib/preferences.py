@@ -31,11 +31,14 @@ class Paths(object):
     except KeyError:
         cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
 
+    # Cached directories
+    effects_cache = os.path.join(cache, "effects")
+    colours_cache = os.path.join(cache, "colours")
+
     # Subdirectories
     effects = os.path.join(root, "effects")
     effects_keyframed = os.path.join(effects, "keyframed")
     effects_scripted = os.path.join(effects, "scripted")
-    effects_cache = os.path.join(cache, "effects")
     presets = os.path.join(root, "presets")
     custom_icons = os.path.join(root, "custom_icons")
 
@@ -337,9 +340,8 @@ def start_initalization():
     Prepares the preferences module.
     """
     # Create folders if they do not exist.
-    for folder in [path.root, path.effects, path.effects_keyframed, path.effects_scripted, path.effects_cache, path.presets, path.cache, path.custom_icons]:
+    for folder in [path.root, path.effects, path.effects_keyframed, path.effects_scripted, path.presets, path.cache, path.effects_cache, path.colours_cache, path.custom_icons]:
         if not os.path.exists(folder):
-            dbg.stdout("Configuration folder does not exist. Creating: " + folder, dbg.action)
             os.makedirs(folder)
 
     # Create preferences if non-existent.

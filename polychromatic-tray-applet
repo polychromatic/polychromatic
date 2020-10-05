@@ -557,14 +557,7 @@ class PolychromaticTrayApplet():
         Params:
             colour_hex      Hex value, e.g. "#00FF00"
         """
-        colour_path = os.path.join(session_storage, "{0}.png".format(colour_hex.strip("#")))
-        if not os.path.exists(colour_path):
-            dbg.stdout("Generating colour bitmap: " + colour_hex, dbg.action, 1)
-            subprocess.call("convert -size 22x22 xc:{0} {1}".format(colour_hex, colour_path), shell=True)
-        if not os.path.exists(colour_path):
-            dbg.stdout("ERROR: Failed to generate bitmap: " + colour_hex, dbg.error)
-            return None
-        return colour_path
+        return common.generate_colour_bitmap(dbg, path, colour_hex)
 
 
 class Callback():
@@ -660,7 +653,7 @@ class Callback():
 
         for zone in device["zone_options"].keys():
             dbg.stdout("Setting '{2}' colour to '{0}' for {1}".format(hex_value, name, zone), dbg.action, 1)
-            r = middleman.set_device_colour_1(device, zone, hex_value)
+            r = middleman.set_device_colour(device, zone, hex_value)
             _verbose_check_status(r)
 
     @staticmethod
@@ -810,11 +803,6 @@ if __name__ == "__main__":
     if procpid.is_another_instance_is_running("tray-applet"):
         procpid.stop_component("tray-applet")
     procpid.set_component_pid("tray-applet")
-
-    # Prepare cache directory
-    session_storage = os.path.join(path.cache, "tray")
-    if not os.path.exists(session_storage):
-        os.makedirs(session_storage)
 
     args = parse_parameters()
 

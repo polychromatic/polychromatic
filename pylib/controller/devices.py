@@ -183,7 +183,7 @@ class DevicesTab(object):
 
         # Create controls for avaliable options
         multiple_zones = len(device["zone_options"].keys()) > 1
-        current_id, current_data, current_colours = middleman.Middleman._get_current_device_option(middleman.Middleman, device)
+        current_option_id, current_option_data, current_colours = middleman.Middleman._get_current_device_option(middleman.Middleman, device)
 
         for zone in device["zone_options"].keys():
             zone_name = locales.get(zone)
@@ -206,7 +206,7 @@ class DevicesTab(object):
 
             if len(effect_options) > 0:
                 effect_controls = self._create_effect_controls(zone, effect_options)
-                param_controls = self._create_effect_parameter_controls(zone, current_id, effect_options)
+                param_controls = self._create_effect_parameter_controls(zone, current_option_id, effect_options)
                 if effect_controls:
                     widgets.append(effect_controls)
                 if param_controls:
@@ -215,7 +215,7 @@ class DevicesTab(object):
             # Colours
             if len(current_colours) > 0:
                 for colour_no, colour_hex in enumerate(current_colours):
-                    widgets.append(self._create_colour_control(colour_no, colour_hex, current_id, current_data))
+                    widgets.append(self._create_colour_control(colour_no, colour_hex, current_option_id, current_option_data, zone))
 
             # Other controls (e.g. brightness, poll rate)
             for option in options:
@@ -442,9 +442,10 @@ class DevicesTab(object):
         self.radio_params = widgets
         return self.widgets.create_row_widget(self._("Effect Mode"), widgets, vertical=True)
 
-    def _create_colour_control(self, colour_no, colour_hex, current_id, current_data):
+    def _create_colour_control(self, colour_no, colour_hex, option_id, option_data, zone):
         """
-        Creates a row control for setting the current colour.
+        Creates a row control for setting the current colour for the specified
+        option (effect)
 
         colour_no is 0-based. 0 = Primary, 1 = Secondary, etc
         """
@@ -459,10 +460,12 @@ class DevicesTab(object):
             label = self._("Colour []").replace("[]", str(colour_no))
 
         def _set_new_colour(new_hex):
-            print(new_hex)
-            print("stub:_set_new_colour")
+            device = self.appdata.middleman.get_device(self.current_backend, self.current_uid)
+            response = self.appdata.middleman.set_device_colour(device, zone, new_hex, colour_no)
+            if response:
+                self.reload_device()
 
-        return self.widgets.create_row_widget(label, [self.widgets.create_colour_control(colour_hex, _set_new_colour)])
+        return self.widgets.create_row_widget(label, [self.widgets.create_colour_control(colour_hex, _set_new_colour, self._("Change []").replace("[]", label))])
 
     def _create_dpi_control(self, device):
         """

@@ -20,7 +20,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QWidget, QMessageBox, QGridLayout, \
                             QLabel, QPushButton, QToolButton, QGroupBox, \
                             QListWidget, QHBoxLayout, QVBoxLayout, QFormLayout, \
-                            QSizePolicy, QSpacerItem, QDialog
+                            QSizePolicy, QSpacerItem, QDialog, QColorDialog, \
+                            QDialogButtonBox, QTreeWidget, QTreeWidgetItem, \
+                            QLineEdit
 
 def load_qt_theme(app, qapp, window):
     """
@@ -321,7 +323,7 @@ class PolychromaticWidgets(object):
                 layout.addWidget(widget)
         layout.addStretch()
 
-    def create_colour_control(self, current_hex, callback_fn):
+    def create_colour_control(self, current_hex, callback_fn, title):
         """
         Create a colour picker control for the user to set a colour. Setting
         the colour will open a dialog.
@@ -333,7 +335,25 @@ class PolychromaticWidgets(object):
             current_hex     String of the current hex value in use.
             callback_fn     Function to run after saving changes
         """
-        print("stub:create_colour_control")
+        container = QWidget()
+        container.setLayout(QHBoxLayout())
+        preview = QWidget()
+        preview.setMinimumHeight(28)
+        preview.setMaximumHeight(28)
+        preview.setMinimumWidth(80)
+        preview.setMaximumWidth(80)
+        preview.setStyleSheet("QWidget {{ background-color: {0} }}".format(current_hex))
+
+        def _clicked_change_colour():
+            picker = ColourPicker(self.appdata, callback_fn, current_hex, title)
+
+        btn = QPushButton()
+        btn.setText(self.appdata._("Change..."))
+        btn.clicked.connect(_clicked_change_colour)
+
+        container.layout().addWidget(preview)
+        container.layout().addWidget(btn)
+        return container
 
     def create_icon_picker_control(self, callback_fn):
         """
@@ -398,4 +418,180 @@ class PolychromaticWidgets(object):
 
         msgbox.finished.connect(_dialog_closed)
         msgbox.exec()
+
+
+class ColourPicker(object):
+    """
+    The colour picker dialog allows the user to quickly choose a colour or
+    hand over to the system's colour picker (which on Linux, would be Qt's native picker)
+    """
+    def __init__(self, appdata, callback_fn, current_hex, title):
+        self.appdata = appdata
+        self.current_hex = current_hex
+        self.current_name = ""
+        self.callback_fn = callback_fn
+        self.title = title
+        self.saved_colours = pref.load_file(pref.path.colours)
+
+        # UI Controls
+        self.dialog = get_ui_widget(appdata, "colour-picker", q_toplevel=QDialog)
+        self.dialog_btns = self.dialog.findChild(QDialogButtonBox, "buttonBox")
+        self.change_btn = self.dialog.findChild(QPushButton, "OpenPicker")
+        self.list_save_btn = self.dialog.findChild(QPushButton, "SaveToList")
+        self.list_del_btn = self.dialog.findChild(QPushButton, "DeleteFromList")
+        self.list_text_input = self.dialog.findChild(QLineEdit, "ColourName")
+        self.save_widget = self.dialog.findChild(QWidget, "SaveWidget")
+        self.save_widget.setHidden(True)
+        self.open_save_widget = self.dialog.findChild(QPushButton, "OpenSaveWidget")
+        self.close_save_widget = self.dialog.findChild(QPushButton, "CloseSaveWidget")
+        self.saved_tree = self.dialog.findChild(QTreeWidget, "SavedColours")
+        self.current_preview = self.dialog.findChild(QWidget, "CurrentPreview")
+        self.current_label = self.dialog.findChild(QLabel, "CurrentLabel")
+
+        # Connect signals when interacting with UI controls
+        self.dialog_btns.accepted.connect(self._apply_colour)
+        self.change_btn.clicked.connect(self._open_system_picker)
+        self.open_save_widget.clicked.connect(self._open_save_widget)
+        self.close_save_widget.clicked.connect(self._close_save_widget)
+        self.list_text_input.textEdited.connect(self._on_save_input_change)
+        self.list_text_input.returnPressed.connect(self._save_to_list)
+        self.list_save_btn.clicked.connect(self._save_to_list)
+        self.list_del_btn.clicked.connect(self._delete_from_list)
+        self.saved_tree.itemSelectionChanged.connect(self._switch_colour)
+
+        # Refresh UI data and open dialog
+        self._build_saved_colour_list()
+        self._refresh_selected_colour(current_hex)
+        self.saved_tree.setColumnWidth(0, 140)
+        self.dialog.setWindowTitle(title)
+        self.dialog.exec()
+
+    def _switch_colour(self):
+        """
+        User selects a colour from their selected colour list.
+        """
+        items = self.saved_tree.selectedItems()
+        if items:
+            self._refresh_selected_colour(items[0].colour_hex)
+
+    def _add_to_tree(self, name, value):
+        """
+        Appends an item to the tree.
+        """
+        item = QTreeWidgetItem()
+        item.setText(0, name)
+        item.setText(1, value.upper())
+        item.setIcon(0, QIcon(common.generate_colour_bitmap(self.appdata.dbg, pref.path, value, "16x16")))
+        item.colour_name = name
+        item.colour_hex = value.upper()
+        item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsDragEnabled)
+        self.saved_tree.addTopLevelItem(item)
+        return item
+
+    def _get_tree_objects(self):
+        root = self.saved_tree.invisibleRootItem()
+        items = []
+        for i in range(root.childCount()):
+            items.append(root.child(i))
+        return items
+
+    def _refresh_selected_colour(self, new_hex):
+        """
+        Refresh the UI to show the newly chosen colour.
+        """
+        self.current_hex = new_hex
+        self.current_preview.setStyleSheet("QWidget {{ background-color: {0} }}".format(new_hex))
+        self.current_label.setText("{0}\n({1})".format(new_hex.upper(), ", ".join(map(str, common.hex_to_rgb(new_hex)))))
+
+        self.list_text_input.setText("")
+        self.open_save_widget.setDisabled(False)
+        self.list_del_btn.setDisabled(True)
+
+        for widget in self._get_tree_objects():
+            if widget.colour_hex == new_hex:
+                widget.setSelected(True)
+                self.current_name = widget.colour_name
+                self.save_widget.setHidden(True)
+                self.open_save_widget.setDisabled(True)
+                self.list_del_btn.setDisabled(False)
+                return
+
+        self.saved_tree.clearSelection()
+
+    def _apply_colour(self):
+        """
+        User applies their newly chosen colour. Saves the colour list to file if
+        there are new colours or the order was modified.
+        """
+        dbg = self.appdata.dbg
+        self._save_colour_list_to_file()
+        dbg.stdout("Colour set to: " + self.current_hex, dbg.success, 1)
+        self.callback_fn(self.current_hex)
+
+    def _save_colour_list_to_file(self):
+        """
+        Saves the colour list to file.
+        """
+        # TODO: Optimisation: Only save if there are changes (add/remove/reorder)
+        dbg = self.appdata.dbg
+        dbg.stdout("Saving colour list...", dbg.action, 1)
+        colour_list = []
+        for item in self._get_tree_objects():
+            colour_list.append({
+                "name": item.colour_name,
+                "hex": item.colour_hex
+            })
+            pref.save_file(pref.Paths().colours, colour_list)
+
+    def _open_system_picker(self):
+        """
+        User uses the system's colour picker to pick any colour, which could
+        include the ability to choose a pixel on the screen (dependent on OS)
+        """
+        output = QColorDialog.getColor(title=self.title, initial=QColor(self.current_hex))
+        if not output.isValid():
+            return
+        new_hex = output.name()
+        self._refresh_selected_colour(new_hex)
+
+    def _open_save_widget(self):
+        self.save_widget.setHidden(False)
+        self.open_save_widget.setDisabled(True)
+
+    def _close_save_widget(self):
+        self.save_widget.setHidden(True)
+        self.open_save_widget.setDisabled(False)
+
+    def _on_save_input_change(self, text):
+        self.list_save_btn.setEnabled(True if len(text) > 0 else False)
+
+    def _save_to_list(self):
+        """
+        Save the colour to their Saved Colour list.
+        """
+        new_name = self.list_text_input.text()
+        new_hex = self.current_hex
+        item = self._add_to_tree(new_name, new_hex)
+        item.setSelected(True)
+        self._close_save_widget()
+
+    def _delete_from_list(self):
+        """
+        Delete the selected item from the Saved Colour list.
+        """
+        item = self.saved_tree.selectedItems()[0]
+        self.saved_tree.invisibleRootItem().removeChild(item)
+
+    def _build_saved_colour_list(self):
+        """
+        Builds the initial saved colour list.
+        """
+        self.saved_tree.invisibleRootItem().takeChildren()
+
+        for index, colour in enumerate(self.saved_colours):
+            item = self._add_to_tree(colour["name"], colour["hex"])
+            if self.current_hex == item.colour_hex:
+                item.setSelected(True)
+                if index > 5:
+                    self.saved_tree.scrollToItem(item)
 
