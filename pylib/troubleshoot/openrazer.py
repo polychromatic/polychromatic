@@ -210,14 +210,12 @@ def troubleshoot(_):
 
             return unreg_ids
 
-        found_unsupported_device = None
+        found_unsupported_device = False
 
         if PYTHON_LIB_PRESENT:
             unsupported_devices = _get_filtered_lsusb_list()
             if len(unsupported_devices) > 0:
                 found_unsupported_device = True
-            else:
-                found_unsupported_device
 
         results.append({
             "test_name": _("Check for unsupported hardware"),
