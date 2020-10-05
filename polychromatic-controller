@@ -268,6 +268,20 @@ class MainWindow(QMainWindow):
         # Bind actions to menu bar
         self.findChild(QAction, "actionQuitApp").triggered.connect(self._quit_app)
 
+        # Warn if configuration is newer then this version.
+        pref_ver = pref.VERSION
+        save_ver = app.preferences["config_version"]
+        if save_ver > pref_ver:
+            widgets = controller.shared.PolychromaticWidgets(app)
+            details = "Polychromatic v{0}\nSave Data: v{1} (application requires v{2} and older)".format(VERSION, save_ver, pref_ver)
+            widgets.open_dialog(widgets.dialog_warning,
+                                _("Incompatible Save Data"),
+                                "{0}\n\n{1}\n\n{2}".format(
+                                    _("Polychromatic's configuration (including your effects and presets) have been previously saved in a newer version of this software."),
+                                    _("Running older versions of the software could corrupt your save data or cause impaired operation. This is unsupported."),
+                                    _("Consider updating the application, or reset your save data by deleting: ~/.config/polychromatic")),
+                                traceback=details)
+
         # Showtime!
         self.show()
 
