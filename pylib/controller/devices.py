@@ -22,7 +22,7 @@ from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \
                             QPushButton, QToolButton, QMessageBox, QListWidget, \
                             QTreeWidget, QTreeWidgetItem, QLabel, QComboBox, \
                             QSpacerItem, QSizePolicy, QSlider, QCheckBox, \
-                            QButtonGroup, QRadioButton
+                            QButtonGroup, QRadioButton, QDialog
 
 class DevicesTab(object):
     """
@@ -676,4 +676,159 @@ class DevicesTab(object):
         """
         Opens a dialogue box describing the metadata for the device.
         """
-        print("stub:show_device_info")
+        # Alias
+        _ = self.appdata._
+
+        # Dialog Controls
+        dialog = shared.get_ui_widget(self.appdata, "device-info", QDialog)
+        tree = dialog.findChild(QTreeWidget, "DeviceTree")
+        btn_close = dialog.findChild(QPushButton, "Close")
+        btn_refresh = dialog.findChild(QPushButton, "Refresh")
+        btn_test_matrix = dialog.findChild(QPushButton, "TestMatrix")
+
+        tree.setColumnWidth(0, 250)
+        root = tree.invisibleRootItem()
+
+        # Connect signals
+        def _close():
+            dialog.accept()
+
+        def _populate_tree():
+            self.appdata.main_window.setCursor(Qt.BusyCursor)
+            root.takeChildren()
+            device = self.appdata.middleman.get_device(self.current_backend, self.current_uid)
+
+            def mkitem(data, value="", icon=None):
+                item = QTreeWidgetItem()
+                item.setText(0, data)
+                if type(value) in [str, int]:
+                    item.setText(1, str(value))
+                elif type(value) == bool:
+                    if value == True:
+                        item.setText(1, _("Yes"))
+                    else:
+                        item.setText(1, _("No"))
+                else:
+                    item.setText(1, _("(Unavailable or not applicable)"))
+                    item.setDisabled(True)
+                if icon:
+                    item.setIcon(1 if value else 0, QIcon(icon))
+                return item
+
+            hw = mkitem(_("Hardware"))
+            hw.addChild(mkitem(_("Name"), device["name"]))
+            hw.addChild(mkitem(_("Backend"), middleman.BACKEND_ID_NAMES[device["backend"]]))
+            hw.addChild(mkitem(_("Internal Backend ID"), str(device["uid"])))
+            hw.addChild(mkitem(_("Form Factor"), device["form_factor"]["label"], device["form_factor"]["icon"]))
+            hw.addChild(mkitem(_("Serial"), device["serial"]))
+            hw.addChild(mkitem(_("Image"), device["real_image"], device["real_image"]))
+            hw.addChild(mkitem(_("Monochromatic"), device["monochromatic"]))
+            if device["vid"]:
+                hw.addChild(mkitem("VID:PID", "{0}:{1}".format(device["vid"], device["pid"])))
+            else:
+                hw.addChild(mkitem("VID:PID", None))
+            hw.addChild(mkitem(_("Firmware Version"), device["firmware_version"]))
+            hw.addChild(mkitem(_("Keyboard Layout"), device["keyboard_layout"]))
+            hw.addChild(mkitem(_("Matrix Supported"), device["matrix"]))
+            if device["matrix"]:
+                hw.addChild(mkitem(_("Matrix Dimensions"), _("1 column(s), 2 row(s)").replace("1", str(device["matrix_rows"])).replace("2", str(device["matrix_cols"]))))
+            tree.addTopLevelItem(hw)
+
+            # Summary
+            summary = mkitem(_("Current Status"))
+            for state in device["summary"]:
+                try:
+                    summary.addChild(mkitem(state["string"], "", state["icon"]))
+                except KeyError:
+                    summary.addChild(mkitem(self.appdata.locales.get(state["string_id"]), "", state["icon"]))
+            tree.addTopLevelItem(summary)
+
+            # DPI
+            if device["dpi_x"]:
+                dpi = mkitem(_("DPI"))
+                dpi.addChild(mkitem("DPI X", device["dpi_x"]))
+                dpi.addChild(mkitem("DPI Y", device["dpi_y"]))
+                dpi.addChild(mkitem(_("Supports 2 Dimensions"), device["dpi_single"] == False))
+                dpi.addChild(mkitem(_("Default Ranges"), ", ".join(map(str, device["dpi_ranges"]))))
+                dpi.addChild(mkitem(_("Minimum"), device["dpi_min"]))
+                dpi.addChild(mkitem(_("Maximum"), device["dpi_max"]))
+                tree.addTopLevelItem(dpi)
+            else:
+                tree.addTopLevelItem(mkitem(_("DPI"), None))
+
+            # Zones
+            zones = mkitem(_("Zones"))
+            for zone in device["zone_options"].keys():
+                try:
+                    icon = device["zone_icons"][zone]
+                except KeyError:
+                    # Backend did not specify an icon for this zone!
+                    # BUG: Some OpenRazer mice have no 'main' but do here for DPI only
+                    icon = common.get_icon("zones", zone)
+
+                zone_item = mkitem(self.appdata.locales.get(zone), "", icon)
+                for option in device["zone_options"][zone]:
+                    option_icon = common.get_icon("options", option["id"])
+                    option_item = mkitem(self.appdata.locales.get(option["id"]), "", option_icon)
+                    option_item.addChild(mkitem(_("Internal ID"), option["id"]))
+                    option_item.addChild(mkitem(_("Type"), option["type"]))
+                    max_colours = option["colours"]
+                    if option["colours"] > 0:
+                        option_item.addChild(mkitem(_("Colour Inputs"), option["colours"]))
+
+                    try:
+                        if len(option["parameters"]) > 0:
+                            param_parent = mkitem(_("Parameters"))
+                            for param in option["parameters"]:
+                                param_item = mkitem(self.appdata.locales.get(param["id"]), "", common.get_icon("options", param["id"]))
+                                param_item.addChild(mkitem(_("Internal ID"), param["id"]))
+                                param_item.addChild(mkitem(_("Internal Data"), param["data"]))
+                                param_item.addChild(mkitem(_("Active"), param["active"]))
+                                if param["colours"] > 0:
+                                    param_item.addChild(mkitem(_("Colour Inputs"), param["colours"]))
+                                if param["colours"] > option["colours"]:
+                                    max_colours = param["colours"]
+                                param_parent.addChild(param_item)
+                            option_item.addChild(param_parent)
+                    except KeyError:
+                        # N/A: Parameters only for effect/multichoice
+                        pass
+
+                    try:
+                        option_item.addChild(mkitem(_("Active"), option["active"]))
+                    except KeyError:
+                        # N/A: Only for effect/toggles
+                        pass
+
+                    try:
+                        option_item.addChild(mkitem(_("Current Value"), str(option["value"]) + option["suffix"]))
+                        option_item.addChild(mkitem(_("Minimum"), option["min"]))
+                        option_item.addChild(mkitem(_("Maximum"), option["max"]))
+                        option_item.addChild(mkitem(_("Interval"), option["step"]))
+                    except KeyError:
+                        # N/A: Only for slider
+                        pass
+
+                    # Colours (all possible inputs)
+                    # FIXME: Update backend. Not working to spec!
+                    #for colour_no in range(1, max_colours + 1):
+                        #colour_hex = option["colour_" + str(colour_no)]
+                        #option_item.addChild(mkitem(_("Colour []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.appdata.dbg, pref.path, colour_hex)))
+
+                    zone_item.addChild(option_item)
+                zones.addChild(zone_item)
+            tree.addTopLevelItem(zones)
+
+            tree.expandAll()
+            self.appdata.main_window.unsetCursor()
+
+        def _test_matrix():
+            device = self.appdata.middleman.get_device(self.current_backend, self.current_uid)
+            self._test_device_matrix(device)
+
+        btn_close.clicked.connect(_close)
+        btn_refresh.clicked.connect(_populate_tree)
+        btn_test_matrix.clicked.connect(self._test_device_matrix)
+        dialog.open()
+        _populate_tree()
+
