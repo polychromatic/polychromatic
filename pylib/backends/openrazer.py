@@ -230,7 +230,7 @@ class Backend(_backend.Backend):
                     "max": 100,
                     "step": 5,
                     "suffix": "%",
-                    "colours": 0 # n/a
+                    "colours": [] # n/a
                 })
 
             elif brightness_type == bool:
@@ -238,7 +238,7 @@ class Backend(_backend.Backend):
                     "id": "brightness",
                     "type": "toggle",
                     "active": True if brightness_parent.active else False,
-                    "colours": 0 # n/a
+                    "colours": [] # n/a
                 })
 
             # Hardware Effects
@@ -250,7 +250,7 @@ class Backend(_backend.Backend):
                         "id": effect,
                         "type": "effect",
                         "parameters": [],
-                        "colours": 0,
+                        "colours": [],
                         "active": current_state["effect"].startswith(effect)
                     }
 
@@ -273,74 +273,65 @@ class Backend(_backend.Backend):
                                 "id": direction_2,
                                 "data": 2,
                                 "active": current_state["wave_dir"] == 2,
-                                "colours": 0
+                                "colours": []
                             },
                             {
                                 "id": direction_1,
                                 "data": 1,
                                 "active": current_state["wave_dir"] == 1,
-                                "colours": 0
+                                "colours": []
                             }
                         ]
 
                     elif effect == "ripple":
-                        # FIXME: Random colour does not appear in Controller UI!
                         if _device_has_zone_capability("ripple_random"):
                             effect_option["parameters"].append({
                                 "id": "random",
                                 "data": "random",
                                 "active": current_state["effect"] == "rippleRandomColour",
-                                "colours": 0
+                                "colours": []
                             })
-                            current_state["active"] = current_state["effect"] == "rippleRandomColour"
 
                         if _device_has_zone_capability("ripple"):
                             effect_option["parameters"].append({
                                 "id": "single",
                                 "data": "single",
                                 "active": current_state["effect"] == "ripple",
-                                "colours": 1
+                                "colours": [current_state["colour_1"]]
                             })
 
                     elif effect == "reactive":
-                        # FIXME: Primary colour not appearing!
-                        effect_option["colours"] = 1
                         effect_option["parameters"] = [
                             {
                                 "id": "fast",
                                 "data": 1,
                                 "active": current_state["speed"] == 1,
-                                "colours": 1
+                                "colours": [current_state["colour_1"]]
                             },
                             {
                                 "id": "medium",
                                 "data": 2,
                                 "active": current_state["speed"] == 2,
-                                "colours": 1
+                                "colours": [current_state["colour_1"]]
                             },
                             {
                                 "id": "slow",
                                 "data": 3,
                                 "active": current_state["speed"] == 3,
-                                "colours": 1
+                                "colours": [current_state["colour_1"]]
                             },
                             {
                                 "id": "vslow",
                                 "data": 4,
                                 "active": current_state["speed"] == 4,
-                                "colours": 1
+                                "colours": [current_state["colour_1"]]
                             }
                         ]
 
                     elif effect in "static":
-                        effect_option["colours"] = 1
+                        effect_option["colours"] = [current_state["colour_1"]]
 
-                    effect_option["active"] = True if effect.startswith(current_state["effect"]) else False
-
-                    # Always store the last used colours (same for each zone per device)
-                    effect_option["colour_1"] = current_state["colour_1"]
-                    effect_option["colour_2"] = current_state["colour_2"]
-                    effect_option["colour_3"] = current_state["colour_3"]
+                    effect_option["active"] = True if current_state["effect"].startswith(effect) else False
 
                     options.append(effect_option)
 
@@ -350,20 +341,21 @@ class Backend(_backend.Backend):
                     "id": effect,
                     "type": "effect",
                     "parameters": [],
-                    "colours": 0,
+                    "colours": [],
                     "active": current_state["effect"].startswith(effect)
                 }
 
                 for _colour_count, param in enumerate(["random", "single", "dual", "triple"]):
                     if _device_has_zone_capability(effect + "_" + param):
+                        _colour_list = []
+                        for c in range(1, _colour_count + 1):
+                            _colour_list.append(current_state["colour_" + str(c)])
                         param_key = {
                             "id": param,
                             "data": param,
                             "active": current_state["effect"].endswith(param.capitalize()),
-                            "colours": _colour_count
+                            "colours": _colour_list
                         }
-                        for c in range(1, _colour_count + 1):
-                            param_key["colour_" + str(c)] = current_state["colour_" + str(c)]
                         effect_option["parameters"].append(param_key)
 
                 return effect_option
@@ -395,7 +387,7 @@ class Backend(_backend.Backend):
                 "id": "game_mode",
                 "type": "toggle",
                 "active": True if rdevice.game_mode_led else False,
-                "colours": 0 # n/a
+                "colours": [] # n/a
             })
 
         if rdevice.has("poll_rate"):
@@ -406,14 +398,14 @@ class Backend(_backend.Backend):
                     "id": "{0}Hz".format(rate),
                     "data": rate,
                     "active": poll_rate == rate,
-                    "colours": 0 # n/a
+                    "colours": [] # n/a
                 })
             zone_options["main"].append({
                 "id": "poll_rate",
                 "type": "multichoice",
                 "parameters": params,
                 "active": True,         # Always a poll rate
-                "colours": 0 # n/a
+                "colours": [] # n/a
             })
 
         # Prepare summary of device.
@@ -570,7 +562,7 @@ class Backend(_backend.Backend):
 
         rzone = self._get_zone_as_object(rdevice, zone)
 
-        # Hardware effects require up to 3 colours.
+        # Hardware effects require up to 3 colours. Daemon uses RGB integers (0-255)
         colour_hex = colours
         colour_1 = [0, 255, 0]
         colour_2 = [255, 0, 0]

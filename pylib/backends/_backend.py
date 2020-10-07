@@ -149,13 +149,10 @@ class Backend(object):
                                 "id":           (str)   ID to identify later. Used for string.
                                 "data":         (any)   Any data type according to the backend's needs.
                                 "active":       (bool)  This parameter is currently in use.
-                                "colours":      (int)   This parameter inputs this amount of colours.
+                                "colours":      (list)  List of hex values last used for this option/parameter combo.
                             }
                         ],
-                        "colours":              (int)   This option inputs this amount of colours.
-                                                        Ignored when parameters are present.
-                        "colour_1": "#RRGGBB"   (str)   Currently saved hex value for primary colour.
-                        "colour_2": "#RRGGBB"   (str)   Currently saved hex value for secondary colour (etc)
+                        "colours":              (list)  List of hex values last used for this option (no parameters only)
 
                         # Only for effect and toggle
 

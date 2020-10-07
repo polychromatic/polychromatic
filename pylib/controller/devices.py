@@ -373,8 +373,7 @@ class DevicesTab(object):
 
             # Use saved colour, if available for this effect
             if len(effect["parameters"]) == 0:
-                for c in range(1, effect["colours"]):
-                    colour_hex.append(effect["colour_" + str(c)])
+                colour_hex = effect["colours"]
 
             # For effects with parameters, the second one will be used as the first may be 'random' or 'off'.
             if param_count > 0:
@@ -384,8 +383,7 @@ class DevicesTab(object):
                     param = effect["parameters"][1]
 
                 option_data = param["data"]
-                for c in range(1, param["colours"]):
-                    colour_hex.append(param["colour_" + str(c)])
+                colour_hex = param["colours"]
 
             self.appdata.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, zone, option_id, option_data, colour_hex)
             self.reload_device()
@@ -426,10 +424,7 @@ class DevicesTab(object):
                 radio.option_id = effect_id
                 radio.option_data = param["data"]
                 radio.zone = zone
-                radio.colour_hex = []
-
-                for c in range(1, param["colours"]):
-                    radio.colour_hex.append(param["colour_" + str(c)])
+                radio.colour_hex = param["colours"]
 
                 if param["active"]:
                     radio.setChecked(True)
@@ -772,9 +767,6 @@ class DevicesTab(object):
                     option_item = mkitem(self.appdata.locales.get(option["id"]), "", option_icon)
                     option_item.addChild(mkitem(_("Internal ID"), option["id"]))
                     option_item.addChild(mkitem(_("Type"), option["type"]))
-                    max_colours = option["colours"]
-                    if option["colours"] > 0:
-                        option_item.addChild(mkitem(_("Colour Inputs"), option["colours"]))
 
                     try:
                         if len(option["parameters"]) > 0:
@@ -784,10 +776,9 @@ class DevicesTab(object):
                                 param_item.addChild(mkitem(_("Internal ID"), param["id"]))
                                 param_item.addChild(mkitem(_("Internal Data"), param["data"]))
                                 param_item.addChild(mkitem(_("Active"), param["active"]))
-                                if param["colours"] > 0:
-                                    param_item.addChild(mkitem(_("Colour Inputs"), param["colours"]))
-                                if param["colours"] > option["colours"]:
-                                    max_colours = param["colours"]
+                                if param["colours"]:
+                                    for colour_no, colour_hex in enumerate(option["colours"]):
+                                        param_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.appdata.dbg, pref.path, colour_hex)))
                                 param_parent.addChild(param_item)
                             option_item.addChild(param_parent)
                     except KeyError:
@@ -809,11 +800,10 @@ class DevicesTab(object):
                         # N/A: Only for slider
                         pass
 
-                    # Colours (all possible inputs)
-                    # FIXME: Update backend. Not working to spec!
-                    #for colour_no in range(1, max_colours + 1):
-                        #colour_hex = option["colour_" + str(colour_no)]
-                        #option_item.addChild(mkitem(_("Colour []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.appdata.dbg, pref.path, colour_hex)))
+                    # Colours (entire option, no parameters)
+                    if option["colours"] and not option["parameters"]:
+                        for colour_no, colour_hex in enumerate(option["colours"]):
+                            option_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.appdata.dbg, pref.path, colour_hex)))
 
                     zone_item.addChild(option_item)
                 zones.addChild(zone_item)

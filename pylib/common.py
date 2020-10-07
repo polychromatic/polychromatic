@@ -286,7 +286,7 @@ def run_thread(target_function, args=()):
 def rgb_to_hex(rgb_list):
     """
     Converts [R,G,B] list to #RRGGBB string.
-    Polychromatic stores and presents colours as hex values.
+    Polychromatic stores and processes colours as hex values.
     """
     return "#{0:02X}{1:02X}{2:02X}".format(*rgb_list)
 
@@ -294,7 +294,7 @@ def rgb_to_hex(rgb_list):
 def hex_to_rgb(hex_string):
     """
     Converts "#RRGGBB" string to [R,G,B] list.
-    The daemon expects parameters with individual RGB values.
+    Some backends/logic may expect colours to be individual RGB values.
     """
     hex_string = hex_string.lstrip("#")
     return list(int(hex_string[i:i+2], 16) for i in (0, 2 ,4))
@@ -328,7 +328,7 @@ def get_bulk_apply_options(devices):
             {
                 "option_id": "<id>"
                 "option_data": <data>
-                "colours": <int>
+                "required_colours": <int>
             }
         ]
     }
@@ -379,7 +379,7 @@ def get_bulk_apply_options(devices):
         output["effects"].append({
             "option_id": effect,
             "option_data": effects_params[effect],
-            "colours": effects_colours[effect]
+            "required_colours": effects_colours[effect]
         })
 
     return output

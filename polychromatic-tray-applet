@@ -359,23 +359,22 @@ class PolychromaticTrayApplet():
             for option in bulk["effects"]:
                 option_id = option["option_id"]
                 option_data = option["option_data"]
-                colours_needed = option["colours"]
+                required_colours = option["required_colours"]
 
                 label = locales.get(option_id)
                 icon = self._get_icon("options", str(option_id))
 
-                indicator.create_menu_item(bulk_menu, label, True, cb.set_bulk_option, [option_id, option_data, colours_needed], icon)
+                indicator.create_menu_item(bulk_menu, label, True, cb.set_bulk_option, [option_id, option_data, required_colours], icon)
 
             # -- Colours
             if len(effects) > 0:
                 indicator.create_seperator(bulk_menu)
                 colour_menu, colour_menu_item = indicator.create_submenu(_("Primary Colour"), True, self._get_icon("general", "palette"))
 
-                for colour in colours:
+                for colour in saved_colours:
                     label = colour["name"]
                     data = colour["hex"]
                     icon = self._get_colour_icon(data)
-
                     indicator.create_menu_item(colour_menu, label, True, cb.set_bulk_colour, [data], icon)
                 indicator.add_menu_item(bulk_menu, colour_menu_item)
 
@@ -415,7 +414,7 @@ class PolychromaticTrayApplet():
                 option_icon = self._get_icon("options", option_id)
 
                 # Show 'Edit Colours' later if supported
-                if option["colours"] > 0:
+                if len(option["colours"]) > 0:
                     can_set_colours = True
 
                 # Option contains parameters, show submenu
@@ -428,7 +427,7 @@ class PolychromaticTrayApplet():
                         indicator.add_menu_item(submenu, self.create_parameters_menu(device, zone, option))
 
                         for param in option["parameters"]:
-                            if param["colours"] > 0:
+                            if len(param["colours"]) > 0:
                                 can_set_colours = True
 
                 # Option is a slider, for values between 0 and 100.
@@ -469,7 +468,7 @@ class PolychromaticTrayApplet():
             if device["monochromatic"]:
                 index = colours_mono
             else:
-                index = colours
+                index = saved_colours
 
             for pos in range(0, len(index)):
                 try:
@@ -602,7 +601,6 @@ class Callback():
 
         Params:
             attr        [device, zone, option_id, option_data]
-            colour_hex  Used in set_colour() only
         """
         device, zone, option_id, option_data = attr
 
@@ -610,27 +608,22 @@ class Callback():
         uid = device["uid"]
         name = device["name"]
         serial = device["serial"]
+        device = middleman.get_device(backend, uid)
 
         # Re-use previously selected colours
-        required_colours = 0
         colour_hex = []
         for option in device["zone_options"][zone]:
-            if option["id"] == option_id and int(option["colours"]) > 0:
-                required_colours = option["colours"]
-                break
+            if option["id"] == option_id:
+                colour_hex = option["colours"]
 
             try:
                 if option["parameters"]:
                     for param in option["parameters"]:
-                        if param["id"] == option_data and int(param["colours"]) > 0:
-                            required_colours = param["colours"]
-                            break
+                        if param["data"] == option_data:
+                            colour_hex = param["colours"]
             except KeyError:
                 # No parameters for sliders or toggles
                 pass
-
-        for i in range(1, required_colours + 1):
-            colour_hex.append(option["colour_" + str(i)])
 
         dbg.stdout("Setting option '{0}' (data: {1}) for {2} in zone '{3}'".format(option_id, option_data, name, zone), dbg.action, 1)
         dbg.stdout("Re-using colours: {0}".format(", ".join(colour_hex)), dbg.debug, 1)
@@ -650,6 +643,7 @@ class Callback():
         backend = device["backend"]
         uid = device["uid"]
         name = device["name"]
+        device = middleman.get_device(backend, uid)
 
         for zone in device["zone_options"].keys():
             dbg.stdout("Setting '{2}' colour to '{0}' for {1}".format(hex_value, name, zone), dbg.action, 1)
@@ -682,7 +676,7 @@ class Callback():
         Option clicked to set an effect for all devices (where supported)
 
         Params:
-            attr    [option_id, option_data, colours]
+            attr    [option_id, option_data, colours_needed]
         """
         option_id, option_data, colours_needed = attr
         middleman.set_bulk_option(option_id, option_data, colours_needed)
@@ -813,7 +807,7 @@ if __name__ == "__main__":
 
     # Load data into memory
     prefs = pref.load_file(path.preferences)
-    colours = pref.load_file(path.colours)
+    saved_colours = pref.load_file(path.colours)
     colours_mono = common.get_green_shades()
 
     # Initialise the indicator

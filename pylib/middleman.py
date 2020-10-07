@@ -235,7 +235,6 @@ class Middleman(object):
                 if option["active"] == True:
                     found_option = option
                     option_id = option["id"]
-                    colour_count = option["colours"]
 
                     try:
                         if len(option["parameters"]) == 0:
@@ -243,17 +242,17 @@ class Middleman(object):
                         else:
                             for param in option["parameters"]:
                                 if param["active"] == True:
-                                    option_data = param["id"]
-                                    colour_count = param["colours"]
-                                    for c in range(1, colour_count + 1):
-                                        colour_hex.append(param["colour_" + str(c)])
+                                    option_data = param["data"]
+                                    colour_hex = param["colours"]
                     except KeyError:
                         # Toggle or slider do not have a 'parameters' key
                         pass
 
+        if not found_option:
+            return [None, None, None]
+
         if not param:
-            for c in range(1, colour_count + 1):
-                colour_hex.append(found_option["colour_" + str(c)])
+            colour_hex = found_option["colours"]
 
         return [option_id, option_data, colour_hex]
 
@@ -265,6 +264,8 @@ class Middleman(object):
         The return code is the same as set_device_state()
         """
         option_id, option_data, colour_hex = self._get_current_device_option(device)
+        if not colour_hex:
+            return False
         colour_hex[colour_pos] = hex_value
         return self.set_device_state(device["backend"], device["uid"], device["serial"], zone, option_id, option_data, colour_hex)
 
@@ -301,14 +302,15 @@ class Middleman(object):
                 for option in device["zone_options"][zone]:
                     if option["id"] == option_id:
                         skip = False
-
-                        for i in range(1, colours_needed + 1):
-                            colour_hex.append(option["colour_" + str(i)])
-
+                        colour_hex = option["colours"]
                         break
 
                 if skip:
                     continue
+
+                # TODO: Use default colours
+                while len(colour_hex) < colours_needed:
+                    colour_hex.append("#00FF00")
 
                 self._dbg.stdout("- {0} [{1}]".format(name, zone), self._dbg.action, 1)
                 result = self.set_device_state(backend, uid, serial, zone, option_id, option_data, colour_hex)
@@ -340,14 +342,20 @@ class Middleman(object):
             uid = device["uid"]
             serial = device["serial"]
 
-            for zone in device["zone_options"].keys():
+            # Skip devices that do not support this option
+            if not option_id:
+                continue
 
+            for zone in device["zone_options"].keys():
                 # Skip if the device's zone/options doesn't support this request
                 skip = True
                 for option in device["zone_options"][zone]:
                     if option["id"] == option_id:
                         skip = False
                         break
+
+                    if not option["colours"]:
+                        continue
 
                 if skip:
                     continue

@@ -405,12 +405,12 @@ if args.list_options:
                     params = []
 
                 try:
-                    colours = control["colours"]
+                    colour_hex = control["colours"]
                 except KeyError:
-                    colours = 0
+                    colour_hex = []
 
-                if colours > 0:
-                    col_colours = _list_colours(colours, control)
+                if colour_hex:
+                    col_colours = ", ".join(colour_hex)
 
                 if type == "slider":
                     col_param = str(control["value"])
@@ -436,9 +436,6 @@ if args.list_options:
                     _add_row()
 
                 elif type in ["multichoice", "effect"] and len(params) == 0:
-                    if colours > 0:
-                        col_colours = _list_colours(colours, control)
-
                     if control["active"]:
                         col_zone = dbg.success + zone
                         col_option = dbg.success + control["id"]
@@ -465,9 +462,7 @@ if args.list_options:
                             pass
 
                         try:
-                            colours = param["colours"]
-                            if colours > 0:
-                                col_colours = _list_colours(colours, control)
+                            col_colours = ", ".join(param["colours"])
                         except KeyError:
                             pass
 
@@ -551,7 +546,24 @@ apply_zone = args.zone
 apply_option = args.option
 apply_param = args.parameter
 if args.colours:
-    apply_colours = args.colours.split(",")
+    apply_colours = []
+
+    # Validate colour input (hash at the beginning, 6 length)
+    valid = True
+    for colour in args.colours.split(","):
+        if colour[0] != "#":
+            # Be lenient with missing hashes
+            colour = "#" + colour
+        if len(colour) == 4:
+            valid = False
+            dbg.stdout(_("3 byte hexadecimal values are unsupported.").replace("[]", colour), dbg.warning)
+        elif len(colour) != 7:
+            valid = False
+            dbg.stdout(_("Colour [] is not a valid hex value.").replace("[]", colour), dbg.warning)
+        apply_colours.append(colour)
+
+    if not valid:
+        exit(1)
 else:
     apply_colours = []
 
@@ -618,10 +630,10 @@ for device_item in device_list:
 
                     # Do we have all the colours required?
                     try:
-                        required_colour_count = param["colours"]
+                        required_colour_count = len(param["colours"])
 
                         if required_colour_count > user_colours_count:
-                            dbg.stdout(_("Skipping: [device] - Requires [1] colour(s) but only [2] specified.").replace("[device]", device_name).replace("[1]", str(required_colour_count)).replace("[2]", str(user_colours_count)), dbg.warning)
+                            dbg.stdout(_("Skipping: [device] - Requires 1 colour(s) but only 2 specified.").replace("[device]", device_name).replace("1", str(required_colour_count)).replace("2", str(user_colours_count)), dbg.warning)
                             continue
                     except KeyError:
                         if verbose:
@@ -631,8 +643,10 @@ for device_item in device_list:
 
                 elif len(params) == 0:
                     try:
-                        if option["colours"] > len(apply_colours):
-                            dbg.stdout(_("Skipping: [device] - Requires [1] colour(s) but only [2] specified.").replace("[device]", device_name).replace("[1]", str(option["colours"])).replace("[2]", str(len(apply_colours))), dbg.warning)
+                        required_colour_count = len(option["colours"])
+
+                        if len(option["colours"]) > len(apply_colours):
+                            dbg.stdout(_("Skipping: [device] - Requires 1 colour(s) but only 2 specified.").replace("[device]", device_name).replace("1", str(required_colour_count)).replace("2", str(len(apply_colours))), dbg.warning)
                             continue
                     except KeyError:
                         if verbose:
@@ -641,7 +655,7 @@ for device_item in device_list:
                     valid = True
 
     if not valid:
-        dbg.stdout(_("Skipping: [device] - This option is not supported.").replace("[device]", device_name), dbg.warning)
+        dbg.stdout(_("Skipping: [device] - Setting this option was unsuccessful or is not supported.").replace("[device]", device_name), dbg.warning)
         continue
 
     for zone in zones:
