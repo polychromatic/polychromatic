@@ -110,13 +110,6 @@ class ApplicationData(object):
         """
         self.main_window = MainWindow()
 
-        # Tabs
-        self.tab_devices = controller.devices.DevicesTab(self)
-        self.tab_effects = controller.effects.EffectsTab(self)
-        self.tab_presets = controller.presets.PresetsTab(self)
-        self.tab_triggers = controller.triggers.TriggersTab(self)
-        self.tab_preferences = controller.preferences.PreferencesTab(self)
-
         # Misc
         self.menubar = controller.menubar.MenuBar(self)
 
@@ -129,6 +122,13 @@ class ApplicationData(object):
 
         dbg.stdout("Getting effect list...", dbg.action, 1)
         self.effect_list = effects.get_effect_list()
+
+        # Tabs
+        self.tab_devices = controller.devices.DevicesTab(self)
+        self.tab_effects = controller.effects.EffectsTab(self)
+        self.tab_presets = controller.presets.PresetsTab(self)
+        self.tab_triggers = controller.triggers.TriggersTab(self)
+        self.tab_preferences = controller.preferences.PreferencesTab(self)
 
         # Disable inactive backends in menu bar
         if "openrazer" in self.middleman.not_installed:
@@ -245,7 +245,6 @@ class MainWindow(QMainWindow):
 
         def _change_tab_proxy(b, i):
             tabs.setCurrentIndex(i)
-            _change_tab()
 
         tabs.currentChanged.connect(_change_tab)
 

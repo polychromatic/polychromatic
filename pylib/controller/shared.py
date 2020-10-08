@@ -109,6 +109,27 @@ def clear_layout(layout):
             child.widget().deleteLater()
 
 
+class TabData(object):
+    """
+    This parent class is inherited by all tab objects storing common variables.
+    """
+    def __init__(self, appdata):
+        self.appdata = appdata
+        self.widgets = PolychromaticWidgets(appdata)
+        self.locales = appdata.locales
+        self.dbg = appdata.dbg
+        self._ = appdata._
+        self.middleman = appdata.middleman
+        self.main_window = appdata.main_window
+        self.menubar = appdata.menubar
+
+    def set_tab(self):
+        """
+        Called when the tab is opened via the user interface.
+        """
+        pass
+
+
 class PolychromaticWidgets(object):
     """
     Code for building some of the common UI elements of the Controller application.
@@ -594,4 +615,3 @@ class ColourPicker(object):
                 item.setSelected(True)
                 if index > 5:
                     self.saved_tree.scrollToItem(item)
-

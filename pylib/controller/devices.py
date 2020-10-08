@@ -24,15 +24,12 @@ from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \
                             QSpacerItem, QSizePolicy, QSlider, QCheckBox, \
                             QButtonGroup, QRadioButton, QDialog
 
-class DevicesTab(object):
+class DevicesTab(shared.TabData):
     """
     Allows the user to quickly change the existing state of the device right now.
     """
     def __init__(self, appdata):
-        self.appdata = appdata
-        self.widgets = shared.PolychromaticWidgets(appdata)
-        self.locales = appdata.locales
-        self._ = appdata._
+        super().__init__(appdata)
 
         # Session
         self.current_backend = None
@@ -40,8 +37,8 @@ class DevicesTab(object):
         self.current_serial = None
 
         # UI Elements
-        self.Contents = self.appdata.main_window.findChild(QWidget, "DeviceContents")
-        self.SidebarTree = self.appdata.main_window.findChild(QTreeWidget, "DeviceSidebarTree")
+        self.Contents = self.main_window.findChild(QWidget, "DeviceContents")
+        self.SidebarTree = self.main_window.findChild(QTreeWidget, "DeviceSidebarTree")
         self.SidebarTree.itemClicked.connect(self._sidebar_changed)
 
     def set_tab(self):
@@ -63,8 +60,8 @@ class DevicesTab(object):
 
         # Recache the device list
         self.SidebarTree.parent().show()
-        self.appdata.device_list = self.appdata.middleman.get_device_list()
-        unknown_device_list = self.appdata.middleman.get_unsupported_devices()
+        self.appdata.device_list = self.middleman.get_device_list()
+        unknown_device_list = self.middleman.get_unsupported_devices()
 
         # Clear device entries
         devices_branch.takeChildren()
@@ -99,11 +96,11 @@ class DevicesTab(object):
             self.open_unknown_device(devices_branch.child(0).backend)
 
         # All backends failed to load
-        elif len(self.appdata.middleman.backends) == 0 and len(self.appdata.middleman.import_errors) > 0:
+        elif len(self.middleman.backends) == 0 and len(self.middleman.import_errors) > 0:
             self._open_no_backend_found(1)
 
         # No backends are installed
-        elif len(self.appdata.middleman.backends) == 0 and len(self.appdata.middleman.not_installed) > 0:
+        elif len(self.middleman.backends) == 0 and len(self.middleman.not_installed) > 0:
             self._open_no_backend_found(2)
 
         # Backends present, but no devices listed
@@ -132,10 +129,10 @@ class DevicesTab(object):
         Show details and controls to instant change the current parameters for
         the specified device.
         """
-        device = self.appdata.middleman.get_device(backend, uid)
+        device = self.middleman.get_device(backend, uid)
 
         if type(device) in [None, str]:
-            _ = self.appdata._
+            _ = self._
             backend_name = middleman.BACKEND_ID_NAMES[backend]
 
             msg1 = _("An error occurred while reading this device. This could be either be a bug in Polychromatic or the [] backend.").replace("[]", backend_name)
@@ -342,7 +339,7 @@ class DevicesTab(object):
         for effect in effect_options:
             fx_id = effect["id"]
             fx_params = effect["parameters"]
-            fx_string = self.appdata.locales.get(fx_id)
+            fx_string = self.locales.get(fx_id)
             fx_active = effect["active"]
             fx_colours = effect["colours"]
 
@@ -385,7 +382,7 @@ class DevicesTab(object):
                 option_data = param["data"]
                 colour_hex = param["colours"]
 
-            self.appdata.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, zone, option_id, option_data, colour_hex)
+            self.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, zone, option_id, option_data, colour_hex)
             self.reload_device()
 
         self.fx_btn_grp.buttonClicked.connect(_clicked_effect_button)
@@ -406,8 +403,8 @@ class DevicesTab(object):
                 if not radio.isChecked():
                     continue
 
-                self.appdata.dbg.stdout("Setting parameter {} for {} on {} device {} (zone: {}, colours: {})".format(radio.option_data, radio.option_id, self.current_backend, self.current_uid, zone, str(radio.colour_hex)), self.appdata.dbg.action, 1)
-                self.appdata.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, radio.zone, radio.option_id, radio.option_data, radio.colour_hex)
+                self.dbg.stdout("Setting parameter {} for {} on {} device {} (zone: {}, colours: {})".format(radio.option_data, radio.option_id, self.current_backend, self.current_uid, zone, str(radio.colour_hex)), self.dbg.action, 1)
+                self.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, radio.zone, radio.option_id, radio.option_data, radio.colour_hex)
                 self.reload_device()
 
         for effect in effect_options:
@@ -415,7 +412,7 @@ class DevicesTab(object):
                 continue
 
             for param in effect["parameters"]:
-                label = self.appdata.locales.get(param["id"])
+                label = self.locales.get(param["id"])
 
                 radio = QRadioButton()
                 radio.setText(label)
@@ -455,8 +452,8 @@ class DevicesTab(object):
             label = self._("Colour []").replace("[]", str(colour_no))
 
         def _set_new_colour(new_hex):
-            device = self.appdata.middleman.get_device(self.current_backend, self.current_uid)
-            response = self.appdata.middleman.set_device_colour(device, zone, new_hex, colour_no)
+            device = self.middleman.get_device(self.current_backend, self.current_uid)
+            response = self.middleman.set_device_colour(device, zone, new_hex, colour_no)
             if response:
                 self.reload_device()
 
@@ -473,13 +470,13 @@ class DevicesTab(object):
         """
         After clicking or changing an option, send this change to the backend.
         """
-        dbg = self.appdata.dbg
+        dbg = self.dbg
         backend = device["backend"]
         uid = device["uid"]
         serial = device["serial"]
         dbg.stdout("Setting option '{0}' on {1} ({2} device {3})".format(option_id, device["name"], backend, uid), dbg.action, 1)
         dbg.stdout("  -> Zone: {0} | Param: {1} | Colours: {2}".format(zone, option_data, colour_hex), dbg.action, 1)
-        response = self.appdata.middleman.set_device_state(backend, uid, serial, zone, option_id, option_data, colour_hex)
+        response = self.middleman.set_device_state(backend, uid, serial, zone, option_id, option_data, colour_hex)
 
         _ = self._
 
@@ -573,7 +570,7 @@ class DevicesTab(object):
         Opens the documentation online to learn more about Polychromatic's device
         functionality.
         """
-        self.appdata.menubar.online_help()
+        self.menubar.online_help()
 
     def _start_troubleshooter(self):
         """
@@ -582,18 +579,18 @@ class DevicesTab(object):
         to troubleshoot.
         """
         # TODO: Prompt not implemented as only one backend (OpenRazer)
-        self.appdata.menubar.openrazer.troubleshoot()
+        self.menubar.openrazer.troubleshoot()
 
     def _open_backend_exception(self):
         """
         Opens a dialog showing the details of an exception for one of the backends.
         """
-        dbg = self.appdata.dbg
-        _ = self.appdata._
+        dbg = self.dbg
+        _ = self._
 
-        for backend_id in self.appdata.middleman.import_errors.keys():
+        for backend_id in self.middleman.import_errors.keys():
             backend_name = middleman.BACKEND_ID_NAMES[backend_id]
-            exception = self.appdata.middleman.import_errors[backend_id].strip()
+            exception = self.middleman.import_errors[backend_id].strip()
             dbg.stdout("{0}\n------------------------------\n{1}".format(backend_name, exception), dbg.error)
             self.widgets.open_dialog(self.widgets.dialog_generic,
                                     _("Backend Error: []").replace("[]", backend_name),
@@ -611,7 +608,7 @@ class DevicesTab(object):
         backend_name = middleman.BACKEND_ID_NAMES[backend]
 
         def _restart_backend():
-            self.appdata.middleman.restart(backend)
+            self.middleman.restart(backend)
 
         self.widgets.populate_empty_state(layout,
             common.get_icon("empty", "nodevice"),
@@ -646,7 +643,7 @@ class DevicesTab(object):
         shared.clear_layout(layout)
 
         def _view_details():
-            _ = self.appdata._
+            _ = self._
             self.widgets.open_dialog(self.widgets.dialog_generic, _("Error Details"), msg1, msg2, exception)
 
         self.widgets.populate_empty_state(layout, common.get_icon("empty", "nobackend"), self._("Something went wrong!"), "",
@@ -672,7 +669,7 @@ class DevicesTab(object):
         Opens a dialogue box describing the metadata for the device.
         """
         # Alias
-        _ = self.appdata._
+        _ = self._
 
         # Dialog Controls
         dialog = shared.get_ui_widget(self.appdata, "device-info", QDialog)
@@ -689,9 +686,9 @@ class DevicesTab(object):
             dialog.accept()
 
         def _populate_tree():
-            self.appdata.main_window.setCursor(Qt.BusyCursor)
+            self.main_window.setCursor(Qt.BusyCursor)
             root.takeChildren()
-            device = self.appdata.middleman.get_device(self.current_backend, self.current_uid)
+            device = self.middleman.get_device(self.current_backend, self.current_uid)
 
             def mkitem(data, value="", icon=None):
                 item = QTreeWidgetItem()
@@ -735,7 +732,7 @@ class DevicesTab(object):
                 try:
                     summary.addChild(mkitem(state["string"], "", state["icon"]))
                 except KeyError:
-                    summary.addChild(mkitem(self.appdata.locales.get(state["string_id"]), "", state["icon"]))
+                    summary.addChild(mkitem(self.locales.get(state["string_id"]), "", state["icon"]))
             tree.addTopLevelItem(summary)
 
             # DPI
@@ -761,10 +758,10 @@ class DevicesTab(object):
                     # BUG: Some OpenRazer mice have no 'main' but do here for DPI only
                     icon = common.get_icon("zones", zone)
 
-                zone_item = mkitem(self.appdata.locales.get(zone), "", icon)
+                zone_item = mkitem(self.locales.get(zone), "", icon)
                 for option in device["zone_options"][zone]:
                     option_icon = common.get_icon("options", option["id"])
-                    option_item = mkitem(self.appdata.locales.get(option["id"]), "", option_icon)
+                    option_item = mkitem(self.locales.get(option["id"]), "", option_icon)
                     option_item.addChild(mkitem(_("Internal ID"), option["id"]))
                     option_item.addChild(mkitem(_("Type"), option["type"]))
 
@@ -772,13 +769,13 @@ class DevicesTab(object):
                         if len(option["parameters"]) > 0:
                             param_parent = mkitem(_("Parameters"))
                             for param in option["parameters"]:
-                                param_item = mkitem(self.appdata.locales.get(param["id"]), "", common.get_icon("options", param["id"]))
+                                param_item = mkitem(self.locales.get(param["id"]), "", common.get_icon("options", param["id"]))
                                 param_item.addChild(mkitem(_("Internal ID"), param["id"]))
                                 param_item.addChild(mkitem(_("Internal Data"), param["data"]))
                                 param_item.addChild(mkitem(_("Active"), param["active"]))
                                 if param["colours"]:
                                     for colour_no, colour_hex in enumerate(option["colours"]):
-                                        param_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.appdata.dbg, pref.path, colour_hex)))
+                                        param_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.dbg, pref.path, colour_hex)))
                                 param_parent.addChild(param_item)
                             option_item.addChild(param_parent)
                     except KeyError:
@@ -803,17 +800,17 @@ class DevicesTab(object):
                     # Colours (entire option, no parameters)
                     if option["colours"] and not option["parameters"]:
                         for colour_no, colour_hex in enumerate(option["colours"]):
-                            option_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.appdata.dbg, pref.path, colour_hex)))
+                            option_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.dbg, pref.path, colour_hex)))
 
                     zone_item.addChild(option_item)
                 zones.addChild(zone_item)
             tree.addTopLevelItem(zones)
 
             tree.expandAll()
-            self.appdata.main_window.unsetCursor()
+            self.main_window.unsetCursor()
 
         def _test_matrix():
-            device = self.appdata.middleman.get_device(self.current_backend, self.current_uid)
+            device = self.middleman.get_device(self.current_backend, self.current_uid)
             self._test_device_matrix(device)
 
         btn_close.clicked.connect(_close)

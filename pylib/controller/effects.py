@@ -11,20 +11,19 @@ from .. import common
 from .. import effects
 from .. import locales
 from .. import preferences as pref
+from . import shared
 
 from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, QListWidget, QTreeWidget, QLabel, QComboBox
 
-class EffectsTab(object):
+class EffectsTab(shared.TabData):
     """
     Allows the user to quickly change the existing state of the device right now.
     """
     def __init__(self, appdata):
-        self.appdata = appdata
+        super().__init__(appdata)
 
     def set_tab(self):
         """
-        Device tab opened.
+        Effects tab opened.
         """
-        w = self.appdata.main_window
-
         print("stub: EffectsTab.set_tab")
