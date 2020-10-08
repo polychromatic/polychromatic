@@ -109,9 +109,9 @@ class DevicesTab(shared.TabData):
 
         # Open the first device initially
         if len(self.appdata.device_list) > 0:
-            device = self.appdata.device_list[0]
-            self.open_device(device["backend"], device["uid"])
-            devices_branch.child(0).setSelected(True)
+            first_item = devices_branch.child(0)
+            first_item.setSelected(True)
+            self.open_device(first_item.backend, first_item.uid)
 
     def _sidebar_changed(self, item):
         """

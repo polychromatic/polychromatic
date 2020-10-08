@@ -263,6 +263,7 @@ class MainWindow(QMainWindow):
         landing_tab = app.preferences["controller"]["landing_tab"]
         if landing_tab >= 0 and landing_tab <= 4:
             _change_tab_proxy(None, landing_tab)
+            _change_tab()
 
         # Bind actions to menu bar
         self.findChild(QAction, "actionQuitApp").triggered.connect(self._quit_app)
