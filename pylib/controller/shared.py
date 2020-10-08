@@ -129,6 +129,12 @@ class TabData(object):
         """
         pass
 
+    def set_cursor_normal(self):
+        self.main_window.unsetCursor()
+
+    def set_cursor_busy(self):
+        self.main_window.setCursor(Qt.BusyCursor)
+
 
 class PolychromaticWidgets(object):
     """

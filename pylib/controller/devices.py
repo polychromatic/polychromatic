@@ -686,7 +686,7 @@ class DevicesTab(shared.TabData):
             dialog.accept()
 
         def _populate_tree():
-            self.main_window.setCursor(Qt.BusyCursor)
+            self.set_cursor_busy()
             root.takeChildren()
             device = self.middleman.get_device(self.current_backend, self.current_uid)
 
@@ -807,7 +807,7 @@ class DevicesTab(shared.TabData):
             tree.addTopLevelItem(zones)
 
             tree.expandAll()
-            self.main_window.unsetCursor()
+            self.set_cursor_normal()
 
         def _test_matrix():
             device = self.middleman.get_device(self.current_backend, self.current_uid)
