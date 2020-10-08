@@ -16,7 +16,7 @@ from . import shared
 
 import os
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QMargins
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \
                             QPushButton, QToolButton, QMessageBox, QListWidget, \
@@ -129,6 +129,7 @@ class DevicesTab(shared.TabData):
         Show details and controls to instant change the current parameters for
         the specified device.
         """
+        self.set_cursor_busy()
         device = self.middleman.get_device(backend, uid)
 
         if type(device) in [None, str]:
@@ -210,7 +211,7 @@ class DevicesTab(shared.TabData):
                     widgets.append(param_controls)
 
             # Colours
-            if len(current_colours) > 0:
+            if current_colours and len(current_colours) > 0:
                 for colour_no, colour_hex in enumerate(current_colours):
                     widgets.append(self._create_colour_control(colour_no, colour_hex, current_option_id, current_option_data, zone))
 
@@ -234,6 +235,7 @@ class DevicesTab(shared.TabData):
                     layout.addWidget(widget)
 
         layout.addStretch()
+        self.set_cursor_normal()
 
     def reload_device(self):
         """
@@ -660,9 +662,100 @@ class DevicesTab(shared.TabData):
         Show options for setting options that apply to all connected devices, where
         the option is supported.
         """
+        self.set_cursor_busy()
         layout = self.Contents.layout()
         shared.clear_layout(layout)
-        print("stub:open_apply_to_all")
+
+        bulk = common.get_bulk_apply_options(self.middleman.get_device_all())
+
+        effects = bulk["effects"]
+        brightnesses = bulk["brightness"]
+
+        # For creating controls
+        self.btn_grp = QButtonGroup()
+
+        def _create_button(label, icon_path, option_id, option_data, option_colours=0, colour=None):
+            # Same button as effects
+            button = QToolButton()
+            button.setText(label)
+            button.setIconSize(QSize(30, 30))
+            button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+            button.setIcon(QIcon(icon_path))
+            button.setMinimumHeight(40)
+            button.setMinimumWidth(130)
+            button.option_id = option_id
+            button.option_data = option_data
+            button.required_colours = option_colours
+            button.colour = colour
+            self.btn_grp.addButton(button)
+            return button
+
+        def add_to_page(label, widgets):
+            group = self.widgets.create_group_widget(label)
+            group.layout().setAlignment(Qt.AlignTop)
+            group.layout().setContentsMargins(QMargins(30, 5, 30, 5))
+            row = 0
+            col = 0
+            for position, widget in enumerate(widgets):
+                group.layout().addWidget(widget, row, col)
+                col += 1
+                if col >= 5:
+                    col = 0
+                    row += 1
+            layout.addWidget(group)
+
+        def _apply_button_clicked(button):
+            self.set_cursor_busy()
+            if button.option_id:
+                # Setting effect/brightness
+                self.middleman.set_bulk_option(button.option_id, button.option_data, button.required_colours)
+            else:
+                # Setting colour
+                self.middleman.set_bulk_colour(button.colour)
+            self.set_cursor_normal()
+
+        self.btn_grp.buttonClicked.connect(_apply_button_clicked)
+
+        # Brightness
+        if len(brightnesses) > 0:
+            widgets = []
+            for brightness in brightnesses:
+                option_id = brightness["option_id"]
+                option_data = brightness["option_data"]
+
+                label = str(option_data) + "%"
+                icon = common.get_icon("options", str(option_data))
+                widgets.append(_create_button(label, icon, option_id, option_data))
+
+            add_to_page(self._("Brightness"), widgets)
+
+        # Options
+        if len(effects) > 0:
+            widgets = []
+            for option in effects:
+                option_id = option["option_id"]
+                option_data = option["option_data"]
+                required_colours = option["required_colours"]
+
+                label = locales.get(option_id)
+                icon = common.get_icon("options", str(option_id))
+                widgets.append(_create_button(label, icon, option_id, option_data, option_colours=required_colours))
+
+            add_to_page(self._("Effects"), widgets)
+
+        # Colours
+        if len(effects) > 0:
+            widgets = []
+            for colour in pref.load_file(pref.path.colours):
+                label = colour["name"]
+                data = colour["hex"]
+                icon = common.generate_colour_bitmap(self.dbg, pref.path, data, "40x40")
+                widgets.append(_create_button(label, icon, None, None, colour=data))
+
+            add_to_page(self._("Colours"), widgets)
+
+        layout.addStretch()
+        self.set_cursor_normal()
 
     def show_device_info(self):
         """
