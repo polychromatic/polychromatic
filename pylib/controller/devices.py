@@ -22,7 +22,7 @@ from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \
                             QPushButton, QToolButton, QMessageBox, QListWidget, \
                             QTreeWidget, QTreeWidgetItem, QLabel, QComboBox, \
                             QSpacerItem, QSizePolicy, QSlider, QCheckBox, \
-                            QButtonGroup, QRadioButton, QDialog
+                            QButtonGroup, QRadioButton, QDialog, QTableWidget
 
 class DevicesTab(shared.TabData):
     """
@@ -817,6 +817,7 @@ class DevicesTab(shared.TabData):
             hw.addChild(mkitem(_("Matrix Supported"), device["matrix"]))
             if device["matrix"]:
                 hw.addChild(mkitem(_("Matrix Dimensions"), _("1 column(s), 2 row(s)").replace("1", str(device["matrix_rows"])).replace("2", str(device["matrix_cols"]))))
+                btn_test_matrix.setDisabled(False)
             tree.addTopLevelItem(hw)
 
             # Summary
@@ -900,15 +901,65 @@ class DevicesTab(shared.TabData):
             tree.addTopLevelItem(zones)
 
             tree.expandAll()
+            dialog.setWindowTitle("{0} - {1}".format(_("Device Information"), device["name"]))
             self.set_cursor_normal()
 
         def _test_matrix():
-            device = self.middleman.get_device(self.current_backend, self.current_uid)
-            self._test_device_matrix(device)
+            dialog.accept()
+            self._test_device_matrix()
 
         btn_close.clicked.connect(_close)
         btn_refresh.clicked.connect(_populate_tree)
-        btn_test_matrix.clicked.connect(self._test_device_matrix)
+        btn_test_matrix.clicked.connect(_test_matrix)
         dialog.open()
         _populate_tree()
 
+    def _test_device_matrix(self):
+        """
+        Opens a dialogue box to allow the user to test the individual key
+        lighting for their device.
+        """
+        _ = self._
+        fx = self.middleman.get_device_object(self.current_backend, self.current_uid)
+
+        # Dialog Controls
+        self.dialog = shared.get_ui_widget(self.appdata, "inspect-matrix", QDialog)
+        label = self.dialog.findChild(QLabel, "Label")
+        table = self.dialog.findChild(QTableWidget, "Matrix")
+        btn_close = self.dialog.findChild(QPushButton, "Close")
+        cur_pos = self.dialog.findChild(QLabel, "CurrentPosition")
+
+        def _close_test():
+            # WARNING: Hardcoded 'main' zone for matrix logic
+            self.middleman.replay_active_effect(self.current_backend, self.current_uid, "main")
+            self.dialog.accept()
+
+        # Populate table
+        for row in range(0, fx.rows):
+            table.insertRow(row)
+        for col in range(0, fx.cols):
+            table.insertColumn(col)
+
+        def _set_pos():
+            indexes = table.selectedIndexes()
+            fx.clear()
+            for index in indexes:
+                fx.set(index.row(), index.column(), 255, 255, 255)
+            if len(indexes) == 0:
+                cur_pos.setText("")
+            elif len(indexes) == 1:
+                row = indexes[0].row()
+                col = indexes[0].column()
+                cur_pos.setText(_("Position: [X],[Y] (Row [1], Column [2])").replace("[X]", str(row)).replace("[Y]", str(col)).replace("[1]", str(row + 1)).replace("[2]", str(col + 1)))
+            elif len(indexes) > 1:
+                cur_pos.setText(_("Position: (Multiple)"))
+            fx.draw()
+
+        # Connect signals and set focus
+        btn_close.clicked.connect(_close_test)
+        table.itemSelectionChanged.connect(_set_pos)
+        table.setFocus()
+        table.setCurrentCell(0, 0)
+        self.dialog.adjustSize()
+        self.dialog.setWindowTitle(self.dialog.windowTitle() + " - " + fx.name)
+        self.dialog.open()

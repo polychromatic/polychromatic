@@ -68,12 +68,14 @@
       </item>
       <item>
        <widget class="QPushButton" name="TestMatrix">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
-         <string>Test Matrix</string>
+         <string>Inspect Matrix</string>
         </property>
         <property name="icon">
-         <iconset theme="debug-run">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="table"/>
         </property>
        </widget>
       </item>
