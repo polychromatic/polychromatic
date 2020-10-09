@@ -49,8 +49,10 @@ The software is ready to speak multiple languages!
 
 ## Donations
 
-This software is developed in my spare time without any expection of money in return,
-but if you're [feeling generous](https://github.com/polychromatic/polychromatic/issues/75), then you are more than welcome to
-[donate to the lead developer](https://www.paypal.me/LukeHorwell) of Polychromatic
-and [the people who bring you the driver and daemon](https://github.com/openrazer/openrazer/blob/master/README.md#contributions).
+If you love this software and think it's worth a few quid, euros or dollars,
+you're very welcome to leave a little something to excite the developer!
 Thank you for your generosity.
+
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W02DPTW)
+
+If you don't wish to use Ko-fi, [there's also PayPal](https://www.paypal.me/LukeHorwell).
