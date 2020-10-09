@@ -7,37 +7,39 @@
 This module is a higher level interface for custom effects that transparently
 connects to the supported backend, regardless of driver.
 
-It is also used to render keyframe effects.
-
-The API is based on OpenRazer's Python library.
+It is also used to render keyframe and scripted effects.
 """
 
-# from . import common
+from . import common
 
 
 class FX(object):
     """
-    The class that provides the object 'fx' used in custom effect scripts.
+    Backends use this class for the get_device_object() functionality. This
+    is for supporting individual LED lighting where supported by the device.
+
+    This object is the 'fx' object used in custom effect scripts as well as
+    Polychromatic internally for software effects.
+
+    All classes should be implemented. If they are unused
     """
-    def __init__(self, device):
+    def __init__(self, rows, cols, name, backend, form_factor, serial):
         """
-        Initalise variables used by the custom effect.
+        Initalise essential variables - these are user facing variables.
 
         Params:
-            device      (obj)       middleman.get_device_object()
+            rows        (int)   Number of rows, 0-based.
+            cols        (int)   Number of cols, 0-based.
+            name        (str)   Hardware's name
+            backend     (str)   ID of the backend
+            form_factor (str)   ID of the form factor
+            serial      (str)   Hardware's serial number
         """
-        self._device = device
-        self.rows = device["rows"]
-        self.cols = device["cols"]
-        self.name = device["name"]
-        self.backend = device["backend"]
-        self.form_factor = device["form_factor"]
-
-        # Functions
-        self.set = device["set"]
-        self.draw = device["draw"]
-        self.clear = device["clear"]
-        self.brightness = device["brightness"]
+        self.rows = rows
+        self.cols = cols
+        self.name = name
+        self.backend = backend
+        self.form_factor = form_factor
 
     def rgb_to_hex(self, red, green, blue):
         """
@@ -46,13 +48,47 @@ class FX(object):
         Input:  (0, 255, 0)
         Output: "#00FF00"
         """
-        pass
+        return common.rgb_to_hex([red, green, blue])
 
     def hex_to_rgb(self, value):
         """
         Converts a HEX colour string to a RGB string.
 
         Input:  "#FF0000"
-        Output: (255, 0, 0)
+        Output: [255, 0, 0]
         """
-        pass
+        return common.hex_to_rgb(value)
+
+    def set(self, x, y, red, green, blue):
+        """
+        Dummy implementation for the backend to set an LED position to the
+        specified red, green and blue values for drawing later.
+
+        The X and Y positions should be 0-based.
+
+        Input:  (x, y, red, green, blue)
+        """
+        raise NotImplementedError
+
+    def draw(self):
+        """
+        Dummy implementation for the backend to submit the new matrix to the
+        hardware.
+        """
+        raise NotImplementedError
+
+    def clear(self):
+        """
+        Dummy implementation for the backend to clear the matrix, essentially
+        turning off all the LEDs.
+        """
+        raise NotImplementedError
+
+    def brightness(self, percent):
+        """
+        Dummy implementation for the backend to set the brightness of all the
+        LEDs. Could be used for fade effects.
+
+        Input: percent (int between 0-100)
+        """
+        raise NotImplementedError

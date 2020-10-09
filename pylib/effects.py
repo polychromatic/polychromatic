@@ -356,7 +356,7 @@ def send_effect_frames(frames, fps, device):
         fps         (int)   Desired number of frames per second.
         device      (str)   middleman.get_device_object() object
     """
-    fx_obj = fx.FX(device)
+    #fx_obj = fx.FX(device)
     #procpid.set_as_device_custom_fx(device["serial"]) # FIXME
 
     # FIXME: Stub!
@@ -372,7 +372,7 @@ def send_effect_custom(script_path, device, params):
         script_path (str)   Path to Python script
         device      (str)   middleman.get_device_object() object
     """
-    fx_obj = fx.FX(device)
+    #fx_obj = fx.FX(device)
     try:
         script_dir = os.path.dirname(script_path)
         script_name = os.path.basename(script_path).replace(".py", "")
@@ -385,7 +385,8 @@ def send_effect_custom(script_path, device, params):
 
     try:
         #procpid.set_as_device_custom_fx(device["serial"]) # FIXME
-        custom_script.run(fx_obj, params)
+        #custom_script.run(fx_obj, params)
+        raise NotImplementedError
     except KeyboardInterrupt:
         exit(0)
 

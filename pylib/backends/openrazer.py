@@ -18,6 +18,7 @@ import grp
 # import requests       _get_device_image() for retrieving device image URLs
 
 from . import _backend
+from .. import fx
 
 from openrazer import client as rclient
 
@@ -1102,16 +1103,13 @@ class Backend(_backend.Backend):
         if not rdevice.has("lighting_led_matrix"):
             return "Device does not support 'lighting_led_matrix'"
 
-        class OpenRazerCustomFX(object):
-            def __init__(self, rdevice, backend_id, name, rows, cols, serial, form_factor):
+        class OpenRazerCustomFX(fx.FX):
+            def __init__(self, rows, cols, name, backend, form_factor, serial, rdevice):
+                """
+                Parameter 'rdevice' holds the OpenRazer daemon's device object.
+                """
+                super().__init__(rows, cols, name, backend, form_factor, serial)
                 self._rdevice = rdevice
-
-                self.backend = backend_id
-                self.name = name
-                self.rows = rows
-                self.cols = cols
-                self.serial = serial
-                self.form_factor = form_factor
 
             def set(self, x, y, red, green, blue):
                 self._rdevice.fx.advanced.matrix[x,y] = (red, green, blue)
@@ -1125,13 +1123,13 @@ class Backend(_backend.Backend):
             def brightness(self, percent):
                 self._rdevice.brightness = percent
 
-        return OpenRazerCustomFX(rdevice,
-                                 self.backend_id,
-                                 str(rdevice.name),
-                                 int(rdevice.fx.advanced.rows),
+        return OpenRazerCustomFX(int(rdevice.fx.advanced.rows),
                                  int(rdevice.fx.advanced.cols),
+                                 str(rdevice.name),
+                                 self.backend_id,
+                                 self._get_form_factor(rdevice.type)["id"],
                                  str(rdevice.serial),
-                                 self._get_form_factor(rdevice.type)["id"])
+                                 rdevice)
 
     def restart(self):
         """
