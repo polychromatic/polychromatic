@@ -97,7 +97,7 @@ def get_data_dir_path():
     return path
 
 
-def get_form_factor(form_factor_id):
+def get_form_factor(_, form_factor_id):
     """
     Reads a string provided by a backend and returns data that is used to refer
     to the device ("form factor") throughout the application.
@@ -114,14 +114,25 @@ def get_form_factor(form_factor_id):
     if form_factor_id not in FORM_FACTORS:
         form_factor_id = "unrecognised"
 
+    labels = {
+        "accessory": _("USB Accessory"),
+        "keyboard": _("Keyboard"),
+        "mouse": _("Mouse"),
+        "mousemat": _("Mousemat"),
+        "keypad": _("Keypad"),
+        "headset": _("Headset"),
+        "gpu": _("External Graphics Enclosure"),
+        "unrecognised": _("Unrecognised")
+    }
+
     return {
         "id": form_factor_id,
         "icon": get_icon("devices", form_factor_id),
-        "label": locales.get(form_factor_id)
+        "label": labels[form_factor_id]
     }
 
 
-def get_green_shades():
+def get_green_shades(_):
     """
     Returns a custom colours.json for use with non-RGB keyboards,
     like the Razer BlackWidow Ultimate.
@@ -131,7 +142,7 @@ def get_green_shades():
     for shade in ["#00FF00", "#00E100", "#00C800", "#00AF00", "#009600", "#007D00", "#006400", "#004B00", "#003200"]:
         count += 1
         colours.append({
-            "name": "{0} {1}".format(locales.get("green"), str(count)),
+            "name": "{0} {1}".format(_("Green"), str(count)),
             "hex": shade
         })
     return colours
@@ -310,7 +321,7 @@ def get_plural(integer, non_plural, plural):
         return plural
 
 
-def get_bulk_apply_options(devices):
+def get_bulk_apply_options(_, devices):
     """
     Return a dictionary describing a list of IDs for the interface to build
     buttons to quickly apply common options to all connected devices.
@@ -338,8 +349,9 @@ def get_bulk_apply_options(devices):
     # Brightness
     for x in range(0, 125, 25):
         output["brightness"].append({
-            "option_id": "brightness",
-            "option_data": x,
+            "id": "brightness",
+            "data": x,
+            "label": "{0}%".format(str(x)),
             "icon": get_icon("options", str(x))
         })
 
@@ -368,6 +380,14 @@ def get_bulk_apply_options(devices):
         "static": 1
     }
 
+    effects_labels = {
+        "spectrum": _("Spectrum"),
+        "wave": _("Wave"),
+        "breath": _("Breath"),
+        "reactive": _("Reactive"),
+        "static": _("Static")
+    }
+
     for option_id in effects.keys():
         for device in devices:
             for zone in device["zone_options"].keys():
@@ -377,8 +397,9 @@ def get_bulk_apply_options(devices):
 
     for effect in effects.keys():
         output["effects"].append({
-            "option_id": effect,
-            "option_data": effects_params[effect],
+            "id": effect,
+            "data": effects_params[effect],
+            "label": effects_labels[effect],
             "required_colours": effects_colours[effect]
         })
 

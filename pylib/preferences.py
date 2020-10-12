@@ -335,7 +335,7 @@ def get_custom_icons():
     return os.listdir(path.custom_icons)
 
 
-def start_initalization():
+def init(_):
     """
     Prepares the preferences module.
     """
@@ -359,22 +359,21 @@ def start_initalization():
     data = load_file(path.colours)
     if len(data) <= 2:
         default_data = [
-            {"name": locales.get("white"), "hex": "#FFFFFF"},
-            {"name": locales.get("red"), "hex": "#FF0000"},
-            {"name": locales.get("green"), "hex": "#00FF00"},
-            {"name": locales.get("blue"), "hex": "#0000FF"},
-            {"name": locales.get("aqua"), "hex": "#00FFFF"},
-            {"name": locales.get("orange"), "hex": "#FFA500"},
-            {"name": locales.get("pink"), "hex": "#FF00FF"},
-            {"name": locales.get("purple"), "hex": "#8000FF"},
-            {"name": locales.get("yellow"), "hex": "#FFFF00"},
-            {"name": locales.get("grey-light"), "hex": "#C0C0C0"},
-            {"name": locales.get("grey-dark"), "hex": "#7F7F7F"},
-            {"name": locales.get("black"), "hex": "#000000"}
+            {"name": _("White"), "hex": "#FFFFFF"},
+            {"name": _("Red"), "hex": "#FF0000"},
+            {"name": _("Green"), "hex": "#00FF00"},
+            {"name": _("Blue"), "hex": "#0000FF"},
+            {"name": _("Aqua"), "hex": "#00FFFF"},
+            {"name": _("Orange"), "hex": "#FFA500"},
+            {"name": _("Pink"), "hex": "#FF00FF"},
+            {"name": _("Purple"), "hex": "#8000FF"},
+            {"name": _("Yellow"), "hex": "#FFFF00"},
+            {"name": _("Light Grey"), "hex": "#C0C0C0"},
+            {"name": _("Dark Grey"), "hex": "#7F7F7F"},
+            {"name": _("Black"), "hex": "#000000"}
         ]
         save_file(path.colours, default_data)
 
 
 # Module Initalization
 path = Paths()
-start_initalization()

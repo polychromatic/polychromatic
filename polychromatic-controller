@@ -115,7 +115,7 @@ class ApplicationData(object):
 
         # Session Data
         dbg.stdout("Getting device list...", dbg.action, 1)
-        self.middleman = middleman.Middleman(dbg, common)
+        self.middleman = middleman.Middleman(dbg, common, _)
         self.middleman.init()
         self.device_list = self.middleman.get_device_list()
         self.current_device = None
@@ -349,6 +349,7 @@ if __name__ == "__main__":
     _ = locales._
 
     parse_parameters()
+    pref.init(_)
 
     # Improve resolution for HiDPI displays
     HIDPI = False

@@ -27,8 +27,8 @@ class Backend(_backend.Backend):
     """
     Bindings for the OpenRazer 2.x Python library.
     """
-    def __init__(self, dbg, common):
-        super().__init__(dbg, common)
+    def __init__(self, dbg, common, _):
+        super().__init__(dbg, common, _)
         self.backend_id = "openrazer"
         self.logo = "openrazer.svg"
         self.version = rclient.__version__
@@ -209,7 +209,7 @@ class Backend(_backend.Backend):
 
         # Build an index of zones, parameters and what's currently set.
         _zones = self._get_supported_zones(rdevice)
-        zone_icons = self._get_zone_icons(_zones, name)
+        zone_labels, zone_icons = self._get_zone_label_and_icons(_zones, name, self._get_form_factor(rdevice.type))
         zone_options = {}
 
         def _device_has_zone_capability(capability):
@@ -225,6 +225,7 @@ class Backend(_backend.Backend):
             if brightness_type == int:
                 options.append({
                     "id": "brightness",
+                    "label": self._("Brightness"),
                     "type": "slider",
                     "value": round(brightness_parent.brightness),
                     "min": 0,
@@ -237,6 +238,7 @@ class Backend(_backend.Backend):
             elif brightness_type == bool:
                 options.append({
                     "id": "brightness",
+                    "label": self._("Brightness"),
                     "type": "toggle",
                     "active": True if brightness_parent.active else False,
                     "colours": [] # n/a
@@ -244,6 +246,18 @@ class Backend(_backend.Backend):
 
             # Hardware Effects
             current_state = self._read_persistence_storage(rdevice, zone)
+
+            effect_labels = {
+                "spectrum": self._("Spectrum"),
+                "wave": self._("Wave"),
+                "reactive": self._("Reactive"),
+                "breath": self._("Breath"),
+                "ripple": self._("Ripple"),
+                "starlight": self._("Starlight"),
+                "pulsate": self._("Pulsate"),
+                "blinking": self._("Blink"),
+                "static": self._("Static")
+            }
 
             for effect in ["spectrum", "wave", "reactive", "ripple", "static", "pulsate", "blinking"]:
                 if _device_has_zone_capability(effect):
@@ -255,29 +269,43 @@ class Backend(_backend.Backend):
                         "active": current_state["effect"].startswith(effect)
                     }
 
+                    try:
+                        effect_option["label"] = effect_labels[effect]
+                    except KeyError:
+                        self.debug("Unknown effect: " + effect)
+                        effect_option["label"] = self._("Unknown")
+
                     # Add parameters and determine what is in use
                     if effect == "wave":
                         # Change label IDs depending on orientation.
-                        direction_1 = "right"
-                        direction_2 = "left"
+                        direction_1_data = "right"
+                        direction_1_label = self._("Right")
+                        direction_2_data = "left"
+                        direction_2_label = self._("Left")
 
                         if rdevice.type == "mouse":
-                            direction_1 = "up"
-                            direction_2 = "down"
+                            direction_1_data = "up"
+                            direction_1_label = self._("Up")
+                            direction_2_data = "down"
+                            direction_2_label = self._("Down")
 
                         elif rdevice.type == "mousemat":
-                            direction_1 = "anticlock"
-                            direction_2 = "clock"
+                            direction_1_data = "anticlock"
+                            direction_1_label = self._("Clockwise")
+                            direction_2_data = "clock"
+                            direction_2_label = self._("Anti-clockwise")
 
                         effect_option["parameters"] = [
                             {
-                                "id": direction_2,
+                                "id": direction_2_data,
+                                "label": direction_2_label,
                                 "data": 2,
                                 "active": current_state["wave_dir"] == 2,
                                 "colours": []
                             },
                             {
-                                "id": direction_1,
+                                "id": direction_1_data,
+                                "label": direction_1_label,
                                 "data": 1,
                                 "active": current_state["wave_dir"] == 1,
                                 "colours": []
@@ -288,6 +316,7 @@ class Backend(_backend.Backend):
                         if _device_has_zone_capability("ripple_random"):
                             effect_option["parameters"].append({
                                 "id": "random",
+                                "label": self._("Random"),
                                 "data": "random",
                                 "active": current_state["effect"] == "rippleRandomColour",
                                 "colours": []
@@ -296,6 +325,7 @@ class Backend(_backend.Backend):
                         if _device_has_zone_capability("ripple"):
                             effect_option["parameters"].append({
                                 "id": "single",
+                                "label": self._("Single"),
                                 "data": "single",
                                 "active": current_state["effect"] == "ripple",
                                 "colours": [current_state["colour_1"]]
@@ -305,24 +335,28 @@ class Backend(_backend.Backend):
                         effect_option["parameters"] = [
                             {
                                 "id": "fast",
+                                "label": self._("Fast"),
                                 "data": 1,
                                 "active": current_state["speed"] == 1,
                                 "colours": [current_state["colour_1"]]
                             },
                             {
                                 "id": "medium",
+                                "label": self._("Medium"),
                                 "data": 2,
                                 "active": current_state["speed"] == 2,
                                 "colours": [current_state["colour_1"]]
                             },
                             {
                                 "id": "slow",
+                                "label": self._("Slow"),
                                 "data": 3,
                                 "active": current_state["speed"] == 3,
                                 "colours": [current_state["colour_1"]]
                             },
                             {
                                 "id": "vslow",
+                                "label": self._("Very Slow"),
                                 "data": 4,
                                 "active": current_state["speed"] == 4,
                                 "colours": [current_state["colour_1"]]
@@ -340,10 +374,18 @@ class Backend(_backend.Backend):
             def _get_multi_effect_parameters(effect):
                 effect_option = {
                     "id": effect,
+                    "label": effect_labels[effect],
                     "type": "effect",
                     "parameters": [],
                     "colours": [],
                     "active": current_state["effect"].startswith(effect)
+                }
+
+                param_labels = {
+                    "random": self._("Random"),
+                    "single": self._("Single"),
+                    "dual": self._("Dual"),
+                    "triple": self._("Triple")
                 }
 
                 for _colour_count, param in enumerate(["random", "single", "dual", "triple"]):
@@ -353,6 +395,7 @@ class Backend(_backend.Backend):
                             _colour_list.append(current_state["colour_" + str(c)])
                         param_key = {
                             "id": param,
+                            "label": param_labels[param],
                             "data": param,
                             "active": current_state["effect"].endswith(param.capitalize()),
                             "colours": _colour_list
@@ -386,6 +429,7 @@ class Backend(_backend.Backend):
             _init_main_if_empty()
             zone_options["main"].append({
                 "id": "game_mode",
+                "label": self._("Game Mode"),
                 "type": "toggle",
                 "active": True if rdevice.game_mode_led else False,
                 "colours": [] # n/a
@@ -397,12 +441,14 @@ class Backend(_backend.Backend):
             for rate in poll_rate_ranges:
                 params.append({
                     "id": "{0}Hz".format(rate),
+                    "label": "{0} Hz".format(rate),
                     "data": rate,
                     "active": poll_rate == rate,
                     "colours": [] # n/a
                 })
             zone_options["main"].append({
                 "id": "poll_rate",
+                "label": self._("Poll Rate"),
                 "type": "multichoice",
                 "parameters": params,
                 "active": True,         # Always a poll rate
@@ -417,11 +463,13 @@ class Backend(_backend.Backend):
         # -- If all zones are the same, show that status, otherwise state (Multiple)
         # -- Not all statuses are shown at once since this can be crowded for some devices.
         _effects = []
+        _effects_labels = {}
         _brightness = []
         for zone in zone_options:
             for option in zone_options[zone]:
                 if option["type"] == "effect" and option["active"] == True:
                     _effects.append(option["id"])
+                    _effects_labels[option["id"]] = option["label"]
 
                 if option["id"] == "brightness" and "value" in option.keys():
                     _brightness.append(option["value"])
@@ -437,12 +485,12 @@ class Backend(_backend.Backend):
             if is_same(_effects):
                 summary.append({
                     "icon": self.common.get_icon("options", _effects[0]),
-                    "string_id": _effects[0]
+                    "label": _effects_labels[_effects[0]]
                 })
             else:
                 summary.append({
                     "icon": self.common.get_icon("options", "static"),
-                    "string_id": "multiple"
+                    "label": self._("(Multiple)")
                 })
 
         # -- Brightness
@@ -451,29 +499,29 @@ class Backend(_backend.Backend):
             if not is_same(_brightness):
                 summary.append({
                     "icon": self.common.get_icon("options", "75"),
-                    "string_id": "multiple"
+                    "label": self._("(Multiple)")
                 })
             elif _brightness[0] == True:
                 summary.append({
                     "icon": self.common.get_icon("options", "100"),
-                    "string_id": "on"
+                    "label": self._("On")
                 })
             elif _brightness[0] in [False, 0]:
                 summary.append({
                     "icon": self.common.get_icon("options", "50"),
-                    "string_id": "off"
+                    "label": self._("Off")
                 })
             elif type(_brightness[0]) in [int, float]:
                 summary.append({
                     "icon": self.common.get_icon("options", "100"),
-                    "string": "{0}%".format(_brightness[0])
+                    "label": "{0}%".format(_brightness[0])
                 })
 
         # -- Game Mode
         if game_mode:
             summary.append({
                 "icon": self.common.get_icon("options", "game_mode"),
-                "string_id": "game_mode"
+                "label": self._("Game Mode Enabled")
             })
 
         # -- DPI
@@ -481,19 +529,19 @@ class Backend(_backend.Backend):
             if dpi_x == dpi_y or dpi_single:
                 summary.append({
                     "icon": self.common.get_icon("general", "dpi"),
-                    "string": "{0} DPI".format(dpi_x)
+                    "label": "{0} DPI".format(dpi_x)
                 })
             else:
                 summary.append({
                     "icon": self.common.get_icon("general", "dpi"),
-                    "string": "{0}, {1} DPI".format(dpi_x, dpi_y)
+                    "label": "{0}, {1} DPI".format(dpi_x, dpi_y)
                 })
 
         # -- Poll Rate
         if poll_rate:
             summary.append({
                 "icon": self.common.get_icon("options", "poll_rate"),
-                "string": "{0} Hz".format(poll_rate)
+                "label": "{0} Hz".format(poll_rate)
             })
 
         # -- Battery Status
@@ -514,7 +562,7 @@ class Backend(_backend.Backend):
 
             summary.append({
                 "icon": self.common.get_icon("general", icon),
-                "string": "{0}%".format(battery_level)
+                "label": "{0}%".format(battery_level)
             })
 
         return {
@@ -539,6 +587,7 @@ class Backend(_backend.Backend):
             "matrix": matrix,
             "matrix_rows": matrix_rows,
             "matrix_cols": matrix_cols,
+            "zone_labels": zone_labels,
             "zone_icons": zone_icons,
             "zone_options": zone_options
         }
@@ -731,7 +780,7 @@ class Backend(_backend.Backend):
         except KeyError:
             form_factor_id = device_type
 
-        return self.common.get_form_factor(form_factor_id)
+        return self.common.get_form_factor(self._, form_factor_id)
 
     def _get_zone_as_object(self, rdevice, zone):
         """
@@ -790,25 +839,60 @@ class Backend(_backend.Backend):
 
         return zones
 
-    def _get_zone_icons(self, zones, device_name):
+    def _get_zone_label_and_icons(self, zones, device_name, form_factor):
         """
         Returns the name of icons for a device's lighting areas.
-
         For example, on a Razer Hex mouse, "logo" would be hex ring buttons.
+
+        Params:
+            zones           (list)  List of zones specified in _get_supported_zones
+            device_name     (str)   Name of device, used to determine special labels
+            form_factor     (dict)  Output of self._get_form_factor()
+
+        Returns:
+            zone_labels     (dict)
+            zone_icons      (dict)
         """
+        zone_labels = {}
         zone_icons = {}
 
+        # Always include the 'main' zone metadata (e.g. mice DPI, name, serial)
+        zones.append("main")
+
+        labels = {
+            "logo": self._("Logo"),
+            "scroll": self._("Scroll Wheel"),
+            "backlight": self._("Backlight"),
+            "left": self._("Left"),
+            "right": self._("Right")
+        }
+
         for zone in zones:
+            try:
+                label = labels[zone]
+            except KeyError:
+                label = self._("Unknown")
+
             if zone == "logo" and device_name.startswith("Razer Nex"):
+                label = self._("Hex Ring")
                 icon = self.common.get_icon("zones", "naga-hex-ring")
+
             elif zone == "logo" and device_name.startswith("Razer Blade"):
+                label = self._("Laptop Lid")
                 icon = self.common.get_icon("zones", "blade-logo")
+
             else:
                 icon = self.common.get_icon("zones", zone)
 
+            # 'main' refers to the base hardware, e.g. overall mouse
+            if zone == "main":
+                label = form_factor["label"]
+                icon = form_factor["icon"]
+
+            zone_labels[zone] = label
             zone_icons[zone] = icon
 
-        return zone_icons
+        return zone_labels, zone_icons
 
     def _get_filtered_lsusb_list(self):
         """

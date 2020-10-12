@@ -15,12 +15,15 @@ class Backend(object):
     This parent class is inherited by all backends in their individual modules
     adjacent to this file.
     """
-    def __init__(self, dbg, common):
+    def __init__(self, dbg, common, _):
         """
         Identifiable data, variables and session storage for the backend.
         """
-        # PRIVATE - See self.debug() for usage.
+        # See self.debug() for usage.
         self._dbg = dbg
+
+        # Pass a string to _ to get the translated, localized string.
+        self._ = _
 
         # The self.common module may contain useful functions for processing.
         self.common = common
@@ -121,8 +124,7 @@ class Backend(object):
             "summary": [        (list)  List overview current status. Examples:
                 {
                     "icon": "/path/to/icon.svg"     (str) Absolute path to icon
-                    "string_id": "dpi"              (str) Show string ID next to icon
-                    "string": "1800 DPI"            (str) OR show this exact text
+                    "label": "1800 DPI"             (str) Label to display
                 }
             ],
             "dpi_x":            (int)   Device's DPI X value
@@ -134,19 +136,24 @@ class Backend(object):
             "matrix":           (bool)  Supports individual LED mapping
             "matrix_rows":      (int)   Total rows in LED matrix
             "matrix_cols":      (int)   Total columns in LED matrix
+            "zone_labels": {    (dict)  Human readable label for each zone
+                "main":         (str)   E.g. "Base"
+            }
             "zone_icons": {     (dict)  Graphic to visually represent each zone
-                "main":         (str)   Name of icon as seen in {data}/img/zones/
+                "main":         (str)   E.g. Name of icon as seen in {data}/img/zones/
             }
             "zone_options": {   (dict)  Tells Polychromatic how to present the options.
                 "main": [       (dict)  Keys for each zone.
                     {
                         # Required
 
-                        "id":                   (str)   ID to identify later. Used for string/icon.
+                        "id":                   (str)   ID to identify later. Used for icon.
+                        "label":                (str)   Human readable name for this option.
                         "type":                 (str)   "effect", "slider", "toggle" or "multichoice"
                         "parameters": [         (list)  Parameters for "effect" and "multichoice".
                             {
-                                "id":           (str)   ID to identify later. Used for string.
+                                "id":           (str)   ID to identify later.
+                                "label":        (str)   Human readable name for this parameter.
                                 "data":         (any)   Any data type according to the backend's needs.
                                 "active":       (bool)  This parameter is currently in use.
                                 "colours":      (list)  List of hex values last used for this option/parameter combo.

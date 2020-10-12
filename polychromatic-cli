@@ -57,6 +57,7 @@ else:
 dbg = common.Debugging()
 path = pref.Paths()
 _ = locales._
+pref.init(_)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 verbose = False
 
@@ -250,7 +251,7 @@ if args.help:
 ########################################
 # Select devices
 ########################################
-middleman = middleman_module.Middleman(dbg, common)
+middleman = middleman_module.Middleman(dbg, common, _)
 middleman.init()
 
 if verbose:
@@ -465,6 +466,8 @@ if args.list_options:
                             col_colours = ", ".join(param["colours"])
                         except KeyError:
                             pass
+
+                        col_param += "{0} ({1})".format(dbg.grey, str(param["data"]))
 
                         _add_row()
 

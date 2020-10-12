@@ -330,7 +330,7 @@ class PolychromaticTrayApplet():
         # When multiple devices are present, show 'apply to all' actions
         if len(devices) > 1:
             bulk_menu, bulk_menu_item = indicator.create_submenu(_("Apply to All"), True, self._get_icon("devices", "all"))
-            bulk = common.get_bulk_apply_options(devices)
+            bulk = common.get_bulk_apply_options(_, devices)
 
             effects = bulk["effects"]
             brightnesses = bulk["brightness"][::-1]
@@ -340,10 +340,9 @@ class PolychromaticTrayApplet():
                 indicator.create_menu_item(bulk_menu, _("Brightness"), False, None, None, self._get_icon("options", "brightness"))
 
             for brightness in brightnesses:
-                option_id = brightness["option_id"]
-                option_data = brightness["option_data"]
-
-                label = str(option_data) + "%"
+                option_id = brightness["id"]
+                option_data = brightness["data"]
+                label = brightness["label"]
                 icon = self._get_icon("options", str(option_data))
 
                 indicator.create_menu_item(bulk_menu, label, True, cb.set_bulk_option, [option_id, option_data, 0], icon)
@@ -357,11 +356,10 @@ class PolychromaticTrayApplet():
                 indicator.create_menu_item(bulk_menu, _("Effects"), False, None, None, self._get_icon("options", "ripple"))
 
             for option in bulk["effects"]:
-                option_id = option["option_id"]
-                option_data = option["option_data"]
+                option_id = option["id"]
+                option_data = option["data"]
                 required_colours = option["required_colours"]
-
-                label = locales.get(option_id)
+                label = option["label"]
                 icon = self._get_icon("options", str(option_id))
 
                 indicator.create_menu_item(bulk_menu, label, True, cb.set_bulk_option, [option_id, option_data, required_colours], icon)
@@ -400,8 +398,8 @@ class PolychromaticTrayApplet():
         dbg.stdout("- " + device_name, dbg.action, 1)
 
         for zone in device["zone_options"].keys():
-            zone_name = locales.get(zone)
-            zone_icon = common.get_icon("zones", zone)
+            zone_name = device["zone_labels"][zone]
+            zone_icon = device["zone_icons"][zone]
 
             # Create label when multiple zones are present
             if multiple_zones:
@@ -410,7 +408,7 @@ class PolychromaticTrayApplet():
             # Add options
             for option in device["zone_options"][zone]:
                 option_id = option["id"]
-                option_label = locales.get(option_id)
+                option_label = option["label"]
                 option_icon = self._get_icon("options", option_id)
 
                 # Show 'Edit Colours' later if supported
@@ -492,16 +490,13 @@ class PolychromaticTrayApplet():
         choice or effect list.
         """
         option_id = option["id"]
-        submenu, submenu_item = indicator.create_submenu(locales.get(option_id), True, self._get_icon("options", option_id))
+        submenu, submenu_item = indicator.create_submenu(option["label"], True, self._get_icon("options", option_id))
 
         for param in option["parameters"]:
-            param_id = param["id"]
-            param_data = param["data"]
-
             # Some IDs have submenu icons
             icon = None
 
-            indicator.create_menu_item(submenu, locales.get(param_id), True, cb.set_option, [device, zone, option_id, param_data], icon)
+            indicator.create_menu_item(submenu, param["label"], True, cb.set_option, [device, zone, option_id, param["data"]], icon)
 
         return submenu_item
 
@@ -511,7 +506,7 @@ class PolychromaticTrayApplet():
         create five calculated intervals (e.g. 0-100 -> 0,25,50,75,100)
         """
         option_id = option["id"]
-        submenu, submenu_item = indicator.create_submenu(locales.get(option_id), True, self._get_icon("options", option_id))
+        submenu, submenu_item = indicator.create_submenu(option["label"], True, self._get_icon("options", option_id))
 
         suffix = option["suffix"]
         min = int(option["min"])
@@ -532,7 +527,7 @@ class PolychromaticTrayApplet():
         Creates the submenu for an option that is either on/off.
         """
         option_id = option["id"]
-        submenu, submenu_item = indicator.create_submenu(locales.get(option_id), True, self._get_icon("options", option_id))
+        submenu, submenu_item = indicator.create_submenu(option["label"], True, self._get_icon("options", option_id))
 
         # Some IDs have submenu icons
         icon_on = None
@@ -799,16 +794,17 @@ if __name__ == "__main__":
     procpid.set_component_pid("tray-applet")
 
     args = parse_parameters()
+    pref.init(_)
 
     # Initalise devices
-    middleman = middleman_mod.Middleman(dbg, common)
+    middleman = middleman_mod.Middleman(dbg, common, _)
     middleman.init()
     device_list = middleman.get_device_list()
 
     # Load data into memory
     prefs = pref.load_file(path.preferences)
     saved_colours = pref.load_file(path.colours)
-    colours_mono = common.get_green_shades()
+    colours_mono = common.get_green_shades(_)
 
     # Initialise the indicator
     cb = Callback()

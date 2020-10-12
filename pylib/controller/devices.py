@@ -157,13 +157,9 @@ class DevicesTab(shared.TabData):
 
         indicators = []
         for item in device["summary"]:
-            try:
-                label = self.locales.get(item["string_id"])
-            except KeyError:
-                label = item["string"]
             indicators.append({
                 "icon": item["icon"],
-                "label": label
+                "label": item["label"]
             })
 
         buttons = [
@@ -184,7 +180,7 @@ class DevicesTab(shared.TabData):
         current_option_id, current_option_data, current_colours = middleman.Middleman._get_current_device_option(middleman.Middleman, device)
 
         for zone in device["zone_options"].keys():
-            zone_name = locales.get(zone)
+            zone_label = device["zone_labels"][zone]
             widgets = []
 
             # Effect options will be collected and presented as a group of buttons
@@ -226,7 +222,7 @@ class DevicesTab(shared.TabData):
 
             # Group controls if there are multiple zones
             if multiple_zones:
-                group = self.widgets.create_group_widget(zone_name)
+                group = self.widgets.create_group_widget(zone_label)
                 for widget in widgets:
                     group.layout().addWidget(widget)
                 layout.addWidget(group)
@@ -248,7 +244,7 @@ class DevicesTab(shared.TabData):
         Returns a row widget consisting of the correct controls and bindings.
         """
         option_id = option["id"]
-        option_label = locales.get(option_id)
+        option_label = option["label"]
 
         if option["type"] == "slider":
             return self.widgets.create_row_widget(option_label, self._create_control_slider(device, zone, option))
@@ -317,7 +313,7 @@ class DevicesTab(shared.TabData):
 
         combo = QComboBox()
         for i, param in enumerate(params):
-            combo.addItem(locales.get(param["id"]))
+            combo.addItem(param["label"])
             if param["active"] == True:
                 current_index = i
             i = i + 1
@@ -341,7 +337,7 @@ class DevicesTab(shared.TabData):
         for effect in effect_options:
             fx_id = effect["id"]
             fx_params = effect["parameters"]
-            fx_string = self.locales.get(fx_id)
+            fx_string = effect["label"]
             fx_active = effect["active"]
             fx_colours = effect["colours"]
 
@@ -414,7 +410,7 @@ class DevicesTab(shared.TabData):
                 continue
 
             for param in effect["parameters"]:
-                label = self.locales.get(param["id"])
+                label = param["label"]
 
                 radio = QRadioButton()
                 radio.setText(label)
@@ -666,7 +662,7 @@ class DevicesTab(shared.TabData):
         layout = self.Contents.layout()
         shared.clear_layout(layout)
 
-        bulk = common.get_bulk_apply_options(self.middleman.get_device_all())
+        bulk = common.get_bulk_apply_options(self._, self.middleman.get_device_all())
 
         effects = bulk["effects"]
         brightnesses = bulk["brightness"]
@@ -720,10 +716,9 @@ class DevicesTab(shared.TabData):
         if len(brightnesses) > 0:
             widgets = []
             for brightness in brightnesses:
-                option_id = brightness["option_id"]
-                option_data = brightness["option_data"]
-
-                label = str(option_data) + "%"
+                option_id = brightness["id"]
+                option_data = brightness["data"]
+                label = brightness["label"]
                 icon = common.get_icon("options", str(option_data))
                 widgets.append(_create_button(label, icon, option_id, option_data))
 
@@ -733,11 +728,10 @@ class DevicesTab(shared.TabData):
         if len(effects) > 0:
             widgets = []
             for option in effects:
-                option_id = option["option_id"]
-                option_data = option["option_data"]
+                option_id = option["id"]
+                option_data = option["data"]
                 required_colours = option["required_colours"]
-
-                label = locales.get(option_id)
+                label = option["label"]
                 icon = common.get_icon("options", str(option_id))
                 widgets.append(_create_button(label, icon, option_id, option_data, option_colours=required_colours))
 
@@ -823,10 +817,7 @@ class DevicesTab(shared.TabData):
             # Summary
             summary = mkitem(_("Current Status"))
             for state in device["summary"]:
-                try:
-                    summary.addChild(mkitem(state["string"], "", state["icon"]))
-                except KeyError:
-                    summary.addChild(mkitem(self.locales.get(state["string_id"]), "", state["icon"]))
+                summary.addChild(mkitem(state["label"], "", state["icon"]))
             tree.addTopLevelItem(summary)
 
             # DPI
@@ -845,17 +836,14 @@ class DevicesTab(shared.TabData):
             # Zones
             zones = mkitem(_("Zones"))
             for zone in device["zone_options"].keys():
-                try:
-                    icon = device["zone_icons"][zone]
-                except KeyError:
-                    # Backend did not specify an icon for this zone!
-                    # BUG: Some OpenRazer mice have no 'main' but do here for DPI only
-                    icon = common.get_icon("zones", zone)
+                label = device["zone_labels"][zone]
+                icon = device["zone_icons"][zone]
 
-                zone_item = mkitem(self.locales.get(zone), "", icon)
+                zone_item = mkitem(label, "", icon)
+
                 for option in device["zone_options"][zone]:
                     option_icon = common.get_icon("options", option["id"])
-                    option_item = mkitem(self.locales.get(option["id"]), "", option_icon)
+                    option_item = mkitem(option["label"], "", option_icon)
                     option_item.addChild(mkitem(_("Internal ID"), option["id"]))
                     option_item.addChild(mkitem(_("Type"), option["type"]))
 
@@ -863,7 +851,7 @@ class DevicesTab(shared.TabData):
                         if len(option["parameters"]) > 0:
                             param_parent = mkitem(_("Parameters"))
                             for param in option["parameters"]:
-                                param_item = mkitem(self.locales.get(param["id"]), "", common.get_icon("options", param["id"]))
+                                param_item = mkitem(param["label"], "", common.get_icon("options", param["id"]))
                                 param_item.addChild(mkitem(_("Internal ID"), param["id"]))
                                 param_item.addChild(mkitem(_("Internal Data"), param["data"]))
                                 param_item.addChild(mkitem(_("Active"), param["active"]))
