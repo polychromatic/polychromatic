@@ -257,6 +257,16 @@ class Middleman(object):
 
         return [option_id, option_data, colour_hex]
 
+    def replay_active_effect(self, backend, uid, zone):
+        """
+        Replays the 'active' effect. This may be used, for example, to restore
+        the effect that was being played before the matrix was tested.
+        """
+        device = self.get_device(backend, uid)
+        option_id, option_data, colour_hex = self._get_current_device_option(device)
+        if option_id:
+            return self.set_device_state(backend, uid, device["serial"], zone, option_id, option_data, colour_hex)
+
     def set_device_colour(self, device, zone, hex_value, colour_pos=0):
         """
         Replays the currently selected effect (option_id) with the same parameters
