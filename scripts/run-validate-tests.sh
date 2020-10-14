@@ -2,7 +2,7 @@
 
 cd "$(dirname "$0")/../"
 
-./tests/validate-scdoc.sh
-./tests/validate-json.py
-./tests/validate-scss.sh
-./tests/validate-py.sh
+./scripts/validate-scdoc.sh
+./scripts/validate-json.py
+./scripts/validate-scss.sh
+./scripts/validate-py.sh
