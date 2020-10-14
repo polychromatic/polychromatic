@@ -335,7 +335,8 @@ def parse_parameters():
         dbg.verbose_level = 1
 
     if args.locale:
-        _ = locales.reload_locales(locales, __file__, args.locale)
+        i18n = locales.Locales(__file__, args.locale)
+        _ = i18n.init()
 
     return args
 
@@ -346,7 +347,8 @@ if __name__ == "__main__":
     DATA_PATH = common.get_data_dir_path()
     path = pref.Paths()
     dbg = common.Debugging()
-    _ = locales._
+    i18n = locales.Locales(__file__)
+    _ = i18n.init()
 
     parse_parameters()
     pref.init(_)

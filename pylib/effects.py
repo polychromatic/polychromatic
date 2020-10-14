@@ -60,16 +60,11 @@ def _get_i18n(data, key_name):
     """
     Returns localised keys for a dictionary if they exist.
     """
-    locale_full = locales.CURRENT_LOCALE
-    locale_part = locales.CURRENT_LOCALE[:2]
+    pass
+    return ""
 
-    if "{0}[{1}]".format(key_name, locale_full) in data.keys():
-        return data["{0}[{1}]".format(key_name, locale_full)]
 
-    if "{0}[{1}]".format(key_name, locale_part) in data.keys():
-        return data["{0}[{1}]".format(key_name, locale_part)]
 
-    return data[key_name]
 
 
 def _get_icon_path(icon):
@@ -237,8 +232,8 @@ def get_effect(filepath):
     # Attributes in memory
     effect = data.copy()
     effect["ui"] = {}
-    effect["ui"]["name"] = _get_i18n(data, "name")
-    effect["ui"]["summary"] = _get_i18n(data, "summary")
+    #effect["ui"]["name"] = _get_i18n(data, "name")
+    #effect["ui"]["summary"] = _get_i18n(data, "summary")
     effect["ui"]["icon"] = _get_icon_path(data["icon"])
     effect["ui"]["filepath"] = filepath
 

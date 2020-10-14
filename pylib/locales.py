@@ -13,90 +13,73 @@ import gettext
 from . import common
 
 
-def setup_translations(bin_path, force_locale=None):
+class Locales(object):
     """
-    Initalises translations for the application.
-
-    Parameters:
-        bin_path        __file__ of the application that is being executed.
-
-    Returns: Result from gettext.translation()
+    Supports localisation through the application by utilising gettext to know
+    which locale is in use, and get the "_" object for processing strings.
     """
-    whereami = os.path.abspath(os.path.join(os.path.dirname(bin_path)))
+    def __init__(self, bin_path, force_locale=""):
+        self.bin_path = bin_path
+        self.locale = force_locale
+        self.locale_path = None
+        self.translation = None
+        self._ = None
 
-    if os.path.exists(os.path.join(whereami, "locale/dist")):
-        # Using relative path (development build)
-        locale_path = os.path.join(whereami, "locale/dist/")
-    elif os.path.exists(os.path.join(whereami, "locale/")):
-        # Using relative path (/opt build)
-        locale_path = os.path.join(whereami, "locale/")
-    else:
-        # Using system path or en_US if none found
-        locale_path = "/usr/share/locale/"
+        if not self.locale:
+            self.locale = "en_GB"
 
-    if force_locale:
-        return gettext.translation("polychromatic", localedir=locale_path, fallback=True, languages=[force_locale])
+    def init(self):
+        """
+        Initalises translations for the application.
 
-    return gettext.translation("polychromatic", localedir=locale_path, fallback=True)
+        Returns:
+            gettext.translation() bound to an i18n variable.
+        """
+        whereami = os.path.abspath(os.path.join(os.path.dirname(self.bin_path)))
 
+        if os.path.exists(os.path.join(whereami, "locale/dist")):
+            # Using relative path (development build)
+            self.locale_path = os.path.join(whereami, "locale/dist/")
+        elif os.path.exists(os.path.join(whereami, "locale/")):
+            # Using relative path (/opt build)
+            self.locale_path = os.path.join(whereami, "locale/")
+        else:
+            # Using system path or source (en_GB) if none found
+            self.locale_path = "/usr/share/locale/"
 
-def _get_gettext(i18n):
-    """
-    Returns the object for binding to the "_" variable.
-    """
-    return i18n.gettext
+        self.translation = gettext.translation("polychromatic", localedir=self.locale_path, fallback=True, languages=[self.locale])
+        self._ = self.translation.gettext
 
+        return self._get_gettext()
 
-def _get_current_locale(i18n):
-    """
-    Returns a string describing the current locale. E.g. "de" or "en_US".
-    """
-    if t.info() == dict:
-        return t.info().language
+    def _get_gettext(self):
+        """
+        Returns the object for binding to the "_" variable.
+        """
+        return self._
 
-    # Fallback in use
-    return "en_GB"
+    def _get_current_locale(self):
+        """
+        Returns a string describing the current locale. E.g. "de" or "en_US".
+        """
+        if self.translation:
+            return self.translation.info()["language"]
 
+        # Fallback in use
+        return "en_GB"
 
-def reload_locales(self, bin_path, force_locale):
-    """
-    Reloads the locales when passing the --locale parameter.
-
-    Parameters:
-        self            This module (locales)
-        bin_path        __file__ of the current application
-        force_locale    Use a specific locale
-
-    Returns the gettext object which should be re-assigned
-    to the application's _ variable.
-    """
-    self.t = setup_translations(bin_path, force_locale)
-    self._ = _get_gettext(t)
-    self.CURRENT_LOCALE = _get_current_locale(t)
-    self.KEYBOARD_LAYOUTS = get_keyboard_layouts()
-
-    return self._
-
-
-def get_keyboard_layouts():
-    return {
-        "en_US": _("English (US)"),
-        "en_GB": _("English (British)"),
-        "el_GR": _("Greek"),
-        "de_DE": _("German"),
-        "fr_FR": _("French"),
-        "ru_RU": _("Russian"),
-        "ja_JP": _("Japanese"),
-        "es_ES": _("Spanish"),
-        "it_IT": _("Italian"),
-        "pt_PT": _("Portuguese (Portugal)"),
-        "pt_BR": _("Portuguese (Brazil)"),
-        "en_US_mac": _("English (US, Macintosh)")
-    }
-
-
-# Module Initalization
-t = setup_translations(__file__)
-_ = _get_gettext(t)
-CURRENT_LOCALE = _get_current_locale(t)
-KEYBOARD_LAYOUTS = get_keyboard_layouts()
+    def get_keyboard_layouts(self):
+        return {
+            "en_US": self._("English (US)"),
+            "en_GB": self._("English (British)"),
+            "el_GR": self._("Greek"),
+            "de_DE": self._("German"),
+            "fr_FR": self._("French"),
+            "ru_RU": self._("Russian"),
+            "ja_JP": self._("Japanese"),
+            "es_ES": self._("Spanish"),
+            "it_IT": self._("Italian"),
+            "pt_PT": self._("Portuguese (Portugal)"),
+            "pt_BR": self._("Portuguese (Brazil)"),
+            "en_US_mac": self._("English (US, Macintosh)")
+        }
