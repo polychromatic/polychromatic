@@ -22,10 +22,6 @@ jobs:
         # SCSS
         sudo apt-get install sassc
 
-        # JS
-        sudo apt-get install npm
-        sudo npm install -g jshint
-
         # Python
         sudo apt-get install pylint3
 
@@ -45,23 +41,19 @@ jobs:
 
     - name: Validate JSON
       run: |
-        ./tests/validate-json.py
+        ./scripts/validate-json.py
 
     - name: Validate SCSS
       run: |
-        ./tests/validate-scss.sh
-
-    - name: Validate JS
-      run: |
-        ./tests/validate-js.sh
+        ./scripts/validate-scss.sh
 
     - name: Validate Python
       run: |
-        ./tests/validate-py.sh
+        ./scripts/validate-py.sh
 
     - name: Validate man (scdoc)
       run: |
-        ./tests/validate-scdoc.sh
+        ./scripts/validate-scdoc.sh
 
     - name: 'Test Meson/Ninja Build'
       run: |
