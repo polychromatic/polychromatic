@@ -333,10 +333,9 @@ if args.list_options:
         if details == None:
             continue
 
-        elif details == str:
-            dbg.stdout(_("Could not retrieve device information:") + '\n' + details)
+        elif type(details) == str:
+            dbg.stdout(_("Could not retrieve device information:") + " {0}\n{1}".format(device["name"], details), dbg.error)
             rows.append([_("Backend"), middleman_module.BACKEND_ID_NAMES[device["backend"]]])
-            dbg.stdout(details, dbg.error)
             continue
 
         dbg.stdout("[{0}]".format(details["name"]), dbg.action)
@@ -401,7 +400,7 @@ if args.list_options:
                 col_colours = dbg.grey + "-"
                 col_param = dbg.grey + "-"
 
-                type = control["type"]
+                option_type = control["type"]
                 try:
                     params = control["parameters"]
                 except KeyError:
@@ -415,7 +414,7 @@ if args.list_options:
                 if colour_hex:
                     col_colours = ", ".join(colour_hex)
 
-                if type == "slider":
+                if option_type == "slider":
                     col_param = str(control["value"])
                     if control["value"] > 0:
                         col_zone = dbg.success + zone
@@ -427,7 +426,7 @@ if args.list_options:
                         col_param = dbg.error + col_param
                     _add_row()
 
-                elif type == "toggle":
+                elif option_type == "toggle":
                     if control["active"]:
                         col_zone = dbg.success + zone
                         col_option = dbg.success + control["id"]
@@ -438,7 +437,7 @@ if args.list_options:
                         col_param = dbg.error + _("Off") + " (0)"
                     _add_row()
 
-                elif type in ["multichoice", "effect"] and len(params) == 0:
+                elif option_type in ["multichoice", "effect"] and len(params) == 0:
                     if control["active"]:
                         col_zone = dbg.success + zone
                         col_option = dbg.success + control["id"]
@@ -448,7 +447,7 @@ if args.list_options:
                         col_colours = dbg.normal + col_colours
                     _add_row()
 
-                elif type in ["multichoice", "effect"] and len(params) > 0:
+                elif option_type in ["multichoice", "effect"] and len(params) > 0:
                     for param in control["parameters"]:
                         col_zone = dbg.normal + zone
                         col_option = dbg.normal + control["id"]
