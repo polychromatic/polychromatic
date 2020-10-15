@@ -42,8 +42,8 @@ jobs:
       run: |
         ./scripts/run-unit-test.sh "10_internals"
 
-    - name: Test OpenRazer Backend
-      run: |
-        eval $(dbus-launch --sh-syntax)
-        export OPENRAZER_SRC="$GITHUB_WORKSPACE/openrazer"
-        ./scripts/run-unit-test.sh "20_openrazer"
+#    - name: Test OpenRazer Backend
+#      run: |
+#        eval $(dbus-launch --sh-syntax)
+#        export OPENRAZER_SRC="$GITHUB_WORKSPACE/openrazer"
+#        ./scripts/run-unit-test.sh "20_openrazer"
