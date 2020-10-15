@@ -68,8 +68,9 @@ class OpenRazerTest(object):
         self.process_daemon = subprocess.Popen(cmd_daemon, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         # Wait a moment for the daemon to be ready.
+        print("Waiting 3 seconds for daemon to start...")
+        time.sleep(3)
         print("Waiting for daemon to be ready...")
-        time.sleep(2)
         devman = openrazer.client.DeviceManager()
         devices = devman.devices
         print("Daemon ready.")

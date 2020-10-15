@@ -9,7 +9,7 @@ on:
       - dev-1.0.0-pyqt5
 
 jobs:
-  build:
+  unit_tests:
     runs-on: ubuntu-20.04
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -31,7 +31,7 @@ jobs:
       run: |
         git clone https://github.com/lah7/openrazer -b fake-driver-cfg --depth=1 "$GITHUB_WORKSPACE/openrazer"
         sudo add-apt-repository ppa:openrazer/daily
-        sudo apt-get install openrazer-daemon python3-openrazer
+        sudo apt-get install openrazer-daemon python3-openrazer dbus-x11
 
     - name: Development Build
       run: |
@@ -44,5 +44,6 @@ jobs:
 
     - name: Test OpenRazer Backend
       run: |
+        eval $(dbus-launch --sh-syntax)
         export OPENRAZER_SRC="$GITHUB_WORKSPACE/openrazer"
         ./scripts/run-unit-test.sh "20_openrazer"
