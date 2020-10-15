@@ -44,19 +44,23 @@ class Backend(_backend.Backend):
         self.ripple_speed = 0.01
         self.starlight_speed = 0.01
 
-    def _reinit_device_manager(self):
+    def _reinit_device_manager(self, force_refresh=False):
         """
-        OpenRazer uses a "Device Manager" containing devices connected. It needs
-        to be refreshed when devices are connected/disconnected.
+        OpenRazer uses a "Device Manager" containing devices connected. It only
+        needs to be refreshed when devices are connected/disconnected.
+
+        The device manager will be 'cached' for the duration of the session.
         """
-        self.debug("Initalising Device Manager...")
-        try:
-            self.devman = rclient.DeviceManager()
-            self.devman.sync_effects = False
-            self.devices = self.devman.devices
-            return True
-        except Exception as e:
-            return self.common.get_exception_as_string(e)
+        if not self.devman or force_refresh:
+            try:
+                self.debug("Initalising Device Manager...")
+                self.devman = rclient.DeviceManager()
+                self.devman.sync_effects = False
+                self.devices = self.devman.devices
+                return True
+            except Exception as e:
+                return self.common.get_exception_as_string(e)
+        return True
 
     def get_device_list(self):
         """
@@ -66,7 +70,7 @@ class Backend(_backend.Backend):
         uid = -1
 
         if not self.devices:
-            success = self._reinit_device_manager()
+            success = self._reinit_device_manager(force_refresh=True)
             if success != True:
                 return success
 
