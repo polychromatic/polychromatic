@@ -218,7 +218,7 @@ class DevicesTab(shared.TabData):
 
             # DPI
             if zone == "main" and device["dpi_x"]:
-                self._create_dpi_control(device)
+                widgets.append(self._create_dpi_control(device))
 
             # Group controls if there are multiple zones
             if multiple_zones:
@@ -263,7 +263,6 @@ class DevicesTab(shared.TabData):
         slider.setValue(option["value"])
         slider.setMinimum(option["min"])
         slider.setMaximum(option["max"])
-        #slider.setTracking(False) # ???
         slider.setSingleStep(option["step"])
         slider.setPageStep(option["step"] * 2)
         slider.setMaximumWidth(150)
@@ -461,8 +460,36 @@ class DevicesTab(shared.TabData):
         """
         Creates a more sophicated control for setting the DPI.
         """
-        print("stub:_create_dpi_control")
-        return self.widgets.create_row_widget(self._("DPI"), [])
+        # TODO: Fancier DPI control. Change both X/Y and support X only.
+        slider = QSlider(Qt.Horizontal)
+        slider.setMinimum(device["dpi_min"])
+        slider.setMaximum(device["dpi_max"])
+        slider.setValue(device["dpi_x"])
+        slider.setSingleStep(100)
+        slider.setPageStep(200)
+        slider.setMaximumWidth(150)
+
+        # Qt bug: Ticks won't appear with stylesheet
+        slider.setTickPosition(QSlider.TicksBelow)
+        slider.setTickInterval(device["dpi_max"] / 10)
+
+        label = QLabel()
+        label.setText(str(device["dpi_x"]) + " DPI")
+
+        # Change label while sliding
+        def _slider_moved(value):
+            label.setText(str(value) + " DPI")
+        slider.sliderMoved.connect(_slider_moved)
+        slider.valueChanged.connect(_slider_moved)
+
+        # Send request once dropped
+        def _slider_dropped():
+            self.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, "", "dpi", [slider.value(), slider.value()], [])
+
+        slider.sliderReleased.connect(_slider_dropped)
+        slider.valueChanged.connect(_slider_dropped)
+
+        return self.widgets.create_row_widget(self._("DPI"), [slider, label])
 
     def _event_set_option(self, device, zone, option_id, option_data, colour_hex=[]):
         """
