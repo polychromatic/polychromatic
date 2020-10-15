@@ -147,7 +147,7 @@ def init_config(filepath):
 
         # Touch new file
         save_file(filepath, {})
-        dbg.stdout(filepath + ": New configuration written.", dbg.success)
+        dbg.stdout(filepath + ": New configuration written.", dbg.success, 1)
 
     except Exception as e:
         # Couldn't create the default configuration.

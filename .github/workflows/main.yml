@@ -22,22 +22,26 @@ jobs:
         # SCSS
         sudo apt-get install sassc
 
-        # Python
+        # Python Lint
         sudo apt-get install pylint3
 
         # Man
         sudo apt-get install scdoc
 
-        # Build
+        # Build System
         sudo apt-get install meson
 
         # Debian Packaging
         sudo apt-get install debhelper devscripts python3-polib
 
-        # Additional modules (dependencies)
+        # Backend: OpenRazer
         sudo add-apt-repository ppa:openrazer/daily
-        sudo apt install python3-setproctitle python3-requests python3-openrazer gir1.2-gtk-3.0 gir1.2-webkit2-4.0 gir1.2-appindicator3-0.1
-        sudo apt install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtwebengine
+        sudo apt-get install python3-openrazer
+
+        # Application Dependencies
+        sudo apt-get install python3-colorama python3-requests python3-setproctitle imagemagick
+        sudo apt-get install gir1.2-gtk-3.0 gir1.2-appindicator3-0.1
+        sudo apt-get install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtwebengine
 
     - name: Validate JSON
       run: |
