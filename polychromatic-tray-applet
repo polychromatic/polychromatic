@@ -495,8 +495,7 @@ class PolychromaticTrayApplet():
         submenu, submenu_item = indicator.create_submenu(option["label"], True, self._get_icon("options", option_id))
 
         for param in option["parameters"]:
-            # Some IDs have submenu icons
-            icon = None
+            icon = common.get_icon("params", param["id"])
 
             indicator.create_menu_item(submenu, param["label"], True, cb.set_option, [device, zone, option_id, param["data"]], icon)
 

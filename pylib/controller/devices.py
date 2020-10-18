@@ -427,6 +427,11 @@ class DevicesTab(shared.TabData):
                 if param["active"]:
                     radio.setChecked(True)
 
+                icon = common.get_icon("params", param["id"])
+                if icon:
+                    radio.setIcon(QIcon(icon))
+                    radio.setIconSize(QSize(22, 22))
+
                 widgets.append(radio)
 
         if not widgets:

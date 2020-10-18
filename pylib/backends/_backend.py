@@ -152,7 +152,7 @@ class Backend(object):
                         "type":                 (str)   "effect", "slider", "toggle" or "multichoice"
                         "parameters": [         (list)  Parameters for "effect" and "multichoice".
                             {
-                                "id":           (str)   ID to identify later.
+                                "id":           (str)   ID to identify later. Used for icon if available.
                                 "label":        (str)   Human readable name for this parameter.
                                 "data":         (any)   Any data type according to the backend's needs.
                                 "active":       (bool)  This parameter is currently in use.
