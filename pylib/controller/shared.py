@@ -11,6 +11,8 @@ from .. import common
 from .. import locales
 from .. import preferences as pref
 
+from ..qt.flowlayout import FlowLayout as QFlowLayout
+
 import os
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QMargins
@@ -262,7 +264,7 @@ class PolychromaticWidgets(object):
         group.layout().setAlignment(Qt.AlignTop)
         return group
 
-    def create_row_widget(self, label_text, widgets=[], vertical=False):
+    def create_row_widget(self, label_text, widgets=[], vertical=False, wrap=False):
         """
         Returns a widget for use when presenting controls for a particular option.
 
@@ -270,27 +272,37 @@ class PolychromaticWidgets(object):
             label_text      (str)   Human readable control label
             widgets         (list)  List of widgets to display
             vertical        (bool)  Use a vertical layout instead of horizontal
+            wrap            (bool)  Wrap widgets when they get too long (horizontal only)
 
         Returns: QWidget()
         """
         widget = QWidget()
-        widget.setLayout(QFormLayout())
+        widget.setLayout(QHBoxLayout() if wrap else QFormLayout())
         layout = widget.layout()
-        layout.setRowWrapPolicy(QFormLayout.WrapLongRows)
         layout.setContentsMargins(QMargins(30, 5, 30, 5))
 
         # Left - Add label
         label = QLabel()
         label.setText(label_text)
+        label.setAlignment(Qt.AlignTop)
         label.setMinimumWidth(150)
+        label.setMaximumWidth(150)
 
         # Right - Add controls
         inner_widget = QWidget()
-        inner_widget.setLayout(QVBoxLayout() if vertical else QHBoxLayout())
+        if wrap:
+            inner_widget.setLayout(QFlowLayout())
+        else:
+            inner_widget.setLayout(QVBoxLayout() if vertical else QHBoxLayout())
+
         for w in widgets:
             inner_widget.layout().addWidget(w)
 
-        layout.addRow(label, inner_widget)
+        if wrap:
+            layout.addWidget(label)
+            layout.addWidget(inner_widget)
+        else:
+            layout.addRow(label, inner_widget)
 
         return widget
 

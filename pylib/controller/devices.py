@@ -391,7 +391,7 @@ class DevicesTab(shared.TabData):
         if not widgets:
             return None
 
-        return self.widgets.create_row_widget(self._("Effect"), widgets)
+        return self.widgets.create_row_widget(self._("Effect"), widgets, wrap=True)
 
     def _create_effect_parameter_controls(self, zone, effect_id, effect_options):
         """
