@@ -252,6 +252,7 @@ class Backend(_backend.Backend):
             current_state = self._read_persistence_storage(rdevice, zone)
 
             effect_labels = {
+                "none": self._("None"),
                 "spectrum": self._("Spectrum"),
                 "wave": self._("Wave"),
                 "reactive": self._("Reactive"),
@@ -263,7 +264,7 @@ class Backend(_backend.Backend):
                 "static": self._("Static")
             }
 
-            for effect in ["spectrum", "wave", "reactive", "ripple", "static", "pulsate", "blinking"]:
+            for effect in ["none", "spectrum", "wave", "reactive", "ripple", "static", "pulsate", "blinking"]:
                 if _device_has_zone_capability(effect):
                     effect_option = {
                         "id": effect,
@@ -647,6 +648,10 @@ class Backend(_backend.Backend):
                     brightness_parent.active = option_data
 
             # Effects and their parameters
+            elif option_id == "none":
+                rzone.none()
+                self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "none")
+
             elif option_id == "spectrum":
                 rzone.spectrum()
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "spectrum")
