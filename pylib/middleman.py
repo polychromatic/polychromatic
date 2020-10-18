@@ -141,7 +141,6 @@ class Middleman(object):
         if type(device) in [None, str]:
             return device
 
-
         return device
 
     def get_device_all(self):
@@ -207,13 +206,14 @@ class Middleman(object):
             if module.backend_id == backend:
                 return module.restart()
 
-    def _get_current_device_option(self, device):
+    def _get_current_device_option(self, device, zone=None):
         """
         Return the currently 'active' option, its parameter and colour(s), if applicable.
         Usually this would be an effect.
 
         Params:
             device          (dict)      middleman.get_device() object
+            zone            (str)       (Optional) Get data for this specific zone.
 
         Returns list:
         [option_id, option_data, colour_hex]
@@ -225,7 +225,13 @@ class Middleman(object):
         found_option = None
         param = None
 
-        for zone in device["zone_options"].keys():
+        if zone:
+            zones = [zone]
+        else:
+            # Find an active effect in all zones, uses the last matched one.
+            zones = device["zone_options"].keys()
+
+        for zone in zones:
             for option in device["zone_options"][zone]:
                 if not "active" in option.keys():
                     continue
@@ -263,7 +269,7 @@ class Middleman(object):
         the effect that was being played before the matrix was tested.
         """
         device = self.get_device(backend, uid)
-        option_id, option_data, colour_hex = self._get_current_device_option(device)
+        option_id, option_data, colour_hex = self._get_current_device_option(device, zone)
         if option_id:
             return self.set_device_state(backend, uid, device["serial"], zone, option_id, option_data, colour_hex)
 
@@ -274,7 +280,7 @@ class Middleman(object):
 
         The return code is the same as set_device_state()
         """
-        option_id, option_data, colour_hex = self._get_current_device_option(device)
+        option_id, option_data, colour_hex = self._get_current_device_option(device, zone)
         if not colour_hex:
             return False
         colour_hex[colour_pos] = hex_value

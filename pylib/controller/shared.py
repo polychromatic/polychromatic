@@ -350,7 +350,7 @@ class PolychromaticWidgets(object):
                 layout.addWidget(widget)
         layout.addStretch()
 
-    def create_colour_control(self, current_hex, callback_fn, title):
+    def create_colour_control(self, current_hex, callback_fn, callback_data, title):
         """
         Create a colour picker control for the user to set a colour. Setting
         the colour will open a dialog.
@@ -360,7 +360,9 @@ class PolychromaticWidgets(object):
 
         Params:
             current_hex     String of the current hex value in use.
-            callback_fn     Function to run after saving changes
+            callback_fn     Function to run after saving changes.
+            callback_data   Additional data to pass to callback_fn.
+            title           Title to show when colour is being picked.
         """
         container = QWidget()
         container.setLayout(QHBoxLayout())
@@ -372,7 +374,7 @@ class PolychromaticWidgets(object):
         preview.setStyleSheet("QWidget {{ background-color: {0} }}".format(current_hex))
 
         def _clicked_change_colour():
-            picker = ColourPicker(self.appdata, callback_fn, current_hex, title)
+            picker = ColourPicker(self.appdata, callback_fn, callback_data, current_hex, title)
 
         btn = QPushButton()
         btn.setText(self.appdata._("Change..."))
@@ -452,11 +454,12 @@ class ColourPicker(object):
     The colour picker dialog allows the user to quickly choose a colour or
     hand over to the system's colour picker (which on Linux, would be Qt's native picker)
     """
-    def __init__(self, appdata, callback_fn, current_hex, title):
+    def __init__(self, appdata, callback_fn, callback_data, current_hex, title):
         self.appdata = appdata
         self.current_hex = current_hex
         self.current_name = ""
         self.callback_fn = callback_fn
+        self.callback_data = callback_data
         self.title = title
         self.saved_colours = pref.load_file(pref.path.colours)
 
@@ -553,7 +556,7 @@ class ColourPicker(object):
         dbg = self.appdata.dbg
         self._save_colour_list_to_file()
         dbg.stdout("Colour set to: " + self.current_hex, dbg.success, 1)
-        self.callback_fn(self.current_hex)
+        self.callback_fn(self.current_hex, self.callback_data)
 
     def _save_colour_list_to_file(self):
         """

@@ -41,6 +41,9 @@ class DevicesTab(shared.TabData):
         self.SidebarTree = self.main_window.findChild(QTreeWidget, "DeviceSidebarTree")
         self.SidebarTree.itemClicked.connect(self._sidebar_changed)
 
+        # Avoid GC from cleaning up invisible controls
+        self.btn_grps = {}
+
     def set_tab(self):
         """
         Device tab opened. Populate the device and task lists, and open the
@@ -177,9 +180,9 @@ class DevicesTab(shared.TabData):
 
         # Create controls for avaliable options
         multiple_zones = len(device["zone_options"].keys()) > 1
-        current_option_id, current_option_data, current_colours = middleman.Middleman._get_current_device_option(middleman.Middleman, device)
 
         for zone in device["zone_options"].keys():
+            current_option_id, current_option_data, current_colours = middleman.Middleman._get_current_device_option(middleman.Middleman, device, zone)
             zone_label = device["zone_labels"][zone]
             widgets = []
 
@@ -198,7 +201,7 @@ class DevicesTab(shared.TabData):
                     effect_options.append(option)
                     continue
 
-            if len(effect_options) > 0:
+            if len(effect_options) > 0 and current_option_id:
                 effect_controls = self._create_effect_controls(zone, effect_options)
                 param_controls = self._create_effect_parameter_controls(zone, current_option_id, effect_options)
                 if effect_controls:
@@ -331,7 +334,7 @@ class DevicesTab(shared.TabData):
         Groups all options with the "effect" type and present them as larger buttons.
         """
         widgets = []
-        self.fx_btn_grp = QButtonGroup()
+        self.btn_grps[zone] = QButtonGroup()
 
         for effect in effect_options:
             fx_id = effect["id"]
@@ -350,7 +353,7 @@ class DevicesTab(shared.TabData):
             button.setMinimumWidth(70)
             button.effect = effect
             button.zone = zone
-            self.fx_btn_grp.addButton(button)
+            self.btn_grps[zone].addButton(button)
 
             if fx_active:
                 button.setChecked(True)
@@ -359,8 +362,8 @@ class DevicesTab(shared.TabData):
 
         def _clicked_effect_button(button):
             effect = button.effect
-            param_count = len(effect["parameters"])
             zone = button.zone
+            param_count = len(effect["parameters"])
             option_id = effect["id"]
             option_data = None
             colour_hex = []
@@ -379,10 +382,11 @@ class DevicesTab(shared.TabData):
                 option_data = param["data"]
                 colour_hex = param["colours"]
 
+            self.dbg.stdout("Setting effect {0} (data: {1}) on {2} device {3} (zone: {4}, colours: {5})".format(option_id, str(option_data), self.current_backend, self.current_uid, zone, str(colour_hex)), self.dbg.action, 1)
             self.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, zone, option_id, option_data, colour_hex)
             self.reload_device()
 
-        self.fx_btn_grp.buttonClicked.connect(_clicked_effect_button)
+        self.btn_grps[zone].buttonClicked.connect(_clicked_effect_button)
 
         if not widgets:
             return None
@@ -396,11 +400,11 @@ class DevicesTab(shared.TabData):
         widgets = []
 
         def _clicked_param_button():
-            for radio in self.radio_params:
+            for radio in self.btn_grps["radio_param_" + zone]:
                 if not radio.isChecked():
                     continue
 
-                self.dbg.stdout("Setting parameter {} for {} on {} device {} (zone: {}, colours: {})".format(radio.option_data, radio.option_id, self.current_backend, self.current_uid, zone, str(radio.colour_hex)), self.dbg.action, 1)
+                self.dbg.stdout("Setting parameter {} for {} on {} device {} (zone: {}, colours: {})".format(radio.option_data, radio.option_id, self.current_backend, self.current_uid, radio.zone, str(radio.colour_hex)), self.dbg.action, 1)
                 self.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, radio.zone, radio.option_id, radio.option_data, radio.colour_hex)
                 self.reload_device()
 
@@ -428,7 +432,7 @@ class DevicesTab(shared.TabData):
         if not widgets:
             return None
 
-        self.radio_params = widgets
+        self.btn_grps["radio_param_" + zone] = widgets
         return self.widgets.create_row_widget(self._("Effect Mode"), widgets, vertical=True)
 
     def _create_colour_control(self, colour_no, colour_hex, option_id, option_data, zone):
@@ -448,13 +452,15 @@ class DevicesTab(shared.TabData):
         except KeyError:
             label = self._("Colour []").replace("[]", str(colour_no))
 
-        def _set_new_colour(new_hex):
+        _set_data = {"zone": zone, "colour_no": colour_no}
+
+        def _set_new_colour(new_hex, data):
             device = self.middleman.get_device(self.current_backend, self.current_uid)
-            response = self.middleman.set_device_colour(device, zone, new_hex, colour_no)
+            response = self.middleman.set_device_colour(device, data["zone"], new_hex, data["colour_no"])
             if response:
                 self.reload_device()
 
-        return self.widgets.create_row_widget(label, [self.widgets.create_colour_control(colour_hex, _set_new_colour, self._("Change []").replace("[]", label))])
+        return self.widgets.create_row_widget(label, [self.widgets.create_colour_control(colour_hex, _set_new_colour, _set_data, self._("Change []").replace("[]", label))])
 
     def _create_dpi_control(self, device):
         """
@@ -695,7 +701,7 @@ class DevicesTab(shared.TabData):
         brightnesses = bulk["brightness"]
 
         # For creating controls
-        self.btn_grp = QButtonGroup()
+        self.btn_grps["all"] = QButtonGroup()
 
         def _create_button(label, icon_path, option_id, option_data, option_colours=0, colour=None):
             # Same button as effects
@@ -710,7 +716,7 @@ class DevicesTab(shared.TabData):
             button.option_data = option_data
             button.required_colours = option_colours
             button.colour = colour
-            self.btn_grp.addButton(button)
+            self.btn_grps["all"].addButton(button)
             return button
 
         def add_to_page(label, widgets):
@@ -737,7 +743,7 @@ class DevicesTab(shared.TabData):
                 self.middleman.set_bulk_colour(button.colour)
             self.set_cursor_normal()
 
-        self.btn_grp.buttonClicked.connect(_apply_button_clicked)
+        self.btn_grps["all"].buttonClicked.connect(_apply_button_clicked)
 
         # Brightness
         if len(brightnesses) > 0:
