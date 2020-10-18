@@ -573,6 +573,13 @@ else:
 
 for device_item in device_list:
     device = middleman.get_device(device_item["backend"], device_item["uid"])
+    if not device:
+        continue
+    elif type(device) == str:
+        dbg.stdout(_("There was a problem reading the device:") + " " + device_item["name"], dbg.error)
+        dbg.stdout(device + "\n", dbg.error)
+        continue
+
     zones = device["zone_options"].keys()
 
     # Check an option was specified
