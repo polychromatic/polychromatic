@@ -46,7 +46,7 @@ class PreferencesWindow(shared.TabData):
             ["controller", "window_behaviour", QComboBox, "WindowBehaviourCombo", False],
 
             # -- Tray
-            ["tray", "enabled", QCheckBox, "TrayAutoStart", False],
+            ["tray", "autostart", QCheckBox, "TrayAutoStart", False],
             ["tray", "mode", QComboBox, "TrayModeCombo", False],
 
             # -- Editor

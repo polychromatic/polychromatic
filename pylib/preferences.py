@@ -105,7 +105,7 @@ def load_file(filepath):
         _validate("controller", "window_pos_y", int, 0)
         _validate("controller", "window_size_x", int, 1000)
         _validate("controller", "window_size_y", int, 600)
-        _validate("tray", "enabled", bool, True)
+        _validate("tray", "autostart", bool, True)
         _validate("tray", "mode", int, 0)
         _validate("tray", "icon", str, common.get_default_tray_icon())
 

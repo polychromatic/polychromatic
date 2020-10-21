@@ -72,7 +72,7 @@ def autostart():
 
     This instance will exit as soon as the checks have completed.
     """
-    if prefs["tray"]["enabled"]:
+    if prefs["tray"]["autostart"]:
         procpid.start_component("tray-applet")
 
     print("stub:Helpers.autostart")
