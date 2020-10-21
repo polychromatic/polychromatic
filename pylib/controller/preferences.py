@@ -43,6 +43,7 @@ class PreferencesWindow(shared.TabData):
             ["controller", "system_qt_theme", QCheckBox, "UseSystemQtTheme", False],
             ["controller", "show_menu_bar", QCheckBox, "AlwaysHideMenuBar", True],
             ["controller", "landing_tab", QComboBox, "LandingTabCombo", False],
+            ["controller", "window_behaviour", QComboBox, "WindowBehaviourCombo", False],
 
             # -- Tray
             ["tray", "enabled", QCheckBox, "TrayAutoStart", False],
