@@ -96,7 +96,7 @@ def load_file(filepath):
     if filepath == path.preferences:
         _validate("colours", "primary", str, "#00FF00")
         _validate("colours", "secondary", str, "#FF0000")
-        _validate("effects", "live_preview", bool, True)
+        _validate("editor", "live_preview", bool, True)
         _validate("controller", "landing_tab", int, 0)
         _validate("controller", "show_menu_bar", bool, True)
         _validate("controller", "system_qt_theme", bool, False)
@@ -202,7 +202,7 @@ def upgrade_old_pref():
     # v0.4.0 (dev)
     if config_version == 6:
         # The configuration will be reset.
-        dbg.stdout("Development configuration detected. Preferences have been reset.", dbg.warning)
+        dbg.stdout("Old development configuration detected. Preferences have been reset.", dbg.warning)
         for filepath in [path.preferences, path.colours, path.old_devicestate]:
             if os.path.exists(filepath):
                 os.remove(filepath)
@@ -272,7 +272,7 @@ def upgrade_old_pref():
                 "primary": "#00FF00",               # New
                 "secondary": "#00FFFF"              # New
             },
-            "effects": {
+            "editor": {
                 "live_preview": old_live_preview    # Changed
             },
             "tray": {

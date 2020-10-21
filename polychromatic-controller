@@ -87,6 +87,8 @@ class ApplicationData(object):
         self._ = _
         self.path = path
         self.data_path = data_path
+        self.exec_path = __file__
+        self.exec_args = sys.argv
         self.hidpi = hidpi
         self.version = VERSION
         self.versions = VERSIONS
@@ -128,7 +130,9 @@ class ApplicationData(object):
         self.tab_effects = controller.effects.EffectsTab(self)
         self.tab_presets = controller.presets.PresetsTab(self)
         self.tab_triggers = controller.triggers.TriggersTab(self)
-        self.tab_preferences = controller.preferences.PreferencesTab(self)
+
+        # Subwindows
+        self.ui_preferences = controller.preferences.PreferencesWindow(self)
 
         # Disable inactive backends in menu bar
         if "openrazer" in self.middleman.not_installed:
@@ -195,8 +199,7 @@ class MainWindow(QMainWindow):
             self.findChild(QToolButton, "DevicesTabButton"),
             self.findChild(QToolButton, "EffectsTabButton"),
             self.findChild(QToolButton, "PresetsTabButton"),
-            self.findChild(QToolButton, "TriggersTabButton"),
-            self.findChild(QToolButton, "PreferencesTabButton")
+            self.findChild(QToolButton, "TriggersTabButton")
         ]
 
         # Also in the menu bar
@@ -204,8 +207,7 @@ class MainWindow(QMainWindow):
             self.findChild(QAction, "actionDevices"),
             self.findChild(QAction, "actionEffects"),
             self.findChild(QAction, "actionPresets"),
-            self.findChild(QAction, "actionTriggers"),
-            self.findChild(QAction, "actionPreferences")
+            self.findChild(QAction, "actionTriggers")
         ]
 
         # Code for each tab is stored in a separate module
@@ -213,8 +215,7 @@ class MainWindow(QMainWindow):
             app.tab_devices,
             app.tab_effects,
             app.tab_presets,
-            app.tab_triggers,
-            app.tab_preferences
+            app.tab_triggers
         ]
 
         def _change_tab():
@@ -252,12 +253,10 @@ class MainWindow(QMainWindow):
         tab_buttons[1].clicked.connect(lambda a: _change_tab_proxy(a, 1))
         tab_buttons[2].clicked.connect(lambda a: _change_tab_proxy(a, 2))
         tab_buttons[3].clicked.connect(lambda a: _change_tab_proxy(a, 3))
-        tab_buttons[4].clicked.connect(lambda a: _change_tab_proxy(a, 4))
         tab_menu_items[0].triggered.connect(lambda a: _change_tab_proxy(a, 0))
         tab_menu_items[1].triggered.connect(lambda a: _change_tab_proxy(a, 1))
         tab_menu_items[2].triggered.connect(lambda a: _change_tab_proxy(a, 2))
         tab_menu_items[3].triggered.connect(lambda a: _change_tab_proxy(a, 3))
-        tab_menu_items[4].triggered.connect(lambda a: _change_tab_proxy(a, 4))
 
         # Open the default tab
         landing_tab = app.preferences["controller"]["landing_tab"]
@@ -312,7 +311,6 @@ def parse_parameters():
         "effects",
         "presets",
         "triggers",
-        "preferences",
         "troubleshoot",
         "colours"
     ]

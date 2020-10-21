@@ -260,39 +260,6 @@
          </property>
         </spacer>
        </item>
-       <item>
-        <widget class="QToolButton" name="PreferencesTabButton">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Preferences</string>
-         </property>
-         <property name="icon">
-          <iconset>
-           <normaloff>../img/tab_inactive/preferences.svg</normaloff>
-           <normalon>../img/tab_active/preferences.svg</normalon>../img/tab_inactive/preferences.svg</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>20</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextBesideIcon</enum>
-         </property>
-         <property name="arrowType">
-          <enum>Qt::NoArrow</enum>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
     </item>
@@ -647,16 +614,6 @@
         <string>Triggers</string>
        </attribute>
       </widget>
-      <widget class="QWidget" name="TabPreferences">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>../img/tab_inactive/preferences.svg</normaloff>
-         <normalon>../img/tab_active/preferences.svg</normalon>../img/tab_inactive/preferences.svg</iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Preferences</string>
-       </attribute>
-      </widget>
      </widget>
     </item>
     <item>
@@ -735,7 +692,6 @@
     <addaction name="actionEffects"/>
     <addaction name="actionPresets"/>
     <addaction name="actionTriggers"/>
-    <addaction name="actionPreferences"/>
     <addaction name="separator"/>
     <addaction name="actionReinstateMenuBar"/>
     <addaction name="actionHideMenuBar"/>
@@ -772,6 +728,7 @@
      <addaction name="actionOpenRazerConfigure"/>
      <addaction name="actionOpenRazerOpenLog"/>
      <addaction name="actionOpenRazerRestartDaemon"/>
+     <addaction name="separator"/>
      <addaction name="actionOpenRazerAbout"/>
     </widget>
     <widget class="QMenu" name="menuTroubleshoot">
@@ -796,6 +753,8 @@
     </property>
     <addaction name="actionDuplicate"/>
     <addaction name="actionDelete"/>
+    <addaction name="separator"/>
+    <addaction name="actionPreferences"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -917,21 +876,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+4</string>
-   </property>
-  </action>
-  <action name="actionPreferences">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>../img/tab_active/preferences.svg</normaloff>../img/tab_active/preferences.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Preferences</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+5</string>
    </property>
   </action>
   <action name="actionOnlineHelp">
@@ -1078,7 +1022,7 @@
      <normaloff>../img/tab_active/preferences.svg</normaloff>../img/tab_active/preferences.svg</iconset>
    </property>
    <property name="text">
-    <string>Settings</string>
+    <string>Configure...</string>
    </property>
   </action>
   <action name="actionOpenRazerAbout">
@@ -1107,7 +1051,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>New Preset from Current Settings</string>
+    <string>New Preset from Current Devices...</string>
    </property>
   </action>
   <action name="actionRestartTrayApplet">
@@ -1133,7 +1077,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="window-pin"/>
+    <iconset theme="window-pin">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Keep the Menu Bar</string>
@@ -1150,9 +1095,6 @@
    <property name="text">
     <string>Duplicate</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+V</string>
-   </property>
   </action>
   <action name="actionDelete">
    <property name="enabled">
@@ -1164,6 +1106,15 @@
    </property>
    <property name="text">
     <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="icon">
+    <iconset>
+     <normaloff>../img/tab_active/preferences.svg</normaloff>../img/tab_active/preferences.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Preferences</string>
    </property>
   </action>
   <action name="actionTroubleshootOpenRazer">

@@ -46,6 +46,7 @@ class MenuBar(object):
         # -- View
         self._bind_item("actionHideMenuBar", self.hide_menu_bar)
         self._bind_item("actionReinstateMenuBar", self.reinstate_menu_bar)
+        self._bind_item("actionPreferences", self.open_preferences)
 
         # -- Tools
         self._bind_item("actionRestartTrayApplet", self.restart_tray_applet)
@@ -57,7 +58,7 @@ class MenuBar(object):
         self._bind_item("actionOpenRazerReleaseNotes", self.openrazer.release_notes)
         self._bind_item("actionOpenRazerConfigure", self.openrazer.configure)
         self._bind_item("actionOpenRazerOpenLog", self.openrazer.open_log)
-        self._bind_item("actionOpenRazerRestartDaemon", self.openrazer.restart)
+        self._bind_item("actionOpenRazerRestartDaemon", self.openrazer.restart_daemon)
         self._bind_item("actionOpenRazerAbout", self.openrazer.about)
 
         # -- Tools > Troubleshooter
@@ -178,6 +179,9 @@ class MenuBar(object):
         self.thread.result = []
         self.thread.finished.connect(_troubleshoot_complete)
         self.thread.start()
+
+    def open_preferences(self):
+        self.appdata.ui_preferences.open_window()
 
     def restart_tray_applet(self):
         procpid.start_component("tray-applet")
@@ -343,6 +347,10 @@ class MenuBarOpenRazer(MenuBar):
     def restart(self):
         print("stub:MenuBarOpenRazer.restart")
         pass
+
+    def restart_daemon(self):
+        # TODO: Prompt that interuptted background tasks, etc
+        print("stub:restart middleman")
 
     def _get_dbus_version(self):
         """

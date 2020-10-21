@@ -116,6 +116,7 @@ def is_another_instance_is_running(component):
         return True
     return False
 
+
 def stop_component(component):
     """
     Unassign the PID to the running process, allowing it to be used by
@@ -138,7 +139,11 @@ def restart_component(component):
     pid_file = _get_pid_file(component)
     pid = get_component_pid(component)
     if pid:
+        # Already running, ask to restart self
         os.kill(pid, signal.SIGUSR1)
+    else:
+        # Not running, start!
+        start_component(component)
 
 
 def start_component(name, parameters=[]):
@@ -173,6 +178,11 @@ def start_component(name, parameters=[]):
     return False
 
 
+def restart_self(exec_path, exec_args):
+    """
+    Immediately restart the current execution.
+    """
+    os.execv(exec_path, exec_args)
 
 
 
