@@ -337,16 +337,23 @@ class MenuBarOpenRazer(MenuBar):
         webbrowser.open(self.url_latest)
 
     def configure(self):
-        print("stub:MenuBarOpenRazer.configure")
-        pass
+        self.appdata.ui_preferences.openrazer.open_window()
 
     def open_log(self):
-        print("stub:MenuBarOpenRazer.open_log")
-        pass
+        cmd = None
+        try:
+            cmd = "xdg-open file://{0}/openrazer/logs/razer.log".format(os.environ["XDG_DATA_HOME"])
+        except KeyError:
+            pass
 
-    def restart(self):
-        print("stub:MenuBarOpenRazer.restart")
-        pass
+        if not cmd:
+            try:
+                cmd = "xdg-open file:///home/{0}/.local/share/openrazer/logs/razer.log".format(os.environ["USER"])
+            except KeyError:
+                cmd = "xdg-open file:///home/$USER/.local/share/openrazer/logs/razer.log"
+
+        print("Running: " + cmd)
+        os.system(cmd)
 
     def restart_daemon(self):
         # TODO: Prompt that interuptted background tasks, etc

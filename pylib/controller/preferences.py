@@ -16,6 +16,7 @@ from .. import preferences as pref
 from . import shared
 
 import os
+#import configparser        # Imported on demand, OpenRazer only
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
@@ -224,6 +225,34 @@ class OpenRazerPreferences(shared.TabData):
     def __init__(self, appdata):
         super().__init__(appdata)
 
+        # OpenRazer uses configparser. If not available, open text editor instead.
+        try:
+            import configparser
+            self.config_possible = True
+        except (ImportError, ModuleNotFoundError):
+            self.config_possible = False
+
+        self.conf_path = None
+        try:
+            self.conf_path = "{0}/.config/openrazer/razer.conf".format(os.environ["XDG_CONFIG_HOME"])
+        except KeyError:
+            pass
+
+        if not self.conf_path:
+            try:
+                self.conf_path = "/home/{0}/.config/openrazer/razer.conf".format(os.environ["USER"])
+            except KeyError:
+                self.conf_path = "/home/$USER/.config/openrazer/razer.conf"
+
+        self.keys = [
+            ["General", "verbose_logging", bool],
+            ["Startup", "sync_effects_enabled", bool],
+            ["Startup", "devices_off_on_screensaver", bool],
+            ["Startup", "mouse_battery_notifier", bool],
+            ["Startup", "mouse_battery_notifier_freq", int],
+            ["Statistics", "key_statistics", bool],
+        ]
+
     def open_log(self):
         self.menubar.openrazer.open_log()
 
@@ -234,5 +263,82 @@ class OpenRazerPreferences(shared.TabData):
         """
         Opens a window for adjusting OpenRazer options.
 
+        If configparser is not present for some reason, open the text editor.
         """
-        pass
+        if not self.config_possible:
+            os.system("xdg-open file://{0}".format(self.conf_path))
+            return
+
+        self.dialog = shared.get_ui_widget(self.appdata, "openrazer-config", QDialog)
+        self.dialog.findChild(QDialogButtonBox, "DialogButtons").accepted.connect(self._save_and_restart)
+
+        for key in self.keys:
+            group = key[0]
+            key_name = key[1]
+            data_type = key[2]
+
+            if data_type == bool:
+                chkbox = self.dialog.findChild(QCheckBox, key_name)
+                chkbox.setChecked(self._read_config(group, key_name, bool))
+
+            elif data_type == int:
+                spinner = self.dialog.findChild(QSpinBox, key_name)
+                spinner.setValue(self._read_config(group, key_name, int))
+
+        self.dialog.open()
+
+    def _save_and_restart(self):
+        """
+        Updates the razer.conf file according to the GUI options.
+        """
+        for key in self.keys:
+            group = key[0]
+            key_name = key[1]
+            data_type = key[2]
+
+            if data_type == bool:
+                value = self.dialog.findChild(QCheckBox, key_name).isChecked()
+            elif data_type == int:
+                value = self.dialog.findChild(QSpinBox, key_name).value()
+            else:
+                continue
+
+            self._write_config(group, key_name, value)
+
+        # Restart the daemon to apply changes
+        self.menubar.openrazer.restart_daemon()
+
+    def _read_config(self, group, key_name, data_type):
+        """
+        Reads OpenRazer's razer.conf file, similar format to an INI.
+        If value is not found, the default is False or 0.
+        """
+        import configparser
+        config = configparser.ConfigParser()
+        config.read(self.conf_path)
+
+        try:
+            value = config[group][key_name]
+            if value == "True":
+                return True
+            elif value == "False":
+                return False
+            else:
+                return data_type(value)
+        except KeyError:
+            # Return default data
+            if data_type == int:
+                return 0
+            elif data_type == bool:
+                return False
+
+    def _write_config(self, group, key_name, value):
+        """
+        Overwrites a new key to OpenRazer's razer.conf file.
+        """
+        import configparser
+        config = configparser.ConfigParser()
+        config.read(self.conf_path)
+        config[group][key_name] = str(value)
+        with open(self.conf_path, "w") as f:
+            config.write(f)
