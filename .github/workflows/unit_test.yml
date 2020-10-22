@@ -44,4 +44,5 @@ jobs:
 
     - name: Test OpenRazer Backend
       run: |
-        sudo ./tests/20_openrazer_daemon.sh "$GITHUB_WORKSPACE/openrazer"
+        eval $(sudo dbus-launch --sh-syntax)
+        sudo -E ./tests/20_openrazer_daemon.sh "$GITHUB_WORKSPACE/openrazer"

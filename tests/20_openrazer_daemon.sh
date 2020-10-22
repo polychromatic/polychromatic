@@ -51,7 +51,6 @@ sleep 1
 # Start daemon with fake devices
 if [ ! -z "$GITHUB_WORKSPACE" ]; then
     # Only CI (GitHub Actions) must run as root due to lack of user groups.
-    eval $(dbus-launch --sh-syntax)
     openrazer-daemon -F --run-dir "$run_dir" --log-dir "$log_dir" --test-dir "$test_dir" --as-root &
 else
     # Local testing, should be already part of plugdev group.
