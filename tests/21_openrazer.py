@@ -5,25 +5,34 @@
 
 import unittest
 
-# Test Modules
-import _backends
-
-# Initalise OpenRazer daemon's fake devices
-OPENRAZER_DAEMON = _backends.OpenRazerTest()
-
 # Polychromatic Modules
 from pylib import common as common
 from pylib import middleman as middleman
 
-# Begin testing!
+# Backend Modules
+import openrazer.client
+
+
 class OpenRazerMiddlemanTest(unittest.TestCase):
     """
     Test many OpenRazer devices against the middleman layer.
     """
     @classmethod
     def setUpClass(self):
-        OPENRAZER_DAEMON.start_daemon()
+        # Wait for the daemon
+        print("Waiting for daemon to be ready...")
+        devman = openrazer.client.DeviceManager()
+        devices = devman.devices
+        print("\nDaemon ready. The test will now begin.\n")
 
+        if len(devices) == 0:
+            print("\nCannot start test as there are no devices!\n")
+            exit(1)
+
+        # No longer needed, as middleman's functions will be used.
+        del(devman)
+
+        # Common Polychromatic code
         self.dbg = common.Debugging()
 
         def _dummy_i18n(string):
@@ -37,7 +46,6 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(self):
-        OPENRAZER_DAEMON.stop_daemon()
         pass
 
     def setUp(self):

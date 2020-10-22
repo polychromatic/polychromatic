@@ -10,7 +10,7 @@ on:
 
 jobs:
   unit_tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
@@ -29,7 +29,7 @@ jobs:
 
     - name: Install OpenRazer Backend
       run: |
-        git clone https://github.com/lah7/openrazer -b fake-driver-cfg --depth=1 "$GITHUB_WORKSPACE/openrazer"
+        git clone https://github.com/openrazer/openrazer --depth=1 "$GITHUB_WORKSPACE/openrazer"
         sudo add-apt-repository ppa:openrazer/daily
         sudo apt-get install openrazer-daemon python3-openrazer dbus-x11
 
@@ -42,8 +42,6 @@ jobs:
       run: |
         ./scripts/run-unit-test.sh "10_internals"
 
-#    - name: Test OpenRazer Backend
-#      run: |
-#        eval $(dbus-launch --sh-syntax)
-#        export OPENRAZER_SRC="$GITHUB_WORKSPACE/openrazer"
-#        ./scripts/run-unit-test.sh "20_openrazer"
+    - name: Test OpenRazer Backend
+      run: |
+        sudo ./tests/20_openrazer_daemon.sh "$GITHUB_WORKSPACE/openrazer"
