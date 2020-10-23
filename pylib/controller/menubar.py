@@ -20,7 +20,7 @@ from PyQt5.QtCore import Qt, QThread
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 from PyQt5.QtWidgets import QWidget, QMenuBar, QAction, QLabel, QDialog, \
                             QPushButton, QTreeWidget, QTreeWidgetItem, \
-                            QTextEdit, QButtonGroup, QProgressBar
+                            QTextEdit, QButtonGroup, QProgressBar, QMessageBox
 
 
 class MenuBar(object):
@@ -356,8 +356,31 @@ class MenuBarOpenRazer(MenuBar):
         os.system(cmd)
 
     def restart_daemon(self):
-        # TODO: Prompt that interuptted background tasks, etc
-        print("stub:restart middleman")
+        """
+        Restart the OpenRazer daemon, which also requires the application and
+        any background processes (including the tray applet) to restart.
+        """
+        def _reload_openrazer():
+            self.appdata.main_window.hide()
+            self.loading = shared.get_ui_widget(self.appdata, "loading", QDialog)
+
+            label = self.loading.findChild(QLabel, "Label")
+            label.setText(self.appdata._("Restarting the backend/application..."))
+            self.loading.show()
+            common.run_thread(_reload_openrazer_thread)
+
+        def _reload_openrazer_thread():
+            self.appdata.middleman.get_backend("openrazer").restart()
+            procpid.restart_all()
+            procpid.restart_self(self.appdata.exec_path, self.appdata.exec_args)
+
+        self.widgets.open_dialog(self.widgets.dialog_generic,
+                                 self.appdata._("Restart Backend?"),
+                                 self.appdata._("Restarting this backend will also restart Polychromatic. Any unsaved data will be lost. Continue?"),
+                                 None, None,
+                                 [QMessageBox.Ok, QMessageBox.Cancel],
+                                 QMessageBox.Ok,
+                                 {QMessageBox.Ok: _reload_openrazer})
 
     def _get_dbus_version(self):
         """

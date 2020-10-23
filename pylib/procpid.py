@@ -7,6 +7,7 @@
 This module is responsible for managing other Polychromatic processes.
 """
 
+import glob
 import os
 import signal
 from subprocess import Popen
@@ -58,8 +59,8 @@ def _is_polychromatic_process(component, pid):
 
 def get_component_pid(component):
     """
-    Returns the PID of either a running Polychromatic process, or the process
-    that has 'locked' the device.
+    Returns the PID of a running Polychromatic process, which may be providing
+    a feature (e.g. tray applet) or processing software effects for a device.
 
     Returns:
         (int)       Process ID
@@ -77,6 +78,15 @@ def get_component_pid(component):
         return pid
 
     return None
+
+
+def get_component_pid_list():
+    """
+    Returns a list of all the components that currently have a PID file. This
+    isn't validated and is presumed to be running and Polychromatic processes.
+    """
+    for component in glob.glob(_get_pid_dir() + "/*.pid"):
+        os.path.basename(component.replace(".pid", ""))
 
 
 def set_component_pid(component):
@@ -185,6 +195,12 @@ def restart_self(exec_path, exec_args):
     os.execv(exec_path, exec_args)
 
 
+def restart_all():
+    """
+    Restart all tasks, excluding the current one.
+    """
+    for pid_file in get_component_pid_list():
+        restart_component(pid_file)
 
 
 def get_preset_state(serial):
