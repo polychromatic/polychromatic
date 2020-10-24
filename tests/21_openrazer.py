@@ -8,6 +8,7 @@ import unittest
 # Polychromatic Modules
 from pylib import common as common
 from pylib import middleman as middleman
+from pylib import preferences as pref
 
 # Backend Modules
 import openrazer.client
@@ -33,10 +34,11 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         del(devman)
 
         # Common Polychromatic code
-        self.dbg = common.Debugging()
-
         def _dummy_i18n(string):
             return string
+
+        self.dbg = common.Debugging()
+        pref.init(_dummy_i18n)
 
         self.middleman = middleman.Middleman(self.dbg, common, _dummy_i18n)
         self.middleman.init()
