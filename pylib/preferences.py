@@ -109,6 +109,7 @@ def load_file(filepath):
         _validate("tray", "autostart", bool, True)
         _validate("tray", "mode", int, 0)
         _validate("tray", "icon", str, common.get_default_tray_icon())
+        _validate("tray", "autostart_delay", int, 0)
 
     return(data)
 

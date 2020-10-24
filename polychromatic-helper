@@ -34,6 +34,7 @@ import argparse
 import setproctitle
 import os
 import json
+import time
 
 # Import modules if running relatively.
 if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
@@ -42,7 +43,7 @@ if os.path.exists(os.path.dirname(__file__) + "/pylib/"):
         import pylib.effects as effects
         import pylib.preferences as preferences
         import pylib.procpid as procpid
-        import pylib.middleman as middleman
+        import pylib.middleman as middleman_module
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -54,7 +55,7 @@ else:
         import polychromatic.effects as effects
         import polychromatic.preferences as pref
         import polychromatic.procpid as procpid
-        import polychromatic.middleman as middleman
+        import polychromatic.middleman as middleman_module
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
@@ -72,7 +73,23 @@ def autostart():
 
     This instance will exit as soon as the checks have completed.
     """
+    # If backend hasn't initialized already, try again.
+    timeout = 10
+    while len(middleman.backends) == 0 and timeout > 0:
+        dbg.stdout("Still waiting for backends to be ready...", dbg.warning, 1)
+        time.sleep(2)
+        timeout = timeout - 1
+        middleman.init()
+
+    if len(middleman.backends) == 0:
+        dbg.stdout("Timed out waiting for backends to load, or they are non-functional.", dbg.error)
+
+    # Start Tray Applet
     if prefs["tray"]["autostart"]:
+        delay = prefs["tray"]["autostart_delay"]
+        if delay > 0:
+            dbg.stdout("Starting tray applet in {0} second(s)...".format(delay), dbg.action, 1)
+            time.sleep(delay)
         procpid.start_component("tray-applet")
 
     print("stub:Helpers.autostart")
@@ -174,8 +191,14 @@ if __name__ == "__main__":
     # Appear as its own process.
     setproctitle.setproctitle("polychromatic-helper")
 
+    # i18n is not used for internal processes.
+    def _(string):
+        return string
+
     dbg = common.Debugging()
     args = parse_parameters()
+    middleman = middleman_module.Middleman(dbg, common, _)
+    middleman.init()
 
     if args.autostart:
         autostart()

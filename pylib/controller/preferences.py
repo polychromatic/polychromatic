@@ -48,6 +48,7 @@ class PreferencesWindow(shared.TabData):
             # -- Tray
             ["tray", "autostart", QCheckBox, "TrayAutoStart", False],
             ["tray", "mode", QComboBox, "TrayModeCombo", False],
+            ["tray", "autostart_delay", QSpinBox, "TrayDelaySpinner", 0],
 
             # -- Editor
             ["editor", "live_preview", QCheckBox, "LivePreview", False],
@@ -139,6 +140,8 @@ class PreferencesWindow(shared.TabData):
             widget.setChecked(not data if inverted else data)
         elif qcontrol == QComboBox:
             widget.setCurrentIndex(data)
+        elif qcontrol == QSpinBox:
+            widget.setValue(data)
 
     def _set_option(self, group, item, qcontrol, qid, inverted):
         """
@@ -155,6 +158,8 @@ class PreferencesWindow(shared.TabData):
                 data = not data
         elif qcontrol == QComboBox:
             data = widget.currentIndex()
+        elif qcontrol == QSpinBox:
+            data = widget.value()
 
         self.pref_data[group][item] = data
 
