@@ -8,9 +8,12 @@ This module is responsible for managing other Polychromatic processes.
 """
 
 import glob
+import json
 import os
 import signal
 from subprocess import Popen
+
+from . import preferences as pref
 
 
 def _get_pid_dir():
@@ -203,84 +206,123 @@ def restart_all():
         restart_component(pid_file)
 
 
-def get_preset_state(serial):
+class DeviceSoftwareState(object):
     """
-    Returns the name of the preset that represents this device's current status.
+    Tracks the active custom software effect or preset for a specified device,
+    such as when a custom effect is currently being played and/or a preset is
+    currently in use.
 
-    This will return None if a preset is not responsible for the device's state.
-    """
-    tmp_file = os.path.join(_get_pid_dir(), serial + "-preset")
+    This is metadata for the user interface. It may also be used to resume a
+    custom effect or preset state at login.
 
-    if os.path.exists(tmp_file):
-        with open(tmp_file, "r") as f:
-            return str(f.readline().strip())
-
-    return None
-
-
-def reset_preset_state(serial):
-    """
-    This device is no longer under the control of a preset.
-    """
-    tmp_file = os.path.join(_get_pid_dir(), serial + "-preset")
-
-    if os.path.exists(tmp_file):
-        os.remove(tmp_file)
-
-
-def set_preset_state(serial, preset_name):
-    """
-    Set the name of the preset that is now representing this device's state.
-    This is to inform the user that this preset caused the current conditions.
-    """
-    tmp_file = os.path.join(_get_pid_dir(), serial + "-preset")
-
-    with open(tmp_file, "w") as f:
-        f.write(preset_name)
-
-
-def get_effect_state(serial):
-    """
-    Get the name and icon of the custom effect that is controlling this device,
-    if applicable.
-
-    Returns dict: {name, icon} if applicable, otherwise None.
-    """
-    name_file = os.path.join(_get_pid_dir(), serial + "-custom-fx-name")
-    icon_file = os.path.join(_get_pid_dir(), serial + "-custom-fx-icon")
-    name = None
-    icon = None
-
-    if os.path.exists(name_file):
-        with open(name_file, "r") as f:
-            name = str(f.readline().strip())
-
-    if os.path.exists(icon_file):
-        with open(icon_file, "r") as f:
-            icon = str(f.readline().strip())
-
-        if not os.path.exists(icon):
-            icon = None
-
-    if name:
-        return {
-            "name": name,
-            "icon": icon
+    The "state" is stored as a JSON file named after the device's serial number.
+    {
+        "effect": {
+            "name": "Human readable name",
+            "icon": "<absolute path>",
+            "path": "<path to effect JSON>"
+        },
+        "preset": {
+            "name": "Human readable name",
+            "icon": "<absolute path>",
+            "path": "<path to preset JSON>"
         }
-
-    return None
-
-
-def set_effect_state(serial, effect_name, effect_icon):
+    }
     """
-    Set the name and icon of the custom effect that is controlling this device.
-    This is to inform the user.
-    """
-    fx_name = os.path.join(_get_pid_dir(), serial + "-custom-fx-name")
-    fx_icon = os.path.join(_get_pid_dir(), serial + "-custom-fx-icon")
+    def __init__(self, serial):
+        self.serial = serial
+        self.state = {}
+        self.state_path = os.path.join(pref.path.states, serial + ".json")
 
-    with open(fx_name, "w") as f:
-        f.write(effect_name)
+        if not os.path.exists(self.state_path):
+            with open(self.state_path, "w") as f:
+                f.write("{}")
 
-    with open(fx_icon, "w") as f:
-        f.write(effect_icon)
+        self._read_state()
+
+    def _read_state(self):
+        with open(self.state_path) as f:
+            self.state = json.load(f)
+
+    def _write_state(self):
+        with open(self.state_path, "w") as f:
+            f.write(json.dumps(self.state))
+
+    def get_preset(self):
+        """
+        Returns the metadata of the preset that is currently representing this
+        device's current status.
+
+        If no preset is set, this will return None.
+        """
+        try:
+            return {
+                "name": self.state["preset"]["name"],
+                "icon": self.state["preset"]["icon"],
+                "path": self.state["preset"]["path"]
+            }
+        except KeyError:
+            return None
+
+    def set_preset(self, name, icon, path):
+        """
+        This device is now set to the properties of a saved preset.
+        """
+        self.state["preset"] = {}
+        self.state["preset"]["name"] = name
+        self.state["preset"]["icon"] = icon
+        self.state["preset"]["path"] = path
+        self._write_state()
+
+    def clear_preset(self):
+        """
+        This device no longer matches the preset state.
+        """
+        try:
+            del(self.state["preset"])
+            self._write_state()
+        except KeyError:
+            # Does not exist.
+            pass
+
+    def get_effect(self, ignore_pid=False):
+        """
+        Returns the metadata of the effect that is currently playing on this
+        device. This only applies to custom software effects and not any
+        backend or hardware effects.
+
+        If no effect is running, this will return None.
+        """
+        pid = get_component_pid(self.serial)
+        if not pid and not ignore_pid:
+            return None
+
+        try:
+            return {
+                "name": self.state["effect"]["name"],
+                "icon": self.state["effect"]["icon"],
+                "path": self.state["effect"]["path"]
+            }
+        except KeyError:
+            return None
+
+    def set_effect(self, name, icon, path):
+        """
+        This device is now running under a software effect.
+        """
+        self.state["effect"] = {}
+        self.state["effect"]["name"] = name
+        self.state["effect"]["icon"] = icon
+        self.state["effect"]["path"] = path
+        self._write_state()
+
+    def clear_effect(self):
+        """
+        This device is no longer running under a software effect.
+        """
+        try:
+            del(self.state["effect"])
+            self._write_state()
+        except KeyError:
+            # Does not exist.
+            pass

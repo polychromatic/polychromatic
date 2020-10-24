@@ -41,6 +41,7 @@ class Paths(object):
     effects_scripted = os.path.join(effects, "scripted")
     presets = os.path.join(root, "presets")
     custom_icons = os.path.join(root, "custom_icons")
+    states = os.path.join(root, "states")
 
     # Files
     preferences = os.path.join(root, "preferences.json")
@@ -345,7 +346,16 @@ def init(_):
     Prepares the preferences module.
     """
     # Create folders if they do not exist.
-    for folder in [path.root, path.effects, path.effects_keyframed, path.effects_scripted, path.presets, path.cache, path.effects_cache, path.colours_cache, path.custom_icons]:
+    for folder in [path.root,
+                   path.effects,
+                   path.effects_keyframed,
+                   path.effects_scripted,
+                   path.presets,
+                   path.states,
+                   path.cache,
+                   path.effects_cache,
+                   path.colours_cache,
+                   path.custom_icons]:
         if not os.path.exists(folder):
             os.makedirs(folder)
 

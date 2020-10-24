@@ -212,9 +212,6 @@ class Backend(object):
         This will be used when playing back custom effects - which could be static
         or very dynamic at high frame rates.
 
-        If the device doesn't buffer frames in memory, 'set()' could be used in place of
-        'draw()', however this could slow down the effect playback.
-
         Devices with firmware or NAND/flash memory that isn't designed for software
         programming should not implement this stub, as it may damage the hardware.
 

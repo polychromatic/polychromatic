@@ -7,6 +7,7 @@ import pylib.common as common
 import pylib.controller as controller
 import pylib.locales as locales
 import pylib.preferences as preferences
+import pylib.procpid as procpid
 
 import os
 import unittest
@@ -111,6 +112,35 @@ class PolychromaticTests(unittest.TestCase):
 
     def test_hex_to_rgb(self):
         self.assertEqual(common.hex_to_rgb("#FF00FF"), [255, 0, 255], "Could not convert RGB to hex")
+
+    def test_state_set_effect(self):
+        state = procpid.DeviceSoftwareState("POLY000001")
+
+        # Simulate a process running custom effect
+        procpid.set_component_pid("POLY000001")
+
+        state.set_effect("Untitled Effect 1", "/path/to/icon", "/path/to/effect.json")
+        self.assertEqual(state.get_effect(ignore_pid=True)["name"], "Untitled Effect 1", "Could not set effect state")
+        self.assertEqual(state.get_effect(ignore_pid=True)["icon"], "/path/to/icon", "Could not set effect state")
+        self.assertEqual(state.get_effect(ignore_pid=True)["path"], "/path/to/effect.json", "Could not set effect state")
+
+    def test_state_clear_effect(self):
+        state = procpid.DeviceSoftwareState("POLY000001")
+        procpid.release_component_pid("POLY000001")
+        state.clear_effect()
+        self.assertEqual(state.get_effect(), None, "Could not clear effect state")
+
+    def test_state_set_preset(self):
+        state = procpid.DeviceSoftwareState("POLY000001")
+        state.set_preset("Untitled Effect 1", "/path/to/icon", "/path/to/effect.json")
+        self.assertEqual(state.get_preset()["name"], "Untitled Effect 1", "Could not set preset state")
+        self.assertEqual(state.get_preset()["icon"], "/path/to/icon", "Could not set preset state")
+        self.assertEqual(state.get_preset()["path"], "/path/to/effect.json", "Could not set preset state")
+
+    def test_state_clear_preset(self):
+        state = procpid.DeviceSoftwareState("POLY000001")
+        state.clear_preset()
+        self.assertEqual(state.get_preset(), None, "Could not clear preset state")
 
 if __name__ == '__main__':
     unittest.main()

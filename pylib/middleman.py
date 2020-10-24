@@ -141,6 +141,12 @@ class Middleman(object):
         if type(device) in [None, str]:
             return device
 
+        # Append state data
+        state = procpid.DeviceSoftwareState(device["serial"])
+        device["state"] = {}
+        device["state"]["effect"] = state.get_effect()
+        device["state"]["preset"] = state.get_preset()
+
         return device
 
     def get_device_all(self):
@@ -385,3 +391,4 @@ class Middleman(object):
                     self._dbg.stdout("Bad request!", self._dbg.error, 1)
                 else:
                     self._dbg.stdout("Error: " + str(result), self._dbg.error, 1)
+
