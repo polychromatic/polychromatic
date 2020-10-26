@@ -24,6 +24,7 @@ from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \
                             QSpacerItem, QSizePolicy, QSlider, QCheckBox, \
                             QButtonGroup, QRadioButton, QDialog, QTableWidget
 
+
 class DevicesTab(shared.TabData):
     """
     Allows the user to quickly change the existing state of the device right now.
@@ -682,7 +683,7 @@ class DevicesTab(shared.TabData):
             _ = self._
             self.widgets.open_dialog(self.widgets.dialog_generic, _("Error Details"), msg1, msg2, exception)
 
-        self.widgets.populate_empty_state(layout, common.get_icon("empty", "nobackend"), self._("Something went wrong!"), "",
+        self.widgets.populate_empty_state(layout, common.get_icon("empty", "nobackend"), self._("There was a problem opening this device"), "",
             [
                 {
                     "label": self._("View Details"),
@@ -889,7 +890,7 @@ class DevicesTab(shared.TabData):
                         if len(option["parameters"]) > 0:
                             param_parent = mkitem(_("Parameters"))
                             for param in option["parameters"]:
-                                param_item = mkitem(param["label"], "", common.get_icon("options", param["id"]))
+                                param_item = mkitem(param["label"], "", common.get_icon("params", param["id"]))
                                 param_item.addChild(mkitem(_("Internal ID"), param["id"]))
                                 param_item.addChild(mkitem(_("Internal Data"), param["data"]))
                                 param_item.addChild(mkitem(_("Active"), param["active"]))

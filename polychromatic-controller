@@ -29,7 +29,7 @@ import sys
 
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import QThreadPool
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont, QFontDatabase
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, \
                             QToolButton, QTabWidget, QAction, QDesktopWidget
@@ -113,6 +113,10 @@ class ApplicationData(object):
         """
         self.main_window = MainWindow()
 
+        # Polychromatic's Qt theme is based on Fusion, for consistency.
+        if not self.system_qt_theme:
+            qapp.setStyle("Fusion")
+
         # Misc
         self.menubar = controller.menubar.MenuBar(self)
 
@@ -161,7 +165,6 @@ class MainWindow(QMainWindow):
 
         # Load UI
         uic.loadUi(os.path.join(DATA_PATH, "qt", "main.ui"), self)
-        controller.shared.load_qt_theme(app, qapp, self)
 
         menubar = self.menuBar
         header = self.findChild(QWidget, "Header")
@@ -197,6 +200,11 @@ class MainWindow(QMainWindow):
         Objects initalised. Continue loading the main application window
         containing all the tabs.
         """
+        # Finish loading UI style/fonts
+        QFontDatabase.addApplicationFont(os.path.join(app.data_path, "qt", "fonts", "Play_regular.ttf"))
+        controller.shared.load_qt_theme(app, qapp, self)
+        qapp.setFont(QFont("Play", 10, 0))
+
         # Tab objects - custom design and native tabs
         tabs = self.findChild(QTabWidget, "MainTabWidget")
 

@@ -18,7 +18,7 @@ $secondary: #008000;
 /* Colours */
 $text-colour: #D6D6D6;
 $text-disabled: darken($text-colour, 50%);
-$button-colour: #DED9CB;
+$button-text-colour: #DED9CB;
 $border-colour: #2D2D2D;
 $border-group-colour: #4D4D4D;
 $text-colour-sidebar-heading: #969696;
@@ -27,26 +27,35 @@ $text-colour-sidebar-heading: #969696;
 /**********************************************************
   Base
 **********************************************************/
-QScrollArea * {
+QScrollArea *,
+QMainWindow *,
+QDialog *,
+QMessageBox {
     color: $text-colour;
-}
-
-QScrollArea QLabel:disabled {
-    color: $text-disabled;
-}
-
-QScrollArea * {
     selection-background-color: $secondary;
     selection-color: #fff;
 }
+
+QLabel:disabled {
+    color: $text-disabled;
+}
+
+/* Horizontal Line */
+QFrame[frameShape="4"],
+QFrame[frameShape="5"] {
+    border: none;
+    background: $border-colour;
+    max-height: 1px;
+}
+
 
 /**********************************************************
   Tooltips
 **********************************************************/
 QToolTip {
-    color: $text-colour;
-    background-color: $bg-control;
-    border: 1px solid $bg-secondary;
+    color: #fff;
+    background-color: $bg-secondary;
+    border: 1px solid $border-colour;
 }
 
 
@@ -107,10 +116,11 @@ QScrollBar::sub-line {
 QPushButton,
 QToolButton {
     background-color: $bg-primary;
-    color: $button-colour;
+    color: $button-text-colour;
     border: 2px solid $border-colour;
     margin: 0;
     padding: 4px 16px;
+    selection-background-color: transparent;
 }
 
 QPushButton:focus,
@@ -161,26 +171,32 @@ QToolButton:disabled {
 **********************************************************/
 QTabWidget::pane,
 QTabWidget::tab-bar {
-    border-bottom: 2px solid $border-colour;
+    border-bottom: 1px solid $border-colour;
 }
 
 QTabBar::tab {
-    background: $bg-secondary;
-    border: none;
-    border-bottom: 2px solid transparent;
+    background: lighten($bg-secondary, 5%);
+    border: 1px solid $border-colour;
     color: #fff;
-    padding: 2px 4px;
+    padding: 4px 8px;
+    margin: 0;
 }
 
 QTabBar::tab:hover {
-    border-bottom-color: $border-colour;
+    border-color: lighten($border-colour, 10%);
+    border-bottom-color: transparent;
     color: darken($text-colour, 10%);
 }
 
 QTabBar::tab:selected {
     background: $bg-secondary;
     color: $primary;
-    border-bottom-color: $primary;
+    border-color: $primary;
+    border-bottom-color: transparent;
+}
+
+QTabBar::tab:disabled {
+    color: $text-disabled;
 }
 
 
@@ -200,31 +216,31 @@ QTabBar::tab:selected {
     background-position: right top;
     background-repeat: no-repeat;
     border-bottom: 2px solid $border-colour;
-}
 
-#MainTabCustom > QToolButton,
-#MainTabCustom > QSpacerItem {
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
-}
+    > QToolButton,
+    > QSpacerItem {
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+    }
 
-#MainTabCustom QToolButton {
-    color: $text-colour;
-    padding: 5px 4px;
-    padding-left: 8px;
-    padding-right: 2px;
-    height: 16px;
-}
+    QToolButton {
+        color: $text-colour;
+        padding: 5px 4px;
+        padding-left: 8px;
+        padding-right: 2px;
+        height: 16px;
+    }
 
-#MainTabCustom QToolButton:hover {
-    border-bottom-color: lighten($border-colour, 20%);
-    color: lighten($text-colour, 10%);
-}
+    QToolButton:hover {
+        border-bottom-color: lighten($border-colour, 20%);
+        color: lighten($text-colour, 10%);
+    }
 
-#MainTabCustom QToolButton::checked {
-    border-bottom-color: $primary;
-    color: $primary;
+    QToolButton::checked {
+        border-bottom-color: $primary;
+        color: $primary;
+    }
 }
 
 
@@ -288,43 +304,90 @@ QMenu::item:disabled {
 
 
 /**********************************************************
-  Sidebar
+  HeaderView (shared with TreeView and TableView)
 **********************************************************/
-QTreeView {
-    background: $bg-secondary;
-    show-decoration-selected: 0;
-}
-
-/* Not appearing like a real tree branch UI */
-QTreeView::branch {
-    background: transparent;
-}
-
-/* Sidebar Item */
-QTreeView::item {
-    background: transparent;
-    border: none;
-    color: $text-colour;
+QHeaderView::section {
+    background: $bg-primary;
+    color: white;
     padding: 2px 4px;
 }
 
-QTreeView::item:hover {
-    background: lighten($bg-secondary, 20%);
-    color: #fff;
+
+/**********************************************************
+  TreeView
+**********************************************************/
+QTreeView {
+    background: $bg-secondary;
+    alternate-background-color: lighten($bg-secondary, 10%);
+    show-decoration-selected: 1;
+    selection-background-color: $secondary;
 }
 
-QTreeView::item:selected,
-QTreeView::item:selected:active {
+QTreeView::item {
+    border: 0px solid transparent;
+    padding: 4px 3px;
+}
+
+QTreeView::item:hover {
+    background: lighten($bg-secondary, 15%);
+}
+
+QTreeView::item:selected {
     background: $secondary;
     color: #fff;
 }
 
-/* Sidebar Heading */
-QTreeView::item:has-children {
-    background: transparent;
-    border-bottom: 1px solid darken($text-colour-sidebar-heading, 40%);
-    color: $text-colour-sidebar-heading;
-    padding: 10px 5px;
+QTreeView::item:selected:active {
+    background: $secondary;
+}
+
+QTreeView::item:disabled {
+    color: $text-disabled;
+}
+
+
+/**********************************************************
+  Sidebar
+**********************************************************/
+#MainTabWidget {
+    QTreeView {
+        background: $bg-secondary;
+        show-decoration-selected: 0;
+    }
+
+    QTreeView::branch {
+        background: transparent;
+    }
+
+    /* Sidebar Item */
+    QTreeView::item {
+        background: transparent;
+        border: none;
+        color: $text-colour;
+        padding: 2px 4px;
+        height: 28px;
+    }
+
+    QTreeView::item:hover {
+        background: lighten($bg-secondary, 20%);
+        color: #fff;
+    }
+
+    QTreeView::item:selected,
+    QTreeView::item:selected:active {
+        background: $secondary;
+        color: #fff;
+    }
+
+    /* Sidebar Heading */
+    QTreeView::item:has-children {
+        background: transparent;
+        border-bottom: 1px solid darken($text-colour-sidebar-heading, 40%);
+        color: $text-colour-sidebar-heading;
+        padding: 10px 5px;
+        margin-top: 10px;
+        height: 32px;
+    }
 }
 
 
@@ -477,7 +540,7 @@ QComboBox {
     background: $bg-primary;
     border: 1px solid $border-colour;
     border-radius: 3px;
-    padding: 1px 18px 1px 3px;
+    padding: 3px 18px 3px 3px;
     min-width: 6em;
 }
 
@@ -503,6 +566,7 @@ QComboBox::down-arrow {
 
 QComboBox QAbstractItemView {
     background: $bg-secondary;
+    border: 1px solid $bg-primary;
     selection-background-color: $secondary;
     selection-color: #fff;
 }
@@ -569,13 +633,14 @@ QSlider::add-page:vertical:disabled {
     background: $bg-disabled;
 }
 
+
 /**********************************************************
   Spinners
 **********************************************************/
 QSpinBox,
 QDateTimeEdit {
     background: $bg-primary;
-    padding-right: 15px;
+    padding: 3px 15px 3px 3px;
     border: 0;
 }
 
@@ -598,7 +663,7 @@ QSpinBox::up-button,
 QDateTimeEdit::up-button {
     subcontrol-origin: border;
     subcontrol-position: top right;
-    width: 16px;
+    width: 12px;
     border-image: url([data]/qt/assets/spin-up.svg) 1;
     border-width: 1px;
 }
@@ -617,8 +682,7 @@ QSpinBox::down-button,
 QDateTimeEdit::down-button {
     subcontrol-origin: border;
     subcontrol-position: bottom right;
-
-    width: 16px;
+    width: 12px;
     border-image: url([data]/qt/assets/spin-down.svg) 1;
     border-width: 1px;
     border-top-width: 0;
@@ -675,6 +739,7 @@ QGroupBox::title {
     text-align: left;
 }
 
+
 /**********************************************************
   Status Bar
 **********************************************************/
@@ -687,3 +752,73 @@ QStatusBar::item {
     border: 1px solid red;
     border-radius: 3px;
 }*/
+
+
+/**********************************************************
+  Line Edit Box
+**********************************************************/
+QLineEdit {
+    background-color: $bg-primary;
+    color: $button-text-colour;
+    border: 1px solid $border-colour;
+    padding: 4px;
+    selection-background-color: $secondary;
+}
+
+QLineEdit:hover {
+    background-color: lighten($bg-primary, 5%);
+    color: #fff;
+}
+
+
+/**********************************************************
+  Text Edit
+**********************************************************/
+QTextEdit, QListView {
+    background-color: $bg-secondary;
+    color: $text-colour;
+}
+
+
+/**********************************************************
+  Message Box
+**********************************************************/
+QMessageBox {
+    QLabel {
+        color: $text-colour;
+    }
+
+    QTextEdit {
+        font-family: monospace;
+    }
+}
+
+
+/**********************************************************
+  Table
+**********************************************************/
+QTableView {
+    background: $bg-secondary;
+    color: white;
+    padding: 2px 4px;
+    selection-background-color: $secondary;
+    gridline-color: $bg-primary;
+
+    QAbsractScrollArea {
+        background: $bg-primary;
+    }
+
+    QHeaderView {
+        background: $bg-secondary;
+        border: 0px;
+    }
+
+    QHeaderView::section:checked {
+        background-color: $secondary;
+    }
+
+    QTableCornerButton::section {
+        background: $bg-primary;
+        border: 1px solid transparent;
+    }
+}

@@ -33,9 +33,18 @@
     <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>8</number>
+   </property>
    <item>
     <widget class="QWidget" name="About" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
       <item>
        <widget class="QLabel" name="Logo">
         <property name="minimumSize">
@@ -63,6 +72,12 @@
       </item>
       <item>
        <widget class="QLabel" name="Label">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>40</height>
+         </size>
+        </property>
         <property name="text">
          <string>These settings only apply to the OpenRazer daemon.
 Polychromatic does not support the use of these options.</string>
@@ -196,6 +211,13 @@ Use &quot;Apply to All&quot; instead.</string>
       </size>
      </property>
     </spacer>
+   </item>
+   <item>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="DialogButtons">

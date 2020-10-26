@@ -16,7 +16,7 @@ from ..qt.flowlayout import FlowLayout as QFlowLayout
 import os
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QMargins
-from PyQt5.QtGui import QIcon, QPalette, QColor, QFont, QFontDatabase, QPixmap
+from PyQt5.QtGui import QIcon, QPalette, QColor, QFont, QPixmap
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QWidget, QMessageBox, QGridLayout, \
@@ -25,6 +25,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QSizePolicy, QSpacerItem, QDialog, QColorDialog, \
                             QDialogButtonBox, QTreeWidget, QTreeWidgetItem, \
                             QLineEdit
+
 
 def load_qt_theme(app, qapp, window):
     """
@@ -39,9 +40,8 @@ def load_qt_theme(app, qapp, window):
         return
 
     # Load "Play" font
-    QFontDatabase.addApplicationFont(os.path.join(app.data_path, "qt", "fonts", "Play_regular.ttf"))
-    font = QFont("Play", 10, 1)
-    qapp.setFont(font)
+    font = QFont("Play", 10, 0)
+    window.setFont(font)
 
     menu_bar = window.findChild(QMenuBar, "menuBar")
     if menu_bar:
@@ -52,28 +52,35 @@ def load_qt_theme(app, qapp, window):
         custom_tabs.setFont(font)
 
     # Load basic colour palettes
-    ui_palette = QPalette()
-    black = QColor(0, 0, 0)
-    white = QColor(255, 255, 255)
-    primary = QColor(0, 255, 0)
-    secondary = QColor(0, 128, 0)
-    ui_palette.setColor(QPalette.Window, QColor(0, 0, 0))
-    ui_palette.setColor(QPalette.WindowText, white)
-    ui_palette.setColor(QPalette.Base, QColor(25, 25, 25))
-    ui_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-    ui_palette.setColor(QPalette.ToolTipBase, white)
-    ui_palette.setColor(QPalette.ToolTipText, white)
-    ui_palette.setColor(QPalette.Text, white)
-    ui_palette.setColor(QPalette.Button, QColor(50, 50, 50)) #323232
-    ui_palette.setColor(QPalette.ButtonText, white)
-    ui_palette.setColor(QPalette.Link, primary)
-    ui_palette.setColor(QPalette.Highlight, secondary)
-    ui_palette.setColor(QPalette.HighlightedText, white)
-    window.setPalette(ui_palette)
+    window.setPalette(get_palette(app))
 
     # Load QSS (essentially CSS) with Polychromatic's design
     with open(os.path.join(app.data_path, "qt", "style.qss"), "r") as f:
         window.setStyleSheet(f.read().replace("[data]", app.data_path))
+
+
+def get_palette(app):
+    """
+    Returns a QPalette with Polychromatic's colours.
+    """
+    palette = QPalette()
+    black = QColor(0, 0, 0)
+    white = QColor(255, 255, 255)
+    primary = QColor(0, 255, 0)
+    secondary = QColor(0, 128, 0)
+    palette.setColor(QPalette.Window, QColor(0, 0, 0))
+    palette.setColor(QPalette.WindowText, white)
+    palette.setColor(QPalette.Base, QColor(25, 25, 25))
+    palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+    palette.setColor(QPalette.ToolTipBase, white)
+    palette.setColor(QPalette.ToolTipText, white)
+    palette.setColor(QPalette.Text, white)
+    palette.setColor(QPalette.Button, QColor(50, 50, 50))
+    palette.setColor(QPalette.ButtonText, white)
+    palette.setColor(QPalette.Link, primary)
+    palette.setColor(QPalette.Highlight, secondary)
+    palette.setColor(QPalette.HighlightedText, white)
+    return palette
 
 
 def get_ui_widget(appdata, name, q_toplevel=QWidget):
@@ -212,7 +219,7 @@ class PolychromaticWidgets(object):
             widget = QWidget()
             widget.setLayout(QHBoxLayout())
             layout = widget.layout()
-            layout.setContentsMargins(0,0,10,0)
+            layout.setContentsMargins(0, 0, 10, 0)
 
             # Create image
             if indicator["icon"]:
@@ -295,6 +302,7 @@ class PolychromaticWidgets(object):
         else:
             inner_widget.setLayout(QVBoxLayout() if vertical else QHBoxLayout())
 
+        inner_widget.layout().setContentsMargins(0, 0, 0, 0)
         for w in widgets:
             inner_widget.layout().addWidget(w)
 
@@ -378,6 +386,7 @@ class PolychromaticWidgets(object):
         """
         container = QWidget()
         container.setLayout(QHBoxLayout())
+        container.layout().setContentsMargins(0, 0, 0, 0)
         preview = QWidget()
         preview.setMinimumHeight(28)
         preview.setMaximumHeight(28)
@@ -394,6 +403,7 @@ class PolychromaticWidgets(object):
 
         container.layout().addWidget(preview)
         container.layout().addWidget(btn)
+        container.layout().addStretch()
         return container
 
     def create_icon_picker_control(self, callback_fn):
@@ -433,7 +443,10 @@ class PolychromaticWidgets(object):
         msgbox.setWindowTitle(title)
         msgbox.setText(text)
         msgbox.setIcon(dialog_type)
-        load_qt_theme(self.appdata, self.appdata.main_app, msgbox)
+
+        if not self.appdata.system_qt_theme:
+            msgbox.setPalette(get_palette(self.appdata))
+            load_qt_theme(self.appdata, self.appdata.main_app, msgbox)
 
         if info_text:
             msgbox.setInformativeText(info_text);
@@ -450,7 +463,6 @@ class PolychromaticWidgets(object):
 
         if traceback:
             msgbox.setDetailedText(traceback)
-            msgbox.setStyleSheet("QTextEdit { font-family: monospace; }");
 
         def _dialog_closed(result):
             for action in actions.keys():

@@ -55,6 +55,18 @@
    <item>
     <widget class="QWidget" name="DialogButtons" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
        <widget class="QPushButton" name="Refresh">
         <property name="text">
@@ -75,7 +87,8 @@
          <string>Inspect Matrix</string>
         </property>
         <property name="icon">
-         <iconset theme="table"/>
+         <iconset theme="table">
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>

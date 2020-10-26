@@ -156,6 +156,7 @@ class MenuBar(object):
                         subitem = QTreeWidgetItem()
                         subitem.setText(1, "• " + line)
                         subitem.setToolTip(1, line)
+                        subitem.setDisabled(True)
                         item.addChild(subitem)
                 column.addChild(item)
 
