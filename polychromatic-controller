@@ -258,11 +258,16 @@ class MainWindow(QMainWindow):
                                     traceback=traceback)
             self.unsetCursor()
 
-        def _change_tab_proxy(b, i):
-            tabs.setCurrentIndex(i)
+        def _change_tab_proxy(button, index):
+            tabs.setCurrentIndex(index)
+
+            # Clicking onto the 'button tab' should reload
+            if button == False:
+                _change_tab()
 
         tabs.currentChanged.connect(_change_tab)
 
+        # TODO: Move to a loop, but watch out for variable references
         tab_buttons[0].clicked.connect(lambda a: _change_tab_proxy(a, 0))
         tab_buttons[1].clicked.connect(lambda a: _change_tab_proxy(a, 1))
         tab_buttons[2].clicked.connect(lambda a: _change_tab_proxy(a, 2))
@@ -274,7 +279,7 @@ class MainWindow(QMainWindow):
 
         # Open the default tab
         landing_tab = app.preferences["controller"]["landing_tab"]
-        if landing_tab >= 0 and landing_tab <= 4:
+        if landing_tab >= 0 and landing_tab <= len(tab_objects):
             _change_tab_proxy(None, landing_tab)
             _change_tab()
 
