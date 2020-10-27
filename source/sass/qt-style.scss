@@ -241,6 +241,10 @@ QTabBar::tab:disabled {
         border-bottom-color: $primary;
         color: $primary;
     }
+
+    QToolButton:disabled {
+        color: $text-disabled;
+    }
 }
 
 

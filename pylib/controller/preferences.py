@@ -81,6 +81,13 @@ class PreferencesWindow(shared.TabData):
         self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").clicked.connect(self.menubar.openrazer.restart_daemon)
         self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").clicked.connect(self.menubar.openrazer.troubleshoot)
 
+        if not "openrazer" in self.appdata.middleman.get_backends():
+            self.dialog.findChild(QPushButton, "OpenRazerSettings").setDisabled(True)
+            self.dialog.findChild(QPushButton, "OpenRazerAbout").setDisabled(True)
+            self.dialog.findChild(QPushButton, "OpenRazerOpenLog").setDisabled(True)
+            self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").setDisabled(True)
+            self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").clicked.connect(self.menubar.openrazer.troubleshoot)
+
         # Backend Status
         for backend in middleman.BACKEND_ID_NAMES.keys():
             label = self._("Not in use")

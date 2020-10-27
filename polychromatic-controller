@@ -277,6 +277,10 @@ class MainWindow(QMainWindow):
         tab_menu_items[2].triggered.connect(lambda a: _change_tab_proxy(a, 2))
         tab_menu_items[3].triggered.connect(lambda a: _change_tab_proxy(a, 3))
 
+        # FIXME: Features not available
+        tab_buttons[2].setDisabled(True)
+        tab_buttons[3].setDisabled(True)
+
         # Open the default tab
         landing_tab = app.preferences["controller"]["landing_tab"]
         if landing_tab >= 0 and landing_tab <= len(tab_objects):
