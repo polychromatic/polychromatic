@@ -251,7 +251,7 @@ class PolychromaticTrayApplet():
         """
         # Show error if no backends are available
         if len(middleman.backends) == 0:
-            self._setup_failed(_("No backends available"), _("Please check the installation and try again"))
+            self._setup_failed(_("No backends available"), common.get_icon("general", "unknown"))
             return False
 
         # Build the applet
@@ -274,7 +274,7 @@ class PolychromaticTrayApplet():
         """
         return common.get_tray_icon(dbg, prefs["tray"]["icon"])
 
-    def _setup_failed(self, error_reason, exception=None):
+    def _setup_failed(self, message, icon_path):
         """
         A simple menu is displayed when something goes wrong.
         """
@@ -284,21 +284,20 @@ class PolychromaticTrayApplet():
         indicator.setup(error_icon)
 
         menu = indicator.create_menu()
-        indicator.create_menu_item(menu, error_reason, False)
-        if exception:
-            indicator.create_menu_item(menu, _("Exception:") + ' ' + exception, False)
+        indicator.create_menu_item(menu, message, False, None, None, icon_path)
         indicator.create_seperator(menu)
         indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
-        indicator.create_menu_item(menu, _("Troubleshoot"), True, cb.launch_controller, "troubleshoot", self._get_icon("general", "preferences"))
+        if procpid.is_component_installed("controller"):
+            indicator.create_menu_item(menu, _("Troubleshoot"), True, cb.launch_controller, "troubleshoot", self._get_icon("tab_active", "preferences"))
+        else:
+            indicator.create_menu_item(menu, _("Troubleshoot (requires Controller)"), False, cb.launch_controller, "troubleshoot", self._get_icon("tab_active", "preferences"))
         indicator.create_seperator(menu)
         indicator.create_menu_item(menu, _("Open Controller"), True, cb.launch_controller, None, self._get_icon("general", "controller"))
         indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
 
         indicator.finalize()
 
-        dbg.stdout(error_reason, dbg.error)
-        if exception:
-            dbg.stdout("Exception: " + exception, dbg.error)
+        dbg.stdout(message, dbg.error)
 
     def build_indicator(self):
         """

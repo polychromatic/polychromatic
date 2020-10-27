@@ -11,6 +11,7 @@ import glob
 import json
 import os
 import signal
+import shutil
 from subprocess import Popen
 
 from . import preferences as pref
@@ -159,6 +160,28 @@ def restart_component(component):
         start_component(component)
 
 
+def _get_component_exec_path(name):
+    """
+    Internally gets the path of a component, such as "tray-applet" or "controller".
+
+    Returns:
+        (str)   Path to exceutable, e.g. "/usr/bin/polychromatic-controller"
+        None    Executable not found.
+    """
+    bin_filename = "polychromatic-" + name
+
+    # __file__ = procpid.py
+    path_relative = os.path.abspath(os.path.join(os.path.dirname(__file__), "../", bin_filename))
+    path_var = shutil.which(bin_filename)
+    path_system = "/usr/bin/" + bin_filename
+
+    for path in [path_relative, path_var, path_system]:
+        if path and os.path.exists(path):
+            return path
+
+    return None
+
+
 def start_component(name, parameters=[]):
     """
     Start a new Polychromatic process with 'name' being the suffix of the
@@ -166,28 +189,32 @@ def start_component(name, parameters=[]):
 
     Returns a boolean to indicate whether the process successfully spawned.
     """
-    bin_filename = "polychromatic-" + name
+    bin_path = _get_component_exec_path(name)
 
-    # __file__ = procpid.py
-    path_relative = os.path.abspath(os.path.join(os.path.dirname(__file__), "../", bin_filename))
-    path_system = "/usr/bin/" + bin_filename
+    try:
+        bin_arguments = [bin_path]
+        bin_arguments += parameters
+        Popen(bin_arguments)
+        return True
+    except Exception as e:
+        print("Failed to start process: " + " ".join(bin_arguments))
+        print(str(e))
+        return False
 
-    for path in [path_relative, path_system]:
-        if os.path.exists(path):
-            try:
-                bin_arguments = [path]
-                bin_arguments += parameters
-                Popen(bin_arguments)
-                return True
-            except Exception as e:
-                print("Failed to start process: " + " ".join(bin_arguments))
-                print(str(e))
-                return False
+    print("Could not locate executable: polychromatic-" + name)
+    return False
 
-    print("Could not locate a suitable executable: " + bin_filename)
-    print("Tried:")
-    print(" - " + path_relative)
-    print(" - " + path_system)
+
+def is_component_installed(name):
+    """
+    Checks whether another Polychromatic component is installed. This could be
+    because of modular packaging, where a user installs the tray applet, but
+    not the Controller, for example.
+
+    Returns a boolean to indicate it is launchable.
+    """
+    if _get_component_exec_path(name):
+        return True
     return False
 
 
