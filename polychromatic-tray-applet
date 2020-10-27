@@ -274,6 +274,15 @@ class PolychromaticTrayApplet():
         """
         return common.get_tray_icon(dbg, prefs["tray"]["icon"])
 
+    def _create_menu_item_if_controller_present(self, menu, label, open_to, icon_path=None):
+        """
+        Creates a menu item, but conditionally checks if the Controller is
+        installed. This is for buttons that would open the Controller to edit
+        the feature via a GUI.
+        """
+        is_installed = procpid.is_component_installed("controller")
+        indicator.create_menu_item(menu, label, is_installed, cb.launch_controller, open_to, icon_path)
+
     def _setup_failed(self, message, icon_path):
         """
         A simple menu is displayed when something goes wrong.
@@ -287,12 +296,9 @@ class PolychromaticTrayApplet():
         indicator.create_menu_item(menu, message, False, None, None, icon_path)
         indicator.create_seperator(menu)
         indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
-        if procpid.is_component_installed("controller"):
-            indicator.create_menu_item(menu, _("Troubleshoot"), True, cb.launch_controller, "troubleshoot", self._get_icon("tab_active", "preferences"))
-        else:
-            indicator.create_menu_item(menu, _("Troubleshoot (requires Controller)"), False, cb.launch_controller, "troubleshoot", self._get_icon("tab_active", "preferences"))
+        self._create_menu_item_if_controller_present(menu, _("Troubleshoot"), "troubleshoot", self._get_icon("tab_active", "preferences"))
         indicator.create_seperator(menu)
-        indicator.create_menu_item(menu, _("Open Controller"), True, cb.launch_controller, None, self._get_icon("general", "controller"))
+        self._create_menu_item_if_controller_present(menu, _("Open Controller"), None, self._get_icon("general", "controller"))
         indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
 
         indicator.finalize()
@@ -378,9 +384,15 @@ class PolychromaticTrayApplet():
             indicator.create_seperator(menu)
             indicator.add_menu_item(menu, bulk_menu_item)
 
+            # TODO: Placeholder, Presets not yet implemented
+            print("stub:preset menu")
+            presets_menu, presets_menu_item = indicator.create_submenu(_("Apply Preset"), False, self._get_icon("tab_active", "presets"))
+            indicator.create_menu_item(presets_menu, "Placeholder", False)
+            indicator.add_menu_item(menu, presets_menu_item)
+
         # General Options
         indicator.create_seperator(menu)
-        indicator.create_menu_item(menu, _("Open Controller"), True, cb.launch_controller, None, self._get_icon("general", "controller"))
+        self._create_menu_item_if_controller_present(menu, _("Open Controller"), None, self._get_icon("general", "controller"))
         indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
         indicator.finalize()
 
@@ -453,10 +465,11 @@ class PolychromaticTrayApplet():
         if device["matrix"]:
             indicator.create_seperator(submenu)
 
-            # TODO: Add custom effects menu
-            indicator.create_menu_item(submenu, _("Effects not yet implemented"), False)
-            indicator.create_menu_item(submenu, _("Edit Effects..."), True, cb.launch_controller, "effects", self._get_icon("general", "edit"))
-
+            # TODO: Placeholder, custom effects not yet implemented
+            print("stub:effects menu")
+            effects_menu, effects_menu_item = indicator.create_submenu(_("Effects"), False, self._get_icon("tab_active", "effects"))
+            indicator.create_menu_item(effects_menu, "Placeholder", False)
+            indicator.add_menu_item(submenu, effects_menu_item)
 
         # Colour (repeats last effect)
         if can_set_colours:
@@ -477,8 +490,9 @@ class PolychromaticTrayApplet():
 
             indicator.create_seperator(colour_menu)
             indicator.create_menu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [device, zone], self._get_icon("general", "palette"))
-            indicator.create_menu_item(colour_menu, _("Edit Colours..."), True, cb.launch_controller, "colours", self._get_icon("general", "edit"))
-            indicator.create_seperator(submenu)
+
+            self._create_menu_item_if_controller_present(colour_menu, _("Edit Colours..."), "colours", self._get_icon("general", "edit"))
+
             if multiple_zones:
                 indicator.create_menu_item(submenu, _("All Zones"), False, None, None, device_icon)
             indicator.add_menu_item(submenu, colour_menu_item)
