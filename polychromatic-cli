@@ -62,7 +62,6 @@ pref.init(_)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 verbose = False
 
-
 ########################################
 # Pretty columns
 ########################################
@@ -72,10 +71,17 @@ def print_columns(data, print_header=False):
 
     Params:
         data = [
-            ["Row 1 Column 2", "Row 1 Column 2", "Row 1 Column 3"]
-            ["Row 2 Column 2", "Row 2 Column 2", "Row 2 Column 3"]
+            ["Row 1 Column 1", "Row 1 Column 2", "Row 1 Column 3"]
+            ["Row 2 Column 1", "Row 2 Column 2", "Row 2 Column 3"]
         ]
     """
+    # Basic mode
+    if args.no_pretty_column:
+        for row in data:
+            print("      ".join(row))
+        return
+
+    # Pretty mode
     total_cols = 0
     col_widths = {}
     col_pos = {}
@@ -155,6 +161,7 @@ parser.add_argument("--dpi", action="store")
 parser.add_argument("--version", action="store_true")
 parser.add_argument("-h", "--help", action="store_true")
 parser.add_argument("--locale", action="store")
+parser.add_argument("--no-pretty-column", action="store_true")
 parser.add_argument("-v", "--verbose", action="store_true")
 
 args = parser.parse_args()
@@ -232,6 +239,10 @@ if args.help:
         [
             dbg.action + "  -h, --help",
             dbg.normal + _("Show this help message and exit")
+        ],
+        [
+            dbg.action + "  --no-pretty-column",
+            dbg.normal + _("Do not print with pretty columns")
         ],
         [
             dbg.action + "  --locale" + dbg.warning + " {code}",
