@@ -22,7 +22,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget, QPushButton, QTreeWidget, QLabel, \
                             QComboBox, QCheckBox, QDialog, QSpinBox, \
-                            QDialogButtonBox, QTabWidget, QMessageBox
+                            QDoubleSpinBox, QDialogButtonBox, QTabWidget, \
+                            QMessageBox
 
 
 class PreferencesWindow(shared.TabData):
@@ -289,12 +290,20 @@ class OpenRazerPreferences(shared.TabData):
                 self.conf_path = "/home/$USER/.config/openrazer/razer.conf"
 
         self.keys = [
+            # "Group", "Item", <data type>
             ["General", "verbose_logging", bool],
             ["Startup", "sync_effects_enabled", bool],
             ["Startup", "devices_off_on_screensaver", bool],
             ["Startup", "mouse_battery_notifier", bool],
             ["Startup", "mouse_battery_notifier_freq", int],
             ["Statistics", "key_statistics", bool],
+        ]
+
+        self.client = [
+            # "Filename", <data type>
+            ["allow_image_download",  int],
+            ["ripple_speed", float],
+            ["starlight_speed", float]
         ]
 
     def open_log(self):
@@ -316,6 +325,7 @@ class OpenRazerPreferences(shared.TabData):
         self.dialog = shared.get_ui_widget(self.appdata, "openrazer-config", QDialog)
         self.dialog.findChild(QDialogButtonBox, "DialogButtons").accepted.connect(self._save_and_restart)
 
+        # razer.conf
         for key in self.keys:
             group = key[0]
             key_name = key[1]
@@ -329,12 +339,38 @@ class OpenRazerPreferences(shared.TabData):
                 spinner = self.dialog.findChild(QSpinBox, key_name)
                 spinner.setValue(self._read_config(group, key_name, int))
 
+        # Client
+        for meta in self.client:
+            filename = meta[0]
+            data_type = meta[1]
+            path = os.path.join(pref.path.root, "backends", "openrazer", filename)
+
+            if not os.path.exists(path):
+                continue
+
+            try:
+                with open(path, "r") as f:
+                    data = str(f.readline()).strip()
+                    data = data_type(data)
+            except ValueError:
+                self.dbg.stdout("Ignoring unexpected data from override file: " + filename, self.dbg.warning, 1)
+                continue
+
+            if data_type == int:
+                chkbox = self.dialog.findChild(QCheckBox, filename)
+                chkbox.setChecked(True if data == 1 else False)
+
+            elif data_type == float:
+                spinner = self.dialog.findChild(QDoubleSpinBox, filename)
+                spinner.setValue(float(data))
+
         self.dialog.open()
 
     def _save_and_restart(self):
         """
         Updates the razer.conf file according to the GUI options.
         """
+        # razer.conf
         for key in self.keys:
             group = key[0]
             key_name = key[1]
@@ -348,6 +384,22 @@ class OpenRazerPreferences(shared.TabData):
                 continue
 
             self._write_config(group, key_name, value)
+
+        # client
+        for meta in self.client:
+            filename = meta[0]
+            data_type = meta[1]
+            path = os.path.join(pref.path.root, "backends", "openrazer", filename)
+
+            if data_type == int:
+                data = 1 if self.dialog.findChild(QCheckBox, filename).isChecked() else 0
+                with open(path, "w") as f:
+                    f.write(str(data))
+
+            elif data_type == float:
+                data = self.dialog.findChild(QDoubleSpinBox, filename).value()
+                with open(path, "w") as f:
+                    f.write(str(data))
 
         # Restart the daemon to apply changes
         self.menubar.openrazer.restart_daemon()

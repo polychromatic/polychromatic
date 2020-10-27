@@ -42,9 +42,9 @@ class Backend(_backend.Backend):
         self.devices = None
 
         # Client Settings
-        self.allow_image_download = False
-        self.ripple_speed = 0.01
-        self.starlight_speed = 0.01
+        self.allow_image_download = True
+        self.ripple_speed = 0.05
+        self.starlight_speed = 0.05
 
         self.load_client_overrides()
 
@@ -77,8 +77,8 @@ class Backend(_backend.Backend):
                 return default
 
         self.allow_image_download = True if _load_override("allow_image_download", int, 1) == 1 else False
-        self.ripple_speed = _load_override("ripple_speed", float, 0.01)
-        self.starlight_speed = _load_override("starlight_speed", float, 0.01)
+        self.ripple_speed = _load_override("ripple_speed", float, 0.05)
+        self.starlight_speed = _load_override("starlight_speed", float, 0.05)
 
     def _reinit_device_manager(self, force_refresh=False):
         """
