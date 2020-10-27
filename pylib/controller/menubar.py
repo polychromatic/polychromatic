@@ -226,8 +226,6 @@ class MenuBar(object):
         pixmap = pixmap_src.scaled(96, 96, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         about_icon.setPixmap(pixmap)
 
-        layout = about.findChild(QWidget, "AppDetails").layout()
-
         # App Name
         name = about.findChild(QLabel, "AppName")
         name.setText(title)
