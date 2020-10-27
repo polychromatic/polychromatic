@@ -235,14 +235,14 @@ def generate_colour_bitmap(dbg, path, colour_hex, size="22x22"):
 
     return colour_path
 
-def execute_polychromatic_component(dbg, component, tab=None):
+def execute_polychromatic_component(dbg, component, controller_open=None):
     """
     Starts a Polychromatic application relative to its location or system-wide
     if installed.
 
     Params:
-        component   e.g. "controller" would run "polychromatic-controller"
-        tab         (Optional - Controller only) Opens a specific tab.
+        component           e.g. "controller" would run "polychromatic-controller"
+        controller_open     (Optional - Controller only) Opens a specific tab/feature.
     """
     data_dir = get_data_dir_path()
     exec_name = "polychromatic-" + component
@@ -267,9 +267,9 @@ def execute_polychromatic_component(dbg, component, tab=None):
     for bin_path in possible_paths:
         args = [bin_path]
 
-        if tab:
-            args.append("--tab")
-            args.append(tab)
+        if controller_open:
+            args.append("--open")
+            args.append(controller_open)
 
         if os.path.exists(bin_path):
             dbg.stdout("Executing: " + os.path.realpath(" ".join(args)), dbg.debug, 1)

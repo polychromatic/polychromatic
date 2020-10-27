@@ -281,8 +281,17 @@ class MainWindow(QMainWindow):
         tab_buttons[2].setDisabled(True)
         tab_buttons[3].setDisabled(True)
 
-        # Open the default tab
+        # Open the default tab, unless an alternate is specified
         landing_tab = app.preferences["controller"]["landing_tab"]
+        args_tab = {
+            "devices": 0,
+            "effects": 1,
+            "presets": 2,
+            "triggers": 3
+        }
+        if args.open and args.open in args_tab.keys():
+            landing_tab = args_tab[args.open]
+
         if landing_tab >= 0 and landing_tab <= len(tab_objects):
             _change_tab_proxy(None, landing_tab)
             _change_tab()
@@ -295,7 +304,7 @@ class MainWindow(QMainWindow):
         save_ver = app.preferences["config_version"]
         if save_ver > pref_ver:
             widgets = controller.shared.PolychromaticWidgets(app)
-            details = "Polychromatic v{0}\nSave Data: v{1} (application requires v{2} and older)".format(VERSION, save_ver, pref_ver)
+            details = "Polychromatic v{0}\nSave Data: {1} (application requires {2} or older)".format(VERSION, save_ver, pref_ver)
             widgets.open_dialog(widgets.dialog_warning,
                                 _("Incompatible Save Data"),
                                 "{0}\n\n{1}\n\n{2}".format(
@@ -322,6 +331,13 @@ class MainWindow(QMainWindow):
             size_x = app.preferences["controller"]["window_size_x"]
             size_y = app.preferences["controller"]["window_size_y"]
             self.setGeometry(pos_x, pos_y, size_x, size_y)
+
+        # Alternate modes
+        if args.open:
+            if args.open == "troubleshoot":
+                # TODO: Should support multiple backends!
+                app.menubar.openrazer.troubleshoot()
+                return
 
         # Showtime!
         self.show()
@@ -373,7 +389,7 @@ def parse_parameters():
     parser.add_argument("--version", help=_("Print program version and exit"), action="store_true")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
     parser.add_argument("--locale", help=_("Force a specific language, e.g. de_DE"), action="store")
-    parser.add_argument("--tab", help=_("Open a specific tab or section"), action="store", choices=tab_choices)
+    parser.add_argument("--open", help=_("Open a specific tab or feature"), action="store", choices=tab_choices)
 
     args = parser.parse_args()
 
@@ -400,7 +416,7 @@ if __name__ == "__main__":
     i18n = locales.Locales(__file__)
     _ = i18n.init()
 
-    parse_parameters()
+    args = parse_parameters()
     pref.init(_)
 
     # Improve resolution for HiDPI displays
