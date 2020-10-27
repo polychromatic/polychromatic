@@ -40,9 +40,45 @@ class Backend(_backend.Backend):
         # Variables for OpenRazer
         self.devman = None
         self.devices = None
-        self.allow_image_download = True
+
+        # Client Settings
+        self.allow_image_download = False
         self.ripple_speed = 0.01
         self.starlight_speed = 0.01
+
+        self.load_client_overrides()
+
+    def load_client_overrides(self):
+        """
+        Load any user-defined client settings that Polychromatic should use
+        interfacing with the daemon. These are stored as individual files inside
+        the ~/.config/polychromatic/backends/openrazer directory.
+        """
+        try:
+            config_dir = os.path.join(os.environ["XDG_CONFIG_HOME"], ".config", "polychromatic", "backends", "openrazer")
+        except KeyError:
+            config_dir = os.path.join(os.path.expanduser("~"), ".config", "polychromatic", "backends", "openrazer")
+
+        if not os.path.exists(config_dir):
+            os.makedirs(config_dir)
+
+        def _load_override(filename, data_type, default):
+            path = os.path.join(config_dir, filename)
+            if not os.path.exists(path):
+                return default
+
+            with open(path, "r") as f:
+                data = str(f.readline()).strip()
+
+            try:
+                output = data_type(data)
+                self.debug("Setting client setting: {0} to {1}".format(filename, output))
+            except ValueError:
+                return default
+
+        self.allow_image_download = True if _load_override("allow_image_download", int, 1) == 1 else False
+        self.ripple_speed = _load_override("ripple_speed", float, 0.01)
+        self.starlight_speed = _load_override("starlight_speed", float, 0.01)
 
     def _reinit_device_manager(self, force_refresh=False):
         """
