@@ -32,6 +32,10 @@ temp_home="$(mktemp -d)"
 export HOME="$temp_home"
 mkdir $HOME/.config $HOME/.cache
 
+# (OpenRazer) Disallow device images from being downloaded
+mkdir -p $HOME/.config/polychromatic/backends/openrazer
+echo -e '0' > $HOME/.config/polychromatic/backends/openrazer/allow_image_download
+
 # Run the test!
 python3 tests/$test_name
 result=$?

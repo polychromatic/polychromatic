@@ -3,6 +3,7 @@
 # Working directory should be the repository root.
 #
 
+import subprocess
 import unittest
 
 # Polychromatic Modules
@@ -43,7 +44,7 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         self.middleman = middleman.Middleman(self.dbg, common, _dummy_i18n)
         self.middleman.init()
 
-        # Do not download device images
+        # Definitely do not download device images
         self.middleman.get_backend("openrazer").allow_image_download = False
 
     @classmethod
@@ -55,6 +56,17 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    @staticmethod
+    def _got_exception_running_command(cmd=[]):
+        """
+        Runs the command and checks the output and returns a boolean when
+        there is a Python exception.
+        """
+        output = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
+        if str(output).find("Traceback") != -1:
+            return True
+        return False
 
     def test_backend_is_loaded(self):
         self.assertNotEqual(self.middleman.get_backend("openrazer"), None, "OpenRazer backend isn't loaded")
@@ -144,6 +156,18 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
                     print(common.get_exception_as_string(e))
                     success = False
         self.assertEqual(success, True, "Supported device(s) failed to draw a matrix")
+
+    def test_cli_list_devices(self):
+        self.assertEqual(self._got_exception_running_command(["./polychromatic-cli", "--no-pretty-column", "-l"]), False, "CLI failed to list devices")
+
+    def test_cli_list_options(self):
+        self.assertEqual(self._got_exception_running_command(["./polychromatic-cli", "--no-pretty-column", "-k"]), False, "CLI failed to list options")
+
+    def test_cli_set_option(self):
+        self.assertEqual(self._got_exception_running_command(["./polychromatic-cli", "--no-pretty-column", "-o", "static", "-c", "#00FF00"]), False, "CLI failed to set option")
+
+    def test_cli_set_parameter(self):
+        self.assertEqual(self._got_exception_running_command(["./polychromatic-cli", "--no-pretty-column", "-o", "wave", "-p", "1"]), False, "CLI failed to set option with parameter")
 
 if __name__ == '__main__':
     unittest.main()
