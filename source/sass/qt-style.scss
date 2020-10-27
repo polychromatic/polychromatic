@@ -642,83 +642,9 @@ QSlider::add-page:vertical:disabled {
   Spinners
 **********************************************************/
 QSpinBox,
+QDoubleSpinBox,
 QDateTimeEdit {
     background: $bg-primary;
-    padding: 3px 15px 3px 3px;
-    border: 0;
-}
-
-QSpinBox:focus,
-QSpinBox:hover,
-QDateTimeEdit:focus,
-QDateTimeEdit:hover {
-    background-color: lighten($bg-primary, 5%);
-    color: #fff;
-}
-
-QSpinBox::up-arrow,
-QSpinBox::down-arrow,
-QDateTimeEdit::up-arrow,
-QDateTimeEdit::down-arrow {
-    image: none;
-}
-
-QSpinBox::up-button,
-QDateTimeEdit::up-button {
-    subcontrol-origin: border;
-    subcontrol-position: top right;
-    width: 12px;
-    border-image: url([data]/qt/assets/spin-up.svg) 1;
-    border-width: 1px;
-}
-
-QSpinBox::up-button:hover,
-QDateTimeEdit::up-button:hover {
-    border-image: url([data]/qt/assets/spin-up-hover.svg) 1;
-}
-
-QSpinBox::up-button:pressed,
-QDateTimeEdit::up-button:pressed {
-    border-image: url([data]/qt/assets/spin-up-pressed.svg) 1;
-}
-
-QSpinBox::down-button,
-QDateTimeEdit::down-button {
-    subcontrol-origin: border;
-    subcontrol-position: bottom right;
-    width: 12px;
-    border-image: url([data]/qt/assets/spin-down.svg) 1;
-    border-width: 1px;
-    border-top-width: 0;
-}
-
-QSpinBox::down-button:hover,
-QDateTimeEdit::down-button:hover {
-    border-image: url([data]/qt/assets/spin-down-hover.svg) 1;
-}
-
-QSpinBox::down-button:pressed,
-QDateTimeEdit::down-button:pressed {
-    border-image: url([data]/qt/assets/spin-down-pressed.svg) 1;
-}
-
-QDateTimeEdit:disabled,
-QSpinBox:disabled {
-    background: $bg-disabled;
-    color: $text-disabled;
-}
-
-QSpinBox::up-arrow:disabled,
-QSpinBox::up-arrow:off,
-QDateTimeEdit::up-arrow:disabled,
-QDateTimeEdit::up-arrow:off {
-   border-image: url([data]/qt/assets/spin-up-disabled.svg);
-}
-
-QSpinBox::down-arrow:disabled,
-QSpinBox::down-arrow:off,
-QDateTimeEdit::down-arrow:disabled {
-   border-image: url([data]/qt/assets/spin-down-disabled.svg);
 }
 
 
