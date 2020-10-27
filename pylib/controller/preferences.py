@@ -67,6 +67,9 @@ class PreferencesWindow(shared.TabData):
         for option in self.options:
             self._load_option(option[0], option[1], option[2], option[3], option[4])
 
+        self.dialog.findChild(QPushButton, "SavedColoursButton").clicked.connect(self.modify_colours)
+        self.dialog.findChild(QPushButton, "SavedColoursReset").clicked.connect(self.reset_colours)
+
         # Create pickers
         print("fixme:TrayIconPLACEHOLDER")
         tray_icon_widget = self.dialog.findChild(QLabel, "TrayIconPLACEHOLDER")
@@ -229,6 +232,34 @@ class PreferencesWindow(shared.TabData):
         if self.restart_applet:
             self.dbg.stdout("Tray applet settings changed. Will restart component.", self.dbg.action, 1)
             procpid.restart_component("tray-applet")
+
+    def modify_colours(self):
+        """
+        Opens the colour picker for editing saved colours for later use.
+        """
+        def _cb_dummy(a, b):
+            # List is saved upon closing, nothing to do.
+            pass
+
+        virtual_picker = self.widgets.create_colour_control("#FFFFFF", _cb_dummy, None, self._("Saved Colours"))
+        virtual_picker.findChild(QPushButton).click()
+
+    def reset_colours(self):
+        """
+        Reset colours to the defaults.
+        """
+        def _cb_reset_colours():
+            os.remove(pref.path.colours)
+            pref.init(self._)
+
+        self.widgets.open_dialog(self.widgets.dialog_generic,
+                                 self._("Reset to Default Colours"),
+                                 self._("All colours in the list will be reset. Continue?"),
+                                 None, None,
+                                 [QMessageBox.Ok, QMessageBox.Cancel],
+                                 QMessageBox.Ok,
+                                 {QMessageBox.Ok: _cb_reset_colours})
+
 
 class OpenRazerPreferences(shared.TabData):
     """

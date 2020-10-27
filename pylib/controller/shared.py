@@ -10,6 +10,7 @@ This module contains widgets shared across the Controller GUI.
 from .. import common
 from .. import locales
 from .. import preferences as pref
+from .. import procpid
 
 from ..qt.flowlayout import FlowLayout as QFlowLayout
 
@@ -376,7 +377,7 @@ class PolychromaticWidgets(object):
         the colour will open a dialog.
 
         When a colour is saved, the callback_fn will be executed passing the new
-        hex colour as a parameter.
+        hex colour as a parameter as well as callback_data (as one variable)
 
         Params:
             current_hex     String of the current hex value in use.
@@ -595,7 +596,12 @@ class ColourPicker(object):
                 "name": item.colour_name,
                 "hex": item.colour_hex
             })
-            pref.save_file(pref.Paths().colours, colour_list)
+        pref.save_file(pref.Paths().colours, colour_list)
+
+        # Reload the tray applet to use new colour list
+        if procpid.get_component_pid("tray-applet"):
+            dbg.stdout("Colour list saved. Reloading tray applet...", dbg.action, 1)
+            procpid.restart_component("tray-applet")
 
     def _open_system_picker(self):
         """
@@ -633,8 +639,12 @@ class ColourPicker(object):
         """
         Delete the selected item from the Saved Colour list.
         """
-        item = self.saved_tree.selectedItems()[0]
-        self.saved_tree.invisibleRootItem().removeChild(item)
+        try:
+            item = self.saved_tree.selectedItems()[0]
+            self.saved_tree.invisibleRootItem().removeChild(item)
+        except IndexError:
+            # UI Hiccup - clicked too fast, last item in list, etc
+            self.list_del_btn.setDisabled(True)
 
     def _build_saved_colour_list(self):
         """

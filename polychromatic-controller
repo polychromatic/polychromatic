@@ -338,6 +338,9 @@ class MainWindow(QMainWindow):
                 # TODO: Should support multiple backends!
                 app.menubar.openrazer.troubleshoot()
                 return
+            elif args.open == "colours":
+                app.ui_preferences.modify_colours()
+                exit()
 
         # Showtime!
         self.show()
