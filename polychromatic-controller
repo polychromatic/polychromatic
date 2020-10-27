@@ -267,6 +267,9 @@ class MainWindow(QMainWindow):
 
         tabs.currentChanged.connect(_change_tab)
 
+        # Press F5 to refresh tab
+        self.findChild(QAction, "actionRefreshTab").triggered.connect(_change_tab)
+
         # TODO: Move to a loop, but watch out for variable references
         tab_buttons[0].clicked.connect(lambda a: _change_tab_proxy(a, 0))
         tab_buttons[1].clicked.connect(lambda a: _change_tab_proxy(a, 1))

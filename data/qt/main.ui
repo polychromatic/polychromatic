@@ -754,6 +754,8 @@
     <addaction name="actionDuplicate"/>
     <addaction name="actionDelete"/>
     <addaction name="separator"/>
+    <addaction name="actionRefreshTab"/>
+    <addaction name="separator"/>
     <addaction name="actionPreferences"/>
    </widget>
    <addaction name="menuFile"/>
@@ -1124,6 +1126,18 @@
    </property>
    <property name="text">
     <string>OpenRazer Driver/Daemon</string>
+   </property>
+  </action>
+  <action name="actionRefreshTab">
+   <property name="icon">
+    <iconset>
+     <normaloff>../img/general/refresh.svg</normaloff>../img/general/refresh.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
    </property>
   </action>
  </widget>
