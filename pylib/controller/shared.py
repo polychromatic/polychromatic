@@ -128,6 +128,7 @@ class TabData(object):
         self.widgets = PolychromaticWidgets(appdata)
         self.locales = appdata.locales
         self.dbg = appdata.dbg
+        self.paths = appdata.paths
         self._ = appdata._
         self.middleman = appdata.middleman
         self.main_window = appdata.main_window
@@ -486,7 +487,7 @@ class ColourPicker(object):
         self.callback_fn = callback_fn
         self.callback_data = callback_data
         self.title = title
-        self.saved_colours = pref.load_file(pref.path.colours)
+        self.saved_colours = pref.load_file(appdata.path.colours)
 
         # UI Controls
         self.dialog = get_ui_widget(appdata, "colour-picker", q_toplevel=QDialog)
@@ -536,7 +537,7 @@ class ColourPicker(object):
         item = QTreeWidgetItem()
         item.setText(0, name)
         item.setText(1, value.upper())
-        item.setIcon(0, QIcon(common.generate_colour_bitmap(self.appdata.dbg, pref.path, value, "16x16")))
+        item.setIcon(0, QIcon(common.generate_colour_bitmap(self.appdata.dbg, self.appdata.paths, value, "16x16")))
         item.colour_name = name
         item.colour_hex = value.upper()
         item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsDragEnabled)
@@ -596,7 +597,7 @@ class ColourPicker(object):
                 "name": item.colour_name,
                 "hex": item.colour_hex
             })
-        pref.save_file(pref.Paths().colours, colour_list)
+        pref.save_file(self.appdata.paths.colours, colour_list)
 
         # Reload the tray applet to use new colour list
         if procpid.get_component_pid("tray-applet"):

@@ -25,7 +25,7 @@ from . import fx
 # Also set in preferences.py
 VERSION = 7
 
-path = pref.Paths()
+path = common.Paths()
 dbg = common.Debugging()
 
 

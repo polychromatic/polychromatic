@@ -27,6 +27,7 @@ class PolychromaticTests(unittest.TestCase):
     def setUp(self):
         self._ = locales.Locales("polychromatic-controller").init()
         self.dbg = common.Debugging()
+        self.paths = common.Paths()
         preferences.init(self._)
 
     def tearDown(self):
@@ -44,10 +45,10 @@ class PolychromaticTests(unittest.TestCase):
 
     def test_locales_can_translate_colours(self):
         _ = locales.Locales("polychromatic-controller", "de_DE").init()
-        if os.path.exists(preferences.path.colours):
-            os.remove(preferences.path.colours)
+        if os.path.exists(self.paths.colours):
+            os.remove(self.paths.colours)
         preferences.init(_)
-        colours = preferences.load_file(preferences.path.colours)
+        colours = preferences.load_file(self.paths.colours)
         passed = False
         for item in colours:
             # EN: Green | DE: Grün
@@ -56,24 +57,24 @@ class PolychromaticTests(unittest.TestCase):
         self.assertTrue(passed, "Could not translate colour strings")
 
     def test_config_pref_read(self):
-        data = preferences.load_file(preferences.path.preferences)
+        data = preferences.load_file(self.paths.preferences)
         self.assertFalse(data["controller"]["system_qt_theme"], "Could not init or read preferences file")
 
     def test_config_pref_write(self):
-        newdata = preferences.load_file(preferences.path.preferences)
+        newdata = preferences.load_file(self.paths.preferences)
         newdata["controller"]["landing_tab"] = 2
-        preferences.save_file(preferences.path.preferences, newdata)
+        preferences.save_file(self.paths.preferences, newdata)
 
-        data = preferences.load_file(preferences.path.preferences)
+        data = preferences.load_file(self.paths.preferences)
         self.assertEqual(data["controller"]["landing_tab"], 2, "Could not write to preferences file")
 
     def test_config_pref_force_invalid_data(self):
-        newdata = preferences.load_file(preferences.path.preferences)
+        newdata = preferences.load_file(self.paths.preferences)
         newdata["controller"]["system_qt_theme"] = 123456
-        preferences.save_file(preferences.path.preferences, newdata)
+        preferences.save_file(self.paths.preferences, newdata)
 
         # load_file._validate() should correct this
-        data = preferences.load_file(preferences.path.preferences)
+        data = preferences.load_file(self.paths.preferences)
         self.assertFalse(data["controller"]["system_qt_theme"], "Invalid data was not corrected")
 
     def test_data_path(self):
@@ -105,7 +106,7 @@ class PolychromaticTests(unittest.TestCase):
         self.assertIsNotNone(common.get_icon("general", "controller"), "Could not retrieve an icon")
 
     def test_colour_bitmap(self):
-        self.assertIsNotNone(common.generate_colour_bitmap(self.dbg, preferences.path, "#00FF00"), "Could not generate a bitmap")
+        self.assertIsNotNone(common.generate_colour_bitmap(self.dbg, self.paths, "#00FF00"), "Could not generate a bitmap")
 
     def test_rgb_to_hex(self):
         self.assertEqual(common.rgb_to_hex([0, 255, 0]), "#00FF00", "Could not convert RGB to hex")

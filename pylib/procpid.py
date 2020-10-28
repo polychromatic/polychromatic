@@ -14,7 +14,7 @@ import signal
 import shutil
 from subprocess import Popen
 
-from . import preferences as pref
+from . import common
 
 
 def _get_pid_dir():
@@ -257,9 +257,10 @@ class DeviceSoftwareState(object):
     }
     """
     def __init__(self, serial):
+        self.paths = common.Paths()
         self.serial = serial
         self.state = {}
-        self.state_path = os.path.join(pref.path.states, serial + ".json")
+        self.state_path = os.path.join(self.paths.states, serial + ".json")
 
         if not os.path.exists(self.state_path):
             with open(self.state_path, "w") as f:

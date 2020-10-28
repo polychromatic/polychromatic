@@ -779,10 +779,10 @@ class DevicesTab(shared.TabData):
         # Colours
         if len(effects) > 0:
             widgets = []
-            for colour in pref.load_file(pref.path.colours):
+            for colour in pref.load_file(self.paths.colours):
                 label = colour["name"]
                 data = colour["hex"]
-                icon = common.generate_colour_bitmap(self.dbg, pref.path, data, "40x40")
+                icon = common.generate_colour_bitmap(self.dbg, self.paths, data, "40x40")
                 widgets.append(_create_button(label, icon, None, None, colour=data))
 
             add_to_page(self._("Colours"), widgets)
@@ -896,7 +896,7 @@ class DevicesTab(shared.TabData):
                                 param_item.addChild(mkitem(_("Active"), param["active"]))
                                 if param["colours"]:
                                     for colour_no, colour_hex in enumerate(option["colours"]):
-                                        param_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.dbg, pref.path, colour_hex)))
+                                        param_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.dbg, self.paths, colour_hex)))
                                 param_parent.addChild(param_item)
                             option_item.addChild(param_parent)
                     except KeyError:
@@ -921,7 +921,7 @@ class DevicesTab(shared.TabData):
                     # Colours (entire option, no parameters)
                     if option["colours"] and not option["parameters"]:
                         for colour_no, colour_hex in enumerate(option["colours"]):
-                            option_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.dbg, pref.path, colour_hex)))
+                            option_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.dbg, self.paths, colour_hex)))
 
                     zone_item.addChild(option_item)
                 zones.addChild(zone_item)

@@ -77,7 +77,7 @@ class ApplicationData(object):
     Shared data that is globally accessible throughout the application.
     This includes save data variables and objects for each tab.
     """
-    def __init__(self, qapp, dbg, _, path, data_path, hidpi):
+    def __init__(self, qapp, dbg, _, paths, data_path, hidpi):
         """
         Prepare the object.
         """
@@ -86,7 +86,7 @@ class ApplicationData(object):
         self.dbg = dbg
         self.locales = locales
         self._ = _
-        self.path = path
+        self.paths = paths
         self.data_path = data_path
         self.exec_path = __file__
         self.exec_args = sys.argv
@@ -103,7 +103,7 @@ class ApplicationData(object):
 
         # Settings
         dbg.stdout("Loading preferences...", dbg.action, 1)
-        self.preferences = pref.load_file(self.path.preferences)
+        self.preferences = pref.load_file(self.paths.preferences)
         self.system_qt_theme = self.preferences["controller"]["system_qt_theme"]
         self.show_menu_bar = self.preferences["controller"]["show_menu_bar"]
 
@@ -361,7 +361,7 @@ class MainWindow(QMainWindow):
             app.preferences["controller"]["window_pos_y"] = rect.top()
             app.preferences["controller"]["window_size_x"] = rect.width()
             app.preferences["controller"]["window_size_y"] = rect.height()
-            pref.save_file(pref.path.preferences, app.preferences)
+            pref.save_file(paths.preferences, app.preferences)
 
         dbg.stdout("Goodbye!", dbg.success, 1)
         qapp.quit()
@@ -417,7 +417,7 @@ if __name__ == "__main__":
     setproctitle.setproctitle("polychromatic-controller")
 
     DATA_PATH = common.get_data_dir_path()
-    path = pref.Paths()
+    paths = common.Paths()
     dbg = common.Debugging()
     i18n = locales.Locales(__file__)
     _ = i18n.init()
@@ -435,6 +435,6 @@ if __name__ == "__main__":
         QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
     qapp = QApplication(sys.argv)
-    app = ApplicationData(qapp, dbg, _, path, DATA_PATH, HIDPI)
+    app = ApplicationData(qapp, dbg, _, paths, DATA_PATH, HIDPI)
     app.load()
     qapp.exec_()

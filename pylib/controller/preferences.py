@@ -59,7 +59,7 @@ class PreferencesWindow(shared.TabData):
         """
         Opens the Preferences window to change Polychromatic's options.
         """
-        self.pref_data = pref.load_file(pref.path.preferences)
+        self.pref_data = pref.load_file(self.paths.preferences)
 
         self.dialog = shared.get_ui_widget(self.appdata, "preferences", QDialog)
         self.dialog.findChild(QDialogButtonBox, "DialogButtons").accepted.connect(self._save_changes)
@@ -193,7 +193,7 @@ class PreferencesWindow(shared.TabData):
         for option in self.options:
             self._set_option(option[0], option[1], option[2], option[3], option[4])
 
-        result = pref.save_file(pref.path.preferences, self.pref_data)
+        result = pref.save_file(self.paths.preferences, self.pref_data)
         if result:
             self.dbg.stdout("Save complete.", self.dbg.success, 1)
         else:
@@ -250,7 +250,7 @@ class PreferencesWindow(shared.TabData):
         Reset colours to the defaults.
         """
         def _cb_reset_colours():
-            os.remove(pref.path.colours)
+            os.remove(self.paths.colours)
             pref.init(self._)
 
         self.widgets.open_dialog(self.widgets.dialog_generic,
@@ -343,7 +343,7 @@ class OpenRazerPreferences(shared.TabData):
         for meta in self.client:
             filename = meta[0]
             data_type = meta[1]
-            path = os.path.join(pref.path.root, "backends", "openrazer", filename)
+            path = os.path.join(self.paths.root, "backends", "openrazer", filename)
 
             if not os.path.exists(path):
                 continue
@@ -385,11 +385,11 @@ class OpenRazerPreferences(shared.TabData):
 
             self._write_config(group, key_name, value)
 
-        # client
+        # Client
         for meta in self.client:
             filename = meta[0]
             data_type = meta[1]
-            path = os.path.join(pref.path.root, "backends", "openrazer", filename)
+            path = os.path.join(self.paths.root, "backends", "openrazer", filename)
 
             if data_type == int:
                 data = 1 if self.dialog.findChild(QCheckBox, filename).isChecked() else 0
