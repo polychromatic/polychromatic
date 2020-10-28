@@ -86,7 +86,7 @@ class MenuBar(object):
         self.menubar.hide()
         self.mainwindow.findChild(QAction, "actionReinstateMenuBar").setVisible(True)
         self.appdata.preferences["controller"]["show_menu_bar"] = False
-        preferences.save_file(self.appdata.path.preferences, self.appdata.preferences)
+        preferences.save_file(self.appdata.paths.preferences, self.appdata.preferences)
 
     def reinstate_menu_bar(self):
         """
@@ -94,7 +94,7 @@ class MenuBar(object):
         """
         self.mainwindow.findChild(QAction, "actionReinstateMenuBar").setVisible(False)
         self.appdata.preferences["controller"]["show_menu_bar"] = True
-        preferences.save_file(self.appdata.path.preferences, self.appdata.preferences)
+        preferences.save_file(self.appdata.paths.preferences, self.appdata.preferences)
 
     def _run_troubleshooter(self, backend):
         """
@@ -289,7 +289,7 @@ class MenuBar(object):
         _ = self.appdata._
         logo = common.get_icon("logo", "polychromatic")
 
-        with open(os.path.join(self.appdata.data_path, "license.txt"), "r") as f:
+        with open(os.path.join(self.appdata.paths.data_dir, "license.txt"), "r") as f:
             license = f.read()
 
         links = [

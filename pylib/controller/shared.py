@@ -56,8 +56,8 @@ def load_qt_theme(app, qapp, window):
     window.setPalette(get_palette(app))
 
     # Load QSS (essentially CSS) with Polychromatic's design
-    with open(os.path.join(app.data_path, "qt", "style.qss"), "r") as f:
-        window.setStyleSheet(f.read().replace("[data]", app.data_path))
+    with open(os.path.join(common.paths.data_dir, "qt", "style.qss"), "r") as f:
+        window.setStyleSheet(f.read().replace("[data]", common.paths.data_dir))
 
 
 def get_palette(app):
@@ -93,7 +93,7 @@ def get_ui_widget(appdata, name, q_toplevel=QWidget):
         name            Name of UI file (in ui/ folder) without .ui extension
         q_toplevel      Top-level object class, e.g. QWidget() or QDialog()
     """
-    ui_file = os.path.join(appdata.data_path, "qt", name + ".ui")
+    ui_file = os.path.join(appdata.paths.data_dir, "qt", name + ".ui")
     if not os.path.exists(ui_file):
         print("Missing UI file: " + ui_file)
         return None
@@ -487,7 +487,7 @@ class ColourPicker(object):
         self.callback_fn = callback_fn
         self.callback_data = callback_data
         self.title = title
-        self.saved_colours = pref.load_file(appdata.path.colours)
+        self.saved_colours = pref.load_file(appdata.paths.colours)
 
         # UI Controls
         self.dialog = get_ui_widget(appdata, "colour-picker", q_toplevel=QDialog)

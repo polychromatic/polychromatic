@@ -565,7 +565,7 @@ class PolychromaticTrayApplet():
         Params:
             colour_hex      Hex value, e.g. "#00FF00"
         """
-        return common.generate_colour_bitmap(dbg, paths, colour_hex)
+        return common.generate_colour_bitmap(dbg, common.paths, colour_hex)
 
 
 class Callback():
@@ -783,7 +783,6 @@ if __name__ == "__main__":
     setproctitle.setproctitle("polychromatic-tray-applet")
 
     # Global variables
-    paths = common.Paths()
     i18n = locales.Locales(__file__)
     _ = i18n.init()
     dbg = common.Debugging()
@@ -818,8 +817,8 @@ if __name__ == "__main__":
     device_list = middleman.get_device_list()
 
     # Load data into memory
-    prefs = pref.load_file(paths.preferences)
-    saved_colours = pref.load_file(paths.colours)
+    prefs = pref.load_file(common.paths.preferences)
+    saved_colours = pref.load_file(common.paths.colours)
     colours_mono = common.get_green_shades(_)
 
     # Initialise the indicator

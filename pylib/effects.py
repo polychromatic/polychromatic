@@ -75,7 +75,7 @@ def _get_icon_path(icon):
         return icon
 
     if icon.startswith("img/"):
-        absolute_builtin_icon = os.path.join(common.get_data_dir_path(), icon)
+        absolute_builtin_icon = os.path.join(path.data_dir, icon)
         if os.path.exists(absolute_builtin_icon):
             return absolute_builtin_icon
 

@@ -27,7 +27,7 @@ class PolychromaticTests(unittest.TestCase):
     def setUp(self):
         self._ = locales.Locales("polychromatic-controller").init()
         self.dbg = common.Debugging()
-        self.paths = common.Paths()
+        self.paths = common.paths
         preferences.init(self._)
 
     def tearDown(self):
@@ -78,7 +78,7 @@ class PolychromaticTests(unittest.TestCase):
         self.assertFalse(data["controller"]["system_qt_theme"], "Invalid data was not corrected")
 
     def test_data_path(self):
-        self.assertTrue(common.get_data_dir_path().endswith("/data"))
+        self.assertTrue(self.paths.data_dir.endswith("/data"), "Unexpected development data directory path")
 
     def test_get_form_factor(self):
         ff = common.get_form_factor(self._, "keyboard")

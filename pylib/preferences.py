@@ -17,7 +17,7 @@ from . import locales
 VERSION = 7
 
 dbg = common.Debugging()
-path = common.Paths()
+path = common.paths
 
 def load_file(filepath):
     """

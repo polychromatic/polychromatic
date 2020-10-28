@@ -55,7 +55,6 @@ else:
 # Set up variables
 ########################################
 dbg = common.Debugging()
-paths = common.Paths()
 i18n = locales.Locales(__file__)
 _ = i18n.init()
 pref.init(_)

@@ -185,8 +185,7 @@ def parse_parameters():
 
 
 if __name__ == "__main__":
-    paths = common.Paths()
-    prefs = preferences.load_file(paths.preferences)
+    prefs = preferences.load_file(common.paths.preferences)
 
     # Appear as its own process.
     setproctitle.setproctitle("polychromatic-helper")

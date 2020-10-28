@@ -30,8 +30,10 @@ FORM_FACTORS = [
     "unrecognised"
 ]
 
-
 class Paths(object):
+    """
+    Initialises the paths for data files, configuration and caches.
+    """
     # Config/cache (XDG) directories
     try:
         root = os.path.join(os.environ["XDG_CONFIG_HOME"], ".config", "polychromatic")
@@ -72,6 +74,18 @@ class Paths(object):
                    cache, assets_cache, effects_cache, colours_cache]:
         if not os.path.exists(folder):
             os.makedirs(folder)
+
+    # Data directory
+    # -- For development, this is normally adjacent to the application executable.
+    # -- For system-wide installs, this is generally /usr/share/polychromatic.
+    module_path = __file__
+    if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))):
+        data_dir = os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))
+    elif os.path.exists("/usr/share/polychromatic/"):
+        data_dir = "/usr/share/polychromatic/"
+    else:
+        print("Data directory cannot be located. Exiting.")
+        exit(1)
 
 
 class Debugging(object):
@@ -118,26 +132,6 @@ def get_exception_as_string(e):
     output that is normally displayed via the GUI.
     """
     return traceback.format_exc().replace("'", '’').replace('"', '’')
-
-
-def get_data_dir_path():
-    """
-    Returns the path for the data directory.
-
-    For development, this is normally adjacent to the application executable.
-    For system-wide installs, this is generally /usr/share/polychromatic.
-    """
-    module_path = __file__
-
-    if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))):
-        path = os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))
-    elif os.path.exists("/usr/share/polychromatic/"):
-        path = "/usr/share/polychromatic/"
-    else:
-        print("Data directory cannot be located. Exiting.")
-        exit(1)
-
-    return path
 
 
 def get_form_factor(_, form_factor_id):
@@ -232,7 +226,7 @@ def get_tray_icon(dbg, icon_value):
         return icon_value
 
     # Check if the icon is relative -> a built-in icon
-    icon_builtin = os.path.join(get_data_dir_path(), icon_value)
+    icon_builtin = os.path.join(paths.data_dir, icon_value)
     if os.path.exists(icon_builtin):
         return icon_builtin
 
@@ -253,7 +247,7 @@ def get_icon(folder, name):
         None        Icon does not exist
     """
     for ext in [".svg", ".png"]:
-        icon_path = os.path.join(DATA_PATH, "img", folder, name + ext)
+        icon_path = os.path.join(paths.data_dir, "img", folder, name + ext)
         if os.path.exists(icon_path):
             return icon_path
 
@@ -287,7 +281,7 @@ def execute_polychromatic_component(dbg, component, controller_open=None):
         component           e.g. "controller" would run "polychromatic-controller"
         controller_open     (Optional - Controller only) Opens a specific tab/feature.
     """
-    data_dir = get_data_dir_path()
+    data_dir = paths.data_dir
     exec_name = "polychromatic-" + component
 
     possible_paths = [
@@ -448,6 +442,5 @@ def get_bulk_apply_options(_, devices):
 
     return output
 
-
-# Module Initalization
-DATA_PATH = get_data_dir_path()
+# Available to all modules
+paths = Paths()
