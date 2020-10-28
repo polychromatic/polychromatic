@@ -73,6 +73,7 @@ class Backend(_backend.Backend):
             try:
                 output = data_type(data)
                 self.debug("Setting client setting: {0} to {1}".format(filename, output))
+                return output
             except ValueError:
                 return default
 

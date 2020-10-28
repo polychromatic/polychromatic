@@ -89,8 +89,11 @@ def get_component_pid_list():
     Returns a list of all the components that currently have a PID file. This
     isn't validated and is presumed to be running and Polychromatic processes.
     """
+    pids = []
     for component in glob.glob(_get_pid_dir() + "/*.pid"):
-        os.path.basename(component.replace(".pid", ""))
+        pids.append(os.path.basename(component.replace(".pid", "")))
+
+    return pids
 
 
 def set_component_pid(component):
