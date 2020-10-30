@@ -199,6 +199,7 @@ class MainWindow(QMainWindow):
 
         self.CloseButton = self.findChild(QPushButton, "CloseApp")
         self.CloseButton.clicked.connect(self._quit_app)
+        self.closeEvent = self._quit_app
 
     def load(self):
         """
