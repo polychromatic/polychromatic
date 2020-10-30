@@ -138,7 +138,9 @@ class MenuBar(object):
             label = self.result_window.findChild(QLabel, "Title")
             tree = self.result_window.findChild(QTreeWidget, "Results")
             column = tree.invisibleRootItem()
-            self.result_window.findChild(QPushButton, "Close").setIcon(self.widgets.get_icon_qt("general", "close", "window-close"))
+
+            if not self.appdata.system_qt_theme:
+                self.result_window.findChild(QPushButton, "Close").setIcon(self.widgets.get_icon_qt("general", "close"))
 
             all_passed = True
             for result in results:
@@ -278,6 +280,8 @@ class MenuBar(object):
         def _close(a):
             about.accept()
         close.clicked.connect(_close)
+        if not self.appdata.system_qt_theme:
+            close.setIcon(self.widgets.get_icon_qt("general", "close"))
 
         window_title = ' '.join(sub[:1].upper() + sub[1:] for sub in title.split(' '))
         about.setWindowTitle(_("About []").replace("[]", window_title))

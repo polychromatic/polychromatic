@@ -162,28 +162,24 @@ class PolychromaticWidgets(object):
         self.dialog_error = QMessageBox.Critical
         self.dialog_warning = QMessageBox.Warning
 
-    def get_icon_qt(self, folder, name, native_theme=None):
+    def get_icon_qt(self, folder, name):
         """
         Returns a QIcon() object with the specified button image.
 
         Params:
             folder          For common.get_icon()
             name            For common.get_icon()
-            native_theme    (Optional) Use this icon when system theme is used
         """
-        if self.appdata.system_qt_theme and native_theme:
-            icon = QIcon()
-            icon.fromTheme(native_theme)
-            return icon
-
-        icons = common.get_icon_styles(self.appdata.dbg, folder, name, self.appdata.normal_colour, self.appdata.disabled_colour, self.appdata.active_colour, self.appdata.selected_colour)
+        icons = common.get_icon_styles(self.appdata.dbg, folder, name, self.appdata.normal_colour, self.appdata.disabled_colour, self.appdata.active_colour, self.appdata.selected_colour, self.appdata.secondary_colour_active, self.appdata.secondary_colour_inactive)
         if not icons:
             return QIcon()
 
         qicon = QIcon(icons[0])
         qicon.addFile(icons[1], mode=QIcon.Disabled)
         qicon.addFile(icons[2], mode=QIcon.Active)
+        qicon.addFile(icons[2], mode=QIcon.Active, state=QIcon.On)
         qicon.addFile(icons[3], mode=QIcon.Selected)
+        qicon.addFile(icons[3], mode=QIcon.Selected, state=QIcon.On)
         return qicon
 
     def create_summary_widget(self, icon_path, title, indicators=[], buttons=[]):
@@ -495,6 +491,8 @@ class PolychromaticWidgets(object):
                 if result == action:
                     actions[action]()
 
+        # TODO: Use own icons for dialog (when Polychromatic Qt theme is used)
+
         msgbox.finished.connect(_dialog_closed)
         msgbox.exec()
 
@@ -530,13 +528,14 @@ class ColourPicker(object):
         self.current_label = self.dialog.findChild(QLabel, "CurrentLabel")
 
         # Set Dialog Button Icons
-        self.change_btn.setIcon(self.widgets.get_icon_qt("general", "edit", "document-edit"))
-        self.open_save_widget.setIcon(self.widgets.get_icon_qt("general", "new", "list-add"))
-        self.close_save_widget.setIcon(self.widgets.get_icon_qt("general", "close", "document-close"))
-        self.list_save_btn.setIcon(self.widgets.get_icon_qt("general", "save", "document-save"))
-        self.list_del_btn.setIcon(self.widgets.get_icon_qt("general", "delete", "delete"))
-        self.dialog_btns.button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save", "document-save"))
-        self.dialog_btns.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel", "dialog-cancel"))
+        if not self.appdata.system_qt_theme:
+            self.change_btn.setIcon(self.widgets.get_icon_qt("general", "edit"))
+            self.open_save_widget.setIcon(self.widgets.get_icon_qt("general", "new"))
+            self.close_save_widget.setIcon(self.widgets.get_icon_qt("general", "close"))
+            self.list_save_btn.setIcon(self.widgets.get_icon_qt("general", "save"))
+            self.list_del_btn.setIcon(self.widgets.get_icon_qt("general", "delete"))
+            self.dialog_btns.button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save"))
+            self.dialog_btns.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel"))
 
         # Connect signals when interacting with UI controls
         self.dialog_btns.accepted.connect(self._apply_colour)

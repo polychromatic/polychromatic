@@ -109,7 +109,7 @@ class PolychromaticTests(unittest.TestCase):
         self.assertIsNotNone(common.generate_colour_bitmap(self.dbg, "#00FF00"), "Could not generate a colour bitmap")
 
     def test_asset_bitmaps(self):
-        icons = common.get_icon_styles(self.dbg, "general", "controller", "#FF0000", "#00FF00", "#0000FF", "#FFFFFF")
+        icons = common.get_icon_styles(self.dbg, "general", "controller", "#FF0000", "#00FF00", "#0000FF", "#FFFFFF", "#000000", "#808080")
         self.assertEqual(len(icons), 4, "Could not generate icon bitmap")
 
     def test_rgb_to_hex(self):

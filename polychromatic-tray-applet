@@ -296,7 +296,7 @@ class PolychromaticTrayApplet():
         indicator.create_menu_item(menu, message, False, None, None, icon_path)
         indicator.create_seperator(menu)
         indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
-        self._create_menu_item_if_controller_present(menu, _("Troubleshoot"), "troubleshoot", self._get_icon("tab_active", "preferences"))
+        self._create_menu_item_if_controller_present(menu, _("Troubleshoot"), "troubleshoot", self._get_icon("general", "preferences"))
         indicator.create_seperator(menu)
         self._create_menu_item_if_controller_present(menu, _("Open Controller"), None, self._get_icon("general", "controller"))
         indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
@@ -386,7 +386,7 @@ class PolychromaticTrayApplet():
 
             # TODO: Placeholder, Presets not yet implemented
             print("stub:preset menu")
-            presets_menu, presets_menu_item = indicator.create_submenu(_("Apply Preset"), False, self._get_icon("tab_active", "presets"))
+            presets_menu, presets_menu_item = indicator.create_submenu(_("Apply Preset"), False, self._get_icon("general", "presets"))
             indicator.create_menu_item(presets_menu, "Placeholder", False)
             indicator.add_menu_item(menu, presets_menu_item)
 
@@ -467,7 +467,7 @@ class PolychromaticTrayApplet():
 
             # TODO: Placeholder, custom effects not yet implemented
             print("stub:effects menu")
-            effects_menu, effects_menu_item = indicator.create_submenu(_("Effects"), False, self._get_icon("tab_active", "effects"))
+            effects_menu, effects_menu_item = indicator.create_submenu(_("Effects"), False, self._get_icon("general", "effects"))
             indicator.create_menu_item(effects_menu, "Placeholder", False)
             indicator.add_menu_item(submenu, effects_menu_item)
 
@@ -548,7 +548,7 @@ class PolychromaticTrayApplet():
         icon_off = None
         if option_id == "game_mode":
             icon_on = self._get_icon("options", "game_mode")
-            icon_off = self._get_icon("options", "game_mode_disabled")
+            icon_off = self._get_icon("options", "game_mode_off")
         elif option_id == "brightness":
             icon_on = self._get_icon("options", "100")
             icon_off = self._get_icon("options", "0")

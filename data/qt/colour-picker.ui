@@ -72,6 +72,12 @@
     <property name="spacing">
      <number>10</number>
     </property>
+    <property name="leftMargin">
+     <number>3</number>
+    </property>
+    <property name="rightMargin">
+     <number>3</number>
+    </property>
     <item>
      <spacer name="verticalSpacer">
       <property name="orientation">
@@ -149,7 +155,11 @@
           <string>Opens the system's colour picker</string>
          </property>
          <property name="text">
-          <string>Change...</string>
+          <string>Change</string>
+         </property>
+         <property name="icon">
+          <iconset theme="document-edit">
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </widget>
        </item>
@@ -160,6 +170,10 @@
          </property>
          <property name="text">
           <string>Save</string>
+         </property>
+         <property name="icon">
+          <iconset theme="document-save">
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </widget>
        </item>

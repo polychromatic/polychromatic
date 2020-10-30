@@ -45,6 +45,7 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
         import pylib.controller as controller
         import pylib.effects as effects
         import pylib.middleman as middleman
+        import pylib.controller.shared as shared
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -58,6 +59,7 @@ else:
         import polychromatic.controller as controller
         import polychromatic.effects as effects
         import polychromatic.middleman as middleman
+        import polychromatic.controller.shared as shared
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
@@ -98,6 +100,8 @@ class ApplicationData(object):
         self.disabled_colour = "#575757"    # $text-disabled
         self.active_colour = "#00FF00"      # $primary
         self.selected_colour = "#00FF00"    # $primary
+        self.secondary_colour_active = "#008000"    # $secondary
+        self.secondary_colour_inactive = "#808080"  # $secondary (desaturated)
 
         # Assigned in load() later
         self.middleman = None
@@ -229,6 +233,19 @@ class MainWindow(QMainWindow):
             self.findChild(QAction, "actionPresets"),
             self.findChild(QAction, "actionTriggers")
         ]
+
+        # Tab icons
+        widgets = shared.PolychromaticWidgets(app)
+        if app.system_qt_theme:
+            tabs.setTabIcon(0, widgets.get_icon_qt("general", "devices"))
+            tabs.setTabIcon(1, widgets.get_icon_qt("general", "effects"))
+            tabs.setTabIcon(2, widgets.get_icon_qt("general", "presets"))
+            tabs.setTabIcon(3, widgets.get_icon_qt("general", "triggers"))
+        else:
+            tab_buttons[0].setIcon(widgets.get_icon_qt("general", "devices"))
+            tab_buttons[1].setIcon(widgets.get_icon_qt("general", "effects"))
+            tab_buttons[2].setIcon(widgets.get_icon_qt("general", "presets"))
+            tab_buttons[3].setIcon(widgets.get_icon_qt("general", "triggers"))
 
         # Code for each tab is stored in a separate module
         tab_objects = [

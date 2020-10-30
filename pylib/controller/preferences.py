@@ -69,14 +69,15 @@ class PreferencesWindow(shared.TabData):
         tabs.setTabIcon(0, self.widgets.get_icon_qt("general", "controller"))
         tabs.setTabIcon(1, self.widgets.get_icon_qt("general", "tray-applet"))
         tabs.setTabIcon(2, self.widgets.get_icon_qt("general", "profile-default"))
-        tabs.setTabIcon(3, self.widgets.get_icon_qt("tab_active", "triggers"))
+        tabs.setTabIcon(3, self.widgets.get_icon_qt("general", "triggers"))
         tabs.setTabIcon(4, self.widgets.get_icon_qt("emblems", "software"))
 
         # Set Dialog Button Icons
-        self.dialog.findChild(QPushButton, "SavedColoursButton").setIcon(self.widgets.get_icon_qt("general", "edit", "document-edit"))
-        self.dialog.findChild(QPushButton, "SavedColoursReset").setIcon(self.widgets.get_icon_qt("general", "reset", "document-revert"))
-        self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save", "document-save"))
-        self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel", "dialog-cancel"))
+        if not self.appdata.system_qt_theme:
+            self.dialog.findChild(QPushButton, "SavedColoursButton").setIcon(self.widgets.get_icon_qt("general", "edit"))
+            self.dialog.findChild(QPushButton, "SavedColoursReset").setIcon(self.widgets.get_icon_qt("general", "reset"))
+            self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save"))
+            self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel"))
 
         # Options
         for option in self.options:
@@ -94,14 +95,16 @@ class PreferencesWindow(shared.TabData):
 
         # Backend Buttons
         self.dialog.findChild(QPushButton, "OpenRazerSettings").clicked.connect(self.menubar.openrazer.configure)
-        self.dialog.findChild(QPushButton, "OpenRazerSettings").setIcon(self.widgets.get_icon_qt("tab_active", "preferences", "preferences"))
         self.dialog.findChild(QPushButton, "OpenRazerAbout").clicked.connect(self.menubar.openrazer.about)
         self.dialog.findChild(QPushButton, "OpenRazerOpenLog").clicked.connect(self.menubar.openrazer.open_log)
-        self.dialog.findChild(QPushButton, "OpenRazerOpenLog").setIcon(self.widgets.get_icon_qt("general", "folder", "folder"))
         self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").clicked.connect(self.menubar.openrazer.restart_daemon)
-        self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").setIcon(self.widgets.get_icon_qt("general", "refresh", "view-refresh"))
         self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").clicked.connect(self.menubar.openrazer.troubleshoot)
-        self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").setIcon(self.widgets.get_icon_qt("emblems", "utility", "tools"))
+
+        if not self.appdata.system_qt_theme:
+            self.dialog.findChild(QPushButton, "OpenRazerSettings").setIcon(self.widgets.get_icon_qt("general", "preferences"))
+            self.dialog.findChild(QPushButton, "OpenRazerOpenLog").setIcon(self.widgets.get_icon_qt("general", "folder"))
+            self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").setIcon(self.widgets.get_icon_qt("general", "refresh"))
+            self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").setIcon(self.widgets.get_icon_qt("emblems", "utility"))
 
         if not "openrazer" in self.appdata.middleman.get_backends():
             self.dialog.findChild(QPushButton, "OpenRazerSettings").setDisabled(True)
@@ -200,9 +203,10 @@ class PreferencesWindow(shared.TabData):
 
         tree = self.dialog.findChild(QTreeWidget, "TasksTree")
 
-        self.dialog.findChild(QPushButton, "TasksRefresh").setIcon(self.widgets.get_icon_qt("general", "refresh", "view-refresh"))
-        self.dialog.findChild(QPushButton, "TasksReload").setIcon(self.widgets.get_icon_qt("editor", "repeat", "system-reboot"))
-        self.dialog.findChild(QPushButton, "TasksStopAll").setIcon(self.widgets.get_icon_qt("editor", "stop", "process-stop"))
+        if not self.appdata.system_qt_theme:
+            self.dialog.findChild(QPushButton, "TasksRefresh").setIcon(self.widgets.get_icon_qt("general", "refresh"))
+            self.dialog.findChild(QPushButton, "TasksReload").setIcon(self.widgets.get_icon_qt("editor", "repeat"))
+            self.dialog.findChild(QPushButton, "TasksStopAll").setIcon(self.widgets.get_icon_qt("editor", "stop"))
 
         # TODO: Not fully implemented yet!
         self.dialog.findChild(QTabWidget, "PreferencesTabs").setTabEnabled(3, False)
@@ -245,10 +249,10 @@ class PreferencesWindow(shared.TabData):
                                      self._("Restart Required"),
                                      self._("To apply these changes, the application must be restarted. Any unsaved changes will be lost."),
                                      None, None,
-                                     [QMessageBox.Apply, QMessageBox.Ignore],
-                                     QMessageBox.Apply,
+                                     [QMessageBox.Ok, QMessageBox.Ignore],
+                                     QMessageBox.Ok,
                                      {
-                                        QMessageBox.Apply: _cb_restart_now
+                                        QMessageBox.Ok: _cb_restart_now
                                      })
 
         # Reload tray applet
@@ -348,8 +352,9 @@ class OpenRazerPreferences(shared.TabData):
         self.dialog.findChild(QDialogButtonBox, "DialogButtons").accepted.connect(self._save_and_restart)
 
         # Set Dialog Button Icons
-        self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save", "document-save"))
-        self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel", "dialog-cancel"))
+        if not self.appdata.system_qt_theme:
+            self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save"))
+            self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel"))
 
         # razer.conf
         for key in self.keys:

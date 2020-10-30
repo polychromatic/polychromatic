@@ -127,7 +127,7 @@
               </property>
               <property name="icon">
                <iconset>
-                <normaloff>../img/tab_active/devices.svg</normaloff>../img/tab_active/devices.svg</iconset>
+                <normaloff>../img/general/devices.svg</normaloff>../img/general/devices.svg</iconset>
               </property>
              </item>
              <item>
@@ -136,7 +136,7 @@
               </property>
               <property name="icon">
                <iconset>
-                <normaloff>../img/tab_active/effects.svg</normaloff>../img/tab_active/effects.svg</iconset>
+                <normaloff>../img/general/effects.svg</normaloff>../img/general/effects.svg</iconset>
               </property>
              </item>
              <item>
@@ -145,7 +145,7 @@
               </property>
               <property name="icon">
                <iconset>
-                <normaloff>../img/tab_active/presets.svg</normaloff>../img/tab_active/presets.svg</iconset>
+                <normaloff>../img/general/presets.svg</normaloff>../img/general/presets.svg</iconset>
               </property>
              </item>
              <item>
@@ -154,7 +154,7 @@
               </property>
               <property name="icon">
                <iconset>
-                <normaloff>../img/tab_active/triggers.svg</normaloff>../img/tab_active/triggers.svg</iconset>
+                <normaloff>../img/general/triggers.svg</normaloff>../img/general/triggers.svg</iconset>
               </property>
              </item>
             </widget>
@@ -248,12 +248,18 @@
                 <property name="text">
                  <string>Change...</string>
                 </property>
+                <property name="icon">
+                 <iconset theme="document-edit"/>
+                </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="SavedColoursReset">
                 <property name="text">
                  <string>Reset to Default Colours</string>
+                </property>
+                <property name="icon">
+                 <iconset theme="document-revert"/>
                 </property>
                </widget>
               </item>
@@ -622,6 +628,9 @@
                 <property name="text">
                  <string>Refresh</string>
                 </property>
+                <property name="icon">
+                 <iconset theme="view-refresh"/>
+                </property>
                </widget>
               </item>
               <item>
@@ -642,12 +651,18 @@
                 <property name="text">
                  <string>Stop All</string>
                 </property>
+                <property name="icon">
+                 <iconset theme="process-stop"/>
+                </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="TasksReload">
                 <property name="text">
                  <string>Restart All</string>
+                </property>
+                <property name="icon">
+                 <iconset theme="system-reboot"/>
                 </property>
                </widget>
               </item>
@@ -800,6 +815,9 @@
                    <property name="text">
                     <string>Configure</string>
                    </property>
+                   <property name="icon">
+                    <iconset theme="configure"/>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -817,6 +835,9 @@
                   <widget class="QPushButton" name="OpenRazerTroubleshoot">
                    <property name="text">
                     <string>Troubleshoot...</string>
+                   </property>
+                   <property name="icon">
+                    <iconset theme="tools"/>
                    </property>
                   </widget>
                  </item>
@@ -856,12 +877,18 @@
                    <property name="text">
                     <string>Open Log...</string>
                    </property>
+                   <property name="icon">
+                    <iconset theme="folder"/>
+                   </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="OpenRazerRestartDaemon">
                    <property name="text">
                     <string>Restart Daemon</string>
+                   </property>
+                   <property name="icon">
+                    <iconset theme="view-refresh"/>
                    </property>
                   </widget>
                  </item>

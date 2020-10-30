@@ -18,17 +18,17 @@ Exec=polychromatic-controller --open devices
 
 [Desktop Action effects]
 Name=Edit Effects
-Icon=/usr/share/polychromatic/img/tab_active/effects.svg
+Icon=/usr/share/polychromatic/img/general/effects.svg
 Exec=polychromatic-controller --open effects
 
 [Desktop Action presets]
-Name=Edit Effects
-Icon=/usr/share/polychromatic/img/tab_active/presets.svg
+Name=Edit Presets
+Icon=/usr/share/polychromatic/img/general/presets.svg
 Exec=polychromatic-controller --open presets
 
 [Desktop Action triggers]
-Name=Edit Effects
-Icon=/usr/share/polychromatic/img/tab_active/triggers.svg
+Name=Edit Triggers
+Icon=/usr/share/polychromatic/img/general/triggers.svg
 Exec=polychromatic-controller --open triggers
 
 [Desktop Action tray-applet]

@@ -576,7 +576,7 @@ class DevicesTab(shared.TabData):
             0: [
                 {
                     "label": self._("Troubleshoot"),
-                    "icon": common.get_icon("tab_inactive", "preferences"),
+                    "icon": common.get_icon("general", "preferences"),
                     "action": self._start_troubleshooter
                 }
             ],
@@ -588,7 +588,7 @@ class DevicesTab(shared.TabData):
                 },
                 {
                     "label": self._("Troubleshoot"),
-                    "icon": common.get_icon("tab_inactive", "preferences"),
+                    "icon": common.get_icon("general", "preferences"),
                     "action": self._start_troubleshooter
                 }
             ]
@@ -661,7 +661,7 @@ class DevicesTab(shared.TabData):
                 },
                 {
                     "label": self._("Troubleshoot"),
-                    "icon": common.get_icon("tab_inactive", "preferences"),
+                    "icon": common.get_icon("general", "preferences"),
                     "action": self._start_troubleshooter
                 },
                 {
@@ -805,9 +805,10 @@ class DevicesTab(shared.TabData):
         btn_test_matrix = dialog.findChild(QPushButton, "TestMatrix")
 
         # Dialog Button Icons
-        btn_refresh.setIcon(self.widgets.get_icon_qt("general", "refresh", "view-refresh"))
-        btn_test_matrix.setIcon(self.widgets.get_icon_qt("general", "matrix", "table"))
-        btn_close.setIcon(self.widgets.get_icon_qt("general", "close", "window-close"))
+        if not self.appdata.system_qt_theme:
+            btn_refresh.setIcon(self.widgets.get_icon_qt("general", "refresh"))
+            btn_test_matrix.setIcon(self.widgets.get_icon_qt("general", "matrix"))
+            btn_close.setIcon(self.widgets.get_icon_qt("general", "close"))
 
         tree.setColumnWidth(0, 250)
         root = tree.invisibleRootItem()
@@ -962,7 +963,8 @@ class DevicesTab(shared.TabData):
         cur_pos = self.dialog.findChild(QLabel, "CurrentPosition")
 
         # Dialog Button Icons
-        btn_close.setIcon(self.widgets.get_icon_qt("general", "close", "window-close"))
+        if not self.appdata.system_qt_theme:
+            btn_close.setIcon(self.widgets.get_icon_qt("general", "close"))
 
         def _close_test():
             # WARNING: Hardcoded 'main' zone for matrix logic

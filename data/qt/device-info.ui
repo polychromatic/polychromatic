@@ -72,6 +72,9 @@
         <property name="text">
          <string>Refresh</string>
         </property>
+        <property name="icon">
+         <iconset theme="view-refresh"/>
+        </property>
        </widget>
       </item>
       <item>
@@ -81,6 +84,9 @@
         </property>
         <property name="text">
          <string>Inspect Matrix</string>
+        </property>
+        <property name="icon">
+         <iconset theme="table"/>
         </property>
        </widget>
       </item>
@@ -101,6 +107,9 @@
        <widget class="QPushButton" name="Close">
         <property name="text">
          <string>Close</string>
+        </property>
+        <property name="icon">
+         <iconset theme="dialog-close"/>
         </property>
        </widget>
       </item>

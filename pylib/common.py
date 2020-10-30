@@ -273,13 +273,14 @@ def generate_colour_bitmap(dbg, colour_hex, size="22x22"):
     return cache_path
 
 
-def get_icon_styles(dbg, folder, name, normal_colour, disabled_colour, active_colour, selected_colour):
+def get_icon_styles(dbg, folder, name, normal_colour, disabled_colour, active_colour, selected_colour, secondary_active, secondary_inactive):
     """
     Returns a list of icon paths to SVG assets for use with buttons and other
     Qt widgets in this order: ["normal", "disabled", "active", "selected"]. If
     the icon is missing, then None is returned.
 
-    Paramaters are for get_icon() and the hex values to use.
+    Paramaters are for get_icon() and the hex values to use. The secondary colour
+    is used to recolour icons with a dual tone.
 
     The file is cached to speed up future retrievals of the asset.
     """
@@ -299,7 +300,8 @@ def get_icon_styles(dbg, folder, name, normal_colour, disabled_colour, active_co
                 data = f.readlines()
             newdata = []
             for line in data:
-                newdata.append(line.replace("#00FF00", colour).replace("#00ff00", colour))
+                secondary_colour = secondary_active if colour in [active_colour, selected_colour] else secondary_inactive
+                newdata.append(line.replace("#00FF00", colour).replace("#00ff00", colour).replace("#008000", secondary_colour))
             with open(cache_path, "w") as f:
                 f.writelines(newdata)
 
