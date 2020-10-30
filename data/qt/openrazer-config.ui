@@ -169,12 +169,16 @@ Use &quot;Apply to All&quot; instead.</string>
           <item>
            <widget class="QLabel" name="mouse_battery_notifier_freq_label">
             <property name="text">
-             <string>Notify frequency (in seconds)</string>
+             <string>Notification Frequency</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="mouse_battery_notifier_freq"/>
+           <widget class="QSpinBox" name="mouse_battery_notifier_freq">
+            <property name="suffix">
+             <string> seconds</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
