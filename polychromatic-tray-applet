@@ -565,7 +565,7 @@ class PolychromaticTrayApplet():
         Params:
             colour_hex      Hex value, e.g. "#00FF00"
         """
-        return common.generate_colour_bitmap(dbg, common.paths, colour_hex)
+        return common.generate_colour_bitmap(dbg, colour_hex)
 
 
 class Callback():

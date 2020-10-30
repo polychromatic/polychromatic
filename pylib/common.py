@@ -48,7 +48,6 @@ class Paths(object):
     # Cached directories
     assets_cache = os.path.join(cache, "assets")
     effects_cache = os.path.join(cache, "effects")
-    colours_cache = os.path.join(cache, "colours")
 
     # Subdirectories
     effects = os.path.join(root, "effects")
@@ -71,12 +70,12 @@ class Paths(object):
     # Create folders if they do not exist.
     for folder in [root, presets, custom_icons, states,
                    effects, effects_keyframed, effects_scripted,
-                   cache, assets_cache, effects_cache, colours_cache]:
+                   cache, assets_cache, effects_cache]:
         if not os.path.exists(folder):
             os.makedirs(folder)
 
     # Data directory
-    # -- For development, this is normally adjacent to the application executable.
+    # -- For developmen/opt, this is normally adjacent to the application executable.
     # -- For system-wide installs, this is generally /usr/share/polychromatic.
     module_path = __file__
     if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))):
@@ -250,27 +249,64 @@ def get_icon(folder, name):
         icon_path = os.path.join(paths.data_dir, "img", folder, name + ext)
         if os.path.exists(icon_path):
             return icon_path
-
     return None
 
-def generate_colour_bitmap(dbg, path, colour_hex, size="22x22"):
+
+def generate_colour_bitmap(dbg, colour_hex, size="22x22"):
     """
     Generates a small bitmap of a colour and returns the path. Used for some UI controls
     that cannot use stylesheets.
 
     The file is cached to speed up future retrievals of the colour.
     """
-    colour_path = os.path.join(path.colours_cache, "{name}-{size}.png".format(name=colour_hex.strip("#"), size=size))
+    cache_name = str(hash(colour_hex + size))
+    cache_path = os.path.join(paths.assets_cache, cache_name + ".png")
 
-    if not os.path.exists(colour_path):
+    if not os.path.exists(cache_path):
         dbg.stdout("Generating colour bitmap: " + colour_hex, dbg.action, 1)
-        subprocess.call("convert -size {size} xc:{hex} {path}".format(hex=colour_hex, path=colour_path, size=size), shell=True)
+        subprocess.call("convert -size {size} xc:{hex} {path}".format(hex=colour_hex, path=cache_path, size=size), shell=True)
 
-    if not os.path.exists(colour_path):
+    if not os.path.exists(cache_path):
         dbg.stdout("ERROR: Failed to generate bitmap: " + colour_hex, dbg.error)
         return None
 
-    return colour_path
+    return cache_path
+
+
+def get_icon_styles(dbg, folder, name, normal_colour, disabled_colour, active_colour, selected_colour):
+    """
+    Returns a list of icon paths to SVG assets for use with buttons and other
+    Qt widgets in this order: ["normal", "disabled", "active", "selected"]. If
+    the icon is missing, then None is returned.
+
+    Paramaters are for get_icon() and the hex values to use.
+
+    The file is cached to speed up future retrievals of the asset.
+    """
+    original_icon = get_icon(folder, name)
+    icons = []
+
+    if not original_icon:
+        return None
+
+    for colour in [normal_colour, disabled_colour, active_colour, selected_colour]:
+        cache_name = str(hash(folder + name + colour))
+        cache_path = os.path.join(paths.assets_cache, cache_name + ".svg")
+
+        if not os.path.exists(cache_path):
+            dbg.stdout("Generating icon style: {0}/{1} ({2})".format(folder, name, colour), dbg.warning, 1)
+            with open(original_icon, "r") as f:
+                data = f.readlines()
+            newdata = []
+            for line in data:
+                newdata.append(line.replace("#00FF00", colour).replace("#00ff00", colour))
+            with open(cache_path, "w") as f:
+                f.writelines(newdata)
+
+        icons.append(cache_path)
+
+    return icons
+
 
 def execute_polychromatic_component(dbg, component, controller_open=None):
     """

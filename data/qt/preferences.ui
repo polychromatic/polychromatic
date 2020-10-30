@@ -35,10 +35,6 @@
       <number>0</number>
      </property>
      <widget class="QWidget" name="general">
-      <attribute name="icon">
-       <iconset>
-        <normaloff>../img/general/controller.svg</normaloff>../img/general/controller.svg</iconset>
-      </attribute>
       <attribute name="title">
        <string>General</string>
       </attribute>
@@ -252,18 +248,12 @@
                 <property name="text">
                  <string>Change...</string>
                 </property>
-                <property name="icon">
-                 <iconset theme="document-edit"/>
-                </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="SavedColoursReset">
                 <property name="text">
                  <string>Reset to Default Colours</string>
-                </property>
-                <property name="icon">
-                 <iconset theme="document-revert"/>
                 </property>
                </widget>
               </item>
@@ -290,10 +280,6 @@
       </layout>
      </widget>
      <widget class="QWidget" name="tray">
-      <attribute name="icon">
-       <iconset>
-        <normaloff>../img/general/tray-applet.svg</normaloff>../img/general/tray-applet.svg</iconset>
-      </attribute>
       <attribute name="title">
        <string>Tray Applet</string>
       </attribute>
@@ -470,10 +456,6 @@
       </layout>
      </widget>
      <widget class="QWidget" name="effects">
-      <attribute name="icon">
-       <iconset>
-        <normaloff>../img/general/profile-default.svg</normaloff>../img/general/profile-default.svg</iconset>
-      </attribute>
       <attribute name="title">
        <string>Editor</string>
       </attribute>
@@ -529,10 +511,6 @@
       </layout>
      </widget>
      <widget class="QWidget" name="tasks">
-      <attribute name="icon">
-       <iconset>
-        <normaloff>../img/tab_active/triggers.svg</normaloff>../img/tab_active/triggers.svg</iconset>
-      </attribute>
       <attribute name="title">
        <string>Background Tasks</string>
       </attribute>
@@ -644,10 +622,6 @@
                 <property name="text">
                  <string>Refresh</string>
                 </property>
-                <property name="icon">
-                 <iconset theme="view-refresh">
-                  <normaloff>.</normaloff>.</iconset>
-                </property>
                </widget>
               </item>
               <item>
@@ -668,20 +642,12 @@
                 <property name="text">
                  <string>Stop All</string>
                 </property>
-                <property name="icon">
-                 <iconset theme="process-stop">
-                  <normaloff>.</normaloff>.</iconset>
-                </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="TasksReload">
                 <property name="text">
                  <string>Restart All</string>
-                </property>
-                <property name="icon">
-                 <iconset theme="system-reboot">
-                  <normaloff>.</normaloff>.</iconset>
                 </property>
                </widget>
               </item>
@@ -702,10 +668,6 @@
       </layout>
      </widget>
      <widget class="QWidget" name="backend">
-      <attribute name="icon">
-       <iconset>
-        <normaloff>../img/emblems/software.svg</normaloff>../img/emblems/software.svg</iconset>
-      </attribute>
       <attribute name="title">
        <string>Backends</string>
       </attribute>
@@ -838,10 +800,6 @@
                    <property name="text">
                     <string>Configure</string>
                    </property>
-                   <property name="icon">
-                    <iconset>
-                     <normaloff>../img/tab_active/preferences.svg</normaloff>../img/tab_active/preferences.svg</iconset>
-                   </property>
                   </widget>
                  </item>
                  <item>
@@ -859,10 +817,6 @@
                   <widget class="QPushButton" name="OpenRazerTroubleshoot">
                    <property name="text">
                     <string>Troubleshoot...</string>
-                   </property>
-                   <property name="icon">
-                    <iconset>
-                     <normaloff>../img/emblems/utility.svg</normaloff>../img/emblems/utility.svg</iconset>
                    </property>
                   </widget>
                  </item>
@@ -902,20 +856,12 @@
                    <property name="text">
                     <string>Open Log...</string>
                    </property>
-                   <property name="icon">
-                    <iconset>
-                     <normaloff>../img/general/folder.svg</normaloff>../img/general/folder.svg</iconset>
-                   </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="OpenRazerRestartDaemon">
                    <property name="text">
                     <string>Restart Daemon</string>
-                   </property>
-                   <property name="icon">
-                    <iconset>
-                     <normaloff>../img/general/refresh.svg</normaloff>../img/general/refresh.svg</iconset>
                    </property>
                   </widget>
                  </item>

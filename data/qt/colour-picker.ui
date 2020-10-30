@@ -151,10 +151,6 @@
          <property name="text">
           <string>Change...</string>
          </property>
-         <property name="icon">
-          <iconset theme="document-edit">
-           <normaloff>.</normaloff>.</iconset>
-         </property>
         </widget>
        </item>
        <item>
@@ -164,9 +160,6 @@
          </property>
          <property name="text">
           <string>Save</string>
-         </property>
-         <property name="icon">
-          <iconset theme="list-add"/>
          </property>
         </widget>
        </item>
@@ -232,11 +225,15 @@
        </item>
        <item>
         <widget class="QPushButton" name="CloseSaveWidget">
+         <property name="toolTip">
+          <string>Cancel saving this colour</string>
+         </property>
          <property name="text">
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="document-close"/>
+          <iconset theme="document-close">
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </widget>
        </item>

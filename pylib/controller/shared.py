@@ -162,6 +162,30 @@ class PolychromaticWidgets(object):
         self.dialog_error = QMessageBox.Critical
         self.dialog_warning = QMessageBox.Warning
 
+    def get_icon_qt(self, folder, name, native_theme=None):
+        """
+        Returns a QIcon() object with the specified button image.
+
+        Params:
+            folder          For common.get_icon()
+            name            For common.get_icon()
+            native_theme    (Optional) Use this icon when system theme is used
+        """
+        if self.appdata.system_qt_theme and native_theme:
+            icon = QIcon()
+            icon.fromTheme(native_theme)
+            return icon
+
+        icons = common.get_icon_styles(self.appdata.dbg, folder, name, self.appdata.normal_colour, self.appdata.disabled_colour, self.appdata.active_colour, self.appdata.selected_colour)
+        if not icons:
+            return QIcon()
+
+        qicon = QIcon(icons[0])
+        qicon.addFile(icons[1], mode=QIcon.Disabled)
+        qicon.addFile(icons[2], mode=QIcon.Active)
+        qicon.addFile(icons[3], mode=QIcon.Selected)
+        return qicon
+
     def create_summary_widget(self, icon_path, title, indicators=[], buttons=[]):
         """
         Returns a summary widget presenting an overview of the selected device,
@@ -482,6 +506,7 @@ class ColourPicker(object):
     """
     def __init__(self, appdata, callback_fn, callback_data, current_hex, title):
         self.appdata = appdata
+        self.widgets = PolychromaticWidgets(appdata)
         self.current_hex = current_hex
         self.current_name = ""
         self.callback_fn = callback_fn
@@ -503,6 +528,15 @@ class ColourPicker(object):
         self.saved_tree = self.dialog.findChild(QTreeWidget, "SavedColours")
         self.current_preview = self.dialog.findChild(QWidget, "CurrentPreview")
         self.current_label = self.dialog.findChild(QLabel, "CurrentLabel")
+
+        # Set Dialog Button Icons
+        self.change_btn.setIcon(self.widgets.get_icon_qt("general", "edit", "document-edit"))
+        self.open_save_widget.setIcon(self.widgets.get_icon_qt("general", "new", "list-add"))
+        self.close_save_widget.setIcon(self.widgets.get_icon_qt("general", "close", "document-close"))
+        self.list_save_btn.setIcon(self.widgets.get_icon_qt("general", "save", "document-save"))
+        self.list_del_btn.setIcon(self.widgets.get_icon_qt("general", "delete", "delete"))
+        self.dialog_btns.button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save", "document-save"))
+        self.dialog_btns.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel", "dialog-cancel"))
 
         # Connect signals when interacting with UI controls
         self.dialog_btns.accepted.connect(self._apply_colour)
@@ -537,7 +571,7 @@ class ColourPicker(object):
         item = QTreeWidgetItem()
         item.setText(0, name)
         item.setText(1, value.upper())
-        item.setIcon(0, QIcon(common.generate_colour_bitmap(self.appdata.dbg, self.appdata.paths, value, "16x16")))
+        item.setIcon(0, QIcon(common.generate_colour_bitmap(self.appdata.dbg, value, "16x16")))
         item.colour_name = name
         item.colour_hex = value.upper()
         item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsDragEnabled)

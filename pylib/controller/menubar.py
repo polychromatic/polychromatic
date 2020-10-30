@@ -138,6 +138,7 @@ class MenuBar(object):
             label = self.result_window.findChild(QLabel, "Title")
             tree = self.result_window.findChild(QTreeWidget, "Results")
             column = tree.invisibleRootItem()
+            self.result_window.findChild(QPushButton, "Close").setIcon(self.widgets.get_icon_qt("general", "close", "window-close"))
 
             all_passed = True
             for result in results:

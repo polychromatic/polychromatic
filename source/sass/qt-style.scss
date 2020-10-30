@@ -131,10 +131,16 @@ QToolButton:hover {
     color: #fff;
 }
 
+QPushButton:focus,
+QToolButton:focus {
+    background-color: darken($bg-primary, 5%);
+}
+
 QPushButton:pressed,
 QToolButton:pressed {
-    background-color: $primary;
-    color: #000;
+    background-color: darken($bg-primary, 5%);
+    border-color: darken($border-colour, 5%);
+    color: $primary;
 }
 
 /* Checked */
@@ -154,8 +160,7 @@ QToolButton:checked:hover {
 
 QPushButton:checked:pressed,
 QToolButton:checked:pressed {
-    background-color: darken($primary, 5%);
-    color: #000;
+    background-color: darken($secondary, 5%);
 }
 
 /* Disabled */
@@ -422,12 +427,12 @@ QCheckBox:unchecked:hover {
 }
 
 QCheckBox::indicator:unchecked:pressed {
-    background-color: lighten($bg-control, 20%);
+    background-color: darken($bg-control, 10%);
     image: none;
 }
 
 QCheckBox:unchecked:pressed {
-    color: lighten($text-colour, 20%);
+    color: darken($text-colour, 10%);
 }
 
 QCheckBox::indicator:checked {
@@ -497,7 +502,7 @@ QRadioButton::indicator:unchecked:pressed {
 }
 
 QRadioButton:unchecked:pressed {
-    color: lighten($text-colour, 20%);
+    color: darken($text-colour, 10%);
 }
 
 QRadioButton::indicator:checked {

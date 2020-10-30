@@ -93,6 +93,12 @@ class ApplicationData(object):
         self.version = VERSION
         self.versions = VERSIONS
 
+        # UI Colours (based on SCSS variables)
+        self.normal_colour = "#DED9CB"      # $button-text-colour
+        self.disabled_colour = "#575757"    # $text-disabled
+        self.active_colour = "#00FF00"      # $primary
+        self.selected_colour = "#00FF00"    # $primary
+
         # Assigned in load() later
         self.middleman = None
         self.menubar = None
