@@ -208,7 +208,7 @@ class MainWindow(QMainWindow):
         """
         # Finish loading UI style/fonts
         QFontDatabase.addApplicationFont(os.path.join(common.paths.data_dir, "qt", "fonts", "Play_regular.ttf"))
-        controller.shared.load_qt_theme(app, qapp, self)
+        controller.shared.load_qt_theme(app, self)
         qapp.setFont(QFont("Play", 10, 0))
 
         # Tab objects - custom design and native tabs
