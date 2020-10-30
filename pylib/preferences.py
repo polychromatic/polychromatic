@@ -152,6 +152,12 @@ def upgrade_old_pref():
         dbg.stdout("")
         return
 
+    # Always clear cache when configuration is updated
+    if os.path.exists(path.cache):
+        shutil.rmtree(path.cache)
+        os.makedirs(path.cache)
+        dbg.stdout("Cache cleared.", dbg.success, 1)
+
     dbg.stdout("Upgrading configuration from v{0} to v{1}...".format(config_version, VERSION), dbg.action)
 
     # v0.3.12
@@ -174,7 +180,7 @@ def upgrade_old_pref():
     # v0.4.0 (dev)
     if config_version == 6:
         # The configuration will be reset.
-        dbg.stdout("Old development configuration detected. Preferences have been reset.", dbg.warning)
+        dbg.stdout("Unsupported v0.4.0 configuration detected. Preferences reset.", dbg.warning)
         for filepath in [path.preferences, path.colours, path.old_devicestate]:
             if os.path.exists(filepath):
                 os.remove(filepath)
@@ -230,6 +236,8 @@ def upgrade_old_pref():
                 except KeyError:
                     # Invalid data, discard.
                     pass
+        except ImportError:
+            dbg.stdout("GTK not installed. Tray icon cannot be migrated.", dbg.error)
         except KeyError:
             # Invalid data, discard.
             pass
