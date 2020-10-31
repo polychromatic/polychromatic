@@ -383,8 +383,8 @@ class DevicesTab(shared.TabData):
                 option_data = param["data"]
                 colour_hex = param["colours"]
 
-            self.dbg.stdout("Setting effect {0} (data: {1}) on {2} device {3} (zone: {4}, colours: {5})".format(option_id, str(option_data), self.current_backend, self.current_uid, zone, str(colour_hex)), self.dbg.action, 1)
-            self.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, zone, option_id, option_data, colour_hex)
+            response = self.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, zone, option_id, option_data, colour_hex)
+            self._event_check_response(response)
             self.reload_device()
 
         self.btn_grps[zone].buttonClicked.connect(_clicked_effect_button)
@@ -507,14 +507,19 @@ class DevicesTab(shared.TabData):
         """
         After clicking or changing an option, send this change to the backend.
         """
-        dbg = self.dbg
         backend = device["backend"]
         uid = device["uid"]
         serial = device["serial"]
-        dbg.stdout("Setting option '{0}' on {1} ({2} device {3})".format(option_id, device["name"], backend, uid), dbg.action, 1)
-        dbg.stdout("  -> Zone: {0} | Param: {1} | Colours: {2}".format(zone, option_data, colour_hex), dbg.action, 1)
+        self.dbg.stdout("Setting option '{0}' on {1} ({2} device {3})".format(option_id, device["name"], backend, uid), self.dbg.action, 1)
+        self.dbg.stdout("  -> Zone: {0} | Param: {1} | Colours: {2}".format(zone, option_data, colour_hex), self.dbg.action, 1)
         response = self.middleman.set_device_state(backend, uid, serial, zone, option_id, option_data, colour_hex)
+        self._event_check_response(response)
 
+    def _event_check_response(self, response):
+        """
+        Checks the result of the request to the backend. Upon failure, inform the user.
+        """
+        dbg = self.dbg
         _ = self._
 
         if response == True:
@@ -531,12 +536,13 @@ class DevicesTab(shared.TabData):
                                      _("Device Unavailable"),
                                      _("The request could not be completed due to devices being removed/inserted."),
                                      _("Please refresh and try again."))
+            self.reload_device()
         elif type(response) == str:
             dbg.stdout("Backend threw an exception", dbg.error, 1)
             print(response)
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      _("Backend Error"),
-                                     _("The request could not be completed as an error was thrown by the backend."),
+                                     _("The request could not be completed due to an error."),
                                      traceback=response)
 
     def _open_no_backend_found(self, message_id):

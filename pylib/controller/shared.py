@@ -25,7 +25,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QListWidget, QHBoxLayout, QVBoxLayout, QFormLayout, \
                             QSizePolicy, QSpacerItem, QDialog, QColorDialog, \
                             QDialogButtonBox, QTreeWidget, QTreeWidgetItem, \
-                            QLineEdit
+                            QLineEdit, QTextEdit
 
 
 def load_qt_theme(appdata, window):
@@ -485,6 +485,7 @@ class PolychromaticWidgets(object):
 
         if traceback:
             msgbox.setDetailedText(traceback)
+            msgbox.findChild(QTextEdit).setMinimumWidth(600)
 
         def _dialog_closed(result):
             for action in actions.keys():
