@@ -346,7 +346,7 @@ class PolychromaticWidgets(object):
             icon_path       (str)       Path to the background graphic. Should be 750x500.
             title           (str)       Larger text to display.
             subtitle        (str)       Smaller text to display.
-            buttons         (list)      (Optional) In format: [{icon, label, action}, {..}]
+            buttons         (list)      (Optional) In format: [{icon_folder, icon_name, label, action}, {..}]
 
         Returns nothing - the layout is directly applied.
         """
@@ -380,7 +380,7 @@ class PolychromaticWidgets(object):
             for spec in buttons:
                 button = QPushButton()
                 button.setText(spec["label"])
-                button.setIcon(QIcon(spec["icon"]))
+                button.setIcon(self.get_icon_qt(spec["icon_folder"], spec["icon_name"]))
                 button.clicked.connect(spec["action"])
                 button_container.layout().addWidget(button)
             button_container.layout().addStretch()

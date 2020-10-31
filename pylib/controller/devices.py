@@ -576,19 +576,22 @@ class DevicesTab(shared.TabData):
             0: [
                 {
                     "label": self._("Troubleshoot"),
-                    "icon": common.get_icon("general", "preferences"),
+                    "icon_folder": "general",
+                    "icon_name": "preferences",
                     "action": self._start_troubleshooter
                 }
             ],
             2: [
                 {
                     "label": self._("Online Help"),
-                    "icon": common.get_icon("general", "external"),
+                    "icon_folder": "general",
+                    "icon_name": "external",
                     "action": self._open_online_help
                 },
                 {
                     "label": self._("Troubleshoot"),
-                    "icon": common.get_icon("general", "preferences"),
+                    "icon_folder": "general",
+                    "icon_name": "preferences",
                     "action": self._start_troubleshooter
                 }
             ]
@@ -596,7 +599,8 @@ class DevicesTab(shared.TabData):
         buttons[1] = buttons[2].copy()
         buttons[1].append({
             "label": self._("Show Error Details"),
-            "icon": common.get_icon("general", "warning"),
+            "icon_folder": "general",
+            "icon_name": "warning",
             "action": self._open_backend_exception
         })
 
@@ -656,17 +660,20 @@ class DevicesTab(shared.TabData):
             [
                 {
                     "label": "{0} {1}".format(self._("Restart"), backend_name),
-                    "icon": common.get_icon("general", "refresh"),
+                    "icon_folder": "general",
+                    "icon_name": "refresh",
                     "action": _restart_backend
                 },
                 {
                     "label": self._("Troubleshoot"),
-                    "icon": common.get_icon("general", "preferences"),
+                    "icon_folder": "general",
+                    "icon_name": "preferences",
                     "action": self._start_troubleshooter
                 },
                 {
                     "label": self._("Online Help"),
-                    "icon": common.get_icon("general", "external"),
+                    "icon_folder": "general",
+                    "icon_name": "external",
                     "action": self._open_online_help
                 },
             ])
@@ -687,10 +694,12 @@ class DevicesTab(shared.TabData):
             [
                 {
                     "label": self._("View Details"),
-                    "icon": common.get_icon("emblems", "software"),
+                    "icon_folder": "emblems",
+                    "icon_name": "software",
                     "action": _view_details
                 }
             ])
+        self.set_cursor_normal()
 
     def open_apply_to_all(self):
         """
