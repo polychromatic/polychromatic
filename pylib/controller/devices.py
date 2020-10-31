@@ -848,13 +848,15 @@ class DevicesTab(shared.TabData):
                 elif type(value) == bool:
                     if value == True:
                         item.setText(1, _("Yes"))
+                        item.setIcon(1, QIcon(common.get_icon("general", "success")))
                     else:
                         item.setText(1, _("No"))
+                        item.setIcon(1, QIcon(common.get_icon("general", "close")))
                 else:
                     item.setText(1, _("(Unavailable or not applicable)"))
                     item.setDisabled(True)
                 if icon:
-                    item.setIcon(1 if value else 0, QIcon(icon))
+                    item.setIcon(1 if value != "" else 0, QIcon(icon))
                 return item
 
             hw = mkitem(_("Hardware"))
@@ -864,7 +866,7 @@ class DevicesTab(shared.TabData):
             hw.addChild(mkitem(_("Form Factor"), device["form_factor"]["label"], device["form_factor"]["icon"]))
             hw.addChild(mkitem(_("Serial"), device["serial"]))
             hw.addChild(mkitem(_("Image"), device["real_image"], device["real_image"]))
-            hw.addChild(mkitem(_("Monochromatic"), device["monochromatic"]))
+            hw.addChild(mkitem(_("Monochromatic"), device["monochromatic"], common.get_icon("general", "ring-mono") if device["monochromatic"] else common.get_icon("tray", "ring")))
             if device["vid"]:
                 hw.addChild(mkitem("VID:PID", "{0}:{1}".format(device["vid"], device["pid"])))
             else:
@@ -873,7 +875,7 @@ class DevicesTab(shared.TabData):
             hw.addChild(mkitem(_("Keyboard Layout"), device["keyboard_layout"]))
             hw.addChild(mkitem(_("Matrix Supported"), device["matrix"]))
             if device["matrix"]:
-                hw.addChild(mkitem(_("Matrix Dimensions"), _("1 column(s), 2 row(s)").replace("1", str(device["matrix_rows"])).replace("2", str(device["matrix_cols"]))))
+                hw.addChild(mkitem(_("Matrix Dimensions"), _("1 column(s), 2 row(s)").replace("1", str(device["matrix_rows"])).replace("2", str(device["matrix_cols"])), common.get_icon("general", "matrix")))
                 btn_test_matrix.setDisabled(False)
             tree.addTopLevelItem(hw)
 

@@ -33,8 +33,8 @@
      </property>
      <property name="iconSize">
       <size>
-       <width>22</width>
-       <height>22</height>
+       <width>18</width>
+       <height>18</height>
       </size>
      </property>
      <attribute name="headerVisible">
@@ -73,7 +73,8 @@
          <string>Refresh</string>
         </property>
         <property name="icon">
-         <iconset theme="view-refresh"/>
+         <iconset theme="view-refresh">
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>
@@ -86,7 +87,8 @@
          <string>Inspect Matrix</string>
         </property>
         <property name="icon">
-         <iconset theme="table"/>
+         <iconset theme="table">
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>
@@ -109,7 +111,8 @@
          <string>Close</string>
         </property>
         <property name="icon">
-         <iconset theme="dialog-close"/>
+         <iconset theme="dialog-close">
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>
