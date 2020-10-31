@@ -403,7 +403,7 @@ class Backend(_backend.Backend):
                             }
                         ]
 
-                    elif effect in "static":
+                    elif effect in ["static", "pulsate", "blinking"]:
                         effect_option["colours"] = [current_state["colour_1"]]
 
                     effect_option["active"] = True if current_state["effect"].startswith(effect) else False
