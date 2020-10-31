@@ -632,6 +632,10 @@ class ColourPicker(object):
         """
         Saves the colour list to file.
         """
+        # When pre-defined monochromatic colours are used, never save!
+        if self.monoscale:
+            return
+
         # TODO: Optimisation: Only save if there are changes (add/remove/reorder)
         dbg = self.appdata.dbg
         dbg.stdout("Saving colour list...", dbg.action, 1)
