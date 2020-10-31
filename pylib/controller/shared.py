@@ -392,7 +392,7 @@ class PolychromaticWidgets(object):
                 layout.addWidget(widget)
         layout.addStretch()
 
-    def create_colour_control(self, current_hex, callback_fn, callback_data, title):
+    def create_colour_control(self, current_hex, callback_fn, callback_data, title, monoscale=False):
         """
         Create a colour picker control for the user to set a colour. Setting
         the colour will open a dialog.
@@ -405,6 +405,7 @@ class PolychromaticWidgets(object):
             callback_fn     Function to run after saving changes.
             callback_data   Additional data to pass to callback_fn.
             title           Title to show when colour is being picked.
+            monoscale       Picker should only show green only colours.
         """
         container = QWidget()
         container.setLayout(QHBoxLayout())
@@ -417,7 +418,7 @@ class PolychromaticWidgets(object):
         preview.setStyleSheet("QWidget {{ background-color: {0} }}".format(current_hex))
 
         def _clicked_change_colour():
-            picker = ColourPicker(self.appdata, callback_fn, callback_data, current_hex, title)
+            picker = ColourPicker(self.appdata, callback_fn, callback_data, current_hex, title, monoscale)
 
         btn = QPushButton()
         btn.setText(self.appdata._("Change..."))
@@ -503,7 +504,7 @@ class ColourPicker(object):
     The colour picker dialog allows the user to quickly choose a colour or
     hand over to the system's colour picker (which on Linux, would be Qt's native picker)
     """
-    def __init__(self, appdata, callback_fn, callback_data, current_hex, title):
+    def __init__(self, appdata, callback_fn, callback_data, current_hex, title, monoscale):
         self.appdata = appdata
         self.widgets = PolychromaticWidgets(appdata)
         self.current_hex = current_hex
@@ -512,6 +513,7 @@ class ColourPicker(object):
         self.callback_data = callback_data
         self.title = title
         self.saved_colours = pref.load_file(appdata.paths.colours)
+        self.monoscale = monoscale
 
         # UI Controls
         self.dialog = get_ui_widget(appdata, "colour-picker", q_toplevel=QDialog)
@@ -537,6 +539,14 @@ class ColourPicker(object):
             self.list_del_btn.setIcon(self.widgets.get_icon_qt("general", "delete"))
             self.dialog_btns.button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save"))
             self.dialog_btns.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel"))
+
+        # If the device only supports a monoscale of "RGB", use a fixed list.
+        if monoscale:
+            self.list_del_btn.setDisabled(True)
+            self.open_save_widget.setDisabled(True)
+            self.open_save_widget.setHidden(True)
+            self.dialog.findChild(QWidget, "SavedColoursVList").setHidden(True)
+            self.saved_colours = common.get_green_shades(self.appdata._)
 
         # Connect signals when interacting with UI controls
         self.dialog_btns.accepted.connect(self._apply_colour)
@@ -647,6 +657,12 @@ class ColourPicker(object):
         if not output.isValid():
             return
         new_hex = output.name()
+
+        # Strip R/B out of RGB if device is monochromatic
+        if self.monoscale:
+            as_rgb = common.hex_to_rgb(new_hex)
+            new_hex = common.rgb_to_hex([0, as_rgb[1], 0])
+
         self._refresh_selected_colour(new_hex)
 
     def _open_save_widget(self):

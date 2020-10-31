@@ -213,7 +213,7 @@ class DevicesTab(shared.TabData):
             # Colours
             if current_colours and len(current_colours) > 0:
                 for colour_no, colour_hex in enumerate(current_colours):
-                    widgets.append(self._create_colour_control(colour_no, colour_hex, current_option_id, current_option_data, zone))
+                    widgets.append(self._create_colour_control(colour_no, colour_hex, current_option_id, current_option_data, zone, device["monochromatic"]))
 
             # Other controls (e.g. brightness, poll rate)
             for option in options:
@@ -441,7 +441,7 @@ class DevicesTab(shared.TabData):
         self.btn_grps["radio_param_" + zone] = widgets
         return self.widgets.create_row_widget(self._("Effect Mode"), widgets, vertical=True)
 
-    def _create_colour_control(self, colour_no, colour_hex, option_id, option_data, zone):
+    def _create_colour_control(self, colour_no, colour_hex, option_id, option_data, zone, monochromatic):
         """
         Creates a row control for setting the current colour for the specified
         option (effect)
@@ -466,7 +466,7 @@ class DevicesTab(shared.TabData):
             if response:
                 self.reload_device()
 
-        return self.widgets.create_row_widget(label, [self.widgets.create_colour_control(colour_hex, _set_new_colour, _set_data, self._("Change []").replace("[]", label))])
+        return self.widgets.create_row_widget(label, [self.widgets.create_colour_control(colour_hex, _set_new_colour, _set_data, self._("Change []").replace("[]", label), monochromatic)])
 
     def _create_dpi_control(self, device):
         """

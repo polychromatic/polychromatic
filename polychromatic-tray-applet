@@ -488,10 +488,10 @@ class PolychromaticTrayApplet():
                 except Exception:
                     dbg.stdout("Ignoring invalid colour data at index position " + str(pos), dbg.error)
 
-            indicator.create_seperator(colour_menu)
-            indicator.create_menu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [device, zone], self._get_icon("general", "palette"))
-
-            self._create_menu_item_if_controller_present(colour_menu, _("Edit Colours..."), "colours", self._get_icon("general", "edit"))
+            if not device["monochromatic"]:
+                indicator.create_seperator(colour_menu)
+                indicator.create_menu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [device, zone], self._get_icon("general", "palette"))
+                self._create_menu_item_if_controller_present(colour_menu, _("Edit Colours..."), "colours", self._get_icon("general", "edit"))
 
             if multiple_zones:
                 indicator.create_menu_item(submenu, _("All Zones"), False, None, None, device_icon)
