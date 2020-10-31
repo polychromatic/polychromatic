@@ -383,6 +383,7 @@ class DevicesTab(shared.TabData):
                 option_data = param["data"]
                 colour_hex = param["colours"]
 
+            self.dbg.stdout("Setting effect {0} (data: {1}) on {2} device {3} (zone: {4}, colours: {5})".format(option_id, str(option_data), self.current_backend, self.current_uid, zone, str(colour_hex)), self.dbg.action, 1)
             response = self.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, zone, option_id, option_data, colour_hex)
             self._event_check_response(response)
             self.reload_device()
@@ -462,7 +463,9 @@ class DevicesTab(shared.TabData):
 
         def _set_new_colour(new_hex, data):
             device = self.middleman.get_device(self.current_backend, self.current_uid)
+            self.dbg.stdout("Setting colour of current effect on {0} device {1} (zone: {2}, colour {3}: {4})".format(device["backend"], device["uid"], data["zone"], str(data["colour_no"]), new_hex), self.dbg.action, 1)
             response = self.middleman.set_device_colour(device, data["zone"], new_hex, data["colour_no"])
+            self._event_check_response(response)
             if response:
                 self.reload_device()
 
