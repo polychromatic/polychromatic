@@ -43,8 +43,7 @@ class Backend(_backend.Backend):
 
         # Client Settings
         self.allow_image_download = True
-        self.ripple_speed = 0.05
-        self.starlight_speed = 0.05
+        self.ripple_refresh_rate = 0.05
 
         self.load_client_overrides()
 
@@ -78,8 +77,7 @@ class Backend(_backend.Backend):
                 return default
 
         self.allow_image_download = True if _load_override("allow_image_download", int, 1) == 1 else False
-        self.ripple_speed = _load_override("ripple_speed", float, 0.05)
-        self.starlight_speed = _load_override("starlight_speed", float, 0.05)
+        self.ripple_refresh_rate = _load_override("ripple_refresh_rate", float, 0.05)
 
     def _reinit_device_manager(self, force_refresh=False):
         """
@@ -412,15 +410,19 @@ class Backend(_backend.Backend):
 
                     options.append(effect_option)
 
-            # There is no 'lighting_breath' or 'lighting_starlight' in the capabilities list
-            def _get_multi_effect_parameters(effect):
+            # There isn't a single 'lighting_breath' and 'lighting_starlight' in the capabilities list
+            # -- Breath has up to 4 parameters.
+            if True in [_device_has_zone_capability("breath_random"),
+                        _device_has_zone_capability("breath_single"),
+                        _device_has_zone_capability("breath_dual"),
+                        _device_has_zone_capability("breath_triple")]:
                 effect_option = {
-                    "id": effect,
-                    "label": effect_labels[effect],
+                    "id": "breath",
+                    "label": effect_labels["breath"],
                     "type": "effect",
                     "parameters": [],
                     "colours": [],
-                    "active": current_state["effect"].startswith(effect)
+                    "active": current_state["effect"].startswith("breath")
                 }
 
                 param_labels = {
@@ -431,7 +433,7 @@ class Backend(_backend.Backend):
                 }
 
                 for _colour_count, param in enumerate(["random", "single", "dual", "triple"]):
-                    if _device_has_zone_capability(effect + "_" + param):
+                    if _device_has_zone_capability("breath" + "_" + param):
                         _colour_list = []
                         for c in range(1, _colour_count + 1):
                             _colour_list.append(current_state["colour_" + str(c)])
@@ -444,18 +446,49 @@ class Backend(_backend.Backend):
                         }
                         effect_option["parameters"].append(param_key)
 
-                return effect_option
+                options.append(effect_option)
 
-            if True in [_device_has_zone_capability("breath_random"),
-                        _device_has_zone_capability("breath_single"),
-                        _device_has_zone_capability("breath_dual"),
-                        _device_has_zone_capability("breath_triple")]:
-                options.append(_get_multi_effect_parameters("breath"))
-
+            # -- Starlight has up to 3 parameters, plus 3 speeds each.
             if True in [_device_has_zone_capability("starlight_random"),
                         _device_has_zone_capability("starlight_single"),
                         _device_has_zone_capability("starlight_dual")]:
-                options.append(_get_multi_effect_parameters("starlight"))
+                effect_option = {
+                    "id": "starlight",
+                    "label": effect_labels["starlight"],
+                    "type": "effect",
+                    "parameters": [],
+                    "colours": [],
+                    "active": current_state["effect"].startswith("starlight")
+                }
+
+                param_labels = {
+                    "random": self._("Random"),
+                    "single": self._("Single"),
+                    "dual": self._("Dual")
+                }
+
+                param_speeds = {
+                    "fast": self._("Fast"),
+                    "medium": self._("Medium"),
+                    "slow": self._("Slow"),
+                }
+
+                for _colour_count, param in enumerate(["random", "single", "dual"]):
+                    for speed_no, speed in enumerate(["fast", "medium", "slow"]):
+                        if _device_has_zone_capability("starlight" + "_" + param):
+                            _colour_list = []
+                            for c in range(1, _colour_count + 1):
+                                _colour_list.append(current_state["colour_" + str(c)])
+                            param_key = {
+                                "id": param,
+                                "label": "{0} ({1})".format(param_labels[param], param_speeds[speed]),
+                                "data": "{0}_{1}".format(param, speed),
+                                "active": current_state["effect"].endswith(param.capitalize()) and int(current_state["speed"]) == speed_no + 1,
+                                "colours": _colour_list
+                            }
+                            effect_option["parameters"].append(param_key)
+
+                options.append(effect_option)
 
             # DPI is a special control, variables have been populated earlier.
 
@@ -748,36 +781,50 @@ class Backend(_backend.Backend):
 
             elif option_id == "ripple" and option_data == "single":
                 # Params: <red> <green> <blue> <speed>
-                rzone.ripple(colour_1[0], colour_1[1], colour_1[2], self.ripple_speed)
+                rzone.ripple(colour_1[0], colour_1[1], colour_1[2], self.ripple_refresh_rate)
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "ripple")
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
 
             elif option_id == "ripple" and option_data == "random":
                 # Params: <speed>
-                rzone.ripple_random(self.ripple_speed)
+                rzone.ripple_random(self.ripple_refresh_rate)
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "rippleRandomColour")
 
-            elif option_id == "starlight" and option_data == "single":
-                # Params: <red> <green> <blue> <speed>
-                rzone.starlight_single(colour_1[0], colour_1[1], colour_1[2], self.starlight_speed)
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "starlightSingle")
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "speed", option_data)
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
+            elif option_id == "starlight":
+                starlight_type = option_data.split("_")[0]
+                speed_string = option_data.split("_")[1]
+                speeds = {
+                    "fast": 1,
+                    "medium": 2,
+                    "slow": 3
+                }
+                try:
+                    speed = speeds[speed_string]
+                except KeyError:
+                    self.debug("Invalid/unknown starlight speed!")
+                    return False
 
-            elif option_id == "starlight" and option_data == "dual":
-                # Params: <red1> <green1> <blue1> <red2> <green2> <blue2> <speed>
-                rzone.starlight_dual(colour_1[0], colour_1[1], colour_1[2],
-                    colour_2[0], colour_2[1], colour_2[2], self.starlight_speed)
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "starlightDual")
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "speed", option_data)
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_2", colour_hex[1])
+                if starlight_type == "random":
+                    # Params: <speed>
+                    rzone.starlight_random(speed)
+                    self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "starlightRandom")
+                    self._write_persistence_storage_fallback(rdevice, zone, rzone, "speed", speed)
 
-            elif option_id == "starlight" and option_data == "random":
-                # Params: <speed>
-                rzone.starlight_random(self.starlight_speed)
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "starlightRandom")
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "speed", option_data)
+                elif starlight_type == "single":
+                    # Params: <red> <green> <blue> <speed>
+                    rzone.starlight_single(colour_1[0], colour_1[1], colour_1[2], speed)
+                    self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "starlightSingle")
+                    self._write_persistence_storage_fallback(rdevice, zone, rzone, "speed", speed)
+                    self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
+
+                elif starlight_type == "dual":
+                    # Params: <red1> <green1> <blue1> <red2> <green2> <blue2> <speed>
+                    rzone.starlight_dual(colour_1[0], colour_1[1], colour_1[2],
+                        colour_2[0], colour_2[1], colour_2[2], speed)
+                    self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "starlightDual")
+                    self._write_persistence_storage_fallback(rdevice, zone, rzone, "speed", speed)
+                    self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
+                    self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_2", colour_hex[1])
 
             elif option_id == "static":
                 # Params: <red> <green> <blue>

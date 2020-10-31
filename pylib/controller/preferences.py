@@ -327,9 +327,8 @@ class OpenRazerPreferences(shared.TabData):
 
         self.client = [
             # "Filename", <data type>
-            ["allow_image_download",  int],
-            ["ripple_speed", float],
-            ["starlight_speed", float]
+            ["allow_image_download", int],
+            ["ripple_refresh_rate", float]
         ]
 
     def open_log(self):

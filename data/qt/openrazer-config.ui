@@ -313,7 +313,7 @@ Use &quot;Apply to All&quot; instead.</string>
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="ripple_speed_group" native="true">
+        <widget class="QWidget" name="ripple_refresh_rate_group" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <property name="spacing">
            <number>0</number>
@@ -331,14 +331,14 @@ Use &quot;Apply to All&quot; instead.</string>
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="ripple_speed_label">
+           <widget class="QLabel" name="ripple_refresh_rate_label">
             <property name="text">
              <string>Ripple Refresh Rate</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="ripple_speed">
+           <widget class="QDoubleSpinBox" name="ripple_refresh_rate">
             <property name="suffix">
              <string> seconds</string>
             </property>
@@ -360,69 +360,6 @@ Use &quot;Apply to All&quot; instead.</string>
            </widget>
           </item>
          </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QWidget" name="starlight_speed_group" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="starlight_speed_label">
-            <property name="text">
-             <string>Starlight Refresh Rate</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="starlight_speed">
-            <property name="suffix">
-             <string> seconds</string>
-            </property>
-            <property name="decimals">
-             <number>3</number>
-            </property>
-            <property name="minimum">
-             <double>0.001000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>1.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
-            </property>
-            <property name="value">
-             <double>0.050000000000000</double>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="refresh_rate_note">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Changes to the refresh rate will take effect next time these hardware effects are triggered.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
         </widget>
        </item>
        <item>
