@@ -838,7 +838,6 @@ class DevicesTab(shared.TabData):
         def _populate_tree():
             self.set_cursor_busy()
             root.takeChildren()
-            device = self.middleman.get_device(self.current_backend, self.current_uid)
 
             def mkitem(data, value="", icon=None):
                 item = QTreeWidgetItem()
@@ -960,6 +959,13 @@ class DevicesTab(shared.TabData):
         def _test_matrix():
             dialog.accept()
             self._test_device_matrix()
+
+        # Gather data, and exit if an error occurs
+        device = self.middleman.get_device(self.current_backend, self.current_uid)
+        self._event_check_response(device)
+
+        if device in [str, None, False]:
+            return
 
         btn_close.clicked.connect(_close)
         btn_refresh.clicked.connect(_populate_tree)
