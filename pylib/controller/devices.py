@@ -202,7 +202,7 @@ class DevicesTab(shared.TabData):
                     effect_options.append(option)
                     continue
 
-            if len(effect_options) > 0 and current_option_id:
+            if len(effect_options) > 0:
                 effect_controls = self._create_effect_controls(zone, effect_options)
                 param_controls = self._create_effect_parameter_controls(zone, current_option_id, effect_options)
                 if effect_controls:
