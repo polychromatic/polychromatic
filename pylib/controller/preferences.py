@@ -132,11 +132,11 @@ class PreferencesWindow(shared.TabData):
                 label = self._("Error loading the module.")
                 icon = "serious"
 
-            pixmap_src = QPixmap(common.get_icon("general", icon))
-            pixmap = pixmap_src.scaled(24, 24, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            backend_label = self.dialog.findChild(QLabel, "Status_" + backend + "_label")
+            backend_label.setText(label)
 
-            self.dialog.findChild(QLabel, "Status_" + backend + "_label").setText(label)
-            self.dialog.findChild(QLabel, "Status_" + backend + "_icon").setPixmap(pixmap)
+            backend_status_icon = self.dialog.findChild(QLabel, "Status_" + backend + "_icon")
+            shared.set_pixmap_for_label(backend_status_icon, common.get_icon("general", icon), 24)
 
         # Prompt for a restart after changing these options
         def _cb_set_restart_flag():

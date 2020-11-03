@@ -119,6 +119,23 @@ def clear_layout(layout):
             child.widget().deleteLater()
 
 
+def set_pixmap_for_label(qlabel, icon_path, icon_size=24):
+    """
+    Creates a pixmap for a label maintaining its aspect ratio and size.
+
+    This only applies to QLabel() objects. Buttons and other UI elements use QIcon().
+
+    Params:
+        qlabel      (obj)   QLabel() object
+        icon_path   (str)   Absolute path to icon
+        icon_size   (int)   Dimensions to scale
+    """
+    pixmap_src = QPixmap(icon_path)
+    pixmap = pixmap_src.scaled(icon_size, icon_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+    qlabel.setPixmap(pixmap)
+    qlabel.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+
 class TabData(object):
     """
     This parent class is inherited by all tab objects storing common variables.
@@ -228,11 +245,7 @@ class PolychromaticWidgets(object):
 
         # Populate Image
         if os.path.exists(icon_path):
-            # Make sure it fits dimensions
-            pixmap_src = QPixmap(icon_path)
-            pixmap = pixmap_src.scaled(115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            image_widget.setPixmap(pixmap)
-            #image_widget.resize(pixmap.width(), pixmap.height())
+            set_pixmap_for_label(image_widget, icon_path, 115)
         else:
             image_widget.deleteLater()
 
@@ -246,10 +259,7 @@ class PolychromaticWidgets(object):
             # Create image
             if indicator["icon"]:
                 label = QLabel()
-                pixmap_src = QPixmap(indicator["icon"])
-                pixmap = pixmap_src.scaled(22, 22, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                label.setPixmap(pixmap)
-                label.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+                set_pixmap_for_label(label, indicator["icon"], 22)
                 layout.addWidget(label)
 
             # Create text
