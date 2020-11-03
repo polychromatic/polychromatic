@@ -51,10 +51,10 @@ sleep 1
 # Start daemon with fake devices
 if [ ! -z "$GITHUB_WORKSPACE" ]; then
     # Only CI (GitHub Actions) must run as root due to lack of user groups.
-    openrazer-daemon -F --run-dir "$run_dir" --log-dir "$log_dir" --test-dir "$test_dir" --as-root &
+    $OPENRAZER_SRC/daemon/run_openrazer_daemon.py -F --run-dir "$run_dir" --log-dir "$log_dir" --test-dir "$test_dir" --as-root &
 else
     # Local testing, should be already part of plugdev group.
-    openrazer-daemon -F --run-dir "$run_dir" --log-dir "$log_dir" --test-dir "$test_dir" &
+    $OPENRAZER_SRC/daemon/run_openrazer_daemon.py -F --run-dir "$run_dir" --log-dir "$log_dir" --test-dir "$test_dir" &
 fi
 sleep 2
 

@@ -140,10 +140,7 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
                 fx = self.middleman.get_device_object(device["backend"], device["uid"])
         self.assertEqual(success, True, "Supported device(s) failed to initalize a matrix")
 
-    # BUG: Some mice known to fail due to incorrectly reporting having a matrix
-    #      https://github.com/openrazer/openrazer/issues/1252
     def test_set_matrix_object(self):
-        self.skipTest("Known Bug: openrazer/openrazer#1252")
         success = True
         for device in self.middleman.get_device_all():
             if device["matrix"]:
