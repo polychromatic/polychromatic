@@ -326,7 +326,10 @@ class PolychromaticTrayApplet():
             indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
             indicator.create_menu_item(menu, _("Troubleshoot"), True, cb.launch_controller, "troubleshoot", self._get_icon("general", "preferences"))
 
-        for device in devices:
+        # Order devices A-Z for consistency
+        sorted_devices = sorted(devices, key=lambda device: device["name"])
+
+        for device in sorted_devices:
             indicator.add_menu_item(menu, self.build_device_submenu(device))
 
         for device in unknown_devices:

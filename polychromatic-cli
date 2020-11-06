@@ -288,6 +288,8 @@ if args.device:
 else:
     device_list = middleman.get_device_list()
 
+device_list = sorted(device_list, key=lambda device: device["name"])
+
 if args.name:
     for device in device_list:
         if device["name"] == str(args.name):
