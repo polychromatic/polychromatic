@@ -69,6 +69,16 @@ class Backend(object):
         return config_store
 
     #####################################################################
+    # Useful functions the backend may wish to use
+    #####################################################################
+    def debug(self, message=""):
+        """
+        Use this function to output messages to the user when they have verbose enabled.
+        This may be useful when users are diagnosing issues with the backend.
+        """
+        self._dbg.stdout("[{0}] {1}".format(self.backend_id, str(message)), self._dbg.debug, 1)
+
+    #####################################################################
     # These are stubs and should be implemented by the backend's module.
     #####################################################################
     def get_device_list(self):
@@ -305,13 +315,3 @@ class Backend(object):
             None                Not applicable.
         """
         return None
-
-    #####################################################################
-    # Useful Functions
-    #####################################################################
-    def debug(self, message=""):
-        """
-        Use this function to output messages to the user when they have verbose enabled.
-        This may be useful when users are diagnosing issues with the backend.
-        """
-        self._dbg.stdout("[{0}] {1}".format(self.backend_id, str(message)), self._dbg.debug, 1)
