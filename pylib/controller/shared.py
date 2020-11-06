@@ -15,9 +15,12 @@ from .. import procpid
 from ..qt.flowlayout import FlowLayout as QFlowLayout
 
 import os
+import glob
+import shutil
+
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, QMargins
-from PyQt5.QtGui import QIcon, QPalette, QColor, QFont, QPixmap
+from PyQt5.QtCore import Qt, QSize, QMargins
+from PyQt5.QtGui import QIcon, QPalette, QColor, QFont, QPixmap, QMovie
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QWidget, QMessageBox, QGridLayout, \
@@ -25,7 +28,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QListWidget, QHBoxLayout, QVBoxLayout, QFormLayout, \
                             QSizePolicy, QSpacerItem, QDialog, QColorDialog, \
                             QDialogButtonBox, QTreeWidget, QTreeWidgetItem, \
-                            QLineEdit, QTextEdit
+                            QLineEdit, QTextEdit, QTabWidget, QScrollArea, \
+                            QButtonGroup, QFileDialog
 
 
 def load_qt_theme(appdata, window):
@@ -439,7 +443,7 @@ class PolychromaticWidgets(object):
         container.layout().addStretch()
         return container
 
-    def create_icon_picker_control(self, callback_fn):
+    def create_icon_picker_control(self, callback_fn, current_icon, title, purpose=0):
         """
         Create an icon picker control for the user to choose an icon from a list
         of built-in icons, user-imported icons ("custom icons") or an application
@@ -451,8 +455,38 @@ class PolychromaticWidgets(object):
 
         Params:
             callback_fn     Function to run after saving changes
+            current_icon    Initial icon
+            title           Window title
+            purpose         IconPicker.purpose_* integer.
         """
-        print("stub:create_icon_picker_control")
+        container = QWidget()
+        container.setLayout(QHBoxLayout())
+        container.layout().setContentsMargins(0, 0, 0, 0)
+
+        preview = QLabel()
+        preview.setMaximumHeight(24)
+        preview.setMaximumWidth(24)
+        preview.current_icon = current_icon
+        set_pixmap_for_label(preview, common.get_full_path_for_save_data_icon(preview.current_icon), 24)
+
+        # TODO: Improve icon quality on HiDPI displays
+
+        def _changed_icon_callback(new_icon):
+            set_pixmap_for_label(preview, common.get_full_path_for_save_data_icon(new_icon), 24)
+            callback_fn(new_icon)
+            preview.current_icon = new_icon
+
+        def _clicked_change_icon():
+            picker = IconPicker(self.appdata, _changed_icon_callback, preview.current_icon, title, purpose)
+
+        btn = QPushButton()
+        btn.setText(self.appdata._("Change..."))
+        btn.clicked.connect(_clicked_change_icon)
+
+        container.layout().addWidget(preview)
+        container.layout().addWidget(btn)
+        container.layout().addStretch()
+        return container
 
     def open_dialog(self, dialog_type, title, text, info_text="", traceback="", buttons=[], default_button=None, actions={}):
         """
@@ -723,3 +757,392 @@ class ColourPicker(object):
                 item.setSelected(True)
                 if index > 5:
                     self.saved_tree.scrollToItem(item)
+
+
+class IconPicker(object):
+    """
+    The icon picker dialog allows the user to choose an icon for an effect,
+    preset or tray applet.
+
+    For convenience, installed applications and Steam games will be listed as
+    icon sources (except for the tray applet)
+    """
+    purpose_generic = 0
+    purpose_tray_icon_only = 1
+
+    def __init__(self, appdata, callback_fn, current_icon, title, purpose=0):
+        """
+        Params:
+            appdata         (obj)   ApplicationData() object
+            callback_fn     (obj)   Run this function after saving new colour. The result will be passed as a parameter.
+            current_icon    (str)   Initial icon path (usually relative)
+            title           (str)   Window title
+            purpose         (bool)  One of the IconPicker.* integers to specify intended behaviour.
+        """
+        self.appdata = appdata
+        self._ = appdata._
+        self.dbg = appdata.dbg
+        self.widgets = PolychromaticWidgets(appdata)
+        self.current_icon = current_icon
+        self.callback_fn = callback_fn
+        self.title = title
+        self.purpose = purpose
+        self.custom_icon_exts = ["svg", "png", "jpg", "jpeg", "gif"]
+        self.custom_icon_filters = [
+            self._("Image Files") + "(*.png *.jpg *.jpeg *.gif *.svg)",
+            self._("PNG Image") + " (*.png)",
+            self._("JPEG Image") + " (*.jpg *.jpeg)",
+            self._("GIF Image") + " (*.gif)",
+            self._("SVG Image") + " (*.svg)",
+            self._("All Files") + " (*)"
+        ]
+
+        # UI Controls
+        self.dialog = get_ui_widget(appdata, "icon-picker", q_toplevel=QDialog)
+        self.dialog_btns = self.dialog.findChild(QDialogButtonBox, "buttonBox")
+        self.tabs = self.dialog.findChild(QTabWidget, "IconTabs")
+        self.custom_icon_toolbar = self.dialog.findChild(QWidget, "CustomIconToolbar")
+        self.custom_icon_add = self.dialog.findChild(QPushButton, "ImportCustomIcon")
+        self.custom_icon_del = self.dialog.findChild(QPushButton, "DeleteCustomIcon")
+        self.gif_warning = self.dialog.findChild(QWidget, "AnimatedGIFWarningLabel")
+        self.button_group = QButtonGroup()
+        self.gif_previews = []
+
+        # Tab contents for housing the icons
+        self.icons_tray = self.dialog.findChild(QWidget, "TraySet")
+        self.icons_emblems = self.dialog.findChild(QWidget, "EmblemSet")
+        self.icons_apps = self.dialog.findChild(QWidget, "ApplicationSet")
+        self.icons_steam = self.dialog.findChild(QWidget, "SteamSet")
+        self.icons_custom = self.dialog.findChild(QWidget, "CustomSet")
+        self.tab_index_widgets = {
+            0: self.icons_tray,
+            1: self.icons_emblems,
+            2: self.icons_apps,
+            3: self.icons_steam,
+            4: self.icons_custom
+        }
+
+        # Set Dialog Button Icons
+        if not self.appdata.system_qt_theme:
+            self.custom_icon_add.setIcon(self.widgets.get_icon_qt("general", "import"))
+            self.custom_icon_del.setIcon(self.widgets.get_icon_qt("general", "delete"))
+            self.dialog_btns.button(QDialogButtonBox.Ok).setIcon(self.widgets.get_icon_qt("general", "ok"))
+            self.dialog_btns.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel"))
+            self.tabs.setTabIcon(0, self.widgets.get_icon_qt("general", "tray-applet"))
+            self.tabs.setTabIcon(1, self.widgets.get_icon_qt("emblems", "misc"))
+            self.tabs.setTabIcon(2, self.widgets.get_icon_qt("emblems", "software"))
+            self.tabs.setTabIcon(3, self.widgets.get_icon_qt("emblems", "steam"))
+            self.tabs.setTabIcon(4, self.widgets.get_icon_qt("general", "folder"))
+
+        # Prepare tabs for icon sets
+        for widget in [self.icons_tray, self.icons_emblems, self.icons_apps, self.icons_steam, self.icons_custom]:
+            widget.setLayout(QFlowLayout())
+
+        # Gather icon data
+        list_tray = pref.load_file(os.path.join(common.paths.data_dir, "img", "tray", "icons.json"))
+        list_emblems = pref.load_file(os.path.join(common.paths.data_dir, "img", "emblems", "icons.json"))
+        if not self.purpose == self.purpose_tray_icon_only:
+            list_apps = self._get_application_icons()
+            list_steam = self._get_steam_icons()
+        list_custom = glob.glob(common.paths.custom_icons + "/*")
+
+        # Populate icon tabs
+        all_icon_buttons = []
+        self._load_icon_set(1, list_emblems)
+        self._load_icon_set(4, list_custom)
+        if self.purpose == self.purpose_tray_icon_only:
+            self._load_icon_set(0, list_tray)
+        else:
+            self._load_icon_set(2, list_apps)
+            self._load_icon_set(3, list_steam)
+
+        # When changing tray applet icon, limit the selection
+        if self.purpose == self.purpose_tray_icon_only:
+            self.tabs.removeTab(2)
+            self.tabs.removeTab(2)
+        else:
+            self.tabs.removeTab(0)
+
+        # TODO: Scroll to selected item
+
+        # Prepare and open dialog
+        self._setup_drag_drop_custom_icon()
+        self.custom_icon_toolbar.setHidden(True)
+        self.gif_warning.setHidden(True)
+        self.button_group.buttonClicked.connect(self.select_icon)
+        self.tabs.currentChanged.connect(self.change_tab)
+        self.custom_icon_add.clicked.connect(self.import_custom_icon)
+        self.custom_icon_del.clicked.connect(self.delete_custom_icon)
+
+        self.dialog.accepted.connect(self.accept_changes)
+        self.dialog.finished.connect(self.close_dialog)
+        self.dialog.setWindowTitle(title)
+        self.dialog.exec()
+
+    def close_dialog(self):
+        """
+        Ensure the dialog (and its children) are destroyed. This is because the
+        tray applet has some animated icons that have QMovie children.
+        """
+        for movie in self.gif_previews:
+            movie.stop()
+            movie.deleteLater()
+        self.dialog.deleteLater()
+
+    def _load_icon_set(self, tab_index, icon_list):
+        """
+        Populates the icons for the specified tab.
+
+        Each button will be injected a variable for save data purposes:
+            .icon_path      Relative/absolute path
+            .tab_index      Tab index (for setting active state)
+        """
+        widget = self.tab_index_widgets[tab_index]
+
+        if len(icon_list) == 0:
+            label = QLabel()
+            if tab_index == 3:
+                label.setText(self._("When Steam is installed, icons from your games will appear here."))
+            elif tab_index == 4:
+                label.setText(self._("Drag and drop icons here, or add them by pressing the Import button."))
+            else:
+                label.setText(self._("No icons found!"))
+            label.setAlignment(Qt.AlignCenter)
+            label.setMargin(4)
+            widget.layout().addWidget(label)
+            return
+
+        # Tray applet supports animated GIFs.
+        def _load_animated_gif(button):
+            movie = QMovie(common.get_full_path_for_save_data_icon(icon_path))
+            movie.button = button
+
+            def _draw_gif(frame):
+                movie.button.setIcon(QIcon(movie.currentPixmap()))
+
+            def _loop_gif(movie):
+                movie.start()
+
+            self.gif_previews.append(movie)
+            movie.frameChanged.connect(_draw_gif)
+            movie.finished.connect(_loop_gif)
+            movie.start()
+
+        # Populate the list
+        for icon_path in icon_list:
+            button = self._make_icon_button(icon_path, tab_index)
+            widget.layout().addWidget(button)
+
+            if icon_path.endswith(".gif"):
+                _load_animated_gif(button)
+
+        # Set initial selection
+        for button in self.button_group.buttons():
+            if button.icon_path == self.current_icon:
+                button.setChecked(True)
+                self.tabs.setCurrentIndex(button.tab_index)
+
+                if button.tab_index == 4:
+                    self.custom_icon_toolbar.setHidden(False)
+                break
+
+    def _make_icon_button(self, icon_path, tab_index):
+        """
+        Creates an icon button for selection.
+        """
+        button = QToolButton()
+        button.setToolTip(icon_path.split("/")[-1])
+        button.setCheckable(True)
+        button.setIconSize(QSize(32, 32))
+        button.setIcon(QIcon(common.get_full_path_for_save_data_icon(icon_path)))
+        button.icon_path = icon_path
+        button.tab_index = tab_index
+        self.button_group.addButton(button)
+
+        return button
+
+    def change_tab(self, button):
+        """
+        Tab index changed. Update visibility of import/delete controls depending
+        if the page is Custom (the last tab)
+        """
+        self.custom_icon_toolbar.setHidden(self.tabs.currentIndex() != self.tabs.count() - 1)
+
+    def select_icon(self, button):
+        """
+        Updates the current icon choice in memory. When a GIF (tray applet) is selected,
+        inform the user of the possibility it might not work on their desktop environment.
+        """
+        self.current_icon = button.icon_path
+        gif_selected = button.tab_index == 0 and button.icon_path.endswith(".gif")
+        self.gif_warning.setHidden(not gif_selected)
+
+        # Only custom icons can be deleted
+        self.custom_icon_del.setEnabled(button.tab_index == 4)
+
+    def accept_changes(self):
+        """
+        Accepts the new icon choice and closes the icon picker. Runs the callback
+        function to process the result.
+        """
+        self.callback_fn(self.current_icon)
+        self.close_dialog()
+
+    def _setup_drag_drop_custom_icon(self):
+        """
+        Prepare the file drag and drop facility as an alternate way to import
+        custom icons.
+        """
+        def dragEnterEvent(event):
+            if event.mimeData().hasUrls():
+                event.accept()
+            else:
+                event.ignore()
+
+        def dropEvent(event):
+            uris = event.mimeData().urls()
+            for uri in uris:
+                if uri.isLocalFile() and uri.path().split(".")[-1].lower() in self.custom_icon_exts:
+                    self.process_new_custom_icon(uri.path())
+
+        self.tabs.setAcceptDrops(True)
+        self.tabs.dragEnterEvent = dragEnterEvent
+        self.tabs.dropEvent = dropEvent
+
+    def process_new_custom_icon(self, source_path):
+        """
+        Adds the specified icon to the user's custom icons set. This may also
+        be triggered by dropping graphics.
+        """
+        target_path = os.path.join(common.paths.custom_icons, os.path.basename(source_path))
+
+        # Prevent duplicates
+        while os.path.exists(target_path):
+            self.dbg.stdout("Custom icon filename already exists: " + target_path, self.dbg.warning, 1)
+            extension = os.path.basename(target_path).split(".")[-1]
+            target_path = target_path.replace("." + extension, "_." + extension)
+
+        if os.path.exists(source_path):
+            self.dbg.stdout("Adding custom icon: " + source_path, self.dbg.action, 1)
+            shutil.copy(source_path, target_path)
+            button = self._make_icon_button(source_path, 4)
+            self.tab_index_widgets[4].layout().addWidget(button)
+
+        # Set as selected
+        self.tabs.setCurrentIndex(self.tabs.count() - 1)
+        button.click()
+
+    def import_custom_icon(self):
+        """
+        Opens the file browser to import new files to the custom icons set.
+        """
+        browser = QFileDialog()
+        browser.setAcceptMode(QFileDialog.AcceptOpen)
+        browser.setFileMode(QFileDialog.ExistingFiles)
+
+        # TODO: Use Polychromatic styles, if possible.
+        load_qt_theme(self.appdata, browser)
+
+        files = browser.getOpenFileNames(caption=self._("Import Custom Icon"), filter=";;".join(self.custom_icon_filters))[0]
+
+        for f in files:
+            if f.startswith("/"):
+                self.process_new_custom_icon(f)
+
+    def delete_custom_icon(self, b):
+        """
+        Removes the specified icon from the user's custom icon set.
+        Any save data referencing this icon will show a generic icon instead.
+        """
+        button = self.button_group.checkedButton()
+        if not button:
+            return
+
+        icon_path = button.icon_path
+        self.dbg.stdout("Deleting custom icon: " + icon_path, self.dbg.action, 1)
+        os.remove(icon_path)
+        button.deleteLater()
+
+        self.custom_icon_del.setEnabled(False)
+
+    def _get_application_icons(self):
+        """
+        Parses the desktop launchers for applications both local and system-wide
+        so the user can pick them.
+        """
+        self.dbg.stdout("Populating application icons...", self.dbg.action, 1)
+        local_apps = glob.glob(os.path.expanduser("~") + "/.local/share/applications/*.desktop")
+        system_apps = glob.glob("/usr/share/applications/*.desktop")
+        file_list = local_apps + system_apps
+        icon_list = []
+
+        # Determine where to find application icons (from theme)
+        theme_name = QIcon.themeName()
+        theme_paths = QIcon.themeSearchPaths()
+        search_paths = []
+        already_found = []
+
+        search_paths.append(os.path.join(os.path.expanduser("~"), ".local", "share", "icons", "**"))
+        for theme_path in theme_paths:
+            search_paths.append(os.path.join(theme_path, theme_name, "apps", "48"))
+        search_paths.append("/usr/share/icons/hicolor/48x48/apps")
+        search_paths.append("/usr/share/icons/hicolor/64x64/apps")
+        search_paths.append("/usr/share/icons/hicolor/128x128/apps")
+        search_paths.append("/usr/share/icons/hicolor/scalable/apps")
+        search_paths.append("/usr/share/pixmaps/")
+
+        def _find_theme_icon(icon_name):
+            # Prevent duplicates
+            if icon_name in already_found:
+                return None
+
+            for search_path in search_paths:
+                for path in glob.glob(os.path.join(search_path, "*"), recursive=True):
+                    filename = os.path.splitext(os.path.basename(path))[0]
+                    if filename == icon_name and os.path.isfile(path):
+                        already_found.append(icon_name)
+                        return path
+            return None
+
+        def parse_launcher_for_icon(lines):
+            for line in lines:
+                if line.startswith("Icon="):
+                    icon = line.split("Icon=")[1].strip()
+
+                    # Absolute path
+                    if os.path.exists(icon):
+                        icon_list.append(icon)
+                        return
+
+                    # Search theme directories
+                    theme_icon = _find_theme_icon(icon)
+                    if theme_icon:
+                        icon_list.append(theme_icon)
+
+        for launcher_path in file_list:
+            with open(launcher_path, "r") as f:
+                parse_launcher_for_icon(f.readlines())
+
+        self.dbg.stdout("Loaded {0} application icons from {1} launchers.".format(len(icon_list), len(file_list)), self.dbg.success, 1)
+
+        # Sort applications A-Z
+        return sorted(icon_list, key=lambda i: os.path.basename(i).lower())
+
+    def _get_steam_icons(self):
+        """
+        If Steam is installed (usually ~/.steam), the application will try to
+        locate "librarycache" which contains many *_icon.jpg files of the games
+        the user has installed/cached.
+        """
+        icon_list = []
+        steam_dir = os.path.expanduser("~") + "/.steam"
+        if not os.path.exists(steam_dir):
+            return []
+
+        for folder in ["steam", "root", "."]:
+            librarycache = os.path.join(steam_dir, folder, "appcache", "librarycache")
+            if os.path.exists(librarycache):
+                icon_list = glob.glob(librarycache + "/*_icon.jpg", recursive=True)
+
+        self.dbg.stdout("Found {0} Steam icons.".format(len(icon_list)), self.dbg.success, 1)
+        return icon_list

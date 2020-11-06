@@ -176,7 +176,14 @@ QToolButton:disabled {
 **********************************************************/
 QTabWidget::pane,
 QTabWidget::tab-bar {
-    border-bottom: 1px solid $border-colour;
+    &:top {
+        border-bottom: 1px solid $border-colour;
+    }
+
+    &:bottom {
+        border-top: 1px solid $border-colour;
+        border-bottom: none;
+    }
 }
 
 QTabBar::tab {
@@ -189,15 +196,29 @@ QTabBar::tab {
 
 QTabBar::tab:hover {
     border-color: lighten($border-colour, 10%);
-    border-bottom-color: transparent;
     color: darken($text-colour, 10%);
+
+    &:top {
+        border-bottom-color: transparent;
+    }
+
+    &:bottom {
+        border-top-color: transparent;
+    }
 }
 
 QTabBar::tab:selected {
     background: $bg-secondary;
     color: $primary;
     border-color: $primary;
-    border-bottom-color: transparent;
+
+    &:top {
+        border-bottom-color: transparent;
+    }
+
+    &:bottom {
+        border-top-color: transparent;
+    }
 }
 
 QTabBar::tab:disabled {
@@ -756,4 +777,15 @@ QTableView {
         background: $bg-primary;
         border: 1px solid transparent;
     }
+}
+
+
+/**********************************************************
+  Special Widgets
+**********************************************************/
+#AnimatedGIFWarningLabel {
+    background: $bg-secondary;
+    border: 1px solid rgba(orange, 0.5);
+    color: orange;
+    padding: 5px;
 }

@@ -86,9 +86,15 @@ class PreferencesWindow(shared.TabData):
         self.dialog.findChild(QPushButton, "SavedColoursButton").clicked.connect(self.modify_colours)
         self.dialog.findChild(QPushButton, "SavedColoursReset").clicked.connect(self.reset_colours)
 
-        # Create pickers
-        print("fixme:TrayIconPLACEHOLDER")
-        tray_icon_widget = self.dialog.findChild(QLabel, "TrayIconPLACEHOLDER")
+        # Create Icon Picker
+        def _set_new_tray_icon(new_icon):
+            self.dbg.stdout("New tray icon saved in memory: " + new_icon, self.dbg.debug, 1)
+            self.pref_data["tray"]["icon"] = new_icon
+            self.restart_applet = True
+
+        tray_icon_picker = self.widgets.create_icon_picker_control(_set_new_tray_icon, self.pref_data["tray"]["icon"], self._("Choose Tray Applet Icon"), shared.IconPicker.purpose_tray_icon_only)
+        tray_icon_widget = self.dialog.findChild(QLabel, "TrayIconPickerPlaceholder")
+        tray_icon_widget.parentWidget().layout().replaceWidget(tray_icon_widget, tray_icon_picker)
 
         # Background Tasks
         self._refresh_background_tasks_status()
@@ -257,7 +263,7 @@ class PreferencesWindow(shared.TabData):
 
         # Reload tray applet
         if self.restart_applet:
-            self.dbg.stdout("Tray applet settings changed. Will restart component.", self.dbg.action, 1)
+            self.dbg.stdout("Tray applet settings changed. Will restart component.", self.dbg.success, 1)
             procpid.restart_component("tray-applet")
 
     def modify_colours(self):

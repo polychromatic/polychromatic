@@ -295,7 +295,7 @@ def get_icon_styles(dbg, folder, name, normal_colour, disabled_colour, active_co
         cache_path = os.path.join(paths.assets_cache, cache_name + ".svg")
 
         if not os.path.exists(cache_path):
-            dbg.stdout("Generating icon style: {0}/{1} ({2})".format(folder, name, colour), dbg.warning, 1)
+            dbg.stdout("Generating icon style: {0}/{1} ({2})".format(folder, name, colour), dbg.action, 1)
             with open(original_icon, "r") as f:
                 data = f.readlines()
             newdata = []
@@ -308,6 +308,34 @@ def get_icon_styles(dbg, folder, name, normal_colour, disabled_colour, active_co
         icons.append(cache_path)
 
     return icons
+
+
+def get_full_path_for_save_data_icon(icon_path):
+    """
+    Returns the full path to an icon specified in the save data for the UI to use.
+
+    Polychromatic stores icon paths relatively. These paths are to be checked
+    in this priority:
+        - Custom Icons (~/.config/.../custom_icons/example.png)
+        - Emblems/Tray (/usr/share/.../img/emblems/example.svg)
+
+    If the icon no longer exists, a fallback will be provided.
+    """
+    possible_paths = [
+        os.path.join(paths.custom_icons, icon_path),
+        os.path.join(paths.data_dir, icon_path)
+    ]
+
+    if os.path.exists(icon_path):
+        # Icon is already absolute!
+        return icon_path
+
+    # Try relative paths
+    for path in possible_paths:
+        if os.path.exists(path):
+            return path
+
+    return get_icon("devices", "unrecognised")
 
 
 def execute_polychromatic_component(dbg, component, controller_open=None):
