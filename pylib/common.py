@@ -9,6 +9,7 @@ and some backends.
 """
 
 import colorama
+import hashlib
 import os
 import sys
 import subprocess
@@ -259,7 +260,7 @@ def generate_colour_bitmap(dbg, colour_hex, size="22x22"):
 
     The file is cached to speed up future retrievals of the colour.
     """
-    cache_name = str(hash(colour_hex + size))
+    cache_name = hashlib.md5(str(colour_hex + size).encode("utf-8")).hexdigest()
     cache_path = os.path.join(paths.assets_cache, cache_name + ".png")
 
     if not os.path.exists(cache_path):
@@ -291,7 +292,7 @@ def get_icon_styles(dbg, folder, name, normal_colour, disabled_colour, active_co
         return None
 
     for colour in [normal_colour, disabled_colour, active_colour, selected_colour]:
-        cache_name = str(hash(folder + name + colour))
+        cache_name = hashlib.md5(str(folder + name + colour).encode("utf-8")).hexdigest()
         cache_path = os.path.join(paths.assets_cache, cache_name + ".svg")
 
         if not os.path.exists(cache_path):

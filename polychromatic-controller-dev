@@ -22,10 +22,5 @@ abort_on_error $?
 ./scripts/build-locales.sh "$(realpath ./locale/dist/)"
 abort_on_error $?
 
-# Clear cache
-if [ -d ~/.cache/polychromatic/ ]; then
-    rm -r ~/.cache/polychromatic/
-fi
-
 # Start!
 exec ./polychromatic-controller --verbose $params
