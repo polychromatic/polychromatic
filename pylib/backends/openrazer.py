@@ -36,6 +36,7 @@ class Backend(_backend.Backend):
         self.bug_url = "https://github.com/openrazer/openrazer/issues"
         self.releases_url = "https://github.com/openrazer/openrazer/releases"
         self.license = "GPLv2"
+        self.config_store = self._get_config_store_path("openrazer")
 
         # Variables for OpenRazer
         self.devman = None
@@ -51,18 +52,10 @@ class Backend(_backend.Backend):
         """
         Load any user-defined client settings that Polychromatic should use
         interfacing with the daemon. These are stored as individual files inside
-        the ~/.config/polychromatic/backends/openrazer directory.
+        the ~/.config/polychromatic/backends/openrazer/ directory.
         """
-        try:
-            config_dir = os.path.join(os.environ["XDG_CONFIG_HOME"], ".config", "polychromatic", "backends", "openrazer")
-        except KeyError:
-            config_dir = os.path.join(os.path.expanduser("~"), ".config", "polychromatic", "backends", "openrazer")
-
-        if not os.path.exists(config_dir):
-            os.makedirs(config_dir)
-
         def _load_override(filename, data_type, default):
-            path = os.path.join(config_dir, filename)
+            path = os.path.join(self.config_store, filename)
             if not os.path.exists(path):
                 return default
 
@@ -1082,10 +1075,7 @@ class Backend(_backend.Backend):
             return ""
 
         # Save images in Polychromatic's config directory under "device_images"
-        try:
-            device_images_dir = os.path.join(os.environ["XDG_CONFIG_HOME"], ".config", "polychromatic", "backends", "openrazer", "images")
-        except KeyError:
-            device_images_dir = os.path.join(os.path.expanduser("~"), ".config", "polychromatic", "backends", "openrazer", "images")
+        device_images_dir = os.path.join(self.config_store, "images")
 
         if not os.path.exists(device_images_dir):
             self.debug("Creating folder for device images: " + device_images_dir)
@@ -1190,9 +1180,9 @@ class Backend(_backend.Backend):
 
     def _read_persistence_storage(self, rdevice, zone):
         """
-        OpenRazer 2.9.0+ uses persistence storage (#1149) to track
-        the last effect, colours and parameters. If this version does not have
-        this or fails, proceed with a file-based fallback.
+        OpenRazer 2.9.0+ uses persistence storage to track the last effect,
+        colours and parameters. If this version does not have this or fails,
+        proceed with a file-based fallback.
         """
         try:
             rzone = self._get_zone_as_object(rdevice, zone)
@@ -1214,10 +1204,7 @@ class Backend(_backend.Backend):
         """
         Prepare the 'fallback' persistence storage if the daemon's is unavailable.
         """
-        try:
-            storage_dir = os.path.join(os.environ["XDG_CONFIG_HOME"], "polychromatic", "backends", "openrazer", "persistence")
-        except KeyError:
-            storage_dir = os.path.join(os.path.expanduser("~"), ".config", "polychromatic", "backends", "openrazer", "persistence")
+        storage_dir = os.path.join(self.config_store, "persistence")
 
         if not os.path.exists(storage_dir):
             os.makedirs(storage_dir)
