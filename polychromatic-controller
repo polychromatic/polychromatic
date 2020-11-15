@@ -481,6 +481,10 @@ class Controller(object):
         # Start watching devicestate index for changes.
         common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
 
+        # If the last selected option was the System Monitor, start the system monitor thread.
+        if pref.get_device_state(self.active_device_serial, "main", "effect") == "system_monitor":
+            common.repeat_last_effect(pref, self.active_device)
+
         dbg.stdout("Application Ready.\n", dbg.action, 2)
         self.show_menu("menu")
 
@@ -1478,6 +1482,7 @@ class Controller(object):
                     ["lighting_pulsate", "pulsate", _("Pulsate")],
                     ["lighting_ripple", "ripple", _("Ripple")],
                     ["lighting_starlight_random", "starlight", _("Starlight")],
+                    ["lighting_reactive", "system_monitor", _("System Monitor")],
                     ["lighting_static", "static", _("Static")]
                 ]
 
@@ -1853,6 +1858,10 @@ class Controller(object):
             show_primary = True
 
         elif effect == "starlight" and params == "dual":
+            show_primary = True
+            show_secondary = True
+
+        if effect == "system_monitor":
             show_primary = True
             show_secondary = True
 

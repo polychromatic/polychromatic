@@ -12,11 +12,13 @@ import sys
 import gettext
 from time import sleep
 from threading import Thread
+import math
 
 # Devices that do not support RGB at all.
 # (excludes Ultimate which supports shades of green)
 fixed_coloured_devices = ["Taipan"]
 
+system_monitor_thread = None
 
 class Debugging(object):
     """
@@ -137,6 +139,8 @@ def get_effect_state_string(string):
         return _("Pulsate")
     elif string == 'unknown':
         return _("Try one...")
+    elif string == "system_monitor":
+        return _("System Monitor")
     else:
         return string
 
@@ -283,6 +287,18 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
             else:
                 fx.starlight_random(speed)
                 remember_params('random')
+
+        elif effect == "system_monitor":
+            # Stop any other effect (needed to shutdown Ripple)
+            fx.static(255, 255, 255)
+            
+            # Start a thread to monitor CPU
+            # usage and change the lighting on the fly.
+            global system_monitor_thread
+            if system_monitor_thread is None or not system_monitor_thread.isAlive():
+                system_monitor_thread = Thread(target=cpu_monitor_thread, args=(device_object, pref, source))
+                system_monitor_thread.daemon = True
+                system_monitor_thread.start()
 
         elif effect == "static":
             fx.static(primary_red, primary_green, primary_blue)
@@ -463,6 +479,87 @@ def devicestate_monitor_thread(callback_function, file_path):
         except FileNotFoundError:
             _init_devicestate_file()
 
+def cpu_usage(last_idle, last_total):
+    with open('/proc/stat') as f:
+        fields = [float(column) for column in f.readline().strip().split()[1:]]
+    idle, total = fields[3], sum(fields)
+    idle_delta, total_delta = idle - last_idle, total - last_total
+    last_idle, last_total = idle, total
+    utilisation = 100.0 * (1.0 - idle_delta / total_delta)
+    return (utilisation, last_idle, last_total)
+
+def cpu_monitor_thread(device, pref, source):
+    #print('CPU thread start')
+        
+    rows, cols = device.fx.advanced.rows, device.fx.advanced.cols
+
+    # Number of CPU rows is half rounded up
+    cpu_rows = min(rows, math.ceil(rows//2))
+    mem_rows = max(0, rows - cpu_rows)
+
+    cpu_query_time = 0.25 # seconds
+    serial = device.serial
+    last_idle = 0
+    last_total = 0
+    
+    while True:
+        # If we used psutil, we could get CPU and RAM this way.
+        #cpu = psutil.cpu_percent(cpu_query_time)
+        #mem = psutil.virtual_memory()
+
+        (cpu, last_idle, last_total) = cpu_usage(last_idle, last_total)
+        
+        # Get RAM usage
+        tot_m, used_m, free_m = map(int, os.popen('free -t -m').readlines()[-1].split()[1:])
+        mem_percent = 1-(free_m/tot_m)
+
+        primary_colours = pref.get_device_state(serial, source, "colour_primary")
+        secondary_colours = pref.get_device_state(serial, source, "colour_secondary")
+
+        if primary_colours:
+            primary_red = primary_colours[0]
+            primary_green = primary_colours[1]
+            primary_blue = primary_colours[2]
+        else:
+            primary_red = 255
+            primary_green = 0
+            primary_blue = 0
+
+        if secondary_colours:
+            secondary_red = secondary_colours[0]
+            secondary_green = secondary_colours[1]
+            secondary_blue = secondary_colours[2]
+        else:
+            secondary_red = 0
+            secondary_green = 255
+            secondary_blue = 0
+            
+
+        # Scale cpu and memory usage to the number of cols
+        num_light = int(cols*(cpu/100))
+        mem_light = int(cols*mem_percent)
+
+        # CPU
+        for row in range(0, cpu_rows):
+            for col in range(cols):
+                if col <= num_light:
+                    device.fx.advanced.matrix[row, col] = (primary_red, primary_green, primary_blue)
+                else:
+                    device.fx.advanced.matrix[row, col] = (128, 128, 128)
+
+        # Memory
+        for row in range(cpu_rows, cpu_rows+mem_rows):
+            for col in range(cols):
+                if col <= mem_light:
+                    device.fx.advanced.matrix[row, col] = (secondary_red, secondary_green, secondary_blue)
+                else:
+                    device.fx.advanced.matrix[row, col] = (128, 128, 128)
+
+        if pref.get_device_state(serial, source, "effect") != "system_monitor":
+            #print('CPU thread shutdown')
+            return
+        device.fx.advanced.draw()
+        sleep(cpu_query_time)
 
 def has_fixed_colour(device_obj):
     """
