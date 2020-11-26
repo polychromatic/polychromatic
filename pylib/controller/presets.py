@@ -13,11 +13,14 @@ from .. import locales
 from .. import preferences as pref
 from . import shared
 
-from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, QListWidget, QTreeWidget, QLabel, QComboBox
+from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
+                            QListWidget, QTreeWidget, QLabel, QComboBox
+
 
 class PresetsTab(shared.TabData):
     """
-    Allows the user to quickly change the existing state of the device right now.
+    Configure individual "presets" that specify the behaviour/lighting of all
+    peripherals at once. Useful for games and applications.
     """
     def __init__(self, appdata):
         super().__init__(appdata)

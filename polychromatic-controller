@@ -145,7 +145,8 @@ class ApplicationData(object):
         # Subwindows
         self.ui_preferences = controller.preferences.PreferencesWindow(self)
 
-        # Disable inactive backends in menu bar
+        # Enable active backends in menu bar
+        # -- OpenRazer
         if "openrazer" in self.middleman.not_installed:
             for action in ["actionOpenRazerConfigure",
                            "actionOpenRazerReportBug",

@@ -14,8 +14,6 @@ from .. import preferences as pref
 from .. import middleman
 from . import shared
 
-import os
-
 from PyQt5.QtCore import Qt, QSize, QMargins
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \

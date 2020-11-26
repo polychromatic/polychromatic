@@ -98,9 +98,8 @@ def save_file(filepath, newdata):
         open(filepath, "w").close()
 
     if os.access(filepath, os.W_OK):
-        f = open(filepath, "w+")
-        f.write(json.dumps(newdata, sort_keys=True, indent=4))
-        f.close()
+        with open(filepath, "w+") as f:
+            f.write(json.dumps(newdata, sort_keys=True, indent=4))
         return True
     else:
         return False

@@ -551,6 +551,15 @@ class ColourPicker(object):
     hand over to the system's colour picker (which on Linux, would be Qt's native picker)
     """
     def __init__(self, appdata, callback_fn, callback_data, current_hex, title, monoscale):
+        """
+        Params:
+            appdata         (obj)   ApplicationData() object
+            callback_fn     (obj)   Run this function after saving new colour. The parameters are (new_hex, callback_data)
+            callback_data   (any)   Additional data to pass to callback_fn
+            current_hex     (str)   Starting colour value (#RRGGBB)
+            title           (str)   Window title
+            monoscale       (bool)  Only show green shades (for monochromatic devices)
+        """
         self.appdata = appdata
         self.widgets = PolychromaticWidgets(appdata)
         self.current_hex = current_hex
