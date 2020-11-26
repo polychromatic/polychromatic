@@ -31,15 +31,16 @@ FORM_FACTORS = [
     "unrecognised"
 ]
 
+
 class Paths(object):
     """
     Initialises the paths for data files, configuration and caches.
     """
     # Config/cache (XDG) directories
     try:
-        root = os.path.join(os.environ["XDG_CONFIG_HOME"], ".config", "polychromatic")
+        config = os.path.join(os.environ["XDG_CONFIG_HOME"], ".config", "polychromatic")
     except KeyError:
-        root = os.path.join(os.path.expanduser("~"), ".config", "polychromatic")
+        config = os.path.join(os.path.expanduser("~"), ".config", "polychromatic")
 
     try:
         cache = os.path.join(os.environ["XDG_CACHE_HOME"], ".cache", "polychromatic")
@@ -51,27 +52,23 @@ class Paths(object):
     effects_cache = os.path.join(cache, "effects")
 
     # Subdirectories
-    effects = os.path.join(root, "effects")
-    effects_layered = os.path.join(effects, "layered")
-    effects_scripted = os.path.join(effects, "scripted")
-    effects_sequence = os.path.join(effects, "sequence")
-    presets = os.path.join(root, "presets")
-    custom_icons = os.path.join(root, "custom_icons")
-    states = os.path.join(root, "states")
+    effects = os.path.join(config, "effects")
+    presets = os.path.join(config, "presets")
+    custom_icons = os.path.join(config, "custom_icons")
+    states = os.path.join(config, "states")
 
     # Files
-    preferences = os.path.join(root, "preferences.json")
-    colours = os.path.join(root, "colours.json")
+    preferences = os.path.join(config, "preferences.json")
+    colours = os.path.join(config, "colours.json")
 
     # Legacy (v0.3.12 and earlier)
-    old_profiles = os.path.join(root, "profiles.json")
-    old_profile_folder = os.path.join(root, "profiles")
-    old_profile_backups = os.path.join(root, "backups")
-    old_devicestate = os.path.join(root, "devicestate.json")
+    old_profiles = os.path.join(config, "profiles.json")
+    old_profile_folder = os.path.join(config, "profiles")
+    old_profile_backups = os.path.join(config, "backups")
+    old_devicestate = os.path.join(config, "devicestate.json")
 
     # Create folders if they do not exist.
-    for folder in [root, presets, custom_icons, states,
-                   effects, effects_layered, effects_scripted, effects_sequence,
+    for folder in [config, presets, custom_icons, states, effects,
                    cache, assets_cache, effects_cache]:
         if not os.path.exists(folder):
             os.makedirs(folder)

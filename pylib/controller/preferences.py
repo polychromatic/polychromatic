@@ -379,7 +379,7 @@ class OpenRazerPreferences(shared.TabData):
         for meta in self.client:
             filename = meta[0]
             data_type = meta[1]
-            path = os.path.join(self.paths.root, "backends", "openrazer", filename)
+            path = os.path.join(self.paths.config, "backends", "openrazer", filename)
 
             if not os.path.exists(path):
                 continue
@@ -425,7 +425,7 @@ class OpenRazerPreferences(shared.TabData):
         for meta in self.client:
             filename = meta[0]
             data_type = meta[1]
-            path = os.path.join(self.paths.root, "backends", "openrazer", filename)
+            path = os.path.join(self.paths.config, "backends", "openrazer", filename)
 
             if data_type == int:
                 data = 1 if self.dialog.findChild(QCheckBox, filename).isChecked() else 0
