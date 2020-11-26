@@ -316,8 +316,12 @@ class MainWindow(QMainWindow):
             landing_tab = args_tab[args.open]
 
         if landing_tab >= 0 and landing_tab <= len(tab_objects):
+            # Signal triggered upon switching tab in the widget.
             _change_tab_proxy(None, landing_tab)
-            _change_tab()
+
+            # Signal is not triggered as the starting page is already 0.
+            if landing_tab == 0:
+                _change_tab()
 
         # Bind actions to menu bar
         self.findChild(QAction, "actionQuitApp").triggered.connect(self._quit_app)
