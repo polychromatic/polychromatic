@@ -36,7 +36,7 @@ class Backend(_backend.Backend):
         self.bug_url = "https://github.com/openrazer/openrazer/issues"
         self.releases_url = "https://github.com/openrazer/openrazer/releases"
         self.license = "GPLv2"
-        self.config_store = self._get_config_store_path("openrazer")
+        self.config_store = self._get_config_store_path()
 
         # Variables for OpenRazer
         self.devman = None

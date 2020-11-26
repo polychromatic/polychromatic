@@ -30,9 +30,6 @@ class Backend(object):
         # The self.common module may contain useful functions for processing.
         self.common = common
 
-        # An optional storage area should the backend need to store additional data
-        self.config_store = self._get_config_store_path("unknown")
-
         # Backend ID
         self.backend_id = "unknown"
 
@@ -48,20 +45,21 @@ class Backend(object):
         self.releases_url = ""
         self.license = "GPLv3"
 
+        # An optional storage area should the backend need to store additional data
+        # --> Add () at the end to trigger the real module.
+        self.config_store = self._get_config_store_path
+
     #####################################################################
     # Internal only
     #####################################################################
-    def _get_config_store_path(self, backend_id):
+    def _get_config_store_path(self):
         """
         Returns a path for the backend to optionally store data.
 
         This function is called when setting self.config_store, it shouldn't be
         reimplemented.
         """
-        try:
-            config_store = os.path.join(os.environ["XDG_CONFIG_HOME"], ".config", "polychromatic", "backends", backend_id)
-        except KeyError:
-            config_store = os.path.join(os.path.expanduser("~"), ".config", "polychromatic", "backends", backend_id)
+        config_store = os.path.join(self.common.paths.config, "backends", self.backend_id)
 
         if not os.path.exists(config_store):
             os.makedirs(config_store)
