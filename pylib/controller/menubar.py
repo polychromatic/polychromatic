@@ -39,9 +39,10 @@ class MenuBar(object):
 
         # Bind global menu bar items to their events
         # -- File
-        #self._bind_item("actionNewEffect", pass)
-        #self._bind_item("actionNewPreset", pass)
-        #self._bind_item("actionNewPresetNow", pass)
+        self._bind_item("actionNewEffect", self.new_effect)
+        self._bind_item("actionImportEffect", self.import_effect)
+        self._bind_item("actionNewPreset", self.new_preset)
+        self._bind_item("actionNewPresetNow", self.new_preset_now)
 
         # -- View
         self._bind_item("actionHideMenuBar", self.hide_menu_bar)
@@ -78,6 +79,21 @@ class MenuBar(object):
         """
         action = self.mainwindow.findChild(QAction, object_name)
         action.triggered.connect(function)
+
+    def new_effect(self):
+        self.appdata.tab_effects.new_effect()
+
+    def import_effect(self):
+        self.appdata.tab_effects.import_effect()
+        pass
+
+    def new_preset(self):
+        print("stub:menubar.new_preset")
+        pass
+
+    def new_preset_now(self):
+        print("stub:menubar.new_preset_now")
+        pass
 
     def hide_menu_bar(self):
         """

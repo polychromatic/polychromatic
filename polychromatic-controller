@@ -86,7 +86,7 @@ class ApplicationData(object):
         self.main_window = None
         self.main_app = qapp
         self.dbg = dbg
-        self.locales = locales
+        self.locales = i18n
         self._ = _
         self.paths = paths
         self.exec_path = __file__
@@ -135,9 +135,6 @@ class ApplicationData(object):
         self.middleman.init()
         self.device_list = self.middleman.get_device_list()
         self.current_device = None
-
-        dbg.stdout("Getting effect list...", dbg.action, 1)
-        self.effect_list = effects.get_effect_list()
 
         # Tabs
         self.tab_devices = controller.devices.DevicesTab(self)

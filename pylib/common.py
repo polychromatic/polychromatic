@@ -52,8 +52,9 @@ class Paths(object):
 
     # Subdirectories
     effects = os.path.join(root, "effects")
-    effects_keyframed = os.path.join(effects, "keyframed")
+    effects_layered = os.path.join(effects, "layered")
     effects_scripted = os.path.join(effects, "scripted")
+    effects_sequence = os.path.join(effects, "sequence")
     presets = os.path.join(root, "presets")
     custom_icons = os.path.join(root, "custom_icons")
     states = os.path.join(root, "states")
@@ -70,7 +71,7 @@ class Paths(object):
 
     # Create folders if they do not exist.
     for folder in [root, presets, custom_icons, states,
-                   effects, effects_keyframed, effects_scripted,
+                   effects, effects_layered, effects_scripted, effects_sequence,
                    cache, assets_cache, effects_cache]:
         if not os.path.exists(folder):
             os.makedirs(folder)

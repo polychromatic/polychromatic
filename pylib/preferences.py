@@ -13,7 +13,6 @@ import shutil
 from . import common
 from . import locales
 
-# Also set in effects.py
 VERSION = 7
 
 dbg = common.Debugging()

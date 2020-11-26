@@ -11,6 +11,7 @@ from .. import common
 from .. import locales
 from .. import preferences as pref
 from .. import procpid
+from .. import fileman
 
 from ..qt.flowlayout import FlowLayout as QFlowLayout
 
@@ -157,9 +158,10 @@ class TabData(object):
 
     def set_tab(self):
         """
-        Called when the tab is opened via the user interface.
+        Called when the tab is opened via the user interface. Each deriving class
+        must implement this.
         """
-        pass
+        raise NotImplementedError
 
     def set_cursor_normal(self):
         self.main_window.unsetCursor()
@@ -228,7 +230,7 @@ class PolychromaticWidgets(object):
         [
             {
                 "id": (str)
-                "icon": (str)
+                "icon": (QIcon)
                 "label": (str)
                 "disabled": (bool)
                 "action": (obj)     (Function to run when clicked)
@@ -278,7 +280,7 @@ class PolychromaticWidgets(object):
         for btn in buttons:
             button = QPushButton()
             button.setObjectName(btn["id"])
-            if btn["icon"] and os.path.exists(btn["icon"]):
+            if btn["icon"]:
                 button.setIcon(btn["icon"])
             button.setText(btn["label"])
 
@@ -1146,3 +1148,242 @@ class IconPicker(object):
 
         self.dbg.stdout("Found {0} Steam icons.".format(len(icon_list)), self.dbg.success, 1)
         return icon_list
+
+
+class CommonFileTab(TabData):
+    """
+    Shared class that implements an interactive file management interface for
+    features that use a FlatFileManagement() system.
+
+    Each feature (e.g. effects, presets) should re-implement the functions
+    where appropriate and specific to different tab interfaces.
+    """
+    def __init__(self, appdata, filemgr_class, content_widget_name, tree_widget_name):
+        """
+        Initialize the tab.
+
+        Params:
+            appdata                 ApplicationData() object
+            filemgr_class           Class to initalize (e.g. effects.EffectFileManagement)
+            content_widget_name     Name of QWidget containing the tab data
+            tree_widget_name        Name of QTreeWidget containing tasks/file list.
+        """
+        super().__init__(appdata)
+
+        # Class variables
+        self.filemgr = filemgr_class(appdata.locales, appdata._, appdata.dbg)
+        self.current_file_data = {}
+        self.current_file_path = ""
+
+        # Specific to feature
+        self.feature = "unknown"
+        self.tasks = {
+            "example": self._clear_tree
+        }
+
+        # Internal codes for UI messages
+        self.INFO_NO_ITEMS = 1
+        self.INFO_BAD_DATA = 2
+
+        self.Contents = self.main_window.findChild(QWidget, content_widget_name)
+        self.Sidebar = self.main_window.findChild(QTreeWidget, tree_widget_name)
+        self.TasksBranch = self.Sidebar.invisibleRootItem().child(0)
+        self.FilesBranch = self.Sidebar.invisibleRootItem().child(1)
+
+        for branch in [self.TasksBranch, self.FilesBranch]:
+            branch.action_id = None
+            branch.action_data = None
+
+        self.Sidebar.itemClicked.connect(self._sidebar_changed)
+
+    def _add_tree_item(self, branch, label, icon, action_id, action_data):
+        """
+        Appends a new QTreeWidgetItem() with the specified parameters.
+
+        action_id and action_data are appended into the object so the
+        _sidebar_changed() function knows what to do with the data.
+        """
+        item = QTreeWidgetItem()
+        item.setText(0, label)
+        item.setIcon(0, QIcon(icon))
+        item.action_id = action_id
+        item.action_data = action_data
+        branch.addChild(item)
+
+    def _clear_tree(self, branch):
+        """
+        Clears the contents of a tree branch.
+        """
+        branch.takeChildren()
+
+    def set_tab(self):
+        """
+        The feature tab is opened.
+        """
+        # Open all tree branches
+        self.Sidebar.expandAll()
+
+        # Populate files in sidebar
+        self._clear_tree(self.FilesBranch)
+        file_list = self.filemgr.get_item_list()
+        for item in file_list:
+            self._add_tree_item(self.FilesBranch, item["name"], item["icon"], "open", item["path"])
+        self.FilesBranch.sortChildren(0, Qt.AscendingOrder)
+
+        # Show the first item
+        if len(file_list) == 0:
+            self.show_no_file_screen(0)
+        else:
+            first_item = self.FilesBranch.child(0)
+            first_item.setSelected(True)
+            self.open_file(first_item.action_data)
+
+    def _sidebar_changed(self, item):
+        """
+        A task or file on the sidebar is clicked.
+
+        For ID "tasks", the data is a key that triggers a function. No parameters.
+        For ID "open", the data will be opened for the user to work with.
+        """
+        if item.action_id == "tasks":
+            self.Sidebar.selectedItems()[0].setSelected(False)
+            self.tasks[item.action_data]()
+        elif item.action_id == "open":
+            self.open_file(item.action_data)
+
+    def show_no_file_screen(self, message_id):
+        """
+        The file cannot be opened for viewing - inform the user.
+        This needs to be implemented by the feature.
+
+        Params:
+            message_id  (int)   One of the self.INFO_* variables
+        """
+        raise NotImplementedError
+
+    def show_error_message(self, path, error_code):
+        """
+        The file failed to load. Parse the error code and inform the user.
+
+        Params:
+            path        (str)   Path to failed file
+            error_code  (int)   Integer from fileman.ERROR_*
+        """
+        reasons = {
+            fileman.ERROR_BAD_DATA: self._("The data is invalid."),
+            fileman.ERROR_MISSING_FILE: self._("The file no longer exists. Please refresh the page."),
+            fileman.ERROR_NEWER_FORMAT: self._("This file was saved in a newer version of this program."),
+            fileman.ERROR_NO_SCRIPT: self._("The accompanying script file is missing.")
+        }
+
+        try:
+            reason = reasons[error_code]
+        except KeyError:
+            reason = self._("Unspecified error: []").replace("[]", str(error_code))
+
+        self.widgets.open_dialog(self.widgets.dialog_error,
+                                 self._("File Error"),
+                                 self._("This file cannot be opened:") + "\n" + path,
+                                 reason)
+
+    def _show_file_error(self, traceback=None):
+        """
+        Show a dialog for the rare scenario where the file could not be written to.
+        """
+        self.widgets.open_dialog(self.widgets.dialog_error,
+                                 self._("File Error"),
+                                 self._("The operation could not be completed due to a file processing error."),
+                                 self._("Please make sure the file permissions are recursively correct:") + '\n' + common.paths.config, traceback)
+
+    def new_file(self):
+        """
+        Create a new file for this feature.
+        The inheriting class should implement this accordingly.
+        """
+        raise NotImplementedError
+
+    def open_file(self, file_path):
+        """
+        Opens the specified file in the interface. This should provide an overview
+        of the file, a preview and provide options to work with the data.
+
+        The inheriting class should implement this accordingly.
+        """
+        raise NotImplementedError
+
+    def edit_file(self):
+        """
+        Open the editor to modify the currently selected file.
+        The inheriting class should implement this accordingly.
+        """
+        raise NotImplementedError
+
+    def delete_file(self):
+        """
+        Confirm the user is sure the selected file should be deleted.
+        """
+        name = self.current_file_data["name"]
+
+        def _file_delete_confirmed():
+            success = self.filemgr.delete_item(self.current_file_path)
+
+            if success != True:
+                self._show_file_error(success)
+                return
+
+            old_item = self.Sidebar.selectedItems()[0]
+            item_index = self.FilesBranch.indexOfChild(old_item)
+            self.FilesBranch.removeChild(old_item)
+            if self.FilesBranch.childCount() == 0:
+                self.show_no_file_screen(0)
+                return
+
+            if item_index > self.FilesBranch.childCount() - 1:
+                item_index = self.FilesBranch.childCount() - 1
+
+            new_item = self.FilesBranch.child(item_index)
+            new_item.setSelected(True)
+            self.open_file(new_item.action_data)
+
+        titles = {
+            "effects": self._("Delete Effect?"),
+            "presets": self._("Delete Preset?")
+        }
+
+        msgs = {
+            "effects": self._("Delete '[]' effect? This cannot be undone.\n\nPresets that use this effect will be unlinked.").replace("[]", name),
+            "presets": self._("Delete '[]' preset? This cannot be undone.\n\nTriggers that automatically activate this preset will no longer function.").replace("[]", name),
+        }
+
+        self.widgets.open_dialog(self.widgets.dialog_warning,
+                                 titles[self.feature],
+                                 msgs[self.feature],
+                                 None, None,
+                                 [QMessageBox.Yes, QMessageBox.No],
+                                 QMessageBox.Yes,
+                                 {QMessageBox.Yes: _file_delete_confirmed})
+
+    def clone_file(self):
+        """
+        Create a new copy of the currently selected effect.
+        """
+        new_file_path = self.filemgr.clone_item(self.current_file_path)
+
+        if not new_file_path:
+            self._show_file_error()
+            return
+
+        # Get the index for the current item
+        current_item = self.Sidebar.selectedItems()[0]
+        item_index = self.FilesBranch.indexOfChild(current_item) + 1
+
+        # Add the new item to the list (dynamic, no reloading)
+        item = QTreeWidgetItem()
+        item.setText(0, self._("[] (Copy)").replace("[]", current_item.text(0)))
+        item.setIcon(0, current_item.icon(0))
+        item.action_id = "open"
+        item.action_data = new_file_path
+        self.FilesBranch.insertChild(item_index, item)
+        current_item.setSelected(False)
+        item.setSelected(True)
+        self.open_file(new_file_path)

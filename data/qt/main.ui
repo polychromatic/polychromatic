@@ -482,6 +482,9 @@
              <property name="expandsOnDoubleClick">
               <bool>false</bool>
              </property>
+             <property name="columnCount">
+              <number>1</number>
+             </property>
              <column>
               <property name="text">
                <string>Sidebar</string>
@@ -494,37 +497,10 @@
               <property name="flags">
                <set>ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
               </property>
-              <item>
-               <property name="text">
-                <string>New Effect</string>
-               </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>../img/general/new.svg</normaloff>../img/general/new.svg</iconset>
-               </property>
-               <property name="flags">
-                <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable</set>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Import Effect</string>
-               </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>../img/general/import.svg</normaloff>../img/general/import.svg</iconset>
-               </property>
-               <property name="flags">
-                <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable</set>
-               </property>
-              </item>
              </item>
              <item>
               <property name="text">
                <string>Effects</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
               </property>
              </item>
             </widget>
@@ -639,6 +615,8 @@
      <string>&amp;File</string>
     </property>
     <addaction name="actionNewEffect"/>
+    <addaction name="actionImportEffect"/>
+    <addaction name="separator"/>
     <addaction name="actionNewPreset"/>
     <addaction name="actionNewPresetNow"/>
     <addaction name="separator"/>
@@ -769,9 +747,6 @@
    </property>
   </action>
   <action name="actionNewEffect">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="icon">
     <iconset>
      <normaloff>../img/general/effects.svg</normaloff>../img/general/effects.svg</iconset>
@@ -1098,6 +1073,15 @@
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+  </action>
+  <action name="actionImportEffect">
+   <property name="icon">
+    <iconset>
+     <normaloff>../img/general/import.svg</normaloff>../img/general/import.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Import Effect...</string>
    </property>
   </action>
  </widget>

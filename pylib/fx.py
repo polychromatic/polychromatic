@@ -7,7 +7,8 @@
 This module is a higher level interface for custom effects that transparently
 connects to the supported backend, regardless of driver.
 
-It is also used to render keyframe and scripted effects.
+This is used internally for rendering software effects as well as "scripted"
+effects written by users.
 """
 
 from . import common
