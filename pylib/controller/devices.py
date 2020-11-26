@@ -464,8 +464,6 @@ class DevicesTab(shared.TabData):
             self.dbg.stdout("Setting colour of current effect on {0} device {1} (zone: {2}, colour {3}: {4})".format(device["backend"], device["uid"], data["zone"], str(data["colour_no"]), new_hex), self.dbg.action, 1)
             response = self.middleman.set_device_colour(device, data["zone"], new_hex, data["colour_no"])
             self._event_check_response(response)
-            if response:
-                self.reload_device()
 
         return self.widgets.create_row_widget(label, [self.widgets.create_colour_control(colour_hex, _set_new_colour, _set_data, self._("Change []").replace("[]", label), monochromatic)])
 

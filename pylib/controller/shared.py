@@ -454,7 +454,7 @@ class PolychromaticWidgets(object):
         preview.setStyleSheet("QWidget {{ background-color: {0} }}".format(current_hex))
 
         def _clicked_change_colour():
-            picker = ColourPicker(self.appdata, callback_fn, callback_data, current_hex, title, monoscale)
+            picker = ColourPicker(self.appdata, callback_fn, callback_data, current_hex, title, monoscale, preview)
 
         btn = QPushButton()
         btn.setText(self.appdata._("Change..."))
@@ -570,7 +570,7 @@ class ColourPicker(object):
     The colour picker dialog allows the user to quickly choose a colour or
     hand over to the system's colour picker (which on Linux, would be Qt's native picker)
     """
-    def __init__(self, appdata, callback_fn, callback_data, current_hex, title, monoscale):
+    def __init__(self, appdata, callback_fn, callback_data, current_hex, title, monoscale, preview):
         """
         Params:
             appdata         (obj)   ApplicationData() object
@@ -579,6 +579,7 @@ class ColourPicker(object):
             current_hex     (str)   Starting colour value (#RRGGBB)
             title           (str)   Window title
             monoscale       (bool)  Only show green shades (for monochromatic devices)
+            preview         (obj)   QWidget() of the preview box
         """
         self.appdata = appdata
         self.widgets = PolychromaticWidgets(appdata)
@@ -589,6 +590,7 @@ class ColourPicker(object):
         self.title = title
         self.saved_colours = pref.load_file(appdata.paths.colours)
         self.monoscale = monoscale
+        self.preview = preview
 
         # UI Controls
         self.dialog = get_ui_widget(appdata, "colour-picker", q_toplevel=QDialog)
@@ -700,6 +702,7 @@ class ColourPicker(object):
         """
         dbg = self.appdata.dbg
         self._save_colour_list_to_file()
+        self.preview.setStyleSheet("QWidget {{ background-color: {0} }}".format(self.current_hex))
         dbg.stdout("Colour set to: " + self.current_hex, dbg.success, 1)
         self.callback_fn(self.current_hex, self.callback_data)
 
