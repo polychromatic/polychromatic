@@ -19,9 +19,10 @@ import os
 import glob
 import shutil
 
-from PyQt5 import uic
+from PyQt5 import uic, QtSvg
 from PyQt5.QtCore import Qt, QSize, QMargins
 from PyQt5.QtGui import QIcon, QPalette, QColor, QFont, QPixmap, QMovie
+from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QWidget, QMessageBox, QGridLayout, \
@@ -241,6 +242,7 @@ class PolychromaticWidgets(object):
         Returns: QWidget()
         """
         summary = get_ui_widget(self.appdata, "widget-summary")
+        container_widget = summary.findChild(QWidget, "SummaryContainer")
         image_widget = summary.findChild(QLabel, "SummaryImage")
         title_widget = summary.findChild(QLabel, "SummaryTitle")
         indicators_widget = summary.findChild(QWidget, "SummaryIcons")
@@ -251,7 +253,25 @@ class PolychromaticWidgets(object):
 
         # Populate Image
         if os.path.exists(icon_path):
-            set_pixmap_for_label(image_widget, icon_path, 115)
+            if icon_path.endswith(".svg"):
+                # Replace summary icon with SVG renderer for better quality/scaling
+                if icon_path.endswith(".svg"):
+                    summary.findChild(QLabel, "SummaryImage").deleteLater()
+                    viewer = QSvgWidget()
+                    viewer.load(icon_path)
+                    viewer.setMinimumHeight(90)
+                    viewer.setMinimumWidth(90)
+                    viewer.setMaximumHeight(90)
+                    viewer.setMaximumWidth(90)
+                    summary.setContentsMargins(8 + 6, 8, 8, 8)
+
+                    # Appends to the end - restructure
+                    summary.layout().addWidget(viewer)
+                    summary.layout().addWidget(container_widget)
+                    summary.layout().addWidget(buttons_widget)
+                    viewer.show()
+            else:
+                set_pixmap_for_label(image_widget, icon_path, 115)
         else:
             image_widget.deleteLater()
 
