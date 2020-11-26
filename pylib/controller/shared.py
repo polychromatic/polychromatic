@@ -735,7 +735,15 @@ class ColourPicker(object):
         User uses the system's colour picker to pick any colour, which could
         include the ability to choose a pixel on the screen (dependent on OS)
         """
-        output = QColorDialog.getColor(title=self.title, initial=QColor(self.current_hex))
+        dialog = QColorDialog()
+
+        # TODO: Nice to have: Use Polychromatic styling for the dialog
+        # QColorDialog() is private, so this may be tricky.
+        # This does not work!
+        load_qt_theme(self.appdata, dialog)
+
+        output = dialog.getColor(title=self.title, initial=QColor(self.current_hex))
+
         if not output.isValid():
             return
         new_hex = output.name()
