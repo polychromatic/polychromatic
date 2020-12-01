@@ -16,10 +16,9 @@ from . import common
 from .preferences import VERSION as VERSION
 
 # Error Codes
-ERROR_NEWER_FORMAT = -1
-ERROR_BAD_DATA = -2
-ERROR_MISSING_FILE = -3
-ERROR_NO_SCRIPT = -4
+ERROR_NEWER_FORMAT = -100
+ERROR_BAD_DATA = -101
+ERROR_MISSING_FILE = -102
 
 
 class FlatFileManagement(object):
@@ -44,6 +43,12 @@ class FlatFileManagement(object):
         # "local" refers to files that the user created.
         self.factory_path = ""
         self.local_path = ""
+
+    def _get_safe_filename(self, filename):
+        """
+        Returns a compatible, safe path for the specified filename.
+        """
+        return "".join([c for c in filename if c.isalpha() or c.isdigit() or c==' ']).replace(" ", "-").strip()
 
     def _get_file_list(self):
         """
@@ -120,7 +125,7 @@ class FlatFileManagement(object):
             if os.path.exists(path):
                 return path
 
-        self.dbg.stdout("Could not locate suitable icon: '{0}'".format(icon_path), self.dbg.warning)
+        self.dbg.stdout("Could not locate suitable icon: '{0}'".format(icon_path), self.dbg.warning, 1)
         return common.get_icon("emblems", "software")
 
     def _validate_key(self, data, key, data_type):
@@ -176,12 +181,63 @@ class FlatFileManagement(object):
 
     def get_item(self, path):
         """
-        Load the item into memory and ensure the data is up-to-date and consistent.
+        Load the item into memory and ensure the data is valid.
         The inheriting class should implement this accordingly.
 
         Returns:
             {}          Data for the feature as defined by the documentation.
             ERROR_*     One of ERROR_* variables in the root of this module.
+        """
+        raise NotImplementedError
+
+    def save_item(self, data, orig_path=None):
+        """
+        Save JSON data to disk.
+
+        Params:
+            data        (dict)      Save data for this feature
+            orig_path   (str)       Optional. Path referencing where the file was loaded from
+
+        Returns a tuple:
+            (success, new_path)     success  = Boolean to indicate success or failure.
+                                    new_path = Path to the file's new path (if this has changed)
+        """
+        # Determine the file name that is consistent with the save data's name.
+        filename = self._get_safe_filename(data["name"].replace(" ", "-"))
+        target_path = os.path.join(self.local_path, filename + ".json")
+
+        # File is new or path changed, make sure there is no duplicate
+        if orig_path != target_path:
+            suffix = 2
+            while os.path.exists(target_path):
+                target_path = os.path.join(self.local_path, filename + "-" + str(suffix) + ".json")
+                suffix += 1
+
+            self.dbg.stdout("Name changed. File will be written to: " + target_path, self.dbg.action, 1)
+
+        # Save the file!
+        try:
+            with open(target_path, "w+") as f:
+                f.write(json.dumps(data, indent=4))
+        except Exception as e:
+            self.dbg.stdout("Save Failed: " + target_path, self.dbg.error)
+            self.dbg.stdout(common.get_exception_as_string(e), self.dbg.error)
+            return (False, target_path)
+
+        # If the file was renamed, only delete if the save succeeded.
+        if orig_path and orig_path != target_path:
+            os.remove(orig_path)
+            self.dbg.stdout("Old filename deleted: " + orig_path, self.dbg.success, 1)
+
+        self.dbg.stdout("Save OK: " + target_path, self.dbg.success, 1)
+        return (True, target_path)
+
+    def init_data(self, item_name, item_type=None):
+        """
+        Initalize new blank data for this feature.
+        The inheriting class should implement this accordingly.
+
+        Returns (dict) containing new data.
         """
         raise NotImplementedError
 
@@ -193,44 +249,6 @@ class FlatFileManagement(object):
         Returns the new data.
         """
         raise NotImplementedError
-
-    def save_item(self, data, path):
-        """
-        Save the data to disk.
-
-        Returns a boolean to indicate success or failure.
-        """
-        try:
-            with open(path, "w+") as f:
-                f.write(json.dumps(data, sort_keys=True, indent=4))
-            return True
-        except Exception as e:
-            self.dbg.stdout("Failed to save " + path, self.dbg.error)
-            self.dbg.stdout(common.get_exception_as_string(e), self.dbg.error)
-            return False
-
-    def init_new_item(self, item_type, item_name):
-        """
-        Initalize a new file for this feature.
-        The inheriting class should implement this accordingly.
-
-        Returns:
-            (str)       File path (the application needs to know where to save later)
-            None        File operation failed
-        """
-        raise NotImplementedError
-
-    def rename_item(self, path, old_name, new_name):
-        """
-        Processes the rename of an item to keep the user's human name consistent
-        with the file name. This will verify and update references from other files,
-        such as effects <--> preset.
-
-        Returns the file path so the application can update its save path in memory.
-        """
-        print("stub:fileman.rename_effect")
-        pass
-        #self.dbg.stdout("{0} renamed from '{1}' to '{2}'".format(self.feature.capitalize(), old_name, new_name), self.dbg.action, 1)
 
     def delete_item(self, path):
         """
@@ -268,13 +286,10 @@ class FlatFileManagement(object):
             # Append "(Copy)" to name and "-copy" to filename
             data["name"] = self._("[] (Copy)").replace("[]", data["name"])
             new_path = path
-            self.dbg.stdout("Determining clone filename...", self.dbg.debug, 1)
-            while os.path.exists(new_path):
-                new_path = new_path.replace(".json", "-copy.json")
-            self.dbg.stdout("Copy will be saved as: " + new_path, self.dbg.debug, 1)
 
-            if self.save_item(data, new_path):
-                self.dbg.stdout("Clone OK: " + new_path, self.dbg.success)
+            success, new_path = self.save_item(data)
+            if success:
+                self.dbg.stdout("Clone OK: " + new_path, self.dbg.success, 1)
                 return new_path
 
         except Exception as e:

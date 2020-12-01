@@ -41,6 +41,7 @@ jobs:
     - name: Test Polychromatic Internals
       run: |
         ./scripts/run-unit-test.sh "10_internals"
+        ./scripts/run-unit-test.sh "11_effects"
 
     - name: Test OpenRazer Backend
       run: |

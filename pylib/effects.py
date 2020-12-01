@@ -14,9 +14,9 @@ from . import common
 from . import fileman
 
 # Effect Types
-LAYERED = 1
-SCRIPTED = 2
-SEQUENCE = 3
+TYPE_LAYERED = 1
+TYPE_SCRIPTED = 2
+TYPE_SEQUENCE = 3
 
 # Layer Types
 LAYER_STATIC = 10
@@ -76,12 +76,11 @@ class EffectFileManagement(fileman.FlatFileManagement):
             self._validate_key(data, "name", str),
             self._validate_key(data, "type", int),
             self._validate_key(data, "author", str),
-            self._validate_key(data, "author_has_github", bool),
+            self._validate_key(data, "author_url", str),
             self._validate_key(data, "icon", str),
             self._validate_key(data, "summary", str),
-            self._validate_key(data, "designed_for", list),
-            self._validate_key(data, "optimised_for", list),
-            self._validate_key(data, "mapping", str),
+            self._validate_key(data, "map_device", str),
+            self._validate_key(data, "map_graphic", str),
             self._validate_key(data, "save_format", int),
             self._validate_key(data, "revision", int)
         ]
@@ -89,7 +88,7 @@ class EffectFileManagement(fileman.FlatFileManagement):
         # Validate specific data
         effect_type = data["type"]
 
-        if effect_type == LAYERED:
+        if effect_type == TYPE_LAYERED:
             results.append(self._validate_key(data, "layers", list))
             try:
                 for layer in data["layers"]:
@@ -100,12 +99,15 @@ class EffectFileManagement(fileman.FlatFileManagement):
             except KeyError:
                 results.append(False)
 
-        elif effect_type == SCRIPTED:
-            if not os.path.exists(os.path.join(os.path.dirname(path), os.path.basename(path).replace(".json", ".py"))):
-                return fileman.ERROR_NO_SCRIPT
+        elif effect_type == TYPE_SCRIPTED:
+            script_path = os.path.join(os.path.dirname(path), os.path.basename(path).replace(".json", ".py"))
+            if not os.path.exists(script_path):
+                self.dbg.stdout("Effect script does not exist: " + script_path, self.dbg.warning, 1)
 
             results.append(self._validate_key(data, "required_os", list))
             results.append(self._validate_key(data, "parameters", list))
+            results.append(self._validate_key(data, "designed_for", list))
+            results.append(self._validate_key(data, "optimised_for", list))
             try:
                 for param in data["parameters"]:
                     results.append(self._validate_key(param, "var", str))
@@ -114,7 +116,7 @@ class EffectFileManagement(fileman.FlatFileManagement):
             except KeyError:
                 results.append(False)
 
-        elif effect_type == SEQUENCE:
+        elif effect_type == TYPE_SEQUENCE:
             results.append(self._validate_key(data, "fps", int))
             results.append(self._validate_key(data, "loop", bool))
             results.append(self._validate_key(data, "frames", list))
@@ -128,6 +130,49 @@ class EffectFileManagement(fileman.FlatFileManagement):
 
         # Append "parsed" key (used by the UI, but not saved)
         data["parsed"] = self._get_parsed_keys(data, path)
+
+        return data
+
+    def init_data(self, effect_name, effect_type):
+        """
+        Creates new effect data, ready for editing by the editor.
+
+        Returns (dict) containing new data.
+        """
+        data = {}
+
+        # Common for all effects
+        data["name"] = effect_name
+        data["type"] = effect_type
+        data["author"] = ""
+        data["author_url"] = ""
+        data["icon"] = "img/general/effects.svg"
+        data["summary"] = ""
+        data["map_device"] = ""
+        data["map_graphic"] = ""
+        data["save_format"] = fileman.VERSION
+        data["revision"] = 1
+
+        if effect_type == TYPE_LAYERED:
+            data["layers"] = [
+                {
+                    "name": self._("Static"),
+                    "type": LAYER_STATIC,
+                    "positions": [],
+                    "properties": {}
+                }
+            ]
+
+        elif effect_type == TYPE_SCRIPTED:
+            data["required_os"] = []
+            data["parameters"] = []
+            data["designed_for"] = []
+            data["optimised_for"] = []
+
+        elif effect_type == TYPE_SEQUENCE:
+            data["fps"] = 10
+            data["loop"] = True
+            data["frames"] = []
 
         return data
 
@@ -145,24 +190,13 @@ class EffectFileManagement(fileman.FlatFileManagement):
         data["save_format"] = fileman.VERSION
         return data
 
-    def init_new_item(self, effect_type, effect_name):
-        """
-        Create a new effect file, ready for editing by the editor.
-
-        Returns:
-            (str)   File path so the application can use this to save later.
-            None    File operation failed
-        """
-        print("stub:effects.init_new_effect")
-        pass
-
     def delete_item(self, path):
         """
         In addition to the usual deletion of an item, also delete the
         effect's accompanying script (if a scripted effect)
         """
         data = self._load_file(path)
-        if data["type"] == SCRIPTED:
+        if data["type"] == TYPE_SCRIPTED:
             os.remove(path.replace(".json", ".py"))
             self.dbg.stdout("Deleted: " + path, self.dbg.success, 1)
 
@@ -182,7 +216,7 @@ class EffectFileManagement(fileman.FlatFileManagement):
         if new_path:
             data = self._load_file(new_path)
 
-            if data["type"] == SCRIPTED:
+            if data["type"] == TYPE_SCRIPTED:
                 src_script = path.replace(".json", ".py")
                 dest_script = new_path.replace(".json", ".py")
 
