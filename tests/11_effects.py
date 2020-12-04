@@ -8,6 +8,7 @@ import pylib.locales as locales
 import pylib.preferences as preferences
 import pylib.effects as effects
 
+import json
 import os
 import unittest
 

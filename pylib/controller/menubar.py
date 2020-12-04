@@ -81,7 +81,7 @@ class MenuBar(object):
         action.triggered.connect(function)
 
     def new_effect(self):
-        self.appdata.tab_effects.new_effect()
+        self.appdata.tab_effects.new_file()
 
     def import_effect(self):
         self.appdata.tab_effects.import_effect()

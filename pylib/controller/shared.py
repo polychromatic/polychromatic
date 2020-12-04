@@ -1211,7 +1211,7 @@ class CommonFileTab(TabData):
         super().__init__(appdata)
 
         # Class variables
-        self.filemgr = filemgr_class(appdata.locales, appdata._, appdata.dbg)
+        self.fileman = filemgr_class(appdata.locales, appdata._, appdata.dbg)
         self.current_file_data = {}
         self.current_file_path = ""
 
@@ -1265,7 +1265,7 @@ class CommonFileTab(TabData):
 
         # Populate files in sidebar
         self._clear_tree(self.FilesBranch)
-        file_list = self.filemgr.get_item_list()
+        file_list = self.fileman.get_item_list()
         for item in file_list:
             self._add_tree_item(self.FilesBranch, item["name"], item["icon"], "open", item["path"])
         self.FilesBranch.sortChildren(0, Qt.AscendingOrder)
@@ -1312,8 +1312,7 @@ class CommonFileTab(TabData):
         reasons = {
             fileman.ERROR_BAD_DATA: self._("The data is invalid."),
             fileman.ERROR_MISSING_FILE: self._("The file no longer exists. Please refresh the page."),
-            fileman.ERROR_NEWER_FORMAT: self._("This file was saved in a newer version of this program."),
-            fileman.ERROR_NO_SCRIPT: self._("The accompanying script file is missing.")
+            fileman.ERROR_NEWER_FORMAT: self._("This file was saved in a newer version of this program.")
         }
 
         try:
@@ -1365,7 +1364,7 @@ class CommonFileTab(TabData):
         name = self.current_file_data["name"]
 
         def _file_delete_confirmed():
-            success = self.filemgr.delete_item(self.current_file_path)
+            success = self.fileman.delete_item(self.current_file_path)
 
             if success != True:
                 self._show_file_error(success)
@@ -1407,7 +1406,7 @@ class CommonFileTab(TabData):
         """
         Create a new copy of the currently selected effect.
         """
-        new_file_path = self.filemgr.clone_item(self.current_file_path)
+        new_file_path = self.fileman.clone_item(self.current_file_path)
 
         if not new_file_path:
             self._show_file_error()

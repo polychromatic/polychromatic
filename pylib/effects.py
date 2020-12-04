@@ -7,6 +7,7 @@
 Handles the processing of custom software effects and device mapping.
 """
 
+import json
 import os
 import shutil
 
@@ -231,3 +232,41 @@ class EffectFileManagement(fileman.FlatFileManagement):
         return None
 
 
+class DeviceMapGraphics(object):
+    """
+    Responsible for populating the list of device graphics and generating SVG
+    graphics of a grid if a specific device is unavailable (or by request).
+    """
+    def __init__(self, appdata):
+        self.appdata = appdata
+        self.maps_path = os.path.join(common.paths.data_dir, "devicemaps", "maps.json")
+        self.automap_path = os.path.join(common.paths.data_dir, "devicemaps", "automap.json")
+
+    def get_graphic_list(self):
+        """
+        Returns a list of dictionaries referencing graphics:
+        {
+            "Human readable name": {
+                "filename": "some_device_graphic_en_GB.svg",
+                "rows": 1,
+                "cols": 2
+            }, { ... }
+        }
+        """
+        with open(self.maps_path) as f:
+            return json.load(f)
+
+    def auto_select_device(self, device_name, device_type, device_cols, device_rows):
+        """
+        Try to automatically determine the graphic best suited for the specified
+        device name. The rows/cols and locale will be taken into consideration.
+
+        If there are no suitable graphics, None will be returned instructing
+        the application to select a grid layout.
+
+        Returns:
+            (str)       Filename for the suggested device map
+            None        No matches for a close enough graphic
+        """
+        print("stub:DeviceMapGraphics.auto_select_device")
+        return ""

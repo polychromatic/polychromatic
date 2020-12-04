@@ -17,7 +17,7 @@ $secondary: #008000;
 
 /* Colours */
 $text-colour: #D6D6D6;
-$text-disabled: darken($text-colour, 50%);
+$text-disabled: darken($text-colour, 33%);
 $button-text-colour: #DED9CB;
 $border-colour: #2D2D2D;
 $border-group-colour: #4D4D4D;
@@ -124,16 +124,15 @@ QToolButton {
 }
 
 QPushButton:focus,
-QPushButton:hover,
-QToolButton:focus,
-QToolButton:hover {
-    background-color: lighten($bg-primary, 5%);
+QToolButton:focus {
+    background-color: darken($bg-primary, 5%);
     color: #fff;
 }
 
-QPushButton:focus,
-QToolButton:focus {
-    background-color: darken($bg-primary, 5%);
+QPushButton:hover,
+QToolButton:hover {
+    background-color: lighten($bg-primary, 5%);
+    color: #fff;
 }
 
 QPushButton:pressed,
@@ -713,6 +712,7 @@ QStatusBar::item {
 /**********************************************************
   Line Edit Box
 **********************************************************/
+QTextEdit,
 QLineEdit {
     background-color: $bg-primary;
     color: $button-text-colour;
@@ -721,6 +721,7 @@ QLineEdit {
     selection-background-color: $secondary;
 }
 
+QTextEdit:hover,
 QLineEdit:hover {
     background-color: lighten($bg-primary, 5%);
     color: #fff;
@@ -730,7 +731,9 @@ QLineEdit:hover {
 /**********************************************************
   Text Edit
 **********************************************************/
-QTextEdit, QListView {
+QTextEdit#LicenseText,
+QTextEdit#LicenseText:hover,
+QListView {
     background-color: $bg-secondary;
     color: $text-colour;
 }
@@ -783,7 +786,8 @@ QTableView {
 /**********************************************************
   Special Widgets
 **********************************************************/
-#AnimatedGIFWarningLabel {
+#AnimatedGIFWarningLabel,
+#DeviceNotPresentLabel {
     background: $bg-secondary;
     border: 1px solid rgba(orange, 0.5);
     color: orange;
