@@ -343,7 +343,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Applet Type</string>
+              <string>Renderer</string>
              </property>
             </widget>
            </item>
@@ -351,7 +351,7 @@
             <widget class="QComboBox" name="TrayModeCombo">
              <item>
               <property name="text">
-               <string>Use Default (AppIndicator3)</string>
+               <string>Default (AppIndicator3)</string>
               </property>
              </item>
              <item>
@@ -408,6 +408,9 @@
               </size>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
+              <property name="spacing">
+               <number>3</number>
+              </property>
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -442,7 +445,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string>On some desktop environments, due to race conditions, it may be necessary to wait to properly load the applet's icon or device list.</string>
+                 <string>On some desktop environments, due to race conditions, it may be necessary to wait so the applet's icon or device list is loaded properly.</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
