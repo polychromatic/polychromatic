@@ -37,11 +37,8 @@ class Locales(object):
         """
         whereami = os.path.abspath(os.path.join(os.path.dirname(self.bin_path)))
 
-        if os.path.exists(os.path.join(whereami, "locale/dist")):
-            # Using relative path (development build)
-            self.locale_path = os.path.join(whereami, "locale/dist/")
-        elif os.path.exists(os.path.join(whereami, "locale/")):
-            # Using relative path (/opt build)
+        if os.path.exists(os.path.join(whereami, "locale")):
+            # Using relative path (development or /opt/ build)
             self.locale_path = os.path.join(whereami, "locale/")
         else:
             # Using system path or source (en_GB) if none found

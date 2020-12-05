@@ -19,7 +19,7 @@ function abort_on_error() {
 abort_on_error $?
 
 # Compile locales
-./scripts/build-locales.sh "$(realpath ./locale/dist/)"
+./scripts/build-locales.sh
 abort_on_error $?
 
 # Start!

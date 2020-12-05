@@ -25,7 +25,7 @@ class PolychromaticTests(unittest.TestCase):
         pass
 
     def setUp(self):
-        self._ = locales.Locales("polychromatic-controller").init()
+        self._ = locales.Locales("polychromatic").init()
         self.dbg = common.Debugging()
         self.paths = common.paths
         preferences.init(self._)
@@ -34,17 +34,17 @@ class PolychromaticTests(unittest.TestCase):
         pass
 
     def test_locales_can_be_set(self):
-        i18n = locales.Locales("polychromatic-controller", "de_DE")
+        i18n = locales.Locales("polychromatic", "de_DE")
         _ = i18n.init()
         self.assertEqual(i18n._get_current_locale(), "de_DE", "Could not set up a German locale")
 
     def test_locales_can_translate_strings(self):
-        _ = locales.Locales("polychromatic-controller", "de_DE").init()
+        _ = locales.Locales("polychromatic", "de_DE").init()
         # EN: Breath | DE: Atem
         self.assertEqual(_("Breath"), "Atem", "Could not translate text in German")
 
     def test_locales_can_translate_colours(self):
-        _ = locales.Locales("polychromatic-controller", "de_DE").init()
+        _ = locales.Locales("polychromatic", "de_DE").init()
         if os.path.exists(self.paths.colours):
             os.remove(self.paths.colours)
         preferences.init(_)

@@ -4,7 +4,7 @@
 # application.
 #
 # Parameters:
-#   $1      Path to generate locales (.mo files)
+#   $1      Optional. Path to generate locales (e.g. en_GB/LC_MESSAGES/polychromatic.mo files)
 #
 
 cd "$(dirname "$0")"/../locale
@@ -15,22 +15,24 @@ if [ -z "$(which msgfmt)" ]; then
     exit 1
 fi
 
+# Path to locales optional. Use development repository otherwise.
 if [ -z "$output_path" ]; then
-    echo "Missing parameter: Path to generate locales"
-    exit 1
+    output_path="$(pwd)"
 fi
 
-if [ -d "$output_path" ]; then
-    rm -r "$output_path"
+if [ ! -d "$output_path" ]; then
+    mkdir "$output_path"
 fi
-
-mkdir "$output_path"
 
 echo -n "Compiling locales using 'msgfmt'..."
 for file in $(ls *.po)
 do
     locale=${file%.*}
-    mkdir -p "$output_path/$locale/LC_MESSAGES/"
-    msgfmt $locale.po -o "$output_path/$locale/LC_MESSAGES/polychromatic.mo"
+    locale_path="$output_path/$locale/LC_MESSAGES/"
+    if [ -d "$locale_path" ]; then
+        rm -r "$locale_path"
+    fi
+    mkdir -p "$locale_path"
+    msgfmt $locale.po -o "$locale_path/polychromatic.mo"
 done
 echo " done!"

@@ -36,7 +36,7 @@ jobs:
     - name: Development Build
       run: |
         ./scripts/build-styles.sh
-        ./scripts/build-locales.sh ./dist
+        ./scripts/build-locales.sh
 
     - name: Test Polychromatic Internals
       run: |

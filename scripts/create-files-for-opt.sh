@@ -42,6 +42,7 @@ cp -vr "$SOURCE/LICENSE" "$DEST/"
 cp -vr "$SOURCE/polychromatic-"* "$DEST/"
 rm "$DEST/polychromatic-controller-dev"
 
+# Build locales
 "$SOURCE/scripts/build-locales.sh" "$DEST/locale/"
 
 # Clean up
