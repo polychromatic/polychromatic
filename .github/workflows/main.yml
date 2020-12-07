@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
@@ -32,7 +32,10 @@ jobs:
         sudo apt-get install meson
 
         # Debian Packaging
-        sudo apt-get install debhelper devscripts python3-polib
+        sudo apt-get install debhelper devscripts
+
+        # Locales
+        sudo apt-get install gettext intltool-debian python3-polib
 
         # Backend: OpenRazer
         sudo add-apt-repository ppa:openrazer/daily
@@ -63,6 +66,14 @@ jobs:
       run: |
         meson build --prefix=/tmp/pkg/
         ninja -C build install
+
+    - name: Generate Locales
+      run: |
+        ./scripts/create-locales.sh
+
+    - name: Build Locales
+      run: |
+        ./scripts/build-locales.sh
 
     - name: Create Build
       run: |

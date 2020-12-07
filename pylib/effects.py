@@ -157,7 +157,7 @@ class EffectFileManagement(fileman.FlatFileManagement):
         if effect_type == TYPE_LAYERED:
             data["layers"] = [
                 {
-                    "name": self._("Static"),
+                    "name": self._("Layer 1"),
                     "type": LAYER_STATIC,
                     "positions": [],
                     "properties": {}
