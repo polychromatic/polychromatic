@@ -278,11 +278,14 @@ QTabBar::tab:disabled {
 **********************************************************/
 QMenuBar {
     background-color: $bg-secondary;
+    spacing: 0;
+    color: $text-colour;
+}
+
+QMenuBar#MainMenubar {
     background-image: url([data]/img/bg/menubar.png);
     background-position: right bottom;
     background-repeat: no-repeat;
-    spacing: 0;
-    color: $text-colour;
 }
 
 QMenuBar::item {

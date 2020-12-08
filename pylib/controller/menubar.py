@@ -29,8 +29,9 @@ class MenuBar(object):
     """
     def __init__(self, appdata):
         self.appdata = appdata
+        self._ = appdata._
         self.mainwindow = self.appdata.main_window
-        self.menubar = self.mainwindow.findChild(QMenuBar, "menuBar")
+        self.menubar = self.mainwindow.findChild(QMenuBar)
         self.widgets = shared.PolychromaticWidgets(appdata)
 
         # Classes per backend
@@ -103,6 +104,9 @@ class MenuBar(object):
         self.mainwindow.findChild(QAction, "actionReinstateMenuBar").setVisible(True)
         self.appdata.preferences["controller"]["show_menu_bar"] = False
         preferences.save_file(self.appdata.paths.preferences, self.appdata.preferences)
+        self.widgets.open_dialog(self.widgets.dialog_generic,
+                                 self._("Hide Menu Bar"),
+                                 self._("The menu bar is now hidden. To temporarily reveal, press Alt."))
 
     def reinstate_menu_bar(self):
         """

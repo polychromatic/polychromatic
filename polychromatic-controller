@@ -173,7 +173,6 @@ class MainWindow(QMainWindow):
         # Load UI
         uic.loadUi(os.path.join(common.paths.data_dir, "qt", "main.ui"), self)
 
-        menubar = self.menuBar
         header = self.findChild(QWidget, "Header")
         tabs = self.findChild(QWidget, "MainTabWidget")
         tabs_custom = self.findChild(QWidget, "MainTabCustom")
@@ -193,7 +192,7 @@ class MainWindow(QMainWindow):
         # Prepare Menu Bar
         self.findChild(QAction, "actionReinstateMenuBar").setVisible(False)
         if not app.preferences["controller"]["show_menu_bar"]:
-            self.menuBar.hide()
+            self.menuBar().hide()
             self.findChild(QAction, "actionReinstateMenuBar").setVisible(True)
 
         # CTRL+C'd
@@ -396,7 +395,7 @@ class MainWindow(QMainWindow):
         Pressing 'Alt' will reveal the menu bar.
         """
         if e.key() == QtCore.Qt.Key_Alt:
-            self.menuBar.show()
+            self.menuBar().show()
 
 
 def parse_parameters():
