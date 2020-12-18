@@ -12,6 +12,7 @@ from .. import effects
 from .. import locales
 from .. import preferences as pref
 from . import shared
+from . import editor
 
 import os
 
@@ -21,7 +22,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
                             QListWidget, QTreeWidget, QLabel, QComboBox, \
                             QTreeWidgetItem, QMenu, QDialog, QDialogButtonBox, \
                             QButtonGroup, QLineEdit, QTextEdit, QCheckBox, \
-                            QGroupBox, QRadioButton
+                            QGroupBox, QRadioButton, QMainWindow
 
 
 class EffectsTab(shared.CommonFileTab):
@@ -43,6 +44,8 @@ class EffectsTab(shared.CommonFileTab):
         self._add_tree_item(self.TasksBranch, self._("New Effect"), common.get_icon("general", "new"), "tasks", "new")
         self._add_tree_item(self.TasksBranch, self._("Import Effect"), common.get_icon("general", "import"), "tasks", "import")
 
+        # Keep track of editor windows so garbage collection doesn't destroy them
+        self.editors = {}
     def show_no_file_screen(self, message_id):
         """
         Effect cannot be opened for viewing - inform the user.
@@ -233,10 +236,21 @@ class EffectsTab(shared.CommonFileTab):
 
     def edit_file(self):
         """
-        Open the editor for the currently selected effect.
+        Open the editor for the currently selected effect. Make sure only one
+        editor is open per file.
         """
-        print("stub:edit_effect")
-        pass
+        effect_path = self.current_file_path
+        effect_type = self.current_file_data["type"]
+
+        if effect_path in self.editors.keys():
+            if self.editors[effect_path].alive:
+                self.widgets.open_dialog(self.widgets.dialog_warning,
+                                         self._("File In Use"),
+                                         self._("This file is being edited in another window. Please close that editor first."))
+                return
+
+        if effect_type in [effects.TYPE_LAYERED, effects.TYPE_SEQUENCE]:
+            self.editors[effect_path] = editor.VisualEffectEditor(self.appdata, self.fileman, effect_path)
 
     def import_effect(self):
         """

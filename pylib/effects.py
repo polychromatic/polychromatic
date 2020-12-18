@@ -82,6 +82,8 @@ class EffectFileManagement(fileman.FlatFileManagement):
             self._validate_key(data, "summary", str),
             self._validate_key(data, "map_device", str),
             self._validate_key(data, "map_graphic", str),
+            self._validate_key(data, "map_cols", int),
+            self._validate_key(data, "map_rows", int),
             self._validate_key(data, "save_format", int),
             self._validate_key(data, "revision", int)
         ]
@@ -255,6 +257,17 @@ class DeviceMapGraphics(object):
         """
         with open(self.maps_path) as f:
             return json.load(f)
+
+    def get_graphic_name_from_filename(self, filename):
+        """
+        Return the human friendly name from the specified filename. If there
+        isn't an entry, the filename will be returned.
+        """
+        maps = self.get_graphic_list()
+        for name in maps.keys():
+            if maps[name]["filename"] == filename:
+                return name
+        return filename
 
     def auto_select_device(self, device_name, device_type, device_cols, device_rows):
         """

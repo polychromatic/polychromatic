@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        html, body {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 255), rgba(50, 50, 50, 255));
+            overflow: hidden;
+            font-family: "Play", sans-serif;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #viewport {
+            cursor: pointer;
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #viewport svg {
+            margin: auto;
+        }
+
+        /* Custom Cursors - Standard DPI */
+        #viewport.mode-1 {
+            cursor: url(cursors/paint.svg), copy;
+        }
+
+        #viewport.mode-2 {
+            cursor: url(cursors/erase.svg), no-drop;
+        }
+
+        #viewport.mode-3 {
+            cursor: url(cursors/picker.svg), grab;
+        }
+
+        /* Custom Cursors - High DPI */
+        @media screen and (                min-resolution: 2dppx) {
+            #viewport.mode-1 {
+                cursor: url(cursors/paint@2x.svg), copy;
+            }
+
+            #viewport.mode-2 {
+                cursor: url(cursors/erase@2x.svg), no-drop;
+            }
+
+            #viewport.mode-3 {
+                cursor: url(cursors/picker@2x.svg), grab;
+            }
+        }
+
+        #status-msg {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 8px;
+            margin: auto;
+            color: gray;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        #status-msg > div {
+            margin-top: auto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="viewport" class="mode-1" onmousedown="event.preventDefault()" draggable="false"></div>
+
+    <div id="status-msg">
+        <div id="current-graphic-name"></div>
+        <div id="current-pos">&nbsp;</div>
+    </div>
+
+    <script>
+        var currentColour = "#00FF00";
+        var eraseColour = "#000000";
+        var currentPos = document.querySelector("#current-pos");
+        var viewport = document.querySelector("#viewport");
+        var mode = 0;
+
+        function loadSVG(svg_name, svg_data) {
+            //
+            // Load the new graphic into the viewport.
+            //
+            document.querySelector("#current-graphic-name").innerHTML = svg_name;
+            viewport.innerHTML = svg_data;
+            document.querySelector("svg").setAttribute("preserveAspectRatio", "xMinYMin");
+
+            // Initialize hover events
+            var LEDs = document.querySelectorAll(".LED");
+            for (i = 0; i < LEDs.length; i++) {
+                var LED = LEDs[i];
+                var x = LED.id.split("-")[0].replace("x", "");
+                var y = LED.id.split("-")[1].replace("y", "");
+                LED.x = x;
+                LED.y = y;
+                LED.setAttribute("onmouseover", "_hoverLED(this)");
+                LED.setAttribute("onmouseout", "_leaveLED()");
+                LED.setAttribute("onmousedown", `setLED(${x}, ${y}, true)`);
+            }
+        }
+
+        function _hoverLED(element) {
+            //
+            // Update the current position text when hovering over an LED.
+            // Additionally, if the mouse is being drag clicked, set the LED too.
+            //
+            currentPos.innerHTML = `(${element.x}, ${element.y})`;
+
+            if (mouseDown > 0)
+                setLED(element.x, element.y, true);
+        }
+
+        function _leaveLED() {
+            //
+            // Remove the current position when no longer hovering an LED.
+            //
+            currentPos.innerHTML = "&nbsp;";
+        }
+
+        // https://stackoverflow.com/a/5624139
+        function _hexToRGB(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function _getTextColour(rgb) {
+            var light = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
+            if (light < 128)
+                x = 255;
+            else
+                x = 0;
+            return `rgb(${x}, ${x}, ${x})`;
+        }
+
+        function _getLightnessColour(rgb, light) {
+            if (light < 0) {
+                rgb.r = (1 + light) * rgb.r;
+                rgb.g = (1 + light) * rgb.g;
+                rgb.b = (1 + light) * rgb.b;
+            } else {
+                rgb.r = (1 - light) * rgb.r + light * 255;
+                rgb.g = (1 - light) * rgb.g + light * 255;
+                rgb.b = (1 - light) * rgb.b + light * 255;
+            }
+
+            return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+        }
+
+        function _setColour(element, hexValue) {
+            //
+            // Fills all paths/text of the specified element.
+            //
+            var rgb = _hexToRGB(hexValue);
+
+            // Use transparent colour for eraser
+            if (mode == 2) {
+                hexValue = eraseColour;
+                var rgb = _hexToRGB(eraseColour);
+            }
+
+            // Usually <g> tag, but could be a path directly.
+            element.style.fill = hexValue;
+
+            // Fill in path(s) and make sure text is still visible.
+            var children = element.childNodes;
+            for (i = 0; i < children.length; i++) {
+                var child = children[i];
+                switch(child.tagName) {
+                    case "path":
+                    case "g":
+                    case "rect":
+                    case "circle":
+                        child.style.fill = hexValue;
+                        child.style.stroke = _getLightnessColour(rgb, 0.33);
+                        break;
+                    case "text":
+                        child.style.fill = _getTextColour(rgb);
+                        break;
+                }
+            }
+        }
+
+        function setLED(x, y, send_to_py, colourOverride) {
+            //
+            // Set specified LED to this colour and send instruction to Python.
+            //
+            if (send_to_py == true) {
+                document.title = `click;${x};${y};${mode}`;
+            }
+            var hex_value = currentColour;
+            var element = document.querySelector(`#x${x}-y${y}`);
+
+            if (colourOverride != undefined)
+                hex_value = colourOverride;
+
+            // "Picker" mode doesn't change any colour.
+            if (mode == 3)
+                return;
+
+            if (element != undefined)
+                _setColour(element, hex_value);
+        }
+
+        function clearLED() {
+            //
+            // Clears all LEDs to "transparent".
+            //
+            var elements = document.querySelectorAll(".LED");
+            for (e = 0; e < elements.length; e++) {
+                var element = elements[e];
+                console.log(element);
+                _setColour(element, eraseColour);
+            }
+        }
+
+        function setMode(new_mode, native) {
+            //
+            // Updates the cursor when the mode changes.
+            //
+            mode = new_mode;
+            viewport.className = "";
+            viewport.classList.add("mode-" + mode);
+        }
+
+        // Keep track of whether the mouse is clicked
+        var mouseDown = 0;
+        document.body.onmousedown = function() {
+            ++mouseDown;
+        }
+        document.body.onmouseup = function() {
+            mouseDown = 0;
+        }
+
+        // Tell Python we're ready!
+        document.title = "ready";
+
+    </script>
+</body>
+</html>

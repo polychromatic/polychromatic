@@ -199,8 +199,8 @@ class MainWindow(QMainWindow):
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self.CloseButton = self.findChild(QPushButton, "CloseApp")
-        self.CloseButton.clicked.connect(self._quit_app)
-        self.closeEvent = self._quit_app
+        self.CloseButton.clicked.connect(self.quit_app)
+        self.closeEvent = self.quit_app
 
     def load(self):
         """
@@ -324,7 +324,7 @@ class MainWindow(QMainWindow):
                 _change_tab()
 
         # Bind actions to menu bar
-        self.findChild(QAction, "actionQuitApp").triggered.connect(self._quit_app)
+        self.findChild(QAction, "actionQuitApp").triggered.connect(self.quit_app)
 
         # Warn if configuration is newer then this version.
         pref_ver = pref.VERSION
@@ -372,10 +372,10 @@ class MainWindow(QMainWindow):
         # Showtime!
         self.show()
 
-    @staticmethod
-    def _quit_app(a=None, b=None):
+    def quit_app(self, event=None, b=None):
         """
-        Gracefully closes the application.
+        Closes the main application window. This won't stop the execution
+        entirely until the last editor window is closed.
         """
         # Save window position if preference set.
         if app.preferences["controller"]["window_behaviour"] == app.main_window.window_behaviour_remember:
@@ -387,8 +387,8 @@ class MainWindow(QMainWindow):
             app.preferences["controller"]["window_size_y"] = rect.height()
             pref.save_file(common.paths.preferences, app.preferences)
 
-        dbg.stdout("Goodbye!", dbg.success, 1)
-        qapp.quit()
+        dbg.stdout("Main window closed, goodbye!", dbg.success, 1)
+        self.close()
 
     def keyPressEvent(self, e):
         """

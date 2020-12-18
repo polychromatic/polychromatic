@@ -31,7 +31,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QSizePolicy, QSpacerItem, QDialog, QColorDialog, \
                             QDialogButtonBox, QTreeWidget, QTreeWidgetItem, \
                             QLineEdit, QTextEdit, QTabWidget, QScrollArea, \
-                            QButtonGroup, QFileDialog
+                            QButtonGroup, QFileDialog, QMenu, QAction, \
+                            QDockWidget
 
 
 def load_qt_theme(appdata, window):
@@ -109,7 +110,7 @@ def get_ui_widget(appdata, name, q_toplevel=QWidget):
     print("stub:get_ui_widget: process i18n strings")
 
     # If a dialog, apply the styles
-    if q_toplevel == QDialog:
+    if q_toplevel in [QDialog, QMainWindow]:
         load_qt_theme(appdata, widget)
 
     return widget

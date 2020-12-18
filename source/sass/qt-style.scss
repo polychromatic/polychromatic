@@ -320,8 +320,11 @@ QMenu::item:selected {
     color: #fff;
 }
 
-QMenu::item:checked {
-    background-color: darken($secondary, 10%);
+QMenuBar {
+    /* Only show checked 'background' color on menu bar */
+    QMenu::item:checked {
+        background-color: darken($secondary, 10%);
+    }
 }
 
 QMenu::separator {
@@ -332,6 +335,42 @@ QMenu::separator {
 
 QMenu::item:disabled {
     color: darken($text-colour, 50%);
+}
+
+
+/**********************************************************
+  Toolbar
+**********************************************************/
+QToolBar {
+    background-color: $bg-secondary;
+    border: 0;
+    margin: 4px 0;
+    spacing: 0;
+    color: $text-colour;
+
+    QPushButton,
+    QToolButton {
+        background-color: transparent;
+        color: $button-text-colour;
+        border: 1px solid transparent;
+        margin: 0;
+        padding: 4px;
+        selection-background-color: transparent;
+    }
+}
+
+
+/**********************************************************
+  Dock
+**********************************************************/
+QDockWidget {
+    titlebar-close-icon: url([data]/img/general/close.svg);
+    titlebar-normal-icon: url([data]/qt/assets/undock.svg);
+
+    &::title {
+        background-color: lighten($bg-secondary, 10%);
+        padding: 4px;
+    }
 }
 
 

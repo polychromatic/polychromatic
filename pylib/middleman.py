@@ -111,6 +111,18 @@ class Middleman(object):
                 new_list.append(device)
         return new_list
 
+    def get_device_by_name(self, name):
+        """
+        Returns a summary of a device by looking up its name.
+
+        None is returned if the device cannot be found (e.g. not connected)
+        """
+        devices = self.get_device_list()
+        for device in devices:
+            if device["name"] == name:
+                return device
+        return None
+
     def get_unsupported_devices(self):
         """
         Returns a list of connected devices that cannot be controlled by their backend.
