@@ -51,6 +51,19 @@
             }
         }
 
+        /* System "Native" Cursors */
+        #viewport.mode-1.native {
+            cursor: cell;
+        }
+
+        #viewport.mode-2.native {
+            cursor: not-allowed;
+        }
+
+        #viewport.mode-3.native {
+            cursor: pointer;
+        }
+
         #status-msg {
             display: flex;
             flex-direction: column;
@@ -233,6 +246,8 @@
             mode = new_mode;
             viewport.className = "";
             viewport.classList.add("mode-" + mode);
+            if (native == true)
+                viewport.classList.add("native");
         }
 
         // Keep track of whether the mouse is clicked

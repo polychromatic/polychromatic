@@ -82,14 +82,14 @@
            <item row="0" column="1">
             <widget class="QCheckBox" name="UseSystemQtTheme">
              <property name="text">
-              <string>Use the system Qt theme</string>
+              <string>Use system Qt theme</string>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
             <widget class="QCheckBox" name="AlwaysHideMenuBar">
              <property name="text">
-              <string>Hide the menu bar</string>
+              <string>Hide menu bar</string>
              </property>
             </widget>
            </item>
@@ -493,7 +493,21 @@
            <property name="verticalSpacing">
             <number>10</number>
            </property>
-           <item row="0" column="0">
+           <item row="2" column="1">
+            <widget class="QCheckBox" name="LivePreview">
+             <property name="text">
+              <string>Preview effect on the actual hardware</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QCheckBox" name="UseSystemCursors">
+             <property name="text">
+              <string>Use system cursors</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
             <widget class="QLabel" name="LivePreviewLabel">
              <property name="minimumSize">
               <size>
@@ -506,10 +520,16 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QCheckBox" name="LivePreview">
+           <item row="0" column="0">
+            <widget class="QLabel" name="UseSystemCursorsLabel">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
-              <string>Show changes on the actual hardware</string>
+              <string>Appearance</string>
              </property>
             </widget>
            </item>

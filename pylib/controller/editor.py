@@ -949,6 +949,7 @@ class DeviceRenderer(shared.TabData):
         self.webview = webview
         self.loaded = False
         self.ready_fn = ready_fn
+        self.use_native_cursor = appdata.preferences["editor"]["system_cursors"]
 
         self.device_map = effects.DeviceMapGraphics(appdata)
         self.map_path = os.path.join(common.paths.data_dir, "devicemaps")
@@ -1091,8 +1092,7 @@ class DeviceRenderer(shared.TabData):
         if not self.loaded:
             return
 
-        self.webview.page().runJavaScript("setMode({0})".format(mode))
-        #self.webview.page().runJavaScript("setMode({0}, {1})".format(mode, self.use_native_cursor))
+        self.webview.page().runJavaScript("setMode({0}, {1})".format(mode, str(self.use_native_cursor).lower()))
 
     def clear(self):
         """

@@ -62,6 +62,7 @@ def load_file(filepath):
         _validate("colours", "primary", str, "#00FF00")
         _validate("colours", "secondary", str, "#FF0000")
         _validate("editor", "live_preview", bool, True)
+        _validate("editor", "system_cursors", bool, False)
         _validate("controller", "landing_tab", int, 0)
         _validate("controller", "show_menu_bar", bool, True)
         _validate("controller", "system_qt_theme", bool, False)

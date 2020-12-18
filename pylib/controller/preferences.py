@@ -53,6 +53,7 @@ class PreferencesWindow(shared.TabData):
 
             # -- Editor
             ["editor", "live_preview", QCheckBox, "LivePreview", False],
+            ["editor", "system_cursors", QCheckBox, "UseSystemCursors", False],
         ]
 
     def open_window(self):
