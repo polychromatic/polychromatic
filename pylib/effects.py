@@ -153,6 +153,8 @@ class EffectFileManagement(fileman.FlatFileManagement):
         data["summary"] = ""
         data["map_device"] = ""
         data["map_graphic"] = ""
+        data["map_cols"] = 0
+        data["map_rows"] = 0
         data["save_format"] = fileman.VERSION
         data["revision"] = 1
 
