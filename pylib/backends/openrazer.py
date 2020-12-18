@@ -1276,7 +1276,7 @@ class Backend(_backend.Backend):
                 self._rdevice = rdevice
 
             def set(self, x, y, red, green, blue):
-                self._rdevice.fx.advanced.matrix[x, y] = (red, green, blue)
+                self._rdevice.fx.advanced.matrix[y, x] = (red, green, blue)
 
             def draw(self):
                 self._rdevice.fx.advanced.draw()
