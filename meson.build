@@ -36,6 +36,7 @@ if build_shared_files == true
     install_data(['pylib/__init__.py',
                   'pylib/common.py',
                   'pylib/effects.py',
+                  'pylib/fileman.py',
                   'pylib/fx.py',
                   'pylib/locales.py',
                   'pylib/middleman.py',
@@ -75,6 +76,10 @@ if build_controller == true
 
     install_subdir('pylib/controller',
         install_dir : join_paths(py_install_dir, 'polychromatic', 'controller'),
+        strip_directory : true)
+
+    install_subdir('pylib/qt',
+        install_dir : join_paths(py_install_dir, 'polychromatic', 'qt'),
         strip_directory : true)
 
     install_data('polychromatic-controller',
