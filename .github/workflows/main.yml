@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
@@ -35,7 +35,7 @@ jobs:
         sudo apt-get install debhelper devscripts
 
         # Locales
-        sudo apt-get install gettext intltool-debian python3-polib
+        sudo apt-get install gettext intltool
 
         # Backend: OpenRazer
         sudo add-apt-repository ppa:openrazer/daily

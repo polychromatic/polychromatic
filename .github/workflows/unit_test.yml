@@ -10,7 +10,7 @@ on:
 
 jobs:
   unit_tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
@@ -20,7 +20,7 @@ jobs:
         sudo apt-get update
 
         # Build Dependencies
-        sudo apt-get install gettext sassc python3-polib
+        sudo apt-get install gettext sassc
 
         # Application Dependencies
         sudo apt-get install python3-colorama python3-requests python3-setproctitle imagemagick
