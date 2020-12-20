@@ -1180,12 +1180,31 @@ class Backend(_backend.Backend):
 
     def _read_persistence_storage(self, rdevice, zone):
         """
-        OpenRazer 2.9.0+ uses persistence storage to track the last effect,
-        colours and parameters. If this version does not have this or fails,
-        proceed with a file-based fallback.
+        OpenRazer >2.9.0 uses persistence storage to track the last effect,
+        colours and parameters. If the daemon currently running does not have
+        this feature, continue with a file-based fallback.
         """
+        rzone = self._get_zone_as_object(rdevice, zone)
+
         try:
-            rzone = self._get_zone_as_object(rdevice, zone)
+            if not hasattr(rzone, "effect"):
+                # Current OpenRazer version doesn't have persistence
+                self.debug("Daemon persistence unavailable, falling back.")
+                return self._read_persistence_storage_fallback(rdevice, zone)
+        except Exception:
+            # Device/zone does not need persistence, return generic data
+            # https://github.com/openrazer/openrazer/issues/1380
+            self.debug("Persistence read unnecessary for {0} (Zone: {1})".format(rdevice.name, zone))
+            return {
+                "effect": "",
+                "colour_1": "#000000",
+                "colour_2": "#000000",
+                "colour_3": "#000000",
+                "wave_dir": 1,
+                "speed":  2
+            }
+
+        try:
             colours = self._convert_colour_bytes(rzone.colors)
 
             return {
@@ -1197,7 +1216,8 @@ class Backend(_backend.Backend):
                 "speed": int(rzone.speed)
             }
         except Exception as e:
-            self.debug("Persistence storage not available, falling back!")
+            self.debug("Failed to read persistence, falling back!")
+            self.debug("The exception was: " + str(e))
             return self._read_persistence_storage_fallback(rdevice, zone)
 
     def _get_persistence_storage_fallback_path(self):
@@ -1239,9 +1259,17 @@ class Backend(_backend.Backend):
         """
         If the daemon does not support persistence storage (e.g. old version)
         then write to files instead.
+
+        Setting effects also summons this function, in case the daemon version
+        doesn't have the persistence feature, otherwise the state would be lost.
         """
-        if hasattr(rzone, "effect"):
-            # No need, daemon supports persistence
+        try:
+            if hasattr(rzone, "effect"):
+                # No need to write to file, daemon will have processed persistence
+                return
+        except Exception:
+            # Workaround API throwing a DBUS exception
+            # https://github.com/openrazer/openrazer/issues/1380
             return
 
         storage_dir = self._get_persistence_storage_fallback_path()
