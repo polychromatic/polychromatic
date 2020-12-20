@@ -20,7 +20,8 @@ from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \
                             QPushButton, QToolButton, QMessageBox, QListWidget, \
                             QTreeWidget, QTreeWidgetItem, QLabel, QComboBox, \
                             QSpacerItem, QSizePolicy, QSlider, QCheckBox, \
-                            QButtonGroup, QRadioButton, QDialog, QTableWidget
+                            QButtonGroup, QRadioButton, QDialog, QTableWidget, \
+                            QTableWidgetItem
 
 
 class DevicesTab(shared.TabData):
@@ -870,7 +871,8 @@ class DevicesTab(shared.TabData):
             hw.addChild(mkitem(_("Keyboard Layout"), device["keyboard_layout"]))
             hw.addChild(mkitem(_("Matrix Supported"), device["matrix"]))
             if device["matrix"]:
-                hw.addChild(mkitem(_("Matrix Dimensions"), _("1 column(s), 2 row(s)").replace("1", str(device["matrix_rows"])).replace("2", str(device["matrix_cols"])), common.get_icon("general", "matrix")))
+                # FIXME: Use plurals in gettext
+                hw.addChild(mkitem(_("Matrix Dimensions"), _("1 row(s), 2 column(s)").replace("1", str(device["matrix_rows"])).replace("2", str(device["matrix_cols"])), common.get_icon("general", "matrix")))
                 btn_test_matrix.setDisabled(False)
             tree.addTopLevelItem(hw)
 
@@ -994,24 +996,30 @@ class DevicesTab(shared.TabData):
             self.dialog.accept()
 
         # Populate table
-        for row in range(0, fx.rows):
-            table.insertRow(row)
-        for col in range(0, fx.cols):
-            table.insertColumn(col)
+        for x in range(0, fx.cols):
+            table.insertColumn(x)
+            header = QTableWidgetItem()
+            header.setText(str(x))
+            table.setHorizontalHeaderItem(x, header)
+        for y in range(0, fx.rows):
+            table.insertRow(y)
+            header = QTableWidgetItem()
+            header.setText(str(y))
+            table.setVerticalHeaderItem(y, header)
 
         def _set_pos():
             indexes = table.selectedIndexes()
             fx.clear()
             for index in indexes:
-                fx.set(index.row(), index.column(), 255, 255, 255)
+                fx.set(index.column(), index.row(), 255, 255, 255)
             if len(indexes) == 0:
                 cur_pos.setText("")
             elif len(indexes) == 1:
-                row = indexes[0].row()
-                col = indexes[0].column()
-                cur_pos.setText(_("Position: [X],[Y] (Row [1], Column [2])").replace("[X]", str(row)).replace("[Y]", str(col)).replace("[1]", str(row + 1)).replace("[2]", str(col + 1)))
+                x = indexes[0].column()
+                y = indexes[0].row()
+                cur_pos.setText(_("Coordinate: X,Y").replace("X", str(x)).replace("Y", str(y)))
             elif len(indexes) > 1:
-                cur_pos.setText(_("Position: (Multiple)"))
+                cur_pos.setText(_("Coordinate: (Multiple)"))
             fx.draw()
 
         # Connect signals and set focus
