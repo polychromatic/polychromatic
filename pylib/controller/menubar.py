@@ -144,7 +144,7 @@ class MenuBar(object):
             if results == None:
                 self.widgets.open_dialog(self.widgets.dialog_warning,
                                          _("Troubleshooting Failed"),
-                                         _("The troubleshooter for this backend is not avaliable for this operating system."))
+                                         _("The troubleshooter for this backend is not available for this operating system."))
                 return
             elif results == str:
                 self.widgets.open_dialog(self.widgets.dialog_error,

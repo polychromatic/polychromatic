@@ -207,7 +207,7 @@ class Middleman(object):
 
         Returns:
             (list)          Results from the troubleshooter
-            None            Troubleshooter not avaliable
+            None            Troubleshooter not available
             False           Troubleshooter failed
         """
         try:

@@ -254,7 +254,7 @@ if args.help:
         ["",""]
     ]
 
-    dbg.stdout(_("Avaliable Options"))
+    dbg.stdout(_("Available Options"))
     dbg.stdout("---------------------------")
     print_columns(rows)
     exit(0)
@@ -280,7 +280,7 @@ if verbose:
             dbg.stdout(" - {0}".format(error), dbg.warning)
 
 if len(middleman.backends) == 0:
-    dbg.stdout(_("No backends avaliable."), dbg.error)
+    dbg.stdout(_("No backends available."), dbg.error)
     exit(1)
 
 if args.device:

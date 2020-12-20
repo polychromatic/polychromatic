@@ -177,7 +177,7 @@ class DevicesTab(shared.TabData):
         summary = self.widgets.create_summary_widget(real_image, device["name"], indicators, buttons)
         layout.addWidget(summary)
 
-        # Create controls for avaliable options
+        # Create controls for available options
         multiple_zones = len(device["zone_options"].keys()) > 1
 
         for zone in device["zone_options"].keys():
