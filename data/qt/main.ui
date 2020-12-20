@@ -173,9 +173,6 @@
        </item>
        <item>
         <widget class="QToolButton" name="PresetsTabButton">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
          <property name="text">
           <string>Presets</string>
          </property>
@@ -201,9 +198,6 @@
        </item>
        <item>
         <widget class="QToolButton" name="TriggersTabButton">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
          <property name="text">
           <string>Triggers</string>
          </property>

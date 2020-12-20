@@ -1,8 +1,32 @@
-polychromatic (0.6.0) focal; urgency=low
+polychromatic (0.6.0) UNRELEASED; urgency=low
 
-  * TBA - Still in development
+  * Controller: Dropped GTK/WebKit. Now uses PyQt5.
+  * Controller: New UI design.
+  * Controller: New troubleshooter for OpenRazer.
+  * Controller: New configuration GUI for OpenRazer.
+  * Controller: New 'Apply to All' feature.
+  * Controller: New Preferences GUI.
+  * Controller: New 'Device Info' and 'Inspect Matrix'.
+  * Controller: New saved colour picker.
+  * Controller: New icon picker - add support for Steam games and custom icons.
+  * Controller: Warn when using incompatible configuration.
+  * Controller: Dropped --print-device-info parameter (use 'Device Info' instead)
+  * Tray Applet: Add support for GTK Status Icon.
+  * Tray Applet: New menu design.
+  * Tray Applet: New option to delay autostart (to fix race conditions)
+  * Helper: Replaces the tray applet autostart desktop launcher.
+  * CLI: New command line interface via 'polychromatic-cli'
+  * OpenRazer is no longer a hard dependency.
+  * OpenRazer: Add support for multizoned hardware.
+  * OpenRazer: Add support for battery status.
+  * Add XDG desktop actions to desktop launcher.
+  * New translations: pt_BR, fr_FR, fi_FI, ru, zh_CN
+  * Change shebang to '/usr/bin/python3'
+  * Build: Changed to meson/ninja.
+  * Bulid: New locale scripts. Source language is now en_GB.
+  * Build: Switch from 'lessc' to 'sassc'
 
- -- Luke Horwell <code@horwell.me>  Tue, 05 May 2020 10:27:16 +0100
+ -- Luke Horwell <code@horwell.me>  Sat, 19 Dec 2020 16:09:50 +0100
 
 polychromatic (0.3.12) xenial; urgency=low
 

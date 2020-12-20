@@ -1,44 +1,93 @@
 ![Polychromatic](.github/logo.png)
 
-A front-end to customise your Razer perpherials under GNU/Linux. Powered by [OpenRazer](https://openrazer.github.io).
+An open source RGB lighting management front-end application to customise
+[OpenRazer] peripherals on GNU/Linux.
 
-[![CI](https://github.com/polychromatic/polychromatic/workflows/CI/badge.svg?branch=dev-1.0.0&event=push)](https://github.com/polychromatic/polychromatic/actions)
+[![CI](https://github.com/polychromatic/polychromatic/workflows/CI/badge.svg?branch=master&event=push)](https://github.com/polychromatic/polychromatic/actions)
 [![GitHub Release](https://img.shields.io/github/release/polychromatic/polychromatic.svg)](https://github.com/polychromatic/polychromatic/releases)
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/polychromatic/polychromatic/blob/master/LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.8.2-blue.svg)](#)
+[![Python Version](https://img.shields.io/badge/python-3.8.6-blue.svg)](#)
 
-![Screenshot of Polychromatic's interfaces](.github/screenshot.png)
+![Screenshot of Polychromatic's v1.0.0 Controller interface](.github/controller@2x.webp)
+
+<p align="center">
+The next generation of the software (v1.0.0) - not released yet!
+</p>
 
 ### [https://polychromatic.app](https://polychromatic.app)
-Take a look at the website for features, screenshots, downloads and documentation.
 
-------------
+---
+
+## v0.3.12 Notice
+
+This README (and branch) is for the next generation of the software still in
+development. For the older release (v0.3.12) designed for Razer BlackWidow Chroma
+and is compatible with most Razer hardware that was supported before 2018, see the
+[stable branch](https://github.com/polychromatic/polychromatic/tree/stable-python38).
+
+v1.0.0 is aimed to be released for beta testing as soon as humanly possible!
+
+
+## About
+
+Polychromatic is a vendor agnostic front-end for managing lighting, RGB effects
+and some special functionality for keyboards, mice, keypads and just about any
+other gaming peripheral on your GNU/Linux system.
+
+The software aims to make it easy to create and co-ordinate lighting effects
+that work across all compatible hardware, even if you switch to another brand
+also supported by Polychromatic.
+
+Presets and triggers enables you to switch your lighting on-the-fly
+to match the application or game that's currently playing.
+
+[View Features & Screenshots](https://polychromatic.app/about/) (v0.3.12)
+
 
 ## Device Support
 
-This software is powered by the [OpenRazer](https://openrazer.github.io) daemon, check
-their [supported devices](https://openrazer.github.io/#devices) grid to confirm whether your device is
-supported by the daemon. If the daemon supports it, Polychromatic will see it too.
+Polychromatic on its own is just a front-end, it needs at least one backend
+installed to provide the actual communication with the hardware.
 
-Due to the diversity of devices, not all of a device's features may be supported right away.
-[Check out the roadmap](https://polychromatic.app/docs/roadmap/) for progress.
+**Currently, [OpenRazer](https://openrazer.github.io) is the only supported
+backend at the moment.** (Being vendor agnostic is a fairly new objective!)
+
+To check your Razer device is supported, check out the
+[supported devices grid](https://openrazer.github.io/#devices) on the OpenRazer website.
+
+In future, this project aims to add support for:
+
+* [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) - supports many brands, including GPU, MB and RAM modules.
+* [Philips Hue (phue)](https://github.com/polychromatic/polychromatic/issues/296)
 
 
-## Getting Started
+## Download
 
-* [Head to the downloads page](https://polychromatic.app/download/) for instructions for your distribution.
-* For build instructions, [see the "Manual Installation" page](https://polychromatic.app/download/manual/).
-* For dependencies and other documentation, [see the docs](https://polychromatic.app/docs/).
-* Curious? [Here's some FAQs](https://polychromatic.app/docs/faqs/)
+Instructions for each supported distro are provided on the website:
+
+* <https://polychromatic.app/download/>
+
+Installing packages from the repository is recommended as this will keep
+the software up-to-date.
+
+Alternately, providing all the [dependencies](https://polychromatic.app/docs/dependencies/)
+are installed, you can run the application directly from the repository without
+installation.
+
+**Are you on the cutting edge?** You can grab artifacts for the [latest build from the Actions tab.](https://github.com/polychromatic/polychromatic/actions?query=workflow%3ABuild)
+You'll need to be signed in to GitHub to download these. Some distros also
+provide a `-git` or testing repository too.
 
 
-## Troubleshooting
+## Something not working?
 
-Occasionally, issues are caused by an improper installation of OpenRazer, which covers
-DBus, the daemon and the driver. [Check if an issue already exists](https://github.com/openrazer/openrazer/issues)
-for your specific device before [creating a new issue](https://github.com/openrazer/openrazer/issues/new).
+For [OpenRazer] users, occasionally, issues are caused by an improper driver
+installation. Polychromatic includes a troubleshooter to identify common problems.
 
-For visual or functional problems with Polychromatic, [please raise an issue here instead](https://github.com/polychromatic/polychromatic/issues/new).
+Should you still be stuck, [check if an issue already exists](https://github.com/openrazer/openrazer/issues),
+and that your hardware is supported before [creating a new issue](https://github.com/openrazer/openrazer/issues/new).
+
+For bugs with Polychromatic, [please raise an issue here](https://github.com/polychromatic/polychromatic/issues/new).
 
 
 ## Translations
@@ -56,3 +105,6 @@ Thank you for your generosity.
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W02DPTW)
 
 If you don't wish to use Ko-fi, [there's also PayPal](https://www.paypal.me/LukeHorwell).
+
+
+[OpenRazer]: https://openrazer.github.io
