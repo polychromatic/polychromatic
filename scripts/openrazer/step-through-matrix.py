@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 #
-# This script will step through each key in the matrix and
-# prompt for a label, to identify what lights up.
+# Use this script to step through each key for a keyboard
+# to document which key corresponds to a position.
 #
 
-import razer.client as rclient
-print("Successfully imported razer.client")
+import openrazer.client as rclient
+print("Successfully imported openrazer.client")
 
 devman = rclient.DeviceManager()
 print("Successfully connected to Device Manager.")
@@ -38,7 +38,7 @@ for row in range(0, total_rows):
     for col in range(0, total_cols):
         device.fx.advanced.matrix[row, col] = [0, 255, 0]
         device.fx.advanced.draw()
-        input("{0}, {1} = ".format(str(row), str(col)))
+        input("{0}, {1} = ".format(str(col), str(row)))
         device.fx.advanced.matrix[row, col] = [0, 0, 0]
 
 input("\nReached the end. Be sure to save this, then press ENTER to quit.")
