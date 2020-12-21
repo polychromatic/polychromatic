@@ -53,7 +53,7 @@ else:
     try:
         import polychromatic.common as common
         import polychromatic.effects as effects
-        import polychromatic.preferences as pref
+        import polychromatic.preferences as preferences
         import polychromatic.procpid as procpid
         import polychromatic.middleman as middleman_module
     except (ImportError, Exception) as e:
