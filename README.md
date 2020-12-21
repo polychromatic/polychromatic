@@ -1,9 +1,10 @@
 ![Polychromatic](.github/logo.png)
 
 An open source RGB lighting management front-end application to customise
-[OpenRazer] peripherals on GNU/Linux.
+[OpenRazer] peripherals on GNU/Linux. Soon to be vendor agnostic!
 
-[![CI](https://github.com/polychromatic/polychromatic/workflows/CI/badge.svg?branch=master&event=push)](https://github.com/polychromatic/polychromatic/actions)
+[![Build](https://github.com/polychromatic/polychromatic/workflows/Build/badge.svg?event=push)](https://github.com/polychromatic/polychromatic/actions?query=workflow%3ABuild)
+[![Unit Tests](https://github.com/polychromatic/polychromatic/workflows/Unit%20Tests/badge.svg?event=push)](https://github.com/polychromatic/polychromatic/actions?query=workflow%3A%22Unit+Tests%22)
 [![GitHub Release](https://img.shields.io/github/release/polychromatic/polychromatic.svg)](https://github.com/polychromatic/polychromatic/releases)
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/polychromatic/polychromatic/blob/master/LICENSE)
 [![Python Version](https://img.shields.io/badge/python-3.8.6-blue.svg)](#)
@@ -92,8 +93,11 @@ For bugs with Polychromatic, [please raise an issue here](https://github.com/pol
 
 ## Translations
 
-The software is ready to speak multiple languages!
+The software can speak multiple languages!
 [Here's a guide](https://polychromatic.app/docs/translations/) if you'd like to contribute.
+
+Please note that there may be new and changed strings while this new
+version is being finalized.
 
 
 ## Donations
