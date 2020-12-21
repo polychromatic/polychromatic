@@ -1,4 +1,14 @@
+# Cache
 __pycache__
 *.pyc
-data/pages/controller.css
-source/data/*.css
+.sass-cache/
+
+# Temporary
+data/qt/*.h
+locale/tmp/
+
+# Compiled
+build/
+locale/*/LC_MESSAGES/
+*.mo
+data/qt/style.qss

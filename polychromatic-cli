@@ -1,0 +1,696 @@
+#!/usr/bin/python3
+#
+# Polychromatic is free software: you can redistribute it and/or modify
+# it under the temms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Polychromatic is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Polychromatic. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright (C) 2017-2020 Luke Horwell <code@horwell.me>
+#
+
+"""
+Control Razer devices from the command line. Useful for commamd line users or bash scripting.
+"""
+VERSION = "0.6.0"
+
+import argparse
+import colorama
+import signal
+import os
+import sys
+
+# Import modules if running relatively.
+if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
+    try:
+        import pylib.preferences as pref
+        import pylib.common as common
+        import pylib.locales as locales
+        import pylib.middleman as middleman_module
+    except (ImportError, Exception) as e:
+        print("Failed to import modules relatively.\n")
+        raise e
+
+# Import modules if installed system-wide.
+else:
+    try:
+        import polychromatic.preferences as pref
+        import polychromatic.common as common
+        import polychromatic.locales as locales
+        import polychromatic.middleman as middleman_module
+    except (ImportError, Exception) as e:
+        print("Polychromatic's modules could not be imported.")
+        print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
+        raise e
+
+
+########################################
+# Set up variables
+########################################
+dbg = common.Debugging()
+i18n = locales.Locales(__file__)
+_ = i18n.init()
+pref.init(_)
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+verbose = False
+
+########################################
+# Pretty columns
+########################################
+def print_columns(data, print_header=False):
+    """
+    Prints a basic 'pretty' table ensuring each column has enough room.
+
+    Params:
+        data = [
+            ["Row 1 Column 1", "Row 1 Column 2", "Row 1 Column 3"]
+            ["Row 2 Column 1", "Row 2 Column 2", "Row 2 Column 3"]
+        ]
+    """
+    # Basic mode
+    if args.no_pretty_column:
+        for row in data:
+            print("      ".join(row))
+        return
+
+    # Pretty mode
+    total_cols = 0
+    col_widths = {}
+    col_pos = {}
+
+    def _back_to_start():
+        # Move cursor to beginning of line
+        for i in range(0, total_cols * 10):
+            print(colorama.Cursor.BACK(), end="")
+
+    def _jump_to_pos(x):
+        # Move cursor to specified position
+        _back_to_start()
+        for i in range(0, x):
+            print(colorama.Cursor.FORWARD(), end="")
+
+    # Calculate the columns dimensions before printing
+    for row in data:
+        for index, col in enumerate(row):
+            line = col
+
+            # Strip formatting characters from calculation
+            for char in [dbg.error, dbg.success, dbg.grey, dbg.normal]:
+                line = line.replace(char, "")
+
+            # Make note of largest width and total columns.
+            try:
+                if len(line) > col_widths[index]:
+                    col_widths[index] = len(line)
+            except KeyError:
+                col_widths[index] = len(line)
+            total_cols = total_cols + col_widths[index]
+
+    for index, col in enumerate(row):
+        # Precalculate the column positions
+        col_pos[index] = 0
+        for i in range(0, index):
+            col_pos[index] += col_widths[i] + 2
+
+    # Print the actual data
+    for index, row in enumerate(data):
+        # Print header background
+        if print_header and index == 0:
+            print(colorama.Back.WHITE + colorama.Fore.BLACK, end="")
+
+        # Print aligned columns
+        for index, col in enumerate(row):
+            _jump_to_pos(col_pos[index])
+            print(col,end="")
+        print(colorama.Style.RESET_ALL)
+
+
+########################################
+# Parse arguments
+########################################
+parser = argparse.ArgumentParser(add_help=False)
+parser._optionals.title = _("These arguments can be specified")
+
+# Select a device
+parser.add_argument("-d", "--device", action="store", choices=common.FORM_FACTORS)
+parser.add_argument("-n", "--name", action="store")
+parser.add_argument("-s", "--serial", action="store")
+
+# Output details only
+parser.add_argument("-l", "--list-devices", action="store_true")
+parser.add_argument("-k", "--list-options", action="store_true")
+
+# Device manipulation
+parser.add_argument("-z", "--zone", action="store")
+parser.add_argument("-o", "--option", action="store")
+parser.add_argument("-p", "--parameter", action="store")
+parser.add_argument("-c", "--colours", action="store")
+
+# Special handling
+parser.add_argument("--dpi", action="store")
+
+# Misc
+parser.add_argument("--version", action="store_true")
+parser.add_argument("-h", "--help", action="store_true")
+parser.add_argument("--locale", action="store")
+parser.add_argument("--no-pretty-column", action="store_true")
+parser.add_argument("-v", "--verbose", action="store_true")
+
+args = parser.parse_args()
+
+if not len(sys.argv) > 1:
+    dbg.stdout(_("No arguments passed."), dbg.error)
+    dbg.stdout(_("Type polychromatic-cli --help to see possible combinations."))
+    exit(0)
+
+if args.version:
+    dbg.stdout(_("Version") + " " + VERSION)
+    exit(0)
+
+if args.locale:
+    i18n = locales.Locales(__file__, args.locale)
+    _ = i18n.init()
+
+if args.verbose:
+    dbg.verbose_level = 1
+    verbose = True
+
+if args.help:
+    rows = [
+        [
+            dbg.action + "  -d, --device" + dbg.warning + " {id}",
+            dbg.normal + _("Select device(s) by form factor. If omitted, select all devices")
+        ],
+        [
+            "",
+            dbg.action + "[{0}]".format(", ".join(common.FORM_FACTORS))
+        ],
+        [
+            dbg.action + "  -n, --name" + dbg.warning + " {name}",
+            dbg.normal + _("Select a device by its name")
+        ],
+        [
+            dbg.action + "  -s, --serial" + dbg.warning + " {serial}",
+            dbg.normal + _("Select a device by its serial number")
+        ],
+        ["", ""],
+        [
+            dbg.action + "  -l, --list-devices",
+            dbg.normal + _("List connected device(s) and their zone(s)")
+        ],
+        [
+            dbg.action + "  -k, --list-options",
+            dbg.normal + _("List supported parameters for selected device(s)")
+        ],
+        ["", ""],
+        [
+            dbg.action + "  -z, --zone" + dbg.warning + " {name}",
+            dbg.normal + _("Make change to specified zone. If omitted, use all available zones")
+        ],
+        [
+            dbg.action + "  -o, --option" + dbg.warning + " {name}",
+            dbg.normal + _("Change an option on the device")
+        ],
+        [
+            dbg.action + "  -p, --parameter" + dbg.warning + " {name}",
+            dbg.normal + _("Set parameter for the option (if applicable)")
+        ],
+        [
+            dbg.action + "  -c, --colours" + dbg.warning + " {hex1,hex2}",
+            dbg.normal + _("Set colours in hex format (#RRGGBB). Comma separated")
+        ],
+        [
+            dbg.action + "  --dpi" + dbg.warning + " {X}[,Y]",
+            dbg.normal + _("Set how fast the cursor moves. Example: 1800 or 1800,800")
+        ],
+        ["", ""],
+        [
+            dbg.action + "  --version",
+            dbg.normal + _("Print version and exit")
+        ],
+        [
+            dbg.action + "  -h, --help",
+            dbg.normal + _("Show this help message and exit")
+        ],
+        [
+            dbg.action + "  --no-pretty-column",
+            dbg.normal + _("Do not print with pretty columns")
+        ],
+        [
+            dbg.action + "  --locale" + dbg.warning + " {code}",
+            dbg.normal + _("Force a specific language, e.g. de_DE")
+        ],
+        [
+            dbg.action + "  -v, --verbose",
+            dbg.normal + _("Output additional data and debug messages")
+        ],
+        ["",""]
+    ]
+
+    dbg.stdout(_("Available Options"))
+    dbg.stdout("---------------------------")
+    print_columns(rows)
+    exit(0)
+
+
+########################################
+# Select devices
+########################################
+middleman = middleman_module.Middleman(dbg, common, _)
+middleman.init()
+
+if verbose:
+    dbg.stdout("Loaded {0} backend(s):".format(len(middleman.backends)), dbg.success)
+    for backend in middleman.backends:
+        dbg.stdout(" - {0}".format(middleman_module.BACKEND_ID_NAMES[backend.backend_id]), dbg.success)
+
+    if len(middleman.not_installed) > 0:
+        dbg.stdout("Not imported: " + ", ".join(middleman.not_installed), dbg.debug)
+
+    if len(middleman.import_errors) > 0:
+        dbg.stdout("Errors:", dbg.warning)
+        for error in middleman.import_errors:
+            dbg.stdout(" - {0}".format(error), dbg.warning)
+
+if len(middleman.backends) == 0:
+    dbg.stdout(_("No backends available."), dbg.error)
+    exit(1)
+
+if args.device:
+    device_list = middleman.get_filtered_device_list(args.device)
+else:
+    device_list = middleman.get_device_list()
+
+device_list = sorted(device_list, key=lambda device: device["name"])
+
+if args.name:
+    for device in device_list:
+        if device["name"] == str(args.name):
+            device_list = [device]
+            break
+
+if args.serial:
+    for device in device_list:
+        if device["serial"] == str(args.serial):
+            device_list = [device]
+            break
+
+unsupported_list = middleman.get_unsupported_devices()
+
+if len(device_list) == 0:
+    dbg.stdout(_("No devices connected."), dbg.error)
+    exit(1)
+
+
+########################################
+# List devices, zones or current status.
+########################################
+if args.list_devices:
+    dbg.stdout("Connected Devices:", dbg.success)
+    table = [[
+        _("Name") + " (-n)",
+        _("Form Factor") + " (-d)",
+        _("Serial") + " (-s)",
+        _("Zones")
+    ]]
+
+    for device in device_list:
+        table.append([
+            "{0}{1}".format(dbg.normal, device["name"]),
+            "{0}{1}".format(dbg.action, device["form_factor"]["id"]),
+            "{0}{1}".format(dbg.warning, device["serial"]),
+            "{0}{1}".format(dbg.magenta, ", ".join(device["zones"]))
+        ])
+
+    for device in unsupported_list:
+        table.append([
+            "{0}{2}: {1}".format(dbg.error, device["name"], middleman_module.BACKEND_ID_NAMES[device["backend"]])
+        ])
+
+    print_columns(table, True)
+
+if args.list_options:
+    for device in device_list:
+        print("")
+        details = middleman.get_device(device["backend"], int(device["uid"]))
+        rows = []
+
+        if details == None:
+            continue
+
+        elif type(details) == str:
+            dbg.stdout(_("Could not retrieve device information:") + " {0}\n{1}".format(device["name"], details), dbg.error)
+            rows.append([_("Backend"), middleman_module.BACKEND_ID_NAMES[device["backend"]]])
+            continue
+
+        dbg.stdout("[{0}]".format(details["name"]), dbg.action)
+
+        # Print device information
+        def _add_row(label, value, colour):
+            rows.append([colour + label, colour + value])
+
+        if verbose:
+            if details["vid"] and details["pid"]:
+                _add_row("VID:PID", "{0}:{1}".format(details["vid"], details["pid"]), dbg.grey)
+
+            if details["serial"]:
+                _add_row(_("Serial"), details["serial"], dbg.grey)
+
+            if details["firmware_version"]:
+                _add_row(_("Firmware Version"), details["firmware_version"], dbg.grey)
+
+            if details["keyboard_layout"]:
+                _add_row(_("Keyboard Layout"), details["keyboard_layout"], dbg.grey)
+
+            if details["matrix"]:
+                dimensions = "{0} {2}, {1} {3}".format(details["matrix_rows"], details["matrix_cols"], _("rows"), _("columns"))
+            else:
+                _add_row(_("Custom Effects"), _("Not supported"), dbg.error)
+
+            if details["matrix"] and not details["monochromatic"]:
+                _add_row(_("Custom Effects"), "{0} ({1})".format(_("Yes"), dimensions), dbg.success)
+
+            if details["matrix"] and details["monochromatic"]:
+                _add_row(_("Custom Effects"), "{0} ({1})".format(_("Yes (Limited RGB)"), dimensions), dbg.success)
+
+            # Space between details and next table
+            _add_row("", "", dbg.normal)
+            print_columns(rows)
+
+        # Print options and their parameter/colour inputs
+        rows = [[
+            _("Zone") + " (-z)",
+            _("Option") + " (-o)",
+            _("Parameter") + " (-p)",
+            _("Colours") + " (-c)"
+        ]]
+
+        def _add_row():
+            rows.append([col_zone, col_option, col_param, col_colours])
+
+        def _list_colours(colour_count, control):
+            if colour_count == 0:
+                return dbg.grey + "-"
+            cur_colours = []
+            listed = 1
+            while listed <= colour_count:
+                cur_colours.append(control["colour_" + str(listed)].upper())
+                listed += 1
+            return "{0} ({1})".format(colour_count, ", ".join(cur_colours))
+
+        for zone in details["zone_options"]:
+            for control in details["zone_options"][zone]:
+                col_zone = dbg.normal + zone
+                col_option = dbg.normal + control["id"]
+                col_colours = dbg.grey + "-"
+                col_param = dbg.grey + "-"
+
+                option_type = control["type"]
+                try:
+                    params = control["parameters"]
+                except KeyError:
+                    params = []
+
+                try:
+                    colour_hex = control["colours"]
+                except KeyError:
+                    colour_hex = []
+
+                if colour_hex:
+                    col_colours = ", ".join(colour_hex)
+
+                if option_type == "slider":
+                    col_param = str(control["value"])
+                    if control["value"] > 0:
+                        col_zone = dbg.success + zone
+                        col_option = dbg.success + control["id"]
+                        col_param = dbg.success + col_param
+                    else:
+                        col_zone = dbg.error + zone
+                        col_option = dbg.error + control["id"]
+                        col_param = dbg.error + col_param
+                    _add_row()
+
+                elif option_type == "toggle":
+                    if control["active"]:
+                        col_zone = dbg.success + zone
+                        col_option = dbg.success + control["id"]
+                        col_param = dbg.success + _("On") + " (1)"
+                    else:
+                        col_zone = dbg.error + zone
+                        col_option = dbg.error + control["id"]
+                        col_param = dbg.error + _("Off") + " (0)"
+                    _add_row()
+
+                elif option_type in ["multichoice", "effect"] and len(params) == 0:
+                    if control["active"]:
+                        col_zone = dbg.success + zone
+                        col_option = dbg.success + control["id"]
+                        col_param = dbg.success + "-"
+                        col_colours = dbg.success + col_colours
+                    else:
+                        col_colours = dbg.normal + col_colours
+                    _add_row()
+
+                elif option_type in ["multichoice", "effect"] and len(params) > 0:
+                    for param in control["parameters"]:
+                        col_zone = dbg.normal + zone
+                        col_option = dbg.normal + control["id"]
+                        col_colours = dbg.grey + "-"
+                        col_param = param["id"]
+
+                        try:
+                            if param["active"] and control["active"]:
+                                col_zone = dbg.success + zone
+                                col_option = dbg.success + control["id"]
+                                col_param = dbg.success + col_param
+                                col_colours = dbg.success + col_colours
+                        except KeyError:
+                            pass
+
+                        try:
+                            col_colours = ", ".join(param["colours"])
+                        except KeyError:
+                            pass
+
+                        col_param += "{0} ({1})".format(dbg.grey, str(param["data"]))
+
+                        _add_row()
+
+        # DPI data
+        if details["dpi_x"] or details["dpi_y"]:
+            col_zone = dbg.grey + "-"
+            col_option = dbg.success + "dpi"
+            col_param = dbg.success
+            col_colours = dbg.grey + "-"
+
+            if details["dpi_single"]:
+                col_param += "{0}".format(details["dpi_x"])
+            else:
+                col_param += "{0},{1}".format(details["dpi_x"], details["dpi_y"])
+
+            col_param += " ({0}-{1})".format(details["dpi_min"], details["dpi_max"])
+        _add_row()
+
+        print_columns(rows, True)
+
+# After using a --list-* parameter, exit here as devices won't be manipulated.
+if args.list_devices or args.list_options:
+    exit()
+
+
+########################################
+# Set DPI
+########################################
+if args.dpi:
+    for device_item in device_list:
+        if device_item["form_factor"]["id"] != "mouse":
+            continue
+
+        device = middleman.get_device(device_item["backend"], device_item["uid"])
+
+        device_name = device["name"]
+        dpi_values = args.dpi.split(",")
+        both_x_y = len(dpi_values) >= 2
+        dpi_min = device["dpi_min"]
+        dpi_max = device["dpi_max"]
+
+        if both_x_y:
+            dpi_values = [int(dpi_values[0]), int(dpi_values[1])]
+        else:
+            dpi_values = [int(dpi_values[0]), int(dpi_values[0])]
+
+        for i in range(0, 1):
+            dpi = dpi_values[i]
+            axis = "X" if 1 else "Y"
+
+            if dpi > dpi_max:
+                dbg.stdout(_("DPI X too high for [device]: [1] (Maximum is [2])").replace("[1]", str(dpi)).replace("[2]", str(dpi_max)).replace("[device]", device_name).replace("X", axis))
+                exit(1)
+
+            if dpi < dpi_min:
+                dbg.stdout(_("DPI X too low for [device]: [1] (Minimum is [2])").replace("[1]", str(dpi)).replace("[2]", str(dpi_min)).replace("[device]", device_name).replace("X", axis))
+                exit(1)
+
+        if verbose:
+            dbg.stdout("Setting DPI for {0}: {1}".format(device_name, dpi_values))
+
+        result = middleman.set_device_state(device["backend"], device["uid"], device["serial"], None, "dpi", dpi_values, [])
+
+        if result == False:
+            dbg.stdout(_("Error: [device] - Invalid request!").replace("[device]", device_name), dbg.error)
+        elif result == True and verbose:
+            dbg.stdout("Successfully executed request.", dbg.success)
+        elif type(result) == str:
+            dbg.stdout(_("Error: [device] - Backend threw exception:").replace("[device]", device_name), dbg.error)
+            dbg.stdout(result, dbg.error)
+
+    exit(0)
+
+
+########################################
+# Set device state
+########################################
+apply_zone = args.zone
+apply_option = args.option
+apply_param = args.parameter
+if args.colours:
+    apply_colours = []
+
+    # Validate colour input (hash at the beginning, 6 length)
+    valid = True
+    for colour in args.colours.split(","):
+        if colour[0] != "#":
+            # Be lenient with missing hashes
+            colour = "#" + colour
+        if len(colour) == 4:
+            valid = False
+            dbg.stdout(_("3 byte hexadecimal values are unsupported.").replace("[]", colour), dbg.warning)
+        elif len(colour) != 7:
+            valid = False
+            dbg.stdout(_("Colour [] is not a valid hex value.").replace("[]", colour), dbg.warning)
+        apply_colours.append(colour)
+
+    if not valid:
+        exit(1)
+else:
+    apply_colours = []
+
+for device_item in device_list:
+    device = middleman.get_device(device_item["backend"], device_item["uid"])
+    if not device:
+        continue
+    elif type(device) == str:
+        dbg.stdout(_("There was a problem reading the device:") + " " + device_item["name"], dbg.error)
+        dbg.stdout(device + "\n", dbg.error)
+        continue
+
+    zones = device["zone_options"].keys()
+
+    # Check an option was specified
+    if not apply_option:
+        dbg.stdout(_("Please specify an option (-o). Use --list-options (-k) to view available options."), dbg.error)
+        exit(1)
+
+    # If a zone was specified, does it match this device?
+    if apply_zone:
+        if apply_zone in zones:
+            zones = [apply_zone]
+        else:
+            dbg.stdout(_("Skipping: [device] - No such zone '[z]'").replace("[z]", apply_zone).replace("[device]", device["name"]), dbg.warning)
+            continue
+
+    # Validate the request has the required parameters and colours
+    valid = False
+    user_colours_count = len(apply_colours)
+    device_name = device["name"]
+
+    for zone in zones:
+        for option in device["zone_options"][zone]:
+            if option["id"] == apply_option:
+
+                # Does this option require parameters?
+                try:
+                    params = option["parameters"]
+                except KeyError:
+                    # Not an effect or multichoice type.
+                    params = []
+                if len(params) > 0 and not apply_param:
+                    dbg.stdout(_("Skipping: [device] - Missing a required parameter.").replace("[device]", device_name), dbg.warning)
+                    continue
+
+                elif len(params) > 0:
+                    valid_param = False
+
+                    # Is a valid parameter listed here?
+                    for param in params:
+                        # -p may accept 'raw' data as well as the string 'ID'
+                        #   E.g. OpenRazer uses 1 or 2 for 'wave', but ID isn't interchangable between devices.
+                        #   left/right = mouse, or anticlock/clock = mousemat
+                        if str(param["data"]) == str(apply_param):
+                            valid_param = True
+                            if type(param["data"]) == int:
+                                apply_param = int(param["data"])
+                            else:
+                                apply_param = param["data"]
+                            break
+
+                        elif param["id"] == apply_param:
+                            valid_param = True
+                            apply_param = param["data"]
+                            break
+
+                    if not valid_param:
+                        dbg.stdout(_("Skipping: [device] - This parameter is not supported.").replace("[device]", device_name), dbg.warning)
+                        continue
+
+                    # Do we have all the colours required?
+                    try:
+                        required_colour_count = len(param["colours"])
+
+                        if required_colour_count > user_colours_count:
+                            dbg.stdout(_("Skipping: [device] - Requires 1 colour(s) but only 2 specified.").replace("[device]", device_name).replace("1", str(required_colour_count)).replace("2", str(user_colours_count)), dbg.warning)
+                            continue
+                    except KeyError:
+                        if verbose:
+                            dbg.stdout("Colours not used for this parameter", dbg.debug)
+
+                    valid = True
+
+                elif len(params) == 0:
+                    try:
+                        required_colour_count = len(option["colours"])
+
+                        if len(option["colours"]) > len(apply_colours):
+                            dbg.stdout(_("Skipping: [device] - Requires 1 colour(s) but only 2 specified.").replace("[device]", device_name).replace("1", str(required_colour_count)).replace("2", str(len(apply_colours))), dbg.warning)
+                            continue
+                    except KeyError:
+                        if verbose:
+                            dbg.stdout("Colours not used for this option", dbg.debug)
+
+                    valid = True
+
+    if not valid:
+        dbg.stdout(_("Skipping: [device] - Setting this option was unsuccessful or is not supported.").replace("[device]", device_name), dbg.warning)
+        continue
+
+    for zone in zones:
+        result = middleman.set_device_state(device["backend"], device["uid"], device["serial"], zone, apply_option, apply_param, apply_colours)
+
+        if result == False:
+            # This shouldn't really happen, since the input was validated.
+            dbg.stdout(_("Error: [device] - Invalid request!").replace("[device]", device_name), dbg.error)
+        elif result == True and verbose:
+            dbg.stdout("Successfully executed request.", dbg.success)
+        elif type(result) == str:
+            dbg.stdout(_("Error: [device] - Backend threw exception:").replace("[device]", device_name), dbg.error)
+            dbg.stdout(result, dbg.error)
+
+exit(0)

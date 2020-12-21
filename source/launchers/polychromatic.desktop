@@ -1,0 +1,37 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Polychromatic
+GenericName=Device Manager
+Comment=Configures connected lighting peripherals
+Icon=polychromatic
+Exec=polychromatic-controller
+Encoding=UTF-8
+Terminal=false
+Categories=Settings;HardwareSettings;
+Actions=devices;effects;tray-applet;
+
+[Desktop Action devices]
+Name=Configure Devices
+Icon=/usr/share/polychromatic/img/general/controller.svg
+Exec=polychromatic-controller --open devices
+
+[Desktop Action effects]
+Name=Edit Effects
+Icon=/usr/share/polychromatic/img/general/effects.svg
+Exec=polychromatic-controller --open effects
+
+[Desktop Action presets]
+Name=Edit Presets
+Icon=/usr/share/polychromatic/img/general/presets.svg
+Exec=polychromatic-controller --open presets
+
+[Desktop Action triggers]
+Name=Edit Triggers
+Icon=/usr/share/polychromatic/img/general/triggers.svg
+Exec=polychromatic-controller --open triggers
+
+[Desktop Action tray-applet]
+Name=Tray Applet
+Icon=/usr/share/polychromatic/img/general/tray-applet.svg
+Exec=polychromatic-tray-applet

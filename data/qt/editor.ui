@@ -1,0 +1,1198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EditorWindow</class>
+ <widget class="QMainWindow" name="EditorWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Effect Editor</string>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonFollowStyle</enum>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="Editor">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QWebEngineView" name="MatrixWebView">
+      <property name="contextMenuPolicy">
+       <enum>Qt::NoContextMenu</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="MenuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1000</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionSaveApply"/>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionRevert"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <widget class="QMenu" name="menuShift_All_Keys">
+     <property name="tearOffEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Shift LEDs</string>
+     </property>
+     <property name="icon">
+      <iconset theme="arrow">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+     <addaction name="actionShift_Left"/>
+     <addaction name="actionShift_Right"/>
+     <addaction name="actionShift_Up"/>
+     <addaction name="actionShift_Down"/>
+    </widget>
+    <addaction name="actionNew_Layer"/>
+    <addaction name="actionDelete_Layer"/>
+    <addaction name="actionDuplicate_Layer"/>
+    <addaction name="actionMove_Layer_Up"/>
+    <addaction name="actionMove_Layer_Down"/>
+    <addaction name="separator"/>
+    <addaction name="actionNew_Frame"/>
+    <addaction name="actionDelete_Frame"/>
+    <addaction name="actionClone_Frame"/>
+    <addaction name="actionMove_Frame_Left"/>
+    <addaction name="actionMove_Frame_Right"/>
+    <addaction name="separator"/>
+    <addaction name="menuShift_All_Keys"/>
+    <addaction name="separator"/>
+    <addaction name="actionEditMetadata"/>
+    <addaction name="actionEditTriggers"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="actionShow_as_Device_Graphic"/>
+    <addaction name="MapGraphic"/>
+    <addaction name="actionShow_as_Grid"/>
+    <addaction name="MapDimensionX"/>
+    <addaction name="MapDimensionY"/>
+    <addaction name="separator"/>
+    <addaction name="actionZoomIn"/>
+    <addaction name="actionZoomOut"/>
+    <addaction name="actionZoomReset"/>
+    <addaction name="separator"/>
+    <addaction name="actionResetDocks"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionOnlineHelp"/>
+    <addaction name="actionWebsite"/>
+    <addaction name="separator"/>
+    <addaction name="actionReleaseNotes"/>
+    <addaction name="actionReportBug"/>
+    <addaction name="actionDonate"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuTool">
+    <property name="title">
+     <string>&amp;Tool</string>
+    </property>
+    <addaction name="actionDraw"/>
+    <addaction name="actionColourPicker"/>
+    <addaction name="actionEraser"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
+   <addaction name="menuTool"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="StatusBar"/>
+  <widget class="QDockWidget" name="LayersDock">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Layers</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="Layers">
+    <layout class="QVBoxLayout" name="LayersDockLayout">
+     <item>
+      <widget class="QWidget" name="LayerListContainer" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QTreeWidget" name="LayerTree">
+          <property name="focusPolicy">
+           <enum>Qt::ClickFocus</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="showDropIndicator" stdset="0">
+           <bool>false</bool>
+          </property>
+          <property name="dragDropOverwriteMode">
+           <bool>false</bool>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="rootIsDecorated">
+           <bool>false</bool>
+          </property>
+          <property name="itemsExpandable">
+           <bool>false</bool>
+          </property>
+          <property name="expandsOnDoubleClick">
+           <bool>false</bool>
+          </property>
+          <attribute name="headerVisible">
+           <bool>false</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>Layer</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Effect</string>
+           </property>
+          </column>
+          <item>
+           <property name="text">
+            <string notr="true">WASD Keys</string>
+           </property>
+           <property name="text">
+            <string>Static</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string notr="true">Layer 3</string>
+           </property>
+           <property name="text">
+            <string notr="true">Static</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string notr="true">Layer 2</string>
+           </property>
+           <property name="text">
+            <string notr="true">Wave</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="LayerButtonsRight" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QToolButton" name="LayerMoveUp">
+             <property name="toolTip">
+              <string>Raise the layer in the stack</string>
+             </property>
+             <property name="statusTip">
+              <string>Raise the layer in the stack</string>
+             </property>
+             <property name="text">
+              <string>Raise</string>
+             </property>
+             <property name="icon">
+              <iconset theme="layer-raise">
+               <normaloff>.</normaloff>.</iconset>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonIconOnly</enum>
+             </property>
+             <property name="arrowType">
+              <enum>Qt::NoArrow</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="LayerMoveDown">
+             <property name="toolTip">
+              <string>Lower the layer in the stack</string>
+             </property>
+             <property name="statusTip">
+              <string>Lower the layer in the stack</string>
+             </property>
+             <property name="text">
+              <string>Lower</string>
+             </property>
+             <property name="icon">
+              <iconset theme="layer-lower">
+               <normaloff>.</normaloff>.</iconset>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonIconOnly</enum>
+             </property>
+             <property name="arrowType">
+              <enum>Qt::NoArrow</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QWidget" name="LayerButtonsLeft" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QToolButton" name="LayerNew">
+          <property name="toolTip">
+           <string>Create a new layer in the stack</string>
+          </property>
+          <property name="statusTip">
+           <string>Create a new layer in the stack</string>
+          </property>
+          <property name="text">
+           <string>New</string>
+          </property>
+          <property name="icon">
+           <iconset theme="list-add">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonIconOnly</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="LayerDelete">
+          <property name="toolTip">
+           <string>Delete the selected layer</string>
+          </property>
+          <property name="statusTip">
+           <string>Delete the selected layer</string>
+          </property>
+          <property name="text">
+           <string>Delete</string>
+          </property>
+          <property name="icon">
+           <iconset theme="delete">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="LayerDuplicate">
+          <property name="toolTip">
+           <string>Duplicate the selected layer</string>
+          </property>
+          <property name="statusTip">
+           <string>Duplicate the selected layer</string>
+          </property>
+          <property name="text">
+           <string>Duplicate</string>
+          </property>
+          <property name="icon">
+           <iconset theme="document-duplicate">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="LayerSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="LayerPropertiesDock">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Properties</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="LayerProperties">
+    <layout class="QFormLayout" name="LayerPropertiesDock_2"/>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="MainToolbar">
+   <property name="contextMenuPolicy">
+    <enum>Qt::NoContextMenu</enum>
+   </property>
+   <property name="windowTitle">
+    <string>Main Toolbar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::NoToolBarArea</set>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonFollowStyle</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionSaveApply"/>
+   <addaction name="actionSave"/>
+   <addaction name="separator"/>
+   <addaction name="actionDraw"/>
+   <addaction name="actionColourPicker"/>
+   <addaction name="actionEraser"/>
+   <addaction name="separator"/>
+   <addaction name="actionEditMetadata"/>
+   <addaction name="actionEditTriggers"/>
+  </widget>
+  <widget class="QDockWidget" name="FramesDock">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Frames</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="Frames">
+    <layout class="QVBoxLayout" name="FramesDockLayout">
+     <item>
+      <widget class="QWidget" name="FramesToolbar" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QToolButton" name="NewFrame">
+          <property name="text">
+           <string>New</string>
+          </property>
+          <property name="icon">
+           <iconset theme="list-add">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonFollowStyle</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="CloneFrame">
+          <property name="text">
+           <string>Clone</string>
+          </property>
+          <property name="icon">
+           <iconset theme="document-duplicate">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonFollowStyle</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="DeleteFrame">
+          <property name="text">
+           <string>Delete</string>
+          </property>
+          <property name="icon">
+           <iconset theme="delete">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonFollowStyle</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="MoveFrameLeft">
+          <property name="text">
+           <string>Move Left</string>
+          </property>
+          <property name="icon">
+           <iconset theme="object-rotate-left">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonFollowStyle</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="MoveFrameRight">
+          <property name="text">
+           <string>Move Right</string>
+          </property>
+          <property name="icon">
+           <iconset theme="object-rotate-right">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonFollowStyle</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTableWidget" name="FramesTable">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustToContents</enum>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="showDropIndicator" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="verticalScrollMode">
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="cornerButtonEnabled">
+        <bool>false</bool>
+       </property>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
+       <row>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </row>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="ColoursDock">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Colours</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="ColoursLayout">
+    <layout class="QGridLayout" name="gridLayout"/>
+   </widget>
+  </widget>
+  <action name="actionSaveApply">
+   <property name="icon">
+    <iconset theme="checkmark">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Save and Close</string>
+   </property>
+   <property name="toolTip">
+    <string>Save the effect to disk, and close the editor</string>
+   </property>
+   <property name="statusTip">
+    <string>Save the effect to disk, and close the editor</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset theme="document-save">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="toolTip">
+    <string>Save any unsaved data to disk, just in case!</string>
+   </property>
+   <property name="statusTip">
+    <string>Save any unsaved data to disk, just in case!</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionRevert">
+   <property name="icon">
+    <iconset theme="document-revert">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Revert</string>
+   </property>
+   <property name="toolTip">
+    <string>Undo any changes and reload from disk</string>
+   </property>
+   <property name="statusTip">
+    <string>Undo any changes and reload from disk</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset theme="application-exit">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Close and Discard Changes</string>
+   </property>
+   <property name="toolTip">
+    <string>Close the editor and discard any unsaved changes</string>
+   </property>
+   <property name="statusTip">
+    <string>Close the editor and discard any unsaved changes</string>
+   </property>
+  </action>
+  <action name="actionDraw">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="draw-freehand">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Draw</string>
+   </property>
+   <property name="toolTip">
+    <string>Draw the selected colour to LEDs by clicking or dragging over them</string>
+   </property>
+   <property name="statusTip">
+    <string>Draw the selected colour to LEDs by clicking or dragging over them</string>
+   </property>
+   <property name="shortcut">
+    <string>1</string>
+   </property>
+  </action>
+  <action name="actionColourPicker">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="color-picker">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Picker</string>
+   </property>
+   <property name="toolTip">
+    <string>Take an existing colour from an LED to draw with</string>
+   </property>
+   <property name="statusTip">
+    <string>Take an existing colour from an LED to draw with</string>
+   </property>
+   <property name="shortcut">
+    <string>2</string>
+   </property>
+  </action>
+  <action name="actionEraser">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="draw-eraser">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Eraser</string>
+   </property>
+   <property name="toolTip">
+    <string>Erase the colour from an LED by clicking or dragging over them</string>
+   </property>
+   <property name="statusTip">
+    <string>Erase the colour from an LED by clicking or dragging over them</string>
+   </property>
+   <property name="shortcut">
+    <string>3</string>
+   </property>
+  </action>
+  <action name="actionShow_as_Device_Graphic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="graphics">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Device Graphic</string>
+   </property>
+   <property name="statusTip">
+    <string>Present the LEDs as a graphical represention of the actual hardware (where available)</string>
+   </property>
+   <property name="shortcut">
+    <string>F3</string>
+   </property>
+  </action>
+  <action name="actionShow_as_Grid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="table">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Grid</string>
+   </property>
+   <property name="statusTip">
+    <string>Present the LEDs in a grid</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
+  </action>
+  <action name="actionEditMetadata">
+   <property name="icon">
+    <iconset theme="tag">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Metadata...</string>
+   </property>
+   <property name="toolTip">
+    <string>Edit the name, icon and other related data for this effect</string>
+   </property>
+   <property name="statusTip">
+    <string>Edit the name, icon and other related data for this effect</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionDuplicate_Layer">
+   <property name="icon">
+    <iconset theme="document-duplicate">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Duplicate Layer</string>
+   </property>
+   <property name="toolTip">
+    <string>Duplicate the selected layer</string>
+   </property>
+   <property name="statusTip">
+    <string>Duplicate the selected layer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionDelete_Layer">
+   <property name="icon">
+    <iconset theme="delete">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Layer</string>
+   </property>
+   <property name="toolTip">
+    <string>Permanently delete the selected layer</string>
+   </property>
+   <property name="statusTip">
+    <string>Permanently delete the selected layer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+K</string>
+   </property>
+  </action>
+  <action name="actionMove_Layer_Up">
+   <property name="icon">
+    <iconset theme="layer-raise">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Raise Layer</string>
+   </property>
+   <property name="toolTip">
+    <string>Raise the layer in the stack</string>
+   </property>
+   <property name="statusTip">
+    <string>Raise the layer in the stack</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Up</string>
+   </property>
+  </action>
+  <action name="actionMove_Layer_Down">
+   <property name="icon">
+    <iconset theme="layer-lower">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Lower Layer</string>
+   </property>
+   <property name="toolTip">
+    <string>Lower the layer in the stack</string>
+   </property>
+   <property name="statusTip">
+    <string>Lower the layer in the stack</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Down</string>
+   </property>
+  </action>
+  <action name="actionShift_Left">
+   <property name="icon">
+    <iconset theme="arrow-left">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Shift Left</string>
+   </property>
+   <property name="statusTip">
+    <string>Push all LEDs on this layer/frame by one column to the left</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Left</string>
+   </property>
+  </action>
+  <action name="actionShift_Right">
+   <property name="icon">
+    <iconset theme="arrow-right">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Shift Right</string>
+   </property>
+   <property name="statusTip">
+    <string>Push all LEDs on this layer/frame by one column to the right</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Right</string>
+   </property>
+  </action>
+  <action name="actionShift_Up">
+   <property name="icon">
+    <iconset theme="arrow-up">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Shift Up</string>
+   </property>
+   <property name="statusTip">
+    <string>Push all LEDs on this layer/frame by one row upwards</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Up</string>
+   </property>
+  </action>
+  <action name="actionShift_Down">
+   <property name="icon">
+    <iconset theme="arrow-down">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Shift Down</string>
+   </property>
+   <property name="statusTip">
+    <string>Push all LEDs on this layer/frame by one row downwards</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Down</string>
+   </property>
+  </action>
+  <action name="actionNew_Layer">
+   <property name="icon">
+    <iconset theme="list-add">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>New Layer...</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a new layer in the stack</string>
+   </property>
+   <property name="statusTip">
+    <string>Create a new layer in the stack</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionResetDocks">
+   <property name="icon">
+    <iconset theme="window">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Reset Dock Positions</string>
+   </property>
+   <property name="statusTip">
+    <string>Reset your workspace back to the default view</string>
+   </property>
+  </action>
+  <action name="actionZoomIn">
+   <property name="icon">
+    <iconset theme="zoom-in">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="statusTip">
+    <string>Enlarge the graphic or grid in the viewport</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+=</string>
+   </property>
+  </action>
+  <action name="actionZoomOut">
+   <property name="icon">
+    <iconset theme="zoom-out">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+   <property name="statusTip">
+    <string>Shrink the graphic or grid in the viewport</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionZoomReset">
+   <property name="icon">
+    <iconset theme="zoom-original">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Reset Zoom</string>
+   </property>
+   <property name="statusTip">
+    <string>Reset the size of the graphic or grid in the viewport</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+0</string>
+   </property>
+  </action>
+  <action name="actionMove_Frame_Left">
+   <property name="icon">
+    <iconset theme="object-rotate-left">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Move Frame Left</string>
+   </property>
+   <property name="toolTip">
+    <string>Place this frame a step before the current position</string>
+   </property>
+   <property name="statusTip">
+    <string>Place this frame a step before the current position</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Left</string>
+   </property>
+  </action>
+  <action name="actionMove_Frame_Right">
+   <property name="icon">
+    <iconset theme="object-rotate-right">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Move Frame Right</string>
+   </property>
+   <property name="toolTip">
+    <string>Place this frame a step after the current position</string>
+   </property>
+   <property name="statusTip">
+    <string>Place this frame a step after the current position</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Right</string>
+   </property>
+  </action>
+  <action name="actionOnlineHelp">
+   <property name="icon">
+    <iconset theme="help-contents">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Online Help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
+  <action name="actionWebsite">
+   <property name="text">
+    <string>Website</string>
+   </property>
+  </action>
+  <action name="actionReleaseNotes">
+   <property name="text">
+    <string>What's New?</string>
+   </property>
+  </action>
+  <action name="actionReportBug">
+   <property name="text">
+    <string>Report a Bug</string>
+   </property>
+  </action>
+  <action name="actionDonate">
+   <property name="text">
+    <string>Donate</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset>
+     <normaloff>../img/logo/polychromatic.svg</normaloff>../img/logo/polychromatic.svg</iconset>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionEditTriggers">
+   <property name="icon">
+    <iconset theme="automated-tasks">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Triggers...</string>
+   </property>
+   <property name="toolTip">
+    <string>Configure automation for this effect, such as time of day, or when a process is running</string>
+   </property>
+   <property name="statusTip">
+    <string>Configure automation for this effect, such as time of day, or when a process is running</string>
+   </property>
+  </action>
+  <action name="actionNew_Frame">
+   <property name="icon">
+    <iconset theme="list-add">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>New Frame</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a blank frame after the current position</string>
+   </property>
+   <property name="statusTip">
+    <string>Create a blank frame after the current position</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionDelete_Frame">
+   <property name="icon">
+    <iconset theme="delete">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Frame</string>
+   </property>
+   <property name="toolTip">
+    <string>Permanently delete this frame</string>
+   </property>
+   <property name="statusTip">
+    <string>Permanently delete this frame</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+K</string>
+   </property>
+  </action>
+  <action name="actionClone_Frame">
+   <property name="icon">
+    <iconset theme="document-duplicate">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Clone Frame</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a copy of the current frame after this position</string>
+   </property>
+   <property name="statusTip">
+    <string>Create a copy of the current frame after this position</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="MapGraphic">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string notr="true">GraphicName</string>
+   </property>
+  </action>
+  <action name="MapDimensionX">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string notr="true">X: 22</string>
+   </property>
+  </action>
+  <action name="MapDimensionY">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string notr="true">Y: 5</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebEngineView</class>
+   <extends>QWidget</extends>
+   <header location="global">QtWebEngineWidgets/QWebEngineView</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

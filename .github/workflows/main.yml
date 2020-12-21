@@ -1,0 +1,89 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+
+        # SCSS
+        sudo apt-get install sassc
+
+        # Python Lint
+        sudo apt-get install pylint3
+
+        # Man
+        sudo apt-get install scdoc
+
+        # Build System
+        sudo apt-get install meson
+
+        # Debian Packaging
+        sudo apt-get install debhelper devscripts
+
+        # Locales
+        sudo apt-get install gettext intltool
+
+        # Backend: OpenRazer
+        sudo add-apt-repository ppa:openrazer/daily
+        sudo apt-get install python3-openrazer
+
+        # Application Dependencies
+        sudo apt-get install python3-colorama python3-requests python3-setproctitle imagemagick
+        sudo apt-get install gir1.2-gtk-3.0 gir1.2-appindicator3-0.1
+        sudo apt-get install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtwebengine
+
+    - name: Validate JSON
+      run: |
+        ./scripts/validate-json.py
+
+    - name: Validate SCSS
+      run: |
+        ./scripts/validate-scss.sh
+
+    - name: Validate Python
+      run: |
+        ./scripts/validate-py.sh
+
+    - name: Validate man (scdoc)
+      run: |
+        ./scripts/validate-scdoc.sh
+
+    - name: 'Test Meson/Ninja Build'
+      run: |
+        meson build --prefix=/tmp/pkg/
+        ninja -C build install
+
+    - name: Generate Locales
+      run: |
+        ./scripts/create-locales.sh
+
+    - name: Build Locales
+      run: |
+        ./scripts/build-locales.sh
+
+    - name: Create Build
+      run: |
+        ./scripts/create-files-for-opt.sh /tmp/dist
+
+    - name: Upload Build
+      uses: actions/upload-artifact@v2
+      with:
+        name: polychromatic-${{github.sha}}
+        path: /tmp/dist/
+
+    - name: Test Debian Packaging
+      run: |
+        git clean -df
+        git checkout .
+        sed -i "s/focal/UNRELEASED/g" debian/changelog
+        dpkg-buildpackage -S -us -uc -d
+        lintian --no-tag-display-limit
+        debuild -b
