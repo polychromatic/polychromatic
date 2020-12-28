@@ -861,9 +861,9 @@ class Backend(_backend.Backend):
             "mug": "accessory"
         }
 
-        try:
+        if device_type in openrazer_to_poly:
             form_factor_id = openrazer_to_poly[device_type]
-        except KeyError:
+        else:
             form_factor_id = device_type
 
         return self.common.get_form_factor(self._, form_factor_id)
@@ -954,9 +954,9 @@ class Backend(_backend.Backend):
         }
 
         for zone in zones:
-            try:
+            if zone in labels:
                 label = labels[zone]
-            except KeyError:
+            else:
                 label = self._("Unknown")
 
             if zone == "logo" and device_name.startswith("Razer Nex"):
