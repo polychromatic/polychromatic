@@ -9,15 +9,18 @@ This module controls the visual editor shared between layered and scripted effec
 
 from .. import common
 from .. import effects
+from ..fx import FX
 from .. import locales
 from .. import preferences as pref
 from . import shared
 from . import effects as controller_effects
 
+from ..qt.flowlayout import FlowLayout as QFlowLayout
+
 import json
 import os
 
-from PyQt5.QtCore import Qt, QRect, QItemSelectionModel, QUrl
+from PyQt5.QtCore import Qt, QRect, QItemSelectionModel, QSize, QUrl
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
                             QListWidget, QTreeWidget, QLabel, QComboBox, \
@@ -25,7 +28,8 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
                             QButtonGroup, QLineEdit, QTextEdit, QCheckBox, \
                             QGroupBox, QRadioButton, QMainWindow, QAction, \
                             QDockWidget, QMenuBar, QToolBar, QStatusBar, \
-                            QTableWidget
+                            QTableWidget, QWidget, QVBoxLayout, QHBoxLayout, \
+                            QScrollArea
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # Visual mode within the WebView editor
@@ -166,6 +170,13 @@ class VisualEffectEditor(shared.TabData):
         self.btn_frame_clone = self.window.findChild(QToolButton, "CloneFrame")
         self.btn_frame_move_left = self.window.findChild(QToolButton, "MoveFrameLeft")
         self.btn_frame_move_right = self.window.findChild(QToolButton, "MoveFrameRight")
+
+        # -- Colour Widgets
+        self.colours_palette = self.window.findChild(QWidget, "ColoursPalette")
+        self.colour_picker_wrapper = self.window.findChild(QWidget, "ColourPickerWrapper")
+        self.current_colour_label = self.window.findChild(QLabel, "CurrentColourLabel")
+        # -- -- Set later in load_colours()
+        self.current_colour_preview = None
 
         # Font should be applied to dock widgets
         self.docks = [self.dock_layers, self.dock_properties, self.dock_colours, self.dock_frames]
@@ -842,8 +853,49 @@ class VisualEffectEditor(shared.TabData):
         """
         Populate the colour dock and functions associated for quickly setting
         the brush (draw) colour.
+
+        Intended for use with sequence effects, the "pixel art" style of editing.
+        In addition, saved colours will have lighter/darker colours generated.
         """
-        pass
+        colours = pref.load_file(common.paths.colours)
+        fx = FX(0, 0, "Dummy", "unknown", "unknown", "X")
+
+        # Current colour (picker) and label
+        def _set_custom_colour(new_hex, data):
+            self._set_current_colour(new_hex)
+
+        picker = self.widgets.create_colour_control(self.current_colour, _set_custom_colour, None, self._("Custom..."))
+        shared.clear_layout(self.colour_picker_wrapper.layout())
+        self.colour_picker_wrapper.layout().addWidget(picker)
+        self.current_colour_preview = picker.findChild(QWidget, "PickerPreview")
+
+        # Populate saved colours (and variants)
+        def _mk_button(parent_widget, name, hex_value):
+            button = QPushButton()
+            button.setIconSize(QSize(32, 32))
+            button.resize(QSize(32, 32))
+            button.setFixedSize(32, 32)
+            button.setFlat(True)
+            button.setToolTip("{0} ({1})".format(name, hex_value))
+            button.setStyleSheet("QPushButton { border: none; background: none; padding: 0; margin: 0; }")
+            button.setIcon(QIcon(common.generate_colour_bitmap(self.appdata.dbg, hex_value, "32x32")))
+            button.clicked.connect(lambda a: self._set_current_colour(hex_value))
+            parent_widget.layout().addWidget(button)
+
+        container = QWidget()
+        container.setLayout(QFlowLayout())
+        container.layout().setSpacing(2)
+        container.layout().setContentsMargins(0, 0, 0, 0)
+
+        for colour in colours:
+            for percent in [-45, -30, -15, 0, 15, 30]:
+                percent = float(percent / 100)
+                new_colour = fx.lightness_hex(colour["hex"], percent)
+                _mk_button(container, "{0} (+{1}%)".format(colour["name"], percent * 100), new_colour)
+
+        shared.clear_layout(self.colours_palette.layout())
+        self.colours_palette.layout().addWidget(container)
+        self.dock_colours.setMinimumWidth(240)
 
     def new_frame(self):
         """
@@ -875,6 +927,21 @@ class VisualEffectEditor(shared.TabData):
         Moves the frame to the right by one and refreshes the visual editor.
         """
         pass
+
+    def _set_current_colour(self, hex_value):
+        """
+        Change the current colour for drawing and set the tool if it isn't
+        set already.
+        """
+        self.current_colour = hex_value
+        self.device_renderer.set_colour(hex_value)
+        self.select_mode_draw()
+
+        # Only if colours dock has initialized
+        self.current_colour_label.setText(hex_value)
+
+        if self.current_colour_preview:
+            self.current_colour_preview.setStyleSheet("QWidget {{ background-color: {0} }}".format(hex_value))
 
     def draw_LED_to_frame(self, x, y):
         """
@@ -918,9 +985,8 @@ class VisualEffectEditor(shared.TabData):
         User picks a colour from the current frame.
         """
         try:
-            self.current_colour = self.data["frames"][self.current_frame][str(x)][str(y)]
-            self.statusbar.showMessage(self._("Current colour set to '[]'").replace("[]", self.current_colour), 5000)
-            self.select_mode_draw()
+            hex_value = self.data["frames"][self.current_frame][str(x)][str(y)]
+            self._set_current_colour(hex_value)
         except KeyError:
             self.statusbar.showMessage(self._("This LED is empty - no colour to pick here!"), 5000)
             return
@@ -1093,6 +1159,15 @@ class DeviceRenderer(shared.TabData):
             return
 
         self.webview.page().runJavaScript("setMode({0}, {1})".format(mode, str(self.use_native_cursor).lower()))
+
+    def set_colour(self, hex_value):
+        """
+        Update the visual editor's current colour in memory.
+        """
+        self.webview.page().runJavaScript("currentColour = '{0}';".format(hex_value))
+
+        # Reset 'title' so the same command can be sent again (i.e. draw on same position)
+        self.webview.page().runJavaScript("document.title = '';")
 
     def clear(self):
         """

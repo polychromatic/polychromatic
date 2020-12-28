@@ -447,7 +447,7 @@ class PolychromaticWidgets(object):
         container = QWidget()
         container.setLayout(QHBoxLayout())
         container.layout().setContentsMargins(0, 0, 0, 0)
-        preview = QWidget()
+        preview = QWidget(objectName="PickerPreview")
         preview.setMinimumHeight(28)
         preview.setMaximumHeight(28)
         preview.setMinimumWidth(80)
