@@ -17,7 +17,7 @@ jobs:
         sudo apt-get install gettext sassc
 
         # Application Dependencies
-        sudo apt-get install python3-colorama python3-requests python3-setproctitle imagemagick
+        sudo apt-get install python3-colorama python3-colour python3-requests python3-setproctitle imagemagick
         sudo apt-get install gir1.2-gtk-3.0 gir1.2-appindicator3-0.1
         sudo apt-get install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtwebengine
 
@@ -36,6 +36,7 @@ jobs:
       run: |
         ./scripts/run-unit-test.sh "10_internals"
         ./scripts/run-unit-test.sh "11_effects"
+        ./scripts/run-unit-test.sh "12_fx"
 
     - name: Test OpenRazer Backend
       run: |
