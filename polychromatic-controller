@@ -66,14 +66,6 @@ else:
         raise e
 
 
-VERSIONS = [
-    ["Application", VERSION],
-    ["Save Data", str(pref.VERSION)],
-    ["Qt", QtCore.PYQT_VERSION_STR],
-    ["Python", "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)]
-]
-
-
 class ApplicationData(object):
     """
     Shared data that is globally accessible throughout the application.
@@ -170,8 +162,9 @@ class MainWindow(QMainWindow):
         self.window_behaviour_center = 0
         self.window_behaviour_remember = 1
 
-        # Load UI
-        uic.loadUi(os.path.join(common.paths.data_dir, "qt", "main.ui"), self)
+        # Load UI and locales
+        widget = uic.loadUi(os.path.join(common.paths.data_dir, "qt", "main.ui"), self)
+        shared.translate_ui(app, widget)
 
         header = self.findChild(QWidget, "Header")
         tabs = self.findChild(QWidget, "MainTabWidget")
@@ -450,6 +443,13 @@ if __name__ == "__main__":
     dbg = common.Debugging()
     i18n = locales.Locales(__file__)
     _ = i18n.init()
+
+    VERSIONS = [
+        [_("Application"), VERSION],
+        [_("Save Data"), str(pref.VERSION)],
+        ["Qt", QtCore.PYQT_VERSION_STR],
+        ["Python", "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)]
+    ]
 
     args = parse_parameters()
     pref.init(_)

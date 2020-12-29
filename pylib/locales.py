@@ -59,7 +59,7 @@ class Locales(object):
         """
         Returns a string describing the current locale. E.g. "de" or "en_US".
         """
-        if self.translation:
+        if self.translation and "language" in self.translation.info():
             return self.translation.info()["language"]
 
         # Fallback in use

@@ -32,7 +32,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QDialogButtonBox, QTreeWidget, QTreeWidgetItem, \
                             QLineEdit, QTextEdit, QTabWidget, QScrollArea, \
                             QButtonGroup, QFileDialog, QMenu, QAction, \
-                            QDockWidget
+                            QDockWidget, QCheckBox, QSpinBox, QComboBox, \
+                            QTreeWidget, QDoubleSpinBox, QRadioButton
 
 
 def load_qt_theme(appdata, window):
@@ -106,14 +107,87 @@ def get_ui_widget(appdata, name, q_toplevel=QWidget):
 
     widget = uic.loadUi(ui_file, q_toplevel())
 
-    # TODO: Process i18n strings
-    print("stub:get_ui_widget: process i18n strings")
-
-    # If a dialog, apply the styles
+    # Apply the styles for dialogs/windows
     if q_toplevel in [QDialog, QMainWindow]:
         load_qt_theme(appdata, widget)
 
+    # Process i18n strings for existing widgets
+    translate_ui(appdata, widget)
+
     return widget
+
+
+def translate_ui(appdata, widget):
+    """
+    Iterates over all the translatable widgets from the newly loaded .ui file
+    and use gettext to apply the localized strings.
+    """
+    if appdata.locales._get_current_locale() == "en_GB":
+        return
+
+    for widget_type in [QLabel, QMenu, QAction, QPushButton, QToolButton, \
+                        QTabWidget, QTreeWidgetItem, QDockWidget, QTreeWidget, \
+                        QCheckBox, QRadioButton, QSpinBox, QDoubleSpinBox, \
+                        QComboBox]:
+        children = widget.findChildren(widget_type)
+        for subwidget in children:
+            _translate_widget(appdata, subwidget)
+
+    _ = appdata._
+
+    if type(widget) == QDialog:
+        widget.setWindowTitle(_(widget.windowTitle()))
+
+
+def _translate_widget(appdata, widget):
+    """
+    Translates the strings of a widget that was loaded on-the-fly via uic.loadUi
+    """
+    _ = appdata._
+
+    if type(widget) == QMenu:
+        widget.setTitle(_(widget.title()))
+        return
+
+    if type(widget) == QDockWidget:
+        widget.setWindowTitle(_(widget.windowTitle()))
+        return
+
+    if type(widget) == QSpinBox or type(widget) == QDoubleSpinBox:
+        widget.setPrefix(_(widget.prefix()))
+        widget.setSuffix(_(widget.suffix()))
+        return
+
+    if type(widget) == QTabWidget:
+        for index in range(0, widget.count()):
+            widget.setTabText(index, _(widget.tabText(0)))
+            widget.setTabToolTip(index, _(widget.tabToolTip(0)))
+        return
+
+    if type(widget) == QComboBox:
+        for index in range(0, widget.count()):
+            widget.setItemText(index, _(widget.itemText(0)))
+        return
+
+    if type(widget) == QTreeWidget:
+        tree_root = widget.invisibleRootItem()
+        for index in range(0, tree_root.childCount()):
+            item = tree_root.child(index)
+            item.setText(0, _(item.text(0)))
+
+            if index in range(0, item.childCount()):
+                child = item.child(index)
+                child.setText(0, _(child.text(0)))
+        return
+
+    if type(widget) == QAction:
+        widget.setStatusTip(_(widget.statusTip()))
+
+    if type(widget) == QWidget:
+        return
+
+    widget.setText(_(widget.text()))
+    widget.setToolTip(_(widget.toolTip()))
 
 
 def clear_layout(layout):
