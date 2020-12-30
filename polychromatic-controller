@@ -444,12 +444,22 @@ if __name__ == "__main__":
     i18n = locales.Locales(__file__)
     _ = i18n.init()
 
+    # Determine version information
     VERSIONS = [
         [_("Application"), VERSION],
         [_("Save Data"), str(pref.VERSION)],
         ["Qt", QtCore.PYQT_VERSION_STR],
         ["Python", "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)]
     ]
+
+    if os.path.exists(os.path.join(os.path.dirname(__file__), ".git")):
+        VERSIONS[0][1] = VERSION + "-git"
+        commit_path = os.path.join(os.path.dirname(__file__), ".git", "ORIG_HEAD")
+        if os.path.exists(commit_path):
+            with open(commit_path, "r") as f:
+                commit_hash = f.readline().strip()
+            VERSIONS[0][1] = VERSION + "-" + commit_hash[:7]
+            VERSIONS.insert(1, ["Commit", commit_hash])
 
     args = parse_parameters()
     pref.init(_)
