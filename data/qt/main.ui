@@ -332,19 +332,19 @@
              </property>
              <column>
               <property name="text">
-               <string>Sidebar</string>
+               <string notr="true">Sidebar</string>
               </property>
              </column>
              <item>
               <property name="text">
-               <string>Tasks</string>
+               <string extracomment="Heading containing buttons for the specific feature">Tasks</string>
               </property>
               <property name="flags">
                <set>ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
               </property>
               <item>
                <property name="text">
-                <string>Apply to All</string>
+                <string extracomment="Button to a section for activating settings to all devices">Apply to All</string>
                </property>
                <property name="icon">
                 <iconset>
@@ -481,12 +481,12 @@
              </property>
              <column>
               <property name="text">
-               <string>Sidebar</string>
+               <string notr="true">Sidebar</string>
               </property>
              </column>
              <item>
               <property name="text">
-               <string>Tasks</string>
+               <string extracomment="Heading containing buttons for the specific feature">Tasks</string>
               </property>
               <property name="flags">
                <set>ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
@@ -606,7 +606,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>&amp;File</string>
+     <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;File</string>
     </property>
     <addaction name="actionNewEffect"/>
     <addaction name="actionImportEffect"/>
@@ -618,7 +618,7 @@
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>&amp;View</string>
+     <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;View</string>
     </property>
     <addaction name="actionDevices"/>
     <addaction name="actionEffects"/>
@@ -630,7 +630,7 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>&amp;Help</string>
+     <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;Help</string>
     </property>
     <addaction name="actionOnlineHelp"/>
     <addaction name="actionWebsite"/>
@@ -643,7 +643,7 @@
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
-     <string>&amp;Tools</string>
+     <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;Tools</string>
     </property>
     <widget class="QMenu" name="menuOpenRazer">
      <property name="title">
@@ -665,7 +665,7 @@
     </widget>
     <widget class="QMenu" name="menuTroubleshoot">
      <property name="title">
-      <string>Troubleshoot...</string>
+      <string>Troubleshoot</string>
      </property>
      <property name="icon">
       <iconset>
@@ -681,7 +681,7 @@
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>&amp;Edit</string>
+     <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;Edit</string>
     </property>
     <addaction name="actionDuplicate"/>
     <addaction name="actionDelete"/>
@@ -761,7 +761,7 @@
     <string>Devices</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+1</string>
+    <string notr="true">Ctrl+1</string>
    </property>
   </action>
   <action name="actionEffects">
@@ -776,7 +776,7 @@
     <string>Effects</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+2</string>
+    <string notr="true">Ctrl+2</string>
    </property>
   </action>
   <action name="actionPresets">
@@ -791,7 +791,7 @@
     <string>Presets</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+3</string>
+    <string notr="true">Ctrl+3</string>
    </property>
   </action>
   <action name="actionTriggers">
@@ -806,7 +806,7 @@
     <string>Triggers</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+4</string>
+    <string notr="true">Ctrl+4</string>
    </property>
   </action>
   <action name="actionOnlineHelp">
@@ -818,7 +818,7 @@
     <string>Online Help</string>
    </property>
    <property name="shortcut">
-    <string>F1</string>
+    <string notr="true">F1</string>
    </property>
   </action>
   <action name="actionReportBug">
@@ -858,9 +858,6 @@
    <property name="text">
     <string>About</string>
    </property>
-   <property name="menuRole">
-    <enum>QAction::TextHeuristicRole</enum>
-   </property>
   </action>
   <action name="actionQuitApp">
    <property name="icon">
@@ -871,7 +868,7 @@
     <string>Quit</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Q</string>
+    <string notr="true">Ctrl+Q</string>
    </property>
    <property name="menuRole">
     <enum>QAction::QuitRole</enum>
@@ -1054,7 +1051,7 @@
      <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>
    </property>
    <property name="text">
-    <string>OpenRazer Driver/Daemon</string>
+    <string extracomment="Troubleshoot option">OpenRazer Driver/Daemon</string>
    </property>
   </action>
   <action name="actionRefreshTab">
@@ -1066,7 +1063,7 @@
     <string>Refresh</string>
    </property>
    <property name="shortcut">
-    <string>F5</string>
+    <string notr="true">F5</string>
    </property>
   </action>
   <action name="actionImportEffect">

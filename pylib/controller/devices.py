@@ -878,7 +878,7 @@ class DevicesTab(shared.TabData):
             hw.addChild(mkitem(_("Matrix Supported"), device["matrix"]))
             if device["matrix"]:
                 # FIXME: Use plurals in gettext
-                hw.addChild(mkitem(_("Matrix Dimensions"), _("1 row(s), 2 column(s)").replace("1", str(device["matrix_rows"])).replace("2", str(device["matrix_cols"])), common.get_icon("general", "matrix")))
+                hw.addChild(mkitem(_("Matrix Dimensions"), _("[1] row(s), [2] column(s)").replace("[1]", str(device["matrix_rows"])).replace("[2]", str(device["matrix_cols"])), common.get_icon("general", "matrix")))
                 btn_test_matrix.setDisabled(False)
             tree.addTopLevelItem(hw)
 

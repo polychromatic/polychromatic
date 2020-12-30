@@ -75,21 +75,21 @@
               </size>
              </property>
              <property name="text">
-              <string>Appearance</string>
+              <string extracomment="Preferences Label">Appearance</string>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
             <widget class="QCheckBox" name="UseSystemQtTheme">
              <property name="text">
-              <string>Use system Qt theme</string>
+              <string extracomment="Preferences Checkbox">Use system Qt theme</string>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
             <widget class="QCheckBox" name="AlwaysHideMenuBar">
              <property name="text">
-              <string>Hide menu bar</string>
+              <string extracomment="Preferences Checkbox">Hide menu bar</string>
              </property>
             </widget>
            </item>
@@ -99,7 +99,7 @@
               <bool>false</bool>
              </property>
              <property name="text">
-              <string>Press Alt to temporarily show the menu bar while it is hidden.</string>
+              <string extracomment="Preferences Tip">Press Alt to temporarily show the menu bar while it is hidden.</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -115,7 +115,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Landing Tab</string>
+              <string extracomment="Preferences Label">Landing Tab</string>
              </property>
             </widget>
            </item>
@@ -168,25 +168,28 @@
               </size>
              </property>
              <property name="text">
-              <string>Window Behaviour</string>
+              <string extracomment="Preferences Label">Window Behaviour</string>
              </property>
             </widget>
            </item>
            <item row="4" column="1">
             <widget class="QComboBox" name="WindowBehaviourCombo">
+             <property name="currentText">
+              <string>Always open in the center</string>
+             </property>
              <item>
               <property name="text">
-               <string>Always open in the center</string>
+               <string extracomment="Preferences dropdown option">Always open in the center</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Remember last position and size</string>
+               <string extracomment="Preferences dropdown option">Remember last position and size</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Let the window manager decide</string>
+               <string extracomment="Preferences dropdown option">Let the window manager decide</string>
               </property>
              </item>
             </widget>
@@ -249,17 +252,19 @@
                  <string>Change...</string>
                 </property>
                 <property name="icon">
-                 <iconset theme="document-edit"/>
+                 <iconset theme="document-edit">
+                  <normaloff>.</normaloff>.</iconset>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="SavedColoursReset">
                 <property name="text">
-                 <string>Reset to Default Colours</string>
+                 <string extracomment="Button">Reset to Default Colours</string>
                 </property>
                 <property name="icon">
-                 <iconset theme="document-revert"/>
+                 <iconset theme="document-revert">
+                  <normaloff>.</normaloff>.</iconset>
                 </property>
                </widget>
               </item>
@@ -323,7 +328,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Behaviour</string>
+              <string extracomment="Preferences Label">Behaviour</string>
              </property>
             </widget>
            </item>
@@ -343,7 +348,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Renderer</string>
+              <string extracomment="Preferences Label">Renderer</string>
              </property>
             </widget>
            </item>
@@ -356,7 +361,7 @@
              </item>
              <item>
               <property name="text">
-               <string>AppIndicator3</string>
+               <string notr="true">AppIndicator3</string>
               </property>
              </item>
              <item>
@@ -395,7 +400,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Autostart Delay</string>
+              <string extracomment="Preferences Label">Autostart Delay</string>
              </property>
             </widget>
            </item>
@@ -426,7 +431,7 @@
               <item>
                <widget class="QSpinBox" name="TrayDelaySpinner">
                 <property name="suffix">
-                 <string> second(s)</string>
+                 <string extracomment="Suffix for a spinner control"> second(s)</string>
                 </property>
                 <property name="maximum">
                  <number>60</number>
@@ -580,7 +585,7 @@
               </size>
              </property>
              <property name="text">
-              <string>To provide features of this application, some additional processes are spawned.</string>
+              <string extracomment="Information text in the Preferences' Background Tasks tab">To provide features of this application, some additional processes are spawned.</string>
              </property>
             </widget>
            </item>
@@ -597,22 +602,22 @@
              </property>
              <column>
               <property name="text">
-               <string>PID</string>
+               <string notr="true">PID</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>Task</string>
+               <string extracomment="Column header in Preferences for Background Tasks">Task</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>Device</string>
+               <string extracomment="Column header in Preferences for Background Tasks">Device</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>Memory Usage</string>
+               <string extracomment="Column header in Preferences for Background Tasks">Memory Usage</string>
               </property>
              </column>
              <item>
@@ -652,7 +657,8 @@
                  <string>Refresh</string>
                 </property>
                 <property name="icon">
-                 <iconset theme="view-refresh"/>
+                 <iconset theme="view-refresh">
+                  <normaloff>.</normaloff>.</iconset>
                 </property>
                </widget>
               </item>
@@ -672,20 +678,22 @@
               <item>
                <widget class="QPushButton" name="TasksStopAll">
                 <property name="text">
-                 <string>Stop All</string>
+                 <string extracomment="Button to stop all background tasks">Stop All</string>
                 </property>
                 <property name="icon">
-                 <iconset theme="process-stop"/>
+                 <iconset theme="process-stop">
+                  <normaloff>.</normaloff>.</iconset>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="TasksReload">
                 <property name="text">
-                 <string>Restart All</string>
+                 <string extracomment="Button to restart all background tasks">Restart All</string>
                 </property>
                 <property name="icon">
-                 <iconset theme="system-reboot"/>
+                 <iconset theme="system-reboot">
+                  <normaloff>.</normaloff>.</iconset>
                 </property>
                </widget>
               </item>
@@ -834,16 +842,6 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QPushButton" name="OpenRazerSettings">
-                   <property name="text">
-                    <string>Configure</string>
-                   </property>
-                   <property name="icon">
-                    <iconset theme="configure"/>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
                   <widget class="QPushButton" name="OpenRazerAbout">
                    <property name="text">
                     <string>About</string>
@@ -855,12 +853,24 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="OpenRazerTroubleshoot">
+                  <widget class="QPushButton" name="OpenRazerSettings">
                    <property name="text">
-                    <string>Troubleshoot...</string>
+                    <string>Configure...</string>
                    </property>
                    <property name="icon">
-                    <iconset theme="tools"/>
+                    <iconset theme="configure">
+                     <normaloff>.</normaloff>.</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="OpenRazerOpenLog">
+                   <property name="text">
+                    <string>Open Log...</string>
+                   </property>
+                   <property name="icon">
+                    <iconset theme="folder">
+                     <normaloff>.</normaloff>.</iconset>
                    </property>
                   </widget>
                  </item>
@@ -896,12 +906,13 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QPushButton" name="OpenRazerOpenLog">
+                  <widget class="QPushButton" name="OpenRazerTroubleshoot">
                    <property name="text">
-                    <string>Open Log...</string>
+                    <string>Troubleshoot...</string>
                    </property>
                    <property name="icon">
-                    <iconset theme="folder"/>
+                    <iconset theme="tools">
+                     <normaloff>.</normaloff>.</iconset>
                    </property>
                   </widget>
                  </item>
@@ -911,7 +922,8 @@
                     <string>Restart Daemon</string>
                    </property>
                    <property name="icon">
-                    <iconset theme="view-refresh"/>
+                    <iconset theme="view-refresh">
+                     <normaloff>.</normaloff>.</iconset>
                    </property>
                   </widget>
                  </item>

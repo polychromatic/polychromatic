@@ -37,7 +37,7 @@
      </property>
      <widget class="QWidget" name="daemon">
       <attribute name="title">
-       <string notr="true">Daemon</string>
+       <string notr="true" extracomment="Tab button for configuring OpenRazer">Daemon</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
@@ -103,7 +103,7 @@
        <item>
         <widget class="QCheckBox" name="verbose_logging">
          <property name="text">
-          <string>Enable verbose logging</string>
+          <string extracomment="Checkbox for configuring OpenRazer">Enable verbose logging</string>
          </property>
         </widget>
        </item>
@@ -113,7 +113,7 @@
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>Sync effects across devices</string>
+          <string extracomment="Checkbox for configuring OpenRazer">Sync effects across devices</string>
          </property>
         </widget>
        </item>
@@ -123,7 +123,7 @@
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>This option is automatically disabled as it impairs Polychromatic's operation.
+          <string extracomment="Hint text for configuring OpenRazer">This option is automatically disabled as it impairs Polychromatic's operation.
 Use &quot;Apply to All&quot; instead.</string>
          </property>
          <property name="wordWrap">
@@ -137,14 +137,14 @@ Use &quot;Apply to All&quot; instead.</string>
        <item>
         <widget class="QCheckBox" name="devices_off_on_screensaver">
          <property name="text">
-          <string>Turn off devices when screen saver / lock screen is present</string>
+          <string extracomment="Checkbox for configuring OpenRazer">Turn off devices when screen saver / lock screen is present</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QCheckBox" name="mouse_battery_notifier">
          <property name="text">
-          <string>Periodically notify battery status (for supported devices)</string>
+          <string extracomment="Checkbox for configuring OpenRazer">Periodically notify battery status (for supported devices)</string>
          </property>
         </widget>
        </item>
@@ -169,14 +169,14 @@ Use &quot;Apply to All&quot; instead.</string>
           <item>
            <widget class="QLabel" name="mouse_battery_notifier_freq_label">
             <property name="text">
-             <string>Notification Frequency</string>
+             <string extracomment="Label for configuring OpenRazer">Notification Frequency</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QSpinBox" name="mouse_battery_notifier_freq">
             <property name="suffix">
-             <string> seconds</string>
+             <string extracomment="Suffix for a spinner control"> seconds</string>
             </property>
            </widget>
           </item>
@@ -186,7 +186,7 @@ Use &quot;Apply to All&quot; instead.</string>
        <item>
         <widget class="QCheckBox" name="key_statistics">
          <property name="text">
-          <string>Enable key statistics</string>
+          <string extracomment="Checkbox for configuring OpenRazer">Enable key statistics</string>
          </property>
         </widget>
        </item>
@@ -196,7 +196,7 @@ Use &quot;Apply to All&quot; instead.</string>
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>Collects number of keypresses per hour per key to generate a heatmap. This is currently unused.</string>
+          <string extracomment="Hint text for configuring OpenRazer">Collects number of keypresses per hour per key to generate a heatmap. This is currently unused.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -223,7 +223,7 @@ Use &quot;Apply to All&quot; instead.</string>
      </widget>
      <widget class="QWidget" name="client">
       <attribute name="title">
-       <string>Client</string>
+       <string extracomment="Tab button for configuring OpenRazer">Client</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
@@ -289,7 +289,7 @@ Use &quot;Apply to All&quot; instead.</string>
        <item>
         <widget class="QCheckBox" name="allow_image_download">
          <property name="text">
-          <string>Download device images</string>
+          <string extracomment="Checkbox for configuring OpenRazer">Download device images</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -302,7 +302,7 @@ Use &quot;Apply to All&quot; instead.</string>
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>OpenRazer stores image URLs pointing to a CDN. These images may be proprietary. This application retrieves images for your devices once and caches them locally.</string>
+          <string extracomment="Hint text for configuring OpenRazer">OpenRazer stores image URLs pointing to a CDN. These images may be proprietary. This application retrieves images for your devices once and caches them locally.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -333,14 +333,14 @@ Use &quot;Apply to All&quot; instead.</string>
           <item>
            <widget class="QLabel" name="ripple_refresh_rate_label">
             <property name="text">
-             <string>Ripple Refresh Rate</string>
+             <string extracomment="Label for configuring OpenRazer">Ripple Refresh Rate</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="ripple_refresh_rate">
             <property name="suffix">
-             <string> seconds</string>
+             <string extracomment="Suffix for a spinner control"> seconds</string>
             </property>
             <property name="decimals">
              <number>3</number>

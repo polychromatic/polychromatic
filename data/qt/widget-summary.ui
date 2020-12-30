@@ -34,7 +34,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true">Summary</string>
   </property>
   <property name="styleSheet">
    <string notr="true">#Summary {
@@ -76,7 +76,7 @@
       </size>
      </property>
      <property name="text">
-      <string/>
+      <string notr="true"/>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -110,7 +110,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Item Name</string>
+         <string notr="true" extracomment="Placeholder">Item Name</string>
         </property>
        </widget>
       </item>

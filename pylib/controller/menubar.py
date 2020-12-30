@@ -475,7 +475,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
         version_dkms = self._get_dkms_version()
 
         if version_dbus:
-            versions.append(["DBUS", version_dbus])
+            versions.append(["D-Bus", version_dbus])
 
         if version_dkms:
             versions.append(["DKMS", version_dkms])

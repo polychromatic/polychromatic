@@ -36,7 +36,7 @@
    <item>
     <widget class="QLabel" name="Label">
      <property name="text">
-      <string>Please choose the type of effect to create.</string>
+      <string extracomment="Shown when creating a new effect">Please choose the type of effect to create.</string>
      </property>
     </widget>
    </item>
@@ -55,7 +55,7 @@
          <string>Create simple effects using a layer-based system</string>
         </property>
         <property name="text">
-         <string>Layered</string>
+         <string extracomment="Button when creating a new effect">Layered</string>
         </property>
         <property name="iconSize">
          <size>
@@ -80,7 +80,7 @@
          <string>Create an animated (or static) using frames and pixels</string>
         </property>
         <property name="text">
-         <string>Sequence</string>
+         <string extracomment="Button when creating a new effect">Sequence</string>
         </property>
         <property name="iconSize">
          <size>
@@ -105,7 +105,7 @@
          <string>Write the effect using the Python programming language</string>
         </property>
         <property name="text">
-         <string>Scripted</string>
+         <string extracomment="Button when creating a new effect">Scripted</string>
         </property>
         <property name="iconSize">
          <size>
@@ -133,7 +133,7 @@
       </size>
      </property>
      <property name="text">
-      <string>Hover for more details</string>
+      <string extracomment="Shown when creating a new effect">Hover for more details</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

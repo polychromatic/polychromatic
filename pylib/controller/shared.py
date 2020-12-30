@@ -1415,7 +1415,7 @@ class CommonFileTab(TabData):
         """
         self.widgets.open_dialog(self.widgets.dialog_error,
                                  self._("File Error"),
-                                 self._("The operation could not be completed due to a file processing error."),
+                                 self._("The operation could not be completed due to an error processing this file."),
                                  self._("Please make sure the file permissions are recursively correct:") + '\n' + common.paths.config, traceback)
 
     def new_file(self):

@@ -42,7 +42,7 @@
       </size>
      </property>
      <property name="text">
-      <string>Troubleshooting complete!</string>
+      <string extracomment="Shown when the troubleshooter successfully">Troubleshooting complete!</string>
      </property>
     </widget>
    </item>
@@ -77,12 +77,12 @@
      </property>
      <column>
       <property name="text">
-       <string>Result</string>
+       <string extracomment="Column header for the troubleshooting results">Result</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Check</string>
+       <string extracomment="Column header for the troubleshooting results">Check</string>
       </property>
      </column>
     </widget>
@@ -130,7 +130,8 @@
          <string>Close</string>
         </property>
         <property name="icon">
-         <iconset theme="dialog-close"/>
+         <iconset theme="dialog-close">
+          <normaloff>.</normaloff>.</iconset>
         </property>
         <property name="default">
          <bool>true</bool>

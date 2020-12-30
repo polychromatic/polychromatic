@@ -49,7 +49,7 @@ echo -e "\nGenerating locales from Qt Designer files...\n"
 cd "$repo_root/data/qt/"
 for ui_file in $(ls *.ui); do
     intltool-extract --type="gettext/qtdesigner" $ui_file
-    xgettext -a --qt $ui_file.h -o $ui_file.pot
+    xgettext -a -c --qt $ui_file.h -o $ui_file.pot
     rm $ui_file.h
     mv $ui_file.pot "$temp_dir/"
 done

@@ -35,7 +35,7 @@
    <item>
     <widget class="QLabel" name="AnimatedGIFWarningLabel">
      <property name="text">
-      <string>Heads up! Animated GIFs are not supported by all desktop environments.</string>
+      <string extracomment="Appears at the top of the icon picker when the user selects a GIF as their tray icon">Heads up! Animated GIFs are not supported by all desktop environments.</string>
      </property>
     </widget>
    </item>
@@ -109,7 +109,7 @@
         </widget>
         <widget class="QWidget" name="EmblemTab">
          <attribute name="title">
-          <string>Emblems</string>
+          <string extracomment="Icon Picker: Tab name for built-in graphics">Emblems</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="spacing">
@@ -155,7 +155,7 @@
            <normaloff>.</normaloff>.</iconset>
          </attribute>
          <attribute name="title">
-          <string>Applications</string>
+          <string extracomment="Icon Picker: Tab name for software installed on the user's system">Applications</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <property name="spacing">
@@ -247,7 +247,7 @@
            <normaloff>.</normaloff>.</iconset>
          </attribute>
          <attribute name="title">
-          <string>Custom</string>
+          <string extracomment="Icon Picker: Tab name for the user to store their own icons">Custom</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <property name="spacing">
@@ -313,7 +313,7 @@
          <item>
           <widget class="QPushButton" name="ImportCustomIcon">
            <property name="toolTip">
-            <string>Browse for an icon to import</string>
+            <string extracomment="Tooltip hovering over the icon picker's browse button">Browse for an icon to import</string>
            </property>
            <property name="text">
             <string/>
@@ -330,7 +330,7 @@
             <bool>false</bool>
            </property>
            <property name="toolTip">
-            <string>Delete this custom icon from your list</string>
+            <string extracomment="Tooltip hovering over the icon picker's delete button">Delete this custom icon from your list</string>
            </property>
            <property name="icon">
             <iconset theme="delete">

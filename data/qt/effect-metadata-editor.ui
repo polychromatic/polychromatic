@@ -54,7 +54,7 @@
             <string/>
            </property>
            <property name="placeholderText">
-            <string>Untitled Effect</string>
+            <string extracomment="Placeholder example text for an effect name">Untitled Effect</string>
            </property>
           </widget>
          </item>
@@ -120,7 +120,7 @@
          <item row="2" column="1">
           <widget class="QLineEdit" name="AuthorURL">
            <property name="placeholderText">
-            <string>https://example.com</string>
+            <string notr="true" extracomment="An example author URL">https://example.com</string>
            </property>
           </widget>
          </item>
@@ -181,7 +181,7 @@
             <bool>false</bool>
            </property>
            <property name="text">
-            <string notr="true">(0 rows, 0 columns)</string>
+            <string notr="true">(1 rows, 2 columns)</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -231,7 +231,7 @@
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>(0 rows, 0 columns)</string>
+               <string notr="true">(1 rows, 2 columns)</string>
               </property>
              </widget>
             </item>

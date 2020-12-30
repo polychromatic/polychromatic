@@ -41,7 +41,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>&amp;File</string>
+     <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;File</string>
     </property>
     <addaction name="actionSaveApply"/>
     <addaction name="actionSave"/>
@@ -52,14 +52,14 @@
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>&amp;Edit</string>
+     <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;Edit</string>
     </property>
     <widget class="QMenu" name="menuShift_All_Keys">
      <property name="tearOffEnabled">
       <bool>true</bool>
      </property>
      <property name="title">
-      <string>Shift LEDs</string>
+      <string extracomment="Menu bar item: To move LEDs in a specific direction">Shift LEDs</string>
      </property>
      <property name="icon">
       <iconset theme="arrow">
@@ -89,7 +89,7 @@
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>&amp;View</string>
+     <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;View</string>
     </property>
     <addaction name="actionShow_as_Device_Graphic"/>
     <addaction name="MapGraphic"/>
@@ -106,7 +106,7 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>&amp;Help</string>
+     <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;Help</string>
     </property>
     <addaction name="actionOnlineHelp"/>
     <addaction name="actionWebsite"/>
@@ -119,7 +119,7 @@
    </widget>
    <widget class="QMenu" name="menuTool">
     <property name="title">
-     <string>&amp;Tool</string>
+     <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;Tool</string>
     </property>
     <addaction name="actionDraw"/>
     <addaction name="actionColourPicker"/>
@@ -196,12 +196,12 @@
           </attribute>
           <column>
            <property name="text">
-            <string>Layer</string>
+            <string extracomment="Column title in effect editor">Layer</string>
            </property>
           </column>
           <column>
            <property name="text">
-            <string>Effect</string>
+            <string extracomment="Column title in effect editor">Effect</string>
            </property>
           </column>
           <item>
@@ -209,7 +209,7 @@
             <string notr="true">WASD Keys</string>
            </property>
            <property name="text">
-            <string>Static</string>
+            <string notr="true">Static</string>
            </property>
           </item>
           <item>
@@ -248,10 +248,10 @@
            <item>
             <widget class="QToolButton" name="LayerMoveUp">
              <property name="toolTip">
-              <string>Raise the layer in the stack</string>
+              <string extracomment="Appears as a tooltip or in the status bar when hovered">Raise the layer in the stack</string>
              </property>
              <property name="statusTip">
-              <string>Raise the layer in the stack</string>
+              <string extracomment="Appears as a tooltip or in the status bar when hovered">Raise the layer in the stack</string>
              </property>
              <property name="text">
               <string>Raise</string>
@@ -271,10 +271,10 @@
            <item>
             <widget class="QToolButton" name="LayerMoveDown">
              <property name="toolTip">
-              <string>Lower the layer in the stack</string>
+              <string extracomment="Appears as a tooltip or in the status bar when hovered">Lower the layer in the stack</string>
              </property>
              <property name="statusTip">
-              <string>Lower the layer in the stack</string>
+              <string extracomment="Appears as a tooltip or in the status bar when hovered">Lower the layer in the stack</string>
              </property>
              <property name="text">
               <string>Lower</string>
@@ -331,10 +331,10 @@
         <item>
          <widget class="QToolButton" name="LayerNew">
           <property name="toolTip">
-           <string>Create a new layer in the stack</string>
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a new layer in the stack</string>
           </property>
           <property name="statusTip">
-           <string>Create a new layer in the stack</string>
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a new layer in the stack</string>
           </property>
           <property name="text">
            <string>New</string>
@@ -351,10 +351,10 @@
         <item>
          <widget class="QToolButton" name="LayerDelete">
           <property name="toolTip">
-           <string>Delete the selected layer</string>
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Delete the selected layer</string>
           </property>
           <property name="statusTip">
-           <string>Delete the selected layer</string>
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Delete the selected layer</string>
           </property>
           <property name="text">
            <string>Delete</string>
@@ -368,10 +368,10 @@
         <item>
          <widget class="QToolButton" name="LayerDuplicate">
           <property name="toolTip">
-           <string>Duplicate the selected layer</string>
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Duplicate the selected layer</string>
           </property>
           <property name="statusTip">
-           <string>Duplicate the selected layer</string>
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Duplicate the selected layer</string>
           </property>
           <property name="text">
            <string>Duplicate</string>
@@ -485,6 +485,12 @@
         </property>
         <item>
          <widget class="QToolButton" name="NewFrame">
+          <property name="toolTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a blank frame after the current position</string>
+          </property>
+          <property name="statusTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a blank frame after the current position</string>
+          </property>
           <property name="text">
            <string>New</string>
           </property>
@@ -499,6 +505,12 @@
         </item>
         <item>
          <widget class="QToolButton" name="CloneFrame">
+          <property name="toolTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a copy of the current frame after this position</string>
+          </property>
+          <property name="statusTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a copy of the current frame after this position</string>
+          </property>
           <property name="text">
            <string>Clone</string>
           </property>
@@ -513,6 +525,12 @@
         </item>
         <item>
          <widget class="QToolButton" name="DeleteFrame">
+          <property name="toolTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Permanently delete this frame</string>
+          </property>
+          <property name="statusTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Permanently delete this frame</string>
+          </property>
           <property name="text">
            <string>Delete</string>
           </property>
@@ -527,6 +545,12 @@
         </item>
         <item>
          <widget class="QToolButton" name="MoveFrameLeft">
+          <property name="toolTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step before the current position</string>
+          </property>
+          <property name="statusTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step before the current position</string>
+          </property>
           <property name="text">
            <string>Move Left</string>
           </property>
@@ -541,6 +565,12 @@
         </item>
         <item>
          <widget class="QToolButton" name="MoveFrameRight">
+          <property name="toolTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step after the current position</string>
+          </property>
+          <property name="statusTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step after the current position</string>
+          </property>
           <property name="text">
            <string>Move Right</string>
           </property>
@@ -728,13 +758,13 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Save and Close</string>
+    <string extracomment="Menu bar item">Save and Close</string>
    </property>
    <property name="toolTip">
-    <string>Save the effect to disk, and close the editor</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Save the effect to disk, and close the editor</string>
    </property>
    <property name="statusTip">
-    <string>Save the effect to disk, and close the editor</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Save the effect to disk, and close the editor</string>
    </property>
   </action>
   <action name="actionSave">
@@ -743,16 +773,16 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Save</string>
+    <string extracomment="Menu bar item or dialog button">Save</string>
    </property>
    <property name="toolTip">
-    <string>Save any unsaved data to disk, just in case!</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Save any unsaved data to disk, just in case!</string>
    </property>
    <property name="statusTip">
-    <string>Save any unsaved data to disk, just in case!</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Save any unsaved data to disk, just in case!</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+S</string>
+    <string notr="true">Ctrl+S</string>
    </property>
   </action>
   <action name="actionRevert">
@@ -761,7 +791,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Revert</string>
+    <string extracomment="Menu bar item - User wishes to discard their changes">Revert</string>
    </property>
    <property name="toolTip">
     <string>Undo any changes and reload from disk</string>
@@ -776,7 +806,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Close and Discard Changes</string>
+    <string extracomment="Menu bar item">Close and Discard Changes</string>
    </property>
    <property name="toolTip">
     <string>Close the editor and discard any unsaved changes</string>
@@ -794,16 +824,16 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Draw</string>
+    <string extracomment="Menu bar item">Draw</string>
    </property>
    <property name="toolTip">
-    <string>Draw the selected colour to LEDs by clicking or dragging over them</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Draw the selected colour to LEDs by clicking or dragging over them</string>
    </property>
    <property name="statusTip">
-    <string>Draw the selected colour to LEDs by clicking or dragging over them</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Draw the selected colour to LEDs by clicking or dragging over them</string>
    </property>
    <property name="shortcut">
-    <string>1</string>
+    <string notr="true">1</string>
    </property>
   </action>
   <action name="actionColourPicker">
@@ -815,16 +845,16 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Picker</string>
+    <string extracomment="Menu bar item">Picker</string>
    </property>
    <property name="toolTip">
-    <string>Take an existing colour from an LED to draw with</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Take an existing colour from an LED to draw with</string>
    </property>
    <property name="statusTip">
-    <string>Take an existing colour from an LED to draw with</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Take an existing colour from an LED to draw with</string>
    </property>
    <property name="shortcut">
-    <string>2</string>
+    <string notr="true">2</string>
    </property>
   </action>
   <action name="actionEraser">
@@ -836,16 +866,16 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Eraser</string>
+    <string extracomment="Menu bar item">Eraser</string>
    </property>
    <property name="toolTip">
-    <string>Erase the colour from an LED by clicking or dragging over them</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Erase the colour from an LED by clicking or dragging over them</string>
    </property>
    <property name="statusTip">
-    <string>Erase the colour from an LED by clicking or dragging over them</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Erase the colour from an LED by clicking or dragging over them</string>
    </property>
    <property name="shortcut">
-    <string>3</string>
+    <string notr="true">3</string>
    </property>
   </action>
   <action name="actionShow_as_Device_Graphic">
@@ -860,13 +890,13 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Device Graphic</string>
+    <string extracomment="Menu bar toggle">Device Graphic</string>
    </property>
    <property name="statusTip">
-    <string>Present the LEDs as a graphical represention of the actual hardware (where available)</string>
+    <string extracomment="Appears in the status bar when hovered">Present the LEDs as a graphical represention of the actual hardware (where available)</string>
    </property>
    <property name="shortcut">
-    <string>F3</string>
+    <string notr="true">F3</string>
    </property>
   </action>
   <action name="actionShow_as_Grid">
@@ -878,13 +908,13 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Grid</string>
+    <string extracomment="Menu bar toggle">Grid</string>
    </property>
    <property name="statusTip">
     <string>Present the LEDs in a grid</string>
    </property>
    <property name="shortcut">
-    <string>F4</string>
+    <string notr="true">F4</string>
    </property>
   </action>
   <action name="actionEditMetadata">
@@ -896,13 +926,13 @@
     <string>Edit Metadata...</string>
    </property>
    <property name="toolTip">
-    <string>Edit the name, icon and other related data for this effect</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Edit the name, icon and other related data for this effect</string>
    </property>
    <property name="statusTip">
-    <string>Edit the name, icon and other related data for this effect</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Edit the name, icon and other related data for this effect</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+I</string>
+    <string notr="true">Ctrl+I</string>
    </property>
   </action>
   <action name="actionDuplicate_Layer">
@@ -914,13 +944,13 @@
     <string>Duplicate Layer</string>
    </property>
    <property name="toolTip">
-    <string>Duplicate the selected layer</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Duplicate the selected layer</string>
    </property>
    <property name="statusTip">
-    <string>Duplicate the selected layer</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Duplicate the selected layer</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+D</string>
+    <string notr="true">Ctrl+D</string>
    </property>
   </action>
   <action name="actionDelete_Layer">
@@ -932,13 +962,13 @@
     <string>Delete Layer</string>
    </property>
    <property name="toolTip">
-    <string>Permanently delete the selected layer</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Permanently delete the selected layer</string>
    </property>
    <property name="statusTip">
-    <string>Permanently delete the selected layer</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Permanently delete the selected layer</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+K</string>
+    <string notr="true">Ctrl+K</string>
    </property>
   </action>
   <action name="actionMove_Layer_Up">
@@ -950,13 +980,13 @@
     <string>Raise Layer</string>
    </property>
    <property name="toolTip">
-    <string>Raise the layer in the stack</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Raise the layer in the stack</string>
    </property>
    <property name="statusTip">
-    <string>Raise the layer in the stack</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Raise the layer in the stack</string>
    </property>
    <property name="shortcut">
-    <string>Alt+Up</string>
+    <string notr="true">Alt+Up</string>
    </property>
   </action>
   <action name="actionMove_Layer_Down">
@@ -968,13 +998,13 @@
     <string>Lower Layer</string>
    </property>
    <property name="toolTip">
-    <string>Lower the layer in the stack</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Lower the layer in the stack</string>
    </property>
    <property name="statusTip">
-    <string>Lower the layer in the stack</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Lower the layer in the stack</string>
    </property>
    <property name="shortcut">
-    <string>Alt+Down</string>
+    <string notr="true">Alt+Down</string>
    </property>
   </action>
   <action name="actionShift_Left">
@@ -983,13 +1013,13 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Shift Left</string>
+    <string extracomment="Menu bar item: To move LEDs in a specific direction">Shift Left</string>
    </property>
    <property name="statusTip">
-    <string>Push all LEDs on this layer/frame by one column to the left</string>
+    <string extracomment="Appears in the status bar when hovered">Push all LEDs on this layer/frame by one column to the left</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+Left</string>
+    <string notr="true">Ctrl+Shift+Left</string>
    </property>
   </action>
   <action name="actionShift_Right">
@@ -998,13 +1028,13 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Shift Right</string>
+    <string extracomment="Menu bar item: To move LEDs in a specific direction">Shift Right</string>
    </property>
    <property name="statusTip">
-    <string>Push all LEDs on this layer/frame by one column to the right</string>
+    <string extracomment="Appears in the status bar when hovered">Push all LEDs on this layer/frame by one column to the right</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+Right</string>
+    <string notr="true">Ctrl+Shift+Right</string>
    </property>
   </action>
   <action name="actionShift_Up">
@@ -1013,13 +1043,13 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Shift Up</string>
+    <string extracomment="Menu bar item: To move LEDs in a specific direction">Shift Up</string>
    </property>
    <property name="statusTip">
-    <string>Push all LEDs on this layer/frame by one row upwards</string>
+    <string extracomment="Appears in the status bar when hovered">Push all LEDs on this layer/frame by one row upwards</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+Up</string>
+    <string notr="true">Ctrl+Shift+Up</string>
    </property>
   </action>
   <action name="actionShift_Down">
@@ -1028,13 +1058,13 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Shift Down</string>
+    <string extracomment="Menu bar item: To move LEDs in a specific direction">Shift Down</string>
    </property>
    <property name="statusTip">
-    <string>Push all LEDs on this layer/frame by one row downwards</string>
+    <string extracomment="Appears in the status bar when hovered">Push all LEDs on this layer/frame by one row downwards</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+Down</string>
+    <string notr="true">Ctrl+Shift+Down</string>
    </property>
   </action>
   <action name="actionNew_Layer">
@@ -1046,13 +1076,13 @@
     <string>New Layer...</string>
    </property>
    <property name="toolTip">
-    <string>Create a new layer in the stack</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a new layer in the stack</string>
    </property>
    <property name="statusTip">
-    <string>Create a new layer in the stack</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a new layer in the stack</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+N</string>
+    <string notr="true">Ctrl+N</string>
    </property>
   </action>
   <action name="actionResetDocks">
@@ -1064,7 +1094,7 @@
     <string>Reset Dock Positions</string>
    </property>
    <property name="statusTip">
-    <string>Reset your workspace back to the default view</string>
+    <string extracomment="Appears in the status bar when hovered">Reset your workspace back to the default view</string>
    </property>
   </action>
   <action name="actionZoomIn">
@@ -1076,10 +1106,10 @@
     <string>Zoom In</string>
    </property>
    <property name="statusTip">
-    <string>Enlarge the graphic or grid in the viewport</string>
+    <string extracomment="Appears in the status bar when hovered">Enlarge the graphic or grid in the viewport</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+=</string>
+    <string notr="true">Ctrl+=</string>
    </property>
   </action>
   <action name="actionZoomOut">
@@ -1091,10 +1121,10 @@
     <string>Zoom Out</string>
    </property>
    <property name="statusTip">
-    <string>Shrink the graphic or grid in the viewport</string>
+    <string extracomment="Appears in the status bar when hovered">Shrink the graphic or grid in the viewport</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+-</string>
+    <string notr="true">Ctrl+-</string>
    </property>
   </action>
   <action name="actionZoomReset">
@@ -1106,10 +1136,10 @@
     <string>Reset Zoom</string>
    </property>
    <property name="statusTip">
-    <string>Reset the size of the graphic or grid in the viewport</string>
+    <string extracomment="Appears in the status bar when hovered">Reset the size of the graphic or grid in the viewport</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+0</string>
+    <string notr="true">Ctrl+0</string>
    </property>
   </action>
   <action name="actionMove_Frame_Left">
@@ -1121,13 +1151,13 @@
     <string>Move Frame Left</string>
    </property>
    <property name="toolTip">
-    <string>Place this frame a step before the current position</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step before the current position</string>
    </property>
    <property name="statusTip">
-    <string>Place this frame a step before the current position</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step before the current position</string>
    </property>
    <property name="shortcut">
-    <string>Alt+Left</string>
+    <string notr="true">Alt+Left</string>
    </property>
   </action>
   <action name="actionMove_Frame_Right">
@@ -1139,13 +1169,13 @@
     <string>Move Frame Right</string>
    </property>
    <property name="toolTip">
-    <string>Place this frame a step after the current position</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step after the current position</string>
    </property>
    <property name="statusTip">
-    <string>Place this frame a step after the current position</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step after the current position</string>
    </property>
    <property name="shortcut">
-    <string>Alt+Right</string>
+    <string notr="true">Alt+Right</string>
    </property>
   </action>
   <action name="actionOnlineHelp">
@@ -1157,7 +1187,7 @@
     <string>Online Help</string>
    </property>
    <property name="shortcut">
-    <string>F1</string>
+    <string notr="true">F1</string>
    </property>
   </action>
   <action name="actionWebsite">
@@ -1198,10 +1228,10 @@
     <string>Edit Triggers...</string>
    </property>
    <property name="toolTip">
-    <string>Configure automation for this effect, such as time of day, or when a process is running</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Configure automation for this effect, such as time of day, or when a process is running</string>
    </property>
    <property name="statusTip">
-    <string>Configure automation for this effect, such as time of day, or when a process is running</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Configure automation for this effect, such as time of day, or when a process is running</string>
    </property>
   </action>
   <action name="actionNew_Frame">
@@ -1213,13 +1243,13 @@
     <string>New Frame</string>
    </property>
    <property name="toolTip">
-    <string>Create a blank frame after the current position</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a blank frame after the current position</string>
    </property>
    <property name="statusTip">
-    <string>Create a blank frame after the current position</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a blank frame after the current position</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+N</string>
+    <string notr="true">Ctrl+N</string>
    </property>
   </action>
   <action name="actionDelete_Frame">
@@ -1231,13 +1261,13 @@
     <string>Delete Frame</string>
    </property>
    <property name="toolTip">
-    <string>Permanently delete this frame</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Permanently delete this frame</string>
    </property>
    <property name="statusTip">
-    <string>Permanently delete this frame</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Permanently delete this frame</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+K</string>
+    <string notr="true">Ctrl+K</string>
    </property>
   </action>
   <action name="actionClone_Frame">
@@ -1249,13 +1279,13 @@
     <string>Clone Frame</string>
    </property>
    <property name="toolTip">
-    <string>Create a copy of the current frame after this position</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a copy of the current frame after this position</string>
    </property>
    <property name="statusTip">
-    <string>Create a copy of the current frame after this position</string>
+    <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a copy of the current frame after this position</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+D</string>
+    <string notr="true">Ctrl+D</string>
    </property>
   </action>
   <action name="MapGraphic">
@@ -1265,6 +1295,9 @@
    <property name="text">
     <string notr="true">GraphicName</string>
    </property>
+   <property name="toolTip">
+    <string notr="true" extracomment="Placeholder">GraphicName</string>
+   </property>
   </action>
   <action name="MapDimensionX">
    <property name="enabled">
@@ -1273,6 +1306,9 @@
    <property name="text">
     <string notr="true">X: 22</string>
    </property>
+   <property name="toolTip">
+    <string notr="true" extracomment="Placeholder">X: 22</string>
+   </property>
   </action>
   <action name="MapDimensionY">
    <property name="enabled">
@@ -1280,6 +1316,9 @@
    </property>
    <property name="text">
     <string notr="true">Y: 5</string>
+   </property>
+   <property name="toolTip">
+    <string notr="true" extracomment="Placeholder">Y: 5</string>
    </property>
   </action>
  </widget>

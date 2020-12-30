@@ -56,7 +56,7 @@
     </rect>
    </property>
    <property name="text">
-    <string/>
+    <string notr="true"/>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -75,7 +75,8 @@
     <string>Close</string>
    </property>
    <property name="icon">
-    <iconset theme="dialog-close"/>
+    <iconset theme="dialog-close">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="default">
     <bool>true</bool>
@@ -98,7 +99,7 @@
    </property>
    <widget class="QWidget" name="TabVersion">
     <attribute name="title">
-     <string>Version</string>
+     <string extracomment="Column header to view the application's version information">Version</string>
     </attribute>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <property name="spacing">
@@ -155,7 +156,7 @@
    </widget>
    <widget class="QWidget" name="TabLicense">
     <attribute name="title">
-     <string>License</string>
+     <string extracomment="Column header to view the application's license information">License</string>
     </attribute>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <property name="spacing">
@@ -196,7 +197,7 @@
    </widget>
    <widget class="QWidget" name="TabLinks">
     <attribute name="title">
-     <string>Links</string>
+     <string extracomment="Column header to view links for an application or backend">Links</string>
     </attribute>
     <layout class="QVBoxLayout" name="verticalLayout_4">
      <property name="sizeConstraint">
@@ -220,7 +221,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Application Name</string>
+    <string notr="true">Application Name</string>
    </property>
   </widget>
   <widget class="QLabel" name="AppURL">
@@ -236,7 +237,7 @@
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
    <property name="text">
-    <string>https://</string>
+    <string notr="true">https://example.com</string>
    </property>
   </widget>
  </widget>
