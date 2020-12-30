@@ -2,14 +2,14 @@
 Type=Application
 Version=1.0
 Name=Polychromatic
-GenericName=Device Manager
-Comment=Configures connected lighting peripherals
+GenericName=Device Manager for RGB Lighting
+Comment=Configure connected lighting peripherals
 Icon=polychromatic
 Exec=polychromatic-controller
 Encoding=UTF-8
 Terminal=false
 Categories=Settings;HardwareSettings;
-Actions=devices;effects;tray-applet;
+Actions=devices;effects;tray-applet;presets;triggers;
 
 [Desktop Action devices]
 Name=Configure Devices
