@@ -398,6 +398,29 @@ class MainWindow(QMainWindow):
             self.menuBar().show()
 
 
+def get_versions():
+    """
+    Returns a list of the application version and its components.
+    """
+    versions = [
+        [_("Application"), VERSION],
+        [_("Save Data"), str(pref.VERSION)],
+        ["Qt", QtCore.PYQT_VERSION_STR],
+        ["Python", "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)]
+    ]
+
+    # When running directly from the repository
+    if os.path.exists(os.path.join(os.path.dirname(__file__), ".git")):
+        import subprocess
+        os.chdir(os.path.dirname(__file__))
+        git_version = subprocess.check_output(["git", "describe"]).strip().decode("UTF-8")[1:]
+        git_commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode("UTF-8")
+        versions[0][1] = git_version
+        versions.insert(1, ["Commit", git_commit])
+
+    return versions
+
+
 def parse_parameters():
     """
     Process the parameters passed to the application.
@@ -424,7 +447,11 @@ def parse_parameters():
     args = parser.parse_args()
 
     if args.version:
-        print("polychromatic {0}".format(VERSION))
+        versions = get_versions()
+        print("Polychromatic " + versions[0][1])
+        del(versions[0])
+        for version in versions:
+            print("{0}: {1}".format(version[0], version[1]))
         exit(0)
 
     if args.verbose:
@@ -443,23 +470,7 @@ if __name__ == "__main__":
     dbg = common.Debugging()
     i18n = locales.Locales(__file__)
     _ = i18n.init()
-
-    # Determine version information
-    VERSIONS = [
-        [_("Application"), VERSION],
-        [_("Save Data"), str(pref.VERSION)],
-        ["Qt", QtCore.PYQT_VERSION_STR],
-        ["Python", "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)]
-    ]
-
-    if os.path.exists(os.path.join(os.path.dirname(__file__), ".git")):
-        VERSIONS[0][1] = VERSION + "-git"
-        commit_path = os.path.join(os.path.dirname(__file__), ".git", "ORIG_HEAD")
-        if os.path.exists(commit_path):
-            with open(commit_path, "r") as f:
-                commit_hash = f.readline().strip()
-            VERSIONS[0][1] = VERSION + "-" + commit_hash[:7]
-            VERSIONS.insert(1, ["Commit", commit_hash])
+    VERSIONS = get_versions()
 
     args = parse_parameters()
     pref.init(_)
