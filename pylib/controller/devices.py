@@ -314,9 +314,15 @@ class DevicesTab(shared.TabData):
         current_index = 0
 
         combo = QComboBox()
+        combo.setIconSize(QSize(16, 16))
         for i, param in enumerate(params):
+            icon_path = common.get_icon("params", param["id"])
             combo.addItem(param["label"])
-            if param["active"] == True:
+
+            if icon_path:
+                combo.setItemIcon(combo.count() - 1, QIcon(icon_path))
+
+            if param["active"] is True:
                 current_index = i
             i = i + 1
 

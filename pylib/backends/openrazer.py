@@ -176,7 +176,6 @@ class Backend(_backend.Backend):
         dpi_single = False          # E.g. DeathAdder 3.5G only inputs X, Y = -1
         dpi_ranges = []
         poll_rate = None
-        poll_rate_ranges = [125, 500, 1000] # Cannot be changed
 
         # Retrieve device variables
         if rdevice.has("name"):
@@ -506,14 +505,29 @@ class Backend(_backend.Backend):
         if rdevice.has("poll_rate"):
             _init_main_if_empty()
             params = []
+
+            # Poll rates are fixed
+            poll_rate_ranges = [125, 500, 1000]
+            ids = {
+                125: "poll_low",
+                500: "poll_mid",
+                1000: "poll_high"
+            }
+            labels = {
+                125: "125 Hz (~8 ms)",
+                500: "500 Hz (~2 ms)",
+                1000: "1000 Hz (~1 ms)"
+            }
+
             for rate in poll_rate_ranges:
                 params.append({
-                    "id": "{0}Hz".format(rate),
-                    "label": "{0} Hz".format(rate),
+                    "id": ids[rate],
+                    "label": labels[rate],
                     "data": rate,
                     "active": poll_rate == rate,
                     "colours": [] # n/a
                 })
+
             zone_options["main"].append({
                 "id": "poll_rate",
                 "label": self._("Poll Rate"),
