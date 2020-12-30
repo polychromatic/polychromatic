@@ -176,7 +176,7 @@ class VisualEffectEditor(shared.TabData):
         self.colour_picker_wrapper = self.window.findChild(QWidget, "ColourPickerWrapper")
         self.current_colour_label = self.window.findChild(QLabel, "CurrentColourLabel")
         # -- -- Set later in load_colours()
-        self.current_colour_preview = None
+        self.current_colour_change = None
 
         # Font should be applied to dock widgets
         self.docks = [self.dock_layers, self.dock_properties, self.dock_colours, self.dock_frames]
@@ -864,10 +864,15 @@ class VisualEffectEditor(shared.TabData):
         def _set_custom_colour(new_hex, data):
             self._set_current_colour(new_hex)
 
+            # Regenerate the colour list if the list has changed.
+            if colours != pref.load_file(common.paths.colours):
+                self.dbg.stdout("Colour list changed, reloading dock...", self.dbg.action, 1)
+                self.load_colours()
+
         picker = self.widgets.create_colour_control(self.current_colour, _set_custom_colour, None, self._("Custom..."))
         shared.clear_layout(self.colour_picker_wrapper.layout())
         self.colour_picker_wrapper.layout().addWidget(picker)
-        self.current_colour_preview = picker.findChild(QWidget, "PickerPreview")
+        self.current_colour_change = picker.findChild(QPushButton, "PickerCustom")
 
         # Populate saved colours (and variants)
         def _mk_button(parent_widget, name, hex_value):
@@ -891,7 +896,10 @@ class VisualEffectEditor(shared.TabData):
             for percent in [-45, -30, -15, 0, 15, 30]:
                 percent = float(percent / 100)
                 new_colour = fx.lightness_hex(colour["hex"], percent)
-                _mk_button(container, "{0} (+{1}%)".format(colour["name"], percent * 100), new_colour)
+                label = "{0} {1}%".format(colour["name"], int(percent * 100))
+                if percent == 0:
+                    label = colour["name"]
+                _mk_button(container, label, new_colour)
 
         shared.clear_layout(self.colours_palette.layout())
         self.colours_palette.layout().addWidget(container)
@@ -940,8 +948,8 @@ class VisualEffectEditor(shared.TabData):
         # Only if colours dock has initialized
         self.current_colour_label.setText(hex_value)
 
-        if self.current_colour_preview:
-            self.current_colour_preview.setStyleSheet("QWidget {{ background-color: {0} }}".format(hex_value))
+        if self.current_colour_change:
+            self.current_colour_change.change_colour(hex_value)
 
     def draw_LED_to_frame(self, x, y):
         """

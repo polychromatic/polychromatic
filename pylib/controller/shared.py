@@ -528,13 +528,22 @@ class PolychromaticWidgets(object):
         preview.setMaximumWidth(80)
         preview.setStyleSheet("QWidget {{ background-color: {0} }}".format(current_hex))
 
-        def _clicked_change_colour():
-            picker = ColourPicker(self.appdata, callback_fn, callback_data, current_hex, title, monoscale, preview)
-
-        btn = QPushButton()
+        btn = QPushButton(objectName="PickerCustom")
         btn.setText(self.appdata._("Change..."))
+        btn.current_hex = current_hex
+
+        # Dynamic function allows changing the initial colour upon opening the picker later.
+        def _change_colour(new_hex):
+            btn.current_hex = new_hex
+            preview.setStyleSheet("QWidget {{ background-color: {0} }}".format(new_hex))
+        btn.change_colour = _change_colour
+
+        # Connect the signal
+        def _clicked_change_colour():
+            picker = ColourPicker(self.appdata, callback_fn, callback_data, btn.current_hex, title, monoscale, preview)
         btn.clicked.connect(_clicked_change_colour)
 
+        # Put it all together
         container.layout().addWidget(preview)
         container.layout().addWidget(btn)
         container.layout().addStretch()
