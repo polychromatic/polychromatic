@@ -102,13 +102,9 @@ version is being finalized.
 
 ## Donations
 
-If you love this software and think it's worth a few quid, euros or dollars,
-you're very welcome to leave a little something to excite the developer!
-Thank you for your generosity.
-
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W02DPTW)
-
-If you don't wish to use Ko-fi, [there's also PayPal](https://www.paypal.me/LukeHorwell).
+If you love this software and wish to leave a little something to excite the
+developer, you're welcome to do so [via paypal.me](https://www.paypal.me/LukeHorwell).
+Thank you for your generosity!
 
 
 [OpenRazer]: https://openrazer.github.io
