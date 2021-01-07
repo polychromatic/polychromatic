@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2017-2020 Luke Horwell <code@horwell.me>
+# Copyright (C) 2017-2021 Luke Horwell <code@horwell.me>
 #
 """
 This module contains shared locale strings for Polychromatic. Usually used
