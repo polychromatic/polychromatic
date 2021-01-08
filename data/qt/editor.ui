@@ -619,6 +619,9 @@
        <property name="selectionMode">
         <enum>QAbstractItemView::SingleSelection</enum>
        </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectColumns</enum>
+       </property>
        <property name="verticalScrollMode">
         <enum>QAbstractItemView::ScrollPerPixel</enum>
        </property>

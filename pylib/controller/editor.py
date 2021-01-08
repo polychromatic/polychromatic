@@ -17,6 +17,7 @@ from . import effects as controller_effects
 
 from ..qt.flowlayout import FlowLayout as QFlowLayout
 
+import copy
 import json
 import os
 
@@ -70,6 +71,9 @@ class VisualEffectEditor(shared.TabData):
         if type(self.data) != dict:
             self._show_file_error()
             return
+
+        # Session variables
+        self.suppress_delete_prompt = False
 
         # Layered Effects Only
         self.current_layer = 0
@@ -250,6 +254,11 @@ class VisualEffectEditor(shared.TabData):
 
         # Widgets
         self.frame_table.itemSelectionChanged.connect(self.open_frame)
+        self.btn_frame_new.clicked.connect(self.new_frame)
+        self.btn_frame_delete.clicked.connect(self.delete_frame)
+        self.btn_frame_clone.clicked.connect(self.clone_frame)
+        self.btn_frame_move_left.clicked.connect(self.shift_frame_left)
+        self.btn_frame_move_right.clicked.connect(self.shift_frame_right)
 
         # Menu Bar Icons
         if not appdata.system_qt_theme:
@@ -815,6 +824,10 @@ class VisualEffectEditor(shared.TabData):
         if fx:
             fx.clear()
 
+        if not self.frame_table.selectedIndexes():
+            self.frame_table.selectColumn(self.current_frame)
+            return
+
         index = self.frame_table.selectedIndexes()[0].column()
         self.current_frame = index
         total_X = self.data["map_cols"]
@@ -825,7 +838,12 @@ class VisualEffectEditor(shared.TabData):
             try:
                 self.data["frames"][index][str(x)]
             except KeyError:
+                # New frame to be written
                 self.data["frames"][index][str(x)] = {}
+            except IndexError:
+                # The last index was just deleted
+                self.frame_table.selectColumn(self.current_frame)
+                return
 
         frame = self.data["frames"][index]
 
@@ -848,6 +866,20 @@ class VisualEffectEditor(shared.TabData):
 
         if fx:
             fx.draw()
+
+        # Disable controls if actions are not possible (0-index)
+        total_frames = len(self.data["frames"])
+
+        # -- Prevent deleting the only frame
+        self.action_delete_frame.setEnabled(total_frames > 1)
+        self.btn_frame_delete.setEnabled(total_frames > 1)
+
+        # -- Preventing shift frames at start/end
+        self.btn_frame_move_left.setEnabled(self.current_frame >= 1)
+        self.action_frame_left.setEnabled(self.current_frame >= 1)
+
+        self.btn_frame_move_right.setEnabled(self.current_frame < total_frames - 1)
+        self.action_frame_right.setEnabled(self.current_frame < total_frames - 1)
 
     def load_colours(self):
         """
@@ -909,37 +941,101 @@ class VisualEffectEditor(shared.TabData):
         """
         Creates a blank frame after the current frame, and loads it.
         """
-        pass
+        self.modified = True
+
+        current_index = self.current_frame
+        new_index = self.current_frame + 1
+        self.dbg.stdout("New frame at position {0}".format(new_index), self.dbg.debug, 1)
+
+        self.data["frames"].insert(new_index, {})
+
+        self.frame_table.insertColumn(new_index)
+        self.frame_table.setColumnWidth(new_index, 64)
+        self.frame_table.selectColumn(new_index)
 
     def delete_frame(self):
         """
         Prompts for confirmation before deleting a frame.
         """
-        pass
+        def _do_delete_frame():
+            self.modified = True
+
+            old_index = self.current_frame
+            new_index = self.current_frame - 1
+
+            if new_index < 0:
+                new_index = 0
+
+            del(self.data["frames"][old_index])
+            self.frame_table.removeColumn(old_index)
+            self.frame_table.selectColumn(new_index)
+
+        if self.suppress_delete_prompt:
+            return _do_delete_frame()
+
+        self.widgets.open_dialog(self.widgets.dialog_warning,
+                                 self._("Delete Frame"),
+                                 self._("Definitely delete this frame? There is no undo."),
+                                 self._("This confirmation can be suppressed by changing the preferences under the Editor tab."),
+                                 None,
+                                 [QMessageBox.Yes, QMessageBox.No],
+                                 QMessageBox.Yes,
+                                 {
+                                    QMessageBox.Yes: _do_delete_frame
+                                 })
 
     def clone_frame(self):
         """
         Creates a new frame inheriting the data for the currently selected one
         and loads it.
         """
-        pass
+        self.modified = True
+
+        current_index = self.current_frame
+        new_index = self.current_frame + 1
+        self.dbg.stdout("Cloned frame at position {0}".format(new_index), self.dbg.debug, 1)
+
+        newdata = copy.deepcopy(self.data["frames"][current_index])
+        self.data["frames"].insert(new_index, newdata)
+
+        self.frame_table.insertColumn(new_index)
+        self.frame_table.setColumnWidth(new_index, 64)
+        self.frame_table.selectColumn(new_index)
+
+    def _swap_frame_data(self, relative_pos):
+        """
+        Relocate frame data with another data position and reload the frame.
+        """
+        self.modified = True
+
+        current_index = self.current_frame
+        new_index = self.current_frame + relative_pos
+
+        data_src = copy.deepcopy(self.data["frames"][current_index])
+        data_dst = copy.deepcopy(self.data["frames"][new_index])
+
+        self.data["frames"][current_index] = data_dst
+        self.data["frames"][new_index] = data_src
+
+        self.dbg.stdout("Swapped frame {0} with frame {1}".format(current_index, new_index), self.dbg.debug, 1)
+        self.frame_table.selectColumn(new_index)
 
     def shift_frame_left(self):
         """
-        Moves the frame to the left by one and refreshes the visual editor.
+        Move the frame to the left by one and refresh the visual editor.
         """
-        pass
+        self._swap_frame_data(-1)
 
     def shift_frame_right(self):
         """
-        Moves the frame to the right by one and refreshes the visual editor.
+        Move the frame to the right by one and refresh the visual editor.
         """
-        pass
+        self._swap_frame_data(1)
 
     def _set_current_colour(self, hex_value):
         """
-        Change the current colour for drawing and set the tool if it isn't
-        set already.
+        Change the colour to draw with. If the draw tool isn't selected,
+        this will automatically change.
         """
         self.current_colour = hex_value
         self.device_renderer.set_colour(hex_value)
@@ -1031,6 +1127,7 @@ class DeviceRenderer(shared.TabData):
         self.graphic_name = self.device_map.get_graphic_name_from_filename(map_graphic)
         self.rows = map_rows
         self.cols = map_cols
+        self.mode = 1
 
         # Wait until the webview has fully loaded, then load the graphic.
         self.webview.loadFinished.connect(self.ready)
@@ -1166,6 +1263,7 @@ class DeviceRenderer(shared.TabData):
         if not self.loaded:
             return
 
+        self.mode = mode
         self.webview.page().runJavaScript("setMode({0}, {1})".format(mode, str(self.use_native_cursor).lower()))
 
     def set_colour(self, hex_value):
@@ -1188,4 +1286,4 @@ class DeviceRenderer(shared.TabData):
         """
         Set the colour of a specific key.
         """
-        self.webview.page().runJavaScript("setLED({0}, {1}, false, '{2}')".format(x, y, hex_value))
+        self.webview.page().runJavaScript("mode = 1; setLED({0}, {1}, false, '{2}'); mode = {3};".format(x, y, hex_value, self.mode))
