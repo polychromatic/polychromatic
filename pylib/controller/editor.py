@@ -315,7 +315,7 @@ class VisualEffectEditor(shared.TabData):
         Populate the controls for the effect being loaded.
         """
         # Reset session variables
-        self.modified = False
+        self.set_modified(False)
         self.current_layer = 0
         self.current_frame = 0
 
@@ -443,6 +443,14 @@ class VisualEffectEditor(shared.TabData):
         else:
             self.window.deleteLater()
 
+    def set_modified(self, state):
+        """
+        Sets the modified flag for this editor. The window title is updated
+        accordingly to display the current file and its state.
+        """
+        self.modified = state
+        self.window.setWindowTitle("{0}{2} — {1}".format(self.data["name"], self._("Effect Editor"), "*" if state else ""))
+
     def _get_layer_labels(self):
         """
         Return a dictionary of human readable labels for layered effects.
@@ -486,7 +494,7 @@ class VisualEffectEditor(shared.TabData):
                                      self._("Save failed. Please check the permissions and try again."))
             return False
 
-        self.modified = False
+        self.set_modified(False)
         self.save_path = save_path
         self.statusbar.showMessage(self._("Saved to: []").replace("[]", save_path))
         return True
@@ -941,7 +949,7 @@ class VisualEffectEditor(shared.TabData):
         """
         Creates a blank frame after the current frame, and loads it.
         """
-        self.modified = True
+        self.set_modified(True)
 
         current_index = self.current_frame
         new_index = self.current_frame + 1
@@ -958,7 +966,7 @@ class VisualEffectEditor(shared.TabData):
         Prompts for confirmation before deleting a frame.
         """
         def _do_delete_frame():
-            self.modified = True
+            self.set_modified(True)
 
             old_index = self.current_frame
             new_index = self.current_frame - 1
@@ -989,7 +997,7 @@ class VisualEffectEditor(shared.TabData):
         Creates a new frame inheriting the data for the currently selected one
         and loads it.
         """
-        self.modified = True
+        self.set_modified(True)
 
         current_index = self.current_frame
         new_index = self.current_frame + 1
@@ -1006,7 +1014,7 @@ class VisualEffectEditor(shared.TabData):
         """
         Relocate frame data with another data position and reload the frame.
         """
-        self.modified = True
+        self.set_modified(True)
 
         current_index = self.current_frame
         new_index = self.current_frame + relative_pos
@@ -1061,7 +1069,7 @@ class VisualEffectEditor(shared.TabData):
             except Exception as e:
                 self._live_preview_failed(e)
 
-        self.modified = True
+        self.set_modified(True)
         self.dbg.stdout("Set LED ({0},{1}) to {2}".format(x, y, self.current_colour), self.dbg.debug, 1)
 
     def erase_LED_from_frame(self, x, y):
@@ -1081,7 +1089,7 @@ class VisualEffectEditor(shared.TabData):
             except Exception as e:
                 self._live_preview_failed(e)
 
-        self.modified = True
+        self.set_modified(True)
         self.dbg.stdout("Erase LED ({0},{1})".format(x, y), self.dbg.debug, 1)
 
     def pick_LED_colour_from_frame(self, x, y):
