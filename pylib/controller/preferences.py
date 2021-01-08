@@ -54,6 +54,7 @@ class PreferencesWindow(shared.TabData):
             # -- Editor
             ["editor", "live_preview", QCheckBox, "LivePreview", False],
             ["editor", "system_cursors", QCheckBox, "UseSystemCursors", False],
+            ["editor", "suppress_confirm_dialog", QCheckBox, "SuppressConfirmDialog", False],
         ]
 
     def open_window(self):

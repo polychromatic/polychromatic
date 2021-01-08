@@ -73,7 +73,7 @@ class VisualEffectEditor(shared.TabData):
             return
 
         # Session variables
-        self.suppress_delete_prompt = False
+        self.suppress_delete_prompt = appdata.preferences["editor"]["suppress_confirm_dialog"]
 
         # Layered Effects Only
         self.current_layer = 0
@@ -983,8 +983,8 @@ class VisualEffectEditor(shared.TabData):
 
         self.widgets.open_dialog(self.widgets.dialog_warning,
                                  self._("Delete Frame"),
-                                 self._("Definitely delete this frame? There is no undo."),
-                                 self._("This confirmation can be suppressed by changing the preferences under the Editor tab."),
+                                 self._("Permanently delete this frame? There is no undo."),
+                                 self._("Tip: This confirmation can be suppressed via the Editor tab under Preferences."),
                                  None,
                                  [QMessageBox.Yes, QMessageBox.No],
                                  QMessageBox.Yes,
