@@ -215,6 +215,10 @@ class FlatFileManagement(object):
 
             self.dbg.stdout("Name changed. File will be written to: " + target_path, self.dbg.action, 1)
 
+        # Don't save parsed (temporary) data in memory
+        if "parsed" in data.keys():
+            del(data["parsed"])
+
         # Save the file!
         try:
             with open(target_path, "w+") as f:
