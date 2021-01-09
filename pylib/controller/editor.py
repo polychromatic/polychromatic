@@ -537,41 +537,117 @@ class VisualEffectEditor(shared.TabData):
         }
         aliases[self.effect_type]()
 
+    def _shift_all_positions(self, relative_x, relative_y):
+        """
+        Offsets the positions of LEDs by the specified relative X or Y value.
+
+        This function only supports the movement of 1 column/row of 1 direction
+        at a time.
+        """
+        self.set_modified(True)
+
+        # Load data into memory
+        if self.effect_type == effects.TYPE_LAYERED:
+            print("fixme:_shift_all_positions TYPE_LAYERED")
+            raise NotImplementedError
+
+        elif self.effect_type == effects.TYPE_SEQUENCE:
+            frame = self.data["frames"][self.current_frame]
+            new_frame = {}
+
+        # Determine operations
+        move_left = relative_x < 0
+        move_right = relative_x > 0
+        move_down = relative_y > 0
+        move_up = relative_y < 0
+
+        # Process changes
+        max_x = self.data["map_cols"] - 1
+        max_y = self.data["map_rows"] - 1
+
+        if move_left or move_right:
+            for x in frame.keys():
+                x = int(x)
+
+                # Shift X-axis
+                if move_left:
+                    new_frame[str(x - 1)] = frame[str(x)]
+                elif move_right:
+                    new_frame[str(x + 1)] = frame[str(x)]
+
+                # Wrap X-axis
+                new_x_keys = new_frame.keys()
+
+                # -- First item goes last
+                if str(-1) in new_x_keys:
+                    new_frame[str(max_x)] = frame[str(0)]
+                    del(new_frame[str(-1)])
+
+                # -- Last item goes first
+                if str(max_x + 1) in new_x_keys:
+                    new_frame[str(0)] = frame[str(max_x)]
+                    del(new_frame[str(max_x + 1)])
+
+        elif move_up or move_down:
+            for x in frame.keys():
+                x = int(x)
+                y_keys = list(frame[str(x)].keys())
+                new_frame[str(x)] = {}
+
+                for y in y_keys:
+                    y = int(y)
+
+                    # Shift Y-axis
+                    if move_up:
+                        new_frame[str(x)][str(y - 1)] = frame[str(x)][str(y)]
+                    elif move_down:
+                        new_frame[str(x)][str(y + 1)] = frame[str(x)][str(y)]
+
+                    # Wrap Y-axis
+                    new_y_keys = new_frame[str(x)].keys()
+
+                    # -- First item goes last
+                    if str(-1) in new_y_keys:
+                        new_frame[str(x)][str(max_y)] = frame[str(x)][str(0)]
+                        del(new_frame[str(x)][str(-1)])
+
+                    # -- Last item goes first
+                    if str(max_y + 1) in new_y_keys:
+                        new_frame[str(x)][str(0)] = frame[str(x)][str(max_y)]
+                        del(new_frame[str(x)][str(max_y + 1)])
+
+        # Save new data and refresh UI
+        if self.effect_type == effects.TYPE_LAYERED:
+            print("fixme:_shift_all_positions TYPE_LAYERED")
+            raise NotImplementedError
+
+        elif self.effect_type == effects.TYPE_SEQUENCE:
+            self.data["frames"][self.current_frame] = new_frame
+            self.open_frame()
+
     def shift_all_left(self):
         """
         Move all the LEDs by -1 on the X-axis.
         """
-        if effects.TYPE_LAYERED:
-            pass
-        elif effects.TYPE_SEQUENCE:
-            pass
+        self._shift_all_positions(-1, 0)
 
     def shift_all_right(self):
         """
         Move all the LEDs by +1 on the X-axis.
         """
-        if effects.TYPE_LAYERED:
-            pass
-        elif effects.TYPE_SEQUENCE:
-            pass
+        self._shift_all_positions(1, 0)
 
     def shift_all_up(self):
         """
-        Move all the LEDs by +1 on the Y-axis.
+        Move all the LEDs by -1 on the Y-axis.
         """
-        if effects.TYPE_LAYERED:
-            pass
-        elif effects.TYPE_SEQUENCE:
-            pass
+        self._shift_all_positions(0, -1)
 
     def shift_all_down(self):
         """
-        Move all the LEDs by -1 on the Y-axis.
+        Move all the LEDs by +1 on the Y-axis.
         """
-        if effects.TYPE_LAYERED:
-            pass
-        elif effects.TYPE_SEQUENCE:
-            pass
+        self._shift_all_positions(0, 1)
 
     def edit_metadata(self):
         """
