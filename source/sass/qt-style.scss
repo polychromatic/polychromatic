@@ -305,6 +305,10 @@ QMenuBar::item:pressed {
     color: #fff;
 }
 
+QMenuBar::item:disabled {
+    color: $text-disabled;
+}
+
 QMenu {
     background: $bg-secondary;
     border: 1px solid $border-colour;

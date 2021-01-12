@@ -54,7 +54,7 @@
     <property name="title">
      <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;Edit</string>
     </property>
-    <widget class="QMenu" name="menuShift_All_Keys">
+    <widget class="QMenu" name="menuShiftMenu">
      <property name="tearOffEnabled">
       <bool>true</bool>
      </property>
@@ -82,7 +82,7 @@
     <addaction name="actionMove_Frame_Left"/>
     <addaction name="actionMove_Frame_Right"/>
     <addaction name="separator"/>
-    <addaction name="menuShift_All_Keys"/>
+    <addaction name="menuShiftMenu"/>
     <addaction name="separator"/>
     <addaction name="actionEditMetadata"/>
     <addaction name="actionEditTriggers"/>
@@ -101,8 +101,6 @@
     <addaction name="actionZoomOut"/>
     <addaction name="actionZoomReset"/>
     <addaction name="separator"/>
-    <addaction name="actionResetDocks"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -117,7 +115,7 @@
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
-   <widget class="QMenu" name="menuTool">
+   <widget class="QMenu" name="menuTools">
     <property name="title">
      <string extracomment="The &amp; character is for keyboard navigation (when holding the ALT key)">&amp;Tool</string>
     </property>
@@ -125,10 +123,26 @@
     <addaction name="actionColourPicker"/>
     <addaction name="actionEraser"/>
    </widget>
+   <widget class="QMenu" name="menuPlayback">
+    <property name="title">
+     <string>Playback</string>
+    </property>
+    <addaction name="actionPlay"/>
+    <addaction name="actionStop"/>
+    <addaction name="separator"/>
+    <addaction name="actionPreviousFrame"/>
+    <addaction name="actionNextFrame"/>
+    <addaction name="separator"/>
+    <addaction name="actionJumpStart"/>
+    <addaction name="actionJumpEnd"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoop"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
-   <addaction name="menuTool"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuPlayback"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="StatusBar"/>
@@ -137,7 +151,7 @@
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::NoDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
     <string>Layers</string>
@@ -403,7 +417,7 @@
   </widget>
   <widget class="QDockWidget" name="LayerPropertiesDock">
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::NoDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
     <string>Properties</string>
@@ -458,7 +472,7 @@
     </sizepolicy>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::NoDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
     <string>Frames</string>
@@ -596,16 +610,193 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <widget class="QToolButton" name="PlaybackJumpStart">
+          <property name="toolTip">
+           <string>Jump to the start of the sequence</string>
+          </property>
+          <property name="statusTip">
+           <string>Jump to the start of the sequence</string>
+          </property>
+          <property name="text">
+           <string>Jump to Start</string>
+          </property>
+          <property name="icon">
+           <iconset theme="media-skip-backward">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="PlaybackPrev">
+          <property name="toolTip">
+           <string>Step backward one frame</string>
+          </property>
+          <property name="statusTip">
+           <string>Step backward one frame</string>
+          </property>
+          <property name="text">
+           <string>Previous Frame</string>
+          </property>
+          <property name="icon">
+           <iconset theme="media-seek-backward">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="PlaybackNext">
+          <property name="toolTip">
+           <string>Step forward one frame</string>
+          </property>
+          <property name="statusTip">
+           <string>Step forward one frame</string>
+          </property>
+          <property name="text">
+           <string>Next Frame</string>
+          </property>
+          <property name="icon">
+           <iconset theme="media-seek-forward">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="PlaybackJumpEnd">
+          <property name="toolTip">
+           <string>Jump to the last frame of the sequence</string>
+          </property>
+          <property name="statusTip">
+           <string>Jump to the last frame of the sequence</string>
+          </property>
+          <property name="text">
+           <string>Jump to End</string>
+          </property>
+          <property name="icon">
+           <iconset theme="media-skip-forward">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Maximum</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>15</width>
+            <height>15</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QToolButton" name="PlaybackStop">
+          <property name="toolTip">
+           <string>Stop playback</string>
+          </property>
+          <property name="statusTip">
+           <string>Stop playback</string>
+          </property>
+          <property name="text">
+           <string>Pause</string>
+          </property>
+          <property name="icon">
+           <iconset theme="media-playback-stop">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="PlaybackStart">
+          <property name="toolTip">
+           <string>Preview the effect from the beginning</string>
+          </property>
+          <property name="statusTip">
+           <string>Preview the effect from the beginning</string>
+          </property>
+          <property name="text">
+           <string>Play</string>
+          </property>
+          <property name="icon">
+           <iconset theme="media-playback-start">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="PlaybackLoop">
+          <property name="toolTip">
+           <string>Toggle whether this effect should loop</string>
+          </property>
+          <property name="statusTip">
+           <string>Toggle whether this effect should loop</string>
+          </property>
+          <property name="text">
+           <string>Loop</string>
+          </property>
+          <property name="icon">
+           <iconset theme="media-playlist-repeat">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="PlaybackFPS">
+          <property name="toolTip">
+           <string>Frames per second to play the sequence.
+
+Note that frame rates that are too high may not
+play properly due to bottlenecks with the driver, 
+lighting firmware or software. This may potentially
+shorten the LED's lifespan.</string>
+          </property>
+          <property name="statusTip">
+           <string>Frames per second to play the sequence</string>
+          </property>
+          <property name="suffix">
+           <string> fps</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>80</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
      <item>
       <widget class="QTableWidget" name="FramesTable">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>80</height>
+        </size>
+       </property>
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
        <property name="verticalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOn</enum>
        </property>
        <property name="sizeAdjustPolicy">
         <enum>QAbstractScrollArea::AdjustToContents</enum>
@@ -646,7 +837,7 @@
   </widget>
   <widget class="QDockWidget" name="ColoursDock">
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::NoDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
     <string>Colours</string>
@@ -728,8 +919,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>170</width>
-          <height>313</height>
+          <width>99</width>
+          <height>358</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -971,7 +1162,7 @@
     <string extracomment="Appears as a tooltip or in the status bar when hovered">Permanently delete the selected layer</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Ctrl+K</string>
+    <string>Del</string>
    </property>
   </action>
   <action name="actionMove_Layer_Up">
@@ -1322,6 +1513,132 @@
    </property>
    <property name="toolTip">
     <string notr="true" extracomment="Placeholder">Y: 5</string>
+   </property>
+  </action>
+  <action name="actionPlay">
+   <property name="icon">
+    <iconset theme="media-playback-start">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Play</string>
+   </property>
+   <property name="toolTip">
+    <string>Start playback</string>
+   </property>
+   <property name="statusTip">
+    <string>Start playback</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="icon">
+    <iconset theme="media-playback-stop">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+   <property name="toolTip">
+    <string>Pause playback</string>
+   </property>
+   <property name="statusTip">
+    <string>Pause playback</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
+   </property>
+  </action>
+  <action name="actionPreviousFrame">
+   <property name="icon">
+    <iconset theme="media-seek-backward">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Previous Frame</string>
+   </property>
+   <property name="toolTip">
+    <string>Step backward one frame</string>
+   </property>
+   <property name="statusTip">
+    <string>Step backward one frame</string>
+   </property>
+   <property name="shortcut">
+    <string>Left</string>
+   </property>
+  </action>
+  <action name="actionNextFrame">
+   <property name="icon">
+    <iconset theme="media-seek-forward">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Next Frame</string>
+   </property>
+   <property name="toolTip">
+    <string>Step forward one frame</string>
+   </property>
+   <property name="statusTip">
+    <string>Step forward one frame</string>
+   </property>
+   <property name="shortcut">
+    <string>Right</string>
+   </property>
+  </action>
+  <action name="actionJumpStart">
+   <property name="icon">
+    <iconset theme="media-skip-backward">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Jump to Start</string>
+   </property>
+   <property name="toolTip">
+    <string>Jump to the start of the sequence</string>
+   </property>
+   <property name="statusTip">
+    <string>Jump to the start of the sequence</string>
+   </property>
+   <property name="shortcut">
+    <string>Home</string>
+   </property>
+  </action>
+  <action name="actionJumpEnd">
+   <property name="icon">
+    <iconset theme="media-skip-forward">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Jump to End</string>
+   </property>
+   <property name="toolTip">
+    <string>Jump to the last frame of the sequence</string>
+   </property>
+   <property name="statusTip">
+    <string>Jump to the last frame of the sequence</string>
+   </property>
+   <property name="shortcut">
+    <string>End</string>
+   </property>
+  </action>
+  <action name="actionLoop">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="media-playlist-repeat">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Loop</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle whether this effect should loop</string>
+   </property>
+   <property name="statusTip">
+    <string>Toggle whether this effect should loop</string>
    </property>
   </action>
  </widget>

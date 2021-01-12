@@ -20,8 +20,9 @@ from ..qt.flowlayout import FlowLayout as QFlowLayout
 import copy
 import json
 import os
+import time
 
-from PyQt5.QtCore import Qt, QRect, QItemSelectionModel, QSize, QUrl
+from PyQt5.QtCore import Qt, QRect, QItemSelectionModel, QThread, QSize, QUrl
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
                             QListWidget, QTreeWidget, QLabel, QComboBox, \
@@ -30,7 +31,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
                             QGroupBox, QRadioButton, QMainWindow, QAction, \
                             QDockWidget, QMenuBar, QToolBar, QStatusBar, \
                             QTableWidget, QWidget, QVBoxLayout, QHBoxLayout, \
-                            QScrollArea
+                            QScrollArea, QSpinBox
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # Visual mode within the WebView editor
@@ -59,13 +60,17 @@ class VisualEffectEditor(shared.TabData):
         self.fileman = fileman
         self.save_path = save_path
         self.data = fileman.get_item(save_path)
-        self.effect_type = self.data["type"]
         self.modified = False
         self.alive = True
         self.current_colour = "#00FF00"
         self.current_tool = VISUAL_MODE_ADD
         self.layer_labels = self._get_layer_labels()
         self.webview_zoom_level = 1.0
+
+        # Effect type
+        self.effect_type = self.data["type"]
+        self.layered_effect = self.effect_type == effects.TYPE_LAYERED
+        self.sequence_effect = self.effect_type == effects.TYPE_SEQUENCE
 
         # Fail if the file moved, or was deleted
         if type(self.data) != dict:
@@ -80,6 +85,8 @@ class VisualEffectEditor(shared.TabData):
 
         # Sequence Effects Only
         self.current_frame = 0
+        self.playback_paused = True
+        self.playback_thread = None
 
         # Load window
         self.window = shared.get_ui_widget(appdata, "editor", QMainWindow)
@@ -111,6 +118,8 @@ class VisualEffectEditor(shared.TabData):
         self.action_exit = self.window.findChild(QAction, "actionExit")
 
         # -- Menu Bar/Toolbar - Edit
+        self.menu_edit = self.window.findChild(QMenu, "menuEdit")
+
         # -- -- Layer only
         self.action_new_layer = self.window.findChild(QAction, "actionNew_Layer")
         self.action_delete_layer = self.window.findChild(QAction, "actionDelete_Layer")
@@ -125,6 +134,7 @@ class VisualEffectEditor(shared.TabData):
         self.action_frame_left = self.window.findChild(QAction, "actionMove_Frame_Left")
         self.action_frame_right = self.window.findChild(QAction, "actionMove_Frame_Right")
 
+        self.menu_shift = self.window.findChild(QMenu, "menuShiftMenu")
         self.action_shift_left = self.window.findChild(QAction, "actionShift_Left")
         self.action_shift_right = self.window.findChild(QAction, "actionShift_Right")
         self.action_shift_up = self.window.findChild(QAction, "actionShift_Up")
@@ -138,12 +148,22 @@ class VisualEffectEditor(shared.TabData):
         self.action_zoom_in = self.window.findChild(QAction, "actionZoomIn")
         self.action_zoom_out = self.window.findChild(QAction, "actionZoomOut")
         self.action_zoom_reset = self.window.findChild(QAction, "actionZoomReset")
-        self.action_dock_reset = self.window.findChild(QAction, "actionResetDocks")
 
         # -- Menu Bar/Toolbar - Tools
+        self.menu_tools = self.window.findChild(QMenu, "menuTools")
         self.tool_draw = self.window.findChild(QAction, "actionDraw")
         self.tool_eraser = self.window.findChild(QAction, "actionEraser")
         self.tool_picker = self.window.findChild(QAction, "actionColourPicker")
+
+        # -- Menu Bar/Dock - Playback
+        self.playback_menu = self.window.findChild(QMenu, "menuPlayback")
+        self.playback_jump_start = self.window.findChild(QAction, "actionJumpStart")
+        self.playback_jump_end = self.window.findChild(QAction, "actionJumpEnd")
+        self.playback_prev = self.window.findChild(QAction, "actionPreviousFrame")
+        self.playback_next = self.window.findChild(QAction, "actionNextFrame")
+        self.playback_play = self.window.findChild(QAction, "actionPlay")
+        self.playback_stop = self.window.findChild(QAction, "actionStop")
+        self.playback_loop = self.window.findChild(QAction, "actionLoop")
 
         # -- Menu Bar - Help
         self.action_help_online = self.window.findChild(QAction, "actionOnlineHelp")
@@ -169,11 +189,21 @@ class VisualEffectEditor(shared.TabData):
 
         # -- Frame Widgets
         self.frame_table = self.window.findChild(QTableWidget, "FramesTable")
+
         self.btn_frame_new = self.window.findChild(QToolButton, "NewFrame")
         self.btn_frame_delete = self.window.findChild(QToolButton, "DeleteFrame")
         self.btn_frame_clone = self.window.findChild(QToolButton, "CloneFrame")
         self.btn_frame_move_left = self.window.findChild(QToolButton, "MoveFrameLeft")
         self.btn_frame_move_right = self.window.findChild(QToolButton, "MoveFrameRight")
+
+        self.btn_playback_jump_start = self.window.findChild(QToolButton, "PlaybackJumpStart")
+        self.btn_playback_jump_end = self.window.findChild(QToolButton, "PlaybackJumpEnd")
+        self.btn_playback_play = self.window.findChild(QToolButton, "PlaybackStart")
+        self.btn_playback_stop = self.window.findChild(QToolButton, "PlaybackStop")
+        self.btn_playback_prev = self.window.findChild(QToolButton, "PlaybackPrev")
+        self.btn_playback_next = self.window.findChild(QToolButton, "PlaybackNext")
+        self.btn_playback_loop = self.window.findChild(QToolButton, "PlaybackLoop")
+        self.spinner_playback_fps = self.window.findChild(QSpinBox, "PlaybackFPS")
 
         # -- Colour Widgets
         self.colours_palette = self.window.findChild(QWidget, "ColoursPalette")
@@ -216,12 +246,6 @@ class VisualEffectEditor(shared.TabData):
         self.action_frame_left.triggered.connect(self.shift_frame_left)
         self.action_frame_right.triggered.connect(self.shift_frame_right)
 
-        self.btn_frame_new.triggered.connect(self.new_frame)
-        self.btn_frame_delete.triggered.connect(self.delete_frame)
-        self.btn_frame_clone.triggered.connect(self.clone_frame)
-        self.btn_frame_move_left.triggered.connect(self.shift_frame_left)
-        self.btn_frame_move_right.triggered.connect(self.shift_frame_right)
-
         # -- Edit (Shared)
         self.action_shift_left.triggered.connect(self.shift_all_left)
         self.action_shift_right.triggered.connect(self.shift_all_right)
@@ -236,12 +260,15 @@ class VisualEffectEditor(shared.TabData):
         self.action_zoom_in.triggered.connect(self.zoom_in)
         self.action_zoom_out.triggered.connect(self.zoom_out)
         self.action_zoom_reset.triggered.connect(self.zoom_reset)
-        self.action_dock_reset.triggered.connect(self.dock_reset)
 
         # -- Tools
         self.tool_draw.triggered.connect(self.select_mode_draw)
         self.tool_eraser.triggered.connect(self.select_mode_eraser)
         self.tool_picker.triggered.connect(self.select_mode_picker)
+
+        # -- Playback (Sequence only)
+        if self.sequence_effect:
+            self._init_playback_controls()
 
         # -- Help
         menubar = self.appdata.menubar
@@ -280,10 +307,7 @@ class VisualEffectEditor(shared.TabData):
             - Colours
             - Frames
         """
-        layered_effect = self.data["type"] == effects.TYPE_LAYERED
-        sequence_effect = self.data["type"] == effects.TYPE_SEQUENCE
-
-        if layered_effect:
+        if self.layered_effect:
             # Remove frame-specific options
             self.tool_picker.deleteLater()
             self.action_new_frame.deleteLater()
@@ -291,8 +315,9 @@ class VisualEffectEditor(shared.TabData):
             self.action_clone_frame.deleteLater()
             self.action_frame_left.deleteLater()
             self.action_frame_right.deleteLater()
+            self.playback_menu.deleteLater()
 
-        elif sequence_effect:
+        elif self.sequence_effect:
             # Remove layer-specific options
             self.action_new_layer.deleteLater()
             self.action_delete_layer.deleteLater()
@@ -303,10 +328,10 @@ class VisualEffectEditor(shared.TabData):
             self.dock_properties.deleteLater()
 
         # Adjust docks for optimum space
-        if layered_effect:
+        if self.layered_effect:
             self.dock_layers.adjustSize()
             self.dock_properties.adjustSize()
-        elif sequence_effect:
+        elif self.sequence_effect:
             self.dock_colours.adjustSize()
             self.dock_frames.adjustSize()
 
@@ -335,19 +360,16 @@ class VisualEffectEditor(shared.TabData):
         """
         Populate the visual editor (grid/graphic) when the webpage is ready.
         """
-        layered_effect = self.data["type"] == effects.TYPE_LAYERED
-        sequence_effect = self.data["type"] == effects.TYPE_SEQUENCE
-
         self.dbg.stdout("Reading data...", self.dbg.action, 1)
 
-        if layered_effect:
+        if self.layered_effect:
             # Populate layer dock
             self.load_layers()
 
             # Open the first layer and populate properties dock
             self.open_layer()
 
-        elif sequence_effect:
+        elif self.sequence_effect:
             # Populate colours dock
             self.load_colours()
 
@@ -404,10 +426,117 @@ class VisualEffectEditor(shared.TabData):
 
         self.dbg.stdout("Previewing effect '{0}' on device '{1}'.".format(self.data["name"], device_name), self.dbg.success, 1)
 
+    def _init_playback_controls(self):
+        """
+        Connect the signals for playing back sequence effects within the editor.
+        For sequence effects only.
+        """
+        self.playback_paused = True
+        self.playback_stop.setVisible(False)
+        self.btn_playback_stop.setVisible(False)
+
+        class PlaybackThread(QThread):
+            """
+            Playing back sequence effects uses the existing editor signals and
+            implementation to automatically go through each frame until the
+            user wishes to stop.
+            """
+            @staticmethod
+            def run():
+                total_frames = self.frame_table.columnCount() - 1
+                while not self.playback_paused and self.alive:
+                    self.frame_table.selectColumn(self.frame_table.currentColumn() + 1)
+                    self.open_frame(True)
+
+                    if self.current_frame == total_frames:
+                        if self.data["loop"] == True:
+                            time.sleep(1 / self.data["fps"])
+                            self.frame_table.selectColumn(0)
+                            self.open_frame(True)
+                        else:
+                            return
+
+                    time.sleep(1 / self.data["fps"])
+
+        def _jump_start():
+            self.frame_table.selectColumn(0)
+
+        def _jump_end():
+            self.frame_table.selectColumn(self.frame_table.columnCount() - 1)
+
+        def _jump_prev():
+            self.frame_table.selectColumn(self.frame_table.currentColumn() - 1)
+
+        def _jump_next():
+            self.frame_table.selectColumn(self.frame_table.currentColumn() + 1)
+
+        def _play_pause_ui(paused):
+            self.playback_paused = paused
+            self.playback_stop.setVisible(not paused)
+            self.btn_playback_stop.setVisible(not paused)
+            self.playback_play.setVisible(paused)
+            self.btn_playback_play.setVisible(paused)
+            self._update_disabled_frame_controls()
+
+        def _play():
+            _jump_start()
+            self.playback_thread.start()
+            self.dbg.stdout("Playback started", self.dbg.action, 1)
+            _play_pause_ui(False)
+
+        def _stop():
+            self.playback_thread.exit()
+
+            if not self.alive:
+                return
+
+            self.dbg.stdout("Playback stopped", self.dbg.action, 1)
+            _play_pause_ui(True)
+
+        def _toggle_loop(checked):
+            self.set_modified(True)
+            self.dbg.stdout("Sequence set to {0}".format("loop" if checked else "play once"), self.dbg.debug, 1)
+            self.data["loop"] = checked
+            self.playback_loop.setChecked(checked)
+            self.btn_playback_loop.setChecked(checked)
+
+        def _set_fps(new_fps):
+            self.set_modified(True)
+            self.dbg.stdout("Sequence frame rate set to: {0} fps".format(new_fps), self.dbg.debug, 1)
+            self.data["fps"] = new_fps
+
+        self.playback_jump_start.triggered.connect(_jump_start)
+        self.playback_jump_end.triggered.connect(_jump_end)
+        self.playback_prev.triggered.connect(_jump_prev)
+        self.playback_next.triggered.connect(_jump_next)
+        self.playback_play.triggered.connect(_play)
+        self.playback_stop.triggered.connect(_stop)
+        self.playback_loop.triggered.connect(_toggle_loop)
+
+        self.btn_playback_jump_start.clicked.connect(_jump_start)
+        self.btn_playback_jump_end.clicked.connect(_jump_end)
+        self.btn_playback_prev.clicked.connect(_jump_prev)
+        self.btn_playback_next.clicked.connect(_jump_next)
+        self.btn_playback_play.clicked.connect(_play)
+        self.btn_playback_stop.clicked.connect(_stop)
+        self.btn_playback_loop.clicked.connect(_toggle_loop)
+        self.spinner_playback_fps.valueChanged.connect(_set_fps)
+
+        # Set initial values
+        self.playback_loop.setChecked(self.data["loop"] == True)
+        self.btn_playback_loop.setChecked(self.data["loop"] == True)
+        self.spinner_playback_fps.setValue(int(self.data["fps"]))
+
+        # Prepare thread to playback the effect
+        self.playback_thread = PlaybackThread()
+        self.playback_thread.finished.connect(_stop)
+
     def closeEvent(self, event=None):
         """
-        Before closing the editor, make sure any unsaved changes are saved.
+        Gracefully closes the editor, ensuring any unsaved changes are saved
+        if desired, and that any thread(s) are stopped.
         """
+        # Prompt for unsaved changes
         if self.modified:
             def _do_not_save():
                 self.modified = False
@@ -429,6 +558,11 @@ class VisualEffectEditor(shared.TabData):
             if event:
                 event.ignore()
             return
+
+        # Stop any threads
+        if self.playback_thread:
+            self.dbg.stdout("Stopping playback thread...", self.dbg.action, 1)
+            self.playback_thread.exit()
 
         # If live preview was active, restore original state
         if self.live_preview and self.device:
@@ -547,11 +681,11 @@ class VisualEffectEditor(shared.TabData):
         self.set_modified(True)
 
         # Load data into memory
-        if self.effect_type == effects.TYPE_LAYERED:
+        if self.layered_effect:
             print("fixme:_shift_all_positions TYPE_LAYERED")
             raise NotImplementedError
 
-        elif self.effect_type == effects.TYPE_SEQUENCE:
+        elif self.sequence_effect:
             frame = self.data["frames"][self.current_frame]
             new_frame = {}
 
@@ -617,11 +751,11 @@ class VisualEffectEditor(shared.TabData):
                         del(new_frame[str(x)][str(max_y + 1)])
 
         # Save new data and refresh UI
-        if self.effect_type == effects.TYPE_LAYERED:
+        if self.layered_effect:
             print("fixme:_shift_all_positions TYPE_LAYERED")
             raise NotImplementedError
 
-        elif self.effect_type == effects.TYPE_SEQUENCE:
+        elif self.sequence_effect:
             self.data["frames"][self.current_frame] = new_frame
             self.open_frame()
 
@@ -669,12 +803,6 @@ class VisualEffectEditor(shared.TabData):
         """
         Opens a window to quickly create, modify or delete a trigger that
         uses this effect.
-        """
-        pass
-
-    def dock_reset(self):
-        """
-        Reset the docks to their original positions.
         """
         pass
 
@@ -895,12 +1023,14 @@ class VisualEffectEditor(shared.TabData):
         if len(table.selectedIndexes()) == 0:
             table.setSelection(QRect(0, 0, 1, 1), QItemSelectionModel.Select)
 
-    def open_frame(self):
+    def open_frame(self, playback_mode=False):
         """
         Open the selected frame for editing.
 
         This will redraw the colours in the visual editor and physical device
         (if preview is enabled) based on the currently selected frame.
+
+        When 'playback_mode' is on, UI controls will not be updated.
         """
         fx = self.device_object
         self.device_renderer.clear()
@@ -951,19 +1081,65 @@ class VisualEffectEditor(shared.TabData):
         if fx:
             fx.draw()
 
-        # Disable controls if actions are not possible (0-index)
-        total_frames = len(self.data["frames"])
+        if not playback_mode:
+            self._update_disabled_frame_controls()
+
+    def _update_disabled_frame_controls(self):
+        """
+        Reusable code to update the state of controls.
+
+        For example, disable buttons that are impossible (e.g. move to right
+        when already at the end) as well as preventing editing while
+        the animation is playing.
+        """
+        # -- Restricted during playback
+        for widget in [
+                self.webview, self.dock_colours,
+                self.tool_draw, self.tool_eraser, self.tool_picker,
+                self.action_edit_metadata, self.action_edit_triggers,
+
+                self.frame_table,
+                self.action_new_frame, self.btn_frame_new,
+                self.action_clone_frame, self.btn_frame_clone,
+
+                self.menu_shift, self.menu_edit, self.menu_tools,
+                self.action_shift_left, self.action_shift_right,
+                self.action_shift_up, self.action_shift_down
+            ]:
+            widget.setEnabled(self.playback_paused)
 
         # -- Prevent deleting the only frame
+        total_frames = len(self.data["frames"])
         self.action_delete_frame.setEnabled(total_frames > 1)
         self.btn_frame_delete.setEnabled(total_frames > 1)
 
-        # -- Preventing shift frames at start/end
+        # -- Preventing shift/step frames at start/end
         self.btn_frame_move_left.setEnabled(self.current_frame >= 1)
         self.action_frame_left.setEnabled(self.current_frame >= 1)
+        self.playback_prev.setEnabled(self.current_frame >= 1)
+        self.btn_playback_prev.setEnabled(self.current_frame >= 1)
+        self.playback_jump_start.setEnabled(self.current_frame >= 1)
+        self.btn_playback_jump_start.setEnabled(self.current_frame >= 1)
 
         self.btn_frame_move_right.setEnabled(self.current_frame < total_frames - 1)
         self.action_frame_right.setEnabled(self.current_frame < total_frames - 1)
+        self.playback_next.setEnabled(self.current_frame < total_frames - 1)
+        self.btn_playback_next.setEnabled(self.current_frame < total_frames - 1)
+        self.playback_jump_end.setEnabled(self.current_frame < total_frames - 1)
+        self.btn_playback_jump_end.setEnabled(self.current_frame < total_frames - 1)
+
+        # -- Restricted during playback but frame specific
+        if not self.playback_paused:
+            for widget in [
+                self.action_delete_frame, self.btn_frame_delete,
+                self.action_frame_left, self.btn_frame_move_left,
+                self.action_frame_right, self.btn_frame_move_right,
+                self.playback_prev, self.btn_playback_prev,
+                self.playback_next, self.btn_playback_next,
+                self.playback_jump_start, self.btn_playback_jump_start,
+                self.playback_jump_end, self.btn_playback_jump_end
+            ]:
+                widget.setEnabled(False)
 
     def load_colours(self):
         """
