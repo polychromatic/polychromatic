@@ -287,6 +287,13 @@ class VisualEffectEditor(shared.TabData):
         self.btn_frame_move_left.clicked.connect(self.shift_frame_left)
         self.btn_frame_move_right.clicked.connect(self.shift_frame_right)
 
+        # Override Behaviours
+        # -- Scroll on frames (sequence only)
+        def frame_table_wheelEvent(event):
+            direction = 1 if int(event.angleDelta().y()) > 0 else -1
+            self.frame_table.selectColumn(self.frame_table.currentColumn() + direction)
+        self.frame_table.wheelEvent = frame_table_wheelEvent
+
         # Menu Bar Icons
         if not appdata.system_qt_theme:
             print("stub:menu bar icons")
