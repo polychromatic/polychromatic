@@ -124,7 +124,7 @@ def init_config(filepath):
     except Exception as e:
         # Couldn't create the default configuration.
         dbg.stdout(filepath + ": Init write error!", dbg.error)
-        dbg.stdout("Exception: ", str(e), dbg.error)
+        dbg.stdout("Exception: " + str(e), dbg.error)
 
 
 def upgrade_old_pref():

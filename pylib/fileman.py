@@ -135,7 +135,7 @@ class FlatFileManagement(object):
         try:
             data[key]
         except KeyError:
-            self.dbg.stdout("{0} file missing required key: {1} ({2})".format(self.feature.capitalize(), key, data_type), self.dbg.error)
+            self.dbg.stdout("{0} file missing required key: {1} ({2})".format(self.feature.capitalize(), key, data_type.__name__), self.dbg.error)
             return False
 
         if type(data[key]) == data_type:

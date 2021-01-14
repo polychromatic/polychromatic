@@ -1394,7 +1394,7 @@ class CommonFileTab(TabData):
             error_code  (int)   Integer from fileman.ERROR_*
         """
         reasons = {
-            fileman.ERROR_BAD_DATA: self._("The data is invalid."),
+            fileman.ERROR_BAD_DATA: self._("The file contains invalid data."),
             fileman.ERROR_MISSING_FILE: self._("The file no longer exists. Please refresh the page."),
             fileman.ERROR_NEWER_FORMAT: self._("This file was saved in a newer version of this program.")
         }

@@ -51,18 +51,19 @@ class EffectsTab(shared.CommonFileTab):
         Effect cannot be opened for viewing - inform the user.
 
         Params:
-            message_id  (int)   One of the CommonFileTab.INFO_* variables
+            message_id  (int)   0   Empty file list
+                                1   File corrupt
         """
         layout = self.Contents.layout()
 
         titles = {
             0: self._("It's empty here!"),
-            1: self._("This one doesn't work!")
+            1: self._("Error loading effect")
         }
 
         subtitles = {
             0: self._("Try creating your own effect or import an image or video."),
-            1: self._("This effect couldn't be loaded due to an error. The file might be corrupt.")
+            1: self._("The application found invalid data in this file. The file might be corrupt.")
         }
 
         icons = {
@@ -229,7 +230,37 @@ class EffectsTab(shared.CommonFileTab):
                 "action": self.delete_file
             }
         ]
-        summary = self.widgets.create_summary_widget(icon_path, data["parsed"]["name"], [], buttons)
+
+        # Populate indicators
+        indicators = []
+
+        # -- Author
+        if data["author"]:
+            indicators.append({"icon": common.get_icon("effects", "author"), "label": data["author"]})
+
+        # -- Effect Type
+        effect_type = data["type"]
+        effect_type_name = {
+            effects.TYPE_LAYERED: self._("Layers"),
+            effects.TYPE_SCRIPTED: self._("Script"),
+            effects.TYPE_SEQUENCE: self._("Sequence"),
+        }
+        effect_type_icon = {
+            effects.TYPE_LAYERED: "layered",
+            effects.TYPE_SCRIPTED: "scripted-small",
+            effects.TYPE_SEQUENCE: "sequence",
+        }
+        indicators.append({"icon": common.get_icon("effects", effect_type_icon[effect_type]), "label": effect_type_name[effect_type]})
+
+        # -- Device
+        if data["map_device"]:
+            device_icon = common.get_icon("devices", data["map_device_icon"])
+            if not device_icon:
+                device_icon = common.get_icon("devices", "accessory")
+            indicators.append({"icon": device_icon, "label": data["map_device"]})
+
+        # Create the summary widget
+        summary = self.widgets.create_summary_widget(icon_path, data["parsed"]["name"], indicators, buttons)
         summary.setMaximumHeight(170)
         layout.addWidget(summary)
         layout.addStretch()
