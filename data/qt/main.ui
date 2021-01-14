@@ -668,8 +668,8 @@
       <string>Troubleshoot</string>
      </property>
      <property name="icon">
-      <iconset>
-       <normaloff>../img/emblems/utility.svg</normaloff>../img/emblems/utility.svg</iconset>
+      <iconset theme="applications-utilities">
+       <normaloff>.</normaloff>.</iconset>
      </property>
      <addaction name="actionTroubleshootOpenRazer"/>
     </widget>
@@ -742,8 +742,8 @@
   </action>
   <action name="actionNewEffect">
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/effects.svg</normaloff>../img/general/effects.svg</iconset>
+    <iconset theme="document-new">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>New Effect...</string>
@@ -811,8 +811,8 @@
   </action>
   <action name="actionOnlineHelp">
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/external.svg</normaloff>../img/general/external.svg</iconset>
+    <iconset theme="help-browser">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Online Help</string>
@@ -861,8 +861,8 @@
   </action>
   <action name="actionQuitApp">
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/exit.svg</normaloff>../img/general/exit.svg</iconset>
+    <iconset theme="application-exit">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Quit</string>
@@ -899,10 +899,6 @@
    </property>
   </action>
   <action name="actionOpenRazerWebsite">
-   <property name="icon">
-    <iconset>
-     <normaloff>../img/general/external.svg</normaloff>../img/general/external.svg</iconset>
-   </property>
    <property name="text">
     <string>Website</string>
    </property>
@@ -928,8 +924,7 @@
   </action>
   <action name="actionOpenRazerRestartDaemon">
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/refresh.svg</normaloff>../img/general/refresh.svg</iconset>
+    <iconset theme="view-refresh"/>
    </property>
    <property name="text">
     <string>Restart Daemon</string>
@@ -937,8 +932,7 @@
   </action>
   <action name="actionOpenRazerOpenLog">
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/folder.svg</normaloff>../img/general/folder.svg</iconset>
+    <iconset theme="folder"/>
    </property>
    <property name="text">
     <string>Open Log...</string>
@@ -946,8 +940,7 @@
   </action>
   <action name="actionOpenRazerConfigure">
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/preferences.svg</normaloff>../img/general/preferences.svg</iconset>
+    <iconset theme="settings-configure"/>
    </property>
    <property name="text">
     <string>Configure...</string>
@@ -967,8 +960,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/presets.svg</normaloff>../img/general/presets.svg</iconset>
+    <iconset theme="bookmark-new">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>New Preset...</string>
@@ -984,8 +977,7 @@
   </action>
   <action name="actionRestartTrayApplet">
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/tray-applet.svg</normaloff>../img/general/tray-applet.svg</iconset>
+    <iconset theme="view-refresh"/>
    </property>
    <property name="text">
     <string>Restart Tray Applet</string>
@@ -993,8 +985,8 @@
   </action>
   <action name="actionRestartHelper">
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/refresh.svg</normaloff>../img/general/refresh.svg</iconset>
+    <iconset theme="view-refresh">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Restart Background Tasks</string>
@@ -1038,8 +1030,7 @@
   </action>
   <action name="actionPreferences">
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/preferences.svg</normaloff>../img/general/preferences.svg</iconset>
+    <iconset theme="settings-configure"/>
    </property>
    <property name="text">
     <string>Preferences</string>
@@ -1056,8 +1047,8 @@
   </action>
   <action name="actionRefreshTab">
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/refresh.svg</normaloff>../img/general/refresh.svg</iconset>
+    <iconset theme="view-refresh">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Refresh</string>
@@ -1068,8 +1059,8 @@
   </action>
   <action name="actionImportEffect">
    <property name="icon">
-    <iconset>
-     <normaloff>../img/general/import.svg</normaloff>../img/general/import.svg</iconset>
+    <iconset theme="document-import">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Import Effect...</string>

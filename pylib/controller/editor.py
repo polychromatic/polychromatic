@@ -214,7 +214,7 @@ class VisualEffectEditor(shared.TabData):
 
         # Font should be applied to dock widgets
         self.docks = [self.dock_layers, self.dock_properties, self.dock_colours, self.dock_frames]
-        if self.appdata.system_qt_theme:
+        if not self.appdata.system_qt_theme:
             for dock in self.docks:
                 font = QFont("Play", 10, 0)
                 dock.setFont(font)
@@ -296,7 +296,80 @@ class VisualEffectEditor(shared.TabData):
 
         # Menu Bar Icons
         if not appdata.system_qt_theme:
-            print("stub:menu bar icons")
+            # -- File
+            self.action_save_apply.setIcon(self.widgets.get_icon_qt("general", "ok"))
+            self.action_save.setIcon(self.widgets.get_icon_qt("general", "save"))
+            self.action_revert.setIcon(self.widgets.get_icon_qt("general", "reset"))
+            self.action_exit.setIcon(self.widgets.get_icon_qt("general", "exit"))
+
+            # -- Edit
+            self.action_new_layer.setIcon(self.widgets.get_icon_qt("general", "new"))
+            self.action_delete_layer.setIcon(self.widgets.get_icon_qt("general", "delete"))
+            self.action_duplicate_layer.setIcon(self.widgets.get_icon_qt("general", "clone"))
+            self.action_layer_up.setIcon(self.widgets.get_icon_qt("general", "move-up"))
+            self.action_layer_down.setIcon(self.widgets.get_icon_qt("general", "move-down"))
+
+            self.action_new_frame.setIcon(self.widgets.get_icon_qt("general", "new"))
+            self.action_delete_frame.setIcon(self.widgets.get_icon_qt("general", "delete"))
+            self.action_clone_frame.setIcon(self.widgets.get_icon_qt("general", "clone"))
+            self.action_frame_left.setIcon(self.widgets.get_icon_qt("general", "move-left"))
+            self.action_frame_right.setIcon(self.widgets.get_icon_qt("general", "move-right"))
+
+            self.menu_shift.setIcon(self.widgets.get_icon_qt("general", "move-up"))
+            self.action_shift_left.setIcon(self.widgets.get_icon_qt("general", "move-left"))
+            self.action_shift_right.setIcon(self.widgets.get_icon_qt("general", "move-right"))
+            self.action_shift_up.setIcon(self.widgets.get_icon_qt("general", "move-up"))
+            self.action_shift_down.setIcon(self.widgets.get_icon_qt("general", "move-down"))
+            self.action_edit_metadata.setIcon(self.widgets.get_icon_qt("general", "properties"))
+            self.action_edit_triggers.setIcon(self.widgets.get_icon_qt("general", "triggers"))
+
+            # -- View
+            self.action_view_device_graphic.setIcon(self.widgets.get_icon_qt("general", "devices"))
+            self.action_view_grid.setIcon(self.widgets.get_icon_qt("general", "matrix"))
+            self.action_zoom_in.setIcon(self.widgets.get_icon_qt("effects", "zoom-in"))
+            self.action_zoom_out.setIcon(self.widgets.get_icon_qt("effects", "zoom-out"))
+            self.action_zoom_reset.setIcon(self.widgets.get_icon_qt("effects", "zoom-reset"))
+
+            # -- Tools
+            self.tool_draw.setIcon(self.widgets.get_icon_qt("effects", "paint"))
+            self.tool_eraser.setIcon(self.widgets.get_icon_qt("effects", "eraser"))
+            self.tool_picker.setIcon(self.widgets.get_icon_qt("effects", "picker"))
+
+            # -- Playback
+            self.playback_jump_start.setIcon(self.widgets.get_icon_qt("effects", "rewind"))
+            self.playback_jump_end.setIcon(self.widgets.get_icon_qt("effects", "fast-forward"))
+            self.playback_prev.setIcon(self.widgets.get_icon_qt("effects", "step-backward"))
+            self.playback_next.setIcon(self.widgets.get_icon_qt("effects", "step-forward"))
+            self.playback_play.setIcon(self.widgets.get_icon_qt("effects", "play"))
+            self.playback_stop.setIcon(self.widgets.get_icon_qt("effects", "stop"))
+            self.playback_loop.setIcon(self.widgets.get_icon_qt("effects", "repeat"))
+
+            # -- Help
+            self.action_help_online.setIcon(self.widgets.get_icon_qt("general", "external"))
+
+        # Dock Button Icons
+        if not appdata.system_qt_theme:
+            # -- Layer Dock
+            self.btn_layer_delete.setIcon(self.widgets.get_icon_qt("general", "delete"))
+            self.btn_layer_duplicate.setIcon(self.widgets.get_icon_qt("general", "clone"))
+            self.btn_layer_move_down.setIcon(self.widgets.get_icon_qt("general", "move-down"))
+            self.btn_layer_move_up.setIcon(self.widgets.get_icon_qt("general", "move-up"))
+            self.btn_layer_new.setIcon(self.widgets.get_icon_qt("general", "new"))
+
+            # -- Frame Dock
+            self.btn_frame_new.setIcon(self.widgets.get_icon_qt("general", "new"))
+            self.btn_frame_delete.setIcon(self.widgets.get_icon_qt("general", "delete"))
+            self.btn_frame_clone.setIcon(self.widgets.get_icon_qt("general", "clone"))
+            self.btn_frame_move_left.setIcon(self.widgets.get_icon_qt("general", "move-left"))
+            self.btn_frame_move_right.setIcon(self.widgets.get_icon_qt("general", "move-right"))
+
+            self.btn_playback_jump_start.setIcon(self.widgets.get_icon_qt("effects", "rewind"))
+            self.btn_playback_jump_end.setIcon(self.widgets.get_icon_qt("effects", "fast-forward"))
+            self.btn_playback_play.setIcon(self.widgets.get_icon_qt("effects", "play"))
+            self.btn_playback_stop.setIcon(self.widgets.get_icon_qt("effects", "stop"))
+            self.btn_playback_prev.setIcon(self.widgets.get_icon_qt("effects", "step-backward"))
+            self.btn_playback_next.setIcon(self.widgets.get_icon_qt("effects", "step-forward"))
+            self.btn_playback_loop.setIcon(self.widgets.get_icon_qt("effects", "repeat"))
 
         # Showtime!
         self._init_window()
