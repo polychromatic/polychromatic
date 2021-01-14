@@ -81,6 +81,7 @@ class EffectFileManagement(fileman.FlatFileManagement):
             self._validate_key(data, "icon", str),
             self._validate_key(data, "summary", str),
             self._validate_key(data, "map_device", str),
+            self._validate_key(data, "map_device_icon", str),
             self._validate_key(data, "map_graphic", str),
             self._validate_key(data, "map_cols", int),
             self._validate_key(data, "map_rows", int),
@@ -152,6 +153,7 @@ class EffectFileManagement(fileman.FlatFileManagement):
         data["icon"] = "img/general/effects.svg"
         data["summary"] = ""
         data["map_device"] = ""
+        data["map_device_icon"] = ""
         data["map_graphic"] = ""
         data["map_cols"] = 0
         data["map_rows"] = 0
