@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>816</width>
-    <height>379</height>
+    <width>900</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,6 +37,12 @@
       </property>
       <item>
        <widget class="QGroupBox" name="DetailsGroup">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="title">
          <string>Effect Details</string>
         </property>
@@ -65,10 +71,38 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="Author">
+           <property name="placeholderText">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="AuthorURLLabel">
+           <property name="text">
+            <string>Author URL</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="AuthorURL">
+           <property name="placeholderText">
+            <string notr="true" extracomment="An example author URL">https://example.com</string>
+           </property>
+          </widget>
+         </item>
          <item row="4" column="0">
           <widget class="QLabel" name="EffectIconLabel">
            <property name="text">
             <string>Icon</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="EffectIconPlaceholder">
+           <property name="text">
+            <string notr="true">&lt;Placeholder&gt;</string>
            </property>
           </widget>
          </item>
@@ -86,57 +120,18 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="RevisionLabel">
-           <property name="text">
-            <string>Revision</string>
-           </property>
-          </widget>
-         </item>
          <item row="7" column="1">
-          <widget class="QLabel" name="Revision">
-           <property name="text">
-            <string notr="true">0</string>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
-          </widget>
-         </item>
-         <item row="8" column="1">
-          <widget class="QLabel" name="RevisionTip">
-           <property name="enabled">
-            <bool>false</bool>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
            </property>
-           <property name="text">
-            <string>This counter increments each time the effect is saved.</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="Author">
-           <property name="placeholderText">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="AuthorURL">
-           <property name="placeholderText">
-            <string notr="true" extracomment="An example author URL">https://example.com</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="AuthorURLLabel">
-           <property name="text">
-            <string>Author URL</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QLabel" name="EffectIconPlaceholder">
-           <property name="text">
-            <string notr="true">&lt;Placeholder&gt;</string>
-           </property>
-          </widget>
+          </spacer>
          </item>
         </layout>
        </widget>
@@ -150,41 +145,10 @@
          <item>
           <widget class="QLabel" name="MappingErrorLabel">
            <property name="text">
-            <string notr="true">Mapping Error</string>
+            <string notr="true">&lt;Placeholder&gt;</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QWidget" name="MappingPreview" native="true">
-           <layout class="QVBoxLayout" name="verticalLayout_2">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>10</number>
-            </property>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="MappingDimensions">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string notr="true">(1 rows, 2 columns)</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -193,6 +157,12 @@
            <layout class="QFormLayout" name="formLayout_3">
             <item row="1" column="0">
              <widget class="QLabel" name="MapDeviceLabel">
+              <property name="minimumSize">
+               <size>
+                <width>75</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="text">
                <string>Device</string>
               </property>
@@ -201,37 +171,69 @@
             <item row="1" column="1">
              <widget class="QComboBox" name="MapDevice"/>
             </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="MapGraphicLabel">
-              <property name="text">
-               <string>Mapping</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QRadioButton" name="MapGraphicToGrid">
-              <property name="text">
-               <string>Use a grid</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1">
-             <widget class="QRadioButton" name="MapGraphicToSVG">
-              <property name="text">
-               <string>Use a graphic resembling this device</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1">
-             <widget class="QComboBox" name="MapGraphicList"/>
-            </item>
             <item row="2" column="1">
              <widget class="QLabel" name="DeviceDimensions">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="text">
-               <string notr="true">(1 rows, 2 columns)</string>
+               <string notr="true">0 rows, 0 columns</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="MapGraphicLabel">
+              <property name="minimumSize">
+               <size>
+                <width>75</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Mapping</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QRadioButton" name="MapGraphicToSVG">
+              <property name="text">
+               <string>Use a graphic resembling this device:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QComboBox" name="MapGraphicList"/>
+            </item>
+            <item row="7" column="1">
+             <widget class="QRadioButton" name="MapGraphicToGrid">
+              <property name="text">
+               <string>Use a grid</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0">
+             <widget class="QLabel" name="MapPreview">
+              <property name="minimumSize">
+               <size>
+                <width>75</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Preview</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="1">
+             <widget class="QLabel" name="MappingPreview">
+              <property name="minimumSize">
+               <size>
+                <width>256</width>
+                <height>128</height>
+               </size>
+              </property>
+              <property name="text">
+               <string notr="true"/>
               </property>
              </widget>
             </item>

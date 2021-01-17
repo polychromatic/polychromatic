@@ -64,19 +64,3 @@ class Locales(object):
 
         # Fallback in use
         return "en_GB"
-
-    def get_keyboard_layouts(self):
-        return {
-            "en_US": self._("English (US)"),
-            "en_GB": self._("English (British)"),
-            "el_GR": self._("Greek"),
-            "de_DE": self._("German"),
-            "fr_FR": self._("French"),
-            "ru_RU": self._("Russian"),
-            "ja_JP": self._("Japanese"),
-            "es_ES": self._("Spanish"),
-            "it_IT": self._("Italian"),
-            "pt_PT": self._("Portuguese (Portugal)"),
-            "pt_BR": self._("Portuguese (Brazil)"),
-            "en_US_mac": self._("English (US, Macintosh)")
-        }

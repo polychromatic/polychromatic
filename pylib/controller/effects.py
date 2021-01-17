@@ -318,6 +318,7 @@ class EffectMetadataEditor(shared.TabData):
         self.effect_type = data["type"]
         self.callback_fn = callback_fn
         self.matrix_devices = {}
+        self.device_info = {}
         self.mapping_graphics = effects.DeviceMapGraphics(appdata)
         self.graphic_list = self.mapping_graphics.get_graphic_list()
 
@@ -330,11 +331,13 @@ class EffectMetadataEditor(shared.TabData):
         self.author_url = self.dialog.findChild(QLineEdit, "AuthorURL")
         self.icon = self.dialog.findChild(QLabel, "EffectIconPlaceholder")
         self.summary = self.dialog.findChild(QTextEdit, "Summary")
-        self.revision = self.dialog.findChild(QLabel, "Revision")
         self.map_device = self.dialog.findChild(QComboBox, "MapDevice")
         self.map_graphic_grid = self.dialog.findChild(QRadioButton, "MapGraphicToGrid")
         self.map_graphic_svg = self.dialog.findChild(QRadioButton, "MapGraphicToSVG")
         self.map_graphic_list = self.dialog.findChild(QComboBox, "MapGraphicList")
+        self.map_preview = self.dialog.findChild(QLabel, "MappingPreview")
+        self.dimensions_device = self.dialog.findChild(QLabel, "DeviceDimensions")
+
         self._set_mapping_error(False)
 
         # Prepare icon picker
@@ -346,67 +349,65 @@ class EffectMetadataEditor(shared.TabData):
         self.icon.deleteLater()
         self.icon = picker
 
-        # Set placeholder based on environment
-        self.author.setPlaceholderText(os.getlogin().capitalize())
+        # Set placeholder based on logged in username
+        try:
+            self.author.setPlaceholderText(os.getlogin().capitalize())
+        except OSError:
+            pass
 
-        # Hide controls if not applicable to effect type
+        # Scripted effects do not store mapping information
         if self.effect_type == effects.TYPE_SCRIPTED:
             self.dialog.findChild(QGroupBox, "MappingGroup").setHidden(True)
             self.dialog.adjustSize()
 
-        # Populate data
+        # Populate metadata fields
         self.name.setText(data["name"])
         self.author.setText(data["author"])
         self.author_url.setText(data["author_url"])
         self.summary.setText(data["summary"])
-        self.revision.setText(str(data["revision"]))
 
         # Populate device list (for non-scripted effects)
         if not self.effect_type == effects.TYPE_SCRIPTED:
             found_device_name = False
 
-            index = -1
-            for device in self.appdata.middleman.get_device_all():
+            for index, device in enumerate(self.appdata.middleman.get_device_all()):
                 if not device or not device["matrix"]:
                     continue
 
-                index += 1
                 self.matrix_devices[index] = device
                 self.map_device.addItem(device["name"])
                 self.map_device.setItemIcon(index, QIcon(device["form_factor"]["icon"]))
+
+                # Append data into object
+                self.device_info[index] = {}
+                self.device_info[index]["icon"] = device["form_factor"]["id"]
+                self.device_info[index]["cols"] = device["matrix_cols"]
+                self.device_info[index]["rows"] = device["matrix_rows"]
 
                 if data["map_device"] == device["name"]:
                     found_device_name = True
                     self.map_device.setCurrentIndex(index)
 
-            # Select the first item if this is a new creation
+            # Select the first device if this is a new creation
             if not data["map_device"]:
                 self.map_device.setCurrentIndex(0)
 
-            # Tell the user if the effect's original device is missing
+            # Inform the user if the original device for this effect is missing
             elif not found_device_name:
-                self._set_mapping_error(True, self._("This effect was created for \"[]\" which isn't present. Choose another device to map.").replace("[]", data["map_device"]))
+                self._set_mapping_error(True)
                 self.map_device.setCurrentIndex(-1)
-                self.map_device.setCurrentText("")
+                self.map_device.setCurrentText(data["map_device"])
 
-        # Populate graphic list (for non-scripted effects)
-        if not self.effect_type == effects.TYPE_SCRIPTED:
-            index = -1
+            # Populate graphic list
+            self._device_updated()
 
-            for name in self.graphic_list.keys():
-                index += 1
-                filename = self.graphic_list[name]["filename"]
-                self.map_graphic_list.addItem(name)
-
-                if data["map_graphic"] == filename:
-                    self.current_graphic_filename = filename
-                    self.map_graphic_list.setCurrentIndex(index)
-
+        # Set initial mapping options (when editing an existing effect)
+        if not data["type"] == effects.TYPE_SCRIPTED:
             if data["map_graphic"]:
                 self.map_graphic_svg.setChecked(True)
-                self.map_graphic_list.setCurrentText(str(data["map_graphic"]))
             else:
                 self.map_graphic_grid.setChecked(True)
+            self._update_graphic_preview()
 
         # Disallow saving if the effect has no name
         name_label = self.dialog.findChild(QLabel,"EffectNameLabel")
@@ -419,7 +420,7 @@ class EffectMetadataEditor(shared.TabData):
         self.map_device.currentIndexChanged.connect(self._device_updated)
         self.map_graphic_grid.toggled.connect(self._select_grid_mode)
         self.map_graphic_svg.toggled.connect(self._select_graphic_mode)
-        self.map_graphic_list.currentIndexChanged.connect(self._update_graphic_name)
+        self.map_graphic_list.currentIndexChanged.connect(self._update_graphic_preview)
 
         # Showtime!
         self._validate_fields()
@@ -440,22 +441,64 @@ class EffectMetadataEditor(shared.TabData):
 
         self.buttons.button(QDialogButtonBox.Ok).setEnabled(all(x == True for x in conditions))
 
-    def _set_mapping_error(self, visible, reason=""):
+    def _set_mapping_error(self, visible, alt_reason=""):
         """
         Show/hide the mapping error label, and update the reason.
         """
         label = self.dialog.findChild(QLabel, "MappingErrorLabel")
         label.setHidden(not visible)
         if visible:
-            label.setText(reason)
+            label.setText(self._("This effect was created for \"[]\" but wasn't found. Choose another device to map.").replace("[]", self.data["map_device"]))
+
+            if alt_reason:
+                label.setText(alt_reason)
 
     def _device_updated(self):
         """
-        Mapping device changed. Refresh the number of columns/rows and notify
-        the user if they will be truncated.
+        Mapping device changed. Update the graphic list to ensure only compatible
+        graphics are displayed.
+
+        If the user is editing an existing effect and chooses a device with less
+        columns/rows then previously, let the user know truncating might occur.
         """
-        self._set_mapping_error(False)
-        print("stub:EffectMetadataEditor._device_updated")
+        device_name = self.map_device.currentText()
+        try:
+            device_info = self.device_info[self.map_device.currentIndex()]
+        except KeyError:
+            return self._set_mapping_error(True)
+        device_rows = device_info["rows"]
+        device_cols = device_info["cols"]
+
+        self.dimensions_device.setText(self._("[1] row(s), [2] column(s)".replace("[1]", str(device_rows)).replace("[2]", str(device_cols))))
+
+        # Filter graphics so only compatible matrix dimensions are shown
+        self.map_graphic_list.clear()
+        for name in self.graphic_list.keys():
+            graphic = self.graphic_list[name]
+            new_index = self.map_graphic_list.count()
+
+            if device_rows != graphic["rows"] or device_cols != graphic["cols"]:
+                continue
+
+            self.map_graphic_list.addItem(name)
+
+            if self.data["map_graphic"] == graphic["filename"]:
+                self.map_graphic_list.setCurrentIndex(new_index)
+
+            # For new effects, auto select the first localized item (mainly for keyboards)
+            if not self.data["map_graphic"] and self.locales._get_current_locale():
+                self.map_graphic_list.setCurrentIndex(new_index)
+
+        # For new effects, auto select the first graphic
+        # TODO: Be smarter, add hint key to auto select Blade laptops, for example.
+        if not self.data["map_graphic"]:
+            self.map_graphic_svg.setChecked(True)
+            self.map_graphic_list.setCurrentIndex(0)
+
+        # If there are no graphics, only grid can be selected
+        self.map_graphic_svg.setEnabled(self.map_graphic_list.count() > 0)
+        self.map_graphic_list.setEnabled(self.map_graphic_list.count() > 0)
+        self.map_graphic_grid.setChecked(self.map_graphic_list.count() == 0)
 
     def _select_grid_mode(self):
         """
@@ -463,35 +506,70 @@ class EffectMetadataEditor(shared.TabData):
         """
         self.map_graphic_list.setEnabled(False)
         self.map_graphic_list.setCurrentIndex(-1)
+        self._update_graphic_preview()
 
     def _select_graphic_mode(self):
         """
         User selects the "Graphic" radio button.
         """
         self.map_graphic_list.setEnabled(True)
-    def _update_graphic_name(self):
-        """
-        User selects the "Graphic" radio button or makes a selection.
+        if self.map_graphic_list.currentIndex() < 0:
+            self.map_graphic_list.setCurrentIndex(0)
+            return
+        self._update_graphic_preview()
 
-        Update the device map preview and make sure the relevant radio is checked.
+    def _update_graphic_preview(self):
         """
-        if not self.map_graphic_list.isEnabled():
+        The graphic options have changed, refresh the preview.
+        """
+        device_map = effects.DeviceMapGraphics(self.appdata)
+        try:
+            device_info = self.device_info[self.map_device.currentIndex()]
+        except KeyError:
+            return self._set_mapping_error(True)
+        cols = device_info["cols"]
+        rows = device_info["rows"]
+        svg_path = None
+
+        # -- Grid
+        if self.map_graphic_grid.isChecked():
+            svg_path = device_map.get_grid_path(cols, rows)
+
+        # -- Graphic
+        elif self.map_graphic_list.currentText() == "":
             return
 
-        print("stub:EffectMetadataEditor._update_graphic_name")
-        pass
+        elif self.map_graphic_svg.isChecked():
+            graphic = self.graphic_list[self.map_graphic_list.currentText()]
+            filename = graphic["filename"]
+            svg_path = device_map.get_graphic_path(filename)
+
+        # Load SVG into view
+        if svg_path:
+            shared.set_pixmap_for_label(self.map_preview, svg_path, 256)
 
     def _save_changes(self):
         """
         Commit the changes and pass them to the callback function.
         """
+        # Metadata fields
         self.data["name"] = self.name.text()
         self.data["author"] = self.author.text()
         self.data["author_url"] = self.author_url.text()
         self.data["summary"] = self.summary.toPlainText()
-        self.data["map_device"] = self.map_device.currentText()
 
-        graphic_name = self.map_graphic_list.currentText()
-        self.data["map_graphic"] = self.graphic_list[graphic_name]["filename"]
+        # Device mapping information
+        if not self.data["type"] == effects.TYPE_SCRIPTED:
+            device_name = self.map_device.currentText()
+            device_info = self.device_info[self.map_device.currentIndex()]
+            graphic_name = self.map_graphic_list.currentText()
+
+            self.data["map_device"] = device_name
+            self.data["map_device_icon"] = device_info["icon"]
+            self.data["map_cols"] = device_info["cols"]
+            self.data["map_rows"] = device_info["rows"]
+            self.data["map_graphic"] = ""
+            if graphic_name:
+                self.data["map_graphic"] = self.graphic_list[graphic_name]["filename"]
 
         self.callback_fn(self.data)

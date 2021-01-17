@@ -1462,7 +1462,6 @@ class DeviceRenderer(shared.TabData):
         self.use_native_cursor = appdata.preferences["editor"]["system_cursors"]
 
         self.device_map = effects.DeviceMapGraphics(appdata)
-        self.map_path = os.path.join(common.paths.data_dir, "devicemaps")
         self.graphic_filename = map_graphic
         self.graphic_name = self.device_map.get_graphic_name_from_filename(map_graphic)
         self.rows = map_rows
@@ -1519,19 +1518,17 @@ class DeviceRenderer(shared.TabData):
         self.editor.action_view_device_graphic.setChecked(True)
         self.editor.action_view_grid.setChecked(False)
 
-        # Verify the device map exists, then load it!
-        graphic_path = os.path.join(self.map_path, self.graphic_filename)
+        svg = self.device_map.get_svg_graphic(self.graphic_filename)
 
-        if not os.path.exists(graphic_path):
-            self.dbg.stdout("Graphic does not exist: '{0}'. Using grid as fallback!".format(graphic_path), self.dbg.error)
+        if not svg:
+            self.dbg.stdout("Graphic does not exist: '{0}'. Using grid as fallback!".format(self.graphic_filename), self.dbg.error)
             self.widgets.open_dialog(self.widgets.dialog_warning,
                                      self._("Missing File"),
                                      self._("This effect was mapped with a graphic named '[]' which wasn't found on this system.".replace("[]", self.graphic_filename)),
                                      self._("The grid will be used instead. A different graphic can be chosen by editing the metadata."))
             return self._generate_grid_svg()
 
-        with open(os.path.join(self.map_path, self.graphic_filename)) as f:
-            return str(f.readlines()).replace("\n", "")
+        return svg
 
     def _generate_grid_svg(self):
         """
@@ -1539,39 +1536,8 @@ class DeviceRenderer(shared.TabData):
         """
         self.editor.action_view_device_graphic.setChecked(False)
         self.editor.action_view_grid.setChecked(True)
-        svg = []
 
-        # How large is each grid?
-        square_px = 50
-        margin_px = 1
-        fill_colour = "#00007f"
-        stroke_colour = "#0000ff"
-        stroke_width = 1
-        total_X_blocks = self.cols
-        total_Y_blocks = self.rows
-
-        svg.append('<svg width="{width}px" height="{height}px"> version="1.1" viewBox="0px 0px {width}px {height}px" xmlns="http://www.w3.org/2000/svg">'.format(
-            width = total_X_blocks * square_px + (margin_px * total_X_blocks),
-            height = total_Y_blocks * square_px + (margin_px * total_X_blocks)
-        ))
-
-        for x in range(0, total_X_blocks):
-            for y in range(0, total_Y_blocks):
-                x_pos = x * square_px + (x * margin_px + 1)
-                y_pos = y * square_px + (y * margin_px + 1)
-                svg.append('<g id="x{x}-y{y}" class="LED"><rect x="{x_pos}px" y="{y_pos}px" width="{square_px}px" height="{square_px}px" style="fill:{fill_colour};paint-order:markers fill stroke;stroke-linecap:round;stroke-width:{stroke_width};stroke:{stroke_colour}"/></g>'.format(
-                    x = x,
-                    y = y,
-                    x_pos = x_pos,
-                    y_pos = y_pos,
-                    square_px = square_px,
-                    fill_colour = fill_colour,
-                    stroke_colour = stroke_colour,
-                    stroke_width = stroke_width
-                ))
-
-        svg.append("</svg>")
-        return "".join(svg)
+        return self.device_map.get_svg_grid(self.cols, self.rows)
 
     def _cb_title_changed(self, title):
         """

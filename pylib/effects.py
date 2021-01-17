@@ -245,8 +245,9 @@ class DeviceMapGraphics(object):
     """
     def __init__(self, appdata):
         self.appdata = appdata
-        self.maps_path = os.path.join(common.paths.data_dir, "devicemaps", "maps.json")
-        self.automap_path = os.path.join(common.paths.data_dir, "devicemaps", "automap.json")
+        self.map_index = os.path.join(common.paths.data_dir, "devicemaps", "maps.json")
+        self.map_dir = os.path.join(common.paths.data_dir, "devicemaps")
+        self.cache_dir = common.paths.assets_cache
 
     def get_graphic_list(self):
         """
@@ -255,12 +256,42 @@ class DeviceMapGraphics(object):
             "Human readable name": {
                 "filename": "some_device_graphic_en_GB.svg",
                 "rows": 1,
-                "cols": 2
+                "cols": 2,
+                "locale": "en_GB"
             }, { ... }
         }
         """
-        with open(self.maps_path) as f:
-            return json.load(f)
+        with open(self.map_index) as f:
+            original_svg =  json.load(f)
+
+        parsed_svg = {}
+
+        for name in original_svg:
+            graphic_path = self.get_graphic_path(original_svg[name]["filename"])
+            if not os.path.exists(graphic_path):
+                self.appdata.dbg.stdout("Graphic missing: " + graphic_path, self.appdata.dbg.warning)
+                continue
+            parsed_svg[name] = original_svg[name]
+
+        return parsed_svg
+
+    def get_graphic_path(self, filename):
+        """
+        Returns an absolute path to the graphic.
+        For use with metadata editor UI which loads via file.
+        """
+        return os.path.join(self.map_dir, filename)
+
+    def get_grid_path(self, cols, rows):
+        """
+        Returns an absolute path to the grid SVG.
+        For use with metadata editor UI which loads via file.
+        """
+        svg = self.get_svg_grid(cols, rows)
+        svg_path = os.path.join(self.cache_dir, "grid-{0}-{1}.svg".format(cols, rows))
+        with open(svg_path, "w") as f:
+            f.writelines(svg)
+        return svg_path
 
     def get_graphic_name_from_filename(self, filename):
         """
@@ -273,17 +304,57 @@ class DeviceMapGraphics(object):
                 return name
         return filename
 
-    def auto_select_device(self, device_name, device_type, device_cols, device_rows):
+    def get_svg_graphic(self, filename):
         """
-        Try to automatically determine the graphic best suited for the specified
-        device name. The rows/cols and locale will be taken into consideration.
-
-        If there are no suitable graphics, None will be returned instructing
-        the application to select a grid layout.
+        Loads the SVG of a device to visually map.
 
         Returns:
-            (str)       Filename for the suggested device map
-            None        No matches for a close enough graphic
+            (str)       SVG Data
+            None        File Missing
         """
-        print("stub:DeviceMapGraphics.auto_select_device")
-        return ""
+        # Verify the device map exists, then load it
+        graphic_path = os.path.join(self.map_dir, filename)
+
+        if not os.path.exists(graphic_path):
+            return None
+
+        with open(os.path.join(self.map_dir, filename)) as f:
+            return str(f.readlines()).replace("\n", "")
+
+    def get_svg_grid(self, cols, rows):
+        """
+        Returns the SVG of the device's matrix represented as a 'pretty' graphic.
+        """
+        svg = []
+
+        # How large is each grid?
+        square_px = 50
+        margin_px = 1
+        fill_colour = "#00ff00"
+        stroke_colour = "#008000"
+        stroke_width = 1
+        total_X_blocks = cols
+        total_Y_blocks = rows
+
+        svg.append('<svg width="{width}px" height="{height}px"> version="1.1" viewBox="0px 0px {width}px {height}px" xmlns="http://www.w3.org/2000/svg">'.format(
+            width = total_X_blocks * square_px + (margin_px * total_X_blocks),
+            height = total_Y_blocks * square_px + (margin_px * total_X_blocks)
+        ))
+
+        for x in range(0, total_X_blocks):
+            for y in range(0, total_Y_blocks):
+                x_pos = x * square_px + (x * margin_px + 1)
+                y_pos = y * square_px + (y * margin_px + 1)
+                svg.append('<g id="x{x}-y{y}" class="LED"><rect x="{x_pos}px" y="{y_pos}px" width="{square_px}px" height="{square_px}px" style="fill:{fill_colour};paint-order:markers fill stroke;stroke-linecap:round;stroke-width:{stroke_width};stroke:{stroke_colour}"/></g>'.format(
+                    x = x,
+                    y = y,
+                    x_pos = x_pos,
+                    y_pos = y_pos,
+                    square_px = square_px,
+                    fill_colour = fill_colour,
+                    stroke_colour = stroke_colour,
+                    stroke_width = stroke_width
+                ))
+
+        svg.append("</svg>")
+        return "".join(svg)
