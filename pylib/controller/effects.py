@@ -469,7 +469,9 @@ class EffectMetadataEditor(shared.TabData):
         device_rows = device_info["rows"]
         device_cols = device_info["cols"]
 
-        self.dimensions_device.setText(self._("[1] row(s), [2] column(s)".replace("[1]", str(device_rows)).replace("[2]", str(device_cols))))
+        dimensions = common.get_plural(device_rows, self._("1 row"), self._("2 rows").replace("2", str(device_rows)))
+        dimensions += ", " + common.get_plural(device_cols, self._("1 column"), self._("2 columns").replace("2", str(device_cols)))
+        self.dimensions_device.setText(dimensions)
 
         # Filter graphics so only compatible matrix dimensions are shown
         self.map_graphic_list.clear()
