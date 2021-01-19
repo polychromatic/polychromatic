@@ -452,9 +452,14 @@ class VisualEffectEditor(shared.TabData):
         self.select_mode_draw()
         graphic_name = self.device_renderer.graphic_name
 
+        # Device Graphic / Grid
+        self.action_view_device_graphic.setEnabled(True if self.data["map_graphic"] else False)
         self.action_info_graphic.setText(graphic_name)
         self.action_info_grid_x.setText(self._("Columns: []").replace("[]", str(rows)))
         self.action_info_grid_y.setText(self._("Rows: []").replace("[]", str(cols)))
+
+        if not self.data["map_graphic"]:
+            self.action_info_graphic.setText(self._("(Not Set)"))
 
     def init_editor(self):
         """
@@ -1019,14 +1024,6 @@ class VisualEffectEditor(shared.TabData):
         Temporarily switch the visual editor graphic to the hardware graphic,
         if available.
         """
-        if not self.data["map_graphic"]:
-            self.action_view_device_graphic.setChecked(False)
-            self.widgets.open_dialog(self.widgets.dialog_generic,
-                                     self.action_view_device_graphic.text(),
-                                     self._("There is no graphic assigned to this device: []").replace("[]", self.device["name"]),
-                                     self._("Specify a graphic by editing the metadata, and then this option will be available."))
-            return
-
         self.device_renderer = DeviceRenderer(self.appdata, self, self.webview, self.init_editor, self.data["map_graphic"], self.data["map_rows"], self.data["map_cols"])
         self.select_mode_draw()
         self.statusbar.showMessage(self._("Temporarily changed the graphic. To make permanent, edit the metadata."), 5000)

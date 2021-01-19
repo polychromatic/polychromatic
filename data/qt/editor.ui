@@ -467,8 +467,10 @@
    <addaction name="actionColourPicker"/>
    <addaction name="actionEraser"/>
    <addaction name="separator"/>
+   <addaction name="actionShow_as_Device_Graphic"/>
+   <addaction name="actionShow_as_Grid"/>
+   <addaction name="separator"/>
    <addaction name="actionEditMetadata"/>
-   <addaction name="actionEditTriggers"/>
   </widget>
   <widget class="QDockWidget" name="FramesDock">
    <property name="sizePolicy">
