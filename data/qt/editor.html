@@ -188,6 +188,7 @@
             element.style.fill = hexValue;
 
             // Fill in path(s) and make sure text is still visible.
+            var text_rgb = _getTextColour(rgb);
             var children = element.childNodes;
             for (i = 0; i < children.length; i++) {
                 var child = children[i];
@@ -198,9 +199,15 @@
                     case "circle":
                         child.style.fill = hexValue;
                         child.style.stroke = _getLightnessColour(rgb, 0.33);
+
+                        // Except child paths that are just for decoration
+                        if (child.getAttribute("nostroke") == "true") {
+                            child.style.stroke = null;
+                            child.style.fill = text_rgb;
+                        }
                         break;
                     case "text":
-                        child.style.fill = _getTextColour(rgb);
+                        child.style.fill = text_rgb;
                         break;
                 }
             }
