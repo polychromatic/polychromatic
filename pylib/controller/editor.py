@@ -407,6 +407,26 @@ class VisualEffectEditor(shared.TabData):
             self.dock_layers.deleteLater()
             self.dock_properties.deleteLater()
 
+        # Window geometry
+        self.appdata.main_window._set_initial_window_position(self.window, "editor")
+
+        # -- If opening in the center, make better use of the screen space
+        centered = self.appdata.preferences["controller"]["window_behaviour"] == self.appdata.window_centered
+        already_small = self.window.height() > 1024 and self.window.width() > 768
+        if centered and not already_small:
+            screen = self.window.screen().availableGeometry()
+            frame = self.window.frameGeometry()
+            prefer_height = screen.height() - 175
+            prefer_width = screen.width() - 275
+
+            # Position in the center, as usual
+            center = screen.center()
+            frame.setHeight(prefer_height)
+            frame.setWidth(prefer_width)
+            frame.moveCenter(center)
+            self.window.resize(prefer_width, prefer_height)
+            self.window.move(frame.topLeft())
+
         # Adjust docks for optimum space
         if self.layered_effect:
             self.dock_layers.adjustSize()
@@ -649,6 +669,9 @@ class VisualEffectEditor(shared.TabData):
             self.dbg.stdout("Restoring original device state...", self.dbg.action, 1)
             for zone in self.device["zones"]:
                 self.middleman.replay_active_effect(self.device["backend"], self.device["uid"], zone)
+
+        # Window geometry
+        self.appdata.main_window._save_window_position(self.window, "editor")
 
         # Close window and allow another editor to open again
         self.alive = False

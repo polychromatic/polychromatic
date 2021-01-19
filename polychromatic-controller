@@ -32,8 +32,7 @@ from PyQt5.QtCore import QThreadPool
 from PyQt5.QtGui import QIcon, QFont, QFontDatabase
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, \
-                            QToolButton, QTabWidget, QAction, QMenu, \
-                            QDesktopWidget
+                            QToolButton, QTabWidget, QAction, QMenu
 
 VERSION = "0.6.0"
 
@@ -109,6 +108,11 @@ class ApplicationData(object):
         self.system_qt_theme = self.preferences["controller"]["system_qt_theme"]
         self.show_menu_bar = self.preferences["controller"]["show_menu_bar"]
 
+        # Preferences Variables
+        self.window_centered = 0
+        self.window_remember = 1
+        self.window_ignore = 2
+
     def load(self):
         """
         Load the application's tab, save data and session data.
@@ -159,10 +163,6 @@ class MainWindow(QMainWindow):
         dbg.stdout("Initalising application...", dbg.action, 1)
         super(MainWindow, self).__init__()
 
-        # Map preferences to variables
-        self.window_behaviour_center = 0
-        self.window_behaviour_remember = 1
-
         # Load UI and locales
         widget = uic.loadUi(os.path.join(common.paths.data_dir, "qt", "main.ui"), self)
         shared.translate_ui(app, widget)
@@ -195,6 +195,51 @@ class MainWindow(QMainWindow):
         self.CloseButton = self.findChild(QPushButton, "CloseApp")
         self.CloseButton.clicked.connect(self.quit_app)
         self.closeEvent = self.quit_app
+
+    @staticmethod
+    def _set_initial_window_position(qmainwindow, key_prefix):
+        """
+        Sets the initial placement of the window, according to user's preferences.
+
+        Params:
+            qmainwindow         QMainWindow() instance
+            key_prefix          Name of prefix for save data. Should be initialized in preferences.
+        """
+        win_behaviour = app.preferences["controller"]["window_behaviour"]
+
+        if win_behaviour == app.window_ignore:
+            return
+
+        if win_behaviour == app.window_centered:
+            frame = qmainwindow.frameGeometry()
+            center = qmainwindow.screen().availableGeometry().center()
+            frame.moveCenter(center)
+            qmainwindow.move(frame.topLeft())
+
+        elif win_behaviour == app.window_remember:
+            dbg.stdout("Loading window geometry...", dbg.action, 1)
+            pos_x = app.preferences["geometry"][key_prefix + "_window_pos_x"]
+            pos_y = app.preferences["geometry"][key_prefix + "_window_pos_y"]
+            size_x = app.preferences["geometry"][key_prefix + "_window_size_x"]
+            size_y = app.preferences["geometry"][key_prefix + "_window_size_y"]
+            qmainwindow.setGeometry(pos_x, pos_y, size_x, size_y)
+
+    @staticmethod
+    def _save_window_position(qmainwindow, key_prefix):
+        """
+        Saves the dimensions and position of the window, according to the user's
+        preferences.
+        """
+        win_behaviour = app.preferences["controller"]["window_behaviour"]
+
+        if win_behaviour == app.window_remember:
+            dbg.stdout("Saving window geometry...", dbg.action, 1)
+            rect = qmainwindow.frameGeometry()
+            app.preferences["geometry"][key_prefix + "_window_pos_x"] = rect.left()
+            app.preferences["geometry"][key_prefix + "_window_pos_y"] = rect.top()
+            app.preferences["geometry"][key_prefix + "_window_size_x"] = rect.width()
+            app.preferences["geometry"][key_prefix + "_window_size_y"] = rect.height()
+            pref.save_file(common.paths.preferences, app.preferences)
 
     def load(self):
         """
@@ -374,24 +419,7 @@ class MainWindow(QMainWindow):
                                     _("Consider updating the application, or reset your save data by deleting: ~/.config/polychromatic")),
                                 traceback=details)
 
-        # Window behaviour
-        #   0 = Open in center
-        #   1 = Remember last position
-        #   2 = Do nothing (let window manager decide)
-
-        win_behaviour = app.preferences["controller"]["window_behaviour"]
-        if win_behaviour == self.window_behaviour_center:
-            rect = self.frameGeometry()
-            center = QDesktopWidget().availableGeometry().center()
-            rect.moveCenter(center)
-            self.move(rect.topLeft())
-
-        elif win_behaviour == self.window_behaviour_remember:
-            pos_x = app.preferences["controller"]["window_pos_x"]
-            pos_y = app.preferences["controller"]["window_pos_y"]
-            size_x = app.preferences["controller"]["window_size_x"]
-            size_y = app.preferences["controller"]["window_size_y"]
-            self.setGeometry(pos_x, pos_y, size_x, size_y)
+        self._set_initial_window_position(self, "main")
 
         # Alternate modes
         if args.open:
@@ -412,14 +440,8 @@ class MainWindow(QMainWindow):
         entirely until the last editor window is closed.
         """
         # Save window position if preference set.
-        if app.preferences["controller"]["window_behaviour"] == app.main_window.window_behaviour_remember:
-            dbg.stdout("Saving window geometry...", dbg.action, 1)
-            rect = app.main_window.frameGeometry()
-            app.preferences["controller"]["window_pos_x"] = rect.left()
-            app.preferences["controller"]["window_pos_y"] = rect.top()
-            app.preferences["controller"]["window_size_x"] = rect.width()
-            app.preferences["controller"]["window_size_y"] = rect.height()
-            pref.save_file(common.paths.preferences, app.preferences)
+        if app.preferences["controller"]["window_behaviour"] == app.window_remember:
+            self._save_window_position(self, "main")
 
         dbg.stdout("Main window closed, goodbye!", dbg.success, 1)
         self.close()

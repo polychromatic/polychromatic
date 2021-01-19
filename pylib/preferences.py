@@ -68,14 +68,16 @@ def load_file(filepath):
         _validate("controller", "show_menu_bar", bool, True)
         _validate("controller", "system_qt_theme", bool, False)
         _validate("controller", "window_behaviour", int, 0)
-        _validate("controller", "window_pos_x", int, 0)
-        _validate("controller", "window_pos_y", int, 0)
-        _validate("controller", "window_size_x", int, 1000)
-        _validate("controller", "window_size_y", int, 600)
         _validate("tray", "autostart", bool, True)
         _validate("tray", "mode", int, 0)
         _validate("tray", "icon", str, common.get_default_tray_icon())
         _validate("tray", "autostart_delay", int, 0)
+
+        for prefix in ["main", "editor"]:
+            _validate("geometry", prefix + "_window_pos_x", int, 0)
+            _validate("geometry", prefix + "_window_pos_y", int, 0)
+            _validate("geometry", prefix + "_window_size_x", int, 1000)
+            _validate("geometry", prefix + "_window_size_y", int, 600)
 
     return(data)
 
