@@ -42,10 +42,12 @@ class EffectsTab(shared.CommonFileTab):
         }
 
         self._add_tree_item(self.TasksBranch, self._("New Effect"), common.get_icon("general", "new"), "tasks", "new")
-        self._add_tree_item(self.TasksBranch, self._("Import Effect"), common.get_icon("general", "import"), "tasks", "import")
+        # FIXME: Not yet implemented: Import Effect
+        #self._add_tree_item(self.TasksBranch, self._("Import Effect"), common.get_icon("general", "import"), "tasks", "import")
 
         # Keep track of editor windows so garbage collection doesn't destroy them
         self.editors = {}
+
     def show_no_file_screen(self, message_id):
         """
         Effect cannot be opened for viewing - inform the user.
@@ -78,13 +80,14 @@ class EffectsTab(shared.CommonFileTab):
                     "icon_folder": "general",
                     "icon_name": "new",
                     "action": self.new_file
-                },
-                {
-                    "label": self._("Import Effect"),
-                    "icon_folder": "general",
-                    "icon_name": "import",
-                    "action": self.import_effect
                 }
+                # FIXME: Not yet implemented: Import Effect
+                #{
+                    #"label": self._("Import Effect"),
+                    #"icon_folder": "general",
+                    #"icon_name": "import",
+                    #"action": self.import_effect
+                #}
             ],
             1: []
         }
@@ -135,6 +138,10 @@ class EffectsTab(shared.CommonFileTab):
         btn_layered.clicked.connect(lambda: self.new_file_stage_2(dialog, effects.TYPE_LAYERED))
         btn_scripted.clicked.connect(lambda: self.new_file_stage_2(dialog, effects.TYPE_SCRIPTED))
         btn_sequence.clicked.connect(lambda: self.new_file_stage_2(dialog, effects.TYPE_SEQUENCE))
+
+        # FIXME: Not yet implemented editors
+        btn_layered.setEnabled(False)
+        btn_scripted.setEnabled(False)
 
         dialog.open()
 
@@ -205,7 +212,8 @@ class EffectsTab(shared.CommonFileTab):
                 "id": "play",
                 "icon": self.widgets.get_icon_qt("effects", "play"),
                 "label": self._("Play"),
-                "disabled": False,
+                # FIXME: Not yet implemented: Play effect
+                "disabled": True,
                 "action": self.play_effect
             },
             {
