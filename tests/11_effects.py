@@ -8,6 +8,7 @@ import pylib.locales as locales
 import pylib.preferences as preferences
 import pylib.effects as effects
 
+import glob
 import json
 import os
 import unittest
@@ -107,6 +108,53 @@ class PolychromaticTests(unittest.TestCase):
         orig_path = data["parsed"]["path"]
         success, new_path = self.fileman.save_item(data)
         self.assertNotEqual(orig_path, new_path, "Could not save an effect with a duplicate filename")
+
+    def test_devicemap_map_json(self):
+        passed = True
+        with open("data/devicemaps/maps.json") as f:
+            data = json.load(f)
+        for name in data.keys():
+            item = data[name]
+            if not type(item["filename"]) == str:
+                passed = False
+            if not type(item["rows"]) == int:
+                passed = False
+            if not type(item["cols"]) == int:
+                passed = False
+            if not type(item["locale"]) in [str, None]:
+                passed = False
+
+        self.assertEqual(passed, True, "Invalid data found in maps.json")
+
+    def test_devicemap_map_exists(self):
+        passed = True
+        with open("data/devicemaps/maps.json") as f:
+            data = json.load(f)
+        for name in data.keys():
+            if not os.path.exists("data/devicemaps/" + data[name]["filename"]):
+                passed = False
+
+        self.assertEqual(passed, True, "maps.json referenced SVG files that do not exist")
+
+    def test_devicemap_map_xy_check(self):
+        for svg_file in glob.glob("data/devicemaps/*.svg"):
+            with open(svg_file) as f:
+                data = " ".join(f.readlines())
+
+                # SVGs should have at least one "LED" class.
+                if data.find("LED") == -1:
+                    self.assertTrue(False, "Device map {0} does not specify an LED class!".format(os.path.basename(svg_file)))
+                found_an_ID = False
+                for x in range(0, 50):
+                    for y in range(0, 50):
+                        if data.find("x{0}-y{1}".format(str(x), str(y))) != -1:
+                            found_an_ID = True
+
+                # SVGs should have at least one "x0-y0" ID.
+                if not found_an_ID:
+                    self.assertTrue(False, "Device map {0} does not specify IDs!".format(os.path.basename(svg_file)))
+
+        self.assertEqual(True, True)
 
 
 if __name__ == '__main__':
