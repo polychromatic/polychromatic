@@ -28,13 +28,13 @@ The helper intends to be as lightweight and minimal as possible as there could
 be multple helper processes running simultaneously. It also is designed to be
 'terminated' without fuss as Polychromatic will record PIDs for the components.
 """
-VERSION = "0.6.0"
-
 import argparse
 import setproctitle
 import os
 import json
 import time
+
+VERSION = "0.6.0"
 
 # Import modules if running relatively.
 if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
@@ -174,8 +174,12 @@ def parse_parameters():
     args = parser.parse_args()
 
     if args.version:
-        dbg.stdout("Version " + VERSION)
-        exit()
+        app_version, git_commit, py_version = common.get_versions(VERSION)
+        print("Polychromatic", app_version)
+        if git_commit:
+            print("Commit:", git_commit)
+        print("Python:", py_version)
+        exit(0)
 
     if args.verbose:
         dbg.verbose_level = 1

@@ -507,5 +507,26 @@ def get_bulk_apply_options(_, devices):
 
     return output
 
+
+def get_versions(base_version):
+    """
+    When running from a Git repository, return the development revision and
+    Git commit "revision" as a tuple. Otherwise just the release version.
+
+    This is intended to make debugging easier.
+    """
+    py_version = "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
+
+    if os.path.exists(os.path.join(os.path.dirname(__file__), "..", ".git")):
+        import subprocess
+        os.chdir(os.path.dirname(__file__))
+        git_version = subprocess.check_output(["git", "describe"]).strip().decode("UTF-8")[1:]
+        git_commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode("UTF-8")
+        return (git_version, git_commit, py_version)
+
+    # Production "installed" version
+    return (base_version, None, py_version)
+
+
 # Available to all modules
 paths = Paths()

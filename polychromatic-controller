@@ -455,20 +455,16 @@ def get_versions():
     """
     Returns a list of the application version and its components.
     """
+    app_version, git_commit, py_version = common.get_versions(VERSION)
+
     versions = [
-        [_("Application"), VERSION],
+        [_("Application"), app_version],
         [_("Save Data"), str(pref.VERSION)],
+        ["Python", py_version],
         ["Qt", QtCore.PYQT_VERSION_STR],
-        ["Python", "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)]
     ]
 
-    # When running directly from the repository
-    if os.path.exists(os.path.join(os.path.dirname(__file__), ".git")):
-        import subprocess
-        os.chdir(os.path.dirname(__file__))
-        git_version = subprocess.check_output(["git", "describe"]).strip().decode("UTF-8")[1:]
-        git_commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode("UTF-8")
-        versions[0][1] = git_version
+    if git_commit:
         versions.insert(1, ["Commit", git_commit])
 
     return versions

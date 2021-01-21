@@ -764,11 +764,24 @@ def parse_parameters():
     parser._optionals.title = _("Optional arguments")
     parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
+    parser.add_argument("--version", help=_("Print program version and exit"), action="store_true")
     parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
     parser.add_argument("--force-appindicator", help=_("Use AppIndicator for rendering"), action="store_true")
     parser.add_argument("--force-gtk-status", help=_("Use legacy GTK Status Icon for rendering"), action="store_true")
 
     args = parser.parse_args()
+
+    if args.version:
+        app_version, git_commit, py_version = common.get_versions(VERSION)
+        print("Polychromatic", app_version)
+        if git_commit:
+            print("Commit:", git_commit)
+        print("Save Data:", pref.VERSION)
+        print("Python:", py_version)
+
+        if APPINDICATOR:
+            print("GTK:", "{0}.{1}.{2}".format(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION))
+        exit(0)
 
     if args.verbose:
         dbg.verbose_level = 1
