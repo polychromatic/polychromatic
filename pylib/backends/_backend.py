@@ -216,6 +216,14 @@ class Backend(object):
         """
         return None
 
+    def get_device_by_serial(self, serial):
+        """
+        Return a get_device() object of the device by its serial number.
+
+        If the device does not exist, return None.
+        """
+        raise NotImplementedError
+
     def set_device_state(self, uid, zone, option_id, option_data, colours=[]):
         """
         Send a request to the hardware. The data specified by get_device()

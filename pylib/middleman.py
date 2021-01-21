@@ -123,6 +123,18 @@ class Middleman(object):
                 return device
         return None
 
+    def get_device_by_serial(self, serial):
+        """
+        Returns a get_device() object by looking up its serial number.
+
+        None is returned if the device cannot be found (e.g. not connected)
+        """
+        for module in self.backends:
+            device = module.get_device_by_serial(serial)
+            if device:
+                return device
+        return None
+
     def get_unsupported_devices(self):
         """
         Returns a list of connected devices that cannot be controlled by their backend.

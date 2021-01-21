@@ -674,6 +674,19 @@ class Backend(_backend.Backend):
             "zone_options": zone_options
         }
 
+    def get_device_by_serial(self, serial):
+        """
+        See _backend.get_device_by_serial()
+        """
+        if not self.devices:
+            success = self._reinit_device_manager(force_refresh=True)
+            if success != True:
+                return success
+
+        for index, device in enumerate(self.devices):
+            if device.serial == serial:
+                return self.get_device(index)
+
     def set_device_state(self, uid, zone, option_id, option_data, colours=[]):
         """
         See _backend.set_device_state()

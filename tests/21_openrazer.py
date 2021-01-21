@@ -86,6 +86,11 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
                 success = False
         self.assertEqual(success, True, "Failed to get_device() on one (or more) devices")
 
+    def test_get_device_serial(self):
+        # XX0000000203 = BlackWidow Chroma
+        device = self.middleman.get_device_by_serial("XX0000000203")
+        self.assertEqual(device["name"], "Razer BlackWidow Chroma", "Could not get device by serial number")
+
     def test_set_effect_no_parameter(self):
         success = True
         for device in self.middleman.get_device_list():
