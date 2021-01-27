@@ -12,6 +12,7 @@ import pylib.procpid as procpid
 import os
 import unittest
 
+
 class PolychromaticTests(unittest.TestCase):
     """
     Test the internals of Polychromatic.
@@ -120,18 +121,13 @@ class PolychromaticTests(unittest.TestCase):
 
     def test_state_set_effect(self):
         state = procpid.DeviceSoftwareState("POLY000001")
-
-        # Simulate a process running custom effect
-        procpid.set_component_pid("POLY000001")
-
         state.set_effect("Untitled Effect 1", "/path/to/icon", "/path/to/effect.json")
-        self.assertEqual(state.get_effect(ignore_pid=True)["name"], "Untitled Effect 1", "Could not set effect state")
-        self.assertEqual(state.get_effect(ignore_pid=True)["icon"], "/path/to/icon", "Could not set effect state")
-        self.assertEqual(state.get_effect(ignore_pid=True)["path"], "/path/to/effect.json", "Could not set effect state")
+        self.assertEqual(state.get_effect()["name"], "Untitled Effect 1", "Could not set effect state")
+        self.assertEqual(state.get_effect()["icon"], "/path/to/icon", "Could not set effect state")
+        self.assertEqual(state.get_effect()["path"], "/path/to/effect.json", "Could not set effect state")
 
     def test_state_clear_effect(self):
         state = procpid.DeviceSoftwareState("POLY000001")
-        procpid.release_component_pid("POLY000001")
         state.clear_effect()
         self.assertEqual(state.get_effect(), None, "Could not clear effect state")
 

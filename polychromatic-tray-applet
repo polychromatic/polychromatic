@@ -280,7 +280,7 @@ class PolychromaticTrayApplet():
         installed. This is for buttons that would open the Controller to edit
         the feature via a GUI.
         """
-        is_installed = procpid.is_component_installed("controller")
+        is_installed = procpid.ProcessManager().is_component_installed("controller")
         indicator.create_menu_item(menu, label, is_installed, cb.launch_controller, open_to, icon_path)
 
     def _setup_failed(self, message, icon_path):
@@ -806,12 +806,12 @@ if __name__ == "__main__":
     # Handle signals sent to process
     def _restart_applet(num, frame):
         dbg.stdout("Received USR2 signal. Reloading...", dbg.action, 1)
-        procpid.start_component("tray-applet")
+        procmgr.start_component()
         _stop_applet()
 
     def _stop_applet(num=None, frame=None):
         dbg.stdout("Received INT or USR1 signal. Exiting...", dbg.action, 1)
-        procpid.release_component_pid("tray-applet")
+        procmgr.release_component_pid()
         exit(0)
 
     signal.signal(signal.SIGINT, _stop_applet)
@@ -820,9 +820,10 @@ if __name__ == "__main__":
     atexit.register(_stop_applet)
 
     # Only run one tray applet at a time - if one is running, replace it.
-    if procpid.is_another_instance_is_running("tray-applet"):
-        procpid.stop_component("tray-applet")
-    procpid.set_component_pid("tray-applet")
+    procmgr = procpid.ProcessManager("tray-applet")
+    if procmgr.is_another_instance_is_running():
+        procmgr.stop_component()
+    procmgr.set_component_pid()
 
     args = parse_parameters()
     pref.init(_)

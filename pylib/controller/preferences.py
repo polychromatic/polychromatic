@@ -249,9 +249,10 @@ class PreferencesWindow(shared.TabData):
         # Some options require a restart
         if self.prompt_restart:
             self.dbg.stdout("Program settings changed. Prompting to restart application.", self.dbg.action, 1)
+            procmgr = procpid.ProcessManager()
 
             def _cb_restart_now():
-                procpid.restart_self(self.appdata.exec_path, self.appdata.exec_args)
+                procmgr.restart_self(self.appdata.exec_path, self.appdata.exec_args)
 
             self.widgets.open_dialog(self.widgets.dialog_generic,
                                      self._("Restart Required"),
@@ -266,7 +267,8 @@ class PreferencesWindow(shared.TabData):
         # Reload tray applet
         if self.restart_applet:
             self.dbg.stdout("Tray applet settings changed. Will restart component.", self.dbg.success, 1)
-            procpid.restart_component("tray-applet")
+            procmgr = procpid.ProcessManager("tray-applet")
+            procmgr.restart_component()
 
     def modify_colours(self):
         """

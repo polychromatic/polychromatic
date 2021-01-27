@@ -17,223 +17,229 @@ from subprocess import Popen
 from . import common
 
 
-def _get_pid_dir():
+class ProcessManager():
     """
-    Returns the runtime directory for storing process PIDs.
+    Stores functions for controlling other Polychromatic processes, which may
+    be handling a feature (e.g. tray applet) or playing an effect.
+
+    Other Polychromatic processes may send (and be expected to receive) the
+    following signals:
+        USR1    Restart yourself.
+        USR2    Stop running.
     """
-    try:
-        pid_dir = os.path.join(os.environ["XDG_RUNTIME_DIR"], "polychromatic")
-    except KeyError:
-        pid_dir = "/tmp/polychromatic"
+    def __init__(self, component=None):
+        self.pid_dir = self._get_pid_dir()
+        self.component = component
+        self.components = ["controller", "tray-applet", "helper"]
 
-    if not os.path.exists(pid_dir):
-        os.makedirs(pid_dir)
+    def _get_pid_dir(self):
+        """
+        Returns the runtime directory for storing process PIDs.
+        """
+        try:
+            pid_dir = os.path.join(os.environ["XDG_RUNTIME_DIR"], "polychromatic")
+        except KeyError:
+            pid_dir = "/tmp/polychromatic"
 
-    return pid_dir
+        if not os.path.exists(pid_dir):
+            os.makedirs(pid_dir)
 
+        return pid_dir
 
-def _get_pid_file(component):
-    """
-    Returns the path to a PID file.
-    """
-    return os.path.join(_get_pid_dir(), component + ".pid")
+    def _get_pid_file(self):
+        """
+        Returns the path to a PID file.
+        """
+        return os.path.join(self.pid_dir, self.component + ".pid")
 
+    def _is_polychromatic_process(self, component, pid):
+        """
+        Verify that the specified PID is actually an alive Polychromatic process.
+        """
+        cmdline_file = "/proc/{0}/cmdline".format(pid)
 
-def _is_polychromatic_process(component, pid):
-    """
-    Verify that the specified PID is actually an alive Polychromatic process.
-    """
-    cmdline_file = "/proc/{0}/cmdline".format(pid)
+        if os.path.exists(cmdline_file):
+            with open(cmdline_file, "r") as f:
+                cmdline = f.readline()
+        else:
+            # No process running here!
+            return False
 
-    if os.path.exists(cmdline_file):
-        with open(cmdline_file, "r") as f:
-            cmdline = f.readline()
-    else:
-        # No process running here!
+        if cmdline.find("polychromatic-") != -1:
+            return True
+
+        # This PID is old and no longer belongs to Polychromatic
+        pid_file = os.path.join(self.pid_dir, component + ".pid")
+        os.remove(self._get_pid_file())
         return False
 
-    if cmdline.find("polychromatic-") != -1:
-        return True
+    def _get_component_pid(self):
+        """
+        Returns the PID of a running Polychromatic process, which may be providing
+        a feature (e.g. tray applet) or processing software effects for a device.
 
-    # This PID is old and no longer belongs to Polychromatic
-    pid_file = os.path.join(_get_pid_dir(), component + ".pid")
-    os.remove(_get_pid_file(component))
-    return False
+        Returns:
+            (int)       Process ID
+            None        Process is not running
+        """
+        pid_file = self._get_pid_file()
 
+        if not os.path.exists(pid_file):
+            return None
 
-def get_component_pid(component):
-    """
-    Returns the PID of a running Polychromatic process, which may be providing
-    a feature (e.g. tray applet) or processing software effects for a device.
+        with open(pid_file, "r") as f:
+            pid = int(f.read())
 
-    Returns:
-        (int)       Process ID
-        None        Process is not running
-    """
-    pid_file = _get_pid_file(component)
+        if self._is_polychromatic_process(self.component, pid):
+            return pid
 
-    if not os.path.exists(pid_file):
         return None
 
-    with open(pid_file, "r") as f:
-        pid = int(f.read())
+    def _get_component_pid_list(self):
+        """
+        Returns a list of all the components that currently have a PID file. This
+        isn't validated and is presumed to be running and is a Polychromatic process.
+        """
+        pids = []
+        for component in glob.glob(self.pid_dir + "/*.pid"):
+            pids.append(os.path.basename(component.replace(".pid", "")))
 
-    if _is_polychromatic_process(component, pid):
-        return pid
+        return pids
 
-    return None
+    def set_component_pid(self):
+        """
+        Assign the PID of the running process to a component or device, indicating
+        a 'locked' state to avoid multiple instances.
 
+        If the component is already running, it will be stopped.
+        """
+        pid_file = self._get_pid_file()
 
-def get_component_pid_list():
-    """
-    Returns a list of all the components that currently have a PID file. This
-    isn't validated and is presumed to be running and Polychromatic processes.
-    """
-    pids = []
-    for component in glob.glob(_get_pid_dir() + "/*.pid"):
-        pids.append(os.path.basename(component.replace(".pid", "")))
+        if os.path.exists(pid_file):
+            self.stop_component()
 
-    return pids
+        with open(pid_file, "w") as f:
+            f.write(str(os.getpid()))
 
-
-def set_component_pid(component):
-    """
-    Assign the PID of the running process to a component or device, indicating
-    a 'locked' state to avoid multiple instances.
-
-    If the component is already running, it will be stopped.
-    """
-    pid_file = _get_pid_file(component)
-
-    if os.path.exists(pid_file):
-        stop_component(component)
-
-    with open(pid_file, "w") as f:
-        f.write(str(os.getpid()))
-
-    return True
-
-
-def release_component_pid(component):
-    """
-    Unassign the PID of the running process from a component or device.
-    """
-    pid_file = _get_pid_file(component)
-    pid = get_component_pid(component)
-    if pid == os.getpid():
-        os.remove(pid_file)
-
-
-def is_another_instance_is_running(component):
-    """
-    Return a boolean to indicate whether this component is already running.
-    """
-    pid = get_component_pid(component)
-    if pid:
         return True
-    return False
 
+    def release_component_pid(self):
+        """
+        Unassign the PID of the running process from a component or device.
+        """
+        pid_file = self._get_pid_file()
+        pid = self._get_component_pid()
+        if pid == os.getpid():
+            os.remove(pid_file)
 
-def stop_component(component):
-    """
-    Unassign the PID to the running process, allowing it to be used by
-    another Polychromatic process.
-
-    This sends the USR2 signal.
-    """
-    pid_file = _get_pid_file(component)
-    pid = get_component_pid(component)
-    if pid:
-        os.kill(pid, signal.SIGUSR2)
-
-
-def restart_component(component):
-    """
-    Send a request to the process to reload itself.
-
-    This sends the USR1 signal.
-    """
-    pid_file = _get_pid_file(component)
-    pid = get_component_pid(component)
-    if pid:
-        # Already running, ask to restart self
-        os.kill(pid, signal.SIGUSR1)
-    else:
-        # Not running, start!
-        start_component(component)
-
-
-def _get_component_exec_path(name):
-    """
-    Internally gets the path of a component, such as "tray-applet" or "controller".
-
-    Returns:
-        (str)   Path to exceutable, e.g. "/usr/bin/polychromatic-controller"
-        None    Executable not found.
-    """
-    bin_filename = "polychromatic-" + name
-
-    # __file__ = procpid.py
-    path_relative = os.path.abspath(os.path.join(os.path.dirname(__file__), "../", bin_filename))
-    path_var = shutil.which(bin_filename)
-    path_system = "/usr/bin/" + bin_filename
-
-    for path in [path_relative, path_var, path_system]:
-        if path and os.path.exists(path):
-            return path
-
-    return None
-
-
-def start_component(name, parameters=[]):
-    """
-    Start a new Polychromatic process with 'name' being the suffix of the
-    executable, e.g. 'tray-applet'
-
-    Returns a boolean to indicate whether the process successfully spawned.
-    """
-    bin_path = _get_component_exec_path(name)
-
-    try:
-        bin_arguments = [bin_path]
-        bin_arguments += parameters
-        Popen(bin_arguments)
-        return True
-    except Exception as e:
-        print("Failed to start process: " + " ".join(bin_arguments))
-        print(str(e))
+    def is_another_instance_is_running(self):
+        """
+        Return a boolean to indicate whether this component is already running.
+        """
+        pid = self._get_component_pid()
+        if pid:
+            return True
         return False
 
-    print("Could not locate executable: polychromatic-" + name)
-    return False
+    def stop_component(self):
+        """
+        Unassign the PID to the running process, allowing it to be used by
+        another Polychromatic process.
 
+        This sends the USR2 signal.
+        """
+        pid_file = self._get_pid_file()
+        pid = self._get_component_pid()
+        if pid:
+            os.kill(pid, signal.SIGUSR2)
 
-def is_component_installed(name):
-    """
-    Checks whether another Polychromatic component is installed. This could be
-    because of modular packaging, where a user installs the tray applet, but
-    not the Controller, for example.
+    def restart_component(self, pid_file=None):
+        """
+        Send a request to the process to reload itself.
 
-    Returns a boolean to indicate it is launchable.
-    """
-    if _get_component_exec_path(name):
-        return True
-    return False
+        This sends the USR1 signal.
+        """
+        if not pid_file:
+            pid_file = self._get_pid_file()
 
+        pid = self._get_component_pid()
+        if pid:
+            # Already running, ask to restart self
+            os.kill(pid, signal.SIGUSR1)
+        else:
+            # Not running, start!
+            self.start_component()
 
-def restart_self(exec_path, exec_args):
-    """
-    Immediately restart the current execution.
-    """
-    os.execv(exec_path, exec_args)
+    def _get_component_exec_path(self, name):
+        """
+        Internally gets the path of a component, such as "tray-applet" or "controller".
 
+        Returns:
+            (str)   Path to exceutable, e.g. "/usr/bin/polychromatic-controller"
+            None    Executable not found.
+        """
+        bin_filename = "polychromatic-" + name
 
-def restart_all():
-    """
-    Restart all tasks, excluding the current one.
-    """
-    for pid_file in get_component_pid_list():
-        restart_component(pid_file)
+        # __file__ = procpid.py
+        path_relative = os.path.abspath(os.path.join(os.path.dirname(__file__), "../", bin_filename))
+        path_var = shutil.which(bin_filename)
+        path_system = "/usr/bin/" + bin_filename
+
+        for path in [path_relative, path_var, path_system]:
+            if path and os.path.exists(path):
+                return path
+
+        return None
+
+    def start_component(self, parameters=[]):
+        """
+        Start a new Polychromatic process with 'name' being the suffix of the
+        executable, e.g. 'tray-applet'
+
+        Returns a boolean to indicate whether the process successfully spawned.
+        """
+        if self.component not in self.components:
+            return False
+
+        bin_path = self._get_component_exec_path(self.component)
+
+        try:
+            bin_arguments = [bin_path]
+            bin_arguments += parameters
+            Popen(bin_arguments)
+            return True
+        except Exception as e:
+            print("Failed to start process: " + " ".join(bin_arguments))
+            print(str(e))
+            return False
+
+        print("Could not locate executable: polychromatic-" + self.component)
+        return False
+
+    def is_component_installed(self, name):
+        """
+        Checks whether another Polychromatic component is installed. This could be
+        because of modular packaging, where a user installs the tray applet, but
+        not the Controller, for example.
+
+        Returns a boolean to indicate it is launchable.
+        """
+        if self._get_component_exec_path(name):
+            return True
+        return False
+
+    def restart_self(self, exec_path, exec_args):
+        """
+        Immediately restart the current execution.
+        """
+        os.execv(exec_path, exec_args)
+
+    def restart_all(self):
+        """
+        Restart all tasks, excluding the current process.
+        """
+        for pid_file in self._get_component_pid_list():
+            self.restart_component(pid_file)
 
 
 class DeviceSoftwareState(object):
@@ -242,10 +248,10 @@ class DeviceSoftwareState(object):
     such as when a custom effect is currently being played and/or a preset is
     currently in use.
 
-    This is metadata for the user interface. It may also be used to resume a
-    custom effect or preset state at login.
+    This is metadata presented to the user and internally to know the last
+    effect or preset (when autostarting)
 
-    The "state" is stored as a JSON file named after the device's serial number.
+    The "state" is stored in a JSON file named after the device's serial number.
     {
         "effect": {
             "name": "Human readable name",
@@ -272,7 +278,12 @@ class DeviceSoftwareState(object):
 
     def _read_state(self):
         with open(self.state_path) as f:
-            self.state = json.load(f)
+            try:
+                self.state = json.load(f)
+            except Exception:
+                # Bad JSON or filesystem error. Ignore and start afresh.
+                print("Ignoring bad data: ", self.state_path)
+                self.state = {}
 
     def _write_state(self):
         with open(self.state_path, "w") as f:
@@ -296,7 +307,7 @@ class DeviceSoftwareState(object):
 
     def set_preset(self, name, icon, path):
         """
-        This device is now set to the properties of a saved preset.
+        This device is now aligned to the properties of a saved preset.
         """
         self.state["preset"] = {}
         self.state["preset"]["name"] = name
@@ -315,7 +326,7 @@ class DeviceSoftwareState(object):
             # Does not exist.
             pass
 
-    def get_effect(self, ignore_pid=False):
+    def get_effect(self):
         """
         Returns the metadata of the effect that is currently playing on this
         device. This only applies to custom software effects and not any
@@ -323,10 +334,6 @@ class DeviceSoftwareState(object):
 
         If no effect is running, this will return None.
         """
-        pid = get_component_pid(self.serial)
-        if not pid and not ignore_pid:
-            return None
-
         try:
             return {
                 "name": self.state["effect"]["name"],
@@ -348,7 +355,7 @@ class DeviceSoftwareState(object):
 
     def clear_effect(self):
         """
-        This device is no longer running under a software effect.
+        This device is no longer under software control.
         """
         try:
             del(self.state["effect"])

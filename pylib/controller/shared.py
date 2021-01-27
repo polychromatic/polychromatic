@@ -810,9 +810,10 @@ class ColourPicker(object):
         pref.save_file(self.appdata.paths.colours, colour_list)
 
         # Reload the tray applet to use new colour list
-        if procpid.get_component_pid("tray-applet"):
+        procmgr = procpid.ProcessManager("tray-applet")
+        if procmgr.is_another_instance_is_running():
             dbg.stdout("Colour list saved. Reloading tray applet...", dbg.action, 1)
-            procpid.restart_component("tray-applet")
+            procmgr.restart_component()
 
     def _open_system_picker(self):
         """

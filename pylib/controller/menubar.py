@@ -208,10 +208,12 @@ class MenuBar(object):
         self.appdata.ui_preferences.open_window()
 
     def restart_tray_applet(self):
-        procpid.start_component("tray-applet")
+        procmgr = procpid.ProcessManager("tray-applet")
+        procmgr.start_component()
 
     def restart_helper(self):
-        print("stub:restart_helper")
+        procmgr = procpid.ProcessManager("helper")
+        procmgr.start_component("--monitor-triggers")
 
     def online_help(self):
         webbrowser.open("https://polychromatic.app/docs/")
@@ -393,8 +395,9 @@ class MenuBarOpenRazer(MenuBar):
 
         def _reload_openrazer_thread():
             self.appdata.middleman.get_backend("openrazer").restart()
-            procpid.restart_all()
-            procpid.restart_self(self.appdata.exec_path, self.appdata.exec_args)
+            procmgr = procpid.ProcessManager()
+            procmgr.restart_all()
+            procmgr.restart_self(self.appdata.exec_path, self.appdata.exec_args)
 
         self.widgets.open_dialog(self.widgets.dialog_generic,
                                  self.appdata._("Restart Backend?"),
