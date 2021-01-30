@@ -115,7 +115,7 @@ class EffectsTab(shared.CommonFileTab):
         btn_sequence.setIcon(self.widgets.get_icon_qt("effects", "sequence"))
 
         if not self.appdata.system_qt_theme:
-            dialog_buttons.button(QDialogButtonBox.Close).setIcon(self.widgets.get_icon_qt("general", "close"))
+            dialog_buttons.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "close"))
 
         # Hovering over a button will show the tooltip as a label too
         def _hover_button(event, button):
@@ -129,7 +129,7 @@ class EffectsTab(shared.CommonFileTab):
         # For keyboard navigation
         btn_layered.focusInEvent = lambda event: _hover_button(event, btn_layered)
         btn_scripted.focusInEvent = lambda event: _hover_button(event, btn_scripted)
-        btn_sequence.focusInEvent  = lambda event: _hover_button(event, btn_sequence)
+        btn_sequence.focusInEvent = lambda event: _hover_button(event, btn_sequence)
 
         # Prepare button events
         def _close_dialog():
@@ -249,7 +249,7 @@ class EffectsTab(shared.CommonFileTab):
         # -- Effect Type
         effect_type = data["type"]
         effect_type_name = {
-            effects.TYPE_LAYERED: self._("Layers"),
+            effects.TYPE_LAYERED: self._("Layered"),
             effects.TYPE_SCRIPTED: self._("Script"),
             effects.TYPE_SEQUENCE: self._("Sequence"),
         }
@@ -436,6 +436,11 @@ class EffectMetadataEditor(shared.TabData):
         self.map_graphic_grid.toggled.connect(self._select_grid_mode)
         self.map_graphic_svg.toggled.connect(self._select_graphic_mode)
         self.map_graphic_list.currentIndexChanged.connect(self._update_graphic_preview)
+
+        # Set icons
+        if not self.appdata.system_qt_theme:
+            self.buttons.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "close"))
+            self.buttons.button(QDialogButtonBox.Ok).setIcon(self.widgets.get_icon_qt("general", "ok"))
 
         # Showtime!
         self._validate_fields()

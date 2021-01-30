@@ -18,6 +18,7 @@ VERSION = 7
 dbg = common.Debugging()
 path = common.paths
 
+
 def load_file(filepath):
     """
     Loads a JSON file from disk. If empty, it will be created.
@@ -210,7 +211,7 @@ def upgrade_old_pref():
             try:
                 filename = info.get_filename()
             except Exception:
-                filename= None
+                filename = None
 
             if filename:
                 return filename

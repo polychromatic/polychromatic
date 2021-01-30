@@ -51,6 +51,7 @@ class Middleman(object):
         """
         Imports the modules and initalises the backend objects.
         """
+        # -- OpenRazer
         try:
             from .backends import openrazer as openrazer
             self.backends.append(openrazer.Backend(self._dbg, self._common, self._))
@@ -59,6 +60,7 @@ class Middleman(object):
         except Exception as e:
             self.import_errors["openrazer"] = self._common.get_exception_as_string(e)
 
+        # -- Troubleshooter for OpenRazer
         from .troubleshoot import openrazer as openrazer_troubleshoot
         self.troubleshooters["openrazer"] = openrazer_troubleshoot.troubleshoot
 

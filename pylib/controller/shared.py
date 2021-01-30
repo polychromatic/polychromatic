@@ -399,7 +399,6 @@ class PolychromaticWidgets(object):
         """
         group = QGroupBox()
         group.setTitle(title)
-        #group.setFont(QFont("Play", 11))
         group.setLayout(QGridLayout())
         group.layout().setAlignment(Qt.AlignTop)
         return group
