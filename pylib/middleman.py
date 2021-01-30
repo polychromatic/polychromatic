@@ -165,7 +165,7 @@ class Middleman(object):
         if type(device) in [None, str]:
             return device
 
-        # Append state data
+        # In addition, append state data
         state = procpid.DeviceSoftwareState(device["serial"])
         device["state"] = {}
         device["state"]["effect"] = state.get_effect()
@@ -193,11 +193,25 @@ class Middleman(object):
 
         See _backend.Backend.set_device_state() for parameters and data types.
         """
-        # Stop Polychromatic software effect helper for this device if changing an effect
+        # Check the states and stop/clear them (e.g. device was playing a software effect)
+        if not option_id in ["brightness", "poll_rate", "dpi", "game_mode"]:
+            process = procpid.ProcessManager(serial)
+            state = procpid.DeviceSoftwareState(serial)
+
+            if state.get_effect():
+                process.stop()
+                state.clear_effect()
+
+            if state.get_preset():
+                state.clear_preset()
 
         for module in self.backends:
             if module.backend_id == backend:
                 return module.set_device_state(uid, zone, option_id, option_data, colour_hex)
+
+        # Refresh Controller, if it is running.
+        proc_controller = procpid.ProcessManager("controller")
+        proc_controller.reload()
 
     def get_device_object(self, backend, uid):
         """
@@ -296,9 +310,21 @@ class Middleman(object):
     def replay_active_effect(self, backend, uid, zone):
         """
         Replays the 'active' effect. This may be used, for example, to restore
-        the effect that was being played before the matrix was tested.
+        the effect that was being played before the matrix was tested or being
+        previewed in the editor.
         """
         device = self.get_device(backend, uid)
+        serial = device["serial"]
+        state = procpid.DeviceSoftwareState(serial)
+
+        # Device was playing a software effect, resume that.
+        effect = state.get_effect()
+        if effect:
+            procmgr = procpid.ProcessManager("helper")
+            procmgr.start_component(["--run-fx", effect["path"], "--device-serial", serial])
+            return
+
+        # Device was set to a hardware effect, apply that.
         option_id, option_data, colour_hex = self._get_current_device_option(device, zone)
         if option_id:
             return self.set_device_state(backend, uid, device["serial"], zone, option_id, option_data, colour_hex)

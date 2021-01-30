@@ -24,8 +24,18 @@ class ProcessManager():
 
     Other Polychromatic processes may send (and be expected to receive) the
     following signals:
-        USR1    Restart yourself.
-        USR2    Stop running.
+
+    - USR1 "Reload"
+      |- Controller           Refresh current device and/or device list.
+      |- Tray                 Reload, device list changed.
+      |- Helper (FX)          Reload, current effect data changed.
+      |- Helper (Triggers)    Reload, trigger data changed.
+
+    - USR2 "Stop"
+      |- Controller           (n/a)
+      |- Tray                 Exit tray applet
+      |- Helper (FX)          Stop playing effect
+      |- Helper (Triggers)    Stop monitoring triggers
     """
     def __init__(self, component=None):
         self.pid_dir = self._get_pid_dir()
@@ -116,7 +126,7 @@ class ProcessManager():
         pid_file = self._get_pid_file()
 
         if os.path.exists(pid_file):
-            self.stop_component()
+            self.stop()
 
         with open(pid_file, "w") as f:
             f.write(str(os.getpid()))
@@ -141,23 +151,21 @@ class ProcessManager():
             return True
         return False
 
-    def stop_component(self):
+    def stop(self):
         """
-        Unassign the PID to the running process, allowing it to be used by
-        another Polychromatic process.
-
-        This sends the USR2 signal.
+        Send the USR2 signal to the process to ask this component to stop.
+        The PID will be unassigned, allowing it to be used by another
+        Polychromatic process.
         """
         pid_file = self._get_pid_file()
         pid = self._get_component_pid()
         if pid:
             os.kill(pid, signal.SIGUSR2)
 
-    def restart_component(self, pid_file=None):
+    def reload(self, pid_file=None):
         """
-        Send a request to the process to reload itself.
-
-        This sends the USR1 signal.
+        Send the USR1 signal to reload or restart the component. The PID is
+        expected to be reassigned to the new process.
         """
         if not pid_file:
             pid_file = self._get_pid_file()
@@ -239,7 +247,7 @@ class ProcessManager():
         Restart all tasks, excluding the current process.
         """
         for pid_file in self._get_component_pid_list():
-            self.restart_component(pid_file)
+            self.reload(pid_file)
 
 
 class DeviceSoftwareState(object):

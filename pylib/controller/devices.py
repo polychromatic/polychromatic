@@ -165,6 +165,34 @@ class DevicesTab(shared.TabData):
                 "label": item["label"]
             })
 
+        # The summary indicators only show current effect/preset when set
+        state_effect = device["state"]["effect"]
+        state_preset = device["state"]["preset"]
+
+        if state_preset:
+            indicators = [
+                {
+                    "icon": None,
+                    "label": self._("Preset:")
+                },
+                {
+                    "icon": state_preset["icon"],
+                    "label": state_preset["name"]
+                }
+            ]
+
+        elif state_effect:
+            indicators = [
+                {
+                    "icon": None,
+                    "label": self._("Playing:")
+                },
+                {
+                    "icon": state_effect["icon"],
+                    "label": state_effect["name"]
+                }
+            ]
+
         buttons = [
             {
                 "id": "device-info",
@@ -198,6 +226,11 @@ class DevicesTab(shared.TabData):
             # Effects
             for option in options:
                 if option["type"] == "effect":
+                    if state_effect:
+                        # Ignore active hardware effect when software effect is in use.
+                        option["active"] = False
+                        current_option_id = None
+
                     effect_options.append(option)
                     continue
 

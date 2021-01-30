@@ -267,8 +267,8 @@ class PreferencesWindow(shared.TabData):
         # Reload tray applet
         if self.restart_applet:
             self.dbg.stdout("Tray applet settings changed. Will restart component.", self.dbg.success, 1)
-            procmgr = procpid.ProcessManager("tray-applet")
-            procmgr.restart_component()
+            process = procpid.ProcessManager("tray-applet")
+            process.reload()
 
     def modify_colours(self):
         """

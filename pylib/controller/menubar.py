@@ -208,12 +208,12 @@ class MenuBar(object):
         self.appdata.ui_preferences.open_window()
 
     def restart_tray_applet(self):
-        procmgr = procpid.ProcessManager("tray-applet")
-        procmgr.start_component()
+        process = procpid.ProcessManager("tray-applet")
+        process.start_component()
 
     def restart_helper(self):
-        procmgr = procpid.ProcessManager("helper")
-        procmgr.start_component("--monitor-triggers")
+        process = procpid.ProcessManager("helper")
+        process.start_component("--monitor-triggers")
 
     def online_help(self):
         webbrowser.open("https://polychromatic.app/docs/")

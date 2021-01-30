@@ -12,6 +12,7 @@ from .. import effects
 from ..fx import FX
 from .. import locales
 from .. import preferences as pref
+from .. import procpid
 from . import shared
 from . import effects as controller_effects
 
@@ -492,6 +493,7 @@ class VisualEffectEditor(shared.TabData):
         if not self.live_preview:
             return
 
+        # Prepare device object
         device_name = self.data["map_device"]
         self.dbg.stdout("Preparing live preview on '{0}'...".format(device_name), self.dbg.action, 1)
         self.device = self.middleman.get_device_by_name(device_name)
@@ -528,6 +530,13 @@ class VisualEffectEditor(shared.TabData):
             self.device = None
             self.device_object = None
             return
+
+        # Stop any other effects running on the hardware
+        serial = self.device["serial"]
+        state = procpid.DeviceSoftwareState(serial)
+        if state.get_effect():
+            process = procpid.ProcessManager(serial)
+            process.stop()
 
         self.dbg.stdout("Previewing effect '{0}' on device '{1}'.".format(self.data["name"], device_name), self.dbg.success, 1)
 

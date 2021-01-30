@@ -10,6 +10,7 @@ This module controls the 'Effects' tab of the Controller GUI.
 from .. import common
 from .. import effects
 from .. import locales
+from .. import procpid
 from .. import preferences as pref
 from . import shared
 from . import editor
@@ -212,8 +213,7 @@ class EffectsTab(shared.CommonFileTab):
                 "id": "play",
                 "icon": self.widgets.get_icon_qt("effects", "play"),
                 "label": self._("Play"),
-                # FIXME: Not yet implemented: Play effect
-                "disabled": True,
+                "disabled": False,
                 "action": self.play_effect
             },
             {
@@ -298,12 +298,19 @@ class EffectsTab(shared.CommonFileTab):
         print("stub:effects.import_effect")
         pass
 
-    def play_effect(self):
+    def play_effect(self, device_name=None):
         """
         Play the currently selected effect.
+
+        Optionally, for scripted effects, they could be compatible to run on one
+        or more hardware.
         """
-        print("stub:play_effect")
-        pass
+        effect_type = self.current_file_data["type"]
+        if not device_name:
+            device_name = self.current_file_data["map_device"]
+
+        procmgr = procpid.ProcessManager("helper")
+        procmgr.start_component(["--run-fx", self.current_file_path, "--device-name", device_name])
 
 
 class EffectMetadataEditor(shared.TabData):
