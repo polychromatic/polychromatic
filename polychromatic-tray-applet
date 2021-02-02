@@ -86,6 +86,7 @@ class Indicator(object):
         if self.mode == 0:
             self.mode = 1
 
+        # TODO: Refactor into classes
         self.appindicator = 1
         self.gtk_status_icon = 2
         self.names = {
@@ -714,26 +715,24 @@ class Callback():
         Params:
             attr    [device]
         """
-        print("stub:set_custom_colour")
-        return
-
-        backend = attr[0]
-        uid = attr[1]
-        zone = attr[2]
+        device = attr[0]
+        zone = attr[1]
 
         dbg.stdout("Opened GTK colour picker.", dbg.debug, 1)
-        color_selection_dlg = Gtk.ColourSelectionDialog(_("Set Primary Colour"))
+        color_selection_dlg = Gtk.ColorSelectionDialog(_("Set Primary Colour"))
         color_selection_result = color_selection_dlg.run()
 
         if color_selection_result == Gtk.ResponseType.OK:
+            # Parse colour from GTK
             result_gdk_colour = color_selection_dlg.get_color_selection().get_current_color()
             red = int(result_gdk_colour.red_float * 255)
             green = int(result_gdk_colour.green_float * 255)
             blue = int(result_gdk_colour.blue_float * 255)
             hex_value = common.rgb_to_hex([red, green, blue])
 
-            dbg.stdout("Set custom colour for {0} device ID {1} to '{2}'".format(backend, uid, hex_value), dbg.debug, 1)
-            r = middleman.set_device_colours(backend, uid, zone, [hex_value])
+            # Apply colour to device
+            dbg.stdout("Set custom colour for {0} to '{1}'".format(device["name"], hex_value), dbg.debug, 1)
+            r = middleman.set_device_colour(device, zone, hex_value)
             _verbose_check_status(r)
 
         color_selection_dlg.destroy()
