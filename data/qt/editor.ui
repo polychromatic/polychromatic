@@ -653,6 +653,40 @@
          </widget>
         </item>
         <item>
+         <widget class="QToolButton" name="PlaybackStart">
+          <property name="toolTip">
+           <string>Preview the effect from the beginning</string>
+          </property>
+          <property name="statusTip">
+           <string>Preview the effect from the beginning</string>
+          </property>
+          <property name="text">
+           <string>Play</string>
+          </property>
+          <property name="icon">
+           <iconset theme="media-playback-start">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="PlaybackStop">
+          <property name="toolTip">
+           <string>Stop playback</string>
+          </property>
+          <property name="statusTip">
+           <string>Stop playback</string>
+          </property>
+          <property name="text">
+           <string>Pause</string>
+          </property>
+          <property name="icon">
+           <iconset theme="media-playback-stop">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QToolButton" name="PlaybackNext">
           <property name="toolTip">
            <string>Step forward one frame</string>
@@ -691,50 +725,13 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Maximum</enum>
-          </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>15</width>
-            <height>15</height>
+            <width>40</width>
+            <height>20</height>
            </size>
           </property>
          </spacer>
-        </item>
-        <item>
-         <widget class="QToolButton" name="PlaybackStop">
-          <property name="toolTip">
-           <string>Stop playback</string>
-          </property>
-          <property name="statusTip">
-           <string>Stop playback</string>
-          </property>
-          <property name="text">
-           <string>Pause</string>
-          </property>
-          <property name="icon">
-           <iconset theme="media-playback-stop">
-            <normaloff>.</normaloff>.</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="PlaybackStart">
-          <property name="toolTip">
-           <string>Preview the effect from the beginning</string>
-          </property>
-          <property name="statusTip">
-           <string>Preview the effect from the beginning</string>
-          </property>
-          <property name="text">
-           <string>Play</string>
-          </property>
-          <property name="icon">
-           <iconset theme="media-playback-start">
-            <normaloff>.</normaloff>.</iconset>
-          </property>
-         </widget>
         </item>
         <item>
          <widget class="QToolButton" name="PlaybackLoop">

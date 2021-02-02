@@ -205,6 +205,7 @@ class VisualEffectEditor(shared.TabData):
         self.btn_playback_next = self.window.findChild(QToolButton, "PlaybackNext")
         self.btn_playback_loop = self.window.findChild(QToolButton, "PlaybackLoop")
         self.spinner_playback_fps = self.window.findChild(QSpinBox, "PlaybackFPS")
+        self.status_frame = QLabel()
 
         # -- Colour Widgets
         self.colours_palette = self.window.findChild(QWidget, "ColoursPalette")
@@ -482,6 +483,9 @@ class VisualEffectEditor(shared.TabData):
             # Populate frame dock
             self.load_frames()
             self.open_frame()
+
+            # Show the current/total frame position in status bar
+            self.statusbar.addPermanentWidget(self.status_frame)
 
         self.dbg.stdout("Load complete.", self.dbg.success, 1)
         self.window.show()
@@ -1169,9 +1173,10 @@ class VisualEffectEditor(shared.TabData):
                 self.frame_table.selectColumn(self.current_frame)
                 return
 
-        frame = self.data["frames"][index]
+        self.status_frame.setText(self._("Frame [1] of [10]").replace("[1]", str(self.current_frame + 1)).replace("[10]", str(self.frame_table.columnCount())))
 
         # Draw frame on editor (and optionally physical hardware)
+        frame = self.data["frames"][index]
         for x in frame.keys():
             for y in frame[x].keys():
                 try:
