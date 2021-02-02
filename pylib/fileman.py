@@ -179,6 +179,26 @@ class FlatFileManagement(object):
 
         return items
 
+    def get_item_list_by_key_filter(self, key, value):
+        """
+        Return a list of parsed files filtered by the specified key (if exists).
+
+        For example, check the "map_device" key and only return a specific device.
+        """
+        items = []
+        file_list = self._get_file_list()
+
+        for path in file_list:
+            data = self._load_file(path)
+            try:
+                if data[key] == value:
+                    items.append(self._get_parsed_keys(data, path))
+            except KeyError:
+                # Key does not exist or matched
+                pass
+
+        return items
+
     def get_item(self, path):
         """
         Load the item into memory and ensure the data is valid.

@@ -50,6 +50,7 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
     try:
         import pylib.preferences as pref
         import pylib.common as common
+        import pylib.effects as effects
         import pylib.locales as locales
         import pylib.middleman as middleman_mod
         import pylib.procpid as procpid
@@ -62,6 +63,7 @@ else:
     try:
         import polychromatic.preferences as pref
         import polychromatic.common as common
+        import polychromatic.effects as effects
         import polychromatic.locales as locales
         import polychromatic.middleman as middleman_mod
         import polychromatic.procpid as procpid
@@ -467,13 +469,20 @@ class PolychromaticTrayApplet():
                 indicator.create_seperator(submenu)
 
         if device["matrix"]:
-            indicator.create_seperator(submenu)
+            # FIXME: Consider scripted effects too!
+            effect_items = fileman_effects.get_item_list_by_key_filter("map_device", device_name)
+            effects_menu, effects_menu_item = indicator.create_submenu(_("Effects"), True, self._get_icon("general", "effects"))
 
-            # TODO: Placeholder, custom effects not yet implemented
-            print("stub:effects menu")
-            effects_menu, effects_menu_item = indicator.create_submenu(_("Effects"), False, self._get_icon("general", "effects"))
-            indicator.create_menu_item(effects_menu, "Placeholder", False)
+            if len(effect_items) > 0:
+                for item in effect_items:
+                     indicator.create_menu_item(effects_menu, item["name"], True, cb.set_effect, [device, item["path"]], item["icon"])
+            else:
+                indicator.create_menu_item(effects_menu, _("No custom effects"), False)
+
+            indicator.create_seperator(submenu)
             indicator.add_menu_item(submenu, effects_menu_item)
+            indicator.create_seperator(effects_menu)
+            indicator.create_menu_item(effects_menu, _("Edit Effects..."), True, cb.launch_controller, "effects", self._get_icon("general", "edit"))
 
         # Colour (repeats last effect)
         if can_set_colours:
@@ -737,6 +746,22 @@ class Callback():
 
         color_selection_dlg.destroy()
 
+    @staticmethod
+    def set_effect(item, attr):
+        """
+        Option clicked to activate an effect for the specified device.
+
+        Params:
+            attr    [device, path]
+        """
+        device = attr[0]
+        path = attr[1]
+
+        device_name = device["name"]
+        dbg.stdout("Playing effect '{0}' on '{1}'".format(path, device_name), dbg.debug, 1)
+        procmgr = procpid.ProcessManager("helper")
+        procmgr.start_component(["--run-fx", path, "--device-name", device_name])
+
 
 def _verbose_check_status(result):
     """
@@ -836,6 +861,7 @@ if __name__ == "__main__":
     prefs = pref.load_file(common.paths.preferences)
     saved_colours = pref.load_file(common.paths.colours)
     colours_mono = common.get_green_shades(_)
+    fileman_effects = effects.EffectFileManagement(i18n, _, dbg)
 
     # Initialise the indicator
     cb = Callback()
