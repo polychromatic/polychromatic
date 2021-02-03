@@ -32,7 +32,8 @@ from PyQt5.QtCore import QThreadPool
 from PyQt5.QtGui import QIcon, QFont, QFontDatabase
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, \
-                            QToolButton, QTabWidget, QAction, QMenu
+                            QToolButton, QTabWidget, QAction, QMenu, \
+                            QDesktopWidget
 
 VERSION = "0.6.0"
 
@@ -212,7 +213,15 @@ class MainWindow(QMainWindow):
 
         if win_behaviour == app.window_centered:
             frame = qmainwindow.frameGeometry()
-            center = qmainwindow.screen().availableGeometry().center()
+
+            # DEPRECATED: QDesktopWidget(), but some distros ship an older Qt version (5.8, 5.12)
+            qt_ver = QtCore.PYQT_VERSION_STR.split(".")
+            if qt_ver[0] == "5" and int(qt_ver[1]) <= 14:
+                center = QDesktopWidget().availableGeometry().center()
+            else:
+                # For >= Qt 5.15
+                center = qmainwindow.screen().availableGeometry().center()
+
             frame.moveCenter(center)
             qmainwindow.move(frame.topLeft())
 

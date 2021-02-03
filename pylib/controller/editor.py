@@ -23,6 +23,7 @@ import json
 import os
 import time
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QRect, QItemSelectionModel, QThread, QSize, QUrl
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
@@ -32,7 +33,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
                             QGroupBox, QRadioButton, QMainWindow, QAction, \
                             QDockWidget, QMenuBar, QToolBar, QStatusBar, \
                             QTableWidget, QWidget, QVBoxLayout, QHBoxLayout, \
-                            QScrollArea, QSpinBox
+                            QScrollArea, QSpinBox, QDesktopWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # Visual mode within the WebView editor
@@ -416,7 +417,15 @@ class VisualEffectEditor(shared.TabData):
         centered = self.appdata.preferences["controller"]["window_behaviour"] == self.appdata.window_centered
         already_small = self.window.height() > 1024 and self.window.width() > 768
         if centered and not already_small:
-            screen = self.window.screen().availableGeometry()
+
+            # DEPRECATED: QDesktopWidget(), but some distros ship an older Qt version (5.8, 5.12)
+            qt_ver = QtCore.PYQT_VERSION_STR.split(".")
+            if qt_ver[0] == "5" and int(qt_ver[1]) <= 14:
+                screen = QDesktopWidget().availableGeometry()
+            else:
+                # For >= Qt 5.15
+                screen = self.window.screen().availableGeometry()
+
             frame = self.window.frameGeometry()
             prefer_height = screen.height() - 175
             prefer_width = screen.width() - 275
