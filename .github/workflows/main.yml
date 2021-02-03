@@ -87,3 +87,18 @@ jobs:
         dpkg-buildpackage -S -us -uc -d
         lintian --no-tag-display-limit
         debuild -b
+
+    - name: Prepare GPG Signing Key
+      if: ${{ github.event_name == 'push' && github.repository == 'polychromatic/polychromatic' && github.ref == 'refs/heads/master' }}
+      run: |
+        mkdir -p ~/.gnupg/
+        printf "$BOT_GPG_KEY_BASE64" | base64 --decode > ~/.gnupg/private.key
+        gpg --import ~/.gnupg/private.key
+      env:
+        BOT_GPG_KEY_BASE64: ${{ secrets.BOT_GPG_KEY_BASE64 }}
+
+    - name: Upload Packages to Launchpad
+      if: ${{ github.event_name == 'push' && github.repository == 'polychromatic/polychromatic' && github.ref == 'refs/heads/master' }}
+      run: |
+        git fetch --unshallow --tags
+        ./scripts/packaging/prepare-edge-ppa.sh ./
