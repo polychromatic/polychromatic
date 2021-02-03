@@ -40,7 +40,7 @@ SIGN_DATE = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S")
 
 def get_changelog():
     lines = []
-    lines.append("polychromatic ({0}) {1}; urgency=low\n\n".format(PKG_VERSION, CODENAME))
+    lines.append("polychromatic ({0}~{1}) {1}; urgency=low\n\n".format(PKG_VERSION, CODENAME))
     lines.append("  This package was automatically generated.\n\n")
     if len(LOG.split("\n")) > 1:
         lines.append("  Commit changes (newest first):\n\n")

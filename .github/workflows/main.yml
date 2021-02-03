@@ -92,6 +92,7 @@ jobs:
       if: ${{ github.event_name == 'push' && github.repository == 'polychromatic/polychromatic' && github.ref == 'refs/heads/master' }}
       run: |
         mkdir -p ~/.gnupg/
+        chmod 700 ~/.gnupg
         printf "$BOT_GPG_KEY_BASE64" | base64 --decode > ~/.gnupg/private.key
         gpg --import ~/.gnupg/private.key
       env:
