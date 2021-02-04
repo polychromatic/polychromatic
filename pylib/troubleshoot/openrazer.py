@@ -87,16 +87,17 @@ def troubleshoot(_):
             # Cannot automatically check unless we know the version of the modules.
             dkms_installed_src = None
             dkms_installed_built = None
+        dkms_installed_built = None
 
         results.append({
             "test_name": _("DKMS sources are installed"),
-            "suggestion": _("Install the 'openrazer-meta' package for your distribution."),
+            "suggestion": _("Install the 'openrazer-driver-dkms' package for your distribution."),
             "passed": dkms_installed_src
         })
 
         results.append({
             "test_name": _("DKMS module has been built for this kernel version"),
-            "suggestion": _("Ensure the correct Linux kernel headers are installed. Try re-installing the DKMS module (replacing 2.x.x with the version of OpenRazer installed) $ sudo dkms install -m openrazer-driver/2.x.x"),
+            "suggestion": _("Ensure the correct Linux kernel headers package for your distribution is installed. Try re-installing the DKMS module: $ sudo dkms install -m openrazer-driver/x.x.x").replace("x.x.x", dkms_version),
             "passed": dkms_installed_built
         })
 
