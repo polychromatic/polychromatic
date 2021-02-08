@@ -126,6 +126,18 @@ class PolychromaticTests(unittest.TestCase):
 
         self.assertEqual(passed, True, "Invalid data found in maps.json")
 
+    def test_devicemap_valid_json(self):
+        passed = True
+        for svg_file in glob.glob("data/devicemaps/*.json"):
+            with open(svg_file) as f:
+                try:
+                    data = json.load(f)
+                except Exception as e:
+                    print(svg_file, str(e))
+                    passed = False
+
+        self.assertEqual(passed, True, "Invalid JSON: " + svg_file)
+
     def test_devicemap_map_exists(self):
         passed = True
         with open("data/devicemaps/maps.json") as f:
