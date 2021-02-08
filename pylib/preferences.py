@@ -15,6 +15,12 @@ from . import locales
 
 VERSION = 7
 
+TOOLBAR_STYLE_DEFAULT = 0
+TOOLBAR_STYLE_ICONS_ONLY = 1
+TOOLBAR_STYLE_TEXT_ONLY = 2
+TOOLBAR_STYLE_ALONGSIDE = 3
+TOOLBAR_STYLE_UNDER = 4
+
 dbg = common.Debugging()
 path = common.paths
 
@@ -67,6 +73,7 @@ def load_file(filepath):
         _validate("controller", "show_menu_bar", bool, True)
         _validate("controller", "system_qt_theme", bool, False)
         _validate("controller", "window_behaviour", int, 0)
+        _validate("controller", "toolbar_style", int, TOOLBAR_STYLE_ALONGSIDE)
         _validate("tray", "autostart", bool, True)
         _validate("tray", "mode", int, 0)
         _validate("tray", "icon", str, common.get_default_tray_icon())

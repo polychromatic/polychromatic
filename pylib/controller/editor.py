@@ -438,6 +438,17 @@ class VisualEffectEditor(shared.TabData):
             self.window.resize(prefer_width, prefer_height)
             self.window.move(frame.topLeft())
 
+        # Toolbar style
+        toolbar_style = self.appdata.preferences["controller"]["toolbar_style"]
+        toolbar_styles = {
+            pref.TOOLBAR_STYLE_DEFAULT: Qt.ToolButtonFollowStyle,
+            pref.TOOLBAR_STYLE_ICONS_ONLY: Qt.ToolButtonIconOnly,
+            pref.TOOLBAR_STYLE_TEXT_ONLY: Qt.ToolButtonTextOnly,
+            pref.TOOLBAR_STYLE_ALONGSIDE: Qt.ToolButtonTextBesideIcon,
+            pref.TOOLBAR_STYLE_UNDER: Qt.ToolButtonTextUnderIcon
+        }
+        self.toolbar.setToolButtonStyle(toolbar_styles[toolbar_style])
+
         # Adjust docks for optimum space
         if self.layered_effect:
             self.dock_layers.adjustSize()

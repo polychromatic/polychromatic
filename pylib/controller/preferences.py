@@ -45,6 +45,7 @@ class PreferencesWindow(shared.TabData):
             ["controller", "show_menu_bar", QCheckBox, "AlwaysHideMenuBar", True],
             ["controller", "landing_tab", QComboBox, "LandingTabCombo", False],
             ["controller", "window_behaviour", QComboBox, "WindowBehaviourCombo", False],
+            ["controller", "toolbar_style", QComboBox, "ToolbarStyle", False],
 
             # -- Tray
             ["tray", "autostart", QCheckBox, "TrayAutoStart", False],

@@ -106,7 +106,7 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="LandingTabLabel">
              <property name="minimumSize">
               <size>
@@ -119,7 +119,7 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="4" column="1">
             <widget class="QComboBox" name="LandingTabCombo">
              <item>
               <property name="text">
@@ -159,7 +159,7 @@
              </item>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="5" column="0">
             <widget class="QLabel" name="WindowBehaviourLabel">
              <property name="minimumSize">
               <size>
@@ -172,7 +172,7 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="5" column="1">
             <widget class="QComboBox" name="WindowBehaviourCombo">
              <property name="currentText">
               <string>Always open in the center</string>
@@ -194,7 +194,7 @@
              </item>
             </widget>
            </item>
-           <item row="6" column="0">
+           <item row="7" column="0">
             <widget class="QLabel" name="SavedColoursLabel">
              <property name="minimumSize">
               <size>
@@ -207,7 +207,7 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="1">
+           <item row="8" column="1">
             <widget class="QWidget" name="AutoStartGroup" native="true">
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <property name="leftMargin">
@@ -225,7 +225,7 @@
              </layout>
             </widget>
            </item>
-           <item row="6" column="1">
+           <item row="7" column="1">
             <widget class="QWidget" name="SavedColoursGroup" native="true">
              <property name="minimumSize">
               <size>
@@ -282,6 +282,48 @@
                </spacer>
               </item>
              </layout>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QComboBox" name="ToolbarStyle">
+             <item>
+              <property name="text">
+               <string>Follow System Style</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Icons Only</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Text Only</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Text Alongside Icons</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Text Under Icons</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="ToolbarStyleLabel">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Toolbar</string>
+             </property>
             </widget>
            </item>
           </layout>
