@@ -389,16 +389,8 @@ class MainWindow(QMainWindow):
         tab_menu_items[2].setDisabled(True)
         tab_menu_items[3].setDisabled(True)
 
-        # Open the default tab, unless an alternate is specified
+        # Determine 'landing' tab to first open
         landing_tab = app.preferences["controller"]["landing_tab"]
-        args_tab = {
-            "devices": 0,
-            "effects": 1,
-            "presets": 2,
-            "triggers": 3
-        }
-        if args.open and args.open in args_tab.keys():
-            landing_tab = args_tab[args.open]
 
         if landing_tab >= 0 and landing_tab <= len(tab_objects):
             # Signal triggered upon switching tab in the widget.

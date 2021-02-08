@@ -85,12 +85,12 @@ class Indicator(object):
         self.mode = prefs["tray"]["mode"]
 
         # 0 will use the default, unless it is unavailable.
-        if self.mode == 0:
-            self.mode = 1
+        if self.mode == pref.TRAY_DEFAULT:
+            self.mode = pref.TRAY_APPINDICATOR
 
         # TODO: Refactor into classes
-        self.appindicator = 1
-        self.gtk_status_icon = 2
+        self.appindicator = pref.TRAY_APPINDICATOR
+        self.gtk_status_icon = pref.TRAY_GTK_STATUS
         self.names = {
             self.appindicator: "AppIndicator",
             self.gtk_status_icon: "GTKStatusIcon"
