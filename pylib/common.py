@@ -520,8 +520,14 @@ def get_versions(base_version):
     if os.path.exists(os.path.join(os.path.dirname(__file__), "..", ".git")):
         import subprocess
         os.chdir(os.path.dirname(__file__))
-        git_version = subprocess.check_output(["git", "describe"]).strip().decode("UTF-8")[1:]
+
         git_commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode("UTF-8")
+
+        try:
+            git_version = subprocess.check_output(["git", "describe"]).strip().decode("UTF-8")[1:]
+        except subprocess.CalledProcessError:
+            # Git may throw error "no names found" if repository was shallow cloned or has no tags
+            git_version = "{0}-git-{1}".format(base_version, git_commit[:7])
         return (git_version, git_commit, py_version)
 
     # Production "installed" version
