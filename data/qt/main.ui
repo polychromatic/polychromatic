@@ -827,6 +827,9 @@
    </property>
   </action>
   <action name="actionHideMenuBar">
+   <property name="icon">
+    <iconset theme="window-unpin"/>
+   </property>
    <property name="text">
     <string>Hide Menu Bar</string>
    </property>

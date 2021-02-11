@@ -405,6 +405,7 @@ class EffectMetadataEditor(shared.TabData):
 
             # Select the first device if this is a new creation
             if not data["map_device"]:
+                self.dialog.setWindowTitle(self._("New Effect"))
                 self.map_device.setCurrentIndex(0)
 
             # Inform the user if the original device for this effect is missing

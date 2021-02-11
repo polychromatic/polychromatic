@@ -526,26 +526,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="CloneFrame">
-          <property name="toolTip">
-           <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a copy of the current frame after this position</string>
-          </property>
-          <property name="statusTip">
-           <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a copy of the current frame after this position</string>
-          </property>
-          <property name="text">
-           <string>Clone</string>
-          </property>
-          <property name="icon">
-           <iconset theme="document-duplicate">
-            <normaloff>.</normaloff>.</iconset>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonFollowStyle</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QToolButton" name="DeleteFrame">
           <property name="toolTip">
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Permanently delete this frame</string>
@@ -558,6 +538,26 @@
           </property>
           <property name="icon">
            <iconset theme="delete">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonFollowStyle</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="CloneFrame">
+          <property name="toolTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a copy of the current frame after this position</string>
+          </property>
+          <property name="statusTip">
+           <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a copy of the current frame after this position</string>
+          </property>
+          <property name="text">
+           <string>Clone</string>
+          </property>
+          <property name="icon">
+           <iconset theme="document-duplicate">
             <normaloff>.</normaloff>.</iconset>
           </property>
           <property name="toolButtonStyle">
