@@ -1,0 +1,335 @@
+#!/usr/bin/python3
+#
+# Polychromatic is free software: you can redistribute it and/or modify
+# it under the temms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Polychromatic is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Polychromatic. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright (C) 2020-2021 Luke Horwell <code@horwell.me>
+#
+
+"""
+A multipurpose "helper" process that runs in the background to control separate
+operations of Polychromatic, such as:
+
+- Playback of custom effects on specific hardware.
+- Monitor and process automatic rules (triggers).
+- Autostart the tray applet and resume previous settings.
+
+The helper intends to be as lightweight and minimal as possible as there could
+be multple helper processes running simultaneously. It also is designed to be
+'terminated' without fuss as Polychromatic will record PIDs for the processes.
+"""
+import argparse
+import glob
+import setproctitle
+import os
+import json
+import time
+
+VERSION = "0.6.0"
+
+# Import modules if running relatively.
+if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
+    try:
+        import pylib.common as common
+        import pylib.effects as effects
+        import pylib.preferences as preferences
+        import pylib.procpid as procpid
+        import pylib.middleman as middleman
+        import pylib.locales as locales
+    except (ImportError, Exception) as e:
+        print("Failed to import modules relatively.\n")
+        raise e
+
+# Import modules if installed system-wide.
+else:
+    try:
+        import polychromatic.common as common
+        import polychromatic.effects as effects
+        import polychromatic.preferences as preferences
+        import polychromatic.procpid as procpid
+        import polychromatic.middleman as middleman
+        import polychromatic.locales as locales
+    except (ImportError, Exception) as e:
+        print("Polychromatic's modules could not be imported.")
+        print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
+        raise e
+
+
+class Bootstrapper(object):
+    """
+    Processes the request from the command line and summons the relevant
+    process or code within the helper.
+    """
+    def __init__(self):
+        """
+        Parse the parameters.
+        """
+        self.args = self._parse_parameters()
+        self.preferences = preferences.load_file(common.paths.preferences)
+        self.middleman = middleman.Middleman(dbg, common, _)
+        self.middleman.init()
+
+    def start(self):
+        if self.args.autostart:
+            self.autostart()
+
+        elif self.args.monitor_triggers:
+            self.monitor_triggers()
+
+        elif self.args.run_fx and self.args.device_serial or self.args.device_name:
+            self.run_fx(self.args.run_fx, self.args.device_name, self.args.device_serial)
+
+        else:
+            dbg.stdout("This executable is intended to be invoked by another Polychromatic process.", dbg.warning)
+            exit(1)
+
+    def _parse_parameters(self):
+        """
+        Parse the parameters of what this helper has been summoned to do.
+        Intended to be inputed by a computer, not a human (except verbose/version)
+        """
+        parser = argparse.ArgumentParser(add_help=False)
+        parser.add_argument("-v", "--verbose", action="store_true")
+        parser.add_argument("--version", action="store_true")
+
+        # Operations
+        parser.add_argument("--autostart", action="store_true")
+        parser.add_argument("--monitor-triggers", action="store_true")
+        parser.add_argument("--run-fx", action="store")
+
+        # Custom effects only
+        parser.add_argument("-n", "--device-name", action="store")
+        parser.add_argument("-s", "--device-serial", action="store")
+
+        args = parser.parse_args()
+
+        if args.version:
+            app_version, git_commit, py_version = common.get_versions(VERSION)
+            print("Polychromatic", app_version)
+            if git_commit:
+                print("Commit:", git_commit)
+            print("Python:", py_version)
+            exit(0)
+
+        if args.verbose:
+            dbg.verbose_level = 1
+            dbg.stdout("Verbose enabled", dbg.action, 1)
+
+        return args
+
+    def autostart(self):
+        """
+        Run once when the user's session starts. This will make sure the backends
+        have started before spawning additional processes:
+
+        - If enabled, start the tray applet.
+        - If a 'login' preset is set, activate that.
+            - If not, apply any devices previously in an software effect state.
+        - If triggers are set up, start a process to monitor processes.
+
+        This instance will exit as soon as the checks have completed.
+        """
+        # If backend(s) haven't initialized already, wait for them.
+        timeout = 10
+        while len(self.middleman.backends) == 0 and timeout > 0:
+            dbg.stdout("Still waiting for backends to be ready...", dbg.warning, 1)
+            time.sleep(2)
+            timeout = timeout - 1
+            self.middleman.init()
+
+        if len(self.middleman.backends) == 0:
+            dbg.stdout("Timed out waiting for backends to load, or they are non-functional.", dbg.error)
+
+        # Determine what to do for devices upon login.
+        login_trigger_set = False
+        state_files = glob.glob(os.path.join(common.paths.states, "*.json"))
+
+        # -- Clear the preset states
+        #    There is no guarantee the hardware matched the previous preset
+        for device_json in state_files:
+            serial = os.path.basename(device_json).replace(".json", "")
+            state = procpid.DeviceSoftwareState(serial)
+            state.clear_preset()
+
+        # -- Activate the login preset (if enabled)
+        if login_trigger_set:
+            dbg.stdout("Activating login trigger...", dbg.action, 1)
+            print("stub:login trigger")
+
+        # -- Resume effect states (if any)
+        if not login_trigger_set:
+            procmgr = procpid.ProcessManager("helper")
+            for device_json in state_files:
+                serial = os.path.basename(device_json).replace(".json", "")
+                state = procpid.DeviceSoftwareState(serial)
+                effect = state.get_effect()
+                if effect:
+                    dbg.stdout("Resuming effect '{0}' on device serial '{1}'.".format(effect["name"], serial), dbg.action, 1)
+                    procmgr.start_component(["--run-fx", effect["path"], "--device-serial", serial])
+
+        # Start Tray Applet
+        if self.preferences["tray"]["autostart"]:
+            delay = self.preferences["tray"]["autostart_delay"]
+            if delay > 0:
+                dbg.stdout("Starting tray applet in {0} second(s)...".format(delay), dbg.action, 1)
+                time.sleep(delay)
+            process = procpid.ProcessManager("tray-applet")
+            process.start_component()
+    def monitor_triggers(self):
+        """
+        Triggers may monitor different entities (e.g. time, a file or event)
+        and this process will switch to a different preset when the conditions
+        match.
+
+        This process should always be running when there is at least one trigger set.
+        """
+        print("stub:Helpers.monitor_triggers")
+
+    def run_fx(self, path, name, serial):
+        """
+        Playback a custom effect by sending frames to the specified device
+        (either by device serial or name, the latter takes priority)
+
+        This process should be running until the custom effect reaches the end,
+        or if it's looped, indefinity until interrupted.
+        """
+        # Load device
+        if serial:
+            device = self.middleman.get_device_by_serial(serial)
+
+            if not device:
+                dbg.stdout("Device with serial '{0}' not found. Cannot play effect!".format(serial), dbg.error)
+                exit(1)
+            elif type(device) == str:
+                dbg.stdout("Failed to load device serial '{0}'. Error details:\n{1}".format(serial, device), dbg.error)
+                exit(1)
+
+        else:
+            device = self.middleman.get_device_by_name(name)
+
+            if not device:
+                dbg.stdout("Device '{0}' not found. Cannot play effect!".format(name), dbg.error)
+                exit(1)
+            elif type(device) == str:
+                dbg.stdout("Failed to load device '{0}'. Error details:\n{1}".format(name, device), dbg.error)
+                exit(1)
+
+            serial = device["serial"]
+
+        # Load device object (fx)
+        fx = self.middleman.get_device_object(device["backend"], device["uid"])
+        if not fx:
+            dbg.stdout("Device with serial '{0}' does not support custom effects!".format(serial), dbg.error)
+            exit(1)
+        elif type(fx) == str:
+            dbg.stdout("Failed to get device object for serial '{0}'. Error details:\n{1}".format(serial, fx), dbg.error)
+            exit(1)
+
+        # Prepare objects (PID, state and effect data)
+        process = procpid.ProcessManager(serial)
+        state = procpid.DeviceSoftwareState(serial)
+        filemgr = effects.EffectFileManagement(i18n, _, dbg)
+
+        effect_data = filemgr.get_item(path)
+        effect_name = effect_data["parsed"]["name"]
+        effect_icon = effect_data["parsed"]["icon"]
+        effect_type = effect_data["type"]
+
+        # Update PID assignment
+        process.set_component_pid()
+        state.set_effect(effect_name, effect_icon, path)
+
+        dbg.stdout("Starting playback of '{0}' on {1} device {2}".format(effect_name, device["backend"], device["uid"]), dbg.success, 1)
+        playback = EffectPlayback(device, fx, effect_data)
+
+        if effect_type == effects.TYPE_LAYERED:
+            playback.play_layered()
+        elif effect_type == effects.TYPE_SCRIPTED:
+            playback.play_scripted()
+        elif effect_type == effects.TYPE_SEQUENCE:
+            playback.play_sequence()
+        else:
+            dbg.stdout("Unknown effect type!", dbg.error)
+            exit(1)
+
+
+class EffectPlayback(object):
+    """
+    Handles the background processing of Polychromatic's formats of effects.
+
+    - 'Sequence' is a very simple series of frames.
+    - 'Scripted' have control over the fx object for more complex processing.
+    - 'Layered' is a computed set of scripted effects processed on a layer basis.
+    """
+    def __init__(self, device, fx, data):
+        """
+        Params:
+            device      middleman.get_device() object
+            fx          middleman.get_device_object() object
+            data        Contents of the effect's JSON to run.
+        """
+        self.device = device
+        self.fx = fx
+        self.data = data
+
+    def play_sequence(self):
+        frames = self.data["frames"]
+        total_frames = len(frames) - 1
+        looped = self.data["loop"]
+        fps = self.data["fps"]
+        current = -1
+
+        # Showtime!
+        while True:
+            current = current + 1
+            frame = frames[current]
+            self.fx.clear()
+
+            for x in frame.keys():
+                for y in frame[x].keys():
+                    try:
+                        hex_value = frame[str(x)][str(y)]
+                        rgb = self.fx.hex_to_rgb(hex_value)
+                        self.fx.set(int(x), int(y), rgb[0], rgb[1], rgb[2])
+                    except KeyError:
+                        # Expected, no data stored for this position
+                        continue
+
+            self.fx.draw()
+            time.sleep(1 / fps)
+
+            if current == total_frames:
+                if looped:
+                    current = -1
+                else:
+                    exit(0)
+
+    def play_scripted(self):
+        pass
+
+    def play_layered(self):
+        pass
+
+
+if __name__ == "__main__":
+    # Appear as its own process.
+    setproctitle.setproctitle("polychromatic-helper")
+
+    # i18n is not used for this process.
+    i18n = locales.Locales(__file__)
+    def _(string):
+        return string
+
+    dbg = common.Debugging()
+    helper = Bootstrapper()
+    helper.start()

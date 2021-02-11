@@ -1,208 +1,110 @@
-![Polychromatic](.readme/logo.png)
+![Polychromatic](.github/logo.png)
 
-A front-end for customising the functionality of your Razer perpherials under GNU/Linux.
+An open source RGB lighting management front-end application to customise
+[OpenRazer] peripherals on GNU/Linux. Soon to be vendor agnostic!
 
-[![GitHub Release](https://img.shields.io/github/release/lah7/polychromatic.svg)](https://github.com/lah7/polychromatic/releases)
-[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/lah7/polychromatic/blob/master/LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.5.2-blue.svg)](#)
+[![Build](https://github.com/polychromatic/polychromatic/workflows/Build/badge.svg?event=push)](https://github.com/polychromatic/polychromatic/actions?query=workflow%3ABuild)
+[![Unit Tests](https://github.com/polychromatic/polychromatic/workflows/Unit%20Tests/badge.svg?event=push)](https://github.com/polychromatic/polychromatic/actions?query=workflow%3A%22Unit+Tests%22)
+[![GitHub Release](https://img.shields.io/github/release/polychromatic/polychromatic.svg)](https://github.com/polychromatic/polychromatic/releases)
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/polychromatic/polychromatic/blob/master/LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.8.6-blue.svg)](#)
 
-## Features
+![Screenshot of Polychromatic's v1.0.0 Controller interface](.github/controller@2x.webp)
 
-### Controller
-| Screenshot | Features |
-| ---------- | -------- |
-| ![Controller v0-3-8](https://cloud.githubusercontent.com/assets/13032135/24725693/b9766b60-1a47-11e7-926b-df5568a13e8a.png) | <ul><li>Set effects, brightness, colours, DPI and modes supported by the device.</li><li>Create application profiles.</li><li>Set up colours for quick access.</li><li>View all connected devices and configure the daemon-specific settings.</li></ul>
+<p align="center">
+The next generation of the software (v1.0.0) - not released yet!
+</p>
 
-### Tray Applet
-| Screenshot | Features |
-| ---------- | -------- |
-| ![Tray Effects Menu](https://cloud.githubusercontent.com/assets/13032135/24725801/0aa359b2-1a48-11e7-8c4a-638c6024cb08.png) | <ul><li>Quickly change the Chroma effects of your device from this tray applet.</li><li>Set colours and application profiles on-the-fly.</li></ul>
+### [https://polychromatic.app](https://polychromatic.app)
 
-[View all screenshots](.readme/Screenshots.md)
+---
 
-GNOME Shell 3.xx (in some distributions) may also need to install an **AppIndicator extension** in order to see the tray applet.
+## v0.3.12 Notice
 
-------------
+This README (and branch) is for the next generation of the software still in
+development. For the older release (v0.3.12) designed for Razer BlackWidow Chroma
+and is compatible with most Razer hardware that was supported before 2018, see the
+[stable branch](https://github.com/polychromatic/polychromatic/tree/stable-python38).
+
+v1.0.0 is aimed to be released for beta testing as soon as humanly possible!
+
+
+## About
+
+Polychromatic is a vendor agnostic front-end for managing lighting, RGB effects
+and some special functionality for keyboards, mice, keypads and just about any
+other gaming peripheral on your GNU/Linux system.
+
+The software aims to make it easy to create and co-ordinate lighting effects
+that work across all compatible hardware, even if you switch to another brand
+also supported by Polychromatic.
+
+Presets and triggers enables you to switch your lighting on-the-fly
+to match the application or game that's currently playing.
+
+[View Features & Screenshots](https://polychromatic.app/about/) (v0.3.12)
+
 
 ## Device Support
 
-See the [daemon's device support table](https://github.com/openrazer/openrazer#device-support) to check whether your device is supported by the daemon. Once it works with the daemon, it's likely to work in Polychromatic too.
+Polychromatic on its own is just a front-end, it needs at least one backend
+installed to provide the actual communication with the hardware.
 
-However, not all newly supported devices will work straight away. These devices have known issues:
+**Currently, [OpenRazer](https://openrazer.github.io) is the only supported
+backend at the moment.** (Being vendor agnostic is a fairly new objective!)
 
-| Keyboard | Mouse | Mousemat | Keypad | Headset |
-|   :---:  | :---: |   :---:  | :---:  | :---:   |
-| ![Keyboard](.readme/status/keyboard-ok.png) | ![Mouse](.readme/status/mouse-warn.png) | ![Mousemat](.readme/status/mousemat-warn.png) | ![Keypad](.readme/status/keypad-ok.png) | ![Headset](.readme/status/headset-ok.png)
+To check your Razer device is supported, check out the
+[supported devices grid](https://openrazer.github.io/#devices) on the OpenRazer website.
 
-#### Known Issues
-* **Mice and mousemats**
-  * Profile support will come in a future release.
+In future, this project aims to add support for:
 
-With developments being made to the daemon, it will eventually be possible to:
-
-* Manage macros for keyboards and keypads.
-* Create and run "custom effects".
-
-There are some limitations:
-
-* Profile support is not possible for keypads as the daemon does not support matrixes.
+* [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) - supports many brands, including GPU, MB and RAM modules.
+* [Philips Hue (phue)](https://github.com/polychromatic/polychromatic/issues/296)
 
 
--------------
+## Download
 
-## Driver Installation
+Instructions for each supported distro are provided on the website:
 
-### ![Chroma Drivers](.readme/openrazer.png) OpenRazer
-If you haven't already, you will need to install the [OpenRazer](http://openrazer.github.io/) driver and daemon.
+* <https://polychromatic.app/download/>
 
-Ubuntu and Linux Mint users can install this via this PPA:
+Installing packages from the repository is recommended as this will keep
+the software up-to-date.
 
-    sudo add-apt-repository ppa:openrazer/stable
-    sudo apt update
-    sudo apt install openrazer-meta
+Alternately, providing all the [dependencies](https://polychromatic.app/docs/dependencies/)
+are installed, you can run the application directly from the repository without
+installation.
 
-Please see the [project website](http://openrazer.github.io/#download) for instructions for your distribution.
+**Are you on the cutting edge?** You can grab artifacts for the [latest build from the Actions tab.](https://github.com/polychromatic/polychromatic/actions?query=workflow%3ABuild)
+You'll need to be signed in to GitHub to download these. Some distros also
+provide a `-git` or testing repository too.
 
-
-## Polychromatic Installation
-
-#### ![Ubuntu](.readme/ubuntu.png) Ubuntu 16.04+ / Linux Mint 18+
-
-##### Stable Builds
-
-Polychromatic can be installed via this PPA:
-
-    sudo add-apt-repository ppa:polychromatic/stable
-    sudo apt update
-    sudo apt install polychromatic
-
-The PPA is recommended as it keeps the application up-to-date.
-
-##### Development Builds
-
-These builds deliver the newest features and improvements quicker, but are not well tested and may be buggy at times.
-
-    sudo add-apt-repository ppa:polychromatic/daily
-    sudo apt update
-    sudo apt install polychromatic
-
-If you later decide to revert back to the stable builds:
-
-    sudo apt remove polychromatic
-    sudo rm /etc/apt/sources.list.d/polychromatic-ubuntu-daily.list*
-    sudo add-apt-repository ppa:polychromatic/stable
-    sudo apt update
-    sudo apt install polychromatic
-
-The previous `lah7/polychromatic` and `lah7/polychromatic-daily` PPAs have been deprecated, while they'll still be updated during this transition, in future versions you'll be advised to switch.
-
-#### ![Debian](.readme/debian.png) Debian
-
-Packages built for Ubuntu are also compatible with Debian. You can add the repository and signing key as follows:
-
-```
-echo "deb http://ppa.launchpad.net/polychromatic/stable/ubuntu xenial main" | sudo tee -a /etc/apt/sources.list.d/polychromatic.list
-sudo apt-key adv --recv-key --keyserver keyserver.ubuntu.com 96B9CD7C22E2C8C5
-sudo apt update
-sudo apt install polychromatic
-```
-
-(Or `daily` instead of `stable` for development builds)
-
-Standalone packages are available from the [releases page](https://github.com/lah7/polychromatic/releases/latest/),
-or by following a manual installation below.
-
-
-#### ![Arch](.readme/arch.png) Arch Linux
-
-Packages for Arch are maintained by [z3ntu](https://github.com/z3ntu). You can install using an AUR wrapper, like as follows:
-
-    yaourt -S polychromatic
-    pacaur -S polychromatic
-
-There are two packages:
-
-* [`polychromatic`](https://aur.archlinux.org/packages/polychromatic/) - Latest stable version.
-* [`polychromatic-git`](https://aur.archlinux.org/packages/polychromatic-git/) - Latest development version.
-
-
-#### ![Fedora](.readme/fedora.png) Fedora and ![openSUSE](.readme/opensuse.png) openSUSE
-
-You can add a repository and obtain packages for these distributions via OpenSUSE's Build System.
-Thank you to [z3ntu](https://github.com/z3ntu) for setting this up.
-
-* https://software.opensuse.org/download.html?project=hardware%3Arazer&package=polychromatic
-
-
-#### ![Gentoo](.readme/gentoo.png) Gentoo
-
-Rudimentary ebuilds for Gentoo are maintained by [vifino](https://github.com/vifino) in [his personal overlay](https://github.com/vifino/vifino-overlay/tree/master/app-misc/polychromatic). These can be installed with these commands:
-
-    sudo layman -a vifino-overlay
-    emerge polychromatic
-
-
-#### ![Other Distributions](.readme/linux.png) Other Distributions / Manual Installation
-
-See further below for which dependencies you will require to install first.
-
-    git clone https://github.com/lah7/polychromatic.git
-    cd polychromatic
-    git checkout stable
-    sudo ./install/install.sh
-
-**If you'd like to use the latest development version** (but potentially unstable), skip this line: `git checkout stable`.
-
-You can update your installation by clicking **"Check for Updates"** in the preferences, or by running:
-
-    ./install/update.sh
-
-**Note for Red Hat or CentOS 7** - OpenRazer does not officially support this at the moment ([#399](https://github.com/openrazer/openrazer/issues/399), [#408](https://github.com/openrazer/openrazer/issues/408)). However [moozhub has created packages](https://github.com/moozhub/yum-repo-mooz) you can use.
-
-### Dependencies
-
-Polychromatic interfaces with the daemon from the [OpenRazer project](https://openrazer.github.io). These packages are required for all distributions:
-
-* [python3-openrazer](https://github.com/openrazer/openrazer)
-* [openrazer-daemon](https://github.com/openrazer/openrazer)
-
-These packages are required for **running** the application:
-
-| Debian/Ubuntu | Arch | openSUSE |
-| ------------- | ---- | -------- |
-| [gir1.2-gtk-3.0](https://packages.debian.org/sid/gir1.2-gtk-3.0) | [gtk3](https://www.archlinux.org/packages/extra/x86_64/gtk3/) | |
-| [gir1.2-appindicator3-0.1](https://packages.debian.org/sid/gir1.2-appindicator3-0.1) | [libappindicator-gtk3](https://www.archlinux.org/packages/community/x86_64/libappindicator-gtk3/) | [typelib-1_0-AppIndicator3-0_1](https://software.opensuse.org/package/typelib-1_0-AppIndicator3-0_1) |
-| [gir1.2-webkit2-4.0](https://packages.debian.org/sid/gir1.2-webkit2-4.0) | [webkit2gtk](https://www.archlinux.org/packages/extra/x86_64/webkit2gtk/) | [typelib-1_0-WebKit2-4_0](https://software.opensuse.org/package/typelib-1_0-WebKit2-4_0) |
-| [python3-gi](https://packages.debian.org/sid/python3-gi) | [python-gobject](https://www.archlinux.org/packages/extra/x86_64/python-gobject/) | [python3-gobject](https://software.opensuse.org/package/python3-gobject) |
-| [python3-setproctitle](https://packages.debian.org/sid/python3-setproctitle) | [python-setproctitle](https://www.archlinux.org/packages/community/x86_64/python-setproctitle/) | [python3-setproctitle](https://software.opensuse.org/package/python3-setproctitle) |
-| [python3-requests](https://packages.debian.org/sid/python3-requests) | [python-requests](https://www.archlinux.org/packages/extra/any/python-requests/) | [python3-requests](https://software.opensuse.org/package/python3-requests) |
-| [imagemagick](https://packages.debian.org/sid/imagemagick) | [imagemagick](https://www.archlinux.org/packages/extra/x86_64/imagemagick/) | [imagemagick](https://software.opensuse.org/package/ImageMagick) |
-
-These packages are required just for **compiling** the application:
-
-| Debian/Ubuntu | Arch | openSUSE |
-| ------------- | ---- | -------- |
-| [node-less](https://packages.ubuntu.com/search?keywords=node-less) | [nodejs-less](https://www.archlinux.org/packages/community/any/nodejs-less/) | |
 
 ## Something not working?
 
-* Check that the driver and daemon are [properly installed](https://github.com/openrazer/openrazer#installation) for your distribution.
-* Check that your [device has daemon support](https://github.com/openrazer/openrazer#device-support).
-* For DBUS, daemon or driver bugs, [see if an issue](https://github.com/openrazer/openrazer/issues) has been raised on the [OpenRazer repository](https://github.com/openrazer/openrazer), otherwise [please create a new issue there](https://github.com/openrazer/openrazer/issues/new).
+For [OpenRazer] users, occasionally, issues are caused by an improper driver
+installation. Polychromatic includes a troubleshooter to identify common problems.
 
-For visual or functional problems with Polychromatic, [please raise an issue here instead](https://github.com/lah7/polychromatic/issues/new).
+Should you still be stuck, [check if an issue already exists](https://github.com/openrazer/openrazer/issues),
+and that your hardware is supported before [creating a new issue](https://github.com/openrazer/openrazer/issues/new).
+
+For bugs with Polychromatic, [please raise an issue here](https://github.com/polychromatic/polychromatic/issues/new).
 
 
 ## Translations
 
-The software is ready to speak multiple languages! Take a look
-[at this wiki page](https://github.com/lah7/polychromatic/wiki/How-to-translate-the-application) if you'd like to contribute.
+The software can speak multiple languages!
+[Here's a guide](https://polychromatic.app/docs/translations/) if you'd like to contribute.
+
+Please note that there may be new and changed strings while this new
+version is being finalized.
 
 
 ## Donations
 
-This software is developed in my spare time without any expection of money in return,
-but if you're [feeling generous](https://github.com/lah7/polychromatic/issues/75), then you are more than welcome to
-[donate to the lead developer](https://www.paypal.me/LukeHorwell) of Polychromatic
-and [the people who bring you the driver and daemon](https://github.com/openrazer/openrazer/blob/master/README.md#contributions).
-Thank you for your generosity.
+If you love this software and wish to leave a little something to excite the
+developer, you're welcome to do so [via paypal.me](https://www.paypal.me/LukeHorwell).
+Thank you for your generosity!
+
+
+[OpenRazer]: https://openrazer.github.io

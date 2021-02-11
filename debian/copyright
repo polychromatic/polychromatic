@@ -1,53 +1,61 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: polychromatic
-Upstream-Contact: Luke Horwell <luke@ubuntu-mate.org>
-Source: https://github.com/lah7/polychromatic/
+Upstream-Contact: Luke Horwell <code@horwell.me>
+Source: https://github.com/polychromatic/polychromatic/
 
 Files: polychromatic-controller
        polychromatic-tray-applet
-       data/pages/*.html
-       data/pages/*.js
-       data/mapping/*.svg
-       pylib/*
-       tools/*
-Copyright: 2015-2017, Luke Horwell <luke@ubuntu-mate.org>
+Copyright: 2015-2021, Luke Horwell <code@horwell.me>
            2015-2016, Terry Cain <terry@terrys-home.co.uk>
 License: GPL-3+
 
+Files: polychromatic-cli
+       polychromatic-helper
+Copyright: 2017-2021, Luke Horwell <code@horwell.me>
+License: GPL-3+
+
 Files: data/*
-       source/*
-       debian/*
-       install/*
-       docs/*
-       man/*
-       .readme/*
+       .github/*
        CHANGELOG
+       INSTALL
        LICENSE
        README.md
-Copyright: 2015-2017, Luke Horwell <luke@ubuntu-mate.org>
+       debian/*
+       man/*
+       meson.build
+       meson_options.txt
+       polychromatic-controller-dev
+       pylib/*
+       scripts/*
+       source/*
+       tests/*
+       .*
+Copyright: 2015-2021, Luke Horwell <code@horwell.me>
 License: GPL-3+
 
-Files: lib/jquery-2.1.4.min.js
-       lib/font-awesome.min.css
+Files: data/qt/webview/lib/jquery*
 Copyright: 2015-2015, jQuery Foundation, Inc
-           2016, Dave Gandy
 License: MIT
 
-Files: lib/fontawesome-webfont.woff
-Copyright: 2016, Dave Gandy
+Files: data/qt/webview/lib/html5kellycolorpicker*
+Copyright: 2015-2019, Rubchuk Vladimir
+License: GPL-3+
+
+Files: data/img/*
+Copyright: 2016, Dave Gandy (FontAwesome 5)
+License: MIT
+
+Files: data/qt/fonts/Play-Regular.svg
+Copyright: 2016, Jonas Hecksher
 License: OFL-1.1
 
-Files: lib/snap.svg-min.js
-Copyright: 2013-2017, Adobe Systems Incorporated
-License: Apache 2.0
-
 Files: locale/*
-Copyright: 2016-2017, Luke Horwell (en_GB)
-           2017, BlauerHunger (de_DE)
+Copyright: 2017, BlauerHunger (de)
+           2019, claudiosanches (pt_BR)
+           2020, philippe1973 (fr_FR)
 License: GPL-3+
 
 License: GPL-3+
-
     This package is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 3 of the License, or
@@ -62,7 +70,6 @@ License: GPL-3+
     License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 
 License: MIT
-
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
@@ -81,22 +88,7 @@ License: MIT
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 
- License: Apache 2.0
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    .
-    http://www.apache.org/licenses/LICENSE-2.0
-    .
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
 License: OFL-1.1
-
     PREAMBLE
     The goals of the Open Font License (OFL) are to stimulate worldwide
     development of collaborative font projects, to support the font creation
@@ -179,4 +171,3 @@ License: OFL-1.1
     DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
     FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
     OTHER DEALINGS IN THE FONT SOFTWARE.
-

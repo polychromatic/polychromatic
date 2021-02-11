@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding:utf-8 -*-
+#!/usr/bin/python3
 #
 # Polychromatic is free software: you can redistribute it and/or modify
 # it under the temms of the GNU General Public License as published by
@@ -15,1103 +14,859 @@
 # along with Polychromatic. If not, see <http://www.gnu.org/licenses/>.
 #
 # Copyright (C) 2015-2016 Terry Cain <terry@terrys-home.co.uk>
-#               2015-2017 Luke Horwell <luke@ubuntu-mate.org>
+#               2015-2021 Luke Horwell <code@horwell.me>
 #
+"""
+Control devices from the desktop environment's indicator applet or system tray.
 
-import gi
-gi.require_version('Gtk', '3.0')
-gi.require_version('Gdk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
-from gi.repository import Gtk, Gdk, AppIndicator3 as appindicator
+Works as an AppIndicator (GTK) or GTK Status Icon.
+"""
+
+import atexit
 import argparse
-import collections
 import os
 import sys
 import signal
-import gettext
 import setproctitle
-from subprocess import Popen as background_process
-from subprocess import call as foreground_process
+import subprocess
 from shutil import which
 
-try:
-    import openrazer.client as rclient
-    from openrazer_daemon.keyboard import KeyboardColour
-except Exception as e:
-    print("Failed to import modules for daemon.")
-    print("Exception: " + str(e))
-    exit(1)
+import gi
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+from gi.repository import Gtk, Gdk
 
 try:
-    # Relative copy
-    import pylib.preferences as pref
-    import pylib.profiles as prof
-    import pylib.common as common
-except ImportError:
-    # Installed to system
-    import polychromatic.preferences as pref
-    import polychromatic.profiles as prof
-    import polychromatic.common as common
-except Exception as e:
-    print("One or more of Polychromatic's modules could not be imported!")
-    print("Try re-installing the application.")
-    print("\nException:" + str(e))
-    exit(1)
+    gi.require_version("AppIndicator3", "0.1")
+    from gi.repository import AppIndicator3 as appindicator
+    APPINDICATOR = True
+except:
+    APPINDICATOR = False
 
-path = pref.Paths()
-path.data_source = path.get_data_source(__file__)
-session_storage = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet")
+VERSION = "0.6.0"
 
-"""
-GTK-based tray applet to control devices from the user's desktop environment.
-"""
+# Import modules if running relatively.
+if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
+    try:
+        import pylib.preferences as pref
+        import pylib.common as common
+        import pylib.effects as effects
+        import pylib.locales as locales
+        import pylib.middleman as middleman_mod
+        import pylib.procpid as procpid
+    except (ImportError, Exception) as e:
+        print("Failed to import modules relatively.\n")
+        raise e
 
-# Functions for populating the indicator menus.
-def create_menu_item(label, enabled, function=None, function_params=None, icon_path=None):
+# Import modules if installed system-wide.
+else:
+    try:
+        import polychromatic.preferences as pref
+        import polychromatic.common as common
+        import polychromatic.effects as effects
+        import polychromatic.locales as locales
+        import polychromatic.middleman as middleman_mod
+        import polychromatic.procpid as procpid
+    except (ImportError, Exception) as e:
+        print("Polychromatic's modules could not be imported.")
+        print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
+        raise e
+
+
+class Indicator(object):
+    def __init__(self):
+        """
+        List of technologies that can power the indicator/applet/tray icon.
+
+        For naming, this will be internally referred to as "indicator"
+        """
+        self.indicator = None
+        self.root_menu = None
+        self.mode = prefs["tray"]["mode"]
+
+        # 0 will use the default, unless it is unavailable.
+        if self.mode == pref.TRAY_DEFAULT:
+            self.mode = pref.TRAY_APPINDICATOR
+
+        # TODO: Refactor into classes
+        self.appindicator = pref.TRAY_APPINDICATOR
+        self.gtk_status_icon = pref.TRAY_GTK_STATUS
+        self.names = {
+            self.appindicator: "AppIndicator",
+            self.gtk_status_icon: "GTKStatusIcon"
+        }
+
+        # User may pass a parameter to force a different indicator.
+        if args.force_appindicator:
+            self.mode = self.appindicator
+        elif args.force_gtk_status:
+            self.mode = self.gtk_status_icon
+
+        # Checks the specified mode is available.
+        if self.mode == self.appindicator and not APPINDICATOR:
+            dbg.stdout("AppIndicator is not available, falling back to GTKStatusIcon...", dbg.warning)
+            self.mode = self.gtk_status_icon
+
+    def setup(self, icon_path):
+        """
+        Creates the object, depending on backend in use.
+
+        Params:
+            icon_path       (str)       Absolute path to the icon
+        """
+        dbg.stdout("Initializing " + self.names[self.mode], dbg.action, 1)
+
+        if self.mode == self.appindicator:
+            self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", icon_path, appindicator.IndicatorCategory.APPLICATION_STATUS)
+            self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
+
+        elif self.mode == self.gtk_status_icon:
+            self.indicator = Gtk.StatusIcon()
+            self.indicator.set_name("polychromatic-tray-applet")
+            self.indicator.set_from_file(icon_path)
+            self.indicator.set_visible(True)
+
+        dbg.stdout("Initialized " + self.names[self.mode], dbg.success, 1)
+
+    def create_menu(self):
+        """
+        Returns the root menu object.
+        """
+        if self.mode in [self.appindicator, self.gtk_status_icon]:
+            self.root_menu = Gtk.Menu()
+            return self.root_menu
+
+    def create_menu_item(self, menu, label, enabled, function=None, function_params=None, icon_path=None):
+        """
+        Returns a menu item object for appending into a menu.
+
+        Params:
+            menu                (obj)   create_menu() or create_submenu() object
+            label               (str)   Text to display to the user.
+            enabled             (bool)  Whether the selection should be highlighted or not.
+            function            (obj)   Callback when button is clicked.
+            function_params     (list)  Functions to pass the callback function.
+            icon_path           (str)   Path to image file.
+        """
+        if self.mode in [self.appindicator, self.gtk_status_icon]:
+            if icon_path and os.path.exists(icon_path):
+                item = Gtk.ImageMenuItem(label=label)
+                item.set_sensitive(enabled)
+                item.show()
+
+                img = Gtk.Image()
+                img.set_from_file(icon_path)
+                item.set_image(img)
+            else:
+                item = Gtk.MenuItem(label=label)
+                item.set_sensitive(enabled)
+                item.show()
+
+            if function and not function_params:
+                item.connect("activate", function)
+            elif function and function_params:
+                item.connect("activate", function, function_params)
+
+            menu.append(item)
+
+    def add_menu_item(self, menu, menu_item):
+        """
+        Add a menu item to the specified menu.
+        """
+        menu.append(menu_item)
+
+    def create_submenu(self, label, enabled, icon_path=None):
+        """
+        Create a submenu object, one to add to the parent menu, and the other
+        containing the new menu object itself.
+
+        Params:
+            label               (str)   Text to display to the user.
+            enabled             (bool)  Whether the selection should be highlighted or not.
+
+        Returns list of objects:
+            menu                Menu object (to contain new child menu items)
+            item                Menu item object (for appending to parent menu)
+        """
+        if self.mode in [self.appindicator, self.gtk_status_icon]:
+            if icon_path and os.path.exists(icon_path):
+                item = Gtk.ImageMenuItem(label=label)
+                item.set_sensitive(enabled)
+                item.show()
+
+                img = Gtk.Image()
+                img.set_from_file(icon_path)
+                item.set_image(img)            # GTK3: Deprecated, no replacement!
+            else:
+                item = Gtk.MenuItem(label=label)
+                item.set_sensitive(enabled)
+                item.show()
+
+            menu = Gtk.Menu()
+            menu.show()
+            item.set_submenu(menu)
+
+            return[menu, item]
+
+    def create_seperator(self, menu):
+        """
+        Returns a seperator object.
+
+        Params:
+            menu                (obj)   create_menu() or create_submenu() object.
+        """
+        if self.mode in [self.appindicator, self.gtk_status_icon]:
+            sep = Gtk.SeparatorMenuItem()
+            sep.show()
+            self.add_menu_item(menu, sep)
+
+    def finalize(self):
+        """
+        Connects the event for when the menu is opened/clicked.
+        """
+        if self.mode == self.appindicator:
+            self.indicator.set_title("Polychromatic")
+            self.indicator.set_menu(self.root_menu)
+
+        elif self.gtk_status_icon:
+            def _show_menu_cb(widget, button, time, data=None):
+                self.root_menu.show_all()
+                self.root_menu.popup(None, None, Gtk.StatusIcon.position_menu, self.indicator, button, time)
+
+            def _click_menu_cb(widget):
+                cb.launch_controller(None)
+            self.menu = self.root_menu
+            self.indicator.connect("popup-menu", _show_menu_cb)
+            self.indicator.connect("activate", _click_menu_cb)
+
+
+class PolychromaticTrayApplet():
     """
-    Returns a Gtk menu item for use in menus.
-        label               str     Text to display to the user.
-        enabled             bool    Whether the selection should be highlighted or not.
-        function            obj     Callback when button is clicked.
-        function_params     obj     Functions to pass the callback function.
-        icon_path           str     Path to image file.
-    """
-    if icon_path and os.path.exists(icon_path):
-        item = Gtk.ImageMenuItem(Gtk.STOCK_NEW, label=label)
-        item.set_sensitive(enabled)
-        item.show()
-
-        img = Gtk.Image()
-        img.set_from_file(icon_path)
-        item.set_image(img)
-    else:
-        item = Gtk.MenuItem(label)
-        item.set_sensitive(enabled)
-        item.show()
-
-    if function and not function_params:
-        item.connect("activate", function)
-    elif function and function_params:
-        item.connect("activate", function, function_params)
-
-    return item
-
-def create_submenu(label, enabled):
-    """
-    Returns a Gtk menu item for sub-menu options.
-        label               str     Text to display to the user.
-        enabled             bool    Whether the selection should be highlighted or not.
-
-    Returns objects:
-        item                MenuItem (for parent menu)
-        menu                Menu (containing child menu items)
-    """
-
-    item = Gtk.MenuItem(label)
-    item.set_sensitive(enabled)
-    item.show()
-
-    menu = Gtk.Menu()
-    menu.show()
-    item.set_submenu(menu)
-
-    return[item, menu]
-
-def create_seperator():
-    """
-    Returns a Gtk seperator object.
-    """
-    sep = Gtk.SeparatorMenuItem()
-    sep.show()
-    return sep
-
-
-class AppIndicator(object):
-    """
-    Indicator applet that provides quick access configuration
-    options from the system tray.
+    Provides the logic for providing quick access to device options from the
+    system tray or notification area.
     """
     def __init__(self):
-        self.devman = None
-        self.active_device = None
-        self.active_serial = None
+        pass
 
-        self.indicator = None
-        self.profiles = None
-
-        self.menu_root = None
-        self.menu_devices = None
-        self.menu_effects = None
-        self.menu_brightness = None
-        self.menu_app_profiles = None
-        self.menu_colours = None
-        self.menu_dpi = None
-        self.menu_poll_rate = None
-        self.menu_misc = None
-
-        self.current_device = _("Unknown")
-        self.current_effect = _("Unknown")
-        self.current_brightness = _("Unknown")
-        self.current_app_profile = None
-        self.current_colour = _("Green")
-        self.current_colour_rgb = [0, 255, 0]
-        self.current_dpi = _("Unknown")
-        self.current_poll_rate = _("Unknown")
-        self.current_gamemode = _("Unknown")
-
-        self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", self._get_tray_icon(), appindicator.IndicatorCategory.APPLICATION_STATUS)
-        self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
-
-    def setup(self):
-        # Set active device
-        if not which("openrazer-daemon"):
-            self._setup_failed(_("Daemon Not Installed."), _("Unknown command: openrazer-daemon"))
-
-        try:
-            self.devman = rclient.DeviceManager()
-        except Exception as e:
-            self._setup_failed(_("Daemon isn't running or crashed."), str(e))
+    def start(self):
+        """
+        Begin execution of the tray applet.
+        """
+        # Show error if no backends are available
+        if len(middleman.backends) == 0:
+            self._setup_failed(_("No backends available"), common.get_icon("general", "unknown"))
             return False
 
-        # Turn off incompatible features
-        self.devman.sync_effects = False
-
-        if len(self.devman.devices) == 0:
-            self._setup_failed(_("No devices found."))
-            return False
-        else:
-            self.active_device = self.devman.devices[0]
-            self.active_serial = self.active_device.serial
-            self.current_device = self.active_device.name
-
-        # Ensure correct tray icon is loaded
-        self.indicator.set_icon(self._get_tray_icon())
-
-        # Populate root menu and submenus.
-        self.rebuild_all_submenus()
-        self.rebuild_root_menu()
-
-        # Start watching devicestate index for changes.
-        common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
+        # Build the applet
+        self.build_indicator()
         dbg.stdout("Finished setting up applet.", dbg.success, 1)
-
-    def rebuild_all_submenus(self):
-        """
-        Rebuilds the submenus based on the currently active device.
-        If a device does not require this menu, this returns None.
-        """
-        self.menu_devices = self._build_device_menu()
-        self.menu_effects = self._build_effect_menu()
-        self.menu_brightness = self._build_brightness_menu()
-        self.menu_app_profiles = self._build_app_profile_menu()
-        self.menu_dpi = self._build_dpi_menu()
-        self.menu_poll_rate = self._build_poll_rate_menu()
-        self.menu_gamemode = self._build_gamemode_menu()
-        self.menu_colours = self._build_colour_menu()
-        dbg.stdout("Finished building submenus.", dbg.success, 1)
-
-    def rebuild_root_menu(self):
-        """
-        Rebuilds the parent "tray" menu.
-        """
-        dbg.stdout("Updating menu layout...", dbg.action, 1)
-        root = Gtk.Menu()
-
-        root.append(create_menu_item(self.current_device, False))
-        root.append(self.menu_devices)
-        root.append(create_seperator())
-        dbg.stdout("Finished building root menu.", dbg.success, 1)
-
-        multiple_sources = common.has_multiple_sources(self.active_device)
-
-        if self.menu_effects:
-            root.append(self.menu_effects)
-
-            if self.active_device.has("lighting"):
-                state = common.get_effect_state_string(self._get_device_state("main", "effect"))
-                if multiple_sources:
-                    root.append(create_menu_item(_("Main") + ": " + state, False))
-                else:
-                    root.append(create_menu_item(state, False))
-
-            if self.active_device.has("lighting_backlight"):
-                state = common.get_effect_state_string(self._get_device_state("backlight", "effect"))
-                if multiple_sources:
-                    root.append(create_menu_item(_("Backlight") + ": " + state, False))
-                else:
-                    root.append(create_menu_item(state, False))
-
-            if self.active_device.has("lighting_logo"):
-                state = common.get_effect_state_string(self._get_device_state("logo", "effect"))
-                if multiple_sources:
-                    root.append(create_menu_item(_("Logo") + ": " + state, False))
-                else:
-                    root.append(create_menu_item(state, False))
-
-            if self.active_device.has("lighting_scroll"):
-                state = common.get_effect_state_string(self._get_device_state("scroll", "effect"))
-                if multiple_sources:
-                    root.append(create_menu_item(_("Scroll Wheel") + ": " + state, False))
-                else:
-                    root.append(create_menu_item(state, False))
-
-            root.append(create_seperator())
-
-        if self.menu_brightness:
-            root.append(self.menu_brightness)
-
-            if self.active_device.has("brightness"):
-                try:
-                    state = str(int(self.active_device.brightness)) + "%"
-                except Exception:
-                    state = "---%"
-
-                if multiple_sources:
-                    root.append(create_menu_item(_("Main") + ": " + state, False))
-                else:
-                    root.append(create_menu_item(state, False))
-
-            if self.active_device.has("lighting_backlight_brightness"):
-                try:
-                    state = str(int(self.active_device.fx.misc.backlight.brightness)) + "%"
-                except Exception:
-                    state = "---%"
-
-                if multiple_sources:
-                    root.append(create_menu_item(_("Backlight") + ": " + state, False))
-                else:
-                    root.append(create_menu_item(state, False))
-
-            if self.active_device.has("lighting_logo_brightness"):
-                try:
-                    state = str(int(self.active_device.fx.misc.logo.brightness)) + "%"
-                except Exception:
-                    state = "---%"
-
-                if multiple_sources:
-                    root.append(create_menu_item(_("Logo") + ": " + state, False))
-                else:
-                    root.append(create_menu_item(state, False))
-
-            if self.active_device.has("lighting_scroll_brightness"):
-                try:
-                    state = str(int(self.active_device.fx.misc.scroll_wheel.brightness)) + "%"
-                except Exception:
-                    state = "---%"
-
-                if multiple_sources:
-                    root.append(create_menu_item(_("Scroll Wheel") + ": " + state, False))
-                else:
-                    root.append(create_menu_item(state, False))
-
-            if self.active_device.has("lighting_backlight_active"):
-                try:
-                    if self.active_device.fx.misc.logo.active == 1:
-                        root.append(create_menu_item(_("Backlight") + ": " + _("On"), False))
-                    else:
-                        root.append(create_menu_item(_("Backlight") + ": " + _("Off"), False))
-                except Exception as e:
-                    print("Skipping lighting_backlight_active due to exception:\n" + str(e))
-
-            if self.active_device.has("lighting_logo_active"):
-                try:
-                    if self.active_device.fx.misc.logo.active == 1:
-                        root.append(create_menu_item(_("Logo") + ": " + _("On"), False))
-                    else:
-                        root.append(create_menu_item(_("Logo") + ": " + _("Off"), False))
-                except Exception as e:
-                    print("Skipping lighting_logo_active due to exception:\n" + str(e))
-
-            if self.active_device.has("lighting_scroll_active"):
-                try:
-                    if self.active_device.fx.misc.scroll_wheel.active == 1:
-                        root.append(create_menu_item(_("Scroll Wheel") + ": " + _("On"), False))
-                    else:
-                        root.append(create_menu_item(_("Scroll Wheel") + ": " + _("Off"), False))
-                except Exception as e:
-                    print("Skipping lighting_scroll_active due to exception:\n" + str(e))
-
-            root.append(create_seperator())
-
-        if self.menu_app_profiles:
-            root.append(self.menu_app_profiles)
-            if self.current_app_profile:
-                root.append(create_menu_item(self.current_app_profile, False))
-            root.append(create_seperator())
-
-        if self.menu_dpi:
-            root.append(self.menu_dpi)
-            root.append(create_menu_item(self.current_dpi, False))
-            root.append(create_seperator())
-
-        if self.menu_poll_rate:
-            root.append(self.menu_poll_rate)
-            root.append(create_menu_item(self.current_poll_rate, False))
-            root.append(create_seperator())
-
-        if self.menu_gamemode:
-            root.append(self.menu_gamemode)
-            root.append(create_menu_item(self.current_gamemode, False))
-            root.append(create_seperator())
-
-        if self.menu_colours:
-            root.append(self.menu_colours)
-            root.append(create_menu_item(self.current_colour, True, cb.set_colour_custom, None, self._get_colour_icon(self.current_colour_rgb)))
-            root.append(create_seperator())
-
-        root.append(create_menu_item(_("Open Controller"), True, cb.launch_controller, None, self._get_icon("ui", "controller.svg")))
-        adv_menu = create_submenu(_("Advanced"), True)
-        adv_menu[1].append(create_menu_item("Restart Daemon", True, cb.restart_daemon))
-        root.append(adv_menu[0])
-        root.append(create_seperator())
-        root.append(create_menu_item(_("Quit"), True, cb.quit))
-
-        self.indicator.set_title("Polychromatic")
-        self.indicator.set_menu(root)
-
-    # Data fetching
-    def _get_device_state(self, source, state):
-        value = pref.get_device_state(self.active_serial, source, state)
-        if value == None:
-            value = _("Unknown")
-        return value
-
-    def _get_tray_icon(self):
-        """
-        Returns path or filename for tray icon.
-
-        Icon Sources
-            "tray_icon": {"type": "?"}
-                builtin     = One provided by Polychromatic.    "humanity-light"
-                custom      = One specified by user.            "/path/to/file"
-                gtk         = Use icon by GTK name.             "keyboard"
-        """
-
-        # If it's the first time loading, set default icon to desktop environment.
-        if not pref.exists("tray_icon", "type"):
-            common.set_default_tray_icon(pref)
-
-        icon_type = pref.get("tray_icon", "type", "builtin")
-        icon_value = pref.get("tray_icon", "value", "0")
-        icon_fallback = os.path.join(path.data_source, "tray", "humanity-light.svg")
-
-        try:
-            if icon_type == "builtin":
-                # icon_value = UUID
-                icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
-                return os.path.join(path.data_source, "tray", icon_index[icon_value]["path"])
-
-            elif icon_type == "custom":
-                # icon_value = Path to icon
-                if os.path.exists(icon_value):
-                    return icon_value
-                else:
-                    dbg.stdout("Icon missing: " + icon_value, dbg.error)
-                    dbg.stdout("Using fallback!", dbg.error)
-                    return icon_fallback
-
-            elif icon_type == "gtk":
-                # icon_value = Icon name used by GTK
-                return icon_value
-
-            else:
-                return icon_fallback
-        except Exception:
-            dbg.stdout("Error whlie loading icon, using fallback.", dbg.error)
-            return icon_fallback
 
     def _get_icon(self, img_dir, icon):
         """
         Returns the path for a Polychromatic icon.
-            img_dir = Folder inside "data/img", e.g. "effects"
-            icon    = Filename, including extension.
-        """
-        return os.path.join(path.data_source, "img", img_dir, icon)
 
-    def _setup_failed(self, error_reason, exception=None):
+        Params:
+            img_dir         (str)   Folder inside img, e.g. "effects"
+            icon            (str)   Filename excluding the extension.
+        """
+        return common.get_icon(img_dir, icon)
+
+    def _get_tray_icon(self):
+        """
+        Returns path for tray icon.
+        """
+        return common.get_tray_icon(dbg, prefs["tray"]["icon"])
+
+    def _create_menu_item_if_controller_present(self, menu, label, open_to, icon_path=None):
+        """
+        Creates a menu item, but conditionally checks if the Controller is
+        installed. This is for buttons that would open the Controller to edit
+        the feature via a GUI.
+        """
+        is_installed = procpid.ProcessManager().is_component_installed("controller")
+        indicator.create_menu_item(menu, label, is_installed, cb.launch_controller, open_to, icon_path)
+
+    def _setup_failed(self, message, icon_path):
         """
         A simple menu is displayed when something goes wrong.
         """
-        self.indicator.set_icon(self._get_icon("../tray", "error.svg"))
+        dbg.stdout("Assembling error applet...", dbg.action, 1)
 
-        root = Gtk.Menu()
-        root.append(create_menu_item(error_reason, False))
-        root.append(create_seperator())
-        root.append(create_menu_item(_("Retry"), True, cb.retry_applet))
-        root.append(create_menu_item(_("Restart Daemon"), True, cb.restart_daemon))
-        root.append(create_seperator())
-        root.append(create_menu_item(_("Open Controller"), True, cb.launch_controller, None, self._get_icon("ui", "controller.svg")))
-        root.append(create_menu_item(_("Quit"), True, cb.quit))
-        self.indicator.set_menu(root)
+        error_icon = common.get_tray_icon(dbg, "img/tray/error.svg")
+        indicator.setup(error_icon)
 
-        dbg.stdout("ERROR: " + error_reason, dbg.error)
-        if exception:
-            dbg.stdout("Exception: " + exception, dbg.error)
+        menu = indicator.create_menu()
+        indicator.create_menu_item(menu, message, False, None, None, icon_path)
+        indicator.create_seperator(menu)
+        indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
+        self._create_menu_item_if_controller_present(menu, _("Troubleshoot"), "troubleshoot", self._get_icon("general", "preferences"))
+        indicator.create_seperator(menu)
+        self._create_menu_item_if_controller_present(menu, _("Open Controller"), None, self._get_icon("general", "controller"))
+        indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
 
-    # Builds sub-menus. Returns None if not available for current device.
-    def _build_device_menu(self):
-        dbg.stdout("Building device menu...", dbg.action, 1)
-        submenu = create_submenu(_("Change Device"), True)
-        for device in self.devman.devices:
-            name = device.name
-            serial = device.serial
-            formfactor = common.get_device_type(device.type)
-            icon_path = self._get_icon("states", formfactor + ".svg")
-            if not os.path.exists(icon_path):
-                icon_path = self._get_icon("states", "unknown.svg")
-            submenu[1].append(create_menu_item(name, True, cb.set_device, serial, icon_path))
-            dbg.stdout(" -- Found: " + name, dbg.debug, 1)
-        submenu[1].append(create_seperator())
-        submenu[1].append(create_menu_item(_("Refresh Device List"), True, cb.reload_devices))
-        return submenu[0]
+        indicator.finalize()
 
-    def _build_effect_menu(self):
-        dbg.stdout("Building effect menu...", dbg.action, 1)
-        root_submenu = create_submenu("Effects", True)
+        dbg.stdout(message, dbg.error)
 
-        if self.active_device.has("lighting"):
-            main_submenu = create_submenu("Main", True)
-        else:
-            main_submenu = None
+    def build_indicator(self):
+        """
+        Populates the menu for the tray applet.
+        """
+        indicator.setup(self._get_tray_icon())
 
-        if self.active_device.has("lighting_backlight"):
-            backlight_submenu = create_submenu("Backlight", True)
-        else:
-            backlight_submenu = None
+        dbg.stdout("Loading device data...", dbg.action, 1)
+        devices = middleman.get_device_all()
+        unknown_devices = middleman.get_unsupported_devices()
 
-        if self.active_device.has("lighting_logo"):
-            logo_submenu = create_submenu("Logo", True)
-        else:
-            logo_submenu = None
+        dbg.stdout("Creating menus...", dbg.action, 1)
+        menu = indicator.create_menu()
 
-        if self.active_device.has("lighting_scroll"):
-            scroll_submenu = create_submenu("Scroll Wheel", True)
-        else:
-            scroll_submenu = None
+        # List devices and their submenus.
+        if len(devices) == 0:
+            dbg.stdout("No devices found.", dbg.error, 1)
+            indicator.create_menu_item(menu, _("No devices found."), False)
+            indicator.create_seperator(menu)
+            indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
+            indicator.create_menu_item(menu, _("Troubleshoot"), True, cb.launch_controller, "troubleshoot", self._get_icon("general", "preferences"))
 
-        # Disable menu if device has no light sources to set
-        if not self.active_device.has("lighting") and \
-           not self.active_device.has("lighting_logo") and \
-           not self.active_device.has("lighting_scroll") and \
-           not self.active_device.has("lighting_backlight"):
-            return None
+        # Order devices A-Z for consistency
+        sorted_devices = sorted(devices, key=lambda device: device["name"])
 
-        # Have multiple sub-menus if there are multiple light sources
-        multiple_menus = common.has_multiple_sources(self.active_device)
+        for device in sorted_devices:
+            indicator.add_menu_item(menu, self.build_device_submenu(device))
 
-        fx_list = [
-            # [submenu_obj, has(), callback [source, effect, effect_params], icon, label]
-            [main_submenu, "lighting_none", ["main", "none"], "none", _("None")],
-            [main_submenu, "lighting_spectrum", ["main", "spectrum"], "spectrum", _("Spectrum")],
-            [main_submenu, "lighting_wave", ["main", "wave"], "wave", _("Wave")],
-            [main_submenu, "lighting_reactive", ["main", "reactive", 1], "reactive", _("Reactive (Fast)")],
-            [main_submenu, "lighting_reactive", ["main", "reactive", 2], "reactive", _("Reactive (Medium)")],
-            [main_submenu, "lighting_reactive", ["main", "reactive", 3], "reactive", _("Reactive (Slow)")],
-            [main_submenu, "lighting_reactive", ["main", "reactive", 4], "reactive", _("Reactive (Very Slow)")],
-            [main_submenu, "lighting_breath_random", ["main", "breath", "random"], "breath", _("Breath (Random)")],
-            [main_submenu, "lighting_breath_single", ["main", "breath", "single"], "breath", _("Breath (Single)")],
-            [main_submenu, "lighting_breath_dual", ["main", "breath", "dual"], "breath", _("Breath (Dual)")],
-            [main_submenu, "lighting_pulsate", ["main", "pulsate"], "pulsate", _("Pulsate")],
-            [main_submenu, "lighting_ripple_random", ["main", "ripple", "random"], "ripple", _("Ripple (Random)")],
-            [main_submenu, "lighting_ripple", ["main", "ripple", "single"], "ripple", _("Ripple (Single)")],
-            [main_submenu, "lighting_starlight_single", ["main", "starlight", "single"], "starlight", _("Starlight (Single)")],
-            [main_submenu, "lighting_starlight_dual", ["main", "starlight", "dual"], "starlight", _("Starlight (Dual)")],
-            [main_submenu, "lighting_starlight_random", ["main", "starlight", "random"], "starlight", _("Starlight (Random)")],
-            [main_submenu, "lighting_static", ["main", "static"], "static", _("Static")],
+        for device in unknown_devices:
+            indicator.create_menu_item(menu, "{0} {1}".format(_("Unrecognised:"), device["name"]), False, None, None, device["form_factor"]["icon"])
 
-            # Logo Lighting
-            [logo_submenu, "lighting_logo_none", ["logo", "none"], "none", _("None")],
-            [logo_submenu, "lighting_logo_spectrum", ["logo", "spectrum"], "spectrum", _("Spectrum")],
-            [logo_submenu, "lighting_logo_blinking", ["logo", "blinking"], "blinking", _("Blinking")],
-            [logo_submenu, "lighting_logo_breath_random", ["logo", "breath", "random"], "breath", _("Breath (Random)")],
-            [logo_submenu, "lighting_logo_breath_single", ["logo", "breath", "single"], "breath", _("Breath (Single)")],
-            [logo_submenu, "lighting_logo_breath_dual", ["logo", "breath", "dual"], "breath", _("Breath (Dual)")],
-            [logo_submenu, "lighting_logo_pulsate", ["logo", "pulsate"], "pulsate", _("Pulsate")],
-            [logo_submenu, "lighting_logo_reactive", ["logo", "reactive", "fast"], "reactive", _("Reactive (Fast)")],
-            [logo_submenu, "lighting_logo_reactive", ["logo", "reactive", "med"], "reactive", _("Reactive (Medium)")],
-            [logo_submenu, "lighting_logo_reactive", ["logo", "reactive", "slow"], "reactive", _("Reactive (Slow)")],
-            [logo_submenu, "lighting_logo_reactive", ["logo", "reactive", "vslow"], "reactive", _("Reactive (Very Slow)")],
-            [logo_submenu, "lighting_logo_static", ["logo", "static"], "static", _("Static")],
+        # When multiple devices are present, show 'apply to all' actions
+        if len(devices) > 1:
+            bulk_menu, bulk_menu_item = indicator.create_submenu(_("Apply to All"), True, self._get_icon("devices", "all"))
+            bulk = common.get_bulk_apply_options(_, devices)
 
-            # Scroll Lighting
-            [scroll_submenu, "lighting_scroll_none", ["scroll", "none"], "none", _("None")],
-            [scroll_submenu, "lighting_scroll_spectrum", ["scroll", "spectrum"], "spectrum", _("Spectrum")],
-            [scroll_submenu, "lighting_scroll_blinking", ["scroll", "blinking"], "blinking", _("Blinking")],
-            [scroll_submenu, "lighting_scroll_breath_random", ["scroll", "breath", "random"], "breath", _("Breath (Random)")],
-            [scroll_submenu, "lighting_scroll_breath_single", ["scroll", "breath", "single"], "breath", _("Breath (Single)")],
-            [scroll_submenu, "lighting_scroll_breath_dual", ["scroll", "breath", "dual"], "breath", _("Breath (Dual)")],
-            [scroll_submenu, "lighting_scroll_pulsate", ["scroll", "pulsate"], "pulsate", _("Pulsate")],
-            [scroll_submenu, "lighting_scroll_reactive", ["scroll", "reactive", "fast"], "reactive", _("Reactive (Fast)")],
-            [scroll_submenu, "lighting_scroll_reactive", ["scroll", "reactive", "med"], "reactive", _("Reactive (Medium)")],
-            [scroll_submenu, "lighting_scroll_reactive", ["scroll", "reactive", "slow"], "reactive", _("Reactive (Slow)")],
-            [scroll_submenu, "lighting_scroll_reactive", ["scroll", "reactive", "vslow"], "reactive", _("Reactive (Very Slow)")],
-            [scroll_submenu, "lighting_scroll_static", ["scroll", "static"], "static", _("Static")]
-        ]
+            effects = bulk["effects"]
+            brightnesses = bulk["brightness"][::-1]
 
-        has_items = {
-            "main": False,
-            "logo": False,
-            "scroll": False
-        }
+            # -- Brightness
+            if len(brightnesses) > 0:
+                indicator.create_menu_item(bulk_menu, _("Brightness"), False, None, None, self._get_icon("options", "brightness"))
 
-        for fx in fx_list:
-            target_submenu = fx[0]
-            capability = fx[1]
-            callback = fx[2]
-            icon = fx[3]
-            label = fx[4]
+            for brightness in brightnesses:
+                option_id = brightness["id"]
+                option_data = brightness["data"]
+                label = brightness["label"]
+                icon = self._get_icon("options", str(option_data))
 
-            if self.active_device.has(capability):
-                icon_path = self._get_icon("effects", icon + ".svg")
-                if multiple_menus:
-                    target_submenu[1].append(create_menu_item(label, True, cb.set_effect, callback, icon_path))
-                    has_items[callback[0]] = True
-                else:
-                    root_submenu[1].append(create_menu_item(label, True, cb.set_effect, callback, icon_path))
+                indicator.create_menu_item(bulk_menu, label, True, cb.set_bulk_option, [option_id, option_data, 0], icon)
 
-        if multiple_menus and not has_items["main"] and not has_items["logo"] and not has_items["scroll"]:
-            return None
+            # -- Options
+            if len(effects) > 0:
+                # Separate from brightness, if necessary
+                if len(brightnesses) > 0:
+                    indicator.create_seperator(bulk_menu)
 
-        if multiple_menus and main_submenu and has_items["main"]:
-            root_submenu[1].append(main_submenu[0])
+                indicator.create_menu_item(bulk_menu, _("Effects"), False, None, None, self._get_icon("options", "ripple"))
 
-        if multiple_menus and backlight_submenu:
-            root_submenu[1].append(backlight_submenu[0])
+            for option in bulk["effects"]:
+                option_id = option["id"]
+                option_data = option["data"]
+                required_colours = option["required_colours"]
+                label = option["label"]
+                icon = self._get_icon("options", str(option_id))
 
-        if multiple_menus and logo_submenu and has_items["logo"]:
-            root_submenu[1].append(logo_submenu[0])
+                indicator.create_menu_item(bulk_menu, label, True, cb.set_bulk_option, [option_id, option_data, required_colours], icon)
 
-        if multiple_menus and scroll_submenu and has_items["scroll"]:
-            root_submenu[1].append(scroll_submenu[0])
+            # -- Colours
+            if len(effects) > 0:
+                indicator.create_seperator(bulk_menu)
+                colour_menu, colour_menu_item = indicator.create_submenu(_("Primary Colour"), True, self._get_icon("general", "palette"))
 
-        return root_submenu[0]
+                for colour in saved_colours:
+                    label = colour["name"]
+                    data = colour["hex"]
+                    icon = self._get_colour_icon(data)
+                    indicator.create_menu_item(colour_menu, label, True, cb.set_bulk_colour, [data], icon)
+                indicator.add_menu_item(bulk_menu, colour_menu_item)
 
-    def _build_brightness_menu(self):
-        dbg.stdout("Building brightness menu...", dbg.action, 1)
-        root_submenu = create_submenu("Brightness", True)
+            indicator.create_seperator(menu)
+            indicator.add_menu_item(menu, bulk_menu_item)
 
-        if self.active_device.has("brightness"):
-            main_submenu = create_submenu("Main", True)
-        else:
-            main_submenu = None
+            # TODO: Placeholder, Presets not yet implemented
+            print("stub:preset menu")
+            presets_menu, presets_menu_item = indicator.create_submenu(_("Apply Preset"), False, self._get_icon("general", "presets"))
+            indicator.create_menu_item(presets_menu, "Placeholder", False)
+            indicator.add_menu_item(menu, presets_menu_item)
 
-        if self.active_device.has("lighting_backlight_brightness") or self.active_device.has("lighting_backlight_active"):
-            backlight_submenu = create_submenu("Backlight", True)
-        else:
-            backlight_submenu = None
+        # General Options
+        indicator.create_seperator(menu)
+        self._create_menu_item_if_controller_present(menu, _("Open Controller"), None, self._get_icon("general", "controller"))
+        indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
+        indicator.finalize()
 
-        if self.active_device.has("lighting_logo_brightness") or self.active_device.has("lighting_logo_active"):
-            logo_submenu = create_submenu("Logo", True)
-        else:
-            logo_submenu = None
+    def build_device_submenu(self, device):
+        """
+        Assembles the menu (and submenus) that control an individual device_item.
+        """
+        device_name = device["name"]
+        device_icon = device["form_factor"]["icon"]
+        multiple_zones = len(device["zone_options"]) > 1
+        can_set_colours = False
 
-        if self.active_device.has("lighting_scroll_brightness") or self.active_device.has("lighting_scroll_active"):
-            scroll_submenu = create_submenu("Scroll Wheel", True)
-        else:
-            scroll_submenu = None
+        submenu, submenu_item = indicator.create_submenu(device_name, True, device_icon)
+        dbg.stdout("- " + device_name, dbg.action, 1)
 
-        # Disable menu if device has no light sources to set
-        if not self.active_device.has("brightness") and \
-           not self.active_device.has("lighting_backlight_brightness") and \
-           not self.active_device.has("lighting_backlight_active") and \
-           not self.active_device.has("lighting_logo_brightness") and \
-           not self.active_device.has("lighting_logo_active") and \
-           not self.active_device.has("lighting_scroll_brightness") and \
-           not self.active_device.has("lighting_scroll_active"):
-            return None
+        for zone in device["zone_options"].keys():
+            zone_name = device["zone_labels"][zone]
+            zone_icon = device["zone_icons"][zone]
 
-        # Have multiple sub-menus if there are multiple light sources
-        multiple_menus = common.has_multiple_sources(self.active_device)
+            # Create label when multiple zones are present
+            if multiple_zones:
+                indicator.create_menu_item(submenu, zone_name, False, None, None, zone_icon)
 
-        if self.active_device.has("brightness"):
-            if multiple_menus:
-                target_submenu = main_submenu
+            # Add options
+            for option in device["zone_options"][zone]:
+                option_id = option["id"]
+                option_label = option["label"]
+                option_icon = self._get_icon("options", option_id)
+
+                # Show 'Edit Colours' later if supported
+                if len(option["colours"]) > 0:
+                    can_set_colours = True
+
+                # Option contains parameters, show submenu
+                if option["type"] in ["effect", "multichoice"]:
+                    # Option does not accept parameters, just a button
+                    if len(option["parameters"]) == 0:
+                        indicator.create_menu_item(submenu, option_label, True, cb.set_option, [device, zone, option_id, None], option_icon)
+                    else:
+                        # Create a submenu for effects
+                        indicator.add_menu_item(submenu, self.create_parameters_menu(device, zone, option))
+
+                        for param in option["parameters"]:
+                            if len(param["colours"]) > 0:
+                                can_set_colours = True
+
+                # Option is a slider, for values between 0 and 100.
+                elif option["type"] == "slider":
+                    indicator.add_menu_item(submenu, self.create_slider_menu(device, zone, option))
+
+                elif option["type"] == "toggle":
+                    indicator.add_menu_item(submenu, self.create_toggle_menu(device, zone, option))
+
+            # Add DPI
+            if zone == "main" and device["dpi_x"]:
+                dpi_menu, dpi_menu_item = indicator.create_submenu(_("DPI"), True, self._get_icon("general", "dpi"))
+                for item, dpi in enumerate(device["dpi_ranges"]):
+                    icon = None
+                    if item == 0:
+                        icon = self._get_icon("general", "dpi-slow")
+                    elif item == 5:
+                        icon = self._get_icon("general", "dpi-fast")
+                    indicator.create_menu_item(dpi_menu, str(dpi), True, cb.set_dpi, [device, dpi], icon)
+                indicator.add_menu_item(submenu, dpi_menu_item)
+
+            # Create seperator if there was a zone label
+            if multiple_zones:
+                indicator.create_seperator(submenu)
+
+        if device["matrix"]:
+            # FIXME: Consider scripted effects too!
+            effect_items = fileman_effects.get_item_list_by_key_filter("map_device", device_name)
+            effects_menu, effects_menu_item = indicator.create_submenu(_("Effects"), True, self._get_icon("general", "effects"))
+
+            if len(effect_items) > 0:
+                for item in effect_items:
+                     indicator.create_menu_item(effects_menu, item["name"], True, cb.set_effect, [device, item["path"]], item["icon"])
             else:
-                target_submenu = root_submenu
+                indicator.create_menu_item(effects_menu, _("No custom effects"), False)
 
-            target_submenu[1].append(create_menu_item(_("Full (100%)"), True, cb.set_brightness, ["main", 100]))
-            target_submenu[1].append(create_menu_item(_("Bright (75%)"), True, cb.set_brightness, ["main", 75]))
-            target_submenu[1].append(create_menu_item(_("Medium (50%)"), True, cb.set_brightness, ["main", 50]))
-            target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["main", 25]))
-            target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["main", 0]))
+            indicator.create_seperator(submenu)
+            indicator.add_menu_item(submenu, effects_menu_item)
+            indicator.create_seperator(effects_menu)
+            indicator.create_menu_item(effects_menu, _("Edit Effects..."), True, cb.launch_controller, "effects", self._get_icon("general", "edit"))
 
-        if self.active_device.has("lighting_backlight_backlight"):
-            if multiple_menus:
-                target_submenu = backlight_submenu
+        # Colour (repeats last effect)
+        if can_set_colours:
+            colour_menu, colour_menu_item = indicator.create_submenu(_("Primary Colour"), True, self._get_icon("general", "palette"))
+
+            if device["monochromatic"]:
+                index = colours_mono
             else:
-                target_submenu = root_submenu
+                index = saved_colours
 
-            # No known devices use this yet (April 2017)
-            target_submenu[1].append(create_menu_item(_("Full (100%)"), True, cb.set_brightness, ["backlight", 100]))
-            target_submenu[1].append(create_menu_item(_("Bright (75%)"), True, cb.set_brightness, ["backlight", 75]))
-            target_submenu[1].append(create_menu_item(_("Medium (50%)"), True, cb.set_brightness, ["backlight", 50]))
-            target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["backlight", 25]))
-            target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["backlight", 0]))
-
-        if self.active_device.has("lighting_logo_brightness"):
-            if multiple_menus:
-                target_submenu = logo_submenu
-            else:
-                target_submenu = root_submenu
-
-            target_submenu[1].append(create_menu_item(_("Full (100%)"), True, cb.set_brightness, ["logo", 100]))
-            target_submenu[1].append(create_menu_item(_("Bright (75%)"), True, cb.set_brightness, ["logo", 75]))
-            target_submenu[1].append(create_menu_item(_("Medium (50%)"), True, cb.set_brightness, ["logo", 50]))
-            target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["logo", 25]))
-            target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["logo", 0]))
-
-        if self.active_device.has("lighting_scroll_brightness"):
-            if multiple_menus:
-                target_submenu = scroll_submenu
-            else:
-                target_submenu = root_submenu
-
-            target_submenu[1].append(create_menu_item(_("Full (100%)"), True, cb.set_brightness, ["scroll", 100]))
-            target_submenu[1].append(create_menu_item(_("Bright (75%)"), True, cb.set_brightness, ["scroll", 75]))
-            target_submenu[1].append(create_menu_item(_("Medium (50%)"), True, cb.set_brightness, ["scroll", 50]))
-            target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["scroll", 25]))
-            target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["scroll", 0]))
-
-        # Only show on/off options if the device only supports that.
-        if self.active_device.has("lighting_backlight_active"):
-            backlight_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["backlight", 1]))
-            backlight_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["backlight", 0]))
-            multiple_menus = True
-
-        if self.active_device.has("lighting_logo_active"):
-            logo_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["logo", 1]))
-            logo_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["logo", 0]))
-            multiple_menus = True
-
-        if self.active_device.has("lighting_scroll_active"):
-            scroll_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["scroll", 1]))
-            scroll_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["scroll", 0]))
-            multiple_menus = True
-
-        if multiple_menus and main_submenu:
-            root_submenu[1].append(main_submenu[0])
-
-        if multiple_menus and backlight_submenu:
-            root_submenu[1].append(backlight_submenu[0])
-
-        if multiple_menus and logo_submenu:
-            root_submenu[1].append(logo_submenu[0])
-
-        if multiple_menus and scroll_submenu:
-            root_submenu[1].append(scroll_submenu[0])
-
-        return root_submenu[0]
-
-    def _build_app_profile_menu(self):
-        dbg.stdout("Building app profiles menu...", dbg.action, 1)
-
-        if not self.active_device.has("lighting_led_matrix"):
-            return None
-
-        self.profiles = prof.AppProfiles()
-        uuids = self.profiles.list_profiles()
-        submenu = create_submenu(_("Application Profiles"), True)
-        if len(uuids) > 0:
-            for uuid in uuids:
+            for pos in range(0, len(index)):
                 try:
-                    index = pref.load_file(os.path.join(path.profile_folder, uuid + ".json"))
-                    name = index["name"]
-                    icon = index["icon"]
-                    submenu[1].append(create_menu_item(name, True, cb.set_profile, uuid, icon))
-                except Exception as e:
-                    print("Skipping corrupt profile UUID: " + uuid)
-                    print("Exception: "  + str(e))
-        else:
-            submenu[1].append(create_menu_item(_("No profiles to display."), False))
-        return submenu[0]
+                    name = index[pos]["name"]
+                    hex_value = index[pos]["hex"]
+                    indicator.create_menu_item(colour_menu, name, True, cb.set_colour_primary, [device, hex_value], self._get_colour_icon(hex_value))
+                except Exception:
+                    dbg.stdout("Ignoring invalid colour data at index position " + str(pos), dbg.error)
 
-    def _build_colour_menu(self):
-        dbg.stdout("Building colours menu...", dbg.action, 1)
-        submenu = create_submenu(_("Change Color"), True)
-        colour_index = pref.load_file(path.colours)
-        uuids = list(colour_index)
-        uuids.sort(key=int)
+            if not device["monochromatic"]:
+                indicator.create_seperator(colour_menu)
+                indicator.create_menu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [device, zone], self._get_icon("general", "palette"))
+                self._create_menu_item_if_controller_present(colour_menu, _("Edit Colours..."), "colours", self._get_icon("general", "edit"))
 
-        # Do not show colours menu if device does not support RGB at all.
-        if common.has_fixed_colour(self.active_device):
-            return None
+            if multiple_zones:
+                indicator.create_menu_item(submenu, _("All Zones"), False, None, None, device_icon)
+            indicator.add_menu_item(submenu, colour_menu_item)
 
-        # Show a range of green shades for Ultimate keyboards that are not RGB.
-        if self.active_device.name.find("Ultimate") != -1:
-            colour_index = common.get_green_shades()
-            uuids = list(colour_index.keys())
-            uuids.sort()
+        return submenu_item
 
-        if len(uuids) > 0:
-            for uuid in uuids:
-                name = colour_index[uuid]["name"]
-                rgb = colour_index[uuid]["col"]
-                icon = self._get_colour_icon(rgb)
-                submenu[1].append(create_menu_item(name, True, cb.set_colour, [name, rgb], icon))
-        else:
-            submenu[1].append(create_menu_item(_("No colors to list."), False))
-            submenu[1].append(create_seperator())
-            submenu[1].append(create_menu_item(_("Where did your colors go?"), False))
-        dbg.stdout(" -- Loaded {0} colours.".format(str(len(uuids))), dbg.debug, 1)
-        return submenu[0]
-
-    def _build_dpi_menu(self):
-        dbg.stdout("Building dpi menu...", dbg.action, 1)
-        submenu = create_submenu(_("DPI"), True)
-
-        if not self.active_device.has("dpi"):
-            return None
-
-        try:
-            self.current_dpi = str(self.active_device.dpi[0])
-        except Exception:
-            self.current_dpi = _("Unknown")
-
-        # Use hardware values where known.
-        max_dpi = self.active_device.max_dpi
-        if max_dpi == 16000:
-            dpi_speed_1 = 200   # Not H/W
-            dpi_speed_2 = 800
-            dpi_speed_3 = 1800
-            dpi_speed_4 = 4500
-            dpi_speed_5 = 9000
-            dpi_speed_6 = 16000
-
-        elif max_dpi == 8200:
-            dpi_speed_1 = 200  # Not H/W
-            dpi_speed_2 = 800
-            dpi_speed_3 = 1800
-            dpi_speed_4 = 4800
-            dpi_speed_5 = 6400
-            dpi_speed_6 = 8200
-
-        else:
-            dpi_speed_1 = 200
-            dpi_speed_2 = int(max_dpi / 10)
-            dpi_speed_3 = int(max_dpi / 8)
-            dpi_speed_4 = int(max_dpi / 4)
-            dpi_speed_5 = int(max_dpi / 2)
-            dpi_speed_6 = int(max_dpi)
-
-        submenu[1].append(create_menu_item(_("Super Slow") + ' (' + str(dpi_speed_1) + ')', True, cb.set_dpi, dpi_speed_1, os.path.join(path.data_source, "img/effects/dpi-slow.svg")))
-        submenu[1].append(create_menu_item(_("Slow") + ' (' + str(dpi_speed_2) + ')', True, cb.set_dpi, dpi_speed_2, os.path.join(path.data_source, "img/effects/dpi-slow.svg")))
-        submenu[1].append(create_menu_item(_("Medium") + ' (' + str(dpi_speed_3) + ')', True, cb.set_dpi, dpi_speed_3, os.path.join(path.data_source, "img/effects/dpi-slow.svg")))
-        submenu[1].append(create_menu_item(_("Fast") + ' (' + str(dpi_speed_4) + ')', True, cb.set_dpi, dpi_speed_4, os.path.join(path.data_source, "img/effects/dpi-fast.svg")))
-        submenu[1].append(create_menu_item(_("Super Fast") + ' (' + str(dpi_speed_5) + ')', True, cb.set_dpi, dpi_speed_5, os.path.join(path.data_source, "img/effects/dpi-fast.svg")))
-        submenu[1].append(create_menu_item(_("Blazingly Fast") + ' (' + str(dpi_speed_6) + ')', True, cb.set_dpi, dpi_speed_6, os.path.join(path.data_source, "img/effects/dpi-fast.svg")))
-
-        return submenu[0]
-
-    def _build_poll_rate_menu(self):
-        dbg.stdout("Building poll rate menu...", dbg.action, 1)
-        submenu = create_submenu(_("Poll Rate"), True)
-
-        if not self.active_device.has("poll_rate"):
-            return None
-
-        try:
-            self.current_poll_rate = str(self.active_device.poll_rate) + " Hz"
-        except Exception:
-            self.current_poll_rate = _("Unknown")
-
-        submenu[1].append(create_menu_item("125 Hz", True, cb.set_poll_rate, 125))
-        submenu[1].append(create_menu_item("500 Hz", True, cb.set_poll_rate, 500))
-        submenu[1].append(create_menu_item("1000 Hz", True, cb.set_poll_rate, 1000))
-
-        return submenu[0]
-
-    def _build_gamemode_menu(self):
-        dbg.stdout("Building game mode menu...", dbg.action, 1)
-
-        if not self.active_device.has("game_mode_led"):
-            return None
-
-        state = self.active_device.game_mode_led
-        if state == True:
-            self.current_gamemode = _("Enabled")
-        else:
-            self.current_gamemode = _("Disabled")
-
-        submenu = create_submenu(_("Game Mode"), True)
-        submenu[1].append(create_menu_item(_("Enable"), True, cb.set_gamemode, 1, os.path.join(path.data_source, "img/ui/game-mode.svg")))
-        submenu[1].append(create_menu_item(_("Disable"), True, cb.set_gamemode, 0, os.path.join(path.data_source, "img/ui/game-mode-disabled.svg")))
-        return submenu[0]
-
-    # Creates bitmap files for previewing colours.
-    def _get_colour_icon(self, colour):
+    def create_parameters_menu(self, device, zone, option):
         """
-        Generates a colour block, and gets the path for use as an icon.
-            colour = [red, green, blue]
+        Creates the submenu for an option containing parameters from a multiple
+        choice or effect list.
         """
-        colour_path = os.path.join(session_storage, "{0}-{1}-{2}.png".format(str(colour[0]), str(colour[1]), str(colour[2])))
-        if not os.path.exists(colour_path):
-            dbg.stdout("Creating colour bitmap for: " + str(colour), dbg.action, 1)
-            foreground_process("convert -size 16x16 xc:{0} {1}".format(self._colour_to_hex(colour), colour_path), shell=True)
-        if not os.path.exists(colour_path):
-            dbg.stdout("ERROR: Failed to generate bitmap for: " + str(colour), dbg.error)
-        return colour_path
+        option_id = option["id"]
+        submenu, submenu_item = indicator.create_submenu(option["label"], True, self._get_icon("options", option_id))
 
-    @staticmethod
-    def _colour_to_hex(colour):
-        """
-        Converts a tuple input to #RRGGBB format
-            colour = [red, green, blue]
-        """
-        return "#{0:02X}{1:02X}{2:02X}".format(*colour)
+        for param in option["parameters"]:
+            icon = common.get_icon("params", param["id"])
 
-    # When there are external changes to devicestate.json
-    def device_state_changed(self):
-        dbg.stdout("Device state changed. Refreshing menus.", dbg.action, 1)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+            indicator.create_menu_item(submenu, param["label"], True, cb.set_option, [device, zone, option_id, param["data"]], icon)
+
+        return submenu_item
+
+    def create_slider_menu(self, device, zone, option):
+        """
+        Creates the submenu for an option that is a variable slider. This will
+        create five calculated intervals (e.g. 0-100 -> 0,25,50,75,100)
+        """
+        option_id = option["id"]
+        submenu, submenu_item = indicator.create_submenu(option["label"], True, self._get_icon("options", option_id))
+
+        suffix = option["suffix"]
+        min = int(option["min"])
+        max = int(option["max"])
+        interval = int((max - min) / 4)
+        for no in range(max, min - interval, 0 - interval):
+            # Some IDs have submenu icons
+            icon = None
+            if option_id == "brightness":
+                icon = self._get_icon("options", str(no))
+
+            indicator.create_menu_item(submenu, str(no) + suffix, True, cb.set_option, [device, zone, option_id, int(no)], icon)
+
+        return submenu_item
+
+    def create_toggle_menu(self, device, zone, option):
+        """
+        Creates the submenu for an option that is either on/off.
+        """
+        option_id = option["id"]
+        submenu, submenu_item = indicator.create_submenu(option["label"], True, self._get_icon("options", option_id))
+
+        # Some IDs have submenu icons
+        icon_on = None
+        icon_off = None
+        if option_id == "game_mode":
+            icon_on = self._get_icon("options", "game_mode")
+            icon_off = self._get_icon("options", "game_mode_off")
+        elif option_id == "brightness":
+            icon_on = self._get_icon("options", "100")
+            icon_off = self._get_icon("options", "0")
+
+        indicator.create_menu_item(submenu, _("On"), True, cb.set_option, [device, zone, option_id, True], icon_on)
+        indicator.create_menu_item(submenu, _("Off"), True, cb.set_option, [device, zone, option_id, False], icon_off)
+
+        return submenu_item
+
+    def _get_colour_icon(self, colour_hex):
+        """
+        Generates a colour PNG, and returns the path so it can be used as an icon.
+
+        Params:
+            colour_hex      Hex value, e.g. "#00FF00"
+        """
+        return common.generate_colour_bitmap(dbg, colour_hex)
 
 
 class Callback():
-    def launch_controller(cb, item):
-        dbg.stdout("=> Launch Controller", dbg.debug, 1)
-        possible_paths = [
-            os.path.join(path.data_source, "../polychromatic-controller"),
-            "/usr/bin/polychromatic-controller"
-        ]
-        for bin_path in possible_paths:
-            if os.path.exists(bin_path):
-                dbg.stdout("Executing: " + os.path.realpath(bin_path), dbg.debug, 1)
-                background_process(bin_path)
-                return
+    """
+    Contains functions that run when a menu item is clicked.
+    """
+    @staticmethod
+    def launch_controller(item, tab=None):
+        """
+        Option clicked to open the Controller application.
 
-    def quit(cb, item):
-        dbg.stdout("=> Quit", dbg.debug, 1)
+        Params:
+            tab     (Optional) Open a specific tab in the Controller
+        """
+        if tab:
+            dbg.stdout("=> Launching Controller to '{0}' tab/section...".format(tab), dbg.action, 1)
+        else:
+            dbg.stdout("=> Launching Controller...", dbg.action, 1)
+
+        common.execute_polychromatic_component(dbg, "controller", tab)
+
+    @staticmethod
+    def quit(item):
+        """
+        Option clicked to quit the application.
+        """
         exit(0)
 
-    def restart_daemon(cb, item):
-        dbg.stdout("=> Restart Daemon", dbg.debug, 1)
-        import threading
-        thread = threading.Thread(target=restart_daemon_service, args=())
-        thread.daemon = True
-        thread.start()
-
-    def set_device(cb, item, target_serial):
-        for device in indicator.devman.devices:
-            if device.serial == target_serial:
-                indicator.active_device = device
-                indicator.active_serial = device.serial
-                indicator.current_device = device.name
-                dbg.stdout("=> Set Device to: {0} (Serial: {1}".format(device.name, device.serial), dbg.debug, 1)
-                indicator.rebuild_all_submenus()
-                indicator.rebuild_root_menu()
-
-    def reload_devices(cb, item):
-        dbg.stdout("=> Reload Devices", dbg.debug, 1)
-        indicator.menu_devices = indicator._build_device_menu()
-        indicator.setup()
-
-    def retry_applet(cb, item):
-        dbg.stdout("=> Reload Tray Applet", dbg.debug, 1)
-        indicator.setup()
-
-    def set_effect(cb, item, effect_params):
+    @staticmethod
+    def retry_applet(item):
         """
-            effect_params   list    [source, name] = Passed strings to common function.
+        Option clicked to restart the tray applet.
         """
-        source = effect_params[0]
-        effect = effect_params[1]
-        dbg.stdout("=> Set Effect ID:" + str(effect_params), dbg.debug, 1)
-        try:
-            params = effect_params[2]
-        except Exception:
-            params = None
-        common.set_lighting_effect(pref, indicator.active_device, source, effect, params)
-        indicator.current_app_profile = None
-        indicator.current_effect = common.get_effect_state_string(effect)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        dbg.stdout("Restarting applet...", dbg.action, 1)
+        os.execv(__file__, sys.argv)
+        exit(0)
 
-    def set_brightness(cb, item, attr):
-        source = attr[0]
-        value = attr[1]
-        common.set_brightness(pref, indicator.active_device, source, value)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
-
-    def set_brightness_toggle(cb, item, attr):
-        source = attr[0]
-        value = attr[1]
-        common.set_brightness_toggle(pref, indicator.active_device, source, value)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
-
-    def set_colour(cb, item, params):
+    @staticmethod
+    def set_option(item, attr):
         """
-            params = [name (str), rgb (list)]
-        """
-        name = params[0]
-        rgb = params[1]
-        indicator.current_colour = name
-        indicator.current_colour_rgb = rgb
-        dbg.stdout("Set colour to: {0} (RGB {1})".format(name, rgb), dbg.debug, 1)
-        common.save_colours_to_all_sources(pref, indicator.active_device, "colour_primary", rgb)
-        common.repeat_last_effect(pref, indicator.active_device)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        Option clicked to set an effect for a device.
 
-    def set_colour_custom(cb, item):
-        color_selection_dlg = Gtk.ColorSelectionDialog(_("Change Tray Color"))
+        Params:
+            attr        [device, zone, option_id, option_data]
+        """
+        device, zone, option_id, option_data = attr
+
+        backend = device["backend"]
+        uid = device["uid"]
+        name = device["name"]
+        serial = device["serial"]
+        device = middleman.get_device(backend, uid)
+
+        # Re-use previously selected colours
+        colour_hex = []
+        for option in device["zone_options"][zone]:
+            if option["id"] == option_id:
+                colour_hex = option["colours"]
+
+            try:
+                if option["parameters"]:
+                    for param in option["parameters"]:
+                        if param["data"] == option_data:
+                            colour_hex = param["colours"]
+            except KeyError:
+                # No parameters for sliders or toggles
+                pass
+
+        dbg.stdout("Setting option '{0}' (data: {1}) for {2} in zone '{3}'".format(option_id, option_data, name, zone), dbg.action, 1)
+        dbg.stdout("Re-using colours: {0}".format(", ".join(colour_hex)), dbg.debug, 1)
+        r = middleman.set_device_state(backend, uid, serial, zone, option_id, option_data, colour_hex)
+        _verbose_check_status(r)
+
+    @staticmethod
+    def set_colour_primary(item, attr):
+        """
+        Option clicked to choose a different primary colour.
+
+        Params:
+            attr    [device, hex_string]
+        """
+        device, hex_value = attr
+
+        backend = device["backend"]
+        uid = device["uid"]
+        name = device["name"]
+        device = middleman.get_device(backend, uid)
+
+        for zone in device["zone_options"].keys():
+            dbg.stdout("Setting '{2}' colour to '{0}' for {1}".format(hex_value, name, zone), dbg.action, 1)
+            r = middleman.set_device_colour(device, zone, hex_value)
+            _verbose_check_status(r)
+
+    @staticmethod
+    def set_dpi(item, attr):
+        """
+        Option clicked to set the DPI of a device.
+
+        Params:
+            attr    [device, dpi_x]
+        """
+        device, new_dpi = attr
+
+        backend = device["backend"]
+        uid = device["uid"]
+        name = device["name"]
+        serial = device["serial"]
+
+        dbg.stdout("Setting DPI for {0} to {1}".format(name, new_dpi), dbg.action, 1)
+
+        r = middleman.set_device_state(backend, uid, serial, "main", "dpi", [new_dpi, new_dpi], [])
+        _verbose_check_status(r)
+
+    @staticmethod
+    def set_bulk_option(item, attr):
+        """
+        Option clicked to set an effect for all devices (where supported)
+
+        Params:
+            attr    [option_id, option_data, colours_needed]
+        """
+        option_id, option_data, colours_needed = attr
+        middleman.set_bulk_option(option_id, option_data, colours_needed)
+
+    @staticmethod
+    def set_bulk_colour(item, attr):
+        """
+        Option clicked to set the primary colour for the current effect across
+        all connected devices.
+
+        Params:
+            attr    [hex_value]
+        """
+        new_colour_hex = attr[0]
+        middleman.set_bulk_colour(new_colour_hex)
+
+    @staticmethod
+    def set_custom_colour(item, attr):
+        """
+        Option clicked to open a colour picker to choose any colour for the
+        specified device.
+
+        Params:
+            attr    [device]
+        """
+        device = attr[0]
+        zone = attr[1]
+
+        dbg.stdout("Opened GTK colour picker.", dbg.debug, 1)
+        color_selection_dlg = Gtk.ColorSelectionDialog(_("Set Primary Colour"))
         color_selection_result = color_selection_dlg.run()
 
         if color_selection_result == Gtk.ResponseType.OK:
-            result_rgb = color_selection_dlg.get_color_selection().get_current_color()
-            # Returns value between 0.0 - 1.0 * 255 = 8-bit RGB Value
+            # Parse colour from GTK
+            result_gdk_colour = color_selection_dlg.get_color_selection().get_current_color()
+            red = int(result_gdk_colour.red_float * 255)
+            green = int(result_gdk_colour.green_float * 255)
+            blue = int(result_gdk_colour.blue_float * 255)
+            hex_value = common.rgb_to_hex([red, green, blue])
 
-            rgb = KeyboardColour.gdk_colour_to_rgb(result_rgb)
-            indicator.current_colour = _("Custom") + " ({0}, {1}, {2})".format(str(rgb[0]), str(rgb[1]), str(rgb[2]))
-            indicator.current_colour_rgb = [rgb[0], rgb[1], rgb[2]]
-            dbg.stdout("Set custom colour to: " + str(indicator.current_colour_rgb), dbg.debug, 1)
-            common.save_colours_to_all_sources(pref, indicator.active_device, "colour_primary", indicator.current_colour_rgb)
-            common.repeat_last_effect(pref, indicator.active_device)
-            indicator.rebuild_all_submenus()
-            indicator.rebuild_root_menu()
+            # Apply colour to device
+            dbg.stdout("Set custom colour for {0} to '{1}'".format(device["name"], hex_value), dbg.debug, 1)
+            r = middleman.set_device_colour(device, zone, hex_value)
+            _verbose_check_status(r)
 
         color_selection_dlg.destroy()
 
-    def set_profile(cb, item, uuid):
-        indicator.profiles.send_profile_from_file(indicator.active_device, uuid)
-        pref.set_device_state(indicator.active_device.serial, "main", "effect", "profile")
-        pref.set_device_state(indicator.active_device.serial, "main", "profile", uuid)
-        metadata = indicator.profiles.get_metadata(uuid)
-        indicator.current_effect = _("Profile")
-        indicator.current_app_profile = metadata["name"]
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+    @staticmethod
+    def set_effect(item, attr):
+        """
+        Option clicked to activate an effect for the specified device.
 
-    def set_dpi(cb, item, value):
-        indicator.active_device.dpi = (value, value)
-        indicator.current_dpi = str(value)
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        Params:
+            attr    [device, path]
+        """
+        device = attr[0]
+        path = attr[1]
 
-    def set_poll_rate(cb, item, value):
-        indicator.active_device.poll_rate = value
-        indicator.current_poll_rate = str(value) + " Hz"
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+        device_name = device["name"]
+        dbg.stdout("Playing effect '{0}' on '{1}'".format(path, device_name), dbg.debug, 1)
+        procmgr = procpid.ProcessManager("helper")
+        procmgr.start_component(["--run-fx", path, "--device-name", device_name])
 
-    def set_gamemode(cb, item, state=False):
-        indicator.active_device.game_mode_led = state
-        if state == True:
-            indicator.current_gamemode = _("Enabled")
-        else:
-            indicator.current_gamemode = _("Disabled")
-        indicator.rebuild_all_submenus()
-        indicator.rebuild_root_menu()
+
+def _verbose_check_status(result):
+    """
+    When using the verbose parameter (-v), output details if a request made
+    to the backend was successful.
+    """
+    if type(result) == str:
+        dbg.stdout("An exception occurred processing this request:", dbg.error)
+        dbg.stdout(result, dbg.error)
+    elif result == True:
+        dbg.stdout("Request OK", dbg.success, 1)
+    elif result == None:
+        dbg.stdout("Device Missing", dbg.warning, 1)
+    elif result == False:
+        dbg.stdout("Request unsuccessful - may be unsupported by the device.", dbg.normal, 1)
 
 
 def parse_parameters():
+    """
+    Parses the optional parameters for the tray applet.
+    """
     global _
     parser = argparse.ArgumentParser(add_help=False)
     parser._optionals.title = _("Optional arguments")
     parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
+    parser.add_argument("--version", help=_("Print program version and exit"), action="store_true")
     parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
+    parser.add_argument("--force-appindicator", help=_("Use AppIndicator for rendering"), action="store_true")
+    parser.add_argument("--force-gtk-status", help=_("Use legacy GTK Status Icon for rendering"), action="store_true")
 
     args = parser.parse_args()
+
+    if args.version:
+        app_version, git_commit, py_version = common.get_versions(VERSION)
+        print("Polychromatic", app_version)
+        if git_commit:
+            print("Commit:", git_commit)
+        print("Save Data:", pref.VERSION)
+        print("Python:", py_version)
+
+        if APPINDICATOR:
+            print("GTK:", "{0}.{1}.{2}".format(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION))
+        exit(0)
 
     if args.verbose:
         dbg.verbose_level = 1
         dbg.stdout(_("Verbose enabled"), dbg.debug, 1)
 
     if args.locale:
-        _ = common.setup_translations(__file__, "polychromatic-tray-applet", args.locale)
+        i18n = locales.Locales(__file__, args.locale)
+        _ = i18n.init()
 
-def restart_daemon_service():
-    from subprocess import check_output
-    import time
-
-    def _update_status(string):
-        print(string)
-        root = Gtk.Menu()
-        root.append(create_menu_item(string, False))
-        indicator.indicator.set_menu(root)
-
-    # Gracefully stop the daemon
-    _update_status(_("Stopping openrazer-daemon..."))
-    try:
-        indicator.devman.stop_daemon()
-    except Exception as NoneType:
-        # Cannot stop gracefully. Skip this.
-        pass
-
-    # Wait for the daemon to stop.
-    stopped = False
-    for x in range(0, 5):
-        try:
-            daemon_pid = int(check_output(["pidof", "openrazer-daemon"]))
-        except:
-            stopped = True
-            break
-        time.sleep(1)
-
-    # Kill the daemon if still not ended
-    if not stopped:
-        _update_status(_("Killing openrazer-daemon..."))
-        os.kill(daemon_pid, 9)
-
-    # Ensure a clean log
-    print("\nArchiving log...")
-    log_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log")
-    log_bak = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log.bak")
-    if os.path.exists(log_path):
-        os.rename(log_path, log_bak)
-
-    # Wait for daemon to start again
-    time.sleep(1)
-    _update_status(_("Starting openrazer-daemon..."))
-    background_process("openrazer-daemon", shell=True)
-    for x in range(0, 5):
-        try:
-            daemon_pid = int(check_output(["pidof", "openrazer-daemon"]))
-            running = True
-            break
-        except:
-            running = False
-        time.sleep(1)
-
-    if not running:
-        indicator._setup_failed(_("Daemon Restart Error."), _("The daemon process could not be found."))
-        return
-
-    # Relaunch Controller / Tray Applet
-    print("Relaunching tray applet...")
-
-    os.execv(__file__, sys.argv)
+    return args
 
 
 if __name__ == "__main__":
     # Appear as its own process.
     setproctitle.setproctitle("polychromatic-tray-applet")
 
-    # Kill the process when CTRL+C'd.
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-    # Prepare temporary session storage
-    if not os.path.exists(session_storage):
-        os.makedirs(session_storage)
-
-    # Write a PID file for restarting later.
-    tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
-    f = open(tray_pid_file, 'w')
-    f.write(str(os.getpid()))
-    f.close()
-
-    _ = common.setup_translations(__file__, "polychromatic-tray-applet")
+    # Global variables
+    i18n = locales.Locales(__file__)
+    _ = i18n.init()
     dbg = common.Debugging()
-    parse_parameters()
+
+    # Handle signals sent to process
+    def _restart_applet(num, frame):
+        dbg.stdout("Received USR2 signal. Reloading...", dbg.action, 1)
+        process.start_component()
+        _stop_applet()
+
+    def _stop_applet(num=None, frame=None):
+        dbg.stdout("Received INT or USR1 signal. Exiting...", dbg.action, 1)
+        process.release_component_pid()
+        exit(0)
+
+    signal.signal(signal.SIGINT, _stop_applet)
+    signal.signal(signal.SIGUSR1, _restart_applet)
+    signal.signal(signal.SIGUSR2, _stop_applet)
+    atexit.register(_stop_applet)
+
+    # Only run one tray applet at a time - if one is running, replace it.
+    process = procpid.ProcessManager("tray-applet")
+    if process.is_another_instance_is_running():
+        process.stop()
+    process.set_component_pid()
+
+    args = parse_parameters()
+    pref.init(_)
+
+    # Initalise devices
+    middleman = middleman_mod.Middleman(dbg, common, _)
+    middleman.init()
+    device_list = middleman.get_device_list()
+
+    # Load data into memory
+    prefs = pref.load_file(common.paths.preferences)
+    saved_colours = pref.load_file(common.paths.colours)
+    colours_mono = common.get_green_shades(_)
+    fileman_effects = effects.EffectFileManagement(i18n, _, dbg)
+
+    # Initialise the indicator
     cb = Callback()
-    indicator = AppIndicator()
-    indicator.setup()
+    indicator = Indicator()
+    app = PolychromaticTrayApplet()
+    app.start()
 
     Gtk.main()
-
-    # Application Closed
-    if os.path.exists(tray_pid_file):
-        os.remove(tray_pid_file)
-    exit(0)

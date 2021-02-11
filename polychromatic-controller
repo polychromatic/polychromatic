@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding:utf-8 -*-
-# vim: tabstop=4 shiftwidth=4 softtabstop=4 expandtab colorcolumn=96 :
+#!/usr/bin/python3
 #
 # Polychromatic is free software: you can redistribute it and/or modify
 # it under the temms of the GNU General Public License as published by
@@ -15,3031 +13,528 @@
 # You should have received a copy of the GNU General Public License
 # along with Polychromatic. If not, see <http://www.gnu.org/licenses/>.
 #
-# Copyright (C) 2015-2017 Luke Horwell <luke@ubuntu-mate.org>
+# Copyright (C) 2015-2021 Luke Horwell <code@horwell.me>
 #               2015-2016 Terry Cain <terry@terrys-home.co.uk>
 
 """
-Main application for Polychromatic, a GUI for interfacing with Razer devices.
-
-Requires openrazer-daemon to be installed and running on the system.
+The primary "Controller" GUI for Polychromatic based on PyQt5.
 """
-
-import os
-import sys
-import glob
-import signal
-import gettext
-import time
-import threading
 import argparse
-from setproctitle import setproctitle
-from subprocess import Popen as background_process
-from subprocess import check_output
-from platform import linux_distribution
+import json
+import os
+import signal
+import threading
+import setproctitle
+import sys
 
-try:
-    import openrazer.client as rclient
-    from openrazer_daemon.keyboard import get_keyboard_layout
-    from openrazer_daemon.keyboard import RGB
-    daemon_missing = False
-except ImportError as e:
-    # We'll show a graphical error when loading up.
-    print("Failed to import modules for daemon.")
-    print("Exception: " + str(e))
-    daemon_missing = True
+from PyQt5 import uic, QtCore
+from PyQt5.QtCore import QThreadPool
+from PyQt5.QtGui import QIcon, QFont, QFontDatabase
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, \
+                            QToolButton, QTabWidget, QAction, QMenu, \
+                            QDesktopWidget
 
-try:
-    # Relative copy
-    import pylib.preferences as pref
-    import pylib.profiles as prof
-    import pylib.common as common
-    import pylib.demo as demo
-except ImportError:
-    # Installed to system
-    import polychromatic.preferences as pref
-    import polychromatic.profiles as prof
-    import polychromatic.common as common
-    import polychromatic.demo as demo
-except Exception as e:
-    print("One or more of Polychromatic's modules could not be imported!")
-    print("Try re-installing the application.")
-    print("\nException:" + str(e))
-    exit(1)
+VERSION = "0.6.0"
 
-import gi
-gi.require_version("Gtk", "3.0")
-gi.require_version("Gdk", "3.0")
-gi.require_version("WebKit2", "4.0")
-from gi.repository import GLib, Gtk, Gdk, WebKit2
+# Import modules if running relatively.
+if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
+    try:
+        import pylib.preferences as pref
+        import pylib.common as common
+        import pylib.locales as locales
+        import pylib.controller as controller
+        import pylib.effects as effects
+        import pylib.middleman as middleman
+        import pylib.controller.shared as shared
+    except (ImportError, Exception) as e:
+        print("Failed to import modules relatively.\n")
+        raise e
 
-setproctitle("polychromatic-controller")
-version = "0.3.12"
-version_dev = False
-
-path = pref.Paths()
-path.data_source = path.get_data_source(__file__)
-daemon_config_path = os.path.join(os.path.expanduser('~'), ".local/share/openrazer/razer.conf")
-
-# Imported on-demand:
-#   * requests
-#   * configparser
-#   * shutil
-#   * grp
-
-# Is this application installed in /usr/share or ran from repository?
-if os.path.exists(os.path.join(path.data_source + "/../install/update.sh")):
-    version_dev = True
-    version = version + "-dev"
-
-    # Does the LESS exist? If not, try to compile it.
-    # For development, it's important the latest CSS is used.
-    css_path = os.path.join(path.data_source + "/pages/controller.css")
-    css_compile_cmd = "lessc source/data/controller.less data/pages/controller.css"
-    dbg = common.Debugging()
-    import shutil
-
-    if shutil.which("lessc") == None:
-        dbg.stdout("Please install 'lessc' and run the application again.", dbg.warning)
-        exit(1)
-    else:
-        dbg.stdout("Compiling LESS...", dbg.action, 1)
-        os.system(css_compile_cmd)
-        if os.path.exists(css_path):
-            dbg.stdout("Successfully compiled LESS.", dbg.success)
-        else:
-            dbg.stdout("Failed to compile LESS file! Please install 'lessc' and run:", dbg.error)
-            dbg.stdout(css_compile_cmd)
-            exit(1)
-
+# Import modules if installed system-wide.
 else:
-    version_dev = False
-    version = version + "-stable"
+    try:
+        import polychromatic.preferences as pref
+        import polychromatic.common as common
+        import polychromatic.locales as locales
+        import polychromatic.controller as controller
+        import polychromatic.effects as effects
+        import polychromatic.middleman as middleman
+        import polychromatic.controller.shared as shared
+    except (ImportError, Exception) as e:
+        print("Polychromatic's modules could not be imported.")
+        print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
+        raise e
 
 
-class Translations(object):
-    def push(self, element, string, append=False):
+class ApplicationData(object):
+    """
+    Shared data that is globally accessible throughout the application.
+    This includes save data variables and objects for each tab.
+    """
+    def __init__(self, qapp, dbg, _, paths, hidpi):
         """
-        Pushes a translatible string to the page.
+        Prepare the object.
         """
-        # "append=True" is useful for elements that share contents.
-        if append:
-            app.update_page(element, "append", "{0}".format(string))
-        else:
-            app.update_page(element, "html", "{0}".format(string))
+        self.main_window = None
+        self.main_app = qapp
+        self.dbg = dbg
+        self.locales = i18n
+        self._ = _
+        self.paths = paths
+        self.exec_path = __file__
+        self.exec_args = sys.argv
+        self.hidpi = hidpi
+        self.version = VERSION
+        self.versions = VERSIONS
 
-    def push_var(self, variable, string):
+        # UI Colours (based on SCSS variables)
+        self.normal_colour = "#DED9CB"      # $button-text-colour
+        self.disabled_colour = "#575757"    # $text-disabled
+        self.active_colour = "#00FF00"      # $primary
+        self.selected_colour = "#00FF00"    # $primary
+        self.secondary_colour_active = "#008000"    # $secondary
+        self.secondary_colour_inactive = "#808080"  # $secondary (desaturated)
+
+        # Assigned in load() later
+        self.middleman = None
+        self.menubar = None
+        self.device_list = []
+        self.current_device = None
+        self.effect_list = None
+
+        # Settings
+        dbg.stdout("Loading preferences...", dbg.action, 1)
+        self.preferences = pref.load_file(self.paths.preferences)
+        self.system_qt_theme = self.preferences["controller"]["system_qt_theme"]
+        self.show_menu_bar = self.preferences["controller"]["show_menu_bar"]
+
+        # Preferences Variables
+        self.window_centered = 0
+        self.window_remember = 1
+        self.window_ignore = 2
+
+    def load(self):
         """
-        Pushes a translatable string to a JavaScript variable on the page.
+        Load the application's tab, save data and session data.
         """
-        app.webkit.run_javascript('var {0} = "{1}"'.format(variable, string))
+        self.main_window = MainWindow()
+
+        # Polychromatic's Qt theme is based on Fusion, for consistency.
+        if not self.system_qt_theme:
+            qapp.setStyle("Fusion")
+
+        # Misc
+        self.menubar = controller.menubar.MenuBar(self)
+
+        # Session Data
+        dbg.stdout("Getting device list...", dbg.action, 1)
+        self.middleman = middleman.Middleman(dbg, common, _)
+        self.middleman.init()
+        self.device_list = self.middleman.get_device_list()
+        self.current_device = None
+
+        # Tabs
+        self.tab_devices = controller.devices.DevicesTab(self)
+        self.tab_effects = controller.effects.EffectsTab(self)
+        self.tab_presets = controller.presets.PresetsTab(self)
+        self.tab_triggers = controller.triggers.TriggersTab(self)
+
+        # Subwindows
+        self.ui_preferences = controller.preferences.PreferencesWindow(self)
+
+        # Enable active backends in menu bar
+        # -- OpenRazer
+        if "openrazer" in self.middleman.not_installed:
+            for action in ["actionOpenRazerConfigure",
+                           "actionOpenRazerReportBug",
+                           "actionOpenRazerOpenLog",
+                           "actionOpenRazerRestartDaemon",
+                           "actionOpenRazerAbout"]:
+                self.main_window.findChild(QAction, action).setEnabled(False)
+
+        self.main_window.load()
 
 
-class AppView(WebKit2.WebView):
+class MainWindow(QMainWindow):
+    """
+    The main window is the first window the user will use and interact with.
+    """
     def __init__(self):
-        """
-        Initialise WebKit2
-        """
-        # Create WebKit Container
-        webkit = WebKit2
-        webkit.WebView.__init__(self)
-        self.set_background_color(Gdk.RGBA(0, 0, 0, 1))
+        dbg.stdout("Initalising application...", dbg.action, 1)
+        super(MainWindow, self).__init__()
 
-        # Post-actions after pages fully load.
-        self.connect("load-changed", self.load_changed_cb)
-        self.connect("notify::title", self.title_changed_cb)
-        self.connect("context-menu", self.context_menu_cb)
-        dbg.stdout("Initialised WebKit2.", dbg.success, 2)
+        # Load UI and locales
+        widget = uic.loadUi(os.path.join(common.paths.data_dir, "qt", "main.ui"), self)
+        shared.translate_ui(app, widget)
 
-        try:
-            # Allows Keyboard SVGs to load.
-            self.get_settings().set_allow_file_access_from_file_urls(True)
-            try:
-                self.get_settings().set_allow_universal_access_from_file_urls(True)
-            except AttributeError:
-                print("Ignoring set_allow_universal_access_from_file_urls because the WebKit2GTK version is <2.14.")
+        header = self.findChild(QWidget, "Header")
+        tabs = self.findChild(QWidget, "MainTabWidget")
+        tabs_custom = self.findChild(QWidget, "MainTabCustom")
 
-            # Print console log errors to stdout if verbose
-            if dbg.verbose_level >= 1:
-                self.get_settings().set_enable_write_console_messages_to_stdout(True)
+        if app.system_qt_theme:
+            # User prefers own Qt theme, use native tabs.
+            header.hide()
+            tabs_custom.hide()
+        else:
+            # Custom Qt theme uses a different tab design. Hide native tabs.
+            tabs.tabBar().hide()
 
-            # Basic accessibility - keyboard navigation
-            self.get_settings().set_enable_spatial_navigation(True)
-            self.get_settings().set_enable_caret_browsing(True)
+        # Set window attributes
+        self.setWindowIcon(QIcon(common.get_icon("general", "controller.svg")))
+        self.setWindowTitle("Polychromatic")
 
-        except AttributeError as e:
-            dbg.stdout("WebKit2GTK failed to initialise!", dbg.error)
-            print("Your distribution may be using an older version of this library.")
-            print("For example, Debian/Ubuntu provides this in 'gir1.2-webkit-4.0'\n")
-            dbg.stdout("The exception was: {0}\n".format(str(e)), dbg.error)
-            exit(1)
+        # Prepare Menu Bar
+        self.findChild(QAction, "actionReinstateMenuBar").setVisible(False)
+        if not app.preferences["controller"]["show_menu_bar"]:
+            self.menuBar().hide()
+            self.findChild(QAction, "actionReinstateMenuBar").setVisible(True)
 
-        # Enable web inspector for debugging
-        if dbg.verbose_level == 3:
-            self.get_settings().set_property("enable-developer-extras", True)
-            inspector = self.get_inspector()
-            inspector.show()
-
-        # Load the starting page
-        self.load_uri("file://" + os.path.join(path.data_source, "pages/loading.html"))
-
-    def run_js(self, function):
-        """
-        Runs a JavaScript function on the page, regardless of which thread it is called from.
-        GTK+ operations must be performed on the same thread to prevent crashes.
-        """
-        GLib.idle_add(self._run_js, function)
-
-    def _run_js(self, function):
-        """
-        Runs a JavaScript function on the page when invoked from run_js()
-        """
-        self.run_javascript(function)
-        return GLib.SOURCE_REMOVE
-
-    def title_changed_cb(self, view, frame):
-        """
-        Callback: Title changed ('commands' used for communicating to Python)
-        """
-        title = self.get_title()
-        if title not in ["null", None, "", " "]:
-            dbg.stdout("** Command: " + title, dbg.debug, 2)
-            app.process_command(title)
-
-    def load_changed_cb(self, view, frame):
-        """
-        Callback: Page changed
-        """
-        uri = str(self.get_uri())
-        try:
-            page = uri.rsplit('/', 1)[1].split('.html')[0]
-        except IndexError:
-            return
-        if not self.is_loading():
-            app.current_page = page
-            dbg.stdout(" ** Page Changed: " + page, dbg.debug, 2)
-            app.page_loaded()
-
-    def context_menu_cb(self, view, menu, event, htr, user_data=None):
-        """
-        Callback: Disables the context menu.
-        """
-        return True
-
-    class JavaScriptExecutor(object):
-        """
-        Collects JavaScript and send altogether, used for profile editing.
-        """
-        def __init__(self, webkit, script=None, wrapper=None):
-            if wrapper is not None:
-                self.wrapper = wrapper
-            else:
-                self.wrapper = "$(document).ready(function(){{{0}}});"
-            self.lines = []
-            self.webkit = webkit
-            dbg.stdout(' => JSExec: Ready.', dbg.debug, 2)
-
-            if script is not None:
-                self.add(script)
-
-        def add(self, line):
-            """
-            Adds a line to the collection.
-            :param line: Line to execute
-            :type line: str
-
-            :return: Returns a copy of the object
-            :rtype: JavaScriptExecutor
-            """
-            line = str(line)
-            dbg.stdout(' => JSExec: Line added: ' + line, dbg.debug, 2)
-
-            if line.endswith(';'):
-                self.lines.append(line)
-            else:
-                self.lines.append(line + ';')
-
-            return self
-
-        def exec(self):
-            """
-            Runs the collection of commands.
-            """
-            payload = str(self)
-            dbg.stdout(' => JSExec: Pushed to page.', dbg.debug, 2)
-            self.webkit.run_javascript(payload)
-
-        def __lshift__(self, other):
-            self.add(other)
-            return self
-
-        def __str__(self):
-            lines = '\n' + '\n'.join(self.lines) + '\n'
-            result = self.wrapper.format(lines)
-            return result
-
-
-class AppWindow(object):
-    def run(self):
-        """
-        Assembles and begins running the application.
-        """
-        # Initalise WebKit
-        self.webkit = AppView()
-
-        # Create window
-        self.window = Gtk.Window(title=_("Polychromatic Controller"))
-        self.window.set_wmclass("polychromatic-controller", "polychromatic-controller")
-        self.window.set_position(Gtk.WindowPosition.CENTER)
-        self.window.modify_bg(Gtk.StateType(0), Gdk.Color(0, 0, 0))
-
-        try:
-            self.window.set_icon_from_file(os.path.join(path.data_source, "../install/hicolor/16x16/apps/polychromatic-controller.svg"))
-            dbg.stdout("Window icon set from relative path.", dbg.success, 2)
-        except:
-            self.window.set_icon_from_file("/usr/share/icons/hicolor/16x16/apps/polychromatic-controller.svg")
-            dbg.stdout("Window icon set from /usr/share/ path.", dbg.success, 2)
-
-        # Add elements to window
-        sw = Gtk.ScrolledWindow()
-        sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        sw.add(self.webkit)
-
-        # Scale the application so it looks good on large displays.
-        # range 0.125 - 10
-        try:
-            scale = min(10, max(0.125, float(pref.get("editor", "scaling", 1))))
-        except ValueError:
-            scale = 1.0
-
-        width = int(scale*1024)
-        height = width*3/4
-        self.webkit.set_zoom_level(scale)
-        self.window.set_size_request(width, height)
-        dbg.stdout("Set window to {0}x{1} (scale={2})".format(width, height, scale), dbg.success, 1)
-
-        # Build an auto expanding box and add the scrolled window
-        b = Gtk.VBox(homogeneous=False, spacing=0)
-        b.pack_start(sw, expand=True, fill=True, padding=0)
-        self.window.add(b)
-        self.window.connect("delete-event", Gtk.main_quit)
-        self.window.show_all()
-        dbg.stdout("Initialised Window.", dbg.success, 1)
-
-        # Kills process when CTRL+C'd.
+        # CTRL+C'd
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-        thread = threading.Thread(target=app.start_loading, args=([self.webkit]))
-        thread.daemon = True
-        thread.start()
-        Gtk.main()
-
-
-class Controller(object):
-    def __init__(self):
-        """
-        Initialises variables throughout the application.
-        """
-        # Set up "memory" variables
-        self.webkit = None
-        self.current_page = "loading"
-        self.load_lock = False
-
-        # Set up variables provided by daemon
-        try:
-            self.kb_layout = get_keyboard_layout()
-        except:
-            self.kb_layout = "gb"
-
-    def start_loading(self, webkit):
-        """
-        Starts the main application's operations.
-        """
-        self.webkit = webkit
-        dbg.stdout("Version " + version, dbg.debug, 1)
-
-        # Prepare devices
-        dbg.stdout("Loading daemon...", dbg.action, 1)
-
-        if daemon_missing:
-            self.show_error_page("serious", "daemon-error", _("Daemon Not Installed"),
-                _("Polychromatic requires the OpenRazer Python library, but it could not be imported.") +
-                '<br><br>' + _("Please check the OpenRazer drivers, daemon and Python library are installed.") +
-                '<br><br><a onclick="cmd(\'open?https://github.com/lah7/polychromatic\')">' + _("See the README for further information.") + '</a>')
-            return
-
-        try:
-            self.devman = rclient.DeviceManager()
-        except rclient.DaemonNotFound:
-            print("ERROR: Daemon Not Found.")
-            self.devman = None
-            self.devman_error = "not-running"
-        except Exception as e:
-            print("ERROR: Exception: " + str(e))
-            self.devman = None
-            self.devman_error = "presume-crashed"
-            self.devman_reason = str(e)
-
-        # When the running daemon and installed library differ, request the user to restart the daemon.
-        # Running   = Current running daemon's version.
-        # Installed = Version installed globally on system.
-        try:
-            running_version = self.devman._daemon_version
-            import openrazer_daemon.daemon
-            installed_version = openrazer_daemon.daemon.__version__
-        except Exception:
-            # Daemon may have crashed, skip this check.
-            running_version = 0
-            installed_version = 0
-
-        if installed_version < running_version:
-            print("ERROR: Currently running daemon is older than the installed version.")
-            self.show_error_page("warning", "restart-required", _("Daemon requires a restart"),
-                _("The daemon that is currently running is older than the installed version.") + "<br>" +
-                _("This can cause glitches. Please restart the daemon to continue.") + "<br><br>" +
-                _("This happens if the driver/daemon packages were updated, but you haven't restarted your session or computer."))
-            return
-
-        # Display an upgrade message if using the old daemon.
-        if os.path.exists("/usr/lib/python3/dist-packages/razer/inteface/keyboard.py") or os.path.exists(os.path.join(sys.path[-1], "/razer/inteface/keyboard.py")):
-            print("ERROR: Daemon is incompatible with this version of the program.")
-            self.show_error_page("normal", "upgrade", _("Daemon Upgrade Required"),
-                _("The Razer 'Chroma' driver and daemon currently installed on your system is no longer supported by Polychromatic.") + '<br>' +
-                _("Please remove the current Razer driver/daemon from your system, then install OpenRazer from: ") +
-                '<a onclick="cmd(\'open?https://openrazer.github.io/\')">http://openrazer.github.io/</a>' +
-                '<br><br><a onclick="cmd(\'open?https://github.com/lah7/polychromatic/releases/tag/v0.3.0\')">' +
-                _("For more information, see the Release Notes for v0.3.0.") + '</a>')
-            return
-
-        # Display an error message if the daemon is having problems on the system.
-        if not self.devman:
-            print("ERROR: Could not connect to the Daemon Device Manager!")
-
-            if self.devman_error == "not-running":
-                self.show_error_page("serious", "daemon-error", _("Daemon Not Running"),
-                    _("Polychromatic uses the daemon to interact with your Razer devices, but it doesn't appear to be running."))
-                return
-
-            # Check the user is in the 'plugdev' group
-            import grp
-            if "plugdev" in [grp.getgrgid(g).gr_name for g in os.getgroups()]:
-                has_plugdev = True
-            else:
-                has_plugdev = False
-
-            if not has_plugdev:
-                try:
-                    whoami = str(os.getlogin())
-                except FileNotFoundError:
-                    import pwd
-                    whoami = str(pwd.getpwuid(os.getuid())[0])
-                except Exception:
-                    whoami = _("<username>")
-
-                self.show_error_page("serious", "no-plugdev", _("Insufficient Privileges"),
-                    _("This user account is not in the 'plugdev' group, the daemon requires this to control your device(s).") + \
-                    '<br><br>' + _("Please run this command in the terminal, then log out then back in:") + \
-                    '<br><code>sudo gpasswd -a ' + whoami + ' plugdev</code>')
-                return
-
-            # Likely the daemon is not responding.
-            if self.devman_error == "presume-crashed":
-                exception = ""
-                for line in self.devman_reason.split('\n'):
-                    exception += '<code>' + line + '</code><br>'
-                self.show_error_page("warning", "daemon-not-ready", _("Daemon Not Responding"),
-                    _("Polychromatic could not initialise the daemon. This could be caused by a bug with the daemon process.") + "<br><br>" +
-                    _("Exception:") + '<br><code>' + exception + '</code>')
-                return
-
-        # Display "No Devices Found" screen if none can be found
-        if self.devman:
-            self.devices = self.get_devices()
-            if len(self.devices) == 0:
-                # get_devices() function shows "No Devices Found".
-                return
-
-        # Turn off incompatible features
-        self.devman.sync_effects = False
-
-        # Initialise Profiles
-        dbg.stdout("Loading application profiles...", dbg.action, 1)
-        self.profiles = prof.AppProfiles()
-        self.profiles.selected_uuid = None
-        self.profiles.previous_uuid = None
-
-        # Set active device.
-        if len(self.devices) == 0:
-            self.active_device = None
-            self.active_device_serial = None
-            return
-        else:
-            self.active_device = self.devices[0]
-            self.active_device_serial = self.devices[0].serial
-
-        # Start watching devicestate index for changes.
-        common.devicestate_monitor_start(self.device_state_changed, path.devicestate)
-
-        dbg.stdout("Application Ready.\n", dbg.action, 2)
-        self.show_menu("menu")
-
-    def run_javascript(self, function):
-        """
-        Sends a JavaScript function to the page.
-        """
-        self.webkit.run_js(function)
-
-    def update_page(self, element, function, parm1=None, parm2=None):
-        """
-        Sends a jQuery function to the page, ensuring correctly parsed quotes.
-        """
-        if parm1 and parm2:
-            buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "', '" + parm2.replace("'", '\\\'') + "')"
-            dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
-            self.run_javascript(buffer)
-        if parm1:
-            buffer = '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "')"
-            dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
-            self.run_javascript(buffer)
-        else:
-            buffer = '$("' + element + '").' + function + '()'
-            dbg.stdout(' => Push JS: ' + buffer, dbg.debug, 2)
-            self.run_javascript(buffer)
-
-    def show_menu(self, page):
-        """
-        Changes the current page in use.
-        """
-        self.current_page = page
-        page_path = os.path.join(path.data_source, 'pages', page + '.html')
-
-        if os.path.exists(page_path):
-            self.webkit.load_uri('file://' + page_path)
-        else:
-            print("Unknown menu: " + page)
-
-    def page_loaded(self):
-        """
-        Initialise the page when WebKit has loaded the HTML.
-        """
-
-        page_bindings = {
-            "menu": PageLoaded.menu,
-            "profile_editor": PageLoaded.profile_editor,
-            "preferences": PageLoaded.preferences,
-            "error": PageLoaded.error
-        }
-
-        dbg.stdout(" ** Running post-actions for page: '" + self.current_page + "'...", dbg.debug, 2)
-        try:
-            page_bindings[self.current_page](self)
-        except KeyError:
-            dbg.stdout(" ** No post-actions to run!", dbg.error, 2)
-
-    def refresh_profiles_list(self):
-        """
-        Reloads the key light profiles created by the user.
-        """
-        dbg.stdout("Refreshing profile list...", dbg.debug, 2)
-        self.update_page('#app-profiles', 'html', ' ')
-        uuid_in_use = pref.get_device_state(self.active_device.serial, "main", "profile")
-
-        # Function to append to page.
-        def append_item(uuid, data):
-            css_id = "app-" + uuid
-            title = data["name"]
-            title = title.replace("'", '&#39;').replace('"', '&#39;')
-            try:
-                icon_path = data["icon"]
-            except:
-                icon_path = path.data_source + "/img/profile-default.svg"
-            if self.current_page == "menu":
-
-                # Show highlight in UI if in use
-                extra_class = ""
-                if uuid_in_use:
-                    if uuid == uuid_in_use:
-                        extra_class = "active"
-
-                self.update_page('#app-profiles', 'append', "<button class='app-profile-item {4}' id='{0}' onclick='profile_list_change(\"{0}\", \"{3}\", \"{2}\")'><img src='{1}'>{2}</button>".format(css_id, icon_path, title, uuid, extra_class))
-
-            elif self.current_page == "preferences":
-                self.update_page('#profiles-list', 'append', "<option value='{1}'>{0}</option>".format(title, uuid))
-
-        # Sort the profiles A-Z.
-        sorted_names = {}
-        for uuid in self.profiles.list_profiles():
-            data = self.profiles.load_profile(str(uuid))
-            try:
-                human_name = data["name"]
-            except:
-                print("Profile UUID corrupt: " + str(uuid))
-                continue
-            sorted_names[human_name] = int(uuid)
-
-        item_no = 0
-        for program in sorted(sorted_names):
-            uuid = sorted_names[program]
-            data = self.profiles.load_profile(str(uuid))
-            item_no += 1
-            append_item(str(uuid), data)
-
-    def process_command(self, command):
-        """
-        Processes a command passed from the page to Python.
-        """
-        if command == 'quit':
-            quit()
-
-        ## Effects & Keyboard Controls
-        elif command.startswith('brightness'):
-            """
-            Expects:  brightness?<source>?<value>
-            """
-            source = command.split("?")[1]
-            value = command.split("?")[2]
-            try:
-                common.set_brightness(pref, self.active_device, source, value)
-                self.update_device_active_options()
-
-            except Exception as exception:
-                self.print_error(exception, str(_("Failed to set/change brightness for {0}.")).replace("{0}", self.active_device.name))
-
-        elif command.startswith('effect'):
-            """
-            Expects:  effect?<source>?<effect>?[params]
-            """
-            source = command.split("?")[1]
-            effect = command.split("?")[2]
-            colours = pref.get_device_state(self.active_device.serial, source, "colour_primary")
-
-            try:
-                params = command.split("?")[3]
-            except Exception:
-                params = None
-
-            if colours == None:
-                colours = [0, 255, 0]
-
-            try:
-                common.set_lighting_effect(pref, self.active_device, source, effect, params)
-                self.update_lighting_options(source, effect)
-            except Exception as exception:
-                self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}", effect).replace("{1}", self.active_device.name))
-
-            self.update_device_active_options()
-            self.update_background_header(colours)
-
-        elif command.startswith('dpi'):
-            try:
-                value = int(command.split("?")[1])
-                self.active_device.dpi = (value, value)
-                self.update_page("#dpi-value", "html", str(value))
-                pref.set_device_state(self.active_device.serial, "main", "dpi", value)
-            except Exception as exception:
-                self.print_error(exception, str(_("Failed to set effect '{0}' for {1}.")).replace("{0}", effect).replace("{1}", self.active_device.name))
-
-        elif command.startswith('poll-rate'):
-            try:
-                value = int(command.split("?")[1])
-                if value == 1:
-                    actual_value = 125
-                if value == 2:
-                    actual_value = 500
-                if value == 3:
-                    actual_value = 1000
-                self.active_device.poll_rate = actual_value
-                self.update_page("#poll-rate-value", "html", str(actual_value) + "Hz")
-            except Exception as exception:
-                self.print_error(exception, str(_("Failed to set poll rate for '{device_name}' to {poll_rate}.")).replace("{device_name}", self.active_device).replace("{poll_rate}", str(value)))
-
-        elif command == 'enable-marco-keys':
-            self.active_device.macro.enable_macros()
-            self.update_page('#macro-keys-enable', 'addClass', 'disabled')
-            self.update_page('#macro-keys-enable', 'html', "In Use")
-
-        elif command == 'gamemode-enable':
-            self.active_device.game_mode_led = True
-            self.update_page('#game-mode-status', 'html', 'Enabled')
-            self.update_page('#game-mode-enable', 'hide')
-            self.update_page('#game-mode-disable', 'show')
-            try:
-                pref.set_device_state(self.active_device.serial, "main", "game_mode", True)
-            except Exception as exception:
-                self.print_error(exception, str(_("Failed to change game mode for {0}.")).replace("{0}", self.active_device.name))
-
-        elif command == 'gamemode-disable':
-            self.active_device.game_mode_led = False
-            self.update_page('#game-mode-status', 'html', 'Disabled')
-            self.update_page('#game-mode-enable', 'show')
-            self.update_page('#game-mode-disable', 'hide')
-            try:
-                pref.set_device_state(self.active_device.serial, "main", "game_mode", False)
-            except Exception as exception:
-                self.print_error(exception, str(_("Failed to change game mode for {0}.")).replace("{0}", self.active_device.name))
-
-        elif command == 'refresh-overview-screen':
-            self.refresh_device_list()
-            self.update_page("#device-tabs > .device", "removeClass", "active")
-            self.update_page("#device-overview-tab", "addClass", "active")
-
-        ## Changing colours for this session.
-        elif command.startswith('ask-colour'):
-            """
-            Expects:  ask-colour?<colour_id>?<source>
-            """
-            colour_id = command.split('?')[1]
-            source = command.split('?')[2]
-            picker = Dialogues.color_picker()
-            if picker == None:
-                return
-            else:
-                picker = picker.split(',')
-            command = "set-colour?{0}?{1}?{2}?{3}?{4}".format(colour_id, picker[0], picker[1], picker[2], source)
-            self.process_command(command)
-
-        elif command.startswith('set-colour'):
-            """
-            Expects these parameters separated by '?' in order:
-                colour_id   = Element name (also used for persistance/saving and setting preview element)
-                red         = 0-255 RGB
-                green       = 0-255 RGB
-                blue        = 0-255 RGB
-                source      = Which light source is assigned to this colour?
-            """
-            params = command.split('set-colour?')[1].split('?')
-            colour_id = params[0]
-            red = int(params[1])
-            green = int(params[2])
-            blue = int(params[3])
-            source = params[4]
-
-            if source != "null" and source != "profile":
-                colour_id_state = colour_id.replace("-", "_")
-                pref.set_device_state(self.active_device.serial, source, colour_id_state, [red, green, blue])
-
-            preview_element = "#{0}-{1}-preview".format(colour_id, source)
-            self.update_page(preview_element, "css", "background-color", "rgba({0},{1},{2},1)".format(str(red), str(green), str(blue)))
-            print("Set colour of '{0}' to {1}, {2}, {3}".format(colour_id, int(red), int(green), int(blue)))
-
-            # In profile editor, changing colour must 'reload' the tool.
-            if self.current_page == "profile_editor":
-                self.run_javascript("set_mode('set')")
-
-        ## Preferences for changing colours
-        elif command == 'pref-colour-new':
-            """
-            Creates a new colour in index for editing.
-            """
-            colour_index = pref.load_file(path.colours)
-            uuid = pref.generate_uuid()
-            colour_index[uuid] = {}
-            colour_index[uuid]["name"] = _("New Color")
-            colour_index[uuid]["col"] = [0, 255, 0]
-            pref.save_file(path.colours, colour_index)
-            self.populate_colours_table()
-            self.process_command('pref-colour-edit?' + uuid)
-
-        elif command.startswith('pref-colour-edit'):
-            """
-            Sets the UI for editing a colour.
-                colour_id   = UUID from index
-            """
-            uuid = command.split('?')[1]
-            colour_index = pref.load_file(path.colours)
-
-            try:
-                name = colour_index[uuid]["name"]
-                col = colour_index[uuid]["col"]
-                red = col[0]
-                green = col[1]
-                blue = col[2]
-            except:
-                name = _("Unknown Color")
-                red = 0
-                green = 255
-                blue = 0
-
-            self.update_page(".colour-table-item", "removeClass", "active")
-            self.update_page("#colour-item-" + uuid, "addClass", "active")
-            self.update_page("#colour-editor", "fadeIn", "fast")
-            self.update_page("#colour-edit-preview", "css", "background-color", "rgba({0},{1},{2},1)".format(red, green, blue))
-            self.update_page("#colour-edit-name", "val", name)
-            self.update_page("#colour-save", "attr", "onclick", "save_colour({0})".format(uuid))
-            self.update_page("#colour-delete", "attr", "onclick", "cmd('pref-colour-del?{0}')".format(uuid))
-
-        elif command.startswith('pref-colour-save'):
-            """
-            Takes the values and sets the new colour in the index.
-                colour_id   = UUID from index
-                name        = Name to describe to this colour
-                red         = New RGB value (0-255)
-                gree        = New RGB value (0-255)
-                blue        = New RGB value (0-255)
-            """
-            command = command.split('?')
-            uuid = command[1]
-            name = command[2]
-            red = int(command[3])
-            green = int(command[4])
-            blue = int(command[5])
-            self.update_page("#colour-editor", "fadeOut", "fast")
-            self.populate_colours_table()
-
-            dbg.stdout("Saving colour '{1}' (id: {0}) with RGB {2}, {3}, {4} ...".format(uuid, name, red, green, blue), dbg.action, 1)
-            try:
-                colour_index = pref.load_file(path.colours)
-                colour_index[uuid] = {}
-                colour_index[uuid]["name"] = name
-                colour_index[uuid]["col"] = [red, green, blue]
-                pref.save_file(path.colours, colour_index)
-                self.update_page("#colour-editor", "fadeOut", "fast")
-                self.populate_colours_table()
-
-            except Exception as e:
-                print("Saving colour failed! Exception: " + str(e))
-
-        elif command.startswith('pref-colour-del'):
-            """
-            Expects these parameters separated by '?' in order:
-                colour_id   = UUID from index
-            """
-            uuid = command.split("?")[1]
-            dbg.stdout("Deleting colour ID: {0} ...".format(uuid), dbg.action, 1)
-            try:
-                colour_index = pref.load_file(path.colours)
-                colour_index.pop(uuid)
-                pref.save_file(path.colours, colour_index)
-                self.update_page("#colour-editor", "fadeOut", "fast")
-                self.populate_colours_table()
-
-            except Exception as e:
-                print("Deleting colour failed! Exception: " + str(e))
-
-        elif command == 'pref-colour-reset':
-            dbg.stdout("Resetting colour configuration...", dbg.action, 1)
-            pref.reset_config(path.colours)
-            self.populate_colours_table()
-            self.update_page("#colour-editor", "fadeOut", "fast")
-
-        ## Cancel to main menu.
-        ## '?xxxx' may specify changes to also make when leaving application profile editor.
-        elif command.startswith('cancel-changes'):
-            if command.find('?') > -1:
-                command, cancel_type, cancel_args = command.split('?')
-                if cancel_type == "new-profile":
-                    if pref.get('editor', 'live_switch', True) == True or pref.get('editor', 'live_preview', True) == True:
-                        self.profiles.remove_profile(self.profiles.selected_uuid)
-                        if self.profiles.previous_uuid:
-                            self.profiles.send_profile_from_file(self.active_device, self.profiles.previous_uuid)
-                elif cancel_type == "edit-profile":
-                    if pref.get('editor', 'live_switch', True) == True or pref.get('editor', 'live_preview', True) == True:
-                        if self.profiles.previous_uuid:
-                            self.profiles.send_profile_from_file(self.active_device, self.profiles.previous_uuid)
-
-                self.update_page('#cancel', 'attr', '{onclick: \"cmd(\'cancel-changes\')\"}')
-            self.show_menu('menu')
-
-        ## Preferences
-        elif command == 'pref-open':
-            self.show_menu('preferences')
-
-        elif command.startswith('run?'):
-            command = command.split('run?')[1]
-            background_process(command, shell=True)
-
-        elif command.startswith('open?'):
-            target = command.split('open?')[1]
-            os.system('xdg-open "' + target + '"')
-
-        elif command.startswith('pref-set?'):
-            # pref-set ? <group> ? <setting> ? <value>
-            cmd = command.split('?')
-            group = cmd[1]
-            setting = cmd[2]
-            value = cmd[3]
-            pref.set(group, setting, value)
-
-        elif command.startswith('pref-toggle?'):
-            cmd = command.split('?')
-            group = cmd[1]
-            setting = cmd[2]
-            value = not pref.get(group, setting, False)
-            pref.set(group, setting, value)
-
-        elif command == 'pref-close':
-            self.show_menu('menu')
-
-        elif command == 'pref-reset-all':
-            print('User requested to reset everything.')
-            pref.clear_config()
-            print('\nRestarting the application...\n')
-            os.execv(__file__, sys.argv)
-
-        elif command.startswith('preview-gtk-icon?'):
-            try:
-                icon_name = command.split('?')[1]
-                icon_path = icon_name_to_path(icon_name)
-                self.update_page("#gtk-preview", "attr", "src", icon_path)
-            except:
-                self.update_page("#gtk-preview", "attr", "src", "")
-
-        elif command.startswith("select-tray-icon-uuid?"):
-            uuid = command.split('?')[1]
-            pref.set("tray_icon", "value", str(uuid))
-            self.update_page(".tray-uuids", "removeClass", "selected")
-            self.update_page("#tray-uuid-" + uuid, "addClass", "selected")
-            restart_tray_applet()
-
-        ## Profile Editor / Management
-        elif command.startswith('profile-edit'):
-            self.profiles.selected_uuid = command.split('profile-edit?')[1].replace('%20', ' ')
-            self.profiles.previous_uuid = self.profiles.selected_uuid
-            self.cancel_changes = 'edit-profile'
-            if self.profiles.selected_uuid is not None:
-                self.show_menu('profile_editor')
-            else:
-                print('No profile UUID specified. Nothing to open.')
-
-        elif command.startswith('set-key'):
-            # Parse position/colour information
-            command = command.replace('%20', ' ')
-            row = int(command.split('?')[1])
-            col = int(command.split('?')[2])
-            colour = command.split('?')[3]
-            red = int(colour.strip('rgb()').split(',')[0])
-            green = int(colour.strip('rgb()').split(',')[1])
-            blue = int(colour.strip('rgb()').split(',')[2])
-            self.profiles.memory["rows"][str(row)][col] = (red, green, blue)
-
-            # Live preview (if 'live_preview' is enabled in preferences)
-            if pref.get('editor', 'live_preview', True) == True:
-                self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
-
-        elif command.startswith('clear-key'):
-            command = command.replace('%20', ' ')
-            row = int(command.split('?')[1])
-            col = int(command.split('?')[2])
-            self.profiles.memory["rows"][str(row)][col] = (0, 0, 0)
-
-            # Live preview (if 'live_preview' is enabled in preferences)
-            if pref.get('editor', 'live_preview', True) == True:
-                self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
-
-        elif command.startswith('profile-activate'):
-            command = command.replace('%20', ' ')
-
-            # Send to keyboard
-            uuid = command.split('profile-activate?')[1]
-            self.run_javascript('set_cursor("html","wait")')
-            self.profiles.send_profile_from_file(self.active_device, uuid)
-            self.run_javascript('set_cursor("html","normal")')
-
-            # Update UI
-            data = self.profiles.get_metadata(uuid)
-            self.update_page("#fx-options-main", "html", " ")
-            self.update_page("#active-effect", "html", "<img src='{1}'/> {0}".format(data.get("name"), data.get("icon")))
-            self.update_background_header([0, 255, 0])
-
-            # Update persistance file
-            pref.set_device_state(self.active_device.serial, "main", "effect", "profile")
-            pref.set_device_state(self.active_device.serial, "main", "profile", uuid)
-
-        elif command == 'profile-preview':
-            self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
-
-        elif command.startswith('profile-del'):
-            uuid = command.split('?')[1]
-            self.profiles.remove_profile(uuid)
-            self.refresh_profiles_list()
-            restart_tray_applet()
-
-        elif command.startswith('profile-new'):
-            profile_name = command.split(';')[1].replace('%20', ' ')
-            profile_icon = command.split(';')[2].replace('%20', ' ')
-            self.profiles.previous_uuid = self.profiles.selected_uuid
-            uuid = self.profiles.new_profile()
-            self.profiles.selected_uuid = uuid
-            self.cancel_changes = 'new-profile'
-            self.profiles.set_metadata(uuid, "name", profile_name)
-            if os.path.exists(profile_icon):
-                self.profiles.set_metadata(uuid, "icon", profile_icon)
-            else:
-                profile_icon = path.data_source + "/img/profile-default.svg"
-                self.profiles.set_metadata(uuid, "icon", profile_icon)
-            self.show_menu('profile_editor')
-            restart_tray_applet()
-
-        elif command.startswith('profile-set-metadata'):
-            new_name = command.split(';')[1].replace('%20', ' ')
-            new_icon = command.split(';')[2].replace('%20', ' ')
-
-            # Determine if icon really exists and fallback if not.
-            if os.path.exists(new_icon):
-                self.profiles.memory["icon"] = new_icon
-            else:
-                new_icon = path.data_source + "/img/profile-default.svg"
-
-            # New values are saved to profile stored in memory.
-            self.profiles.memory["name"] = new_name
-            self.profiles.memory["icon"] = new_icon
-
-        elif command == 'profile-save':
-            uuid = self.profiles.selected_uuid
-            print("Saving profile UUID: " + str(uuid))
-            self.profiles.save_profile_from_memory(uuid)
-            self.show_menu('menu')
-
-            if pref.get('editor', 'activate_on_save', True) == True:
-                self.profiles.send_profile_to_keyboard(self.active_device, self.profiles.memory)
-
-        elif command.startswith('profile-rename'):
-            uuid = command.split('?')[1]
-            uuid_css = 'app-' + uuid
-
-            data = self.profiles.memory
-            name = data["name"]
-            icon = data["icon"]
-
-            self.update_page('#dialog-rename-name', 'val', name)
-            self.update_page('#dialog-rename-icon', 'val', icon)
-            self.update_page('#dialog-rename-name-preview', 'html', name)
-            self.update_page('#dialog-rename-icon-preview', 'attr', 'src', icon)
-            self.run_javascript("rename_profile_dialog_open()")
-
-        ## List application launchers to create profiles for.
-        elif command == 'fetch-app-launchers':
-            unknown_icon_path = path.data_source + "/img/ui/generic-application.svg"
-
-            # Functions for this feature.
-            def append_item(uid, name, icon_path):
-                css_id = "launcher-" + uid
-                if not os.path.exists(icon_path):
-                    icon_path = unknown_icon_path
-                self.update_page('#app-launchers', 'append', "<button class='app-launcher-item' id='{0}' onclick='prefill_launcher(\"{0}\", \"{1}\", \"{2}\")'><img src='{2}'><span>{1}</span></button>".format(uid, name, icon_path))
-
-            def read_launcher(filename):
-                contents = ''
-                with open(filename) as stream:
-                    contents = stream.readlines()
-                return contents
-
-            def read_line(data, item):
-                for line in data:
-                    if line.startswith(item):
-                        findings = line.split(item)[1].replace('\n', '')
-                        return findings
-                return 'null'
-
-            # Clear the list, if previously opened.
-            self.update_page('#app-launchers', 'html', ' ')
-            unique_id = 0
-
-            # Gather a list of launchers from A-Z.
-            system_apps = '/usr/share/applications/*.desktop'
-            user_apps = os.path.join(os.path.expanduser('~'), '.local', 'share', 'applications/')
-
-            if os.path.isdir(user_apps):
-                user_launchers = glob.glob(user_apps + '*.desktop')
-                user_launchers.sort()
-            else:
-                user_launchers = []
-
-            sys_launchers = glob.glob(system_apps)
-            sys_launchers.sort()
-
-            launchers = []
-            launchers.extend(user_launchers)
-            launchers.extend(sys_launchers)
-
-            for filename in launchers:
-                unique_id += 1
-                try:
-                    contents = read_launcher(filename)
-                    app_name = read_line(contents, 'Name=')
-                    app_icon = read_line(contents, 'Icon=')
-                except:
-                    # Skip any invalid launchers.
-                    continue
-
-                if os.path.exists(app_icon):
-                    # Icon is already an abs. path.
-                    icon_path = app_icon
-                else:
-                    # Use GTK to determine theme icon.
-                    try:
-                        icon_path = icon_name_to_path(app_icon)
-                    except:
-                        icon_path = unknown_icon_path
-
-                # Icon path couldn't be determined.
-                if not os.path.exists(icon_path):
-                    icon_path = unknown_icon_path
-
-                # Only SVG or PNGs are supported.
-                if not icon_path.endswith(".png") and not icon_path.endswith(".svg"):
-                    icon_path = unknown_icon_path
-
-                # Large SVGs cause severe graphical glitches. Especially LibreOffice.
-                if os.stat(icon_path).st_size > 450000 or icon_path.find("libreoffice") != -1:
-                    dbg.stdout("Skipping large SVG: " + icon_path, dbg.action, 1)
-                    icon_path = unknown_icon_path
-
-                append_item(str(unique_id), app_name, icon_path)
-
-        ## Open the file browser and return a successful path to that div.
-        elif command.startswith("browse-file-icon"):
-            div_id = command.split('?')[1]
-            picker = Dialogues.file_picker(_("Choose Application Profile Icon"), 'image')
-            if picker != None:
-                self.update_page('#'+div_id, 'val', picker)
-                self.update_page('#'+div_id+'-preview', 'attr', 'src', picker)
-            else:
-                return
-
-        ## Miscellaneous
-        elif command == 'open-config-folder':
-            os.system('xdg-open "' + pref.path.root + '"')
-
-        elif command == 'restart-tray':
-            restart_tray_applet()
-
-        elif command == 'reset-app':
-            os.execv(__file__, sys.argv)
-
-        elif command == 'update-check':
-            update_script = os.path.join(path.data_source + "/../install/update.sh")
-            if os.path.exists("/usr/bin/x-terminal-emulator"):
-                background_process('x-terminal-emulator -e "{0}"'.format(update_script), shell=True)
-            else:
-                background_process('xterm -e "{0}"'.format(update_script), shell=True)
-
-        elif command == 'fetch-changelog':
-            import requests
-
-            def fetch_failed():
-                self.update_page("#dialog-changelog-body", "html", ("Unable to fetch the changelog."))
-                self.run_javascript("dialog_open('dialog-changelog')")
-
-            try:
-                r = requests.get('https://raw.githubusercontent.com/lah7/polychromatic/master/CHANGELOG')
-            except:
-                fetch_failed()
-                return
-
-            if r.status_code == 200:
-                self.update_page("#dialog-changelog-body", "html", " ")
-                ver = 0
-                for line in r.text.split('\n'):
-                    if line.startswith("#"):
-                        ver = line[1:].strip()
-                        if ver == version:
-                            self.update_page("#dialog-changelog-body", "append", "<h3><span class='fa fa-arrow-right'></span> " + ver + "</h3>")
-                        else:
-                            self.update_page("#dialog-changelog-body", "append", "<h3>" + ver + "</h3>")
-                        self.update_page("#dialog-changelog-body", "append", "<p><a style='color:lime;text-decoration:underline' href='#' onclick='open_release_note(\"{0}\")'>".format(ver) + _("View Release Notes") + "</a></p>")
-                    elif line == '':
-                        continue
-                    else:
-                        if ver == version:
-                            self.update_page("#dialog-changelog-body", "append", "<li style='color:lime'>" + line.split('*')[1] + "</li>")
-                        else:
-                            self.update_page("#dialog-changelog-body", "append", "<li>" + line.split('*')[1] + "</li>")
-                self.run_javascript("dialog_open('dialog-changelog')")
-            else:
-                fetch_failed()
-                return
-
-        elif command.startswith('daemon-set-config?'):
-            group = command.split('?')[1]
-            item = command.split('?')[2]
-            value = command.split('?')[3]
-            dbg.stdout("Writing to razer.conf: [{0}] -> {1} = {2}".format(group, item, value), dbg.action, 1)
-            self.daemon_config[group][item] = value
-            with open(self.config_path, 'w') as f:
-                self.daemon_config.write(f)
-
-        elif command == 'daemon-restart':
-            self.load_lock = True
-            self.show_menu("loading")
-            thread = threading.Thread(target=restart_daemon_service)
-            thread.daemon = True
-            thread.start()
-
-        elif command == 'daemon-stop':
-            self.devman.stop_daemon()
-            self.show_error_page("warning", "daemon-stopped", _("Daemon gracefully stopped."),
-                _("The daemon has been requested to shut down. To use Polychromatic again, restart the daemon."))
-
-        elif command == 'timeout-error':
-            self.show_error_page("serious", "generic", _("Something went wrong."),
-                _("Polychromatic took too long to initialise the application or daemon. Please reload and try again."))
-
-        elif command == 'demo-chroma':
-            chroma = None
-            for device in self.devices:
-                device.fx.none()
-                if device.name.startswith("Razer BlackWidow Chroma"):
-                    chroma = device
-            if chroma == None:
-                print("Refusing to play demo when keyboard is not present!")
-                return
-            else:
-                chroma_demo = demo.RazerChromaKeyboardDemo(self.webkit, self.profiles, chroma, self.show_menu)
-                self.show_menu("demo")
-
-        ## Multi Device Support
-        elif command.startswith('device-select?'):
-            selected_serial = command.split('?')[1]
-            selected_device = None
-
-            # Loop through each device object until we find the device.
-            for device in self.devices:
-                if device.serial == selected_serial:
-                    selected_device = device
-
-            if selected_device:
-                self.active_device = selected_device
-                self.active_device_serial = selected_device.serial
-            else:
-                print("Could not locate device with serial: " + selected_serial)
-                return
-
-            dbg.stdout("Selected: {0} [{1}]".format(selected_device.name, selected_serial), dbg.debug, 1)
-
-            # Clear any options from previous devices
-            self.update_page(".fx-options", "html", " ")
-            self.update_page("#fx-colour-primary", "hide")
-            self.update_page("#fx-colour-secondary", "hide")
-
-            # Update options for device screen
-            self.update_device_supported_features()
-            self.update_device_active_options()
-
-        else:
-            print("Unimplemented command: " + command)
-
-    def print_error(self, exception, human_text):
-        """
-        Shows a graphical error message to the page.
-        """
-        self.run_javascript("showWarning('" + human_text.replace("'", '"') + "')")
-        dbg.stdout(human_text, dbg.error, 0)
-        dbg.stdout("Exception: " + str(exception), dbg.error, 0)
-
-    def get_devices(self):
-        """
-        Refreshes the currently connected devices, retrieved via the daemon.
-        """
-        dbg.stdout("Gathering devices...", dbg.action, 1)
-        found_devices = []
-        for device in self.devman.devices:
-            dbg.stdout(" -- Found: " + str(device), dbg.debug, 1)
-            found_devices.append(device)
-
-        # Show an error if no devices were returned by the daemon.
-        if len(found_devices) == 0:
-            dbg.stdout("WARN: Daemon did not return any devices.", dbg.warning, 1)
-
-            # Scan 'lsusb' in case device is incompatible with daemon.
-            import subprocess
-            try:
-                lsusb = str(subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0])
-            except FileNotFoundError:
-                dbg.stdout("'lsusb' not available, unable to determine if product is connected.", dbg.error, 1)
-                lsusb = ""
-
-            # Determine which message to display.
-            if lsusb.find("ID 1532") == -1:
-                title = _("No Razer Product Connected")
-                message = _("Please plug in your Razer device and reload the application/daemon.")
-                icon = "no-device"
-                severity = "normal"
-            else:
-                title = _("Device Not Recognised")
-                message = _("A Razer product is connected to your computer, but the daemon didn't detect it.") + '<br>' + \
-                          _("It is possible your Razer product is not bound to the driver properly or it is not yet supported.") + \
-                          '<br><br><u>' + _("Suggestions:") + '</u>' \
-                          '<br>• ' + _("Use the 'modprobe' command to bind the driver to the device.") + \
-                          '<br>• <u><a onclick="cmd(\'open?https://github.com/openrazer/openrazer#device-support\')">' + \
-                            _("Check whether your device PID is listed.") + '</u></a>' + \
-                          '<br>• ' + _("Check the daemon log:") + ' <a onclick="cmd(\'open?/home/$USER/.local/share/openrazer/logs/razer.log\')"><u><code>~/.local/share/openrazer/logs/razer.log</code></u></a>' + \
-                           '</u></a><br><br>' + \
-                           _("As this is a driver/daemon problem, please") + ' ' + \
-                           '<a onclick="cmd(\'open?https://github.com/openrazer/openrazer/wiki/Troubleshooting\')"><u>' + \
-                                _("refer to the troubleshooting guide for further assistance.") + \
-                           '</u></a>'
-                icon = "no-support"
-                severity = "warning"
-
-            self.show_error_page(severity, icon, title, message)
-            return []
-
-        return found_devices
-
-    def refresh_device_list(self):
-        """
-        Refreshes the graphical interface by re-populating the device tabs.
-        """
-        # If the daemon doesn't have any devices, there is nothing to show.
-        if len(self.devices) == 0:
-            return
-
-        selected_id = self.active_device.serial
-
-        if self.current_page == "menu":
-            self.update_page(".device", "remove")
-            self.update_page("#device-tabs", "append", "<button id='device-overview-tab' class='device' onclick='switchPaneOverview(); changeHeaderImg(\"overview\", \"black\")'><img src='../img/ui/overview.svg'> <span>{0}</span></button>".format(_("Overview")))
-            self.update_page("#device-overview", "html", "<h3>{0}</h3>".format(_("Connected Devices")))
-
-            for device in self.devices:
-                name = str(device.name)
-                serial = str(device.serial)
-                img = self.get_device_image(device, "icon")
-                htmlbuffer = "<button id='{0}' class='device' onclick='switchPaneDevice(\"{0}\")' title=\"{2}\"><img src='{1}'> <span>{2}</span></button>".format(serial, img, name)
-                self.update_page("#device-tabs", "append", htmlbuffer)
-
-                # Compile status data together (for multiple light sources)
-                buffer_effect = ""
-                buffer_brightness = ""
-                for source in ["main", "backlight", "logo", "scroll"]:
-                    if source == "main":
-                        capability = "lighting"
-                    else:
-                        capability = "lighting_" + source
-
-                    if not device.has(capability):
-                        continue
-
-                    try:
-                        # Brightness can only be toggled
-                        if device.has(capability + "_active"):
-                            if source == "main":
-                                turned_on = device.active
-                            elif source == "backlight":
-                                turned_on = device.fx.misc.backlight.active
-                            elif source == "logo":
-                                turned_on = device.fx.misc.logo.active
-                            elif source == "scroll":
-                                turned_on = device.fx.misc.scroll_wheel.active
-
-                            if turned_on:
-                                current_brightness = _("On")
-                            else:
-                                current_brightness = _("Off")
-
-                        # Brightness can be adjusted
-                        else:
-                            if source == "main":
-                                current_brightness = str(int(device.brightness)) + "%"
-                            elif source == "backlight":
-                                current_brightness = str(int(device.fx.misc.backlight.brightness)) + "%"
-                            elif source == "logo":
-                                current_brightness = str(int(device.fx.misc.logo.brightness)) + "%"
-                            elif source == "scroll":
-                                current_brightness = str(int(device.fx.misc.scroll_wheel.brightness)) + "%"
-
-                    except:
-                        current_brightness = None
-
-                    current_effect = pref.get_device_state(device.serial, source, "effect")
-                    current_colour = pref.get_device_state(device.serial, source, "colour_primary")
-
-                    if current_brightness:
-                        if len(buffer_brightness) == 0:
-                            buffer_brightness = current_brightness
-                        else:
-                            buffer_brightness += " / " + current_brightness
-
-                    if current_effect:
-                        if len(buffer_effect) > 0:
-                            buffer_effect += "&nbsp;"
-
-                        if not current_colour:
-                            current_colour = [0, 255, 0]
-
-                        if current_effect in ["spectrum", "wave"]:
-                            class_effects = current_effect
-                        else:
-                            class_effects = None
-
-                        buffer_effect += "<img {0}/> <span {1}>{2}</span>".format(
-                            self.generate_css_colour_svg("../img/effects/{0}.svg".format(current_effect), current_colour, 22, 22, class_effects),
-                            self.generate_css_colour_text(current_colour, class_effects),
-                            common.get_effect_state_string(current_effect))
-
-                    if current_effect == "profile":
-                        uuid = pref.get_device_state(serial, "main", "profile")
-                        try:
-                            profile_data = self.profiles.load_profile(uuid)
-                            profile_name = profile_data["name"]
-                            profile_icon = profile_data["icon"]
-                            buffer_effect = "<img src='{0}'/> <span>{1}</span>".format(profile_icon, profile_name)
-                        except Exception:
-                            buffer_effect = "<img src='{0}'/> <span>{1}</span>".format("../img/effects/unknown.svg", _("Unknown Profile"))
-
-                # No brightness or effect set?
-                if buffer_brightness and len(buffer_brightness) == 0:
-                    buffer_brightness = None
-
-                if buffer_effect and len(buffer_effect) == 0:
-                    buffer_effect = None
-
-                # Determine device image
-                img_path = self.get_device_image(device, "actual", "top_img")
-                img_opacity = "1"
-
-                ## If from filesystem, assume own generic icon is used instead
-                if img_path.startswith("../"):
-                    img_opacity = "0.2"
-
-                # Piece device together
-                htmlbuffer = ""
-                htmlbuffer += "<div class='device-card' onclick='switchPaneDevice(\"{0}\")'>".format(serial)
-                htmlbuffer += "<img src='{0}' style='opacity:{1};'/>".format(img_path, img_opacity)
-                htmlbuffer += "<h4>{0}</h4>".format(name)
-                if device.has("serial"):
-                    htmlbuffer += "<p><b>{0}:</b>&nbsp; {1}</p>".format(_("Serial"), serial)
-                if device.has("firmware_version"):
-                    htmlbuffer += "<p><b>{0}:</b>&nbsp; {1}</p>".format(_("Firmware"), device.firmware_version)
-                if buffer_effect:
-                    htmlbuffer += "<p id='device-{0}-effect' class='effect-status'> {1}</p>".format(serial, buffer_effect)
-                if buffer_brightness:
-                    htmlbuffer += "<p class='brightness-status'><span class='fa fa-lightbulb-o'></span> <span id='device-{0}-brightness'>{1}</span></p>".format(serial, str(buffer_brightness))
-                htmlbuffer += "</div>"
-                self.update_page("#device-overview", "append", htmlbuffer)
-
-            self.update_page("#" + selected_id, "addClass", "active")
-            if len(self.devices) > 4:
-                self.update_page("#device-tabs", "addClass", "too-many")
-
-    def update_device_supported_features(self):
-        """
-        Refreshes the page and only shows options that are supported by the current "active" device.
-        """
-        dbg.stdout("\nSet active device: " + self.active_device.name, dbg.success, 1)
-
-        # Gather device information
-        device_name = str(self.active_device.name)
-        device_type = self.active_device.type
-        device_image = self.get_device_image(self.active_device, "actual", "perspective_img")
-        effect_support = [self.active_device.has("lighting"), self.active_device.has("lighting_logo"), self.active_device.has("lighting_scroll")]
-        brightness_support = [self.active_device.has("brightness"), self.active_device.has("lighting_logo_brightness"), self.active_device.has("lighting_scroll_brightness")]
-        brightness_active_support = [self.active_device.has("lighting_backlight_active"), self.active_device.has("lighting_logo_active"), self.active_device.has("lighting_scroll_active")]
-        # 'backlight' missing from effect list as unused by devices.
-
-        # Update GUI
-        self.webkit.run_javascript("change_header('{0}')".format(device_name))
-        self.update_page("#fx-image", "attr", "src", device_image)
-
-        # Show keyboard features if supported.
-        # TODO: Move items into their own sections.
-        self.update_page("#keyboard-options-pane", "hide")
-
-        if self.active_device.has("game_mode_led"):
-            self.update_page("#game-mode-options", "show")
-            self.update_page("#keyboard-options-pane", "show")
-        else:
-            self.update_page("#game-mode-options", "hide")
-
-        if self.active_device.has("macro_mode_led"):
-            self.update_page("#macro-options", "show")
-            self.update_page("#keyboard-options-pane", "show")
-        else:
-            self.update_page("#macro-options", "hide")
-
-        if self.active_device.has("lighting_led_matrix"):
-            self.update_page("#matrix-options", "show")
-            self.update_page("#keyboard-options-pane", "show")
-        else:
-            self.update_page("#matrix-options", "hide")
-
-        ## Lighting Effects
-        def add_to_dropdown(target_element, internal_name, string, source):
-            # internal_name = Used for icon name and passed in command.
-            self.update_page(target_element, "append", "<button onclick='cmd(\"{0}\")'><img src='{1}'/> {2}</button>".format(
-                "effect?" + source + "?" + internal_name, "../img/effects/" + internal_name + ".svg", string))
-
-        if True in effect_support:
-            self.update_page("#fx-lighting", "show")
-
-            if self.active_device.has("lighting"):
-                self.update_page("#lighting-dropdown", "show")
-                self.update_page("#lighting-list", "html", " ")
-                self.update_background_header(pref.get_device_state(self.active_device.serial, "main", "colour_primary"))
-                fx_list = [
-                    # [has() parameter, icon/command, human string]
-                    ["lighting_none", "none", _("None")],
-                    ["lighting_spectrum", "spectrum", _("Spectrum")],
-                    ["lighting_wave", "wave", _("Wave")],
-                    ["lighting_reactive", "reactive", _("Reactive")],
-                    ["lighting_breath_single", "breath", _("Breath")],
-                    ["lighting_pulsate", "pulsate", _("Pulsate")],
-                    ["lighting_ripple", "ripple", _("Ripple")],
-                    ["lighting_starlight_random", "starlight", _("Starlight")],
-                    ["lighting_static", "static", _("Static")]
-                ]
-
-                for fx in fx_list:
-                    if self.active_device.has(fx[0]):
-                        add_to_dropdown("#lighting-list", fx[1], fx[2], "main")
-
-                # Only show icon for Naga Hex V2
-                if self.active_device.name == "Razer Naga Hex V2":
-                    self.update_page("#lighting-main-naga-hex", "show")
-                else:
-                    self.update_page("#lighting-main-naga-hex", "hide")
-
-            else:
-                self.update_page("#lighting-dropdown", "hide")
-
-            if self.active_device.has("lighting_logo"):
-                self.update_page("#lighting-logo-dropdown", "show")
-                self.update_page("#lighting-logo-list", "html", " ")
-                self.update_background_header(pref.get_device_state(self.active_device.serial, "logo", "colour_primary"))
-                fx_list = [
-                    # [has() parameter, icon/command, human string]
-                    ["lighting_logo_none", "none", _("None")],
-                    ["lighting_logo_blinking", "blinking", _("Blinking")],
-                    ["lighting_logo_spectrum", "spectrum", _("Spectrum")],
-                    ["lighting_logo_wave", "wave", _("Wave")],
-                    ["lighting_logo_reactive", "reactive", _("Reactive")],
-                    ["lighting_logo_pulsate", "pulsate", _("Pulsate")],
-                    ["lighting_logo_static", "static", _("Static")]
-                ]
-
-                # Razer Abyssus has "lighting_logo" but no effects, so track if this happens.
-                has_effects = False
-
-                for fx in fx_list:
-                    if self.active_device.has(fx[0]):
-                        add_to_dropdown("#lighting-logo-list", fx[1], fx[2], "logo")
-                        has_effects = True
-
-                if not has_effects:
-                    self.update_page("#lighting-dropdown", "hide")
-                    self.update_page("#fx-lighting", "hide")
-
-            else:
-                self.update_page("#lighting-logo-dropdown", "hide")
-
-            if self.active_device.has("lighting_scroll"):
-                self.update_page("#lighting-scroll-dropdown", "show")
-                self.update_page("#lighting-scroll-list", "html", " ")
-                self.update_background_header(pref.get_device_state(self.active_device.serial, "scroll", "colour_primary"))
-                fx_list = [
-                    # [has() parameter, icon/command, human string]
-                    ["lighting_scroll_none", "none", _("None")],
-                    ["lighting_scroll_blinking", "blinking", _("Blinking")],
-                    ["lighting_scroll_spectrum", "spectrum", _("Spectrum")],
-                    ["lighting_scroll_wave", "wave", _("Wave")],
-                    ["lighting_scroll_reactive", "reactive", _("Reactive")],
-                    ["lighting_scroll_breath_single", "breath", _("Breath")],
-                    ["lighting_scroll_pulsate", "pulsate", _("Pulsate")],
-                    ["lighting_scroll_static", "static", _("Static")]
-                ]
-
-                for fx in fx_list:
-                    if self.active_device.has(fx[0]):
-                        add_to_dropdown("#lighting-scroll-list", fx[1], fx[2], "scroll")
-            else:
-                self.update_page("#lighting-scroll-dropdown", "hide")
-
-        else:
-            self.update_page("#fx-lighting", "hide")
-
-        ## Brightness
-        if True in brightness_support:
-            self.update_page("#fx-brightness", "show")
-            self.update_page(".brightness-container", "hide")
-
-            if self.active_device.has("brightness"):
-                dbg.stdout("Device supports 'brightness'", dbg.debug, 1)
-                self.update_page("#brightness-normal", "show")
-
-            if self.active_device.has("lighting_logo_brightness"):
-                dbg.stdout("Device supports 'lighting_logo_brightness'", dbg.debug, 1)
-                self.update_page("#brightness-logo", "show")
-
-            if self.active_device.has("lighting_scroll_brightness"):
-                dbg.stdout("Device supports 'lighting_scroll_brightness'", dbg.debug, 1)
-                self.update_page("#brightness-scroll", "show")
-        else:
-            self.update_page("#fx-brightness", "hide")
-
-        # Unless the device only supports on/off toggling
-        if True in brightness_active_support:
-            self.update_page("#fx-brightness", "show")
-            self.update_page(".brightness-container", "hide")
-
-            if self.active_device.has("lighting_backlight_active"):
-                dbg.stdout("Device supports 'lighting_backlight_active'", dbg.debug, 1)
-                self.update_page("#brightness-backlight-toggle", "show")
-
-            if self.active_device.has("lighting_logo_active"):
-                dbg.stdout("Device supports 'lighting_logo_active'", dbg.debug, 1)
-                self.update_page("#brightness-logo-toggle", "show")
-
-            if self.active_device.has("lighting_scroll_active"):
-                dbg.stdout("Device supports 'lighting_scroll_active'", dbg.debug, 1)
-                self.update_page("#brightness-scroll-toggle", "show")
-
-        # Mouse DPI
-        if self.active_device.has("dpi"):
-            self.update_page("#fx-dpi", "show")
-        else:
-            self.update_page("#fx-dpi", "hide")
-
-        # Mouse Polling Rate
-        if self.active_device.has("poll_rate"):
-            self.update_page("#fx-poll-rate", "show")
-        else:
-            self.update_page("#fx-poll-rate", "hide")
-
-    def update_device_active_options(self):
-        """
-        Refreshes the page by showing the options selected for the active device.
-        """
-
-        # Clear Overview Screen
-        self.update_page("#device-"+self.active_device_serial+"-brightness", "html", " ")
-
-        ## Brightness
-        def set_brightness_control(element, value):
-            ### Device Screen
-            self.update_page(element + "-input", "val", str(value))
-            if int(value) == 0:
-                self.update_page(element + "-value", "html", _("Off"))
-            else:
-                self.update_page(element + "-value", "html", str(int(value)) + "%")
-
-            ### Overview Screen
-            self.update_page("#device-" + self.active_device_serial + "-brightness", "append", str(int(value)) + '%&nbsp;')
-
-        if self.active_device.has("lighting_backlight_active"):
-            try:
-                if self.active_device.fx.misc.backlight.active == 1:
-                    self.update_page("#brightness-backlight-switch", "prop", "checked", "true")
-                else:
-                    self.update_page("#brightness-backlight-switch", "removeAttr", "checked")
-            except Exception as e:
-                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
-
-        if self.active_device.has("lighting_logo_active"):
-            try:
-                if self.active_device.fx.misc.logo.active == 1:
-                    self.update_page("#brightness-logo-switch", "prop", "checked", "true")
-                else:
-                    self.update_page("#brightness-logo-switch", "removeAttr", "checked")
-            except Exception as e:
-                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
-
-        if self.active_device.has("lighting_scroll_active"):
-            try:
-                if self.active_device.fx.misc.scroll_wheel.active == 1:
-                    self.update_page("#brightness-scroll-switch", "prop", "checked", "true")
-                else:
-                    self.update_page("#brightness-scroll-switch", "removeAttr", "checked")
-            except Exception as e:
-                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
-
-        ## Brightness
-        if self.active_device.has("brightness"):
-            set_brightness_control("#brightness-normal", self.active_device.brightness)
-
-        if self.active_device.has("lighting_logo_brightness"):
-            set_brightness_control("#brightness-logo", self.active_device.fx.misc.logo.brightness)
-
-        if self.active_device.has("lighting_scroll_brightness"):
-            set_brightness_control("#brightness-scroll", self.active_device.fx.misc.scroll_wheel.brightness)
-
-        ## Lighting Effects
-        self.update_page("#fx-colour-primary", "hide")
-        self.update_page("#fx-colour-secondary", "hide")
-        self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", " ")
-
-        def update_lighting_dropdown(element, effect):
-            self.update_page(element, "html", "<img src='{1}'/> {0}".format(common.get_effect_state_string(effect), "../img/effects/" + effect + ".svg"))
-
-        if self.active_device.has("lighting"):
-            try:
-                effect = pref.get_device_state(self.active_device.serial, "main", "effect")
-
-                if effect == "profile":
-                    uuid = pref.get_device_state(self.active_device.serial, "main", "profile")
-                    data = self.profiles.get_metadata(uuid)
-
-                    # Device Tab
-                    self.update_page("#active-effect", "html", "<img src='{1}'/> {0}".format(data.get("name"), data.get("icon")))
-                    self.update_page("#app-" + uuid, "addClass", "active")
-
-                    # Overview Screen
-                    self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", data.get("name"))
-                    self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", data.get("icon"))
-
-                else:
-                    # Device Tab
-                    update_lighting_dropdown("#active-effect", effect)
-                    self.update_lighting_options("main", effect)
-
-                    # Overview Screen
-                    self.update_page("#device-"+self.active_device_serial+"-effect > span", "html", common.get_effect_state_string(effect))
-                    self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", "../img/effects/" + effect + ".svg")
-
-            except TypeError:
-                update_lighting_dropdown("#active-effect", "unknown")
-
-        if self.active_device.has("lighting_logo"):
-            try:
-                effect = pref.get_device_state(self.active_device.serial, "logo", "effect")
-
-                # Device Tab
-                update_lighting_dropdown("#active-effect-logo", effect)
-
-                # Overview Screen
-                self.update_page("#device-"+self.active_device_serial+"-effect > span", "append", "&nbsp;" + common.get_effect_state_string(effect))
-                self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", "../img/effects/" + effect + ".svg")
-
-            except TypeError:
-                update_lighting_dropdown("#active-effect-logo", "unknown")
-                self.update_lighting_options("logo", effect)
-
-        if self.active_device.has("lighting_scroll"):
-            try:
-                effect = pref.get_device_state(self.active_device.serial, "scroll", "effect")
-
-                # Device Tab
-                update_lighting_dropdown("#active-effect-scroll", effect)
-
-                # Overview Screen
-                self.update_page("#device-"+self.active_device_serial+"-effect > span", "append", "&nbsp;" + common.get_effect_state_string(effect))
-                self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", "../img/effects/" + effect + ".svg")
-
-            except TypeError:
-                update_lighting_dropdown("#active-effect-scroll", "unknown")
-                self.update_lighting_options("scroll", effect)
-
-        ## DPI Sensitivity
-        if self.active_device.has("dpi"):
-            try:
-                dpi_max = str(self.active_device.max_dpi)
-                dpi_value = str(self.active_device.dpi[0])
-                self.update_page("#dpi-input", "val", dpi_value)
-                self.update_page("#dpi-input", "attr", "max", dpi_max)
-                self.update_page("#dpi-value", "html", dpi_value)
-            except Exception as e:
-                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
-
-        ## Poll Rate Sensitivity
-        if self.active_device.has("poll_rate"):
-            try:
-                actual_value = self.active_device.poll_rate
-                if actual_value == 125:
-                    value = 1
-                elif actual_value == 500:
-                    value = 2
-                elif actual_value == 1000:
-                    value = 3
-                else:
-                    value = 1
-            except Exception as e:
-                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
-
-            self.update_page("#poll-rate-input", "val", str(value))
-            self.update_page("#poll-rate-value", "html", str(actual_value) + "Hz")
-
-    def update_lighting_options(self, source=None, effect=None):
-        """
-        Refreshes the UI for displaying the correct and supported options.
-
-        source = Which light source to process.
-                 e.g. main/backlight/logo/scroll
-
-        effect = Known effect name to process.
-                 e.g. reactive, wave, spectrum
-        """
-        # Hide/clear existing contents
-        self.update_page("#fx-options-" + source, "html", " ")
-        self.update_page(".app-profile-item", "removeClass", "active")
-
-        # If none specified, just clear the options.
-        if source == None or effect == None:
-            return
-
-        params = str(pref.get_device_state(self.active_device.serial, source, "effect_params"))
-        target = "#fx-options-" + source
-
-        if source == "main":
-            source_has_string = "lighting_"
-        elif source == "backlight":
-            source_has_string = "lighting_backlight_"
-        elif source == "logo":
-            source_has_string = "lighting_logo_"
-        elif source == "scroll":
-            source_has_string = "lighting_scroll_"
-
-        # Template for adding option controls to page
-        def add_radio_option(label, param):
-            if params == param:
-                checked = "checked"
-            else:
-                checked = ""
-
-            template = "<label><input type='radio' onclick='setfx(\"{4}\", \"{0}\", \"{1}\")' {3} /> {2}</label>".format(effect, param, label, checked, source)
-            self.update_page(target, "append", template)
-
-        # Show supported options for effect
-        def add_but_check_ability(has_effect, label, param):
-            has_string = source_has_string + has_effect
-            if self.active_device.has(has_string):
-                add_radio_option(label, param)
-
-        if effect == "wave":
-            # Customise wave direction string depending on form factor
-            device_type = self.active_device.type
-            if common.get_device_type(device_type) == "mouse":
-                left = _("Down")
-                right = _("Up")
-            elif common.get_device_type(device_type) == "mousemat":
-                left = _("Clockwise")
-                right = _("Anti-clockwise")
-            else:
-                left = _("Left")
-                right = _("Right")
-
-            add_radio_option(left, '2')
-            add_radio_option(right, '1')
-
-        elif effect == "reactive":
-            add_radio_option(_("Fast"), '1')
-            add_radio_option(_("Medium"), '2')
-            add_radio_option(_("Slow"), '3')
-            add_radio_option(_("Very Slow"), '4')
-
-        elif effect == "breath":
-            add_but_check_ability("breath_random", _("Random"), 'random')
-            add_but_check_ability("breath_single", _("Single Color"), 'single')
-            add_but_check_ability("breath_dual", _("Dual Colors"), 'dual')
-            # TODO: Add triple breath support
-            #~ add_but_check_ability("breath_triple", _("Triple Colors"), 'triple')
-
-        elif effect == "ripple":
-            add_but_check_ability("ripple_random", _("Random"), 'random')
-            add_but_check_ability("ripple", _("Single Color"), 'single')
-
-        elif effect == "starlight":
-            add_but_check_ability("starlight_single", _("Single"), 'single')
-            add_but_check_ability("starlight_dual", _("Dual"), 'dual')
-            add_but_check_ability("starlight_random", _("Random"), 'random')
-
-        # Show colour picker (for supported effects)
-        show_primary = False
-        show_secondary = False
-        if effect in ["reactive", "ripple", "pulsate", "static"]:
-            show_primary = True
-
-            if params == "random":
-                show_primary = False
-
-        if effect == "breath" and params == "single":
-            show_primary = True
-
-        elif effect == "breath" and params == "dual":
-            show_primary = True
-            show_secondary = True
-
-        if effect == "starlight" and params == "single":
-            show_primary = True
-
-        elif effect == "starlight" and params == "dual":
-            show_primary = True
-            show_secondary = True
-
-        if show_primary:
-            self.print_colour_options(
-                "colour-primary",
-                "#fx-options-"+source,
-                pref.get_device_state(self.active_device.serial, source, "colour_primary"),
-                source,
-                [source, effect, pref.get_device_state(self.active_device.serial, source, "effect_params")]
-            )
-
-        if show_secondary:
-            self.print_colour_options(
-                "colour-secondary",
-                "#fx-options-"+source,
-                pref.get_device_state(self.active_device.serial, source, "colour_secondary"),
-                source,
-                [source, effect, pref.get_device_state(self.active_device.serial, source, "effect_params")]
-            )
-
-    def update_background_header(self, colour_rgb):
-        """
-        Refreshes the dynamic background header based on the current device.
-            colour_rgb = [red, green, blue] - Colour to change the header to.
-        """
-        if not self.current_page == "menu":
-            return
-
-        device_type = common.get_device_type(self.active_device.type)
-        effect = pref.get_device_state(self.active_device.serial, "main", "effect")
-        if colour_rgb:
-            red = colour_rgb[0]
-            green = colour_rgb[1]
-            blue = colour_rgb[2]
-        else:
-            red = 0
-            green = 255
-            blue = 0
-
-        if not os.path.exists(os.path.join(path.data_source, "img/header/" + device_type + ".png")):
-            device_type = "generic"
-
-        if effect == "spectrum":
-            self.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "spectrum"))
-        elif effect == "wave":
-            self.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, "wave"))
-        else:
-            rgba = "rgba({0},{1},{2},1)".format(str(red), str(green), str(blue))
-            self.run_javascript("changeHeaderImg('{0}', '{1}');".format(device_type, rgba))
-
-    def show_error_page(self, severity, icon, title, message):
-        """
-        When things go horribly wrong and the application should abort or restart.
-        """
-        # severity  =   'normal', 'warning', 'serious'
-        # icon      =   Filename as seen in ../img/error/
-        # title / message = Strings to display.
-
-        # For loading screens that should stay regardless of error.
-        if self.load_lock:
-            return
-
-        # Gives window enough time to open.
-        time.sleep(1)
-        self.error_title = title
-        self.error_icon = icon
-        self.error_message = message
-        self.error_class = severity
-        self.show_menu("error")
-
-    def print_colour_options(self, colour_id, target_append_element, start_rgb, source, effect_callback=None):
-        """
-        Creates a colour grid for choosing custom colours.
-            colour_id               = ID of colour (in devicestate) and container element.
-            target_append_element   = ID of element to append to.
-            start_rgb               = [red, green, blue] - list containing current colour.
-            source                  = Where the colour is located, e.g. "main", "backlight", "logo", "scroll".
-            effect_callback         = [source, effect, params] - optional list for setting an effect based on effect.
-        """
-        colour_index = pref.load_file(path.colours, True)
-        uuids = list(colour_index)
-        uuids.sort(key=int)
-
-        if start_rgb == None:
-            start_rgb = [0, 255, 0]
-
-        preview_element = "{0}-{1}-preview".format(colour_id, source)
-        html_buffer = "<div id='{0}' class='colour-picker'>".format(colour_id)
-        html_buffer += "<table><tr><td><div id='{0}' class='colour-preview' style='background-color:rgba({1},{2},{3},1)'></div></td>".format(
-            preview_element, str(start_rgb[0]), str(start_rgb[1]), str(start_rgb[2])) + \
-            "<td><button class='btn' onclick='cmd(\"ask-colour?{0}?{2}\")'>{1}</button></td></tr>".format(colour_id, _("Custom..."), source)
-        html_buffer += "<tr><td colspan='2'>"
-
-        # Show a range of green shades for Ultimate keyboards that are not RGB.
-        if self.active_device.name.find("Ultimate") != -1:
-            colour_index = common.get_green_shades()
-            uuids = list(colour_index.keys())
-            uuids.sort()
-
-        item_no = 0
-        for uuid in uuids:
-            item_no += 1
-            name = colour_index[uuid].get("name")
-            red = colour_index[uuid].get("col")[0]
-            green = colour_index[uuid].get("col")[1]
-            blue = colour_index[uuid].get("col")[2]
-
-            if effect_callback:
-                if effect_callback[2]:
-                    onclick = "cmd(\"set-colour?{0}?{1}?{2}?{3}?{4}\"); cmd(\"effect?{5}?{6}?{7}\")".format(colour_id, red, green, blue, source,
-                                effect_callback[0], effect_callback[1], effect_callback[2])
-                else:
-                    onclick = "cmd(\"set-colour?{0}?{1}?{2}?{3}?{4}\"); cmd(\"effect?{5}?{6}\")".format(colour_id, red, green, blue, source,
-                                effect_callback[0], effect_callback[1])
-            else:
-                onclick = "cmd(\"set-colour?{0}?{1}?{2}?{3}?{4}\")".format(colour_id, red, green, blue, source)
-
-            # Add "show more" button and prepare dropdown if we have many colours.
-            if item_no == 10:
-                html_buffer += "<button onclick='toggleDropdown(\"{0}\")' class='dropdown-focus colour-item color-more-btn' title='{1}'></button>".format(colour_id+"-list", _("More Colors"))
-                html_buffer += "<div class='dropdown' hidden>"
-                html_buffer += "<div id='{0}' class='dropdown-content'>".format(colour_id+"-list")
-
-            # Show first 10 items as clickable boxes.
-            if item_no <= 9:
-                html_buffer += "<button class='colour-icon' onclick='{0}' title='{1}' style='background-color:rgba({2},{3},{4},1)'></button>".format(
-                    onclick, name, red, green, blue)
-
-            # Add the rest to the "show more" menu.
-            else:
-                html_buffer += "<button onclick='{0}' title='{1}'><div class='colour-item' style='background-color:rgba({2},{3},{4},1)'></div> {1}</button>".format(
-                    onclick, name, red, green, blue)
-
-        # Close container for dropdown (if applicable)
-        if item_no > 10:
-            html_buffer += "</div></div>"
-
-        # Close overall container and append to page
-        html_buffer += "</td></tr></table>"
-        self.update_page(target_append_element, "append", html_buffer)
+        self.CloseButton = self.findChild(QPushButton, "CloseApp")
+        self.CloseButton.clicked.connect(self.quit_app)
+        self.closeEvent = self.quit_app
 
     @staticmethod
-    def generate_css_colour_svg(svg_path, colours, width, height, optional_class=None):
-        inline_buffer = "style='background: rgba({0},{1},{2},1); -webkit-mask: url({3}) center / contain no-repeat; width: {4}px; height: {5}px;'".format(
-            colours[0], colours[1], colours[2], svg_path, str(width), str(height))
-        if optional_class:
-            inline_buffer += " class='{0}'".format(optional_class)
-        return inline_buffer
+    def _set_initial_window_position(qmainwindow, key_prefix):
+        """
+        Sets the initial placement of the window, according to user's preferences.
+
+        Params:
+            qmainwindow         QMainWindow() instance
+            key_prefix          Name of prefix for save data. Should be initialized in preferences.
+        """
+        win_behaviour = app.preferences["controller"]["window_behaviour"]
+
+        if win_behaviour == app.window_ignore:
+            return
+
+        if win_behaviour == app.window_centered:
+            frame = qmainwindow.frameGeometry()
+
+            # DEPRECATED: QDesktopWidget(), but some distros ship an older Qt version (5.8, 5.12)
+            qt_ver = QtCore.PYQT_VERSION_STR.split(".")
+            if qt_ver[0] == "5" and int(qt_ver[1]) <= 14:
+                center = QDesktopWidget().availableGeometry().center()
+            else:
+                # For >= Qt 5.15
+                center = qmainwindow.screen().availableGeometry().center()
+
+            frame.moveCenter(center)
+            qmainwindow.move(frame.topLeft())
+
+        elif win_behaviour == app.window_remember:
+            dbg.stdout("Loading window geometry...", dbg.action, 1)
+            pos_x = app.preferences["geometry"][key_prefix + "_window_pos_x"]
+            pos_y = app.preferences["geometry"][key_prefix + "_window_pos_y"]
+            size_x = app.preferences["geometry"][key_prefix + "_window_size_x"]
+            size_y = app.preferences["geometry"][key_prefix + "_window_size_y"]
+            qmainwindow.setGeometry(pos_x, pos_y, size_x, size_y)
 
     @staticmethod
-    def generate_css_colour_text(colours, optional_class=None):
-        inline_buffer = "style='color: rgba({0},{1},{2},1)'".format(colours[0], colours[1], colours[2])
-        if optional_class:
-            inline_buffer += " class='{0}'".format(optional_class)
-        return inline_buffer
-
-    def get_device_image(self, device, image, direction=None):
+    def _save_window_position(qmainwindow, key_prefix):
         """
-        Retrieves an image or icon of a device.
-            device      = Daemon device object
-            image       = "actual" = Use an actual image (provided by razer_urls)
-                          "icon" = Use an icon state
-            direction   = (Optional) Only if image = 'actual', specify which to grab from dictonary.
+        Saves the dimensions and position of the window, according to the user's
+        preferences.
         """
-        unknown_icon = "../img/states/unknown.svg"
+        win_behaviour = app.preferences["controller"]["window_behaviour"]
 
-        if image == "actual":
+        if win_behaviour == app.window_remember:
+            dbg.stdout("Saving window geometry...", dbg.action, 1)
+            rect = qmainwindow.frameGeometry()
+            app.preferences["geometry"][key_prefix + "_window_pos_x"] = rect.left()
+            app.preferences["geometry"][key_prefix + "_window_pos_y"] = rect.top()
+            app.preferences["geometry"][key_prefix + "_window_size_x"] = rect.width()
+            app.preferences["geometry"][key_prefix + "_window_size_y"] = rect.height()
+            pref.save_file(common.paths.preferences, app.preferences)
+
+    def load(self):
+        """
+        Objects initalised. Continue loading the main application window
+        containing all the tabs.
+        """
+        # Finish loading UI style/fonts
+        QFontDatabase.addApplicationFont(os.path.join(common.paths.data_dir, "qt", "fonts", "Play_regular.ttf"))
+        controller.shared.load_qt_theme(app, self)
+
+        if not app.system_qt_theme:
+            qapp.setFont(QFont("Play", 10, 0))
+
+        # Tab objects - custom design and native tabs
+        tabs = self.findChild(QTabWidget, "MainTabWidget")
+
+        # Prepare events when clicking on custom tabs or real tabs:
+        tab_buttons = [
+            self.findChild(QToolButton, "DevicesTabButton"),
+            self.findChild(QToolButton, "EffectsTabButton"),
+            self.findChild(QToolButton, "PresetsTabButton"),
+            self.findChild(QToolButton, "TriggersTabButton")
+        ]
+
+        # Also in the menu bar
+        tab_menu_items = [
+            self.findChild(QAction, "actionDevices"),
+            self.findChild(QAction, "actionEffects"),
+            self.findChild(QAction, "actionPresets"),
+            self.findChild(QAction, "actionTriggers")
+        ]
+
+        # Tab icons
+        widgets = shared.PolychromaticWidgets(app)
+        tab_buttons[0].setIcon(widgets.get_icon_qt("general", "devices"))
+        tab_buttons[1].setIcon(widgets.get_icon_qt("general", "effects"))
+        tab_buttons[2].setIcon(widgets.get_icon_qt("general", "presets"))
+        tab_buttons[3].setIcon(widgets.get_icon_qt("general", "triggers"))
+
+        # Load button icons
+        if not app.system_qt_theme:
+            # -- File
+            self.findChild(QAction, "actionNewEffect").setIcon(widgets.get_icon_qt("general", "effects"))
+            self.findChild(QAction, "actionImportEffect").setIcon(widgets.get_icon_qt("general", "import"))
+            self.findChild(QAction, "actionNewPreset").setIcon(widgets.get_icon_qt("general", "presets"))
+            self.findChild(QAction, "actionNewPresetNow").setIcon(widgets.get_icon_qt("devices", "all"))
+            self.findChild(QAction, "actionQuitApp").setIcon(widgets.get_icon_qt("general", "exit"))
+
+            # -- Edit
+            self.findChild(QAction, "actionDuplicate").setIcon(widgets.get_icon_qt("general", "clone"))
+            self.findChild(QAction, "actionDelete").setIcon(widgets.get_icon_qt("general", "delete"))
+            self.findChild(QAction, "actionRefreshTab").setIcon(widgets.get_icon_qt("general", "refresh"))
+            self.findChild(QAction, "actionPreferences").setIcon(widgets.get_icon_qt("general", "preferences"))
+
+            # -- View
+            self.findChild(QAction, "actionDevices").setIcon(widgets.get_icon_qt("general", "devices"))
+            self.findChild(QAction, "actionEffects").setIcon(widgets.get_icon_qt("general", "effects"))
+            self.findChild(QAction, "actionPresets").setIcon(widgets.get_icon_qt("general", "presets"))
+            self.findChild(QAction, "actionTriggers").setIcon(widgets.get_icon_qt("general", "triggers"))
+            self.findChild(QAction, "actionReinstateMenuBar").setIcon(widgets.get_icon_qt("general", "pin"))
+            self.findChild(QAction, "actionHideMenuBar").setIcon(widgets.get_icon_qt("general", "pin"))
+
+            # -- Tools
+            self.findChild(QMenu, "menuTroubleshoot").setIcon(widgets.get_icon_qt("emblems", "utility"))
+            self.findChild(QAction, "actionRestartTrayApplet").setIcon(widgets.get_icon_qt("general", "tray-applet"))
+            self.findChild(QAction, "actionRestartHelper").setIcon(widgets.get_icon_qt("general", "refresh"))
+
+            # -- Tools/OpenRazer
+            self.findChild(QAction, "actionOpenRazerWebsite").setIcon(widgets.get_icon_qt("general", "external"))
+            self.findChild(QAction, "actionOpenRazerConfigure").setIcon(widgets.get_icon_qt("general", "preferences"))
+            self.findChild(QAction, "actionOpenRazerOpenLog").setIcon(widgets.get_icon_qt("general", "folder"))
+            self.findChild(QAction, "actionOpenRazerRestartDaemon").setIcon(widgets.get_icon_qt("general", "refresh"))
+
+            # -- Help
+            self.findChild(QAction, "actionOnlineHelp").setIcon(widgets.get_icon_qt("general", "external"))
+
+        # Code for each tab is stored in a separate module
+        tab_objects = [
+            app.tab_devices,
+            app.tab_effects,
+            app.tab_presets,
+            app.tab_triggers
+        ]
+
+        def _change_tab():
+            index = tabs.currentIndex()
+            dbg.stdout("Opening tab: " + str(index), dbg.debug, 1)
+            self.setCursor(QtCore.Qt.WaitCursor)
+
+            for button in tab_buttons:
+                button.setChecked(False)
+            for item in tab_menu_items:
+                item.setChecked(False)
+
+            tab_buttons[index].setChecked(True)
+            tab_menu_items[index].setChecked(True)
             try:
-                img_path = device.razer_urls.get(direction)
-            except:
-                dbg.stdout("Daemon does not have a '{0}' image for '{1}'".format(direction, device.name), dbg.error, 1)
-                image = "icon"
+                tab_objects[index].set_tab()
+            except Exception as e:
+                traceback = common.get_exception_as_string(e)
+                print(traceback)
+                widgets = controller.shared.PolychromaticWidgets(app)
+                widgets.open_dialog(widgets.dialog_error,
+                                    _("Controller Error"),
+                                    _("Eeks! An uncaught exception was thrown while loading the tab.") + '\n\n' + \
+                                    _("The application will attempt to continue, but get ready in case something breaks again!"),
+                                    _("This may be reported as a bug on the project's issue tracker."),
+                                    traceback=traceback)
+            self.unsetCursor()
 
-        if image == "icon":
-            formfactor = common.get_device_type(device.type)
-            img_path = path.data_source + "/img/states/{0}.svg".format(formfactor)
-            if not os.path.exists(img_path):
-                img_path = unknown_icon
+        def _change_tab_proxy(button, index):
+            tabs.setCurrentIndex(index)
 
-        if img_path:
-            return img_path
-        else:
-            return unknown_icon
+            # Clicking onto the 'button tab' should reload
+            if button == False:
+                _change_tab()
 
-    def populate_colours_table(self, get_html_only=False):
-        self.update_page("#colour-table", "html", " ")
-        colour_index = pref.load_file(path.colours)
-        uuids = list(colour_index.keys())
-        uuids.sort(key=int)
+        tabs.currentChanged.connect(_change_tab)
 
-        html_buffer = ""
-        for uuid in uuids:
-            try:
-                name = colour_index[uuid]["name"]
-                red = colour_index[uuid]["col"][0]
-                green = colour_index[uuid]["col"][1]
-                blue = colour_index[uuid]["col"][2]
-                rgba = "rgba({0},{1},{2},1)".format(red, green, blue)
+        # Press F5 to refresh tab
+        self.findChild(QAction, "actionRefreshTab").triggered.connect(_change_tab)
 
-                html_buffer += "<a onclick='cmd(\"pref-colour-edit?{0}\")'>".format(uuid)
-                html_buffer += "<div id='colour-item-{0}' class='colour-table-item'>".format(uuid)
-                html_buffer += "<div class='preview' style='background-color:rgba({0},{1},{2},1)'></div>".format(red, green, blue)
-                html_buffer += "<label class='name'>{0}</label>".format(name)
-                html_buffer += "<label class='value'>{0}, {1}, {2}</label>".format(red, green, blue)
-                html_buffer += "</div></a>"
+        # TODO: Move to a loop, but watch out for variable references
+        tab_buttons[0].clicked.connect(lambda a: _change_tab_proxy(a, 0))
+        tab_buttons[1].clicked.connect(lambda a: _change_tab_proxy(a, 1))
+        tab_buttons[2].clicked.connect(lambda a: _change_tab_proxy(a, 2))
+        tab_buttons[3].clicked.connect(lambda a: _change_tab_proxy(a, 3))
+        tab_menu_items[0].triggered.connect(lambda a: _change_tab_proxy(a, 0))
+        tab_menu_items[1].triggered.connect(lambda a: _change_tab_proxy(a, 1))
+        tab_menu_items[2].triggered.connect(lambda a: _change_tab_proxy(a, 2))
+        tab_menu_items[3].triggered.connect(lambda a: _change_tab_proxy(a, 3))
 
-            except Exception:
-                dbg.stdout("Invalid colour entry: {0}".format(uuid), dbg.action, 0)
-                continue
+        # FIXME: Disable unavailable features
+        self.findChild(QAction, "actionImportEffect").setEnabled(False)
+        self.findChild(QAction, "actionRestartHelper").setEnabled(False)
+        tab_buttons[2].setDisabled(True)
+        tab_buttons[3].setDisabled(True)
+        tab_menu_items[2].setDisabled(True)
+        tab_menu_items[3].setDisabled(True)
 
-        if get_html_only:
-            return html_buffer
-        else:
-            self.update_page("#colour-table", "html", html_buffer)
+        # Determine 'landing' tab to first open
+        landing_tab = app.preferences["controller"]["landing_tab"]
 
-    def device_state_changed(self):
-        dbg.stdout("Device state changed. Refreshing interface.", dbg.action, 1)
-        self.update_device_active_options()
+        if landing_tab >= 0 and landing_tab <= len(tab_objects):
+            # Signal triggered upon switching tab in the widget.
+            _change_tab_proxy(None, landing_tab)
+
+            # Signal is not triggered as the starting page is already 0.
+            if landing_tab == 0:
+                _change_tab()
+
+        # Bind actions to menu bar
+        self.findChild(QAction, "actionQuitApp").triggered.connect(self.quit_app)
+
+        # Warn if configuration is newer then this version.
+        pref_ver = pref.VERSION
+        save_ver = app.preferences["config_version"]
+        if save_ver > pref_ver:
+            widgets = controller.shared.PolychromaticWidgets(app)
+            details = "Polychromatic v{0}\nSave Data: {1} (application requires {2} or older)".format(VERSION, save_ver, pref_ver)
+            widgets.open_dialog(widgets.dialog_warning,
+                                _("Incompatible Save Data"),
+                                "{0}\n\n{1}\n\n{2}".format(
+                                    _("Polychromatic's configuration (including your effects and presets) have been previously saved in a newer version of this software."),
+                                    _("Running older versions of the software could corrupt your save data or cause impaired operation. This is unsupported."),
+                                    _("Consider updating the application, or reset your save data by deleting: ~/.config/polychromatic")),
+                                traceback=details)
+
+        self._set_initial_window_position(self, "main")
+
+        # Alternate modes
+        if args.open:
+            if args.open == "troubleshoot":
+                # TODO: Should support multiple backends!
+                app.menubar.openrazer.troubleshoot()
+                return
+            elif args.open == "colours":
+                app.ui_preferences.modify_colours()
+                exit()
+
+        # Showtime!
+        self.show()
+
+    def quit_app(self, event=None, b=None):
+        """
+        Closes the main application window. This won't stop the execution
+        entirely until the last editor window is closed.
+        """
+        # Save window position if preference set.
+        if app.preferences["controller"]["window_behaviour"] == app.window_remember:
+            self._save_window_position(self, "main")
+
+        dbg.stdout("Main window closed, goodbye!", dbg.success, 1)
+        self.close()
+
+    def keyPressEvent(self, e):
+        """
+        Pressing 'Alt' will reveal the menu bar.
+        """
+        if e.key() == QtCore.Qt.Key_Alt:
+            self.menuBar().show()
 
 
-class PageLoaded():
+def get_versions():
     """
-    All of the 'screens' in Polychromatic are here.
+    Returns a list of the application version and its components.
     """
-    def menu(appobj):
-        """
-        The main menu, for choosing a profile or device.
-        """
-        # Push strings
-        trans.push('#close-window', _("Close"))
-        trans.push('#page-header', _("Overview"))
-        trans.push_var('str_overview', _("Overview"))
-        trans.push('#str-brightness', _("Brightness"))
-        trans.push('#str-lighting', _("Lighting Effects"))
-        trans.push('#str-spectrum', _("Spectrum"))
-        trans.push('#str-wave', _("Wave"))
-        trans.push('#str-reactive', _("Reactive"))
-        trans.push('#str-breath', _("Breath"))
-        trans.push('#str-pulsate', _("Pulsate"))
-        trans.push('#str-ripple', _("Ripple"))
-        trans.push('#str-static', _("Static"))
-
-        trans.push('#str-color', _("Color:"), True)
-        trans.push('.str-custom', _("Custom..."))
-        trans.push('.str-none', _("None"), True)
-        trans.push('#str-direction', _("Direction:"), True)
-        trans.push('#str-wave-left', _("Left"))
-        trans.push('#str-wave-right', _("Right"))
-        trans.push('#str-speed', _("Speed:"), True)
-        trans.push('.str-random', _("Random"), True)
-        trans.push('.str-single-col', _("Single Color"), True)
-        trans.push('#str-dual-col', _("Dual Colors"), True)
-        trans.push('#str-cycles', _("Cycle:"), True)
-        trans.push('#str-colours', _("Colors:"), True)
-        trans.push('#str-slow', _("Slow"), True)
-        trans.push('#str-med', _("Medium"), True)
-        trans.push('#str-fast', _("Fast"), True)
-
-        trans.push('#str-modes', _("Key Modes"))
-        trans.push('#str-game-mode', _("Gaming Mode"))
-        trans.push('#game-mode-disable', _("Disable"))
-        trans.push('#game-mode-enable', _("Enable"))
-        trans.push('#game-mode-tip', _("Disables ALT+F4 and Super key."))
-        trans.push('#str-macro-keys', _("Macro Keys"))
-        trans.push('#macro-keys-enable', _("Activate"))
-        trans.push('#profiles-activate', _("Activate"), True)
-        trans.push('.str-help', _("Help"))
-
-        trans.push('#str-profiles', _("Application Profiles"), True)
-        trans.push('#profiles-new', _("New"), True)
-        trans.push('#profiles-edit', _("Edit"), True)
-        trans.push('#profiles-delete', _("Delete"), True)
-
-        trans.push('#dialog-new-title', _("Create New Application Profile"))
-        trans.push('#dialog-new-hint', _("Please enter a name for the new profile, and optionally an icon."))
-        trans.push('#str-new-name', _("Application:"))
-        trans.push('#str-new-icon', _("Icon Path:"))
-        trans.push('#str-fetch-launcher', _("Select Installed Application"))
-        trans.push('#dialog-new-cancel', _("Cancel"))
-        trans.push('#dialog-new-ok', _("Create"))
-
-        trans.push('#dialog-del-title', _("Delete"))
-        trans.push('#dialog-del-hint', _("Are you sure you want to delete this?"))
-        trans.push('#dialog-del-no', _("Keep"))
-        trans.push('#dialog-del-yes', _("Delete"))
-
-        trans.push('#dialog-applauncher-title', _("Choose an Application"))
-        trans.push('#dialog-applauncher-hint', _("The information from the chosen program will be used as the profile's base."))
-        trans.push('#dialog-applauncher-revert', _("Cancel"))
-        trans.push('#dialog-applauncher-ok', _("Select"))
-
-        trans.push('#dialog-help-title', _("Quick Help"))
-        # Just the macro keys are present here.
-        trans.push('#dialog-help-subtitle', _("Macro Keys Usage"))
-        trans.push('#dialog-help-body', _("You can also use on-the-fly macro recording (provided by the daemon) by following these steps:") +
-                   '<ol><li>FN + <div class="macro-key"></div> ' + _("to enter macro mode.") + '</li>' +
-                   '<li>' + _("Press the macro key to assign to. E.g. M1") +'</li>' +
-                   '<li>' + _("Typing in your key combination.") +'</li>' +
-                   '<li>' + _("Exiting macro mode with ") + ' FN + <div class="macro-key"></div></li></ol>')
-        trans.push('#dialog-help-close', _("Close"))
-
-        trans.push('#str-browse-icon', _("Browse Icon"))
-
-        trans.push('#str-dpi', _("DPI"))
-        trans.push('#str-poll-rate', _("Polling Rate"))
-
-        # Page actions
-        appobj.webkit.run_javascript('instantProfileSwitch = false;')
-        appobj.update_page('#profiles-activate', 'show')
-        appobj.refresh_device_list()
-        appobj.refresh_profiles_list()
-
-        # Tell JavaScript whether live profile switching is enabled.
-        if pref.get('editor', 'live_switch', True) == True:
-            appobj.webkit.run_javascript('live_switch = true;')
-            appobj.update_page('#profiles-activate', 'hide')
-        else:
-            appobj.webkit.run_javascript('live_switch = false;')
-
-        # If there are multiple devices connected, show the overview screen first.
-        if len(appobj.devices) > 1:
-            appobj.update_page(".device", "removeClass", "active")
-            appobj.update_page("#device-overview-tab", "addClass", "active")
-            appobj.update_page("#device-individual", "hide")
-            appobj.update_page("#device-overview", "fadeIn")
-        else:
-            appobj.update_device_supported_features()
-            appobj.update_device_active_options()
-
-        # Show message about the old PPA being deprecated.
-        distro = linux_distribution()[0]
-        if distro == "Ubuntu" or distro == "Debian":
-            codename = linux_distribution()[2]
-            for source_file in [
-                "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list",
-                "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily-" + codename + ".list"
-            ]:
-                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                    appobj.update_page("#error-text", "html", "Deprecated PPA detected: You may no longer get future updates for Polychromatic. <a onclick='cmd(&quot;open?https://github.com/polychromatic/polychromatic/releases/tag/v0.3.12&quot;)'><u style='color:lime;font-size:1.2em'>Learn more</u></a>")
-                    appobj.update_page("#error", "fadeIn")
-
-    def preferences(appobj):
-        """
-        The preferences menu, for changing Polychromatic's options.
-        """
-        appobj.update_page("#page-header", "html", "Preferences")
-        appobj.update_page("#close-window", "html", "Close")
-
-        ########################
-        # Tabs
-        ########################
-        def _append_tab(tab_id, icon_path, string, extra_class=""):
-            return '<button id="tab-{0}" class="tab {3}" onclick="switchTab(\'#tab-{0}\')"><img src="../img/{1}"/><span>{2}</span></button>'.format(
-                tab_id, icon_path, string, extra_class)
-
-        html = _append_tab("about", "logo/polychromatic.svg", _("About"), "active")
-        html += _append_tab("app", "ui/generic-application.svg", _("General"))
-        html += _append_tab("tray", "ui/profile-default.svg", _("Tray Applet"))
-        html += _append_tab("col", "effects/static.svg", _("Colors"))
-        html += _append_tab("daemon", "states/unknown.svg", _("Daemon"))
-        appobj.update_page(".tabs", "append", html)
-
-        ########################
-        # About
-        ########################
-        def _append_about_tab():
-            html = '<div id="tab-about-page" class="tab-content">'
-            html += '<img class="about-logo" src="../img/logo/polychromatic.svg"/> <h1 id="about-text">polychromatic</h1>'
-
-            html += UIControls.print_about_label(_("Version:"), version)
-            html += UIControls.print_about_label(_("Configuration:"), "v" + str(pref.version))
-            html += UIControls.print_about_label(_("Profile:"), "v" + str(prof.version))
-
-            # For Apt, check for the source file to determine builds.
-            distro = linux_distribution()[0]
-            if distro == "Ubuntu" or distro == "Debian":
-                codename = linux_distribution()[2]
-                source_html = ""
-
-                source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-" + codename + ".list"
-                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                    source_html += '<div class="about-update-status deprecated"><span class="fa fa-warning"></span> {0}</div>'.format(
-                        "The PPA you are using has been deprecated. <a onclick='cmd(&quot;open?https://github.com/polychromatic/polychromatic/releases/tag/v0.3.12&quot;)'><u>See here for details.</u></a>")
-
-                source_file = "/etc/apt/sources.list.d/lah7-ubuntu-polychromatic-daily-" + codename + ".list"
-                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                    source_html += '<div class="about-update-status deprecated"><span class="fa fa-warning"></span> {0}</div>'.format(
-                        "The PPA you are using has been deprecated. <a onclick='cmd(&quot;open?https://github.com/polychromatic/polychromatic/releases/tag/v0.3.12&quot;)'><u>See here for details.</u></a>")
-
-                source_file = "/etc/apt/sources.list.d/polychromatic-ubuntu-stable-" + codename + ".list"
-                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                    source_html += '<div class="about-update-status"><span class="fa fa-check-circle"></span> {0}</div>'.format(
-                        _("You are set for automatic updates (via PPA)"))
-
-                source_file = "/etc/apt/sources.list.d/polychromatic-ubuntu-daily-" + codename + ".list"
-                if os.path.exists(source_file) and os.path.getsize(source_file) > 0:
-                    source_html += '<div class="about-update-status"><span class="fa fa-check-circle"></span> {0}</div>'.format(
-                        _("You have opted for development packages."))
-
-                html += source_html
-
-            if version_dev or version.endswith("-dev"):
-                html += UIControls.print_button(_("Check for Updates"), "update-button", "update-check")
-
-            html += UIControls.print_button(_("View on GitHub"), "project-button", "open?https://github.com/lah7/polychromatic", "fa-github")
-            html += UIControls.print_button(_("View Change Log"), "changelog-button", "fetch-changelog")
-
-            # fixme: old dialog
-            trans.push('#dialog-changelog-title', _("Update History"), True)
-            trans.push('#dialog-changelog-subtitle', _("A human-readable list of changes made to Polychromatic."))
-            trans.push('#dialog-close', _("Close"), True)
-
-            html += '</div>'
-            return html
-
-        ########################
-        # General
-        ########################
-        def _append_general_tab():
-            html = '<div id="tab-app-page" class="tab-content" hidden>'
-
-            # Profile Editor
-            html += UIControls.print_control_category(_("Application Profiles"))
-            html += UIControls.print_checkbox(_("Enable live switching"), "live_switch", "editor", "live_switch", False, _("Activate profiles instantly as soon as you click on them."))
-            html += UIControls.print_checkbox(_("Enable live preview"), "live_preview", "editor", "live_preview", False, _("While editing, show your changes on the actual keyboard."))
-            html += UIControls.print_checkbox(_("Always activate profiles after saving."), "activate_on_save", "editor", "activate_on_save", False, _("While editing, show your changes on the actual keyboard."))
-
-            # General UI
-            html += UIControls.print_control_category(_("Interface"))
-            html += UIControls.print_slider(_("Scale:"), "scaling", "0.75", "3", "0.25",
-                                            str(pref.get("editor", "scaling", 1)), "editor", "scaling", False,
-                                            _("Scale the application so it looks good on large displays. Requires restart."))
-
-            # Advanced
-            html += UIControls.print_control_category(_("Advanced"))
-            html += UIControls.print_button("Open Configuration Folder", "open-config", "open-config-folder", "fa-folder")
-
-            reset_all_dialog_uuid = UIControls.JavaScript.generate_confirmation_dialog(
-                appobj.update_page,
-                _("Reset Everything"),
-                _("This will erase all your preferences, profiles and settings. This cannot be undone.") + '<br><br>' + \
-                _("The application will restart."),
-                _("Reset Polychromatic"), "cmd(\'pref-reset-all\')", True,
-                _("Cancel"), None,
-                "50vw", "25vh")
-            html += UIControls.print_button("Reset Everything", "reset-everything", "dialog_open('" + reset_all_dialog_uuid + "');", "fa-delete", False, "btn-serious", True)
-
-            # fixme: old dialog
-            trans.push_var('del_all_text', _("Are you sure you wish to erase all configuration and profiles?"))
-            trans.push_var('no_change', _("No Change"))
-
-            html += '</div>'
-            return html
-
-        ########################
-        # Tray Applet
-        ########################
-        def _append_tray_tab():
-            html = '<div id="tab-tray-page" class="tab-content" hidden>'
-            html += UIControls.print_control_category(_("Applet Icon"))
-
-            # Set defaults if non-existant
-            if not pref.exists("tray_icon", "type"):
-                pref.set("tray_icon", "type", "builtin")
-                pref.set("tray_icon", "value", "0")
-
-            icon_type = pref.get("tray_icon", "type", "builtin")
-            icon_value = pref.get("tray_icon", "value", "0")
-
-            # If it's the first time loading, set default icon to desktop environment.
-            if not pref.exists("tray_icon", "type"):
-                common.set_default_tray_icon(pref)
-
-            # Integrated to tray applet
-            html += UIControls.print_radio(_("Default Icon"), "tray-builtin-icon", "tray_icon", "type", "builtin", False, _("Choose a built-in icon."),
-                                            "set_pref_str('tray_icon', 'value', '0'); cmd('restart-tray');")
-
-            html += '<div id="tray-builtin-suboptions" class="tray-suboptions">'
-            html += '<div id="tray-icon-previews">'
-            # Populate built-in icons
-            def add_icon(uuid):
-                icon_name = icon_index[uuid]["name"]
-                icon_path = os.path.join(path.data_source, "tray", icon_index[uuid]["path"])
-                icon_info = icon_index[uuid]["info"]
-                onclick_cmd = "cmd('select-tray-icon-uuid?{0}'); $('.tray-uuid').removeClass('selected'); $('#tray-uuid-{0}').addClass('selected');".format(uuid)
-                return "<button id='tray-uuid-{0}' class='tray-uuid btn {3}' onclick=\"{1}\"><img src='{2}'/></button>".format(
-                uuid, onclick_cmd, icon_path, "selected" if uuid == icon_value else "")
-
-            icon_index = pref.load_file(os.path.join(path.data_source, "tray/icons.json"))
-            icons = sorted(list(icon_index.keys()))
-            for uuid in icons:
-                html += add_icon(uuid)
-            html += '</div><br/>'
-            html += '</div>'
-
-            # Icons using GTK names
-            html += UIControls.print_radio(_("GTK Icon"), "tray-gtk-icon", "tray_icon", "type", "gtk", False, _("Use an icon provided by a GTK theme."),
-                                            "set_pref_str('tray_icon', 'value', $('#tray-icon-gtk').val()); cmd('restart-tray');")
-            html += '<div id="tray-gtk-suboptions" class="tray-suboptions">'
-            html += '<input id="tray-icon-gtk" class="pref-input" type="text" value=""/>'.format(
-                icon_value if icon_type == "gtk" else "")
-            html += '<button id="tray-icon-gtk-ok" class="btn" onclick="console.log($(\'#tray-icon-gtk\').val()); set_pref_str(\'tray_icon\', \'value\', $(\'#tray-icon-gtk\').val()); cmd(\'preview-gtk-icon?\'+$(\'#tray-icon-gtk\').val()); cmd(\'restart-tray\');"><span class="fa fa-check"></span></button>'
-            html += '<br>'
-            html += UIControls._get_helptext_html(_("Examples: ibus-keyboard, gnome-desktop-config"))
-            html += '<br><br>'
-            html += '<label id="str-preview">' + _("Preview:") + '</label><br>'
-            html += '<img id="gtk-preview" src="" />'
-            html += '</div>'
-
-            # Icons using custom paths.
-            html += UIControls.print_radio(_("Custom Path"), "tray-custom-icon", "tray_icon", "type", "custom", False, None,
-                                            "set_pref_str('tray_icon', 'value', $('#tray-icon-path').val()); cmd('restart-tray');")
-            html += '<div id="tray-custom-suboptions" class="tray-suboptions">'
-            html += '<input id="tray-icon-path" class="pref-input" type="text" onchange="$(\'#tray-icon-path-ok\').removeClass(\'disabled\');" value="{0}"/>'.format(
-                icon_value if icon_type == "custom" else "")
-            html += '<button class="btn" onclick="cmd(\'browse-file-icon?tray-icon-path\');" onmouseout="set_pref_str(\'tray_icon\',\'value\', $(\'#tray-icon-path\').val()); $(\'#tray-icon-path-ok\').removeClass(\'disabled\');"><span class="fa fa-folder-open"></span> <span id="str-browse-icon"></span></button>'
-            html += '<button id="tray-icon-path-ok" class="btn disabled" onclick="set_pref_str(\'tray_icon\',\'value\', $(\'#tray-icon-path\').val()); $(this).addClass(\'disabled\'); cmd(\'restart-tray\');"><span class="fa fa-check"></span></button>'
-            html += '</div>'
-
-            html += '</div>'
-            return html
-
-        ########################
-        # Colours
-        ########################
-        def _append_colours_tab():
-            html = '<div id="tab-col-page" class="tab-content" hidden>'
-            html += UIControls.print_control_category(_("Colours"))
-            html += '<div class="left">'
-            html += '<div id="colour-table">{0}</div>'.format(appobj.populate_colours_table(True))
-            html += '<br>'
-            html += UIControls.print_button(_("New"), "colour-new", "pref-colour-new", "fa-plus", False)
-            reset_colour_dialog_uuid = UIControls.JavaScript.generate_confirmation_dialog(
-                appobj.update_page,
-                _("Reset Colors"),
-                _("Are you sure you want to reset all the colors to their defaults?"),
-                _("Restore Defaults"), "cmd(\'pref-colour-reset\')", True,
-                _("Cancel"), None,
-                "50vw", "20vh")
-            html += UIControls.print_button(_("Restore Defaults"), "colour-reset", "dialog_open('" + reset_colour_dialog_uuid + "');", "fa-repeat", False, "btn-dim btn-serious", True)
-            html += '<br><br>'
-            html += '</div>'
-
-            html += '<div id="colour-editor" class="right" hidden>'
-            html += '<div id="colour-edit-preview" class="colour-preview" style="background-color:rgb(0,255,0)"></div>'
-            html += UIControls.print_button(_("Choose..."), "colour-edit", "ask-colour?colour?edit", None, False)
-            html += '<br><br>'
-            html += '<input id="colour-edit-name" class="pref-input" type="text"/>'
-            html += '<br><br>'
-            html += UIControls.print_button(_("Save"), "colour-save", "", "fa-check", False)
-            html += UIControls.print_button(_("Delete"), "colour-delete", "", "fa-trash", False, "btn-serious")
-            html += '</div>'
-
-            html += '</div>'
-            return html
-
-        ########################
-        # Daemon
-        #########################
-        # Reads and sets configuration set in razer.conf
-        appobj.config_path = os.path.join(os.path.expanduser('~'), ".config/openrazer/razer.conf")
-        import configparser
-        appobj.daemon_config = configparser.ConfigParser()
-
-        def _append_daemon_tab():
-            html = '<div id="tab-daemon-page" class="tab-content" hidden>'
-            html += '<img class="about-logo" src="../img/logo/openrazer.svg"/> <h1 id="about-text">OpenRazer</h1>'
-            html += UIControls.print_about_label(_("The daemon is the software that communicates between the front-end applications and the driver."), "")
-            html += UIControls.print_about_label(_("Daemon Version:"), str(appobj.devman.version))
-            html += UIControls.print_about_label(_("Razer Python Library:"), str(appobj.devman.daemon_version))
-
-            html += UIControls.print_page_break()
-
-            html += UIControls.print_button(_("Website"), "daemon-website", "open?https://openrazer.github.io/", "fa-globe")
-            html += UIControls.print_button(_("Project"), "daemon-project", "open?https://github.com/openrazer/openrazer", "fa-github")
-            html += UIControls.print_page_break()
-            html += UIControls.print_button(_("Issues"), "daemon-issues", "open?https://github.com/openrazer/openrazer/issues", "fa-question-circle")
-            html += UIControls.print_button(_("Troubleshooting"), "daemon-troubleshoot", "open?https://github.com/openrazer/openrazer/wiki/Troubleshooting", None)
-            html += UIControls.print_button(_("Device/Daemon Support"), "daemon-support", "open?https://github.com/openrazer/openrazer#device-support", None)
-
-            html += UIControls.print_page_break()
-            html += UIControls.print_control_category(_("Logs"))
-            html += UIControls.print_about_label(_("Useful for diagnosing issues and debugging daemon-related operations."), "")
-            html += UIControls.print_button('<code>~/.config/openrazer/</code>', "config-folder", "run?xdg-open /home/$USER/.config/openrazer/", "fa-folder-open")
-            html += UIControls.print_button('<code>~/.local/share/openrazer/</code>', "config-local", "run?xdg-open /home/$USER/.local/share/openrazer/", "fa-folder-open")
-            html += UIControls.print_page_break()
-            html += UIControls.print_button('<code>~/.local/share/openrazer/logs/razer.log</code>', "log-open", "open?/home/$USER/.local/share/openrazer/logs/razer.log", "fa-file-text-o")
-            html += UIControls.print_button(_("Watch"), "log-watch", "run?x-terminal-emulator -e tail -f /home/$USER/.local/share/openrazer/logs/razer.log", "fa-search")
-
-            html += UIControls.print_page_break()
-            html += UIControls.print_control_category(_("Daemon Service"))
-            html += UIControls.print_about_label(_("If you have re-plugged devices, or are experiencing glitches, try restarting the daemon service."), "")
-            html += UIControls.print_button(_("Restart"), "daemon-restart", "daemon-restart")
-            html += UIControls.print_button(_("Stop"), "daemon-stop", "daemon-stop")
-
-            # TODO: Fix up this code for daemon configuration options
-
-            #~ html += UIControls.print_page_break()
-            #~ html += UIControls.print_control_category(_("Daemon Configuration"))
-            #~ if os.path.exists(appobj.config_path):
-                #~ appobj.daemon_config.read(appobj.config_path)
-            #~ else:
-                #~ html += '<div id="daemon-options-missing" class="alert">'
-                #~ html += '<span class="fa fa-warning"></span> ' + _("Could not read the daemon's configuration file.")
-                #~ html += '</div>'
-
-            #~ html += '<div id="daemon-options-restart" class="alert" hidden>'
-            #~ html += '<span class="fa fa-warning"></span> ' + _("The daemon (and Polychromatic) needs to be restarted for the new settings to take effect.")
-            #~ html += '</div>'
-
-            #~ if os.path.exists(appobj.config_path):
-                #~ appobj.daemon_config.read(appobj.config_path)
-            #~ else:
-                #~ for element in ["verbose-logging", "sync-effects", "screensaver", "key-statistics"]:
-                    #~ appobj.update_page("#daemon-"+element, "addClass", "disabled")
-                    #~ appobj.update_page("#str-"+element, "addClass", "disabled")
-
-            #~ def read_daemon_config(group, item, element, label, description):
-                #~ """
-                #~ Sets the initial checkbox state for razer.conf daemon settings
-                #~ """
-                #~ element_checkbox = "#daemon-" + element
-                #~ element_label = "#str-" + element
-                #~ element_help = "#str-" + element + "-help"
-                #~ appobj.update_page(element_label, "append", label)
-                #~ appobj.update_page(element_help, "html", description)
-                #~ if not appobj.daemon_config.has_option(group, item):
-                    #~ appobj.update_page(element_checkbox, "addClass", "disabled")
-                    #~ appobj.update_page(element_label, "addClass", "disabled")
-                    #~ return
-
-                #~ if appobj.daemon_config.get(group, item) == 'True':
-                    #~ appobj.update_page(element_checkbox, "prop", "checked", "true")
-
-            #~ read_daemon_config("General", "verbose_logging", "verbose-logging", _("Verbose Logging"), _("Show lots of debug messages."))
-            #~ read_daemon_config("Startup", "sync_effects_enabled", "sync-effects", _("Sync Effects to All Devices"), _("When setting an effect, apply this to all other connected devices (where supported)."))
-            #~ read_daemon_config("Startup", "devices_off_on_screensaver", "screensaver", _("Turn off devices when screensaver is running"), _("Not all desktop environments support this feature."))
-            #~ read_daemon_config("Statistics", "key_statistics", "key-statistics", _("Generate Key Statistics"), _("Collects number of key presses per hour for generating heatmaps."))
-
-            html += '</div>'
-            return html
-
-        ########################
-        # Append
-        ########################
-        appobj.update_page("#pref-save", "append", _("Done"))
-        appobj.update_page(".menu_area", "append", _append_about_tab())
-        appobj.update_page(".menu_area", "append", _append_general_tab())
-        appobj.update_page(".menu_area", "append", _append_tray_tab())
-        appobj.update_page(".menu_area", "append", _append_colours_tab())
-        appobj.update_page(".menu_area", "append", _append_daemon_tab())
-
-    def profile_editor(appobj):
-        """
-        The editor for tweaking lighting profiles.
-        """
-        # Push strings
-        trans.push('#close-window', _("Close"))
-        trans.push('#cancel', _("Cancel"))
-        trans.push('#edit-preview', _("Preview"))
-        trans.push('#edit-save', _("Save"), True)
-
-        trans.push_var('str_set', _("Set"))
-        trans.push_var('str_set_help', _("Click on a key to assign a color here."))
-        trans.push_var('str_picker', _("Picker"))
-        trans.push_var('str_picker_help', _("Click on a key to grab its color."))
-        trans.push_var('str_clear', _("Clear"))
-        trans.push_var('str_clear_help', _("Click on a key to clear."))
-        appobj.webkit.run_javascript("set_mode('set')")
-
-        trans.push('#str-edit-profile', _("Edit"), True)
-        trans.push('#dialog-rename-title', _("Edit Profile Details"))
-        trans.push('#dialog-rename-hint', _("Change the name and icon for this profile."))
-        trans.push('#str-rename-name', _("Name:"))
-        trans.push('#str-rename-icon', _("Icon Path:"))
-        trans.push('#dialog-rename-cancel', _("Discard"))
-        trans.push('#dialog-rename-ok', _("Save Changes"))
-        trans.push('#str-browse-icon', _("Browse Icon"))
-
-        device_name = str(appobj.active_device.name)
-
-        # Initialise keyboard layout
-        js_exec = appobj.webkit.JavaScriptExecutor(appobj.webkit)
-        kb_callback = appobj.webkit.JavaScriptExecutor(None, wrapper="keyboard_obj.load(\""+ device_name + "\", function(){{{0}}});")
-
-        # Initalise colour picker
-        appobj.print_colour_options("editor-colour", "#colour-selection", [0, 255, 0], "profile")
-
-        # Collect profile details.
-        uuid = appobj.profiles.selected_uuid
-        appobj.webkit.run_javascript("var selected_profile = '{0}'".format(uuid))
-        profile_path = os.path.join(path.profile_folder, str(uuid) + ".json")
-        appobj.profiles.memory = pref.load_file(profile_path)
-        profile_data = appobj.profiles.memory
-        profile_name = profile_data["name"]
-        profile_icon = profile_data["icon"]
-
-        # Set profile title on page
-        appobj.update_page("#profile-name", "html", profile_name)
-        appobj.update_page("#profile-name", "fadeIn")
-
-        # Set profile icon on page
-        appobj.update_page("#profile-icon", "attr", "src", profile_icon)
-        appobj.update_page("#profile-icon", "fadeIn")
-
-        # Set keyboard layout
-        kb_callback << "keyboard_obj.set_layout(\"kb-" + appobj.kb_layout + "\")"
-
-        # Load profile into keyboard.
-        appobj.profiles.selected_uuid = uuid
-        if pref.get('editor', 'live_preview', True) == True:
-            appobj.profiles.send_profile_to_keyboard(appobj.active_device, profile_data)
-
-        for row in range(0, 6):
-            for col in range(0, 22):
-                red = profile_data["rows"][str(row)][col][0]
-                green = profile_data["rows"][str(row)][col][1]
-                blue = profile_data["rows"][str(row)][col][2]
-                js_string = "keyboard_obj.set_key_colour({0},{1},\"#{2:02X}{3:02X}{4:02X}\")".format(row, col, red, green, blue)
-                kb_callback << js_string
-
-        # Disable space key and FN for keyboards that don't support them.
-        if device_name in "Razer BlackWidow Chroma" "Razer BlackWidow Ultimate":
-            # Except that BW Ultimate 2016 does support the keys.
-            if not device_name == "Razer BlackWidow Ultimate 2016":
-                kb_callback << "keyboard_obj.disable_key(5,7)"
-                kb_callback << "keyboard_obj.disable_key(5,12)"
-
-        # Hide preview button if live previewing is enabled.
-        if pref.get("editor", "live_preview", True) == True:
-            kb_callback << '$("#edit-preview").hide();'
-
-        kb_callback << "$(\"#cancel\").attr({onclick: \"cmd('cancel-changes?"+ appobj.cancel_changes + "?" + uuid + "')\"})"
-
-        js_exec << kb_callback
-        js_exec.exec()
-
-    def error(appobj):
-        """
-        The screen shown when serious errors occur.
-        """
-        trans.push('#close-window', _("Close"))
-        appobj.update_page("#close-window", "html", _("Quit"))
-        appobj.update_page("#restart-app", "html", _("Retry"))
-        appobj.update_page("#restart-daemon", "html", _("Restart Daemon"))
-        appobj.update_page("#error-icon", "attr", "src", "../img/error/" + appobj.error_icon + ".png")
-        appobj.update_page("#error-title", "html", appobj.error_title)
-        appobj.update_page("#error-title", "addClass", appobj.error_class)
-        appobj.update_page("#error-details", "html", appobj.error_message)
-
-
-class UIControls():
-    def print_button(label, uid, cmd, icon=None, disabled=False, css_override=None, cmd_is_js=False):
-        if icon != None:
-            if icon.startswith("fa-"):
-                icon_div = '<span class="fa {0}"></span> '.format(icon)
-            else:
-                icon_div = '<img src="img/{0}" /> '.format(icon)
-        else:
-            icon_div = ""
-
-        if disabled:
-            disabled_class = "disabled"
-        else:
-            disabled_class = ""
-
-        if cmd_is_js:
-            onclick = cmd.replace("'", "\'")
-        else:
-            onclick = "cmd(\'{0}\')".format(cmd)
-
-        return '<button id="{0}" class="btn {4} {5}" onclick="{1}">{2}{3}</button>'.format(
-            uid, onclick, icon_div, label, disabled_class, css_override)
-
-    def print_control_category(label):
-        return '<h3>{0}</h3>'.format(label)
-
-    def print_checkbox(label, uid, pref_group, pref_item, disabled=False, help_text=None):
-        if disabled:
-            disabled_class = "disabled"
-        else:
-            disabled_class = ""
-
-        cmd = "pref-toggle?{0}?{1}".format(pref_group, pref_item)
-
-        if pref.get(pref_group, pref_item, False):
-            checked_class = "checked"
-        else:
-            checked_class = ""
-
-        if help_text:
-            help_text = UIControls._get_helptext_html(help_text)
-        else:
-            help_text = ''
-
-        return '<label class="pref-label {1}"><input type="checkbox" id="{0}" onclick="cmd(\'{3}\')" class="{1}" {4}/> {2}</label> {5}<br/>'.format(
-            uid, disabled_class, label, cmd, checked_class, help_text)
-
-    def print_radio(label, uid, pref_group, pref_item, pref_value, disabled=False, help_text=None, additional_cmds=None):
-        if disabled:
-            disabled_class = "disabled"
-        else:
-            disabled_class = ""
-
-        if pref.get(pref_group, pref_item, "") == pref_value:
-            checked_class = "checked"
-        else:
-            checked_class = ""
-
-        if help_text:
-            help_text = UIControls._get_helptext_html(help_text)
-        else:
-            help_text = ""
-
-        if not additional_cmds:
-            additional_cmds = ""
-
-        cmd = "pref-set?{0}?{1}?{2}".format(pref_group, pref_item, pref_value)
-
-        return '<label class="pref-label {1}"><input type="radio" name="{5}" id="{0}" onclick="cmd(\'{3}\'); {6}" class="{1}" {4}/> {2}</label> {7}<br/>'.format(
-            uid, disabled_class, label, cmd, checked_class, pref_group, additional_cmds, help_text)
-
-    def print_about_label(label, value):
-        return '<label class="about-label">{0} <code>{1}</code></label>'.format(
-            label, value)
-
-    def print_slider(label, uid, min_value, max_value, step_value, start_value, pref_group, pref_item, disabled=False, help_text=None):
-        if disabled:
-            disabled_class = "disabled"
-        else:
-            disabled_class = ""
-
-        if help_text:
-            help_text = UIControls._get_helptext_html(help_text)
-        else:
-            help_text = ''
-
-        cmd = "cmd('pref-set?editor?scaling?' + $(this).val())"
-        return '<label class="pref-label {7}">{6} <input class="{7}" type="range" id="{0}" onmouseout="{1}" min="{2}" max="{3}" value="{4}" step="{5}"/></label>'.format(
-            uid, cmd, min_value, max_value, start_value, step_value, label, disabled_class)
-
-    def _get_helptext_html(text):
-        return '<label class="pref-help">{0}</label>'.format(text)
-
-    def run_post_js(cmds):
-        return '<script>{0}</script>'.format(cmds)
-
-    def print_page_break():
-        return '<br><br>'
-
-    def append_tab(tab_id, icon_path, string, extra_class=""):
-        return '<button id="tab-{0}" class="tab {3}" onclick="switchTab(\'#tab-{0}\')"><img src="../img/{1}"/><span>{2}</span></button>'.format(
-            tab_id, icon_path, string, extra_class)
-
-    class JavaScript():
-        def generate_confirmation_dialog(update_page, title, message, ok_label, ok_cmd=None, ok_serious=False, cancel_label=None, cancel_cmd=None, width=None, height=None):
-            dialog_uuid = "dialog-" + pref.generate_uuid()
-            html = '<div id="{0}" class="dialog" style="width:{3}; height:{4}" hidden>' \
-                    '<h3>{1}</h3>' \
-                    '<p>{2}</p>' \
-                    '<div class="dialog-buttons">' \
-                    '<hr>'.format(
-                        dialog_uuid, title, message, width, height)
-
-            if cancel_label:
-                cancel_onclick = "dialog_close('" + dialog_uuid + "')"
-                if cancel_cmd:
-                    cancel_onclick += "; " + cancel_cmd
-
-                html += '<button class="btn" onclick="{1}">{0}</button>'.format(
-                    cancel_label,
-                    cancel_onclick)
-
-            html += '<button class="btn {3}" onclick="{0}; {1}">{2}</button>'.format(
-                "dialog_close('" + dialog_uuid + "');",
-                ok_cmd if ok_cmd else "",
-                ok_label,
-                "btn-serious" if ok_serious else "")
-
-            html += '</div></div>'
-            update_page("body", "append", html)
-            return dialog_uuid
-
-
-class Dialogues(object):
-    def fatal_error(message, do_quit=False):
-        dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK)
-        dialog.set_title("Polychromatic Controller")
-        dialog.set_markup(message)
-        dialog.run()
-        dialog.destroy()
-        if do_quit:
-            sys.exit()
-
-    def color_picker():
-        # TODO: Ability to track and set last colour in GTK dialog.
-        colorseldlg = Gtk.ColorSelectionDialog(_("Choose a Color"))
-        colorsel = colorseldlg.get_color_selection()
-
-        if colorseldlg.run() == Gtk.ResponseType.OK:
-            colour = colorsel.get_current_color()
-            red = int(colour.red / 256)
-            green = int(colour.green / 256)
-            blue = int(colour.blue / 256)
-            colorseldlg.destroy()
-            return "{0},{1},{2}".format(str(red), str(green), str(blue))
-        else:
-            colorseldlg.destroy()
-            return None
-
-    def file_picker(help_text, filter_mode):
-        #   help_text   =   String displayed in dialog title.
-        #   filters     =   Predefined filters (e.g. 'image')
-
-        win = Gtk.Window(title=_("Polychromatic Controller"))
-        dialog = Gtk.FileChooserDialog(help_text, app.window, Gtk.FileChooserAction.OPEN, \
-                                       (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, \
-                                        Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
-                                      )
-        # Setup filters
-        if filter_mode == 'image':
-            a = Gtk.FileFilter()
-            a.set_name(_("All Images"))
-            a.add_mime_type("image/jpeg")
-            a.add_mime_type("image/png")
-            a.add_mime_type("image/gif")
-            a.add_mime_type("image/svg+xml")
-            dialog.add_filter(a)
-
-            j = Gtk.FileFilter()
-            j.set_name("JPEG " + _("Image"))
-            j.add_mime_type("image/jpeg")
-            dialog.add_filter(j)
-
-            p = Gtk.FileFilter()
-            p.set_name("PNG " + _("Image"))
-            p.add_mime_type("image/png")
-            dialog.add_filter(p)
-
-            g = Gtk.FileFilter()
-            g.set_name("GIF " + _("Image"))
-            g.add_mime_type("image/gif")
-            dialog.add_filter(g)
-
-            s = Gtk.FileFilter()
-            s.set_name("SVG " + _("Image"))
-            s.add_mime_type("image/svg+xml")
-            dialog.add_filter(s)
-
-        response = dialog.run()
-
-        if response == Gtk.ResponseType.OK:
-            filename = dialog.get_filename()
-            dialog.destroy()
-            return filename
-        else:
-            dialog.destroy()
-            return None
+    app_version, git_commit, py_version = common.get_versions(VERSION)
+
+    versions = [
+        [_("Application"), app_version],
+        [_("Save Data"), str(pref.VERSION)],
+        ["Python", py_version],
+        ["Qt", QtCore.PYQT_VERSION_STR],
+    ]
+
+    if git_commit:
+        versions.insert(1, ["Commit", git_commit])
+
+    return versions
 
 
 def parse_parameters():
+    """
+    Process the parameters passed to the application.
+    """
     global _
+
+    tab_choices = [
+        "devices",
+        "effects",
+        "presets",
+        "triggers",
+        "troubleshoot",
+        "colours"
+    ]
+
     parser = argparse.ArgumentParser(add_help=False)
     parser._optionals.title = _("Optional arguments")
     parser.add_argument("-h", "--help", help=_("Show this help message and exit"), action="help")
-    parser.add_argument("--version", help=_("Print progran version and exit"), action="store_true")
+    parser.add_argument("--version", help=_("Print program version and exit"), action="store_true")
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
-    parser.add_argument("-vv", "-d", "--debug", help=_("Be very verbose (for debugging)"), action="store_true")
-    parser.add_argument("--print-device-info", help=_("Gets a list of capabilities for a device"), action="store_true")
-    parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
-
-    # For front-end debugging (developer tools)
-    parser.add_argument("--inspect", help=argparse.SUPPRESS, action="store_true")
+    parser.add_argument("--locale", help=_("Force a specific language, e.g. de_DE"), action="store")
+    parser.add_argument("--open", help=_("Open a specific tab or feature"), action="store", choices=tab_choices)
 
     args = parser.parse_args()
 
     if args.version:
-        print("Polychromatic v" + version)
+        versions = get_versions()
+        print("Polychromatic " + versions[0][1])
+        del(versions[0])
+        for version in versions:
+            print("{0}: {1}".format(version[0], version[1]))
         exit(0)
 
     if args.verbose:
         dbg.verbose_level = 1
-        dbg.stdout(_("Verbose enabled"), dbg.debug, 1)
-
-    if args.debug:
-        dbg.verbose_level = 2
-        dbg.stdout(_("Debug verbose enabled"), dbg.debug, 2)
-
-    if args.print_device_info:
-        CommandLineOnly.print_device_capability_info()
-
-    if args.inspect:
-        dbg.verbose_level = 3
 
     if args.locale:
-        _ = common.setup_translations(__file__, "polychromatic-controller", args.locale)
+        i18n = locales.Locales(__file__, args.locale)
+        _ = i18n.init()
 
-class CommandLineOnly():
-    def print_device_capability_info():
-        #     |                                                                               |
-        print("===============================================================================")
-        print("Please include this data when reporting device-specific issues on GitHub.")
-        print("===============================================================================")
-        print("\nConnecting to the daemon...", end='')
-        try:
-            devman = rclient.DeviceManager()
-        except Exception as e:
-            print("\rUnable to connect to daemon!")
-            print("Exception: " + str(e))
-            print("\nPlease start Polychromatic normally to resolve this issue before proceeding.")
-            exit(1)
+    return args
 
-        print("\rListing devices...          ", end='')
-        devices = devman.devices
-        if len(devices) == 0:
-            print("\rNo devices found.          ")
-            print("\nPlease start Polychromatic normally to resolve this issue before proceeding.")
-            exit(1)
-
-        print("\rConnected Devices:         ")
-        no = 0
-        for device in devices:
-            print("[{0}] - {1} (Serial: {2})".format(str(no), device.name, device.serial))
-            no += 1
-
-        print("\nEnter choice: ", end='')
-        try:
-            no = int(sys.stdin.readline())
-            print("\nSelected: " + devices[no].name)
-        except KeyboardInterrupt:
-            print("")
-            exit(0)
-        except Exception:
-            print("Invalid choice, or device not found.")
-            exit(1)
-
-        device = devices[no]
-        print("\n-------------------------------------------------------------------------------")
-        print("```")
-        print("# Device Info")
-        print("Name: " + device.name)
-        print("Type: " + device.type)
-        print(" ")
-        print("# Device Capabilities")
-        print(device.capabilities)
-        print("```")
-        print("-------------------------------------------------------------------------------")
-        print("\nCopy and paste between these two lines into the GitHub issue.\n")
-
-        exit(0)
-
-
-def icon_name_to_path(icon_name):
-    """
-    This shared function gets an image path using Gtk.
-    """
-    theme = Gtk.IconTheme.get_default()
-    info = theme.lookup_icon(icon_name, 22, 0)
-    filename = info.get_filename()
-    if filename:
-        return filename
-    else:
-        return 'null'
-
-def restart_tray_applet():
-    print("Tray applet restarting...")
-    try:
-        pid = int(check_output(["pidof", "polychromatic-tray-applet"]))
-        os.kill(pid, 9)
-    except Exception:
-        print("Tray applet is not running so not relaunching.")
-        return
-
-    # Where is the tray applet?
-    if __file__.startswith("/usr"):
-        tray_bin_path = "/usr/bin/polychromatic-tray-applet"
-    else:
-        tray_bin_path = os.path.abspath(os.path.join(path.data_source, "../polychromatic-tray-applet"))
-
-    # Attempt to gracefully stop the process, then launch again.
-    try:
-        background_process(tray_bin_path)
-    except OSError:
-        print("Tray applet failed to relaunch.")
-        return
-
-    print("Tray applet reloaded.")
-
-def restart_daemon_service():
-    from subprocess import check_output
-    from shutil import which
-
-    # Enough time to load "loading" page
-    time.sleep(0.5)
-
-    # Is the daemon actually installed?
-    if not which("openrazer-daemon"):
-        app.load_lock = False
-        app.show_error_page("serious", "generic", _("Daemon Not Installed."),
-                            _("Could not find the executable for 'openrazer-daemon'. Please try re-installing the daemon."))
-        return
-
-    # Gracefully stop the daemon
-    print("Stopping openrazer-daemon.", end='')
-    app.update_page("#status-text", "html", _("Stopping daemon..."))
-    try:
-        app.devman.stop_daemon()
-    except Exception as NoneType:
-        # Cannot stop gracefully. Skip this.
-        pass
-
-    # Wait for the daemon to stop.
-    stopped = False
-    app.update_page(".progress", "fadeIn", "fast")
-    app.update_page(".progress-inner", "addClass", "increasing")
-
-    for x in range(0, 5):
-        print(".", end='')
-        try:
-            daemon_pid = int(check_output(["pidof", "openrazer-daemon"]))
-        except:
-            stopped = True
-            break
-        time.sleep(1)
-
-    app.update_page(".progress", "fadeOut", "fast")
-    app.update_page(".progress-inner", "removeClass", "increasing")
-
-    # Kill the daemon if still not ended
-    if not stopped:
-        print("\nKilling openrazer-daemon...")
-        app.update_page("#status-text", "html", _("Killing daemon process..."))
-        os.kill(daemon_pid, 9)
-
-    # Ensure a clean log
-    print("\nArchiving log...")
-    app.update_page("#status-text", "html", _("Archiving log..."))
-    log_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log")
-    log_bak = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/razer.log.bak")
-    if os.path.exists(log_path):
-        os.rename(log_path, log_bak)
-
-    # Wait for daemon to start again
-    time.sleep(1)
-    print("\nStarting openrazer-daemon...")
-    app.update_page("#status-text", "html", _("Starting daemon..."))
-    background_process("openrazer-daemon", shell=True)
-
-    # Check the process is running
-    print("Waiting for openrazer-daemon to start...")
-    app.update_page(".progress", "fadeIn", "fast")
-    app.update_page(".progress-inner", "addClass", "increasing")
-    for x in range(0, 5):
-        print(".", end='')
-        try:
-            daemon_pid = int(check_output(["pidof", "openrazer-daemon"]))
-            running = True
-            break
-        except:
-            running = False
-        time.sleep(1)
-
-    if not running:
-        app.load_lock = False
-        app.show_error_page("serious", "generic", _("Daemon cannot be relaunched."),
-                            _("Failed to execute 'openrazer-daemon'. Please check the daemon log to troubleshoot the problem.") + \
-                            '<br><code>~/.local/share/openrazer/logs/</code><br><br>' + _("Alternately, open a terminal and run:") + '<br><code>openrazer-daemon -Fv</code>')
-        return
-
-    # Relaunch Controller / Tray Applet
-    print("Relaunching Polychromatic...")
-    app.update_page(".progress", "fadeOut", "fast")
-    app.update_page("#loading", "fadeOut", "fast")
-    app.update_page("#status-text", "fadeOut", "fast")
-    restart_tray_applet()
-    os.execv(__file__, sys.argv)
-
-
-# For restarting the tray applet (only when running)
-tray_pid_file = os.path.join("/run/user/", str(os.getuid()), "polychromatic-tray-applet.pid")
 
 if __name__ == "__main__":
-    # Legacy
-    trans = Translations()
+    setproctitle.setproctitle("polychromatic-controller")
 
-    _ = common.setup_translations(__file__, "polychromatic-controller")
     dbg = common.Debugging()
-    parse_parameters()
-    win = AppWindow()
-    app = Controller()
-    win.run()
+    i18n = locales.Locales(__file__)
+    _ = i18n.init()
+    VERSIONS = get_versions()
+
+    args = parse_parameters()
+    pref.init(_)
+
+    # Improve resolution for HiDPI displays
+    HIDPI = False
+    if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
+        QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+        HIDPI = True
+
+    if hasattr(QtCore.Qt, "AA_UseHighDpiPixmaps"):
+        QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
+    qapp = QApplication(sys.argv)
+    app = ApplicationData(qapp, dbg, _, common.paths, HIDPI)
+    app.load()
+    qapp.exec_()

@@ -1,21 +1,89 @@
-#!/usr/bin/env python3
-
-"""
-    Module for common functions used by Polychromatic's
-    Controller and Tray Applet.
-"""
+#!/usr/bin/python3
+#
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2017 Luke Horwell <luke@ubuntu-mate.org>
+# Copyright (C) 2017-2021 Luke Horwell <code@horwell.me>
+#
+"""
+Shared functions that are commonly used across Polychromatic's interfaces
+and some backends.
+"""
 
+import colorama
+import hashlib
 import os
 import sys
-import gettext
-from time import sleep
+import subprocess
+import grp
+import time
+import traceback
 from threading import Thread
 
-# Devices that do not support RGB at all.
-# (excludes Ultimate which supports shades of green)
-fixed_coloured_devices = ["Taipan"]
+from . import locales
+
+FORM_FACTORS = [
+    "accessory",
+    "keyboard",
+    "mouse",
+    "mousemat",
+    "keypad",
+    "headset",
+    "gpu",
+    "unrecognised"
+]
+
+
+class Paths(object):
+    """
+    Initialises the paths for data files, configuration and caches.
+    """
+    # Config/cache (XDG) directories
+    try:
+        config = os.path.join(os.environ["XDG_CONFIG_HOME"], ".config", "polychromatic")
+    except KeyError:
+        config = os.path.join(os.path.expanduser("~"), ".config", "polychromatic")
+
+    try:
+        cache = os.path.join(os.environ["XDG_CACHE_HOME"], ".cache", "polychromatic")
+    except KeyError:
+        cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
+
+    # Cached directories
+    assets_cache = os.path.join(cache, "assets")
+    effects_cache = os.path.join(cache, "effects")
+
+    # Subdirectories
+    effects = os.path.join(config, "effects")
+    presets = os.path.join(config, "presets")
+    custom_icons = os.path.join(config, "custom_icons")
+    states = os.path.join(config, "states")
+
+    # Files
+    preferences = os.path.join(config, "preferences.json")
+    colours = os.path.join(config, "colours.json")
+
+    # Legacy (v0.3.12 and earlier)
+    old_profiles = os.path.join(config, "profiles.json")
+    old_profile_folder = os.path.join(config, "profiles")
+    old_profile_backups = os.path.join(config, "backups")
+    old_devicestate = os.path.join(config, "devicestate.json")
+
+    # Create folders if they do not exist.
+    for folder in [config, presets, custom_icons, states, effects,
+                   cache, assets_cache, effects_cache]:
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+    # Data directory
+    # -- For developmen/opt, this is normally adjacent to the application executable.
+    # -- For system-wide installs, this is generally /usr/share/polychromatic.
+    module_path = __file__
+    if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))):
+        data_dir = os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))
+    elif os.path.exists("/usr/share/polychromatic/"):
+        data_dir = "/usr/share/polychromatic/"
+    else:
+        print("Data directory cannot be located. Exiting.")
+        exit(1)
 
 
 class Debugging(object):
@@ -24,456 +92,441 @@ class Debugging(object):
     """
     def __init__(self):
         self.verbose_level = 0
+        colorama.init()
 
         # Colours for stdout
-        self.error = '\033[91m'
-        self.success = '\033[92m'
-        self.warning = '\033[93m'
-        self.action = '\033[93m'
-        self.debug = '\033[96m'
-        self.normal = '\033[0m'
+        self.error = colorama.Fore.LIGHTRED_EX
+        self.success = colorama.Fore.LIGHTGREEN_EX
+        self.warning = colorama.Fore.YELLOW
+        self.action = colorama.Fore.LIGHTYELLOW_EX
+        self.blue = colorama.Fore.BLUE
+        self.magenta = colorama.Fore.MAGENTA
+        self.debug = colorama.Fore.CYAN
+        self.grey = colorama.Fore.LIGHTBLACK_EX
+        self.normal = colorama.Fore.RESET
 
-    def stdout(self, msg, colour_code='\033[0m', verbosity=0):
+    def stdout(self, msg, colour_code=colorama.Fore.RESET, verbosity=0, overwritable=False):
         # msg           String containing message for stdout.
         # color         stdout code (e.g. '\033[92m')
         # verbosity     0 = Always shown
         #               1 = -v flag
         #               2 = -vv flag
+        if overwritable:
+            line_end = "\r"
+        else:
+            line_end = "\n"
 
         if self.verbose_level >= verbosity:
             # Only colourise output if running in a real terminal.
             if sys.stdout.isatty():
-                print(colour_code + msg + '\033[0m')
+                print(colour_code + msg + '\033[0m', end=line_end)
             else:
                 print(msg)
 
 
-def setup_translations(bin_path, i18n_app, locale_override=None):
+def get_exception_as_string(e):
     """
-    Initalises translations for the application.
-
-    bin_path = __file__ of the application that is being executed.
-    i18n_app = Name of the application's locales.
-
-    Returns
+    For when things go wrong, convert an exception object into a human-readable
+    output that is normally displayed via the GUI.
     """
-    whereami = os.path.abspath(os.path.join(os.path.dirname(bin_path)))
-
-    if os.path.exists(os.path.join(whereami, 'locale/')):
-        # Using relative path
-        locale_path = os.path.join(whereami, 'locale/')
-    else:
-        # Using system path or en_US if none found
-        locale_path = '/usr/share/locale/'
-
-    if locale_override:
-        t = gettext.translation(i18n_app, localedir=locale_path, fallback=True, languages=[locale_override])
-    else:
-        t = gettext.translation(i18n_app, localedir=locale_path, fallback=True)
-
-    # This is set as the app's global variable: _
-    return t.gettext
+    return traceback.format_exc().replace("'", '’').replace('"', '’')
 
 
-def get_device_type(device_type):
+def get_form_factor(_, form_factor_id):
     """
-    Convert the daemon's device type string to what Polychromatic identifies as "form factor".
-    This is used for determining icons.
+    Reads a string provided by a backend and returns data that is used to refer
+    to the device ("form factor") throughout the application.
+
+    Params:
+        form_factor_id      (str)   One string from FORM_FACTORS.
+
+    Returns:
+        {id, icon, label}   A dictionary consisting of:
+                                id          Form Factor ID
+                                icon        Absolute path to icon
+                                label       Human-readable name of form factor
     """
-    if device_type == "firefly":
-        form_factor = "mousemat"
-    elif device_type == "tartarus":
-        form_factor = "keypad"
-    else:
-        form_factor = device_type
-    return(form_factor)
-
-
-def has_multiple_sources(device_obj):
-    """
-    Returns True or False to determine whether a device has multiple light sources.
-    """
-    main_light = device_obj.has("lighting")
-    backlight_light = device_obj.has("lighting_backlight")
-    logo_light = device_obj.has("lighting_logo")
-    scroll_light = device_obj.has("lighting_scroll")
-
-    light_sources = 0
-    for value in [main_light, backlight_light, logo_light, scroll_light]:
-        if value == True:
-            light_sources += 1
-
-    if light_sources > 1:
-        return True
-    else:
-        return False
-
-
-def get_effect_state_string(string):
-    """
-    Function to retrieve the current device effect as a human-readable string.
-    """
-    if string == 'spectrum':
-        return _("Spectrum")
-    elif string == 'wave':
-        return _("Wave")
-    elif string == 'reactive':
-        return _("Reactive")
-    elif string == 'breath':
-        return _("Breath")
-    elif string == 'ripple':
-        return _("Ripple")
-    elif string == 'starlight':
-        return _("Starlight")
-    elif string == 'static':
-        return ("Static")
-    elif string == 'none':
-        return ("None")
-    elif string == 'profile':
-        return _("Profile")
-    elif string == 'blinking':
-        return _("Blinking")
-    elif string == 'pulsate':
-        return _("Pulsate")
-    elif string == 'unknown':
-        return _("Try one...")
-    else:
-        return string
-
-
-def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
-    """
-    Function to set a effect for a specific area of the device.
-
-    device_object = Device to apply effect to.
-    source =        Lighting source labelled by Polychromatic.
-                        e.g. main / scroll / wheel
-    effect =        Effect name identified by Polychromatic.
-                        e.g. wave / spectrum / static
-    params =        (Optional) Any parameters for the effect, seperated by '?'.
-                        e.g. 255?255?255?2
-    """
-    serial = device_object.serial
-
-    # For remembering current device state
-    def remember_params(params):
-        pref.set_device_state(serial, source, "effect_params", params)
-
-    if fx_params:
-        params = str(fx_params).split('?')
-        remember_params(fx_params)
-    else:
-        params = None
-
-    # Determine source function
-    if source == "main":
-        fx = device_object.fx
-
-    elif source == "backlight":
-        fx = device_object.fx.misc.backlight
-
-    elif source == "logo":
-        fx = device_object.fx.misc.logo
-
-    elif source == "scroll":
-        fx = device_object.fx.misc.scroll_wheel
-
-    # Determine colours
-    primary_colours = pref.get_device_state(serial, source, "colour_primary")
-    secondary_colours = pref.get_device_state(serial, source, "colour_secondary")
-
-    if primary_colours:
-        primary_red = primary_colours[0]
-        primary_green = primary_colours[1]
-        primary_blue = primary_colours[2]
-    else:
-        primary_red = 0
-        primary_green = 255
-        primary_blue = 0
-
-    if secondary_colours:
-        secondary_red = secondary_colours[0]
-        secondary_green = secondary_colours[1]
-        secondary_blue = secondary_colours[2]
-    else:
-        secondary_red = 255
-        secondary_green = 0
-        secondary_blue = 0
-
-    # Execute function (only if source is known)
-    if fx:
-        if effect == "none":
-            fx.none()
-
-        elif effect == "spectrum":
-            fx.spectrum()
-
-        elif effect == "wave":
-            # Params:  <direction 1-2>
-            if params:
-                fx.wave(int(params[0]))
-            else:
-                fx.wave(1)
-                remember_params(1)
-
-        elif effect == "reactive":
-            # Params:  <speed 1-4>
-            if params:
-                fx.reactive(primary_red, primary_green, primary_blue, int(params[0]))
-            else:
-                fx.reactive(primary_red, primary_green, primary_blue, 2)
-                remember_params(2)
-
-        elif effect == "blinking":
-            if params:
-                fx.blinking(primary_red, primary_green, primary_blue)
-            else:
-                fx.blinking(primary_red, primary_green, primary_blue)
-
-        elif effect == "breath":
-            # Params: <type>
-            if params:
-                if params[0] == 'random':
-                    fx.breath_random()
-
-                elif params[0] == 'single':
-                    fx.breath_single(primary_red, primary_green, primary_blue)
-
-                elif params[0] == 'dual':
-                    fx.breath_dual(primary_red, primary_green, primary_blue,
-                                   secondary_red, secondary_green, secondary_blue)
-
-                # TODO: Add triple breath support
-
-            else:
-                fx.breath_random()
-                remember_params('random')
-
-        elif effect == "pulsate":
-            fx.pulsate(primary_red, primary_green, primary_blue)
-
-        elif effect == "ripple":
-            # Params: <type>
-            if params:
-                if params[0] == 'single':
-                    fx.ripple(primary_red, primary_green, primary_blue, 0.01)
-
-                elif params[0] == 'random':
-                    fx.ripple_random(0.01)
-
-            else:
-                fx.ripple_random()
-                remember_params('random')
-
-        elif effect == "starlight":
-            # Params: <type> [speed 1-3]
-            # TODO: Add option to set speed. Requires re-structure.
-            speed = 2 # Normal
-
-            if params:
-                if params[0] == 'single':
-                    fx.starlight_single(primary_red, primary_green, primary_blue, speed)
-
-                elif params[0] == 'dual':
-                    fx.starlight_dual(primary_red, primary_green, primary_blue,
-                                      secondary_red, secondary_green, secondary_blue, speed)
-
-                elif params[0] == 'random':
-                    fx.starlight_random(speed)
-            else:
-                fx.starlight_random(speed)
-                remember_params('random')
-
-        elif effect == "static":
-            fx.static(primary_red, primary_green, primary_blue)
-
-        pref.set_device_state(device_object.serial, source, "effect", effect)
-
-    else:
-        print("Unrecognised source! FX not applied.")
-
-
-def set_brightness(pref, device_object, source, value):
-    """
-    Function to set the brightness for a specific area of the device.
-    """
-
-    if source == "main":
-        device_object.brightness = int(value)
-
-    elif source == "backlight":
-        if value == "toggle":
-            if device_object.fx.misc.backlight.active == True:
-                device_object.fx.misc.backlight.active = False
-            else:
-                device_object.fx.misc.backlight.active = True
-        else:
-            device_object.fx.misc.backlight.brightness = int(value)
-
-    elif source == "logo":
-        if value == "toggle":
-            if device_object.fx.misc.logo.active == True:
-                device_object.fx.misc.logo.active = False
-            else:
-                device_object.fx.misc.logo.active = True
-        else:
-            device_object.fx.misc.logo.brightness = int(value)
-
-    elif source == "scroll":
-        if value == "toggle":
-            if device_object.fx.misc.scroll_wheel.active == True:
-                device_object.fx.misc.scroll_wheel.active = False
-            else:
-                device_object.fx.misc.scroll_wheel.active = True
-        else:
-            device_object.fx.misc.scroll_wheel.brightness = int(value)
-
-    if value != "toggle":
-        pref.set_device_state(device_object.serial, source, "brightness", int(value))
-
-
-def set_brightness_toggle(pref, device_object, source, state):
-    """
-    Function to turn on or off a specific area of the device (for supported devices)
-
-    state = True/False/"toggle"
-    """
-
-    if source == "backlight":
-        source_obj = device_object.fx.misc.backlight
-
-    elif source == "logo":
-        source_obj = device_object.fx.misc.logo
-
-    elif source == "scroll":
-        source_obj = device_object.fx.misc.scroll_wheel
-
-    if str(state) == "toggle":
-        if source_obj.active == True:
-            source_obj.active = 0
-        else:
-            source_obj.active = 1
-    else:
-        source_obj.active = state
-
-
-def repeat_last_effect(pref, device_object):
-    """
-    Function to "replay" the last effect, for example, if the colour was changed.
-
-    This affects all effects the device supports.
-    """
-    serial = device_object.serial
-
-    def replay_source(source, capability):
-        if device_object.has(capability):
-            effect = pref.get_device_state(serial, source, "effect")
-            effect_params = pref.get_device_state(serial, source, "effect_params")
-            set_lighting_effect(pref, device_object, source, effect, effect_params)
-
-    replay_source("main", "lighting")
-    replay_source("backlight", "lighting_backlight")
-    replay_source("logo", "lighting_logo")
-    replay_source("scroll", "lighting_scroll")
-
-
-def save_colours_to_all_sources(pref, device_object, colour_name, colour_set):
-    """
-    Function to store the colour for all sources the device supports.
-
-    E.g. the tray applet sets the colour for all the device.
-
-    colour_name = string as used in devicestate, e.g. "colour_primary"
-    colour_set = list in format [red, green, blue]
-    """
-    serial = device_object.serial
-
-    def save_colour(source, capability):
-        if device_object.has(capability):
-            pref.set_device_state(serial, source, colour_name, colour_set)
-
-    save_colour("main", "lighting")
-    save_colour("backlight", "lighting_backlight")
-    save_colour("logo", "lighting_logo")
-    save_colour("scroll", "lighting_scroll")
-
-
-def get_green_shades():
+    if form_factor_id not in FORM_FACTORS:
+        form_factor_id = "unrecognised"
+
+    labels = {
+        "accessory": _("USB Accessory"),
+        "keyboard": _("Keyboard"),
+        "mouse": _("Mouse"),
+        "mousemat": _("Mousemat"),
+        "keypad": _("Keypad"),
+        "headset": _("Headset"),
+        "gpu": _("External Graphics Enclosure"),
+        "unrecognised": _("Unrecognised")
+    }
+
+    return {
+        "id": form_factor_id,
+        "icon": get_icon("devices", form_factor_id),
+        "label": labels[form_factor_id]
+    }
+
+
+def get_green_shades(_):
     """
     Returns a custom colours.json for use with non-RGB keyboards,
     like the Razer BlackWidow Ultimate.
     """
-    return {
-        "1": {"name": _("Green") + " 1", "col": [0, 255, 0]},
-        "2": {"name": _("Green") + " 2", "col": [0, 225, 0]},
-        "3": {"name": _("Green") + " 3", "col": [0, 200, 0]},
-        "4": {"name": _("Green") + " 4", "col": [0, 175, 0]},
-        "5": {"name": _("Green") + " 5", "col": [0, 150, 0]},
-        "6": {"name": _("Green") + " 6", "col": [0, 125, 0]},
-        "7": {"name": _("Green") + " 7", "col": [0, 100, 0]},
-        "8": {"name": _("Green") + " 8", "col": [0, 75, 0]},
-        "9": {"name": _("Green") + " 9", "col": [0, 50, 0]},
-    }
+    colours = []
+    count = 0
+    for shade in ["#00FF00", "#00E100", "#00C800", "#00AF00", "#009600", "#007D00", "#006400", "#004B00", "#003200"]:
+        count += 1
+        colours.append({
+            "name": "{0} {1}".format(_("Green"), str(count)),
+            "hex": shade
+        })
+    return colours
 
 
-def set_default_tray_icon(pref):
+def get_default_tray_icon():
     """
-    Determines which tray icon is best suited for the current desktop environment.
+    Determines which tray icon is best suited for the current desktop environment
+    or theme.
+
+    The path is intentionally relative as this is saved to preferences.json.
+    A relative path will look up the icon in Polychromatic's data folders.
     """
     desktop_env = os.environ.get("XDG_CURRENT_DESKTOP")
-    pref.set("tray_icon", "type", "builtin")
+    theme_env = os.environ.get("GTK_THEME")
 
-    if desktop_env == "KDE":
-        pref.set("tray_icon", "value", "0")
-    else:
-        # MATE/Unity/Others
-        pref.set("tray_icon", "value", "0")
+    # Default icon
+    icon_value = "img/tray/light/polychromatic.svg"
+
+    # TODO: Detect GTK dark theme.
+
+    if desktop_env:
+        if desktop_env == "KDE":
+            icon_value = "img/tray/light/breeze.svg"
+
+    elif theme_env:
+        # Unity/Ubuntu MATE
+        if theme_env.startswith("Ambiant") or theme_env.startswith("Ambiance"):
+            icon_value = "img/tray/light/humanity.svg"
+
+    return icon_value
 
 
-def devicestate_monitor_start(callback_function, file_path):
+def get_tray_icon(dbg, icon_value):
     """
-    Watches the devicestate.json file for changes, so different instances
-    of Polychromatic (e.g. tray applet / controller) can refresh.
+    Returns the full path to the icon to use with the tray applet.
 
-    callback_function   =   Function to call when there is a change.
-    file_path           =   Full path to devicestate.json
+    Params:
+        dbg             (obj)   Application's "dbg" object
+        icon_value      (str)   Preference value of ["tray"]["icon"]
     """
-    thread = Thread(target=devicestate_monitor_thread, args=(callback_function, file_path))
-    thread.daemon = True
-    thread.start()
+    # Check if the icon is absolute -> a custom icon
+    if os.path.exists(icon_value):
+        return icon_value
+
+    # Check if the icon is relative -> a built-in icon
+    icon_builtin = os.path.join(paths.data_dir, icon_value)
+    if os.path.exists(icon_builtin):
+        return icon_builtin
+
+    dbg.stdout("Tray icon missing: {0}\nUsing fallback icon.".format(icon_value), dbg.warning)
+    return get_icon("tray/light", "polychromatic")
 
 
-def devicestate_monitor_thread(callback_function, file_path):
+def get_icon(folder, name):
     """
-    Seperate thread for monitoring devicestate.json changes.
-    See devicestate_monitor_start() for reference.
-    """
-    def _init_devicestate_file():
-        if not os.path.exists(file_path):
-            with open(file_path, "a") as f:
-                f.write("{}")
+    Returns the absolute path to a Polychromatic provided icon from the data
+    folder.
 
-    while True:
-        try:
-            before = os.stat(file_path).st_mtime
-            sleep(1)
-            after = os.stat(file_path).st_mtime
-            if before != after:
-                 callback_function()
-        except FileNotFoundError:
-            _init_devicestate_file()
+    Example:
+        ("general", "battery-75") returns "/usr/share/polychromatic/img/general/battery-75.svg"
+
+    Returns:
+        (str)       Absolute path to icon
+        None        Icon does not exist
+    """
+    for ext in [".svg", ".png"]:
+        icon_path = os.path.join(paths.data_dir, "img", folder, name + ext)
+        if os.path.exists(icon_path):
+            return icon_path
+    return None
 
 
-def has_fixed_colour(device_obj):
+def generate_colour_bitmap(dbg, colour_hex, size="22x22"):
     """
-    Returns True if the device does not support RGB (e.g. can only turn LEDs on/off)
+    Generates a small bitmap of a colour and returns the path. Used for some UI controls
+    that cannot use stylesheets.
+
+    The file is cached to speed up future retrievals of the colour.
     """
-    for name in fixed_coloured_devices:
-        if device_obj.name.find(name) != -1:
+    cache_name = hashlib.md5(str(colour_hex + size).encode("utf-8")).hexdigest()
+    cache_path = os.path.join(paths.assets_cache, cache_name + ".png")
+
+    if not os.path.exists(cache_path):
+        dbg.stdout("Generating colour bitmap: " + colour_hex, dbg.action, 1)
+        subprocess.call("convert -size {size} xc:{hex} {path}".format(hex=colour_hex, path=cache_path, size=size), shell=True)
+
+    if not os.path.exists(cache_path):
+        dbg.stdout("ERROR: Failed to generate bitmap: " + colour_hex, dbg.error)
+        return None
+
+    return cache_path
+
+
+def get_icon_styles(dbg, folder, name, normal_colour, disabled_colour, active_colour, selected_colour, secondary_active, secondary_inactive):
+    """
+    Returns a list of icon paths to SVG assets for use with buttons and other
+    Qt widgets in this order: ["normal", "disabled", "active", "selected"]. If
+    the icon is missing, then None is returned.
+
+    Paramaters are for get_icon() and the hex values to use. The secondary colour
+    is used to recolour icons with a dual tone.
+
+    The file is cached to speed up future retrievals of the asset.
+    """
+    original_icon = get_icon(folder, name)
+    icons = []
+
+    if not original_icon:
+        return None
+
+    for colour in [normal_colour, disabled_colour, active_colour, selected_colour]:
+        cache_name = hashlib.md5(str(folder + name + colour).encode("utf-8")).hexdigest()
+        cache_path = os.path.join(paths.assets_cache, cache_name + ".svg")
+
+        if not os.path.exists(cache_path):
+            dbg.stdout("Generating icon style: {0}/{1} ({2})".format(folder, name, colour), dbg.action, 1)
+            with open(original_icon, "r") as f:
+                data = f.readlines()
+            newdata = []
+            for line in data:
+                secondary_colour = secondary_active if colour in [active_colour, selected_colour] else secondary_inactive
+                newdata.append(line.replace("#00FF00", colour).replace("#00ff00", colour).replace("#008000", secondary_colour))
+            with open(cache_path, "w") as f:
+                f.writelines(newdata)
+
+        icons.append(cache_path)
+
+    return icons
+
+
+def get_full_path_for_save_data_icon(icon_path):
+    """
+    Returns the full path to an icon specified in the save data for the UI to use.
+
+    Polychromatic stores icon paths relatively. These paths are to be checked
+    in this priority:
+        - Custom Icons (~/.config/.../custom_icons/example.png)
+        - Emblems/Tray (/usr/share/.../img/emblems/example.svg)
+
+    If the icon no longer exists, a fallback will be provided.
+    """
+    possible_paths = [
+        os.path.join(paths.custom_icons, icon_path),
+        os.path.join(paths.data_dir, icon_path)
+    ]
+
+    if os.path.exists(icon_path):
+        # Icon is already absolute!
+        return icon_path
+
+    # Try relative paths
+    for path in possible_paths:
+        if os.path.exists(path):
+            return path
+
+    return get_icon("devices", "unrecognised")
+
+
+def execute_polychromatic_component(dbg, component, controller_open=None):
+    """
+    Starts a Polychromatic application relative to its location or system-wide
+    if installed.
+
+    Params:
+        component           e.g. "controller" would run "polychromatic-controller"
+        controller_open     (Optional - Controller only) Opens a specific tab/feature.
+    """
+    data_dir = paths.data_dir
+    exec_name = "polychromatic-" + component
+
+    possible_paths = [
+        # Relative copy #1
+        os.path.join(data_dir, "../" + exec_name),
+
+        # Relative copy #2
+        os.path.join(os.path.dirname(__file__), exec_name),
+
+        # Relative system-wide (e.g. /usr/share/polychromatic)
+        os.path.join(data_dir, "../../bin/" + exec_name),
+
+        # Relative system-wide (e.g. /usr/share/polychromatic)
+        os.path.join(os.path.dirname(__file__), "../" + exec_name),
+
+        # Absolute system-wide
+        "/usr/bin/" + exec_name
+    ]
+
+    for bin_path in possible_paths:
+        args = [bin_path]
+
+        if controller_open:
+            args.append("--open")
+            args.append(controller_open)
+
+        if os.path.exists(bin_path):
+            dbg.stdout("Executing: " + os.path.realpath(" ".join(args)), dbg.debug, 1)
+            try:
+                subprocess.Popen(args)
+            except Exception:
+                pass
             return True
     return False
 
-"""
-Module Initalization
-"""
-_ = setup_translations(__file__, "polychromatic-common")
+
+def run_thread(target_function, args=()):
+    """
+    Executes a function that will run outside the main thread.
+
+    target_function     Function to execute.
+    args                (Optional) A tuple containing arguments.
+    """
+    thread = Thread(target=target_function, args=args)
+    thread.daemon = True
+    thread.start()
+    return thread
+
+
+def rgb_to_hex(rgb_list):
+    """
+    Converts [R,G,B] list to #RRGGBB string.
+    Polychromatic stores and processes colours as hex values.
+    """
+    return "#{0:02X}{1:02X}{2:02X}".format(*rgb_list)
+
+
+def hex_to_rgb(hex_string):
+    """
+    Converts "#RRGGBB" string to [R,G,B] list.
+    Some backends/logic may expect colours to be individual RGB values.
+    """
+    hex_string = hex_string.lstrip("#")
+    return list(int(hex_string[i:i+2], 16) for i in (0, 2 ,4))
+
+
+def get_plural(integer, non_plural, plural):
+    """
+    Returns the correct plural or non-plural spelling based on an integer.
+    """
+    if integer == 1:
+        return non_plural
+    else:
+        return plural
+
+
+def get_bulk_apply_options(_, devices):
+    """
+    Return a dictionary describing a list of IDs for the interface to build
+    buttons to quickly apply common options to all connected devices.
+
+    The output is currently biased to OpenRazer IDs and should be
+    reworked to work with other backends if they use different IDs. Currently,
+    this will return options if at least one device supports them.
+
+    Params:
+        devices         (list)      List of get_device() dicts
+
+    Returns:
+    {
+        "brightness", "effects": [
+            {
+                "option_id": "<id>"
+                "option_data": <data>
+                "required_colours": <int>
+            }
+        ]
+    }
+    """
+    output = {"brightness": [], "effects": []}
+
+    # Brightness
+    for x in range(0, 125, 25):
+        output["brightness"].append({
+            "id": "brightness",
+            "data": x,
+            "label": "{0}%".format(str(x)),
+            "icon": get_icon("options", str(x))
+        })
+
+    # Options
+    effects = {
+        "spectrum": False,
+        "wave": False,
+        "breath": False,
+        "reactive": False,
+        "static": False
+    }
+
+    effects_params = {
+        "spectrum": None,
+        "wave": 2,
+        "breath": "single",
+        "reactive": 2,
+        "static": None
+    }
+
+    effects_colours = {
+        "spectrum": 0,
+        "wave": 0,
+        "breath": 1,
+        "reactive": 1,
+        "static": 1
+    }
+
+    effects_labels = {
+        "spectrum": _("Spectrum"),
+        "wave": _("Wave"),
+        "breath": _("Breath"),
+        "reactive": _("Reactive"),
+        "static": _("Static")
+    }
+
+    for option_id in effects.keys():
+        for device in devices:
+            for zone in device["zone_options"].keys():
+                for option in device["zone_options"][zone]:
+                    if option["id"] == option_id:
+                        effects[option_id] = True
+
+    for effect in effects.keys():
+        output["effects"].append({
+            "id": effect,
+            "data": effects_params[effect],
+            "label": effects_labels[effect],
+            "required_colours": effects_colours[effect]
+        })
+
+    return output
+
+
+def get_versions(base_version):
+    """
+    When running from a Git repository, return the development revision and
+    Git commit "revision" as a tuple. Otherwise just the release version.
+
+    This is intended to make debugging easier.
+    """
+    py_version = "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
+
+    if os.path.exists(os.path.join(os.path.dirname(__file__), "..", ".git")):
+        import subprocess
+        os.chdir(os.path.dirname(__file__))
+        git_version = subprocess.check_output(["git", "describe"]).strip().decode("UTF-8")[1:]
+        git_commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode("UTF-8")
+        return (git_version, git_commit, py_version)
+
+    # Production "installed" version
+    return (base_version, None, py_version)
+
+
+# Available to all modules
+paths = Paths()

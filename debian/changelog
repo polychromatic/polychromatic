@@ -1,4 +1,34 @@
-polychromatic (0.3.12-xenial) xenial; urgency=low
+polychromatic (0.6.0) UNRELEASED; urgency=low
+
+  * Controller: Drop GTK/WebKit. Now uses PyQt5.
+  * Controller: New UI design.
+  * Controller: New troubleshooter for OpenRazer.
+  * Controller: New configuration GUI for OpenRazer.
+  * Controller: New 'Apply to All' feature.
+  * Controller: New Preferences GUI.
+  * Controller: New 'Device Info' and 'Inspect Matrix'.
+  * Controller: New saved colour picker.
+  * Controller: New icon picker - add support for Steam games and custom icons.
+  * Controller: Warn when using incompatible configuration.
+  * Controller: Drop --print-device-info parameter (use 'Device Info' instead)
+  * Tray Applet: Add support for GTK Status Icon.
+  * Tray Applet: New menu design.
+  * Tray Applet: New option to delay autostart (to fix race conditions)
+  * Helper: Replaces the tray applet autostart desktop launcher.
+  * CLI: New command line interface via 'polychromatic-cli'
+  * OpenRazer is no longer a hard dependency.
+  * OpenRazer: Add support for multizoned hardware.
+  * OpenRazer: Add support for battery status.
+  * Add XDG desktop actions to desktop launcher.
+  * New translations: pt_BR, fr_FR, fi_FI, ru, zh_CN
+  * Change shebang to '/usr/bin/python3'
+  * Build: Changed to meson/ninja.
+  * Build: New locale scripts. Source language is now en_GB.
+  * Build: Switch from 'lessc' to 'sassc'
+
+ -- Luke Horwell <code@horwell.me>  Sat, 19 Dec 2020 16:09:50 +0100
+
+polychromatic (0.3.12) xenial; urgency=low
 
   * The DPI/Poll Rate labels were hard to read.
   * Daemon screen in Preferences came up blank.
@@ -7,22 +37,22 @@ polychromatic (0.3.12-xenial) xenial; urgency=low
 
  -- Luke Horwell <code@horwell.me>  Thu, 19 Apr 2018 23:21:11 +0100
 
-polychromatic (0.3.11.2-xenial) xenial; urgency=low
+polychromatic (0.3.11.2) xenial; urgency=low
 
   * Fix profile editor never being displayed.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sat, 30 Sep 2017 20:14:52 +0100
+ -- Luke Horwell <code@horwell.me>  Sat, 30 Sep 2017 20:14:52 +0100
 
-polychromatic (0.3.11.1-xenial) xenial; urgency=low
+polychromatic (0.3.11.1) xenial; urgency=low
 
   * Update dependencies for OpenRazer. Please use ppa:openrazer/stable instead.
   * Update error screens when initialization errors occur.
   * Prevent a segfault with newer WebKit versions.
   * Internal changes to how styling is compiled.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Wed, 06 Sep 2017 21:00:00 +0100
+ -- Luke Horwell <code@horwell.me>  Wed, 06 Sep 2017 21:00:00 +0100
 
-polychromatic (0.3.10-xenial) xenial; urgency=low
+polychromatic (0.3.10) xenial; urgency=low
 
   * Catch more exceptions.
   * Clean up how booleans are stored interally.
@@ -31,31 +61,31 @@ polychromatic (0.3.10-xenial) xenial; urgency=low
   * Prevent exception when devicestate file didn't exist.
   * Properly add support for starlight effect.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Thu, 10 Aug 2017 21:24:39 +0100
+ -- Luke Horwell <code@horwell.me>  Thu, 10 Aug 2017 21:24:39 +0100
 
-polychromatic (0.3.9.3-xenial) xenial; urgency=low
+polychromatic (0.3.9.3) xenial; urgency=low
 
   * Daemon configuration paths updated.
   * Beginnings of some code refactoring.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sat, 01 Jul 2017 23:29:21 +0100
+ -- Luke Horwell <code@horwell.me>  Sat, 01 Jul 2017 23:29:21 +0100
 
-polychromatic (0.3.9.2-xenial) xenial; urgency=low
+polychromatic (0.3.9.2) xenial; urgency=low
 
   * Daemon has renamed razer-service to razer-daemon.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sun, 11 Jun 2017 17:40:05 +0100
+ -- Luke Horwell <code@horwell.me>  Sun, 11 Jun 2017 17:40:05 +0100
 
-polychromatic (0.3.9.1-xenial) xenial; urgency=low
+polychromatic (0.3.9.1) xenial; urgency=low
 
   * Re-licensed as GPL3.
   * Add German translation.
   * Fix profile matrix rows/cols for non-BW devices.
   * Various fixes to prevent exceptions.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Mon, 29 May 2017 16:38:59 +0100
+ -- Luke Horwell <code@horwell.me>  Mon, 29 May 2017 16:38:59 +0100
 
-polychromatic (0.3.9-xenial) xenial; urgency=low
+polychromatic (0.3.9) xenial; urgency=low
 
   * Fix wrong colour for green shade variants.
   * Fix corrupt screen when choosing an application.
@@ -67,9 +97,9 @@ polychromatic (0.3.9-xenial) xenial; urgency=low
   * Hide "effects" menu in tray if device doesn't support them.
   * Sync device state changes between tray/controller.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Wed, 03 May 2017 18:36:48 +0100
+ -- Luke Horwell <code@horwell.me>  Wed, 03 May 2017 18:36:48 +0100
 
-polychromatic (0.3.8-xenial) xenial; urgency=low
+polychromatic (0.3.8) xenial; urgency=low
 
   * Internal code clean-ups.
   * Prevent an exception when creating a new profile.
@@ -82,9 +112,9 @@ polychromatic (0.3.8-xenial) xenial; urgency=low
   * Fix Overview tab not being selected properly.
   * Update translation templates and eb_GB locales.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Tue, 04 Apr 2017 23:18:22 +0100
+ -- Luke Horwell <code@horwell.me>  Tue, 04 Apr 2017 23:18:22 +0100
 
-polychromatic (0.3.7.1-xenial) xenial; urgency=low
+polychromatic (0.3.7.1) xenial; urgency=low
 
   * Fix regression when editing profiles.
   * Fix regression with wave effect in header.
@@ -94,15 +124,15 @@ polychromatic (0.3.7.1-xenial) xenial; urgency=low
   * Update application icons.
   * Tweak message when restarting daemon.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Thu, 16 Mar 2017 22:07:28 +0100
+ -- Luke Horwell <code@horwell.me>  Thu, 16 Mar 2017 22:07:28 +0100
 
-polychromatic (0.3.7-1-xenial) xenial; urgency=low
+polychromatic (0.3.7-1) xenial; urgency=low
 
   * Repackaged for Launchpad.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Thu, 09 Mar 2017 22:12:49 +0100
+ -- Luke Horwell <code@horwell.me>  Thu, 09 Mar 2017 22:12:49 +0100
 
-polychromatic (0.3.7-xenial) xenial; urgency=low
+polychromatic (0.3.7) xenial; urgency=low
 
   * Add support for logo and scroll wheel.
   * Add options for mouse DPI.
@@ -119,15 +149,15 @@ polychromatic (0.3.7-xenial) xenial; urgency=low
   * Show warnings when daemon versions differ.
   * Reshuffled data files and code clean ups.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Tue, 07 Mar 2017 21:41:13 +0100
+ -- Luke Horwell <code@horwell.me>  Tue, 07 Mar 2017 21:41:13 +0100
 
-polychromatic (0.3.6.1-xenial) xenial; urgency=low
+polychromatic (0.3.6.1) xenial; urgency=low
 
   * Revert WebKit2 workaround as regression is fixed in WebKitGTK 2.14.3.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Tue, 17 Jan 2017 21:15:42 +0100
+ -- Luke Horwell <code@horwell.me>  Tue, 17 Jan 2017 21:15:42 +0100
 
-polychromatic (0.3.6-xenial) xenial; urgency=low
+polychromatic (0.3.6) xenial; urgency=low
 
   * Add button to gracefully stop the daemon.
   * Add images for headsets and keypads.
@@ -141,9 +171,9 @@ polychromatic (0.3.6-xenial) xenial; urgency=low
   * Update en_GB locale.
   * Stabilize the behaviour of processing signals with WebKit2.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sat, 14 Jan 2017 17:20:58 +0100
+ -- Luke Horwell <code@horwell.me>  Sat, 14 Jan 2017 17:20:58 +0100
 
-polychromatic (0.3.5-xenial) xenial; urgency=low
+polychromatic (0.3.5) xenial; urgency=low
 
   * Prevent crash when device serial returned null.
   * Correct logic for showing "No Devices Found" screen.
@@ -152,9 +182,9 @@ polychromatic (0.3.5-xenial) xenial; urgency=low
   * Add device overview screen.
   * Drop obsolete "Enable Macro Keys" button.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Wed, 13 Dec 2016 20:53:04 +0100
+ -- Luke Horwell <code@horwell.me>  Wed, 13 Dec 2016 20:53:04 +0100
 
-polychromatic (0.3.4-xenial) xenial; urgency=low
+polychromatic (0.3.4) xenial; urgency=low
 
   * Detect when a Razer product is connected.
   * Track and retain device states.
@@ -162,9 +192,9 @@ polychromatic (0.3.4-xenial) xenial; urgency=low
   * Fix "Reset Preferences" button.
   * Miscellaneous UI fixes.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sat, 02 Oct 2016 21:26:22 +0100
+ -- Luke Horwell <code@horwell.me>  Sat, 02 Oct 2016 21:26:22 +0100
 
-polychromatic (0.3.3-xenial) xenial; urgency=low
+polychromatic (0.3.3) xenial; urgency=low
 
   * Ensure FN/Space keys are enabled for keyboards that support it.
   * Add tabs to preferences.
@@ -178,9 +208,9 @@ polychromatic (0.3.3-xenial) xenial; urgency=low
   * Add demo option - Synchronised Razer BlackWidow Chroma Advert.
   * Remove useless "device refresh" button.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sat, 02 Oct 2016 21:26:22 +0100
+ -- Luke Horwell <code@horwell.me>  Sat, 02 Oct 2016 21:26:22 +0100
 
-polychromatic (0.3.2-xenial) xenial; urgency=low
+polychromatic (0.3.2) xenial; urgency=low
 
   * Add keyboard navigation support.
   * Dropdown menus are themed.
@@ -188,9 +218,9 @@ polychromatic (0.3.2-xenial) xenial; urgency=low
     * Consistent use of normal cursor.
     * Profile editor tools relocated and shows selected tool.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sun, 02 Oct 2016 21:26:22 +0100
+ -- Luke Horwell <code@horwell.me>  Sun, 02 Oct 2016 21:26:22 +0100
 
-polychromatic (0.3.1-xenial) xenial; urgency=low
+polychromatic (0.3.1) xenial; urgency=low
 
   * Display error message on daemon initialisation failures.
   * Set process title earlier to prevent muddled process name.
@@ -199,9 +229,9 @@ polychromatic (0.3.1-xenial) xenial; urgency=low
   * Add support for pulsate effect on Razer BW2013.
   * Add support for logo lighting on Razer Abyssus.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sun, 25 Sep 2016 17:34:26 +0100
+ -- Luke Horwell <code@horwell.me>  Sun, 25 Sep 2016 17:34:26 +0100
 
-polychromatic (0.3.0-xenial) xenial; urgency=low
+polychromatic (0.3.0) xenial; urgency=low
 
   * Migrate to the new daemon.
   * Implement multi-device support.
@@ -217,16 +247,16 @@ polychromatic (0.3.0-xenial) xenial; urgency=low
   * New tray applet icons and string updates.
   * Internal code tweaks and improvements.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sun, 18 Sep 2016 09:51:32 +0100
+ -- Luke Horwell <code@horwell.me>  Sun, 18 Sep 2016 09:51:32 +0100
 
-polychromatic (0.2.3-xenial) xenial; urgency=low
+polychromatic (0.2.3) xenial; urgency=low
 
   * Add autostart entry.
   * Show warning when ran under DaemonV2.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sun, 14 Aug 2016 22:16:12 +0100
+ -- Luke Horwell <code@horwell.me>  Sun, 14 Aug 2016 22:16:12 +0100
 
-polychromatic (0.2.2-xenial) xenial; urgency=low
+polychromatic (0.2.2) xenial; urgency=low
 
   * New application logo.
   * Upgraded profile format.
@@ -240,30 +270,30 @@ polychromatic (0.2.2-xenial) xenial; urgency=low
   * Internal code clean-up.
   * Create packages for Yakkety.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sun, 31 Jul 2016 20:49:00 +0100
+ -- Luke Horwell <code@horwell.me>  Sun, 31 Jul 2016 20:49:00 +0100
 
-polychromatic (0.2.1-xenial) xenial; urgency=low
+polychromatic (0.2.1) xenial; urgency=low
 
   * New dialogue prompts for profile creation/deletion.
   * Add translation support.
   * Use a Python module for setting process title.
   * Internal code clean-up.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Thu, 7 Jul 2016 17:15:00 +0100
+ -- Luke Horwell <code@horwell.me>  Thu, 7 Jul 2016 17:15:00 +0100
 
 
-polychromatic (0.2.0-xenial2) xenial; urgency=low
+polychromatic (0.2.02) xenial; urgency=low
 
   * Migrated to WebKit2.
   * Internal project restructure.
   * Prepared packaging for Ubuntu.
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Sun, 12 Jun 2016 14:38:00 +0100
+ -- Luke Horwell <code@horwell.me>  Sun, 12 Jun 2016 14:38:00 +0100
 
 
-polychromatic (0.1.0-xenial) xenial; urgency=low
+polychromatic (0.1.0) xenial; urgency=low
 
   * Initial Release
 
- -- Luke Horwell <luke@ubuntu-mate.org>  Tue, 17 May 2016 14:57:00 +0100
+ -- Luke Horwell <code@horwell.me>  Tue, 17 May 2016 14:57:00 +0100
 

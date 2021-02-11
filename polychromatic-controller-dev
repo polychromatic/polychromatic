@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# Starts Polychromatic Controller and essential development tasks like
+# compiling the styles.
+#
+# Defaults to using --verbose (verbose) parameter, but also passes any others when
+# executing this script.
+#
+params=$*
+
+cd "$(dirname "$0")"
+
+function abort_on_error() {
+    if [ $1 != 0 ]; then exit 1; fi
+}
+
+# Compile SASS files
+./scripts/build-styles.sh
+abort_on_error $?
+
+# Compile locales
+./scripts/build-locales.sh
+abort_on_error $?
+
+# Start!
+exec ./polychromatic-controller --verbose $params
