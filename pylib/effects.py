@@ -204,7 +204,9 @@ class EffectFileManagement(fileman.FlatFileManagement):
         """
         data = self._load_file(path)
         if data["type"] == TYPE_SCRIPTED:
-            os.remove(path.replace(".json", ".py"))
+            py_path = path.replace(".json", ".py")
+            if os.path.exists(py_path):
+                os.remove(py_path)
             self.dbg.stdout("Deleted: " + path, self.dbg.success, 1)
 
         return super().delete_item(path)
