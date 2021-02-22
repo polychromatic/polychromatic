@@ -115,16 +115,17 @@ class PolychromaticTests(unittest.TestCase):
             data = json.load(f)
         for name in data.keys():
             item = data[name]
-            if not type(item["filename"]) == str:
-                passed = False
-            if not type(item["rows"]) == int:
-                passed = False
-            if not type(item["cols"]) == int:
-                passed = False
-            if not type(item["locale"]) in [str, None]:
+            keys = list(item.keys())
+            if False in [
+                "filename" in keys,
+                "rows" in keys,
+                "cols" in keys,
+                "locale" in keys,
+                "scancode" in keys
+            ]:
                 passed = False
 
-        self.assertEqual(passed, True, "Invalid data found in maps.json")
+        self.assertEqual(passed, True, "Item(s) missing keys in maps.json")
 
     def test_devicemap_valid_json(self):
         passed = True
