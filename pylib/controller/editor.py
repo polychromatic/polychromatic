@@ -1310,7 +1310,7 @@ class VisualEffectEditor(shared.TabData):
             button.setFlat(True)
             button.setToolTip("{0} ({1})".format(name, hex_value))
             button.setStyleSheet("QPushButton { border: none; background: none; padding: 0; margin: 0; }")
-            button.setIcon(QIcon(common.generate_colour_bitmap(self.appdata.dbg, hex_value, "32x32")))
+            button.setIcon(QIcon(common.generate_colour_bitmap(self.appdata.dbg, hex_value, 32)))
             button.clicked.connect(lambda a: self._set_current_colour(hex_value))
             parent_widget.layout().addWidget(button)
 

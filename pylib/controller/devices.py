@@ -836,7 +836,7 @@ class DevicesTab(shared.TabData):
             for colour in pref.load_file(self.paths.colours):
                 label = colour["name"]
                 data = colour["hex"]
-                icon = common.generate_colour_bitmap(self.dbg, data, "40x40")
+                icon = common.generate_colour_bitmap(self.dbg, data, 40)
                 widgets.append(_create_button(label, icon, None, None, colour=data))
 
             add_to_page(self._("Colours"), widgets)

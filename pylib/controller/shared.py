@@ -741,7 +741,7 @@ class ColourPicker(object):
         item = QTreeWidgetItem()
         item.setText(0, name)
         item.setText(1, value.upper())
-        item.setIcon(0, QIcon(common.generate_colour_bitmap(self.appdata.dbg, value, "16x16")))
+        item.setIcon(0, QIcon(common.generate_colour_bitmap(self.appdata.dbg, value, 20)))
         item.colour_name = name
         item.colour_hex = value.upper()
         item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsDragEnabled)

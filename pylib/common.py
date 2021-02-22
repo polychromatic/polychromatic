@@ -261,22 +261,25 @@ def get_icon(folder, name):
     return None
 
 
-def generate_colour_bitmap(dbg, colour_hex, size="22x22"):
+def generate_colour_bitmap(dbg, colour_hex, size=22):
     """
-    Generates a small bitmap of a colour and returns the path. Used for some UI controls
-    that cannot use stylesheets.
+    Generates a small bitmap of a colour and returns the path. Used for some
+    UI controls that cannot use stylesheets.
 
     The file is cached to speed up future retrievals of the colour.
     """
-    cache_name = hashlib.md5(str(colour_hex + size).encode("utf-8")).hexdigest()
-    cache_path = os.path.join(paths.assets_cache, cache_name + ".png")
+    cache_name = hashlib.md5(str(colour_hex + str(size)).encode("utf-8")).hexdigest()
+    cache_path = os.path.join(paths.assets_cache, cache_name + ".svg")
 
     if not os.path.exists(cache_path):
-        dbg.stdout("Generating colour bitmap: " + colour_hex, dbg.action, 1)
-        subprocess.call("convert -size {size} xc:{hex} {path}".format(hex=colour_hex, path=cache_path, size=size), shell=True)
+        dbg.stdout("Generating colour SVG: " + colour_hex, dbg.action, 1)
+        with open(cache_path, "w") as f:
+            f.writelines("<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" " + \
+                "width=\"{0}\" height=\"{0}\"><rect width=\"{0}\" height=\"{0}\" ".format(str(size)) + \
+                    "style=\"fill:{0}\"/></svg>".format(colour_hex))
 
     if not os.path.exists(cache_path):
-        dbg.stdout("ERROR: Failed to generate bitmap: " + colour_hex, dbg.error)
+        dbg.stdout("ERROR: Failed to generate colour SVG: " + colour_hex, dbg.error)
         return None
 
     return cache_path
