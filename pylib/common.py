@@ -47,6 +47,16 @@ class Paths(object):
     except KeyError:
         cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
 
+    # Development only
+    dev = False
+    try:
+        if os.environ["POLYCHROMATIC_DEV_CFG"] == "true":
+            cache = os.path.realpath(os.path.join(os.getcwd(), "dev", "cache"))
+            config = os.path.realpath(os.path.join(os.getcwd(), "dev", "config"))
+            dev = True
+    except KeyError:
+        dev = False
+
     # Cached directories
     assets_cache = os.path.join(cache, "assets")
     effects_cache = os.path.join(cache, "effects")

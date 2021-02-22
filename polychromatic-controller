@@ -184,6 +184,9 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(common.get_icon("general", "controller.svg")))
         self.setWindowTitle("Polychromatic")
 
+        if common.paths.dev:
+            self.setWindowTitle("Polychromatic {0} [dev]".format(get_versions()[0][1]))
+
         # Prepare Menu Bar
         self.findChild(QAction, "actionReinstateMenuBar").setVisible(False)
         if not app.preferences["controller"]["show_menu_bar"]:

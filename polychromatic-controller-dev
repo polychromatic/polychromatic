@@ -1,9 +1,11 @@
 #!/bin/bash
 #
-# Starts Polychromatic Controller and essential development tasks like
-# compiling the styles.
+# Starts Polychromatic Controller and performs essential tasks like
+# compiling the styles and locales.
 #
-# Defaults to using --verbose (verbose) parameter, but also passes any others when
+# The save data is isolated into a directory named "dev".
+#
+# Parameters: Uses --verbose by default, as well as any others passed when
 # executing this script.
 #
 params=$*
@@ -21,6 +23,9 @@ abort_on_error $?
 # Compile locales
 ./scripts/build-locales.sh
 abort_on_error $?
+
+# Isolate configuration
+export POLYCHROMATIC_DEV_CFG=true
 
 # Start!
 exec ./polychromatic-controller --verbose $params
