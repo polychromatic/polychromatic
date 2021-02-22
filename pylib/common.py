@@ -38,12 +38,12 @@ class Paths(object):
     """
     # Config/cache (XDG) directories
     try:
-        config = os.path.join(os.environ["XDG_CONFIG_HOME"], ".config", "polychromatic")
+        config = os.path.join(os.environ["XDG_CONFIG_HOME"], "polychromatic")
     except KeyError:
         config = os.path.join(os.path.expanduser("~"), ".config", "polychromatic")
 
     try:
-        cache = os.path.join(os.environ["XDG_CACHE_HOME"], ".cache", "polychromatic")
+        cache = os.path.join(os.environ["XDG_CACHE_HOME"], "polychromatic")
     except KeyError:
         cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
 
