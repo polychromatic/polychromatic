@@ -51,8 +51,9 @@ class Paths(object):
     dev = False
     try:
         if os.environ["POLYCHROMATIC_DEV_CFG"] == "true":
-            cache = os.path.realpath(os.path.join(os.getcwd(), "dev", "cache"))
-            config = os.path.realpath(os.path.join(os.getcwd(), "dev", "config"))
+            # __file__ = pylib/common.py
+            cache = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "dev", "cache"))
+            config = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "dev", "config"))
             dev = True
     except KeyError:
         dev = False

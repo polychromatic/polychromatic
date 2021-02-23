@@ -811,6 +811,13 @@ def parse_parameters():
         dbg.verbose_level = 1
         dbg.stdout(_("Verbose enabled"), dbg.debug, 1)
 
+    try:
+        if os.environ["POLYCHROMATIC_DEV_CFG"] == "true":
+            dbg.verbose_level = 1
+            dbg.stdout("Verbose enabled (development mode)", dbg.action, 1)
+    except KeyError:
+        pass
+
     if args.locale:
         i18n = locales.Locales(__file__, args.locale)
         _ = i18n.init()

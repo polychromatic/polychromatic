@@ -125,6 +125,13 @@ class Bootstrapper(object):
             dbg.verbose_level = 1
             dbg.stdout("Verbose enabled", dbg.action, 1)
 
+        try:
+            if os.environ["POLYCHROMATIC_DEV_CFG"] == "true":
+                dbg.verbose_level = 1
+                dbg.stdout("Verbose enabled (development mode)", dbg.action, 1)
+        except KeyError:
+            pass
+
         return args
 
     def autostart(self):

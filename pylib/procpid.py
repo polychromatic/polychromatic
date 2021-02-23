@@ -12,7 +12,7 @@ import json
 import os
 import signal
 import shutil
-from subprocess import Popen
+import subprocess
 
 from . import common
 
@@ -214,7 +214,7 @@ class ProcessManager():
         try:
             bin_arguments = [bin_path]
             bin_arguments += parameters
-            Popen(bin_arguments)
+            subprocess.Popen(bin_arguments, env=dict(os.environ))
             return True
         except Exception as e:
             print("Failed to start process: " + " ".join(bin_arguments))
