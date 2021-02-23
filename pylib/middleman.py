@@ -200,7 +200,7 @@ class Middleman(object):
             process = procpid.ProcessManager(serial)
             state = procpid.DeviceSoftwareState(serial)
 
-            if state.get_effect():
+            if state.get_effect() or process.is_another_instance_is_running():
                 process.stop()
                 state.clear_effect()
 

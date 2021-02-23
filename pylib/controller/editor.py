@@ -558,8 +558,8 @@ class VisualEffectEditor(shared.TabData):
         # Stop any other effects running on the hardware
         serial = self.device["serial"]
         state = procpid.DeviceSoftwareState(serial)
-        if state.get_effect():
-            process = procpid.ProcessManager(serial)
+        process = procpid.ProcessManager(serial)
+        if state.get_effect() or process.is_another_instance_is_running():
             process.stop()
 
         self.dbg.stdout("Previewing effect '{0}' on device '{1}'.".format(self.data["name"], device_name), self.dbg.success, 1)
