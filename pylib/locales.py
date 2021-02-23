@@ -47,15 +47,9 @@ class Locales(object):
         self.translation = gettext.translation("polychromatic", localedir=self.locale_path, fallback=True, languages=[self.locale])
         self._ = self.translation.gettext
 
-        return self._get_gettext()
-
-    def _get_gettext(self):
-        """
-        Returns the object for binding to the "_" variable.
-        """
         return self._
 
-    def _get_current_locale(self):
+    def get_current_locale(self):
         """
         Returns a string describing the current locale. E.g. "de" or "en_US".
         """

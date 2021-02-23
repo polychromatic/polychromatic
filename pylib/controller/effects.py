@@ -509,7 +509,7 @@ class EffectMetadataEditor(shared.TabData):
                 self.map_graphic_list.setCurrentIndex(new_index)
 
             # For new effects, auto select the first localized item (mainly for keyboards)
-            if not self.data["map_graphic"] and self.locales._get_current_locale():
+            if not self.data["map_graphic"] and self.locales.get_current_locale():
                 self.map_graphic_list.setCurrentIndex(new_index)
 
         # For new effects, auto select the first graphic

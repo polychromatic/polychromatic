@@ -37,7 +37,7 @@ class PolychromaticTests(unittest.TestCase):
     def test_locales_can_be_set(self):
         i18n = locales.Locales("polychromatic", "de_DE")
         _ = i18n.init()
-        self.assertEqual(i18n._get_current_locale(), "de_DE", "Could not set up a German locale")
+        self.assertEqual(i18n.get_current_locale(), "de_DE", "Could not set up a German locale")
 
     def test_locales_can_translate_strings(self):
         _ = locales.Locales("polychromatic", "de_DE").init()

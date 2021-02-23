@@ -215,19 +215,33 @@ class MenuBar(object):
         process = procpid.ProcessManager("helper")
         process.start_component("--monitor-triggers")
 
+    def _prompt_on_locale_change(self, title):
+        """
+        Informs the user if the resource they click is only available in English.
+        """
+        if not self.appdata.locales.get_current_locale().startswith("en"):
+            self.widgets.open_dialog(self.widgets.dialog_generic,
+                                     title,
+                                     self.appdata._("Polychromatic is about to open a web page for this resource. Unfortunately, it is only available in English at this time."))
+
     def online_help(self):
+        self._prompt_on_locale_change(self._("Online Help"))
         webbrowser.open("https://polychromatic.app/docs/")
 
     def polychromatic_website(self):
+        self._prompt_on_locale_change(self._("Website"))
         webbrowser.open("https://polychromatic.app/")
 
     def polychromatic_release_notes(self):
+        self._prompt_on_locale_change(self._("What's New?"))
         webbrowser.open("https://polychromatic.app/permalink/latest/")
 
     def polychromatic_report_bug(self):
+        self._prompt_on_locale_change(self._("Report Bug"))
         webbrowser.open("https://polychromatic.app/permalink/bugs/")
 
     def polychromatic_donate(self):
+        self._prompt_on_locale_change(self._("Donate"))
         webbrowser.open("https://polychromatic.app/permalink/donate/")
 
     def _show_aboutbox(self, title, logo, homepage_url, versions, license_text, links):

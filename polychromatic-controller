@@ -511,6 +511,7 @@ def parse_parameters():
         dbg.verbose_level = 1
 
     if args.locale:
+        global i18n
         i18n = locales.Locales(__file__, args.locale)
         _ = i18n.init()
 

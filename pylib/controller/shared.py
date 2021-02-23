@@ -122,7 +122,7 @@ def translate_ui(appdata, widget):
     Iterates over all the translatable widgets from the newly loaded .ui file
     and use gettext to apply the localized strings.
     """
-    if appdata.locales._get_current_locale() == "en_GB":
+    if appdata.locales.get_current_locale() == "en_GB":
         return
 
     for widget_type in [QLabel, QMenu, QAction, QPushButton, QToolButton, \
@@ -1464,6 +1464,7 @@ class CommonFileTab(TabData):
             if item_index > self.FilesBranch.childCount() - 1:
                 item_index = self.FilesBranch.childCount() - 1
 
+            print("todo:new_item: -1 but don't throw exception?")
             new_item = self.FilesBranch.child(item_index)
             new_item.setSelected(True)
             self.open_file(new_item.action_data)
