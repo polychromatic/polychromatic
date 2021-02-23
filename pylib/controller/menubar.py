@@ -226,7 +226,21 @@ class MenuBar(object):
 
     def online_help(self):
         self._prompt_on_locale_change(self._("Online Help"))
-        webbrowser.open("https://polychromatic.app/docs/")
+
+        # For context, open the most relevant documentation
+        context = "/"
+        tabs = self.mainwindow.findChild(QWidget, "MainTabWidget")
+        if tabs:
+            current_tab = tabs.currentIndex()
+            indexes = {
+                0: "/controller/devices/",
+                1: "/controller/effects/",
+                2: "/controller/presets/",
+                3: "/controller/triggers/"
+            }
+            context = indexes[current_tab]
+
+        webbrowser.open("https://polychromatic.app/docs" + context)
 
     def polychromatic_website(self):
         self._prompt_on_locale_change(self._("Website"))
