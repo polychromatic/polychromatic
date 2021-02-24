@@ -15,6 +15,7 @@ from .. import common
 from .. import preferences
 from .. import procpid
 from . import shared
+from . import procviewer
 
 from PyQt5.QtCore import Qt, QThread
 from PyQt5.QtGui import QPixmap, QFont, QIcon
@@ -52,7 +53,7 @@ class MenuBar(object):
 
         # -- Tools
         self._bind_item("actionRestartTrayApplet", self.restart_tray_applet)
-        self._bind_item("actionRestartHelper", self.restart_helper)
+        self._bind_item("actionProcessViewer", self.open_process_viewer)
 
         # -- Tools > OpenRazer
         self._bind_item("actionOpenRazerWebsite", self.openrazer.website)
@@ -211,9 +212,8 @@ class MenuBar(object):
         process = procpid.ProcessManager("tray-applet")
         process.start_component()
 
-    def restart_helper(self):
-        process = procpid.ProcessManager("helper")
-        process.start_component("--monitor-triggers")
+    def open_process_viewer(self):
+        procviewer.ProcessViewer(self.appdata)
 
     def _prompt_on_locale_change(self, title):
         """

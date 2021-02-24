@@ -317,7 +317,7 @@ class MainWindow(QMainWindow):
             # -- Tools
             self.findChild(QMenu, "menuTroubleshoot").setIcon(widgets.get_icon_qt("emblems", "utility"))
             self.findChild(QAction, "actionRestartTrayApplet").setIcon(widgets.get_icon_qt("general", "tray-applet"))
-            self.findChild(QAction, "actionRestartHelper").setIcon(widgets.get_icon_qt("general", "refresh"))
+            self.findChild(QAction, "actionProcessViewer").setIcon(widgets.get_icon_qt("emblems", "software"))
 
             # -- Tools/OpenRazer
             self.findChild(QAction, "actionOpenRazerWebsite").setIcon(widgets.get_icon_qt("general", "external"))
@@ -386,7 +386,6 @@ class MainWindow(QMainWindow):
 
         # FIXME: Disable unavailable features
         self.findChild(QAction, "actionImportEffect").setEnabled(False)
-        self.findChild(QAction, "actionRestartHelper").setEnabled(False)
         tab_buttons[2].setDisabled(True)
         tab_buttons[3].setDisabled(True)
         tab_menu_items[2].setDisabled(True)

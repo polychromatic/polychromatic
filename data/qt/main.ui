@@ -677,7 +677,7 @@
     <addaction name="menuTroubleshoot"/>
     <addaction name="separator"/>
     <addaction name="actionRestartTrayApplet"/>
-    <addaction name="actionRestartHelper"/>
+    <addaction name="actionProcessViewer"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -986,13 +986,12 @@
     <string>Restart Tray Applet</string>
    </property>
   </action>
-  <action name="actionRestartHelper">
+  <action name="actionProcessViewer">
    <property name="icon">
-    <iconset theme="view-refresh">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="view-process-tree"/>
    </property>
    <property name="text">
-    <string>Restart Background Tasks</string>
+    <string>View Background Tasks</string>
    </property>
   </action>
   <action name="actionReinstateMenuBar">

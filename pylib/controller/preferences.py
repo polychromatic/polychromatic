@@ -99,9 +99,6 @@ class PreferencesWindow(shared.TabData):
         tray_icon_widget = self.dialog.findChild(QLabel, "TrayIconPickerPlaceholder")
         tray_icon_widget.parentWidget().layout().replaceWidget(tray_icon_widget, tray_icon_picker)
 
-        # Background Tasks
-        self._refresh_background_tasks_status()
-
         # Backend Buttons
         self.dialog.findChild(QPushButton, "OpenRazerSettings").clicked.connect(self.menubar.openrazer.configure)
         self.dialog.findChild(QPushButton, "OpenRazerAbout").clicked.connect(self.menubar.openrazer.about)
@@ -203,22 +200,6 @@ class PreferencesWindow(shared.TabData):
             data = widget.value()
 
         self.pref_data[group][item] = data
-
-    def _refresh_background_tasks_status(self):
-        """
-        Refreshes the background tasks
-        """
-        print("stub:PreferencesWindow._refresh_background_tasks_status")
-
-        tree = self.dialog.findChild(QTreeWidget, "TasksTree")
-
-        if not self.appdata.system_qt_theme:
-            self.dialog.findChild(QPushButton, "TasksRefresh").setIcon(self.widgets.get_icon_qt("general", "refresh"))
-            self.dialog.findChild(QPushButton, "TasksReload").setIcon(self.widgets.get_icon_qt("editor", "repeat"))
-            self.dialog.findChild(QPushButton, "TasksStopAll").setIcon(self.widgets.get_icon_qt("editor", "stop"))
-
-        # TODO: Not fully implemented yet!
-        self.dialog.findChild(QTabWidget, "PreferencesTabs").setTabEnabled(3, False)
 
     def _save_changes(self):
         """
