@@ -75,9 +75,15 @@ Alternately, providing all the [dependencies](https://polychromatic.app/docs/dep
 are installed, you can run the application directly from the repository without
 installation.
 
-**Are you on the cutting edge?** You can grab artifacts for the [latest build from the Actions tab.](https://github.com/polychromatic/polychromatic/actions?query=workflow%3ABuild)
-You'll need to be signed in to GitHub to download these. Some distros also
-provide a `-git` or testing repository too.
+**Are you on the cutting edge?**
+
+On Ubuntu, add [`ppa:polychromatic/edge`]. Arch users can install [`polychromatic-git`] from the AUR.
+
+Alternately, grab the latest build [from the Actions tab.](https://github.com/polychromatic/polychromatic/actions?query=workflow%3ABuild)
+GitHub requires you to be signed in to download these.
+
+[`ppa:polychromatic/edge`]: https://launchpad.net/~polychromatic/+archive/ubuntu/edge
+[`polychromatic-git`]: https://aur.archlinux.org/packages/polychromatic-git/
 
 
 ## Something not working?
