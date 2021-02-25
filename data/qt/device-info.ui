@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>Device Information</string>
   </property>
+  <property name="windowIcon">
+   <iconset theme="dialog-information"/>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTreeWidget" name="DeviceTree">
