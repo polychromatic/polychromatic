@@ -596,24 +596,26 @@ class EffectMetadataEditor(shared.TabData):
         """
         Commit the changes and pass them to the callback function.
         """
+        newdata = self.data.copy()
+
         # Metadata fields
-        self.data["name"] = self.name.text()
-        self.data["author"] = self.author.text()
-        self.data["author_url"] = self.author_url.text()
-        self.data["summary"] = self.summary.toPlainText()
+        newdata["name"] = self.name.text()
+        newdata["author"] = self.author.text()
+        newdata["author_url"] = self.author_url.text()
+        newdata["summary"] = self.summary.toPlainText()
 
         # Device mapping information
-        if not self.data["type"] == effects.TYPE_SCRIPTED:
+        if not newdata["type"] == effects.TYPE_SCRIPTED:
             device_name = self.map_device_combo.currentText()
             device_info = self.device_info[self.map_device_combo.currentIndex()]
             graphic_name = self.map_graphic_list.currentText()
 
-            self.data["map_device"] = device_name
-            self.data["map_device_icon"] = device_info["icon"]
-            self.data["map_cols"] = device_info["cols"]
-            self.data["map_rows"] = device_info["rows"]
-            self.data["map_graphic"] = ""
+            newdata["map_device"] = device_name
+            newdata["map_device_icon"] = device_info["icon"]
+            newdata["map_cols"] = device_info["cols"]
+            newdata["map_rows"] = device_info["rows"]
+            newdata["map_graphic"] = ""
             if graphic_name:
-                self.data["map_graphic"] = self.graphic_list[graphic_name]["filename"]
+                newdata["map_graphic"] = self.graphic_list[graphic_name]["filename"]
 
-        self.callback_fn(self.data)
+        self.callback_fn(newdata)
