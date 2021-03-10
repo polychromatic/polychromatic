@@ -527,7 +527,7 @@ class VisualEffectEditor(shared.TabData):
             self.dbg.stdout("Device not found! No preview.", self.dbg.error, 1)
             self.widgets.open_dialog(self.widgets.dialog_warning,
                                         self._("Missing Device"),
-                                        self._("The device '[]' is assigned to this effect, but was not detected on this system.").replace("[]", device_name),
+                                        self._("This effect is designed for a device named '[]', but it wasn't detected.").replace("[]", device_name),
                                         self._("Live preview has been disabled for this session."))
             return
 
@@ -1579,7 +1579,7 @@ class DeviceRenderer(shared.TabData):
             self.dbg.stdout("Graphic does not exist: '{0}'. Using grid as fallback!".format(self.graphic_filename), self.dbg.error)
             self.widgets.open_dialog(self.widgets.dialog_warning,
                                      self._("Missing File"),
-                                     self._("This effect was mapped with a graphic named '[]' which wasn't found on this system.".replace("[]", self.graphic_filename)),
+                                     self._("This effect is mapped to a graphic named '[]', but it's not installed.".replace("[]", self.graphic_filename)),
                                      self._("The grid will be used instead. A different graphic can be chosen by editing the metadata."))
             return self._generate_grid_svg()
 

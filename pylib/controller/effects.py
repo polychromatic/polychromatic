@@ -66,7 +66,7 @@ class EffectsTab(shared.CommonFileTab):
 
         subtitles = {
             0: self._("Try creating your own effect or import an image or video."),
-            1: self._("The application found invalid data in this file. The file might be corrupt.")
+            1: self._("There's invalid data in this file. The file might be corrupt.")
         }
 
         icons = {
@@ -332,29 +332,37 @@ class EffectMetadataEditor(shared.TabData):
         self.data = data
         self.effect_type = data["type"]
         self.callback_fn = callback_fn
-        self.matrix_devices = {}
-        self.device_info = {}
         self.mapping_graphics = effects.DeviceMapGraphics(appdata)
         self.graphic_list = self.mapping_graphics.get_graphic_list()
+
+        # Session: Remember device attributes: icon, cols, rows
+        self.device_info = {}
 
         # Dialog & Controls
         self.dialog = shared.get_ui_widget(self.appdata, "effect-metadata-editor", QDialog)
         self.buttons = self.dialog.findChild(QDialogButtonBox, "DialogButtons")
 
+        # -- Left: Details
         self.name = self.dialog.findChild(QLineEdit, "EffectName")
         self.author = self.dialog.findChild(QLineEdit, "Author")
         self.author_url = self.dialog.findChild(QLineEdit, "AuthorURL")
         self.icon = self.dialog.findChild(QLabel, "EffectIconPlaceholder")
         self.summary = self.dialog.findChild(QTextEdit, "Summary")
-        self.map_device = self.dialog.findChild(QComboBox, "MapDevice")
+
+        # -- Right: Hardware
+        self.map_device_combo = self.dialog.findChild(QComboBox, "MapDeviceCombo")
         self.map_graphic_grid = self.dialog.findChild(QRadioButton, "MapGraphicToGrid")
         self.map_graphic_svg = self.dialog.findChild(QRadioButton, "MapGraphicToSVG")
         self.map_graphic_list = self.dialog.findChild(QComboBox, "MapGraphicList")
         self.map_preview = self.dialog.findChild(QLabel, "MappingPreview")
         self.dimensions_device = self.dialog.findChild(QLabel, "DeviceDimensions")
 
-        self._set_mapping_error(False)
+        self._init_controls()
 
+    def _init_controls(self):
+        """
+        Populates and set up the UI for this window.
+        """
         # Prepare icon picker
         def _update_icon(new_icon):
             self.data["icon"] = new_icon
@@ -368,74 +376,43 @@ class EffectMetadataEditor(shared.TabData):
         try:
             self.author.setPlaceholderText(os.getlogin().capitalize())
         except OSError:
+            # Some OSes do not support this. Never mind.
             pass
 
-        # Scripted effects do not store mapping information
+        # Scripted effects do not configure mapping
         if self.effect_type == effects.TYPE_SCRIPTED:
             self.dialog.findChild(QGroupBox, "MappingGroup").setHidden(True)
             self.dialog.adjustSize()
 
         # Populate metadata fields
-        self.name.setText(data["name"])
-        self.author.setText(data["author"])
-        self.author_url.setText(data["author_url"])
-        self.summary.setText(data["summary"])
+        self.name.setText(self.data["name"])
+        self.author.setText(self.data["author"])
+        self.author_url.setText(self.data["author_url"])
+        self.summary.setText(self.data["summary"])
 
-        # Populate device list (for non-scripted effects)
+        # Mapping Configuration (non-scripted effects only)
         if not self.effect_type == effects.TYPE_SCRIPTED:
-            found_device_name = False
+            # Populate device list
+            self._populate_devices()
 
-            for index, device in enumerate(self.appdata.middleman.get_device_all()):
-                if not device or not device["matrix"]:
-                    continue
-
-                self.matrix_devices[index] = device
-                self.map_device.addItem(device["name"])
-                self.map_device.setItemIcon(index, QIcon(device["form_factor"]["icon"]))
-
-                # Append data into object
-                self.device_info[index] = {}
-                self.device_info[index]["icon"] = device["form_factor"]["id"]
-                self.device_info[index]["cols"] = device["matrix_cols"]
-                self.device_info[index]["rows"] = device["matrix_rows"]
-
-                if data["map_device"] == device["name"]:
-                    found_device_name = True
-                    self.map_device.setCurrentIndex(index)
-
-            # Select the first device if this is a new creation
-            if not data["map_device"]:
-                self.dialog.setWindowTitle(self._("New Effect"))
-                self.map_device.setCurrentIndex(0)
-
-            # Inform the user if the original device for this effect is missing
-            elif not found_device_name:
-                self._set_mapping_error(True)
-                self.map_device.setCurrentIndex(-1)
-                self.map_device.setCurrentText(data["map_device"])
-
-            # Populate graphic list
-            self._device_updated()
-
-        # Set initial mapping options (when editing an existing effect)
-        if not data["type"] == effects.TYPE_SCRIPTED:
-            if data["map_graphic"]:
+            # Select appropriate mapping mode
+            if self.data["map_graphic"]:
                 self.map_graphic_svg.setChecked(True)
             else:
                 self.map_graphic_grid.setChecked(True)
             self._update_graphic_preview()
 
-        # Disallow saving if the effect has no name
-        name_label = self.dialog.findChild(QLabel,"EffectNameLabel")
+        # Name is a required field
+        name_label = self.dialog.findChild(QLabel, "EffectNameLabel")
         name_label.setText(name_label.text() + "*")
 
         # Connect signals
         self.dialog.accepted.connect(self._save_changes)
         self.name.textChanged.connect(self._validate_fields)
-        self.map_device.currentIndexChanged.connect(self._validate_fields)
-        self.map_device.currentIndexChanged.connect(self._device_updated)
-        self.map_graphic_grid.toggled.connect(self._select_grid_mode)
-        self.map_graphic_svg.toggled.connect(self._select_graphic_mode)
+        self.map_device_combo.currentIndexChanged.connect(self._validate_fields)
+        self.map_device_combo.currentIndexChanged.connect(self._device_updated)
+        self.map_graphic_grid.toggled.connect(self._set_map_grid)
+        self.map_graphic_svg.toggled.connect(self._set_mode_graphic)
         self.map_graphic_list.currentIndexChanged.connect(self._update_graphic_preview)
 
         # Set icons
@@ -447,6 +424,57 @@ class EffectMetadataEditor(shared.TabData):
         self._validate_fields()
         self.dialog.open()
 
+    def _populate_devices(self):
+        """
+        Populate the list of compatible devices to create a software effect for.
+
+        For effects already created, only identical devices (cols/rows) may be
+        interchanged (although there is no guarantee that the matrixes map 1:1)
+        """
+        is_new_file = len(self.data["name"]) == 0
+        found_device_name = False
+
+        for device in self.appdata.middleman.get_device_all():
+            if not device or not device["matrix"]:
+                continue
+
+            self.map_device_combo.addItem(QIcon(device["form_factor"]["icon"]), device["name"])
+            index = self.map_device_combo.count() - 1
+
+            # Store device data for later
+            self.device_info[index] = {}
+            self.device_info[index]["icon"] = device["form_factor"]["id"]
+            self.device_info[index]["cols"] = device["matrix_cols"]
+            self.device_info[index]["rows"] = device["matrix_rows"]
+
+            if self.data["map_device"] == device["name"]:
+                found_device_name = True
+                self.map_device_combo.setCurrentIndex(index)
+
+            # Disable option for existing effects and does not match another device
+            if not is_new_file:
+                if not self.data["map_cols"] == device["matrix_cols"] or \
+                    not self.data["map_rows"] == device["matrix_rows"]:
+                        self.map_device_combo.model().item(index).setEnabled(False)
+
+        # New effect? Select the first device.
+        if not self.data["map_device"]:
+            self.dialog.setWindowTitle(self._("New Effect"))
+            self.map_device_combo.setCurrentIndex(0)
+
+        # Add a placeholder for device if it is not present
+        elif not found_device_name and not is_new_file:
+            self.map_device_combo.addItem(QIcon(common.get_icon("devices", "unrecognised")), self.data["map_device"])
+            index = self.map_device_combo.count() - 1
+            self.map_device_combo.setCurrentIndex(index)
+            self.device_info[index] = {}
+            self.device_info[index]["icon"] = self.data["map_device_icon"]
+            self.device_info[index]["cols"] = self.data["map_cols"]
+            self.device_info[index]["rows"] = self.data["map_rows"]
+
+        # Populate graphic list
+        self._device_updated()
+
     def _validate_fields(self):
         """
         Ensure the fields have sufficient data before saving is allowed.
@@ -456,23 +484,7 @@ class EffectMetadataEditor(shared.TabData):
             len(self.name.text()) > 0
         ]
 
-        # Layered/Sequence effects must have a device to map to
-        if not self.effect_type == effects.TYPE_SCRIPTED:
-            conditions.append(self.map_device.currentIndex() >= 0)
-
-        self.buttons.button(QDialogButtonBox.Ok).setEnabled(all(x == True for x in conditions))
-
-    def _set_mapping_error(self, visible, alt_reason=""):
-        """
-        Show/hide the mapping error label, and update the reason.
-        """
-        label = self.dialog.findChild(QLabel, "MappingErrorLabel")
-        label.setHidden(not visible)
-        if visible:
-            label.setText(self._("This effect was created for \"[]\" but wasn't found. Choose another device to map.").replace("[]", self.data["map_device"]))
-
-            if alt_reason:
-                label.setText(alt_reason)
+        self.buttons.button(QDialogButtonBox.Ok).setEnabled(all(x is True for x in conditions))
 
     def _device_updated(self):
         """
@@ -482,11 +494,8 @@ class EffectMetadataEditor(shared.TabData):
         If the user is editing an existing effect and chooses a device with less
         columns/rows then previously, let the user know truncating might occur.
         """
-        device_name = self.map_device.currentText()
-        try:
-            device_info = self.device_info[self.map_device.currentIndex()]
-        except KeyError:
-            return self._set_mapping_error(True)
+        device_name = self.map_device_combo.currentText()
+        device_info = self.device_info[self.map_device_combo.currentIndex()]
         device_rows = device_info["rows"]
         device_cols = device_info["cols"]
 
@@ -513,17 +522,34 @@ class EffectMetadataEditor(shared.TabData):
                 self.map_graphic_list.setCurrentIndex(new_index)
 
         # For new effects, auto select the first graphic
-        # TODO: Be smarter, add hint key to auto select Blade laptops, for example.
         if not self.data["map_graphic"]:
             self.map_graphic_svg.setChecked(True)
-            self.map_graphic_list.setCurrentIndex(0)
+            self._auto_detect_suitable_graphic()
 
         # If there are no graphics, only grid can be selected
-        self.map_graphic_svg.setEnabled(self.map_graphic_list.count() > 0)
-        self.map_graphic_list.setEnabled(self.map_graphic_list.count() > 0)
-        self.map_graphic_grid.setChecked(self.map_graphic_list.count() == 0)
+        if self.map_graphic_list.count() > 0:
+            self.map_graphic_svg.setEnabled(True)
+            self.map_graphic_list.setEnabled(True)
+            self._auto_detect_suitable_graphic()
+        else:
+            self.map_graphic_svg.setEnabled(False)
+            self.map_graphic_list.setEnabled(False)
+            self.map_graphic_grid.setChecked(self.map_graphic_list.count() == 0)
 
-    def _select_grid_mode(self):
+    def _auto_detect_suitable_graphic(self):
+        """
+        When loading a new device and the 'graphic' option is set, determine
+        the best graphic (as there could be multiple with the same cols/rows)
+        """
+        self.map_graphic_list.setCurrentIndex(0)
+
+        # Graphic matches device name (or close enough)
+        device_name = self.map_device_combo.currentText()
+        for graphic in self.graphic_list:
+            if graphic.find(device_name) != -1:
+                self.map_graphic_list.setCurrentText(graphic)
+
+    def _set_map_grid(self):
         """
         User selects the "Grid" radio button.
         """
@@ -531,14 +557,12 @@ class EffectMetadataEditor(shared.TabData):
         self.map_graphic_list.setCurrentIndex(-1)
         self._update_graphic_preview()
 
-    def _select_graphic_mode(self):
+    def _set_mode_graphic(self):
         """
         User selects the "Graphic" radio button.
         """
         self.map_graphic_list.setEnabled(True)
-        if self.map_graphic_list.currentIndex() < 0:
-            self.map_graphic_list.setCurrentIndex(0)
-            return
+        self._auto_detect_suitable_graphic()
         self._update_graphic_preview()
 
     def _update_graphic_preview(self):
@@ -546,10 +570,7 @@ class EffectMetadataEditor(shared.TabData):
         The graphic options have changed, refresh the preview.
         """
         device_map = effects.DeviceMapGraphics(self.appdata)
-        try:
-            device_info = self.device_info[self.map_device.currentIndex()]
-        except KeyError:
-            return self._set_mapping_error(True)
+        device_info = self.device_info[self.map_device_combo.currentIndex()]
         cols = device_info["cols"]
         rows = device_info["rows"]
         svg_path = None
@@ -583,8 +604,8 @@ class EffectMetadataEditor(shared.TabData):
 
         # Device mapping information
         if not self.data["type"] == effects.TYPE_SCRIPTED:
-            device_name = self.map_device.currentText()
-            device_info = self.device_info[self.map_device.currentIndex()]
+            device_name = self.map_device_combo.currentText()
+            device_info = self.device_info[self.map_device_combo.currentIndex()]
             graphic_name = self.map_graphic_list.currentText()
 
             self.data["map_device"] = device_name

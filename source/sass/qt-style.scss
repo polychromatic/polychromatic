@@ -832,8 +832,7 @@ QTableView {
 /**********************************************************
   Special Widgets
 **********************************************************/
-#AnimatedGIFWarningLabel,
-#MappingErrorLabel {
+#AnimatedGIFWarningLabel {
     background: $bg-secondary;
     border: 1px solid rgba(orange, 0.5);
     color: orange;

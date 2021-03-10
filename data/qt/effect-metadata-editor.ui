@@ -146,16 +146,6 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QLabel" name="MappingErrorLabel">
-           <property name="text">
-            <string notr="true">&lt;Placeholder&gt;</string>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QWidget" name="MappingForm" native="true">
            <layout class="QFormLayout" name="formLayout_3">
             <item row="1" column="0">
@@ -172,7 +162,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QComboBox" name="MapDevice"/>
+             <widget class="QComboBox" name="MapDeviceCombo"/>
             </item>
             <item row="2" column="1">
              <widget class="QLabel" name="DeviceDimensions">
@@ -184,7 +174,7 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="0">
+            <item row="3" column="0">
              <widget class="QLabel" name="MapGraphicLabel">
               <property name="minimumSize">
                <size>
@@ -197,24 +187,24 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
+            <item row="3" column="1">
              <widget class="QRadioButton" name="MapGraphicToSVG">
               <property name="text">
                <string>Use a graphic resembling this device:</string>
               </property>
              </widget>
             </item>
-            <item row="6" column="1">
+            <item row="4" column="1">
              <widget class="QComboBox" name="MapGraphicList"/>
             </item>
-            <item row="7" column="1">
+            <item row="5" column="1">
              <widget class="QRadioButton" name="MapGraphicToGrid">
               <property name="text">
                <string>Use a grid</string>
               </property>
              </widget>
             </item>
-            <item row="8" column="0">
+            <item row="6" column="0">
              <widget class="QLabel" name="MapPreview">
               <property name="minimumSize">
                <size>
@@ -227,7 +217,7 @@
               </property>
              </widget>
             </item>
-            <item row="8" column="1">
+            <item row="6" column="1">
              <widget class="QLabel" name="MappingPreview">
               <property name="minimumSize">
                <size>
