@@ -1140,7 +1140,8 @@ class Backend(_backend.Backend):
         Returns a boolean to state whether the device supports per-lighting but
         only works with the 'green' value from RGB.
         """
-        if str(device.name).find("Ultimate") != -1:
+        # E.g. Razer BlackWidow Ultimate 2016 only outputs "green" RGB
+        if str(device.name).find("Ultimate") != -1 and device.type == "keyboard":
             return True
 
         return False
