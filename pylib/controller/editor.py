@@ -936,9 +936,9 @@ class VisualEffectEditor(shared.TabData):
 
             self.dbg.stdout("Metadata changed, refreshing...", self.dbg.action, 1)
             self.set_modified(True)
+            self.data = newdata
             self.view_device_graphic()
             self.statusbar.clearMessage()
-            self.data = newdata
 
         def _metadata_closed(result):
             self.window.setEnabled(True)

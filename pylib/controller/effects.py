@@ -494,6 +494,7 @@ class EffectMetadataEditor(shared.TabData):
         If the user is editing an existing effect and chooses a device with less
         columns/rows then previously, let the user know truncating might occur.
         """
+        is_new_file = len(self.data["name"]) == 0
         device_name = self.map_device_combo.currentText()
         device_info = self.device_info[self.map_device_combo.currentIndex()]
         device_rows = device_info["rows"]
@@ -505,26 +506,19 @@ class EffectMetadataEditor(shared.TabData):
 
         # Filter graphics so only compatible matrix dimensions are shown
         self.map_graphic_list.clear()
+        found_graphic_index = None
         for name in self.graphic_list.keys():
             graphic = self.graphic_list[name]
-            new_index = self.map_graphic_list.count()
 
             if device_rows != graphic["rows"] or device_cols != graphic["cols"]:
                 continue
 
+            new_index = self.map_graphic_list.count()
             self.map_graphic_list.addItem(name)
 
             if self.data["map_graphic"] == graphic["filename"]:
                 self.map_graphic_list.setCurrentIndex(new_index)
-
-            # For new effects, auto select the first localized item (mainly for keyboards)
-            if not self.data["map_graphic"] and self.locales.get_current_locale():
-                self.map_graphic_list.setCurrentIndex(new_index)
-
-        # For new effects, auto select the first graphic
-        if not self.data["map_graphic"]:
-            self.map_graphic_svg.setChecked(True)
-            self._auto_detect_suitable_graphic()
+                found_graphic_index = new_index
 
         # If there are no graphics, only grid can be selected
         if self.map_graphic_list.count() > 0:
@@ -536,18 +530,33 @@ class EffectMetadataEditor(shared.TabData):
             self.map_graphic_list.setEnabled(False)
             self.map_graphic_grid.setChecked(self.map_graphic_list.count() == 0)
 
+        # For new effects, auto select the first graphic
+        if is_new_file:
+            self.map_graphic_svg.setChecked(True)
+            self._auto_detect_suitable_graphic()
+
+        # For existing effects, (re)select the correct graphic in list
+        if self.data["map_graphic"] and found_graphic_index:
+            self.map_graphic_list.setCurrentIndex(found_graphic_index)
+
     def _auto_detect_suitable_graphic(self):
         """
         When loading a new device and the 'graphic' option is set, determine
         the best graphic (as there could be multiple with the same cols/rows)
         """
         self.map_graphic_list.setCurrentIndex(0)
+        current_locale = self.locales.get_current_locale()
 
-        # Graphic matches device name (or close enough)
+        # Pick graphic closely matching device name and locale (if applicable)
         device_name = self.map_device_combo.currentText()
-        for graphic in self.graphic_list:
-            if graphic.find(device_name) != -1:
-                self.map_graphic_list.setCurrentText(graphic)
+        for name in self.graphic_list.keys():
+            graphic = self.graphic_list[name]
+            locale = graphic["locale"]
+            if name.find(device_name) != -1 and locale == current_locale:
+                self.map_graphic_list.setCurrentText(name)
+
+            if name.find(device_name) != -1 and not locale:
+                self.map_graphic_list.setCurrentText(name)
 
     def _set_map_grid(self):
         """
