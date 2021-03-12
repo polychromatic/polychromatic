@@ -1589,6 +1589,9 @@ class DeviceRenderer(shared.TabData):
                                      self._("The grid will be used instead. A different graphic can be chosen by editing the metadata."))
             return self._generate_grid_svg()
 
+        if self.appdata.preferences["editor"]["hide_key_labels"]:
+            svg = self._hide_key_labels(svg)
+
         return svg
 
     def _generate_grid_svg(self):
@@ -1654,3 +1657,21 @@ class DeviceRenderer(shared.TabData):
         Set the colour of a specific key.
         """
         self.webview.page().runJavaScript("mode = 1; setLED({0}, {1}, false, '{2}'); mode = {3};".format(x, y, hex_value, self.mode))
+
+    def _hide_key_labels(self, svg):
+        """
+        Returns an SVG with the "key labels" hidden or removed.
+
+        This is intended for keyboards/keypads which may not have a localized layout
+        for the user, but share the same physical layout as an existing one. Users
+        may choose to hide labels as a preference too.
+        """
+        output = []
+        lines = svg.splitlines()
+
+        for line in lines:
+            if line.find("class=\"label\"") != -1:
+                print(line)
+                line = line.replace("class=\"label\"", "opacity=\"0\"")
+            output.append(line)
+        return "\n".join(output)
