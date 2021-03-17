@@ -271,9 +271,14 @@ def generate_colour_bitmap(dbg, colour_hex, size=22):
     """
     cache_name = hashlib.md5(str(colour_hex + str(size)).encode("utf-8")).hexdigest()
     cache_path = os.path.join(paths.assets_cache, cache_name + ".svg")
+    cache_dir = os.path.dirname(cache_path)
 
     if not os.path.exists(cache_path):
         dbg.stdout("Generating colour SVG: " + colour_hex, dbg.action, 1)
+
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+
         with open(cache_path, "w") as f:
             f.writelines("<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" " + \
                 "width=\"{0}\" height=\"{0}\"><rect width=\"{0}\" height=\"{0}\" ".format(str(size)) + \
@@ -306,15 +311,22 @@ def get_icon_styles(dbg, folder, name, normal_colour, disabled_colour, active_co
     for colour in [normal_colour, disabled_colour, active_colour, selected_colour]:
         cache_name = hashlib.md5(str(folder + name + colour).encode("utf-8")).hexdigest()
         cache_path = os.path.join(paths.assets_cache, cache_name + ".svg")
+        cache_dir = os.path.dirname(cache_path)
 
         if not os.path.exists(cache_path):
             dbg.stdout("Generating icon style: {0}/{1} ({2})".format(folder, name, colour), dbg.action, 1)
+
             with open(original_icon, "r") as f:
                 data = f.readlines()
+
             newdata = []
             for line in data:
                 secondary_colour = secondary_active if colour in [active_colour, selected_colour] else secondary_inactive
                 newdata.append(line.replace("#00FF00", colour).replace("#00ff00", colour).replace("#008000", secondary_colour))
+
+            if not os.path.exists(cache_dir):
+                os.makedirs(cache_dir)
+
             with open(cache_path, "w") as f:
                 f.writelines(newdata)
 
