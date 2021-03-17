@@ -8,12 +8,13 @@ This module is responsible for loading/saving persistent data used by Polychroma
 """
 
 import os
+import glob
 import json
 import shutil
 from . import common
 from . import locales
 
-VERSION = 7
+VERSION = 8
 
 TOOLBAR_STYLE_DEFAULT = 0
 TOOLBAR_STYLE_ICONS_ONLY = 1
@@ -318,7 +319,64 @@ def upgrade_old_pref():
 
                 save_file(path.colours, new_colours)
 
+    # v0.6.0 (dev)
+    if config_version < 8:
+        from . import effects
 
+        # Convert old 'application profiles' to new 'sequence' effect
+        dbg.stdout("Upgrading v0.3.12 application profiles to new format...", dbg.action)
+        if os.path.exists(common.paths.old_profile_folder):
+            files = glob.glob(common.paths.old_profile_folder + "/*.json")
+            for profile_path in files:
+                try:
+                    with open(profile_path, "r") as f:
+                        olddata = json.load(f)
+                except Exception:
+                    dbg.stdout("Skipping: {0} (Failed to read JSON)".format(profile_path), dbg.error)
+                    continue
+
+                # Validate all required fields are present
+                required = ["name", "icon", "rows"]
+                if not all(key in olddata.keys() for key in required):
+                    dbg.stdout("Skipping: {0} (Invalid data)".format(profile_path), dbg.error)
+                    continue
+
+                # Prepare new format
+                _fx_i18n = locales.Locales("polychromatic")
+                _fx__ = _fx_i18n.init()
+                fileman = effects.EffectFileManagement(_fx_i18n, _fx__, dbg)
+                newdata = fileman.init_data(olddata["name"], effects.TYPE_SEQUENCE)
+
+                # Migrate data from old format
+                # v0.3.12 was hardcoded to BlackWidow Chroma
+                newdata["icon"] = olddata["icon"]
+                newdata["map_device"] = "Razer BlackWidow Chroma"
+                newdata["map_device_icon"] = "keyboard"
+                newdata["map_graphic"] = "blackwidow_m_keys_en_GB.svg" if _fx_i18n.get_current_locale() == "en_GB" else "blackwidow_m_keys_en_US.svg"
+                newdata["map_cols"] = 22
+                newdata["map_rows"] = 6
+                newdata["loop"] = False
+
+                # "rows": {y: [[r,g,b], []} => "frames": [{x: {y: "#RRGGBB"}}]
+                newdata["frames"].append({})
+                for x in range(0, 22):
+                    newdata["frames"][0][str(x)] = {}
+
+                for row in olddata["rows"]:
+                    for col, rgb in enumerate(olddata["rows"][row]):
+                        if not type(rgb) == list or rgb == [0, 0, 0]:
+                            continue
+                        newdata["frames"][0][str(col)][str(row)] = common.rgb_to_hex(rgb)
+
+                fileman.save_item(newdata)
+                dbg.stdout("OK: " + newdata["name"], dbg.success)
+
+        # Rename folders
+        if os.path.exists(common.paths.old_profile_folder):
+            os.rename(common.paths.old_profile_folder, os.path.join(common.paths.config, "profiles-v0.3.12.old"))
+
+        if os.path.exists(common.paths.old_profile_backups):
+            os.rename(common.paths.old_profile_backups, os.path.join(common.paths.config, "backups-v0.3.12.old"))
 
     # Write new version number.
     data = load_file(path.preferences)
