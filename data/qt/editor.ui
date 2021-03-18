@@ -971,6 +971,9 @@ shorten the LED's lifespan.</string>
    <property name="statusTip">
     <string extracomment="Appears as a tooltip or in the status bar when hovered">Save the effect to disk, and close the editor</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
   </action>
   <action name="actionSave">
    <property name="icon">
@@ -1004,6 +1007,9 @@ shorten the LED's lifespan.</string>
    <property name="statusTip">
     <string>Undo any changes and reload from disk</string>
    </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
   </action>
   <action name="actionExit">
    <property name="icon">
@@ -1018,6 +1024,9 @@ shorten the LED's lifespan.</string>
    </property>
    <property name="statusTip">
     <string>Close the editor and discard any unsaved changes</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionDraw">
