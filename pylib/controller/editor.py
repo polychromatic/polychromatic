@@ -147,6 +147,7 @@ class VisualEffectEditor(shared.TabData):
         # -- Menu Bar/Toolbar - View
         self.action_view_device_graphic = self.window.findChild(QAction, "actionShow_as_Device_Graphic")
         self.action_view_grid = self.window.findChild(QAction, "actionShow_as_Grid")
+        self.action_view_key_labels = self.window.findChild(QAction, "actionShowKeyLabels")
         self.action_zoom_in = self.window.findChild(QAction, "actionZoomIn")
         self.action_zoom_out = self.window.findChild(QAction, "actionZoomOut")
         self.action_zoom_reset = self.window.findChild(QAction, "actionZoomReset")
@@ -260,6 +261,7 @@ class VisualEffectEditor(shared.TabData):
         # -- View
         self.action_view_device_graphic.triggered.connect(self.view_device_graphic)
         self.action_view_grid.triggered.connect(self.view_device_grid)
+        self.action_view_key_labels.triggered.connect(self.view_key_labels)
         self.action_zoom_in.triggered.connect(self.zoom_in)
         self.action_zoom_out.triggered.connect(self.zoom_out)
         self.action_zoom_reset.triggered.connect(self.zoom_reset)
@@ -329,6 +331,7 @@ class VisualEffectEditor(shared.TabData):
             # -- View
             self.action_view_device_graphic.setIcon(self.widgets.get_icon_qt("general", "devices"))
             self.action_view_grid.setIcon(self.widgets.get_icon_qt("general", "matrix"))
+            self.action_view_key_labels.setIcon(self.widgets.get_icon_qt("devices", "keyboard"))
             self.action_zoom_in.setIcon(self.widgets.get_icon_qt("effects", "zoom-in"))
             self.action_zoom_out.setIcon(self.widgets.get_icon_qt("effects", "zoom-out"))
             self.action_zoom_reset.setIcon(self.widgets.get_icon_qt("effects", "zoom-reset"))
@@ -466,11 +469,19 @@ class VisualEffectEditor(shared.TabData):
         self.current_layer = 0
         self.current_frame = 0
 
+        # Show Key Labels
+        hide_key_labels = self.appdata.preferences["editor"]["hide_key_labels"]
+        if not hide_key_labels:
+            self.action_view_key_labels.setChecked(True)
+
+        if not self.data["map_device_icon"] in ["keyboard", "keypad"]:
+            self.action_view_key_labels.setEnabled(False)
+
         # Prepare visual editor
         rows = self.data["map_rows"]
         cols = self.data["map_cols"]
         graphic_filename = self.data["map_graphic"]
-        self.device_renderer = DeviceRenderer(self.appdata, self, self.webview, self.init_editor, graphic_filename, rows, cols)
+        self.device_renderer = DeviceRenderer(self.appdata, self, self.webview, self.init_editor, graphic_filename, rows, cols, hide_key_labels)
         self.select_mode_draw()
         graphic_name = self.device_renderer.graphic_name
 
@@ -1064,18 +1075,34 @@ class VisualEffectEditor(shared.TabData):
         Temporarily switch the visual editor graphic to the hardware graphic,
         if available.
         """
-        self.device_renderer = DeviceRenderer(self.appdata, self, self.webview, self.init_editor, self.data["map_graphic"], self.data["map_rows"], self.data["map_cols"])
+        hide_key_labels = not self.action_view_key_labels.isChecked()
+        self.device_renderer = DeviceRenderer(self.appdata, self, self.webview, self.init_editor, self.data["map_graphic"], self.data["map_rows"], self.data["map_cols"], hide_key_labels)
         self.select_mode_draw()
         self.statusbar.showMessage(self._("Temporarily changed the graphic. To make permanent, edit the metadata."), 5000)
+
+        if self.data["map_device_icon"] in ["keyboard", "keypad"]:
+            self.action_view_key_labels.setEnabled(True)
 
     def view_device_grid(self):
         """
         Temporarily switch the visual editor graphic to a grid, which allows
         drawing on any device.
         """
-        self.device_renderer = DeviceRenderer(self.appdata, self, self.webview, self.init_editor, "", self.data["map_rows"], self.data["map_cols"])
+        hide_key_labels = not self.action_view_key_labels.isChecked()
+        self.device_renderer = DeviceRenderer(self.appdata, self, self.webview, self.init_editor, "", self.data["map_rows"], self.data["map_cols"], hide_key_labels)
         self.select_mode_draw()
         self.statusbar.showMessage(self._("Temporarily changed the graphic. To make permanent, edit the metadata."), 5000)
+        self.action_view_key_labels.setEnabled(False)
+
+    def view_key_labels(self):
+        """
+        Temporarily show/hide the key labels (for keyboards and keypads only)
+        """
+        if self.action_view_device_graphic.isChecked():
+            self.view_device_graphic()
+        else:
+            self.view_device_grid()
+        self.statusbar.showMessage(self._("Temporarily changed the graphic. To make permanent, edit the application's preferences."), 5000)
 
     # ----------------------------
     # Specific to Layered Effects
@@ -1503,7 +1530,7 @@ class DeviceRenderer(shared.TabData):
     """
     Responsible for the input/output of the device graphic or grid layout.
     """
-    def __init__(self, appdata, editor, webview, ready_fn, map_graphic, map_rows, map_cols):
+    def __init__(self, appdata, editor, webview, ready_fn, map_graphic, map_rows, map_cols, hide_labels=True):
         """
         Params:
             appdata         ApplicationData() object
@@ -1513,6 +1540,7 @@ class DeviceRenderer(shared.TabData):
             map_graphic     Filename of graphic to use. Blank string indicates to use grid.
             map_rows        Number of rows for device
             map_cols        Number of cols for device
+            show_labels     Boolean of whether labels on keyboards/keypads should be visible
         """
         self.appdata = appdata
         super().__init__(appdata)
@@ -1521,6 +1549,7 @@ class DeviceRenderer(shared.TabData):
         self.loaded = False
         self.ready_fn = ready_fn
         self.use_native_cursor = appdata.preferences["editor"]["system_cursors"]
+        self.hide_key_labels = hide_labels
 
         self.device_map = effects.DeviceMapGraphics(appdata)
         self.graphic_filename = map_graphic
@@ -1589,7 +1618,7 @@ class DeviceRenderer(shared.TabData):
                                      self._("The grid will be used instead. A different graphic can be chosen by editing the metadata."))
             return self._generate_grid_svg()
 
-        if self.appdata.preferences["editor"]["hide_key_labels"]:
+        if self.hide_key_labels:
             svg = self._hide_key_labels(svg)
 
         return svg
@@ -1671,7 +1700,6 @@ class DeviceRenderer(shared.TabData):
 
         for line in lines:
             if line.find("class=\"label\"") != -1:
-                print(line)
                 line = line.replace("class=\"label\"", "opacity=\"0\"")
             output.append(line)
         return "\n".join(output)

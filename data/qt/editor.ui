@@ -107,6 +107,8 @@
     <addaction name="MapDimensionX"/>
     <addaction name="MapDimensionY"/>
     <addaction name="separator"/>
+    <addaction name="actionShowKeyLabels"/>
+    <addaction name="separator"/>
     <addaction name="actionZoomIn"/>
     <addaction name="actionZoomOut"/>
     <addaction name="actionZoomReset"/>
@@ -1648,6 +1650,23 @@ shorten the LED's lifespan.</string>
    </property>
    <property name="statusTip">
     <string>Toggle whether this effect should loop</string>
+   </property>
+  </action>
+  <action name="actionShowKeyLabels">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="input-keyboard"/>
+   </property>
+   <property name="text">
+    <string>Show Key Labels</string>
+   </property>
+   <property name="statusTip">
+    <string>Show or hide the labels and symbols on keys</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
    </property>
   </action>
  </widget>
