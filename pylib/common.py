@@ -72,8 +72,7 @@ class Paths(object):
     preferences = os.path.join(config, "preferences.json")
     colours = os.path.join(config, "colours.json")
 
-    # Legacy (v0.3.12 and earlier)
-    old_profiles = os.path.join(config, "profiles.json")
+    # Legacy (<= v0.3.12)
     old_profile_folder = os.path.join(config, "profiles")
     old_profile_backups = os.path.join(config, "backups")
     old_devicestate = os.path.join(config, "devicestate.json")
@@ -85,7 +84,7 @@ class Paths(object):
             os.makedirs(folder)
 
     # Data directory
-    # -- For developmen/opt, this is normally adjacent to the application executable.
+    # -- For development/opt, this is normally adjacent to the application executable.
     # -- For system-wide installs, this is generally /usr/share/polychromatic.
     module_path = __file__
     if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))):

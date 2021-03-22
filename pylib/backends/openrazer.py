@@ -1208,7 +1208,7 @@ class Backend(_backend.Backend):
 
     def _read_persistence_storage(self, rdevice, zone):
         """
-        OpenRazer >2.9.0 uses persistence storage to track the last effect,
+        OpenRazer 3.0 uses persistence storage to track the last effect,
         colours and parameters. If the daemon currently running does not have
         this feature, continue with a file-based fallback.
         """

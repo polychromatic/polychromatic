@@ -68,12 +68,13 @@ Instructions for each supported distro are provided on the website:
 
 * <https://polychromatic.app/download/>
 
-Installing packages from the repository is recommended as this will keep
+Installing packages from a software repository is recommended as this will keep
 the software up-to-date.
 
 Alternately, providing all the [dependencies](https://polychromatic.app/docs/dependencies/)
 are installed, you can run the application directly from the repository without
-installation.
+installation. The `polychromatic-controller-dev` script will create an isolated
+configuration in `dev/config` as opposed to `~/.config/polychromatic`.
 
 **Are you on the cutting edge?**
 
