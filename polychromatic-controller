@@ -164,6 +164,18 @@ class MainWindow(QMainWindow):
         dbg.stdout("Initalising application...", dbg.action, 1)
         super(MainWindow, self).__init__()
 
+        # BUG: qt5ct >0.37 (if installed) does not play nice with OpenRazer.
+        # When Polychromatic's theme is being used, reload to avoid this plugin for now.
+        if "QT_QPA_PLATFORMTHEME" in list(os.environ.keys()):
+            if os.environ["QT_QPA_PLATFORMTHEME"] == "qt5ct":
+                dbg.stdout("qt5ct >0.37 has been known to hang the application (#317)", dbg.warning)
+                dbg.stdout("If this happens, try changing your qt5ct settings or\nset \"system_qt_theme\": false in ~/.config/polychromatic/preferences.json", dbg.warning)
+
+                if not app.system_qt_theme:
+                    dbg.stdout("Reloading without qt5ct...", dbg.action)
+                    del(os.environ["QT_QPA_PLATFORMTHEME"])
+                    os.execv(os.path.realpath(sys.argv[0]), sys.argv)
+
         # Load UI and locales
         widget = uic.loadUi(os.path.join(common.paths.data_dir, "qt", "main.ui"), self)
         shared.translate_ui(app, widget)
