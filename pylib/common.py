@@ -540,6 +540,7 @@ def get_versions(base_version):
 
     This is intended to make debugging easier.
     """
+    version = base_version
     py_version = "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
 
     if os.path.exists(os.path.join(os.path.dirname(__file__), "..", ".git")):
