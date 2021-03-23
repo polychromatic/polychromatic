@@ -321,7 +321,7 @@ class MenuBar(object):
 
         # Show license text
         license = about.findChild(QTextEdit, "LicenseText")
-        license.setMarkdown(license_text)
+        license.setPlainText(license_text)
 
         # Set up the about window
         close = about.findChild(QPushButton, "Close")
