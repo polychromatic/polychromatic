@@ -243,6 +243,9 @@ class Middleman(object):
         except KeyError:
             # Troubleshooter not available for this backend
             return None
+        except Exception as e:
+            # Troubleshooter crashed
+            return common.get_exception_as_string(e)
 
     def restart(self, backend):
         """

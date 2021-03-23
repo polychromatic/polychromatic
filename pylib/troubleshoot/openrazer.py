@@ -74,6 +74,9 @@ def troubleshoot(_):
         })
 
         # Gather info about DKMS
+        dkms_installed_src = None
+        dkms_installed_built = None
+
         if PYTHON_LIB_PRESENT:
             dkms_version = rclient.__version__
             kernel_version = uname.release
@@ -83,23 +86,20 @@ def troubleshoot(_):
             # Is the OpenRazer DKMS module installed?
             dkms_installed_src = True if os.path.exists(expected_dkms_src) else False
             dkms_installed_built = True if os.path.exists(expected_dkms_build) else False
-        else:
-            # Cannot automatically check unless we know the version of the modules.
-            dkms_installed_src = None
-            dkms_installed_built = None
-        dkms_installed_built = None
 
-        results.append({
-            "test_name": _("DKMS sources are installed"),
-            "suggestion": _("Install the 'openrazer-driver-dkms' package for your distribution."),
-            "passed": dkms_installed_src
-        })
+        if dkms_installed_src:
+            results.append({
+                "test_name": _("DKMS sources are installed"),
+                "suggestion": _("Install the 'openrazer-driver-dkms' package for your distribution."),
+                "passed": dkms_installed_src if dkms_installed_src else False
+            })
 
-        results.append({
-            "test_name": _("DKMS module has been built for this kernel version"),
-            "suggestion": _("Ensure the correct Linux kernel headers package for your distribution is installed. Try re-installing the DKMS module: $ sudo dkms install -m openrazer-driver/x.x.x").replace("x.x.x", dkms_version),
-            "passed": dkms_installed_built
-        })
+        if dkms_installed_built:
+            results.append({
+                "test_name": _("DKMS module has been built for this kernel version"),
+                "suggestion": _("Ensure the correct Linux kernel headers package for your distribution is installed. Try re-installing the DKMS module: $ sudo dkms install -m openrazer-driver/x.x.x").replace("x.x.x", dkms_version),
+                "passed": dkms_installed_built if dkms_installed_built else None
+            })
 
         # Can the DKMS module be loaded?
         modprobe = subprocess.Popen(["modprobe", "-n", "razerkbd"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)

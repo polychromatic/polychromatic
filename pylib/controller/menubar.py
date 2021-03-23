@@ -142,15 +142,15 @@ class MenuBar(object):
             results = self.thread.result
             self.loading.close()
 
-            if results == None:
+            if type(results) == None:
                 self.widgets.open_dialog(self.widgets.dialog_warning,
                                          _("Troubleshooting Failed"),
                                          _("The troubleshooter for this backend is not available for this operating system."))
                 return
-            elif results == str:
+            elif type(results) == str:
                 self.widgets.open_dialog(self.widgets.dialog_error,
                                          _("Troubleshooting Failed"),
-                                         _("The troubleshooter was not expecting that! The process failed as an exception was thrown."),
+                                         _("An exception was thrown while running the troubleshooter. This is probably a bug."),
                                          None,
                                          results)
                 return
