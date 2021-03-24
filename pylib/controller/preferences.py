@@ -311,7 +311,7 @@ class OpenRazerPreferences(shared.TabData):
         self.keys = [
             # "Group", "Item", <data type>
             ["General", "verbose_logging", bool],
-            ["Startup", "sync_effects_enabled", bool],
+            #["Startup", "sync_effects_enabled", bool],
             ["Startup", "devices_off_on_screensaver", bool],
             ["Startup", "mouse_battery_notifier", bool],
             ["Startup", "mouse_battery_notifier_freq", int],

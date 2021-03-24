@@ -533,7 +533,7 @@ QCheckBox:disabled {
 }
 
 QCheckBox::indicator:disabled {
-    background: $text-disabled;
+    background: darken($text-disabled, 30%);
 }
 
 /* No style for indeterminate states as currently unused */
