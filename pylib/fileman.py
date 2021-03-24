@@ -11,6 +11,7 @@ application that utilise individual JSON files, such as effects and presets.
 import glob
 import json
 import os
+import shutil
 
 from . import common
 from .preferences import VERSION as VERSION
@@ -128,15 +129,20 @@ class FlatFileManagement(object):
         self.dbg.stdout("Could not locate suitable icon: '{0}'".format(icon_path), self.dbg.warning, 1)
         return common.get_icon("emblems", "software")
 
-    def _validate_key(self, data, key, data_type):
+    def _validate_key(self, data, key, data_type=None):
         """
         Returns a boolean to indicate whether the key has a value and matches the expected data type.
+
+        Not specifying "data_type" will just check the key exists.
         """
         try:
             data[key]
         except KeyError:
             self.dbg.stdout("{0} file missing required key: {1} ({2})".format(self.feature.capitalize(), key, data_type.__name__), self.dbg.error)
             return False
+
+        if not data_type:
+            return True
 
         if type(data[key]) == data_type:
             return True
@@ -225,6 +231,10 @@ class FlatFileManagement(object):
         # Determine the file name that is consistent with the save data's name.
         filename = self._get_safe_filename(data["name"].replace(" ", "-"))
         target_path = os.path.join(self.local_path, filename + ".json")
+        has_script = False
+
+        if orig_path and os.path.exists(orig_path.replace(".json", ".py")):
+            has_script = True
 
         # File is new or path changed, make sure there is no duplicate
         if orig_path != target_path:
@@ -252,6 +262,12 @@ class FlatFileManagement(object):
         if orig_path and orig_path != target_path:
             os.remove(orig_path)
             self.dbg.stdout("Old filename deleted: " + orig_path, self.dbg.success, 1)
+
+            if has_script:
+                orig_script_path = orig_path.replace(".json", ".py")
+                dest_script_path = target_path.replace(".json", ".py")
+                shutil.move(orig_script_path, dest_script_path)
+                self.dbg.stdout("Effect script relocated: " + dest_script_path, self.dbg.success, 1)
 
         self.dbg.stdout("Save OK: " + target_path, self.dbg.success, 1)
         return (True, target_path)

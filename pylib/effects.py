@@ -7,9 +7,11 @@
 Handles the processing of custom software effects and device mapping.
 """
 
+import importlib
 import json
 import os
 import shutil
+import platform
 
 from . import common
 from . import fileman
@@ -63,7 +65,7 @@ class EffectFileManagement(fileman.FlatFileManagement):
                 return fileman.ERROR_NEWER_FORMAT
             elif fileman.VERSION > save_format:
                 data = self.upgrade_item(data)
-                self.dbg.stdout("Effect upgraded (in memory) to version {0}: {1}".format(fileman.VERSION, path), self.dbg.success)
+                self.dbg.stdout("Effect upgraded (in memory) from v{0} to v{1}: {2}".format(save_format, fileman.VERSION, path), self.dbg.success, 1)
         except KeyError:
             self.dbg.stdout("Invalid Effect: Unspecified save format!", self.dbg.error)
             return fileman.ERROR_BAD_DATA
@@ -117,6 +119,8 @@ class EffectFileManagement(fileman.FlatFileManagement):
                     results.append(self._validate_key(param, "var", str))
                     results.append(self._validate_key(param, "label", str))
                     results.append(self._validate_key(param, "type", str))
+                    results.append(self._validate_key(param, "value"))
+                    results.append(self._validate_key(param, "default"))
             except KeyError:
                 results.append(False)
 
@@ -203,11 +207,14 @@ class EffectFileManagement(fileman.FlatFileManagement):
         effect's accompanying script (if a scripted effect)
         """
         data = self._load_file(path)
+
         if data["type"] == TYPE_SCRIPTED:
             py_path = path.replace(".json", ".py")
             if os.path.exists(py_path):
                 os.remove(py_path)
-            self.dbg.stdout("Deleted: " + path, self.dbg.success, 1)
+                self.dbg.stdout("Deleted: " + path, self.dbg.success, 1)
+            else:
+                self.dbg.stdout("Accompanying script file no longer exists: " + path, self.dbg.warning, 1)
 
         return super().delete_item(path)
 
@@ -360,3 +367,203 @@ class DeviceMapGraphics(object):
 
         svg.append("</svg>")
         return "".join(svg)
+
+
+class ScriptedEffectHandler(object):
+    """
+    Parses scripted effects to verify dependencies, the environment and parse parameters.
+    """
+    def __init__(self, fileman, path):
+        self.fileman = fileman
+        self.path = path
+        self.script_path = self.path.replace(".json", ".py")
+        self.data = fileman.get_item(path)
+
+    def _load_script(self):
+        """
+        Return the contents of the script file for parsing.
+        None is returned if the file does not exist.
+        """
+        if not os.path.exists(self.script_path):
+            return None
+
+        with open(self.script_path, "r") as f:
+            return f.readlines()
+
+    def get_integrity_check(self):
+        """
+        Returns a boolean to indicate whether the script contains the required
+        code to function as a Polychromatic scripted effect.
+        """
+        lines = self._load_script()
+        if not lines:
+            return False
+
+        for line in lines:
+            if line.strip() == "def play(fx, params=[]):":
+                return True
+
+        return False
+
+    def get_modules(self):
+        """
+        Parses the Python script and gathers a list of modules.
+
+        Returns:
+            (list)      List of modules
+            None        File error or detected unsupported import mechanism
+        """
+        lines = self._load_script()
+        if not lines:
+            return None
+
+        modules = []
+        for line in lines:
+            line = line.strip()
+
+            # Only permit 'import' - no 'from' to keep namespace clear.
+            if line.startswith("from "):
+                return None
+
+            # For security and transparency, prevent importlib for sly imports.
+            if line.find("importlib") != -1:
+                return None
+
+            if line[:6] == "import":
+                modules.append(line.split(" ")[1])
+
+        return modules
+
+    @staticmethod
+    def _simulate_import(module):
+        """
+        Tests if a module is importable, without actually importing it.
+        """
+        try:
+            # Python >= 3.4
+            if importlib.util.find_spec(module):
+                return True
+        except AttributeError:
+            # Python <= 3.3
+            if importlib.find_loader(module):
+                return True
+        return False
+
+    def can_find_modules(self):
+        """
+        Returns a boolean to indicate whether all the script's imports
+        can be found.
+        """
+        modules = self.get_modules()
+        if not modules:
+            return False
+
+        for module in modules:
+            if not self._simulate_import(module):
+                return False
+
+        return True
+
+    def can_run_on_platform(self):
+        """
+        Returns a boolean to indicate whether the script is designed to run
+        on this operating system.
+        """
+        required_os = self.data["required_os"]
+        if not required_os:
+            return True
+
+        host_os = platform.system()
+        for system in required_os:
+            if host_os == system:
+                return True
+
+        return False
+
+    def get_import_results(self):
+        """
+        Returns a dictionary with booleans to indicate which modules could
+        be imported. Missing modules indicate a dependency is
+        not installed or in the PATH.
+        """
+        modules = self.get_modules()
+        if not modules:
+            return modules
+
+        results = {}
+        for name in modules:
+            results[name] = self._simulate_import(name)
+        return results
+
+    def is_device_compatible(self, device):
+        """
+        Reads a get_device() object or item from get_device_list() and returns
+        a boolean to indicate whether it is supported.
+        """
+        # Effect isn't restricted to specific device form factors
+        if not self.data["designed_for"]:
+            return True
+
+        # Effect 'certifies' a specific device
+        if device["name"] in self.data["optimised_for"]:
+            return True
+
+        # Effect is designed to run on this form factor
+        if device["form_factor"]["id"] in self.data["designed_for"]:
+            return True
+
+        return False
+
+    def get_parameters(self):
+        """
+        Returns a dictionary of processed parameters for use with this effect.
+
+        To ensure the effect has a value, invalid or missing parameters will be
+        replaced by its default value.
+        """
+        parameters = {}
+
+        for param in self.data["parameters"]:
+            key = param["var"]
+            value = param["default"]
+            param_type = param["type"]
+
+            # Value already saved?
+            if "value" in param.keys():
+                value = param["value"]
+
+            # Use default if no value specified or is invalid
+            if not value:
+                value = param["default"]
+
+            types = {
+                "colour": str,
+                "str": str,
+                "int": int
+            }
+
+            if param_type in types and type(value) != types[param_type]:
+                value = param["default"]
+
+            # Retrieve saved value
+            if param_type == "list":
+                found_match = False
+                for option in param["options"]:
+                    if param["options"][option] == value:
+                        found_match = True
+                if not found_match:
+                    value = param["default"]
+
+            elif param_type == "colour":
+                if value[0] != "#" or len(value) not in [4, 7]:
+                    value = param["default"]
+
+            elif param_type == "str":
+                value = str(value)
+
+            elif param_type == "int":
+                value = int(value)
+
+            parameters[key] = value
+
+        return parameters

@@ -95,6 +95,12 @@ class Paths(object):
         print("Data directory cannot be located. Exiting.")
         exit(1)
 
+    # Runtime directory (for PIDs)
+    try:
+        pid_dir = os.path.join(os.environ["XDG_RUNTIME_DIR"], "polychromatic")
+    except KeyError:
+        pid_dir = "/tmp/polychromatic"
+
 
 class Debugging(object):
     """

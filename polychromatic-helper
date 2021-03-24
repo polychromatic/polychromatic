@@ -34,6 +34,9 @@ import setproctitle
 import os
 import json
 import time
+import importlib
+import signal
+import sys
 
 VERSION = "0.6.0"
 
@@ -262,7 +265,7 @@ class Bootstrapper(object):
         if effect_type == effects.TYPE_LAYERED:
             playback.play_layered()
         elif effect_type == effects.TYPE_SCRIPTED:
-            playback.play_scripted()
+            playback.play_scripted(path)
         elif effect_type == effects.TYPE_SEQUENCE:
             playback.play_sequence()
         else:
@@ -321,8 +324,60 @@ class EffectPlayback(object):
                 else:
                     exit(0)
 
-    def play_scripted(self):
-        pass
+    def play_scripted(self, json_path):
+        fileman = effects.EffectFileManagement(i18n, _, dbg)
+        handler = effects.ScriptedEffectHandler(fileman, json_path)
+
+        # Check script integrity
+        dbg.stdout("Checking script integrity...", dbg.action, 1)
+        if not handler.get_integrity_check() or handler.get_modules() == None:
+            dbg.stdout("Refusing to run effect as integrity checks failed.", dbg.error)
+            exit(1)
+        dbg.stdout("Script integrity OK!", dbg.success, 1)
+
+        # Check OS, device, modules and parameters
+        dbg.stdout("Checking environment...", dbg.action, 1)
+        if not handler.can_run_on_platform():
+            dbg.stdout("Script is not designed to run on this operating system.", dbg.error)
+            exit(1)
+
+        if not handler.is_device_compatible(self.device):
+            dbg.stdout("Script is not compatible this device!", dbg.error)
+            exit(1)
+
+        if not handler.can_find_modules():
+            dbg.stdout("\n\nThis effect depends on Python libraries which were not found.\nPlease install the packages for them and try again.\n", dbg.error)
+
+            modules = handler.get_import_results()
+            for module in modules:
+                loaded = modules[module]
+                if not loaded:
+                    dbg.stdout("- " + module, dbg.error)
+            print("\n")
+            exit(1)
+
+        params = handler.get_parameters()
+
+        # Import the external script as a module and execute the play() function.
+        dbg.stdout("Now chainloading into {0} ...".format(handler.script_path), dbg.action, 1)
+        script_dir = os.path.dirname(handler.script_path)
+        module_name = os.path.basename(handler.script_path).replace(".py", "")
+
+        os.chdir(script_dir)
+        sys.path.append(os.path.abspath(script_dir))
+        runtime = importlib.import_module(module_name)
+
+        # Showtime!
+        try:
+            print("--------------------------------------------------")
+            runtime.play(self.fx, params)
+        except Exception as e:
+            dbg.stdout("\nYikes! This effect has crashed!\n", dbg.error)
+            print(common.get_exception_as_string(e))
+            exit(1)
+
+        dbg.stdout("\nThe script reached the end.\n", dbg.success, 1)
+        exit(0)
 
     def play_layered(self):
         pass
@@ -336,6 +391,9 @@ if __name__ == "__main__":
     i18n = locales.Locales(__file__)
     def _(string):
         return string
+
+    # CTRL+C to terminate the process
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     dbg = common.Debugging()
     helper = Bootstrapper()

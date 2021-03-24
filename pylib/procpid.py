@@ -46,10 +46,7 @@ class ProcessManager():
         """
         Returns the runtime directory for storing process PIDs.
         """
-        try:
-            pid_dir = os.path.join(os.environ["XDG_RUNTIME_DIR"], "polychromatic")
-        except KeyError:
-            pid_dir = "/tmp/polychromatic"
+        pid_dir = common.paths.pid_dir
 
         if not os.path.exists(pid_dir):
             os.makedirs(pid_dir)

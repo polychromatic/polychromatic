@@ -7,6 +7,7 @@ import pylib.common as common
 import pylib.locales as locales
 import pylib.preferences as preferences
 import pylib.effects as effects
+import pylib.fileman as fileman
 
 import glob
 import json
@@ -32,6 +33,9 @@ class PolychromaticTests(unittest.TestCase):
         self.fileman.save_item(self.fileman.init_data("Test 1", effects.TYPE_LAYERED))
         self.fileman.save_item(self.fileman.init_data("Test 2", effects.TYPE_LAYERED))
         self.fileman.save_item(self.fileman.init_data("Test 3", effects.TYPE_LAYERED))
+
+        # Unit test resources
+        self.res_path = os.path.join(os.path.dirname(__file__), "files")
 
     @classmethod
     def tearDownClass(self):
@@ -168,6 +172,99 @@ class PolychromaticTests(unittest.TestCase):
                     self.assertTrue(False, "Device map {0} does not specify IDs!".format(os.path.basename(svg_file)))
 
         self.assertEqual(True, True)
+
+    def test_script_handler_init(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+
+    def test_script_integrity(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        self.assertEqual(handler.get_integrity_check(), True, "Failed to validate effect script integrity!")
+
+    def test_script_integrity_bad(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_bad.json")
+        self.assertEqual(handler.get_integrity_check(), False, "Improperly validated a bad effect script!")
+
+    def test_script_modules(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        self.assertEqual(handler.get_modules(), ["math", "time"], "Unexpected modules from effect script!")
+
+    def test_script_modules_bad(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_bad.json")
+        self.assertEqual(handler.get_modules(), None, "Improperly listing modules for a bad effect script!")
+
+    def test_script_can_find_modules(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        self.assertEqual(handler.can_find_modules(), True, "Could not find modules for effect script!")
+
+    def test_script_can_find_modules_bad(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_bad.json")
+        self.assertEqual(handler.can_find_modules(), False, "Found non-existant modules for effect script!")
+
+    def test_script_can_run_on_platform(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        self.assertEqual(handler.can_run_on_platform(), True, "Could not determine OS for effect script!")
+
+    def test_script_import_results(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        results = handler.get_import_results()
+        self.assertTrue(results["math"], "Failed to get module status for effect script!")
+
+    def test_script_is_device_compatible_1(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        # This effect was written specifically for this hardware
+        device = {
+            "name": "Razer BlackWidow Chroma",
+            "form_factor": {
+                "id": "keyboard"
+            }
+        }
+        self.assertTrue(handler.is_device_compatible(device), "Miscategorised a device as incompatible for effect script!")
+
+    def test_script_is_device_compatible_2(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        # This effect works on any keyboards
+        device = {
+            "name": "Razer BlackWidow Ultimate 2016",
+            "form_factor": {
+                "id": "keyboard"
+            }
+        }
+        self.assertTrue(handler.is_device_compatible(device), "Miscategorised a device as incompatible for effect script!")
+
+    def test_script_is_device_compatible_3(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        # This effect is not designed for mice
+        device = {
+            "name": "Razer Mamba",
+            "form_factor": {
+                "id": "mouse"
+            }
+        }
+        self.assertFalse(handler.is_device_compatible(device), "Miscategorised a device as compatible for effect script!")
+
+    def test_script_parameters_default(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        params = handler.get_parameters()
+        # Colour: Value not set, should return default.
+        self.assertEqual(params["test_colour"], "#00FF00", "Script parameter returned incorrect default!")
+
+    def test_script_parameters_list(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        params = handler.get_parameters()
+        # List: Value set, should be returned.
+        self.assertEqual(params["test_list"], 2, "Script parameter returned incorrect value!")
+
+    def test_script_parameters_str(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        params = handler.get_parameters()
+        # String: Value set, should be returned.
+        self.assertEqual(params["test_text"], "My Text", "Script parameter returned incorrect value!")
+
+    def test_script_parameters_int(self):
+        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        params = handler.get_parameters()
+        # Number: Value not set, should return default.
+        self.assertEqual(params["test_number"], 48, "Script parameter returned incorrect value!")
 
 
 if __name__ == '__main__':
