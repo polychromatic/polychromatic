@@ -184,29 +184,6 @@ Use &quot;Apply to All&quot; instead.</string>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="key_statistics">
-         <property name="text">
-          <string extracomment="Checkbox for configuring OpenRazer">Enable key statistics</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="key_statistics_note">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string extracomment="Hint text for configuring OpenRazer">Collects number of keypresses per hour per key to generate a heatmap. This is currently unused.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="indent">
-          <number>25</number>
-         </property>
-        </widget>
-       </item>
-       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
