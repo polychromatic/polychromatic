@@ -23,6 +23,11 @@ from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \
                             QButtonGroup, QRadioButton, QDialog, QTableWidget, \
                             QTableWidgetItem
 
+# Error codes
+ERROR_NO_DEVICE = 0
+ERROR_BACKEND_IMPORT = 1
+ERROR_NO_BACKEND = 2
+
 
 class DevicesTab(shared.TabData):
     """
@@ -100,15 +105,15 @@ class DevicesTab(shared.TabData):
 
         # All backends failed to load
         elif len(self.middleman.backends) == 0 and len(self.middleman.import_errors) > 0:
-            self._open_no_backend_found(1)
+            self._open_no_backend_found(ERROR_BACKEND_IMPORT)
 
         # No backends are installed
         elif len(self.middleman.backends) == 0 and len(self.middleman.not_installed) > 0:
-            self._open_no_backend_found(2)
+            self._open_no_backend_found(ERROR_NO_BACKEND)
 
         # Backends present, but no devices listed
         elif len(self.appdata.device_list) == 0:
-            self._open_no_backend_found(0)
+            self._open_no_backend_found(ERROR_NO_DEVICE)
 
         # Open the first device initially
         if len(self.appdata.device_list) > 0:
@@ -118,7 +123,8 @@ class DevicesTab(shared.TabData):
 
     def _sidebar_changed(self, item):
         """
-        Navigation on sidebar changed. The variable is appended into the QTreeWidgetItem.
+        User chooses an item on the sidebar. The "section" variable is appended
+        directly into the QTreeWidgetItem.
         """
         if item.section == "apply-to-all":
             self.open_apply_to_all()
@@ -589,10 +595,7 @@ class DevicesTab(shared.TabData):
         No backends are present. Hide the sidebar and show a full screen message.
 
         Params:
-            message_id      (int)   Message to display:
-                                    0 = No device found
-                                    1 = No backends, import error
-                                    2 = No backends, none installed
+            message_id      (int)   An self.err_* integer.
         """
         self.SidebarTree.parent().hide()
 
@@ -600,25 +603,25 @@ class DevicesTab(shared.TabData):
         shared.clear_layout(layout)
 
         graphic = {
-            0: common.get_icon("empty", "nodevice"),
-            1: common.get_icon("empty", "nobackend"),
-            2: common.get_icon("empty", "nobackend")
+            ERROR_NO_DEVICE: common.get_icon("empty", "nodevice"),
+            ERROR_BACKEND_IMPORT: common.get_icon("empty", "nobackend"),
+            ERROR_NO_BACKEND: common.get_icon("empty", "nobackend")
         }
 
         title = {
-            0: self._("No devices connected"),
-            1: self._("No backends loaded"),
-            2: self._("No backends installed")
+            ERROR_NO_DEVICE: self._("No devices connected"),
+            ERROR_BACKEND_IMPORT: self._("No backends loaded"),
+            ERROR_NO_BACKEND: self._("No backends installed")
         }
 
         subtitle = {
-            0: self._("Plug in a compatible device to control its lighting effects and features"),
-            1: self._("Consult the logs and troubleshooter for hints on fixing this problem"),
-            2: self._("Install a compatible backend to configure lighting effects")
+            ERROR_NO_DEVICE: self._("Plug in a compatible device to control its lighting effects and features"),
+            ERROR_BACKEND_IMPORT: self._("Consult the logs and troubleshooter for hints on fixing this problem"),
+            ERROR_NO_BACKEND: self._("Install a compatible backend to configure lighting effects")
         }
 
         buttons = {
-            0: [
+            ERROR_NO_DEVICE: [
                 {
                     "label": self._("Troubleshoot"),
                     "icon_folder": "general",
@@ -626,7 +629,7 @@ class DevicesTab(shared.TabData):
                     "action": self._start_troubleshooter
                 }
             ],
-            2: [
+            ERROR_NO_BACKEND: [
                 {
                     "label": self._("Online Help"),
                     "icon_folder": "general",
@@ -641,8 +644,8 @@ class DevicesTab(shared.TabData):
                 }
             ]
         }
-        buttons[1] = buttons[2].copy()
-        buttons[1].append({
+        buttons[ERROR_BACKEND_IMPORT] = buttons[ERROR_NO_BACKEND].copy()
+        buttons[ERROR_BACKEND_IMPORT].append({
             "label": self._("Show Error Details"),
             "icon_folder": "general",
             "icon_name": "warning",
