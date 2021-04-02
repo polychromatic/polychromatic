@@ -454,6 +454,10 @@ QTreeView::item:disabled {
         color: #fff;
     }
 
+    QTreeView::item:disabled {
+        color: #202020;
+    }
+
     /* Sidebar Heading */
     QTreeView::item:has-children {
         background: transparent;

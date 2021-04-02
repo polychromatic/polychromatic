@@ -533,6 +533,28 @@ class VisualEffectEditor(shared.TabData):
         self.dbg.stdout("Preparing live preview on '{0}'...".format(device_name), self.dbg.action, 1)
         self.device = self.middleman.get_device_by_name(device_name)
 
+        # Inform the user if the backends are not ready
+        if not self.appdata.ready:
+            self.dbg.stdout("Backends not ready! Preview not possible yet.", self.dbg.error, 1)
+            retry = False
+
+            def do_retry():
+                nonlocal retry
+                retry = True
+
+            def do_ignore():
+                self.dbg.stdout("Loading editor without live preview.", self.dbg.action, 1)
+
+            self.widgets.open_dialog(self.widgets.dialog_warning,
+                                        self._("Backend Error"),
+                                        self._("Live preview isn't possible yet as the backends haven't finished initialising."),
+                                        self._("They might be ready now, try again. Or, choose Ignore to continue without a live preview on physical hardware."),
+                                        buttons=[QMessageBox.Retry, QMessageBox.Ignore],
+                                        actions={QMessageBox.Retry: do_retry, QMessageBox.Ignore: do_ignore})
+
+            if retry:
+                return self.init_device_preview()
+
         # Inform the user if attempting to load non-existent device
         if not self.device:
             self.dbg.stdout("Device not found! No preview.", self.dbg.error, 1)

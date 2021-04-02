@@ -14,14 +14,16 @@ from .. import preferences as pref
 from .. import middleman
 from . import shared
 
-from PyQt5.QtCore import Qt, QSize, QMargins
+import time
+
+from PyQt5.QtCore import Qt, QSize, QMargins, QThread
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \
                             QPushButton, QToolButton, QMessageBox, QListWidget, \
                             QTreeWidget, QTreeWidgetItem, QLabel, QComboBox, \
                             QSpacerItem, QSizePolicy, QSlider, QCheckBox, \
                             QButtonGroup, QRadioButton, QDialog, QTableWidget, \
-                            QTableWidgetItem
+                            QTableWidgetItem, QAction
 
 # Error codes
 ERROR_NO_DEVICE = 0
@@ -40,13 +42,14 @@ class DevicesTab(shared.TabData):
         self.current_backend = None
         self.current_uid = None
         self.current_serial = None
+        self.load_thread = None
 
         # UI Elements
         self.Contents = self.main_window.findChild(QWidget, "DeviceContents")
         self.SidebarTree = self.main_window.findChild(QTreeWidget, "DeviceSidebarTree")
         self.SidebarTree.itemClicked.connect(self._sidebar_changed)
 
-        # Avoid GC from cleaning up invisible controls
+        # Avoid garbage collection cleaning up invisible controls
         self.btn_grps = {}
 
     def set_tab(self):
@@ -56,6 +59,7 @@ class DevicesTab(shared.TabData):
         """
         # Open all 'sidebar' tree branches
         self.SidebarTree.expandAll()
+        self.SidebarTree.setEnabled(True)
 
         # Populate sidebar
         tasks_branch = self.SidebarTree.invisibleRootItem().child(0)
@@ -65,6 +69,11 @@ class DevicesTab(shared.TabData):
         tasks_branch.section = None
         devices_branch.section = None
         tasks_branch.child(0).section = "apply-to-all"
+
+        # Backends are still initialising
+        if not self.appdata.ready:
+            self._open_loading()
+            return
 
         # Recache the device list
         self.SidebarTree.parent().show()
@@ -590,6 +599,110 @@ class DevicesTab(shared.TabData):
                                      _("The request could not be completed due to an error."),
                                      traceback=response)
 
+    def _open_loading(self):
+        """
+        Show a skeleton loading screen while backends finish loading.
+
+        A thread will spawn to refresh the devices tab (if open) when the
+        middleman has fully populated.
+        """
+        if self.load_thread:
+            return
+
+        # Sidebar
+        self.SidebarTree.setEnabled(False)
+        tasks_branch = self.SidebarTree.invisibleRootItem().child(0)
+        devices_branch = self.SidebarTree.invisibleRootItem().child(1)
+        tasks_branch.setHidden(True)
+
+        # Skeleton devices
+        device_icon = QIcon()
+        device_icon.addFile(common.get_icon("general", "placeholder"), mode=QIcon.Disabled)
+        skel_strings = [
+            "█████████████",
+            "████████████",
+            "█████████",
+            "███████████",
+            "███████",
+        ]
+        for i in range(0, 5):
+            skel = QTreeWidgetItem()
+            skel.setText(0, skel_strings[i])
+            skel.setIcon(0, device_icon)
+            skel.setDisabled(True)
+            devices_branch.addChild(skel)
+
+        # Skeleton summary
+        def dummy():
+            pass
+
+        buttons = []
+        indicators = [
+            {
+                "icon": common.get_icon("general", "placeholder"),
+                "label": "██████"
+            },
+            {
+                "icon": common.get_icon("general", "placeholder"),
+                "label": "███"
+            }
+        ]
+        summary = self.widgets.create_summary_widget(common.get_icon("devices", "noimage"), "████████████", indicators, buttons)
+
+        # Skeleton device controls (brightness & effect)
+        skels_text = summary.findChildren(QLabel)
+        skels_bg = []
+
+        dummy_slider = QLabel("________________________")
+        dummy_slider.setMaximumWidth(180)
+        dummy_slider.setAlignment(Qt.AlignLeft)
+        skels_bg.append(dummy_slider)
+
+        dummy_buttons = []
+        for i in range(0, 5):
+            dummy = QLabel()
+            dummy.setMinimumHeight(70)
+            dummy.setMinimumWidth(70)
+            dummy.setMaximumHeight(70)
+            dummy.setMaximumWidth(70)
+            dummy.setAlignment(Qt.AlignLeft)
+            dummy_buttons.append(dummy)
+            skels_bg.append(dummy)
+
+        row1 = self.widgets.create_row_widget("███████", [dummy_slider], wrap=True)
+        row2 = self.widgets.create_row_widget("████", dummy_buttons, wrap=True)
+
+        label1 = row1.findChild(QLabel)
+        label2 = row2.findChild(QLabel)
+
+        skels_text.append(label1)
+        skels_text.append(label2)
+
+        # Apply skeleton styling
+        for skel in skels_bg:
+            skel.setStyleSheet("QLabel { background-color: #202020; color: #202020; margin: 4px 0; }")
+        for skel in skels_text:
+            skel.setStyleSheet("QLabel { color: #202020; }")
+
+        # Append widgets
+        layout = self.Contents.layout()
+        for widget in [summary, row1, row2]:
+            layout.addWidget(widget)
+        layout.addStretch()
+
+        class WaitForBackendThread(QThread):
+            @staticmethod
+            def run():
+                while not self.appdata.ready:
+                    time.sleep(0.05)
+
+                refresh = self.main_window.findChild(QAction, "actionRefreshTab")
+                refresh.trigger()
+
+        self.load_thread = WaitForBackendThread()
+        self.load_thread.start()
+        self.set_cursor_busy()
+
     def _open_no_backend_found(self, message_id):
         """
         No backends are present. Hide the sidebar and show a full screen message.
@@ -659,7 +772,7 @@ class DevicesTab(shared.TabData):
         Opens the documentation online to learn more about Polychromatic's device
         functionality.
         """
-        self.menubar.online_help()
+        self.appdata.menubar.online_help()
 
     def _start_troubleshooter(self):
         """
@@ -668,7 +781,7 @@ class DevicesTab(shared.TabData):
         to troubleshoot.
         """
         # TODO: Prompt not implemented as only one backend (OpenRazer)
-        self.menubar.openrazer.troubleshoot()
+        self.appdata.menubar.openrazer.troubleshoot()
 
     def _open_backend_exception(self):
         """
@@ -680,12 +793,12 @@ class DevicesTab(shared.TabData):
         for backend_id in self.middleman.import_errors.keys():
             backend_name = middleman.BACKEND_ID_NAMES[backend_id]
             exception = self.middleman.import_errors[backend_id].strip()
-            dbg.stdout("{0}\n------------------------------\n{1}".format(backend_name, exception), dbg.error)
+            dbg.stdout("\n{0}\n------------------------------\n{1}\n".format(backend_name, exception), dbg.error)
             self.widgets.open_dialog(self.widgets.dialog_generic,
                                     _("Backend Error: []").replace("[]", backend_name),
-                                    _("The last line of the exception was:") + "\n\n" + exception.split("\n")[-1],
-                                    None,
-                                    exception)
+                                    _("Polychromatic won't be able to interact with devices available under [] until the problem has been resolved.").replace("[]", backend_name),
+                                    info_text=_("The last line of the exception was:") + "\n" + exception.split("\n")[-1],
+                                    traceback=exception)
 
     def open_unknown_device(self, backend):
         """

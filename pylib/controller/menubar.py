@@ -19,7 +19,7 @@ from . import procviewer
 
 from PyQt5.QtCore import Qt, QThread
 from PyQt5.QtGui import QPixmap, QFont, QIcon
-from PyQt5.QtWidgets import QWidget, QMenuBar, QAction, QLabel, QDialog, \
+from PyQt5.QtWidgets import QWidget, QMenuBar, QMenu, QAction, QLabel, QDialog, \
                             QPushButton, QTreeWidget, QTreeWidgetItem, \
                             QTextEdit, QButtonGroup, QProgressBar, QMessageBox
 
@@ -74,6 +74,53 @@ class MenuBar(object):
         self._bind_item("actionReportBug", self.polychromatic_report_bug)
         self._bind_item("actionDonate", self.polychromatic_donate)
         self._bind_item("actionAbout", self.about_polychromatic)
+
+        self._load_icons()
+
+    def _load_icons(self):
+        """
+        Load icons for the menu bar if Polychromatics' theme is used.
+        """
+        if self.appdata.system_qt_theme:
+            return
+
+        def _set_icon(object_name, icon_dir, icon_name, object_type=QAction):
+            self.mainwindow.findChild(object_type, object_name).setIcon(self.widgets.get_icon_qt(icon_dir, icon_name))
+
+        # -- File
+        _set_icon("actionNewEffect", "general", "effects")
+        _set_icon("actionImportEffect", "general", "import")
+        _set_icon("actionNewPreset", "general", "presets")
+        _set_icon("actionNewPresetNow", "devices", "all")
+        _set_icon("actionQuitApp", "general", "exit")
+
+        # -- Edit
+        _set_icon("actionDuplicate", "general", "clone")
+        _set_icon("actionDelete", "general", "delete")
+        _set_icon("actionRefreshTab", "general", "refresh")
+        _set_icon("actionPreferences", "general", "preferences")
+
+        # -- View
+        _set_icon("actionDevices", "general", "devices")
+        _set_icon("actionEffects", "general", "effects")
+        _set_icon("actionPresets", "general", "presets")
+        _set_icon("actionTriggers", "general", "triggers")
+        _set_icon("actionReinstateMenuBar", "general", "pin")
+        _set_icon("actionHideMenuBar", "general", "pin")
+
+        # -- Tools
+        _set_icon("menuTroubleshoot", "emblems", "utility", QMenu)
+        _set_icon("actionRestartTrayApplet", "general", "tray-applet")
+        _set_icon("actionProcessViewer", "emblems", "software")
+
+        # -- Tools/OpenRazer
+        _set_icon("actionOpenRazerWebsite", "general", "external")
+        _set_icon("actionOpenRazerConfigure", "general", "preferences")
+        _set_icon("actionOpenRazerOpenLog", "general", "folder")
+        _set_icon("actionOpenRazerRestartDaemon", "general", "refresh")
+
+        # -- Help
+        _set_icon("actionOnlineHelp", "general", "external")
 
     def _bind_item(self, object_name="", function=object):
         """

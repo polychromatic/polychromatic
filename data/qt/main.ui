@@ -926,6 +926,9 @@
    </property>
   </action>
   <action name="actionOpenRazerRestartDaemon">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset theme="view-refresh"/>
    </property>
@@ -934,6 +937,9 @@
    </property>
   </action>
   <action name="actionOpenRazerOpenLog">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset theme="folder"/>
    </property>
@@ -942,6 +948,9 @@
    </property>
   </action>
   <action name="actionOpenRazerConfigure">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset theme="settings-configure"/>
    </property>
@@ -950,6 +959,9 @@
    </property>
   </action>
   <action name="actionOpenRazerAbout">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>
@@ -1039,6 +1051,9 @@
    </property>
   </action>
   <action name="actionTroubleshootOpenRazer">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>

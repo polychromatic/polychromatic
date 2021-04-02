@@ -34,6 +34,7 @@ class PreferencesWindow(shared.TabData):
     def __init__(self, appdata):
         super().__init__(appdata)
         self.openrazer = OpenRazerPreferences(appdata)
+        self.dialog = None
         self.pref_data = None
         self.prompt_restart = False
         self.restart_applet = False
@@ -113,12 +114,37 @@ class PreferencesWindow(shared.TabData):
             self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").setIcon(self.widgets.get_icon_qt("general", "refresh"))
             self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").setIcon(self.widgets.get_icon_qt("emblems", "utility"))
 
-        if not "openrazer" in self.appdata.middleman.get_backends():
-            self.dialog.findChild(QPushButton, "OpenRazerSettings").setDisabled(True)
-            self.dialog.findChild(QPushButton, "OpenRazerAbout").setDisabled(True)
-            self.dialog.findChild(QPushButton, "OpenRazerOpenLog").setDisabled(True)
-            self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").setDisabled(True)
-            self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").clicked.connect(self.menubar.openrazer.troubleshoot)
+        self.refresh_backend_status()
+
+        # Prompt for a restart after changing these options
+        def _cb_set_restart_flag():
+            self.prompt_restart = True
+
+        self.dialog.findChild(QCheckBox, "UseSystemQtTheme").stateChanged.connect(_cb_set_restart_flag)
+
+        # Restart the applet after changing these options
+        def _cb_set_applet_flag(i):
+            self.restart_applet = True
+
+        self.dialog.findChild(QComboBox, "TrayModeCombo").currentIndexChanged.connect(_cb_set_applet_flag)
+
+        self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(0)
+        self.dialog.open()
+
+    def refresh_backend_status(self):
+        """
+        Refreshes the current status and enables/disables controls accordingly.
+        """
+        if not self.dialog:
+            return
+
+        # See also: polychromatic_controller.Applicationdata.init_bg_thread.BackgroundThread()
+        openrazer_disabled = True if not "openrazer" in self.appdata.middleman.get_backends() else False
+        self.dialog.findChild(QPushButton, "OpenRazerSettings").setDisabled(openrazer_disabled)
+        self.dialog.findChild(QPushButton, "OpenRazerAbout").setDisabled(openrazer_disabled)
+        self.dialog.findChild(QPushButton, "OpenRazerOpenLog").setDisabled(openrazer_disabled)
+        self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").setDisabled(openrazer_disabled)
+        self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").setDisabled(openrazer_disabled)
 
         # Backend Status
         for backend in middleman.BACKEND_ID_NAMES.keys():
@@ -145,20 +171,6 @@ class PreferencesWindow(shared.TabData):
             backend_status_icon = self.dialog.findChild(QLabel, "Status_" + backend + "_icon")
             shared.set_pixmap_for_label(backend_status_icon, common.get_icon("general", icon), 24)
 
-        # Prompt for a restart after changing these options
-        def _cb_set_restart_flag():
-            self.prompt_restart = True
-
-        self.dialog.findChild(QCheckBox, "UseSystemQtTheme").stateChanged.connect(_cb_set_restart_flag)
-
-        # Restart the applet after changing these options
-        def _cb_set_applet_flag(i):
-            self.restart_applet = True
-
-        self.dialog.findChild(QComboBox, "TrayModeCombo").currentIndexChanged.connect(_cb_set_applet_flag)
-
-        self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(0)
-        self.dialog.open()
 
     def _load_option(self, group, item, qcontrol, qid, inverted):
         """
