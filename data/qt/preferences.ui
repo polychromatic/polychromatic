@@ -636,27 +636,39 @@
             <number>10</number>
            </property>
            <item row="0" column="0">
-            <widget class="QLabel" name="OpenRazerLabel">
-             <property name="minimumSize">
+            <widget class="QLabel" name="OpenRazerLogo">
+             <property name="maximumSize">
               <size>
-               <width>150</width>
-               <height>0</height>
+               <width>48</width>
+               <height>48</height>
               </size>
              </property>
-             <property name="text">
-              <string>OpenRazer</string>
+             <property name="pixmap">
+              <pixmap>../img/logo/openrazer.svg</pixmap>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             <property name="scaledContents">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QWidget" name="OpenRazerWidget" native="true">
+            <widget class="QWidget" name="OpenRazer" native="true">
              <layout class="QVBoxLayout" name="verticalLayout_8">
               <property name="topMargin">
                <number>0</number>
               </property>
+              <item>
+               <widget class="QLabel" name="OpenRazerTitle">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string notr="true">OpenRazer</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QWidget" name="OpenRazerStatus" native="true">
                 <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -674,23 +686,14 @@
                  </property>
                  <item>
                   <widget class="QLabel" name="Status_openrazer_icon">
-                   <property name="minimumSize">
-                    <size>
-                     <width>24</width>
-                     <height>24</height>
-                    </size>
-                   </property>
                    <property name="maximumSize">
                     <size>
-                     <width>24</width>
-                     <height>24</height>
+                     <width>20</width>
+                     <height>20</height>
                     </size>
                    </property>
-                   <property name="baseSize">
-                    <size>
-                     <width>24</width>
-                     <height>24</height>
-                    </size>
+                   <property name="text">
+                    <string notr="true">[...]</string>
                    </property>
                    <property name="scaledContents">
                     <bool>true</bool>
@@ -706,76 +709,12 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string notr="true">(Status)</string>
+                    <string notr="true">[Not Installed]</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                    </property>
                   </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="OpenRazerButtons2" native="true">
-                <layout class="QHBoxLayout" name="horizontalLayout_4">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QPushButton" name="OpenRazerAbout">
-                   <property name="text">
-                    <string>About</string>
-                   </property>
-                   <property name="icon">
-                    <iconset>
-                     <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="OpenRazerSettings">
-                   <property name="text">
-                    <string>Configure...</string>
-                   </property>
-                   <property name="icon">
-                    <iconset theme="configure">
-                     <normaloff>.</normaloff>.</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="OpenRazerOpenLog">
-                   <property name="text">
-                    <string>Open Log...</string>
-                   </property>
-                   <property name="icon">
-                    <iconset theme="folder">
-                     <normaloff>.</normaloff>.</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_2">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
                  </item>
                 </layout>
                </widget>
@@ -796,9 +735,31 @@
                   <number>0</number>
                  </property>
                  <item>
+                  <widget class="QPushButton" name="OpenRazerAbout">
+                   <property name="text">
+                    <string>About</string>
+                   </property>
+                   <property name="icon">
+                    <iconset theme="documentinfo">
+                     <normaloff>.</normaloff>.</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="OpenRazerSettings">
+                   <property name="text">
+                    <string>Configure</string>
+                   </property>
+                   <property name="icon">
+                    <iconset theme="configure">
+                     <normaloff>.</normaloff>.</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QPushButton" name="OpenRazerTroubleshoot">
                    <property name="text">
-                    <string>Troubleshoot...</string>
+                    <string>Troubleshoot</string>
                    </property>
                    <property name="icon">
                     <iconset theme="tools">
@@ -809,7 +770,7 @@
                  <item>
                   <widget class="QPushButton" name="OpenRazerRestartDaemon">
                    <property name="text">
-                    <string>Restart Daemon</string>
+                    <string>Restart</string>
                    </property>
                    <property name="icon">
                     <iconset theme="view-refresh">
@@ -831,6 +792,19 @@
                   </spacer>
                  </item>
                 </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="OpenRazerLog">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel { text-decoration:underline; }</string>
+                </property>
+                <property name="text">
+                 <string>View Log</string>
+                </property>
                </widget>
               </item>
              </layout>

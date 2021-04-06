@@ -1013,7 +1013,7 @@ class DevicesTab(shared.TabData):
             hw = mkitem(_("Hardware"))
             hw.addChild(mkitem(_("Name"), device["name"]))
             hw.addChild(mkitem(_("Backend"), middleman.BACKEND_ID_NAMES[device["backend"]]))
-            hw.addChild(mkitem(_("Internal Backend ID"), str(device["uid"])))
+            hw.addChild(mkitem(_("Internal Device ID"), str(device["uid"])))
             hw.addChild(mkitem(_("Form Factor"), device["form_factor"]["label"], device["form_factor"]["icon"]))
             hw.addChild(mkitem(_("Serial"), device["serial"]))
             hw.addChild(mkitem(_("Image"), device["real_image"], device["real_image"]))

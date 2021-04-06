@@ -104,13 +104,19 @@ class PreferencesWindow(shared.TabData):
         # Backend Buttons
         self.dialog.findChild(QPushButton, "OpenRazerSettings").clicked.connect(self.menubar.openrazer.configure)
         self.dialog.findChild(QPushButton, "OpenRazerAbout").clicked.connect(self.menubar.openrazer.about)
-        self.dialog.findChild(QPushButton, "OpenRazerOpenLog").clicked.connect(self.menubar.openrazer.open_log)
         self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").clicked.connect(self.menubar.openrazer.restart_daemon)
         self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").clicked.connect(self.menubar.openrazer.troubleshoot)
 
+        # Labels disguised as buttons
+        view_log = self.dialog.findChild(QLabel, "OpenRazerLog")
+        def view_log_clicked(QMouseEvent):
+            if QMouseEvent.button() == Qt.LeftButton:
+                self.openrazer.open_log()
+        view_log.mouseReleaseEvent = view_log_clicked
+
         if not self.appdata.system_qt_theme:
             self.dialog.findChild(QPushButton, "OpenRazerSettings").setIcon(self.widgets.get_icon_qt("general", "preferences"))
-            self.dialog.findChild(QPushButton, "OpenRazerOpenLog").setIcon(self.widgets.get_icon_qt("general", "folder"))
+            self.dialog.findChild(QPushButton, "OpenRazerAbout").setIcon(self.widgets.get_icon_qt("general", "info"))
             self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").setIcon(self.widgets.get_icon_qt("general", "refresh"))
             self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").setIcon(self.widgets.get_icon_qt("emblems", "utility"))
 
@@ -142,27 +148,27 @@ class PreferencesWindow(shared.TabData):
         openrazer_disabled = True if not "openrazer" in self.appdata.middleman.get_backends() else False
         self.dialog.findChild(QPushButton, "OpenRazerSettings").setDisabled(openrazer_disabled)
         self.dialog.findChild(QPushButton, "OpenRazerAbout").setDisabled(openrazer_disabled)
-        self.dialog.findChild(QPushButton, "OpenRazerOpenLog").setDisabled(openrazer_disabled)
         self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").setDisabled(openrazer_disabled)
         self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").setDisabled(openrazer_disabled)
+        self.dialog.findChild(QLabel, "OpenRazerLog").setDisabled(openrazer_disabled)
 
         # Backend Status
         for backend in middleman.BACKEND_ID_NAMES.keys():
-            label = self._("Not in use")
+            label = self._("Unknown")
             icon = "serious"
 
             for obj in self.middleman.backends:
                 if obj.backend_id == backend:
-                    label = self._("Currently in use.")
+                    label = self._("Active")
                     icon = "success"
                     break
 
             if backend in self.middleman.not_installed:
-                label = self._("Not installed.")
+                label = self._("Not Installed")
                 icon = "warning"
 
             elif backend in self.middleman.import_errors.keys():
-                label = self._("Error loading the module.")
+                label = self._("Error loading the module")
                 icon = "serious"
 
             backend_label = self.dialog.findChild(QLabel, "Status_" + backend + "_label")
@@ -170,7 +176,6 @@ class PreferencesWindow(shared.TabData):
 
             backend_status_icon = self.dialog.findChild(QLabel, "Status_" + backend + "_icon")
             shared.set_pixmap_for_label(backend_status_icon, common.get_icon("general", icon), 24)
-
 
     def _load_option(self, group, item, qcontrol, qid, inverted):
         """
