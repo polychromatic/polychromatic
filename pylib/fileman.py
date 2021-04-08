@@ -177,6 +177,8 @@ class FlatFileManagement(object):
 
         for path in file_list:
             data = self._load_file(path)
+            if not data:
+                continue
             try:
                 items.append(self._get_parsed_keys(data, path))
                 self.dbg.stdout("- " + path, self.dbg.action, 1)
