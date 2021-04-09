@@ -24,6 +24,7 @@ class PresetsTab(shared.TabData):
     """
     def __init__(self, appdata):
         super().__init__(appdata)
+        self.feature = "presets"
 
     def set_tab(self):
         """

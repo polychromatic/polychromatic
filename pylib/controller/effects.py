@@ -32,6 +32,7 @@ class EffectsTab(shared.CommonFileTab):
     """
     def __init__(self, appdata):
         super().__init__(appdata, effects.EffectFileManagement, "EffectContents", "EffectSidebarTree")
+        self.feature = "effects"
 
         # Populate tasks
         self.tasks = {
