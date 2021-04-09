@@ -1469,18 +1469,13 @@ class CommonFileTab(TabData):
             new_item.setSelected(True)
             self.open_file(new_item.action_data)
 
-        titles = {
-            "effects": self._("Delete Effect?"),
-            "presets": self._("Delete Preset?")
-        }
-
         msgs = {
-            "effects": self._("Delete '[]' effect? This cannot be undone.\n\nPresets that use this effect will be unlinked.").replace("[]", name),
-            "presets": self._("Delete '[]' preset? This cannot be undone.\n\nTriggers that automatically activate this preset will no longer function.").replace("[]", name),
+            "effects": self._("Delete this effect for good? There is no undo.\n'[]'\n\nPresets or triggers that use this effect will be unlinked.").replace("[]", name),
+            "presets": self._("Delete this preset for good? There is no undo.\n'[]'\n\nTriggers that use this preset will no longer function.").replace("[]", name),
         }
 
         self.widgets.open_dialog(self.widgets.dialog_warning,
-                                 titles[self.feature],
+                                 self._("Confirm Deletion"),
                                  msgs[self.feature],
                                  None, None,
                                  [QMessageBox.Yes, QMessageBox.No],
