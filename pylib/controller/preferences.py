@@ -332,6 +332,7 @@ class OpenRazerPreferences(shared.TabData):
             ["Startup", "devices_off_on_screensaver", bool],
             ["Startup", "mouse_battery_notifier", bool],
             ["Startup", "mouse_battery_notifier_freq", int],
+            ["Startup", "restore_persistence", bool],
         ]
 
         self.client = [

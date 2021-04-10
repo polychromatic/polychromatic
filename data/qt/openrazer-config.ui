@@ -137,7 +137,7 @@ To set all devices at once, create a preset or use &quot;Apply to All&quot; from
        <item>
         <widget class="QCheckBox" name="devices_off_on_screensaver">
          <property name="text">
-          <string extracomment="Checkbox for configuring OpenRazer">Turn off devices when screen saver / lock screen is present</string>
+          <string extracomment="Checkbox for configuring OpenRazer">Turn off devices when screen saver / lock screen is activated</string>
          </property>
         </widget>
        </item>
@@ -181,6 +181,29 @@ To set all devices at once, create a preset or use &quot;Apply to All&quot; from
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="restore_persistence">
+         <property name="text">
+          <string>Apply persistence settings on daemon start</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="restore_persistence_note">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>If you have a Polychromatic trigger configured to run at start-up, it is recommended to turn this option off.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="indent">
+          <number>25</number>
+         </property>
         </widget>
        </item>
        <item>
