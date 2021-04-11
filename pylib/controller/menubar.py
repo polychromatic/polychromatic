@@ -8,6 +8,7 @@ This module contains the events when clicking on interactive menu bar components
 """
 
 import os
+import time
 import subprocess
 import webbrowser
 
@@ -243,6 +244,10 @@ class MenuBar(object):
 
         class TroubleshootThread(QThread):
             def run(self):
+                while not self.appdata.ready:
+                    label.setText(_("Waiting for backends to be ready..."))
+                    time.sleep(0.1)
+                label.setText(_("Running troubleshooter..."))
                 self.result = self.appdata.middleman.troubleshoot(backend, self.appdata._)
 
         # Run in separate thread just in case this takes longer on some systems
