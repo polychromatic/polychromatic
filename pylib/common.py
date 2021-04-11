@@ -87,12 +87,22 @@ class Paths(object):
     # -- For development/opt, this is normally adjacent to the application executable.
     # -- For system-wide installs, this is generally /usr/share/polychromatic.
     module_path = __file__
-    if os.path.exists(os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))):
-        data_dir = os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))
-    elif os.path.exists("/usr/share/polychromatic/"):
-        data_dir = "/usr/share/polychromatic/"
-    else:
-        print("Data directory cannot be located. Exiting.")
+    data_dir = None
+    possible_data_dirs = [
+        os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/")),
+        "/usr/local/share/polychromatic",
+        "/usr/share/polychromatic",
+    ]
+    for directory in possible_data_dirs:
+        if os.path.exists(directory):
+            data_dir = directory
+            break
+
+    if not data_dir:
+        print("Cannot locate data directory! Tried:")
+        for directory in possible_data_dirs:
+            print(" - " + directory)
+        print("\nPlease check all the files are installed properly.")
         exit(1)
 
     # Runtime directory (for PIDs)
