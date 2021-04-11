@@ -27,6 +27,7 @@ try:
 except Exception:
     PYTHON_LIB_PRESENT = False
 
+
 def troubleshoot(_):
     """
     See: _backend.Backend.troubleshoot()
@@ -87,18 +88,16 @@ def troubleshoot(_):
             dkms_installed_src = True if os.path.exists(expected_dkms_src) else False
             dkms_installed_built = True if os.path.exists(expected_dkms_build) else False
 
-        if dkms_installed_src:
             results.append({
                 "test_name": _("DKMS sources are installed"),
                 "suggestion": _("Install the 'openrazer-driver-dkms' package for your distribution."),
-                "passed": dkms_installed_src if dkms_installed_src else False
+                "passed": dkms_installed_src
             })
 
-        if dkms_installed_built:
             results.append({
                 "test_name": _("DKMS module has been built for this kernel version"),
-                "suggestion": _("Ensure the correct Linux kernel headers package for your distribution is installed. Try re-installing the DKMS module: $ sudo dkms install -m openrazer-driver/x.x.x").replace("x.x.x", dkms_version),
-                "passed": dkms_installed_built if dkms_installed_built else None
+                "suggestion": _("Ensure you have the correct Linux kernel headers package installed for your distribution. Your distro's package system might not have rebuilt the DKMS module (this can happen with kernel or OpenRazer updates). Try running: $ sudo dkms install -m openrazer-driver/x.x.x").replace("x.x.x", dkms_version),
+                "passed": dkms_installed_built
             })
 
         # Can the DKMS module be loaded?
@@ -107,7 +106,7 @@ def troubleshoot(_):
         code = modprobe.returncode
 
         results.append({
-            "test_name": _("DKMS module can be loaded"),
+            "test_name": _("DKMS module can be probed"),
             "suggestion": _("For full error details, run $ sudo modprobe razerkbd"),
             "passed": True if code == 0 else False
         })
@@ -211,18 +210,13 @@ def troubleshoot(_):
 
             return unreg_ids
 
-        found_unsupported_device = False
-
-        if PYTHON_LIB_PRESENT:
+        if PYTHON_LIB_PRESENT and dkms_installed_built:
             unsupported_devices = _get_filtered_lsusb_list()
-            if len(unsupported_devices) > 0:
-                found_unsupported_device = True
-
-        results.append({
-            "test_name": _("Check for unsupported hardware"),
-            "suggestion": _("Review the OpenRazer repository to confirm support for your device. Ensure you have the latest version installed and this version does include support for your device."),
-            "passed": found_unsupported_device == False
-        })
+            results.append({
+                "test_name": _("Check for unsupported hardware"),
+                "suggestion": _("Ensure the latest version is installed (your version is x.x.x). Check the OpenRazer repository to confirm your device is listed as supported.").replace("x.x.x", dkms_version),
+                "passed": len(unsupported_devices) == 0
+            })
 
     except Exception as e:
         print("Troubleshooter failed to complete!")
