@@ -873,12 +873,22 @@ class ColourPicker(object):
 
     def _build_saved_colour_list(self):
         """
-        Builds the initial saved colour list.
+        Validates the colours and builds the initial saved colour list.
         """
         self.saved_tree.invisibleRootItem().takeChildren()
 
         for index, colour in enumerate(self.saved_colours):
-            item = self._add_to_tree(colour["name"], colour["hex"])
+            try:
+                name = colour["name"]
+                value = colour["hex"]
+                if not common.validate_hex(value):
+                    raise KeyError
+            except KeyError:
+                self.appdata.dbg.stdout("colours.json: Discarding invalid data for item {0}: {1}".format(str(index), str(colour)), self.appdata.dbg.error)
+                continue
+
+            item = self._add_to_tree(name, value)
+
             if self.current_hex == item.colour_hex:
                 item.setSelected(True)
                 if index > 5:

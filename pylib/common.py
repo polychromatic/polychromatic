@@ -454,6 +454,22 @@ def hex_to_rgb(hex_string):
     return list(int(hex_string[i:i+2], 16) for i in (0, 2 ,4))
 
 
+def validate_hex(value):
+    """
+    Validates a colour hex value and returns whether it's valid. Must be a
+    string, starting with # and consisting of 6 hex digits (0-F).
+    """
+    if not value.startswith("#") or not len(value) == 7:
+        return False
+
+    try:
+        int(value[1:7], 16)
+    except ValueError:
+        return False
+
+    return True
+
+
 def get_plural(integer, non_plural, plural):
     """
     Returns the correct plural or non-plural spelling based on an integer.
