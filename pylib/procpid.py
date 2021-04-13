@@ -154,7 +154,6 @@ class ProcessManager():
         The PID will be unassigned, allowing it to be used by another
         Polychromatic process.
         """
-        pid_file = self._get_pid_file()
         pid = self._get_component_pid()
         if pid:
             os.kill(pid, signal.SIGUSR2)
@@ -244,7 +243,8 @@ class ProcessManager():
         Restart all tasks, excluding the current process.
         """
         for pid_file in self._get_component_pid_list():
-            self.reload(pid_file)
+            procmgr = ProcessManager(pid_file)
+            procmgr.reload(pid_file)
 
 
 class DeviceSoftwareState(object):
