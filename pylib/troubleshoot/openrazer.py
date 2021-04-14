@@ -212,11 +212,12 @@ def troubleshoot(_):
 
         if PYTHON_LIB_PRESENT and dkms_installed_built:
             unsupported_devices = _get_filtered_lsusb_list()
-            results.append({
-                "test_name": _("Check for unsupported hardware"),
-                "suggestion": _("Ensure the latest version is installed (your version is x.x.x). Check the OpenRazer repository to confirm your device is listed as supported.").replace("x.x.x", dkms_version),
-                "passed": len(unsupported_devices) == 0
-            })
+            if type(unsupported_devices) == list:
+                results.append({
+                    "test_name": _("Check for unsupported hardware"),
+                    "suggestion": _("Ensure the latest version is installed (your version is x.x.x). Check the OpenRazer repository to confirm your device is listed as supported.").replace("x.x.x", dkms_version),
+                    "passed": len(unsupported_devices) == 0
+                })
 
     except Exception as e:
         print("Troubleshooter failed to complete!")

@@ -128,6 +128,9 @@ class Backend(_backend.Backend):
         unknown_list = self._get_filtered_lsusb_list()
         form_factor = self._get_form_factor("unrecognised")
 
+        if not unknown_list:
+            return []
+
         for vid, pid in unknown_list:
             devices.append({
                 "backend": self.backend_id,
