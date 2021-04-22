@@ -11,7 +11,7 @@ Project URL: https://github.com/openrazer/openrazer
 """
 
 import os
-import subprocess
+import glob
 import grp
 
 # Imported on demand:
@@ -125,16 +125,16 @@ class Backend(_backend.Backend):
         isn't set up correctly or the hardware isn't supported yet.
         """
         devices = []
-        unknown_list = self._get_filtered_lsusb_list()
+        unknown_list = self._get_unmanaged_razer_usb_pids()
         form_factor = self._get_form_factor("unrecognised")
 
         if not unknown_list:
             return []
 
-        for vid, pid in unknown_list:
+        for pid in unknown_list:
             devices.append({
                 "backend": self.backend_id,
-                "name": "{0}:{1}".format(vid, pid),
+                "name": "{0}:{1}".format("1532", pid),
                 "form_factor": form_factor,
             })
 
@@ -1010,47 +1010,41 @@ class Backend(_backend.Backend):
 
         return zone_labels, zone_icons
 
-    def _get_filtered_lsusb_list(self):
+    def _get_unmanaged_razer_usb_pids(self):
         """
-        Scans 'lsusb' for incompatible Razer devices. As the daemon doesn't recognise them,
-        they can be listed, but cannot be interacted with. Excludes already connected devices.
+        Returns a list of PIDs of Razer hardware that is physically plugged in,
+        but is inaccessible by the daemon.
+
+        This usually means the installation is incomplete or the device is not
+        supported by the driver.
         """
-        all_usb_ids = []
-        reg_ids = []
-        unreg_ids = []
+        all_usb_pids = []
+        reg_pids = []
+        unreg_pids = []
 
-        # Strip lsusb to just get VIDs and PIDs
-        try:
-            lsusb = subprocess.Popen("lsusb", stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
-        except FileNotFoundError:
-            self.debug("'lsusb' not available, unable to determine if product is connected.")
-            return None
+        # Get list of USB VIDs and PIDs plugged into the system.
+        vendor_files = glob.glob("/sys/bus/usb/devices/*/idVendor")
+        for vendor in vendor_files:
+            with open(vendor, "r") as f:
+                vid = str(f.read()).strip().upper()
+                if vid == "1532":
+                    with open(os.path.dirname(vendor) + "/idProduct") as f:
+                        pid = str(f.read()).strip().upper()
+                        all_usb_pids.append(pid)
 
-        for usb in lsusb.split("\n"):
-            if len(usb) > 0:
-                try:
-                    vidpid = usb.split(" ")[5].split(":")
-                    all_usb_ids.append([vidpid[0].upper(), vidpid[1].upper()])
-                except AttributeError:
-                    pass
-
-        # Get VIDs and PIDs of current devices to exclude them.
+        # Get VIDs and PIDs from daemon to exclude them.
         if self.devices:
             for device in self.devices:
                 vidpid = self._get_device_vid_pid(device)
-                reg_ids.append([vidpid.get("vid"), vidpid.get("pid")])
+                reg_pids.append(vidpid.get("pid"))
 
         # Identify Razer VIDs that are not registered in the daemon
-        for usb in all_usb_ids:
-            if usb[0] != "1532":
+        for usb in all_usb_pids:
+            if usb in reg_pids:
                 continue
+            unreg_pids.append(usb)
 
-            if usb in reg_ids:
-                continue
-
-            unreg_ids.append(usb)
-
-        return unreg_ids
+        return unreg_pids
 
     def _get_device_vid_pid(self, rdevice):
         """
