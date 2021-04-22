@@ -31,6 +31,18 @@ except Exception:
     PYTHON_LIB_PRESENT = False
 
 
+def __get_razer_usb_pids():
+    razer_usb_pids = []
+    vendor_files = glob.glob("/sys/bus/usb/devices/*/idVendor")
+    for vendor in vendor_files:
+        with open(vendor, "r") as f:
+            vid = str(f.read()).strip().upper()
+            if vid == "1532":
+                with open(os.path.dirname(vendor) + "/idProduct") as f:
+                    pid = str(f.read()).strip().upper()
+                    razer_usb_pids.append(pid)
+    return razer_usb_pids
+
 def _is_daemon_installed(_):
     return {
         "test_name": _("Daemon is installed"),
@@ -211,6 +223,19 @@ def _is_sysfs_plugdev_permissions_ok(_):
     }
 
 
+def _is_razer_device_connected(_):
+    razer_usb_pids = __get_razer_usb_pids()
+
+    return {
+        "test_name": _("Razer hardware is present for kernel"),
+        "suggestions": [
+            _("The Linux kernel does not see hardware with a VID of 1532."),
+            _("Check the device and USB port is working. Try a different port."),
+        ],
+        "passed": len(razer_usb_pids) > 0
+    }
+
+
 def _check_device_support_list(_):
     remote_get_url = "https://openrazer.github.io/api/devices.json"
     remote_device_list = None
@@ -238,15 +263,7 @@ def _check_device_support_list(_):
         return _remote_failed()
 
     # Get list of USB VIDs and PIDs plugged into the system.
-    razer_usb_pids = []
-    vendor_files = glob.glob("/sys/bus/usb/devices/*/idVendor")
-    for vendor in vendor_files:
-        with open(vendor, "r") as f:
-            vid = str(f.read()).strip().upper()
-            if vid == "1532":
-                with open(os.path.dirname(vendor) + "/idProduct") as f:
-                    pid = str(f.read()).strip().upper()
-                    razer_usb_pids.append(pid)
+    razer_usb_pids = __get_razer_usb_pids()
 
     # Check Razer PIDs against remote device list
     try:
@@ -345,6 +362,7 @@ def troubleshoot(_):
         if os.path.exists("/sys/firmware/efi"):
             results.append(_is_secure_boot_enabled(_))
 
+        results.append(_is_razer_device_connected(_))
         results.append(_is_user_in_plugdev_group(_))
         results.append(_is_sysfs_plugdev_permissions_ok(_))
         results.append(_check_device_support_list(_))
