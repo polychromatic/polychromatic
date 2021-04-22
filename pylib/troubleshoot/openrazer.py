@@ -198,6 +198,67 @@ def _is_sysfs_plugdev_permissions_ok(_):
         }
 
 
+def _check_device_support_list(_):
+    remote_get_url = "https://openrazer.github.io/api/devices.json"
+    remote_device_list = None
+    missing_pids = []
+
+    try:
+        request = requests.get(remote_get_url)
+        remote_device_list = request.json()
+    except Exception as e:
+        # Gracefully ignore connection errors
+        print("Could not retrieve OpenRazer data: {0}\n{1}".format(remote_get_url, str(e)))
+
+    def _remote_failed():
+        return {
+            "test_name": _("Check device compatibility"),
+            "suggestions": [
+                _("Unable to retrieve this data from OpenRazer's website."),
+                _("Check the OpenRazer website to confirm your device is listed as supported."),
+                _("If you're checking OpenRazer's GitHub repository, check the 'stable' branch."),
+            ],
+            "passed": None
+        }
+
+    if not remote_device_list:
+        return _remote_failed()
+
+    # Get list of USB VIDs and PIDs plugged into the system.
+    razer_usb_pids = []
+    vendor_files = glob.glob("/sys/bus/usb/devices/*/idVendor")
+    for vendor in vendor_files:
+        with open(vendor, "r") as f:
+            vid = str(f.read()).strip().upper()
+            if vid == "1532":
+                with open(os.path.dirname(vendor) + "/idProduct") as f:
+                    pid = str(f.read()).strip().upper()
+                    razer_usb_pids.append(pid)
+
+    # Check Razer PIDs against remote device list
+    try:
+        remote_pids = []
+        for device in remote_device_list:
+            remote_pids.append(device["pid"])
+    except KeyError as e:
+        print("Remote device list contains invalid data: " + remote_get_url)
+        return _remote_failed()
+
+    for pid in razer_usb_pids:
+        if not pid in remote_pids:
+            missing_pids.append("1532:" + pid)
+
+    return {
+        "test_name": _("Check device compatibility"),
+        "suggestions": [
+            _("The following PIDs are not supported in the latest stable release of OpenRazer:"),
+            ", ".join(missing_pids),
+            _("Check OpenRazer's issues and pull requests to see the status for your device. Create an issue if necessary."),
+        ],
+        "passed": len(missing_pids) == 0
+    }
+
+
 def _is_openrazer_up_to_date(_):
     if PYTHON_LIB_PRESENT:
         local_version = rclient.__version__
@@ -211,7 +272,7 @@ def _is_openrazer_up_to_date(_):
                 remote_version = request.text.strip()
         except Exception as e:
             # Gracefully ignore connection errors
-            print("Could not retrieve OpenRazer data: {0}\n{1}".format(str(e), remote_get_url))
+            print("Could not retrieve OpenRazer data: {0}\n{1}".format(remote_get_url, str(e)))
             request = None
 
         def _is_version_newer_then(verA, verB):
@@ -244,7 +305,7 @@ def _is_openrazer_up_to_date(_):
             "suggestions": [
                 _("Unable to retrieve this data from OpenRazer's website."),
                 _("Check the OpenRazer website to confirm your device is listed as supported."),
-                _("If you're checking the GitHub repository, check the 'stable' branch."),
+                _("If you're checking OpenRazer's GitHub repository, check the 'stable' branch."),
             ],
             "passed": None
         }
@@ -273,6 +334,7 @@ def troubleshoot(_):
 
         results.append(_is_user_in_plugdev_group(_))
         results.append(_is_sysfs_plugdev_permissions_ok(_))
+        results.append(_check_device_support_list(_))
         results.append(_is_openrazer_up_to_date(_))
 
     except Exception as e:
