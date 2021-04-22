@@ -112,6 +112,19 @@
        <number>0</number>
       </property>
       <item>
+       <widget class="QPushButton" name="CopyToClipboard">
+        <property name="text">
+         <string>Copy to Clipboard</string>
+        </property>
+        <property name="icon">
+         <iconset theme="edit-copy"/>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+C</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

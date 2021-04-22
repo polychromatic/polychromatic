@@ -19,10 +19,11 @@ from . import shared
 from . import procviewer
 
 from PyQt5.QtCore import Qt, QThread
-from PyQt5.QtGui import QPixmap, QFont, QIcon
+from PyQt5.QtGui import QBrush, QPixmap, QFont, QIcon
 from PyQt5.QtWidgets import QWidget, QMenuBar, QMenu, QAction, QLabel, QDialog, \
                             QPushButton, QTreeWidget, QTreeWidgetItem, \
-                            QTextEdit, QButtonGroup, QProgressBar, QMessageBox
+                            QTextEdit, QButtonGroup, QProgressBar, QMessageBox, \
+                            QApplication
 
 
 class MenuBar(object):
@@ -207,6 +208,7 @@ class MenuBar(object):
             label = self.result_window.findChild(QLabel, "Title")
             tree = self.result_window.findChild(QTreeWidget, "Results")
             column = tree.invisibleRootItem()
+            btn_copy = self.result_window.findChild(QPushButton, "CopyToClipboard")
 
             if not self.appdata.system_qt_theme:
                 self.result_window.findChild(QPushButton, "Close").setIcon(self.widgets.get_icon_qt("general", "close"))
@@ -227,6 +229,7 @@ class MenuBar(object):
                     item.setIcon(0, QIcon(common.get_icon("general", "unknown")))
 
                 item.setText(1, result["test_name"])
+                item.copyable = False
 
                 # Provide suggestions on failures
                 if not result["passed"]:
@@ -235,11 +238,30 @@ class MenuBar(object):
                     suggestions = result["suggestions"]
                     for line in suggestions:
                         subitem = QTreeWidgetItem()
-                        subitem.setText(1, "• " + line)
+                        if line.startswith("$"):
+                            text = line
+                            subitem.setBackground(1, QBrush(Qt.black))
+                            subitem.setForeground(1, QBrush(Qt.green))
+                            subitem.copyable = True
+                        else:
+                            text = "• " + line
+                            subitem.setDisabled(True)
+                        subitem.setText(1, text)
                         subitem.setToolTip(1, line)
-                        subitem.setDisabled(True)
                         item.addChild(subitem)
                 column.addChild(item)
+
+            # Commands can be copied to clipboard for convenience
+            def _change_option():
+                selected = tree.selectedItems()[0]
+                btn_copy.setHidden(selected.copyable == False)
+            tree.itemSelectionChanged.connect(_change_option)
+
+            def _copy_to_clipboard():
+                selected_text = tree.selectedItems()[0].text(1).replace("$ ", "")
+                QApplication.clipboard().setText(selected_text)
+            btn_copy.setHidden(True)
+            btn_copy.clicked.connect(_copy_to_clipboard)
 
             def _close_troubleshooter():
                 self.result_window.close()
