@@ -186,16 +186,29 @@ def _is_sysfs_plugdev_permissions_ok(_):
 
     if os.path.exists(log_path):
         with open(log_path) as f:
-            log = f.readlines()
+            full_log = f.read()
+
+        session_start = full_log.rfind("Initialising Daemon")
+        session_log = full_log[session_start:]
+        perm_ok = session_log.find("not owned by plugdev") == -1
 
         return {
-            "test_name": _("Check OpenRazer log for plugdev permission errors"),
+            "test_name": _("Device can be accessed using plugdev permissions"),
             "suggestions": [
-                _("Restarting (or replugging) usually fixes the problem."),
-                _("To reset this error, clear the log:") + ' ' + log_path,
+                _("Restarting the daemon or replugging the hardware usually fixes the problem."),
+                _("If not, the udev rules for your distribution need investigating."),
+                _("Restart the daemon to clear this message."),
             ],
-            "passed": True if "".join(log).find("Could not access /sys/") == -1 else False
+            "passed": perm_ok
         }
+
+    return {
+        "test_name": _("Device can be accessed using plugdev permissions"),
+        "suggestions": [
+            _("The log does not exist. Start the daemon and try again."),
+        ],
+        "passed": None
+    }
 
 
 def _check_device_support_list(_):
