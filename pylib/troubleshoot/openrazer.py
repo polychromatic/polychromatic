@@ -124,19 +124,27 @@ def troubleshoot(_):
         # Is secure boot the problem?
         if os.path.exists("/sys/firmware/efi"):
             sb_sysfile = glob.glob("/sys/firmware/efi/efivars/SecureBoot*")
+
+            sb_reason = _("Secure Boot prevents the driver from loading, as OpenRazer's kernel modules built by DKMS are usually unsigned.")
+
             if len(sb_sysfile) > 0:
-                # The last digit of this sys file indicates whether secure boot is enabled
+                # The last digit of this sysfs file indicates whether secure boot is enabled
                 secureboot = subprocess.Popen(["od", "--address-radix=n", "--format=u1", sb_sysfile[0]], stdout=subprocess.PIPE)
                 status = secureboot.communicate()[0].decode("utf-8").split(" ")[-1].strip()
-            else:
-                # Likely secure boot is not present
-                status = 1
 
-            results.append({
-                "test_name": _("Check Secure Boot (EFI) status"),
-                "suggestion": _("Secure boot is currently enabled. OpenRazer's kernel modules are unsigned, so these cannot be loaded while Secure Boot is enabled. Either disable Secure Boot in the EFI firmware settings, or sign the modules yourself."),
-                "passed": True if int(status) == 0 else False
-            })
+                results.append({
+                    "test_name": _("Check Secure Boot (EFI) status"),
+                    "suggestion": _("Secure boot is enabled. Turn it off in the system's EFI settings or sign the modules yourself.") + ' ' + sb_reason,
+                    "passed": True if int(status) == 0 else False
+                })
+
+            else:
+                # Possibly "invalid argument". Can't be sure if it's on or off.
+                results.append({
+                    "test_name": _("Check Secure Boot (EFI) status"),
+                    "suggestion": _("Unable to automatically check. If it's enabled, turn it off in the system's EFI settings or sign the modules yourself.") + ' ' + sb_reason,
+                    "passed": None
+                })
 
         # Is user in plugdev group?
         groups = subprocess.Popen(["groups"], stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
