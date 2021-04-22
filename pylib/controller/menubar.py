@@ -214,13 +214,22 @@ class MenuBar(object):
             all_passed = True
             for result in results:
                 item = QTreeWidgetItem()
-                item.setText(0, _("Passed") if result["passed"] else _("Failed"))
+
+                # "passed" must be either: True (Passed); False (Failed); None (Unknown)
+                if result["passed"] is True:
+                    item.setText(0, _("Passed"))
+                    item.setIcon(0, QIcon(common.get_icon("general", "success")))
+                elif result["passed"] is False:
+                    item.setText(0, _("Failed"))
+                    item.setIcon(0, QIcon(common.get_icon("general", "serious")))
+                else:
+                    item.setText(0, _("Unknown"))
+                    item.setIcon(0, QIcon(common.get_icon("general", "unknown")))
+
                 item.setText(1, result["test_name"])
-                item.setIcon(0, QIcon(common.get_icon("general", "success")))
 
                 # Provide suggestions on failures
                 if not result["passed"]:
-                    item.setIcon(0, QIcon(common.get_icon("general", "serious")))
                     all_passed = False
 
                     suggestion = result["suggestion"].split(". ")
