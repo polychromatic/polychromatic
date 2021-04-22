@@ -4,7 +4,7 @@
 # Copyright (C) 2020-2021 Luke Horwell <code@horwell.me>
 #
 """
-Troubleshooter for OpenRazer 2.x.
+Troubleshooter for OpenRazer >2.0 and 3.x series.
 
 Users occasionally may end up with installation problems due to the nature of
 having a driver module and requirement of being in the 'plugdev' group.
@@ -12,8 +12,8 @@ having a driver module and requirement of being in the 'plugdev' group.
 Troubleshooting this aims to inform the user and prompt some guidelines to
 get the system up and running again.
 
-The future of OpenRazer (3.0) aims to move to userspace, which will eliminate
-a lot of these issues.
+The future of OpenRazer aims to move to userspace, which will eliminate
+a lot of the common driver issues.
 """
 
 import glob
@@ -49,7 +49,9 @@ def troubleshoot(_):
         # Can openrazer-daemon be found?
         results.append({
             "test_name": _("Daemon is installed"),
-            "suggestion": _("Install the 'openrazer-meta' package for your distribution."),
+            "suggestions": [
+                _("Install the 'openrazer-meta' package for your distribution.")
+            ],
             "passed": True if shutil.which("openrazer-daemon") != None else False
         })
 
@@ -63,14 +65,20 @@ def troubleshoot(_):
 
         results.append({
             "test_name": _("Daemon is running"),
-            "suggestion": _("Start the daemon from the terminal. Look out for any errors: $ openrazer-daemon -Fv"),
+            "suggestions": [
+                _("Start the daemon from the terminal. Run this command and look for errors:"),
+                "$ openrazer-daemon -Fv",
+            ],
             "passed": daemon_running
         })
 
         # Are the Python libraries working?
         results.append({
             "test_name": _("Python library is installed"),
-            "suggestion": _("Install the 'python3-openrazer' package for your distribution. Check your PYTHONPATH is correct."),
+            "suggestions": [
+                _("Install the 'python3-openrazer' package for your distribution."),
+                _("Check the PYTHONPATH environment variable is correct."),
+            ],
             "passed": PYTHON_LIB_PRESENT
         })
 
@@ -90,13 +98,19 @@ def troubleshoot(_):
 
             results.append({
                 "test_name": _("DKMS sources are installed"),
-                "suggestion": _("Install the 'openrazer-driver-dkms' package for your distribution."),
+                "suggestions": [
+                    _("Install the 'openrazer-driver-dkms' package for your distribution."),
+                ],
                 "passed": dkms_installed_src
             })
 
             results.append({
                 "test_name": _("DKMS module has been built for this kernel version"),
-                "suggestion": _("Ensure you have the correct Linux kernel headers package installed for your distribution. Your distro's package system might not have rebuilt the DKMS module (this can happen with kernel or OpenRazer updates). Try running: $ sudo dkms install -m openrazer-driver/x.x.x").replace("x.x.x", dkms_version),
+                "suggestions": [
+                    _("Ensure you have the correct Linux kernel headers package installed for your distribution."),
+                    _("Your distro's package system might not have rebuilt the DKMS module (this can happen with kernel or OpenRazer updates). Try running:"),
+                    "$ sudo dkms install -m openrazer-driver/x.x.x".replace("x.x.x", dkms_version),
+                ],
                 "passed": dkms_installed_built
             })
 
@@ -107,7 +121,10 @@ def troubleshoot(_):
 
         results.append({
             "test_name": _("DKMS module can be probed"),
-            "suggestion": _("For full error details, run $ sudo modprobe razerkbd"),
+            "suggestions": [
+                _("For full error details, run:"),
+                "$ sudo modprobe razerkbd",
+            ],
             "passed": True if code == 0 else False
         })
 
@@ -117,7 +134,10 @@ def troubleshoot(_):
 
         results.append({
             "test_name": _("DKMS module is currently loaded"),
-            "suggestion": _("For full error details, run $ sudo modprobe razerkbd"),
+            "suggestions": [
+                _("For full error details, run:"),
+                "$ sudo modprobe razerkbd"
+            ],
             "passed": True if output.find("razer") != -1 else False
         })
 
@@ -134,7 +154,10 @@ def troubleshoot(_):
 
                 results.append({
                     "test_name": _("Check Secure Boot (EFI) status"),
-                    "suggestion": _("Secure boot is enabled. Turn it off in the system's EFI settings or sign the modules yourself.") + ' ' + sb_reason,
+                    "suggestions": [
+                        _("Secure boot is enabled. Turn it off in the system's EFI settings or sign the modules yourself."),
+                        sb_reason,
+                    ],
                     "passed": True if int(status) == 0 else False
                 })
 
@@ -142,7 +165,10 @@ def troubleshoot(_):
                 # Possibly "invalid argument". Can't be sure if it's on or off.
                 results.append({
                     "test_name": _("Check Secure Boot (EFI) status"),
-                    "suggestion": _("Unable to automatically check. If it's enabled, turn it off in the system's EFI settings or sign the modules yourself.") + ' ' + sb_reason,
+                    "suggestions": [
+                        _("Unable to automatically check. If it's enabled, turn it off in the system's EFI settings or sign the modules yourself."),
+                        sb_reason,
+                    ],
                     "passed": None
                 })
 
@@ -150,7 +176,11 @@ def troubleshoot(_):
         groups = subprocess.Popen(["groups"], stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
         results.append({
             "test_name": _("User account has been added to the 'plugdev' group"),
-            "suggestion": _("If you've recently installed, you may need to restart the computer. Otherwise, run this command, log out, then log back in to the computer: $ sudo gpasswd -a $USER plugdev"),
+            "suggestions": [
+                _("Run this command, log out, then log back in to the computer:"),
+                "$ sudo gpasswd -a $USER plugdev",
+                _("If you've recently installed, you may need to restart the computer."),
+            ],
             "passed": True if groups.find("plugdev") != -1 else False
         })
 
@@ -162,7 +192,10 @@ def troubleshoot(_):
 
             results.append({
                 "test_name": _("Check OpenRazer log for plugdev permission errors"),
-                "suggestion": _("Restarting (or replugging) usually fixes the problem. Clear the log to reset this message."),
+                "suggestions": [
+                    _("Restarting (or replugging) usually fixes the problem."),
+                    _("To reset this error, clear the log:") + ' ' + log_path,
+                ],
                 "passed": True if "".join(log).find("Could not access /sys/") == -1 else False
             })
 
@@ -223,7 +256,10 @@ def troubleshoot(_):
             if type(unsupported_devices) == list:
                 results.append({
                     "test_name": _("Check for unsupported hardware"),
-                    "suggestion": _("Ensure the latest version is installed (your version is x.x.x). Check the OpenRazer repository to confirm your device is listed as supported.").replace("x.x.x", dkms_version),
+                    "suggestions": [
+                        _("Ensure the latest version is installed (your version is x.x.x).").replace("x.x.x", dkms_version),
+                        _("Check the OpenRazer repository to confirm your device is listed as supported."),
+                    ],
                     "passed": len(unsupported_devices) == 0
                 })
 

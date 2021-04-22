@@ -232,8 +232,8 @@ class MenuBar(object):
                 if not result["passed"]:
                     all_passed = False
 
-                    suggestion = result["suggestion"].split(". ")
-                    for line in suggestion:
+                    suggestions = result["suggestions"]
+                    for line in suggestions:
                         subitem = QTreeWidgetItem()
                         subitem.setText(1, "• " + line)
                         subitem.setToolTip(1, line)
