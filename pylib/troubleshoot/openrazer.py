@@ -17,6 +17,7 @@ a lot of the common driver issues.
 """
 
 import glob
+import requests
 import os
 import subprocess
 import shutil
@@ -261,6 +262,56 @@ def troubleshoot(_):
                         _("Check the OpenRazer repository to confirm your device is listed as supported."),
                     ],
                     "passed": len(unsupported_devices) == 0
+                })
+
+        if PYTHON_LIB_PRESENT:
+            local_version = rclient.__version__
+            remote_version = None
+            remote_get_url = "https://openrazer.github.io/api/latest_version.txt"
+            try:
+                request = requests.get(remote_get_url)
+
+                # Response should be 3 digits, e.g. 3.0.1
+                if request.status_code == 200 and len(request.text.strip().split(".")) == 3:
+                    remote_version = request.text.strip()
+            except Exception as e:
+                # Gracefully ignore connection errors
+                print("Could not retrieve OpenRazer data: {0}\n{1}".format(str(e), remote_get_url))
+                request = None
+
+            def _is_version_newer_then(verA, verB):
+                verA = verA.split(".")
+                verB = verB.split(".")
+                is_new = False
+
+                if int(verA[0]) > int(verB[0]):
+                    is_new = True
+
+                if float(verA[1] + '.' + verA[2]) > float(verB[1] + '.' + verB[2]):
+                    is_new = True
+
+                return is_new
+
+            if remote_version:
+                results.append({
+                    "test_name": _("OpenRazer is the latest version"),
+                    "suggestions": [
+                        _("There is a new version of OpenRazer available."),
+                        _("New versions add support for more devices and address device-specific issues."),
+                        _("Your version: 0.0.0").replace("0.0.0", local_version),
+                        _("Latest version: 0.0.0").replace("0.0.0", remote_version),
+                    ],
+                    "passed": _is_version_newer_then(remote_version, local_version) is not True
+                })
+            else:
+                results.append({
+                    "test_name": _("OpenRazer is the latest version"),
+                    "suggestions": [
+                        _("Unable to retrieve this data from OpenRazer's website."),
+                        _("Check the OpenRazer website to confirm your device is listed as supported."),
+                        _("If you're checking the GitHub repository, check the 'stable' branch."),
+                    ],
+                    "passed": None
                 })
 
     except Exception as e:
