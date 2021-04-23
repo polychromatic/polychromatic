@@ -90,12 +90,13 @@ def _is_pylib_installed(_):
 def _run_dkms_checks(_):
     dkms_installed_src = None
     dkms_installed_built = None
+    dkms_version = "<version>"
     uname = os.uname()
+    kernel_version = uname.release
     subresults = []
 
     if PYTHON_LIB_PRESENT:
         dkms_version = rclient.__version__
-        kernel_version = uname.release
         expected_dkms_src = "/var/lib/dkms/openrazer-driver/{0}".format(dkms_version)
         expected_dkms_build = "/var/lib/dkms/openrazer-driver/kernel-{0}-{1}".format(uname.release, uname.machine)
 
@@ -143,7 +144,8 @@ def _run_dkms_checks(_):
         "test_name": _("DKMS module is currently loaded"),
         "suggestions": [
             _("For full error details, run:"),
-            "$ sudo modprobe razerkbd"
+            "$ sudo modprobe razerkbd",
+            _("If you've just installed, it is recommended to restart the computer."),
         ],
         "passed": True if output.find("razer") != -1 else False
     })
@@ -187,7 +189,7 @@ def _is_user_in_plugdev_group(_):
         "suggestions": [
             _("Run this command, log out, then log back in to the computer:"),
             "$ sudo gpasswd -a $USER plugdev",
-            _("If you've recently installed, you may need to restart the computer."),
+            _("If you've just installed, it is recommended to restart the computer."),
         ],
         "passed": True if groups.find("plugdev") != -1 else False
     }
@@ -339,6 +341,14 @@ def _is_openrazer_up_to_date(_):
             ],
             "passed": None
         }
+
+    return {
+        "test_name": _("OpenRazer is the latest version"),
+        "suggestions": [
+            _("Install the 'openrazer-meta' package for your distribution.")
+        ],
+        "passed": False
+    }
 
 
 def troubleshoot(_):
