@@ -111,7 +111,7 @@ class MenuBar(object):
         _set_icon("actionHideMenuBar", "general", "pin")
 
         # -- Tools
-        _set_icon("menuTroubleshoot", "emblems", "utility", QMenu)
+        _set_icon("actionTroubleshootOpenRazer", "emblems", "utility")
         _set_icon("actionRestartTrayApplet", "general", "tray-applet")
         _set_icon("actionProcessViewer", "emblems", "software")
 

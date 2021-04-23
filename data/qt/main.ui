@@ -658,23 +658,14 @@
      <addaction name="actionOpenRazerReleaseNotes"/>
      <addaction name="separator"/>
      <addaction name="actionOpenRazerConfigure"/>
+     <addaction name="actionTroubleshootOpenRazer"/>
+     <addaction name="separator"/>
      <addaction name="actionOpenRazerOpenLog"/>
      <addaction name="actionOpenRazerRestartDaemon"/>
      <addaction name="separator"/>
      <addaction name="actionOpenRazerAbout"/>
     </widget>
-    <widget class="QMenu" name="menuTroubleshoot">
-     <property name="title">
-      <string>Troubleshoot</string>
-     </property>
-     <property name="icon">
-      <iconset theme="applications-utilities">
-       <normaloff>.</normaloff>.</iconset>
-     </property>
-     <addaction name="actionTroubleshootOpenRazer"/>
-    </widget>
     <addaction name="menuOpenRazer"/>
-    <addaction name="menuTroubleshoot"/>
     <addaction name="separator"/>
     <addaction name="actionRestartTrayApplet"/>
     <addaction name="actionProcessViewer"/>
@@ -1055,11 +1046,10 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>
+    <iconset theme="applications-utilities"/>
    </property>
    <property name="text">
-    <string extracomment="Troubleshoot option">OpenRazer Driver/Daemon</string>
+    <string>Troubleshoot</string>
    </property>
   </action>
   <action name="actionRefreshTab">
