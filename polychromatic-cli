@@ -67,6 +67,7 @@ pref.init(_)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 verbose = False
 
+
 ########################################
 # Pretty columns
 ########################################
@@ -206,11 +207,11 @@ if args.help:
         ],
         [
             dbg.action + "  -n, --name" + dbg.warning + " {name}",
-            dbg.normal + _("Select a device by its name")
+            dbg.normal + _("Select a device by name")
         ],
         [
             dbg.action + "  -s, --serial" + dbg.warning + " {serial}",
-            dbg.normal + _("Select a device by its serial number")
+            dbg.normal + _("Select a device by serial number")
         ],
         ["", ""],
         [
@@ -338,7 +339,7 @@ if args.list_devices:
         _("Name") + " (-n)",
         _("Form Factor") + " (-d)",
         _("Serial") + " (-s)",
-        _("Zones")
+        _("Zones") + " (-z)"
     ]]
 
     for device in device_list:
