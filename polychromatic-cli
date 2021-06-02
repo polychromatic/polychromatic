@@ -32,7 +32,10 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
     try:
         import pylib.preferences as pref
         import pylib.common as common
+        import pylib.effects as effects
+        import pylib.fileman as fileman
         import pylib.locales as locales
+        import pylib.procpid as procpid
         import pylib.middleman as middleman_module
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
@@ -43,7 +46,10 @@ else:
     try:
         import polychromatic.preferences as pref
         import polychromatic.common as common
+        import polychromatic.effects as effects
+        import polychromatic.fileman as fileman
         import polychromatic.locales as locales
+        import polychromatic.procpid as procpid
         import polychromatic.middleman as middleman_module
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
@@ -152,6 +158,7 @@ parser.add_argument("-z", "--zone", action="store")
 parser.add_argument("-o", "--option", action="store")
 parser.add_argument("-p", "--parameter", action="store")
 parser.add_argument("-c", "--colours", action="store")
+parser.add_argument("-e", "--effect", action="store")
 
 # Special handling
 parser.add_argument("--dpi", action="store")
@@ -230,6 +237,14 @@ if args.help:
         [
             dbg.action + "  -c, --colours" + dbg.warning + " {hex1,hex2}",
             dbg.normal + _("Set colours in hex format (#RRGGBB). Comma separated")
+        ],
+        [
+            dbg.action + "  -e, --effect" + dbg.warning + " {name/path}",
+            dbg.normal + _("Apply a custom (software) effect by name or path")
+        ],
+        [
+            "",
+            dbg.warning + _("For hardware effects, use --option (-o)")
         ],
         [
             dbg.action + "  --dpi" + dbg.warning + " {X}[,Y]",
@@ -557,6 +572,42 @@ if args.dpi:
             dbg.stdout(_("Error: [device] - Backend threw exception:").replace("[device]", device_name), dbg.error)
             dbg.stdout(result, dbg.error)
 
+    exit(0)
+
+
+########################################
+# Set custom (software) effect
+########################################
+if args.effect:
+    effectman = effects.EffectFileManagement(i18n, _, dbg)
+    requested_path = None
+
+    # User specifies absolute path
+    if os.path.isfile(args.effect):
+        requested_path = os.path.abspath(args.effect)
+
+    # User specifies effect by name
+    else:
+        requested_name = args.effect
+        file_list = effectman.get_item_list()
+        for effect in file_list:
+            if effect["name"] == requested_name:
+                requested_path = effect["path"]
+                break
+
+    if not requested_path:
+        dbg.stdout(_("Unable to locate the effect '[]'").replace("[]", args.effect), dbg.error)
+        exit(1)
+
+    data = effectman.get_item(requested_path)
+    if type(data) == int:
+        # Error details already printed by the get_item() function
+        exit(1)
+
+    procmgr = procpid.ProcessManager("helper")
+    procmgr.start_component(["--run-fx", requested_path, "--device-name", data["map_device"]])
+    if verbose:
+        dbg.stdout("Successfully executed request.", dbg.success)
     exit(0)
 
 
