@@ -937,7 +937,6 @@ class IconPicker(object):
         self.dialog = get_ui_widget(appdata, "icon-picker", q_toplevel=QDialog)
         self.dialog_btns = self.dialog.findChild(QDialogButtonBox, "buttonBox")
         self.tabs = self.dialog.findChild(QTabWidget, "IconTabs")
-        self.custom_icon_toolbar = self.dialog.findChild(QWidget, "CustomIconToolbar")
         self.custom_icon_add = self.dialog.findChild(QPushButton, "ImportCustomIcon")
         self.custom_icon_del = self.dialog.findChild(QPushButton, "DeleteCustomIcon")
         self.gif_warning = self.dialog.findChild(QWidget, "AnimatedGIFWarningLabel")
@@ -1003,10 +1002,8 @@ class IconPicker(object):
 
         # Prepare and open dialog
         self._setup_drag_drop_custom_icon()
-        self.custom_icon_toolbar.setHidden(True)
         self.gif_warning.setHidden(True)
         self.button_group.buttonClicked.connect(self.select_icon)
-        self.tabs.currentChanged.connect(self.change_tab)
         self.custom_icon_add.clicked.connect(self.import_custom_icon)
         self.custom_icon_del.clicked.connect(self.delete_custom_icon)
 
@@ -1077,9 +1074,6 @@ class IconPicker(object):
             if button.icon_path == self.current_icon:
                 button.setChecked(True)
                 self.tabs.setCurrentIndex(button.tab_index)
-
-                if button.tab_index == 4:
-                    self.custom_icon_toolbar.setHidden(False)
                 break
 
     def _make_icon_button(self, icon_path, tab_index):
@@ -1096,13 +1090,6 @@ class IconPicker(object):
         self.button_group.addButton(button)
 
         return button
-
-    def change_tab(self, button):
-        """
-        Tab index changed. Update visibility of import/delete controls depending
-        if the page is Custom (the last tab)
-        """
-        self.custom_icon_toolbar.setHidden(self.tabs.currentIndex() != self.tabs.count() - 1)
 
     def select_icon(self, button):
         """

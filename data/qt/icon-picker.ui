@@ -101,7 +101,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>441</width>
+               <width>480</width>
                <height>187</height>
               </rect>
              </property>
@@ -143,7 +143,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>441</width>
+               <width>480</width>
                <height>187</height>
               </rect>
              </property>
@@ -189,7 +189,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>441</width>
+               <width>480</width>
                <height>187</height>
               </rect>
              </property>
@@ -235,7 +235,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>441</width>
+               <width>480</width>
                <height>187</height>
               </rect>
              </property>
@@ -252,9 +252,9 @@
          <attribute name="title">
           <string extracomment="Icon Picker: Tab name for the user to store their own icons">Custom</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="spacing">
-           <number>0</number>
+           <number>5</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -281,80 +281,80 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>441</width>
+               <width>435</width>
                <height>187</height>
               </rect>
              </property>
             </widget>
            </widget>
           </item>
+          <item>
+           <widget class="QWidget" name="CustomIconToolbar" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>40</width>
+              <height>0</height>
+             </size>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="ImportCustomIcon">
+               <property name="toolTip">
+                <string extracomment="Tooltip hovering over the icon picker's browse button">Browse for an icon to import</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset theme="folder">
+                 <normaloff>.</normaloff>.</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="DeleteCustomIcon">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="toolTip">
+                <string extracomment="Tooltip hovering over the icon picker's delete button">Delete this custom icon from your list</string>
+               </property>
+               <property name="icon">
+                <iconset theme="delete">
+                 <normaloff>.</normaloff>.</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>157</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
          </layout>
         </widget>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="CustomIconToolbar" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>35</width>
-          <height>0</height>
-         </size>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QPushButton" name="ImportCustomIcon">
-           <property name="toolTip">
-            <string extracomment="Tooltip hovering over the icon picker's browse button">Browse for an icon to import</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset theme="folder">
-             <normaloff>.</normaloff>.</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="DeleteCustomIcon">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="toolTip">
-            <string extracomment="Tooltip hovering over the icon picker's delete button">Delete this custom icon from your list</string>
-           </property>
-           <property name="icon">
-            <iconset theme="delete">
-             <normaloff>.</normaloff>.</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>157</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
        </widget>
       </item>
      </layout>
