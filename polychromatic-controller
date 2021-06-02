@@ -187,23 +187,6 @@ class MainWindow(QMainWindow):
         dbg.stdout("Initalising window...", dbg.action, 1)
         super(MainWindow, self).__init__()
 
-        # BUG: The "gtk2" theme causes a hang under OpenRazer's Python library (#317)
-        # When Polychromatic's theme is used, reload to avoid this plugin for now.
-        if "QT_QPA_PLATFORMTHEME" in list(os.environ.keys()):
-            if os.environ["QT_QPA_PLATFORMTHEME"] in ["qt5ct", "gtk2"]:
-                dbg.stdout("""
-                    \nHeads up! The 'gtk2' Qt theme has been known to hang the application (#317)
-when initalizing OpenRazer due to a bug in one of the dependencies.
-\nAs a workaround, the app will reload without QT_QPA_PLATFORMTHEME set, unless
-you have selected 'Use system Qt theme', which may trigger the bug.
-\nIf this happens, run 'unset QT_QPA_PLATFORMTHEME' in a Terminal, then
-'polychromatic-controller' and uncheck 'Use system Qt theme' in Preferences.\n""", dbg.warning)
-
-                if not app.system_qt_theme:
-                    dbg.stdout("Reloading without QT_QPA_PLATFORMTHEME...", dbg.action)
-                    del(os.environ["QT_QPA_PLATFORMTHEME"])
-                    os.execv(os.path.realpath(sys.argv[0]), sys.argv)
-
         # Load UI and locales
         widget = uic.loadUi(os.path.join(common.paths.data_dir, "qt", "main.ui"), self)
         shared.translate_ui(app, widget)
