@@ -1161,7 +1161,7 @@ class IconPicker(object):
         if os.path.exists(source_path):
             self.dbg.stdout("Adding custom icon: " + source_path, self.dbg.action, 1)
             shutil.copy(source_path, target_path)
-            button = self._make_icon_button(source_path, 4)
+            button = self._make_icon_button(target_path, 4)
             self.tab_index_widgets[4].layout().addWidget(button)
 
         # Set as selected
