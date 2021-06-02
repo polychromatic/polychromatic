@@ -8,7 +8,7 @@
 
 REPO_ROOT="$(realpath "$1")"
 
-for codename in "focal" "groovy" "hirsute"
+for codename in "focal" "groovy" "hirsute" "impish"
 do
     echo -e "\n$codename"
     echo -e "===================="
