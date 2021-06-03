@@ -425,7 +425,7 @@ class MenuBar(object):
         _ = self.appdata._
         logo = common.get_icon("logo", "polychromatic")
 
-        with open(os.path.join(self.appdata.paths.data_dir, "license.txt"), "r") as f:
+        with open(os.path.join(self.appdata.paths.data_dir, "licenses/app.txt"), "r") as f:
             license = f.read()
 
         links = [
@@ -564,20 +564,8 @@ class MenuBarOpenRazer(MenuBar):
             [_("Release Notes"), self.url_latest]
         ]
 
-        license = """
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-        """
+        with open(os.path.join(self.appdata.paths.data_dir, "licenses/GPLv2.txt"), "r") as f:
+            license = f.read()
 
         versions = [
             ["Daemon", self.module.devman.daemon_version],
