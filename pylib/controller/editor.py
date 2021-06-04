@@ -25,7 +25,7 @@ import time
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QRect, QItemSelectionModel, QThread, QSize, QUrl
-from PyQt5.QtGui import QIcon, QPixmap, QFont
+from PyQt5.QtGui import QIcon, QPixmap, QFont, QColor
 from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
                             QListWidget, QTreeWidget, QLabel, QComboBox, \
                             QTreeWidgetItem, QMenu, QDialog, QDialogButtonBox, \
@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
                             QGroupBox, QRadioButton, QMainWindow, QAction, \
                             QDockWidget, QMenuBar, QToolBar, QStatusBar, \
                             QTableWidget, QWidget, QVBoxLayout, QHBoxLayout, \
-                            QScrollArea, QSpinBox, QDesktopWidget
+                            QScrollArea, QSpinBox, QDesktopWidget, QColorDialog
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # Visual mode within the WebView editor
@@ -183,7 +183,7 @@ class VisualEffectEditor(shared.TabData):
         self.dock_colours = self.window.findChild(QDockWidget, "ColoursDock")
         self.dock_frames = self.window.findChild(QDockWidget, "FramesDock")
 
-        # -- Layer Widgets
+        # -- Layer Dock
         self.layer_tree = self.window.findChild(QTreeWidget, "LayerTree")
         self.btn_layer_delete = self.window.findChild(QToolButton, "LayerDelete")
         self.btn_layer_duplicate = self.window.findChild(QToolButton, "LayerDuplicate")
@@ -191,7 +191,7 @@ class VisualEffectEditor(shared.TabData):
         self.btn_layer_move_up = self.window.findChild(QToolButton, "LayerMoveUp")
         self.btn_layer_new = self.window.findChild(QToolButton, "LayerNew")
 
-        # -- Frame Widgets
+        # -- Frame Dock
         self.frame_table = self.window.findChild(QTableWidget, "FramesTable")
 
         self.btn_frame_new = self.window.findChild(QToolButton, "NewFrame")
@@ -210,10 +210,13 @@ class VisualEffectEditor(shared.TabData):
         self.spinner_playback_fps = self.window.findChild(QSpinBox, "PlaybackFPS")
         self.status_frame = QLabel()
 
-        # -- Colour Widgets
-        self.colours_palette = self.window.findChild(QWidget, "ColoursPalette")
-        self.colour_picker_wrapper = self.window.findChild(QWidget, "ColourPickerWrapper")
-        self.current_colour_textbox = self.window.findChild(QLineEdit, "CurrentColour")
+        # -- Colour Dock
+        self.saved_colours = self.window.findChild(QWidget, "SavedColoursWidget")
+
+        self.current_colour_block = self.window.findChild(QWidget, "CurrentColourBlock")
+        self.current_colour_textbox = self.window.findChild(QLineEdit, "CurrentColourTextBox")
+        self.btn_change_colour = self.window.findChild(QToolButton, "ChangeCurrentColour")
+
         self.label_hue = self.window.findChild(QLabel, "HueLabel")
         self.label_saturation = self.window.findChild(QLabel, "SaturationLabel")
         self.label_lightness = self.window.findChild(QLabel, "LightnessLabel")
@@ -223,8 +226,6 @@ class VisualEffectEditor(shared.TabData):
         self.btn_saturation_decrease = self.window.findChild(QToolButton, "SaturationDecrease")
         self.btn_lightness_increase = self.window.findChild(QToolButton, "LightnessIncrease")
         self.btn_lightness_decrease = self.window.findChild(QToolButton, "LightnessDecrease")
-        # ... This variable is set later in load_colours()
-        self.current_colour_change = None
 
         # Font should be applied to dock widgets
         self.docks = [self.dock_layers, self.dock_properties, self.dock_colours, self.dock_frames]
@@ -303,6 +304,7 @@ class VisualEffectEditor(shared.TabData):
         self.btn_frame_move_right.clicked.connect(self.shift_frame_right)
 
         # -- Dock: Colours (click)
+        self.btn_change_colour.clicked.connect(self.open_colour_picker)
         self.current_colour_textbox.textChanged.connect(self.set_colour_by_textbox)
         self.btn_hue_increase.clicked.connect(self.set_colour_increase_hue)
         self.btn_saturation_increase.clicked.connect(self.set_colour_increase_saturation)
@@ -422,6 +424,7 @@ class VisualEffectEditor(shared.TabData):
             self.btn_playback_loop.setIcon(self.widgets.get_icon_qt("effects", "repeat"))
 
             # -- Colour Dock
+            self.btn_change_colour.setIcon(self.widgets.get_icon_qt("general", "palette"))
             self.btn_hue_increase.setIcon(self.widgets.get_icon_qt("effects", "more"))
             self.btn_saturation_increase.setIcon(self.widgets.get_icon_qt("effects", "more"))
             self.btn_lightness_increase.setIcon(self.widgets.get_icon_qt("effects", "more"))
@@ -1392,7 +1395,6 @@ class VisualEffectEditor(shared.TabData):
         In addition, saved colours will have lighter/darker colours generated.
         """
         colours = pref.load_file(common.paths.colours)
-        fx = FX(0, 0, "Dummy", "unknown", "unknown", "X")
 
         # Current colour (picker) and label
         def _set_custom_colour(new_hex, data):
@@ -1402,11 +1404,6 @@ class VisualEffectEditor(shared.TabData):
             if colours != pref.load_file(common.paths.colours):
                 self.dbg.stdout("Colour list changed, reloading dock...", self.dbg.action, 1)
                 self.load_colours()
-
-        picker = self.widgets.create_colour_control(self.current_colour, _set_custom_colour, None, self._("Custom..."))
-        shared.clear_layout(self.colour_picker_wrapper.layout())
-        self.colour_picker_wrapper.layout().addWidget(picker)
-        self.current_colour_change = picker.findChild(QPushButton, "PickerCustom")
 
         # Populate saved colours (and variants)
         def _mk_button(parent_widget, name, hex_value):
@@ -1426,20 +1423,27 @@ class VisualEffectEditor(shared.TabData):
         container.layout().setSpacing(2)
         container.layout().setContentsMargins(0, 0, 0, 0)
 
+        edit_btn = QPushButton()
+        if not self.appdata.system_qt_theme:
+            edit_btn.setIcon(self.widgets.get_icon_qt("general", "edit"))
+        edit_btn.setText(self._("Edit"))
+        edit_btn.clicked.connect(self.edit_saved_colours)
+
         for colour in colours:
             shades = [-45, -30, -15, 0, 15, 30]
             if not self.appdata.preferences["editor"]["show_saved_colour_shades"]:
                 shades = [0]
             for percent in shades:
                 percent = float(percent / 100)
-                new_colour = fx.lightness_hex(colour["hex"], percent)
+                new_colour = self.fx.lightness_hex(colour["hex"], percent)
                 label = "{0} {1}%".format(colour["name"], int(percent * 100))
                 if percent == 0:
                     label = colour["name"]
                 _mk_button(container, label, new_colour)
 
-        shared.clear_layout(self.colours_palette.layout())
-        self.colours_palette.layout().addWidget(container)
+        shared.clear_layout(self.saved_colours.layout())
+        self.saved_colours.layout().addWidget(container)
+        self.saved_colours.layout().addWidget(edit_btn)
         self.dock_colours.setMinimumWidth(240)
 
     def new_frame(self):
@@ -1542,6 +1546,7 @@ class VisualEffectEditor(shared.TabData):
         Change the colour to draw with. If the draw tool isn't selected,
         this will automatically change.
         """
+        self.dbg.stdout("Brush colour changed: " + hex_value, self.dbg.debug, 1)
         self.current_colour = hex_value
         self.device_renderer.set_colour(hex_value)
         self.select_mode_draw()
@@ -1550,8 +1555,36 @@ class VisualEffectEditor(shared.TabData):
         if not no_textbox_update:
             self.current_colour_textbox.setText(hex_value)
 
-        if self.current_colour_change:
-            self.current_colour_change.change_colour(hex_value)
+        self.current_colour_block.setStyleSheet("QWidget {{ background-color: {0} }}".format(hex_value))
+        self._refresh_colour_tweak_controls()
+
+    def open_colour_picker(self):
+        """
+        Opens the system (Qt) colour picker for choosing a new colour on the fly.
+        """
+        dialog = QColorDialog()
+
+        # TODO: Nice to have: Use Polychromatic styling for the dialog
+        # QColorDialog() is private, so this may be tricky.
+        # This does not work!
+        shared.load_qt_theme(self.appdata, dialog)
+
+        output = dialog.getColor(title=self._("Choose Brush Colour"), initial=QColor(self.current_colour))
+
+        if not output.isValid():
+            return
+        self._set_current_colour(output.name())
+
+    def edit_saved_colours(self):
+        """
+        Opens Polychromatic's colour picker for managing the saved colour list.
+        """
+        def _update_saved_colours(new_hex, params=[]):
+            self._set_current_colour(new_hex)
+            self.load_colours()
+
+        picker = self.widgets.create_colour_control(self.current_colour, _update_saved_colours, None, self._("Saved Colours"))
+        picker.findChild(QPushButton).click()
 
     def draw_LED_to_frame(self, x, y):
         """
@@ -1610,7 +1643,6 @@ class VisualEffectEditor(shared.TabData):
         """
         if len(new_hex) < 7:
             return
-        self.dbg.stdout("New colour hex input: " + new_hex, self.dbg.action, 1)
         self._set_current_colour(new_hex, no_textbox_update=True)
 
     def _refresh_colour_tweak_controls(self):

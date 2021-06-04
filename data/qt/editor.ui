@@ -849,8 +849,8 @@ shorten the LED's lifespan.</string>
   <widget class="QDockWidget" name="ColoursDock">
    <property name="minimumSize">
     <size>
-     <width>250</width>
-     <height>347</height>
+     <width>297</width>
+     <height>377</height>
     </size>
    </property>
    <property name="features">
@@ -889,7 +889,44 @@ shorten the LED's lifespan.</string>
             <number>2</number>
            </property>
            <item>
-            <widget class="QLineEdit" name="CurrentColour">
+            <widget class="QWidget" name="CurrentColourBlock" native="true">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="baseSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QWidget { background-color: #00ff00; }</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="CurrentColourTextBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>90</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="inputMask">
               <string notr="true">\#HHHHHH</string>
              </property>
@@ -898,24 +935,25 @@ shorten the LED's lifespan.</string>
              </property>
             </widget>
            </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QWidget" name="ColourPickerWrapper" native="true">
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>2</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>2</number>
-           </property>
+           <item>
+            <widget class="QToolButton" name="ChangeCurrentColour">
+             <property name="toolTip">
+              <string extracomment="Tooltip when hovering over the &quot;custom&quot; button">Open System Colour Picker</string>
+             </property>
+             <property name="statusTip">
+              <string extracomment="Status bar hint when hovering over the &quot;custom&quot; button">Choose a custom colour using the system's colour picker</string>
+             </property>
+             <property name="text">
+              <string>Change...</string>
+             </property>
+             <property name="icon">
+              <iconset theme="color"/>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonIconOnly</enum>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -1122,13 +1160,13 @@ shorten the LED's lifespan.</string>
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="ColoursPalette">
+          <widget class="QWidget" name="SavedColoursWidget">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>230</width>
-             <height>172</height>
+             <width>277</width>
+             <height>170</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
