@@ -213,7 +213,7 @@ class VisualEffectEditor(shared.TabData):
         # -- Colour Widgets
         self.colours_palette = self.window.findChild(QWidget, "ColoursPalette")
         self.colour_picker_wrapper = self.window.findChild(QWidget, "ColourPickerWrapper")
-        self.current_colour_label = self.window.findChild(QLabel, "CurrentColourLabel")
+        self.current_colour_textbox = self.window.findChild(QLineEdit, "CurrentColour")
         self.label_hue = self.window.findChild(QLabel, "HueLabel")
         self.label_saturation = self.window.findChild(QLabel, "SaturationLabel")
         self.label_lightness = self.window.findChild(QLabel, "LightnessLabel")
@@ -303,6 +303,7 @@ class VisualEffectEditor(shared.TabData):
         self.btn_frame_move_right.clicked.connect(self.shift_frame_right)
 
         # -- Dock: Colours (click)
+        self.current_colour_textbox.textChanged.connect(self.set_colour_by_textbox)
         self.btn_hue_increase.clicked.connect(self.set_colour_increase_hue)
         self.btn_saturation_increase.clicked.connect(self.set_colour_increase_saturation)
         self.btn_lightness_increase.clicked.connect(self.set_colour_increase_lightness)
@@ -1536,7 +1537,7 @@ class VisualEffectEditor(shared.TabData):
         """
         self._swap_frame_data(1)
 
-    def _set_current_colour(self, hex_value):
+    def _set_current_colour(self, hex_value, no_textbox_update=False):
         """
         Change the colour to draw with. If the draw tool isn't selected,
         this will automatically change.
@@ -1545,8 +1546,9 @@ class VisualEffectEditor(shared.TabData):
         self.device_renderer.set_colour(hex_value)
         self.select_mode_draw()
 
-        # Only if colours dock has initialized
-        self.current_colour_label.setText(hex_value)
+        # Allows the user to keep typing when directly typing hex value
+        if not no_textbox_update:
+            self.current_colour_textbox.setText(hex_value)
 
         if self.current_colour_change:
             self.current_colour_change.change_colour(hex_value)
@@ -1600,6 +1602,16 @@ class VisualEffectEditor(shared.TabData):
             return
 
         self.dbg.stdout("Pick LED ({0},{1}). Current colour changed to {2}".format(x, y, self.current_colour), self.dbg.debug, 1)
+
+    def set_colour_by_textbox(self, new_hex):
+        """
+        Emitted when the hex value is changed. The current colour will only be
+        updated when the full hex is specified. Qt's input mask already validated this.
+        """
+        if len(new_hex) < 7:
+            return
+        self.dbg.stdout("New colour hex input: " + new_hex, self.dbg.action, 1)
+        self._set_current_colour(new_hex, no_textbox_update=True)
 
     def _refresh_colour_tweak_controls(self):
         """
