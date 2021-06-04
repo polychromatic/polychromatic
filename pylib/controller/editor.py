@@ -68,6 +68,7 @@ class VisualEffectEditor(shared.TabData):
         self.current_tool = VISUAL_MODE_ADD
         self.layer_labels = self._get_layer_labels()
         self.webview_zoom_level = 1.0
+        self.fx = FX(0, 0, "dummy", "", "", "")
 
         # Effect type
         self.effect_type = self.data["type"]
@@ -213,7 +214,16 @@ class VisualEffectEditor(shared.TabData):
         self.colours_palette = self.window.findChild(QWidget, "ColoursPalette")
         self.colour_picker_wrapper = self.window.findChild(QWidget, "ColourPickerWrapper")
         self.current_colour_label = self.window.findChild(QLabel, "CurrentColourLabel")
-        # -- -- Set later in load_colours()
+        self.label_hue = self.window.findChild(QLabel, "HueLabel")
+        self.label_saturation = self.window.findChild(QLabel, "SaturationLabel")
+        self.label_lightness = self.window.findChild(QLabel, "LightnessLabel")
+        self.btn_hue_increase = self.window.findChild(QToolButton, "HueIncrease")
+        self.btn_hue_decrease = self.window.findChild(QToolButton, "HueDecrease")
+        self.btn_saturation_increase = self.window.findChild(QToolButton, "SaturationIncrease")
+        self.btn_saturation_decrease = self.window.findChild(QToolButton, "SaturationDecrease")
+        self.btn_lightness_increase = self.window.findChild(QToolButton, "LightnessIncrease")
+        self.btn_lightness_decrease = self.window.findChild(QToolButton, "LightnessDecrease")
+        # ... This variable is set later in load_colours()
         self.current_colour_change = None
 
         # Font should be applied to dock widgets
@@ -284,13 +294,46 @@ class VisualEffectEditor(shared.TabData):
         self.action_help_donate.triggered.connect(menubar.polychromatic_donate)
         self.action_help_about.triggered.connect(menubar.about_polychromatic)
 
-        # Widgets
+        # -- Dock: Frames
         self.frame_table.itemSelectionChanged.connect(self.open_frame)
         self.btn_frame_new.clicked.connect(self.new_frame)
         self.btn_frame_delete.clicked.connect(self.delete_frame)
         self.btn_frame_clone.clicked.connect(self.clone_frame)
         self.btn_frame_move_left.clicked.connect(self.shift_frame_left)
         self.btn_frame_move_right.clicked.connect(self.shift_frame_right)
+
+        # -- Dock: Colours (click)
+        self.btn_hue_increase.clicked.connect(self.set_colour_increase_hue)
+        self.btn_saturation_increase.clicked.connect(self.set_colour_increase_saturation)
+        self.btn_lightness_increase.clicked.connect(self.set_colour_increase_lightness)
+        self.btn_hue_decrease.clicked.connect(self.set_colour_decrease_hue)
+        self.btn_saturation_decrease.clicked.connect(self.set_colour_decrease_saturation)
+        self.btn_lightness_decrease.clicked.connect(self.set_colour_decrease_lightness)
+
+        # -- Dock: Colours (scroll)
+        for widget in [self.label_hue, self.btn_hue_increase, self.btn_hue_decrease]:
+            def _hue_onscroll(evt):
+                if evt.angleDelta().y() > 0:
+                    self.set_colour_increase_hue()
+                else:
+                    self.set_colour_decrease_hue()
+            widget.wheelEvent = _hue_onscroll
+
+        for widget in [self.label_saturation, self.btn_saturation_increase, self.btn_saturation_decrease]:
+            def _saturation_onscroll(evt):
+                if evt.angleDelta().y() > 0:
+                    self.set_colour_increase_saturation()
+                else:
+                    self.set_colour_decrease_saturation()
+            widget.wheelEvent = _saturation_onscroll
+
+        for widget in [self.label_lightness, self.btn_lightness_decrease, self.btn_lightness_increase]:
+            def _lightness_onscroll(evt):
+                if evt.angleDelta().y() > 0:
+                    self.set_colour_increase_lightness()
+                else:
+                    self.set_colour_decrease_lightness()
+            widget.wheelEvent = _lightness_onscroll
 
         # Override Behaviours
         # -- Scroll on frames (sequence only)
@@ -376,6 +419,14 @@ class VisualEffectEditor(shared.TabData):
             self.btn_playback_prev.setIcon(self.widgets.get_icon_qt("effects", "step-backward"))
             self.btn_playback_next.setIcon(self.widgets.get_icon_qt("effects", "step-forward"))
             self.btn_playback_loop.setIcon(self.widgets.get_icon_qt("effects", "repeat"))
+
+            # -- Colour Dock
+            self.btn_hue_increase.setIcon(self.widgets.get_icon_qt("effects", "more"))
+            self.btn_saturation_increase.setIcon(self.widgets.get_icon_qt("effects", "more"))
+            self.btn_lightness_increase.setIcon(self.widgets.get_icon_qt("effects", "more"))
+            self.btn_hue_decrease.setIcon(self.widgets.get_icon_qt("effects", "minus"))
+            self.btn_saturation_decrease.setIcon(self.widgets.get_icon_qt("effects", "minus"))
+            self.btn_lightness_decrease.setIcon(self.widgets.get_icon_qt("effects", "minus"))
 
         # Showtime!
         self._init_window()
@@ -1546,6 +1597,76 @@ class VisualEffectEditor(shared.TabData):
             return
 
         self.dbg.stdout("Pick LED ({0},{1}). Current colour changed to {2}".format(x, y, self.current_colour), self.dbg.debug, 1)
+
+    def _refresh_colour_tweak_controls(self):
+        """
+        Enables/disables controls for HSL adjustments when the next/previous value
+        has been exhausted. For example, pure white (#fff) cannot get any lighter.
+        """
+        for widget in [self.btn_hue_increase, self.btn_hue_decrease,
+                       self.btn_saturation_increase, self.btn_saturation_decrease,
+                       self.btn_lightness_decrease, self.btn_lightness_increase]:
+            widget.setEnabled(True)
+
+        if self.fx.hue_hex(self.current_colour, 0.05) == self.current_colour:
+            self.btn_hue_increase.setEnabled(False)
+
+        if self.fx.hue_hex(self.current_colour, -0.05) == self.current_colour:
+            self.btn_hue_decrease.setEnabled(False)
+
+        if self.fx.saturate_hex(self.current_colour, 0.05) == self.current_colour:
+            self.btn_saturation_increase.setEnabled(False)
+
+        if self.fx.saturate_hex(self.current_colour, -0.05) == self.current_colour:
+            self.btn_saturation_decrease.setEnabled(False)
+
+        if self.fx.lightness_hex(self.current_colour, 0.05) == self.current_colour:
+            self.btn_lightness_increase.setEnabled(False)
+
+        if self.fx.lightness_hex(self.current_colour, -0.05) == self.current_colour:
+            self.btn_lightness_decrease.setEnabled(False)
+
+    def set_colour_increase_hue(self):
+        """
+        Increases the Hue (HSL) of the current colour.
+        """
+        self._set_current_colour(self.fx.hue_hex(self.current_colour, 0.05))
+        self._refresh_colour_tweak_controls()
+
+    def set_colour_decrease_hue(self):
+        """
+        Decreases the Hue (HSL) of the current colour.
+        """
+        self._set_current_colour(self.fx.hue_hex(self.current_colour, -0.05))
+        self._refresh_colour_tweak_controls()
+
+    def set_colour_increase_saturation(self):
+        """
+        Increases the Saturation (HSL) of the current colour.
+        """
+        self._set_current_colour(self.fx.saturate_hex(self.current_colour, 0.05))
+        self._refresh_colour_tweak_controls()
+
+    def set_colour_decrease_saturation(self):
+        """
+        Decreases the Saturation (HSL) of the current colour.
+        """
+        self._set_current_colour(self.fx.saturate_hex(self.current_colour, -0.05))
+        self._refresh_colour_tweak_controls()
+
+    def set_colour_increase_lightness(self):
+        """
+        Increases the Value (HSL) of the current colour.
+        """
+        self._set_current_colour(self.fx.lightness_hex(self.current_colour, 0.05))
+        self._refresh_colour_tweak_controls()
+
+    def set_colour_decrease_lightness(self):
+        """
+        Decreases the Value (HSL) of the current colour.
+        """
+        self._set_current_colour(self.fx.lightness_hex(self.current_colour, -0.05))
+        self._refresh_colour_tweak_controls()
 
 
 class DeviceRenderer(shared.TabData):
