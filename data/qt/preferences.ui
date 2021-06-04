@@ -543,13 +543,6 @@
            <property name="verticalSpacing">
             <number>10</number>
            </property>
-           <item row="3" column="1">
-            <widget class="QCheckBox" name="LivePreview">
-             <property name="text">
-              <string>Preview effect on the actual hardware</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="1">
             <widget class="QCheckBox" name="UseSystemCursors">
              <property name="text">
@@ -570,14 +563,7 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QCheckBox" name="SuppressConfirmDialog">
-             <property name="text">
-              <string>Suppress confirmation dialog boxes</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
+           <item row="3" column="0">
             <widget class="QLabel" name="BehaviourLabel">
              <property name="minimumSize">
               <size>
@@ -594,6 +580,27 @@
             <widget class="QCheckBox" name="HideKeyLabels">
              <property name="text">
               <string>Hide key labels for keyboards and keypads</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QCheckBox" name="ShowSavedColourShades">
+             <property name="text">
+              <string>Show shades for my saved colours</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QCheckBox" name="LivePreview">
+             <property name="text">
+              <string>Preview effect on the actual hardware</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QCheckBox" name="SuppressConfirmDialog">
+             <property name="text">
+              <string>Suppress confirmation dialog boxes</string>
              </property>
             </widget>
            </item>

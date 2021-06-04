@@ -58,6 +58,7 @@ class PreferencesWindow(shared.TabData):
             ["editor", "hide_key_labels", QCheckBox, "HideKeyLabels", False],
             ["editor", "system_cursors", QCheckBox, "UseSystemCursors", False],
             ["editor", "suppress_confirm_dialog", QCheckBox, "SuppressConfirmDialog", False],
+            ["editor", "show_saved_colour_shades", QCheckBox, "ShowSavedColourShades", False],
         ]
 
     def open_window(self):

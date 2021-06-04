@@ -80,10 +80,12 @@ def load_file(filepath):
             save_file(path.preferences, data)
 
     if filepath == path.preferences:
+        # (group, item, type, default)
         _validate("editor", "live_preview", bool, True)
         _validate("editor", "hide_key_labels", bool, False)
         _validate("editor", "system_cursors", bool, False)
         _validate("editor", "suppress_confirm_dialog", bool, False)
+        _validate("editor", "show_saved_colour_shades", bool, True)
         _validate("controller", "landing_tab", int, 0)
         _validate("controller", "show_menu_bar", bool, True)
         _validate("controller", "system_qt_theme", bool, False)

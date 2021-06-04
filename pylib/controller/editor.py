@@ -1426,7 +1426,10 @@ class VisualEffectEditor(shared.TabData):
         container.layout().setContentsMargins(0, 0, 0, 0)
 
         for colour in colours:
-            for percent in [-45, -30, -15, 0, 15, 30]:
+            shades = [-45, -30, -15, 0, 15, 30]
+            if not self.appdata.preferences["editor"]["show_saved_colour_shades"]:
+                shades = [0]
+            for percent in shades:
                 percent = float(percent / 100)
                 new_colour = fx.lightness_hex(colour["hex"], percent)
                 label = "{0} {1}%".format(colour["name"], int(percent * 100))
