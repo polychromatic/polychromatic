@@ -210,7 +210,7 @@ class VisualEffectEditor(shared.TabData):
         self.spinner_playback_fps = self.window.findChild(QSpinBox, "PlaybackFPS")
         self.status_frame = QLabel()
 
-        # -- Colour Dock
+        # -- Colours Menu Bar / Dock
         self.saved_colours = self.window.findChild(QWidget, "SavedColoursWidget")
 
         self.current_colour_block = self.window.findChild(QWidget, "CurrentColourBlock")
@@ -226,6 +226,15 @@ class VisualEffectEditor(shared.TabData):
         self.btn_saturation_decrease = self.window.findChild(QToolButton, "SaturationDecrease")
         self.btn_lightness_increase = self.window.findChild(QToolButton, "LightnessIncrease")
         self.btn_lightness_decrease = self.window.findChild(QToolButton, "LightnessDecrease")
+
+        self.action_colours_picker = self.window.findChild(QAction, "actionOpenColourPicker")
+        self.action_colours_hue_increase = self.window.findChild(QAction, "actionIncreaseHue")
+        self.action_colours_hue_decrease = self.window.findChild(QAction, "actionDecreaseHue")
+        self.action_colours_saturation_increase = self.window.findChild(QAction, "actionIncreaseSaturation")
+        self.action_colours_saturation_decrease = self.window.findChild(QAction, "actionDecreaseSaturation")
+        self.action_colours_lightness_increase = self.window.findChild(QAction, "actionIncreaseLightness")
+        self.action_colours_lightness_decrease = self.window.findChild(QAction, "actionDecreaseLightness")
+        self.action_colours_manage = self.window.findChild(QAction, "actionManageSavedColours")
 
         # Font should be applied to dock widgets
         self.docks = [self.dock_layers, self.dock_properties, self.dock_colours, self.dock_frames]
@@ -281,6 +290,16 @@ class VisualEffectEditor(shared.TabData):
         self.tool_draw.triggered.connect(self.select_mode_draw)
         self.tool_eraser.triggered.connect(self.select_mode_eraser)
         self.tool_picker.triggered.connect(self.select_mode_picker)
+
+        # -- Colours
+        self.action_colours_picker.triggered.connect(self.open_colour_picker)
+        self.action_colours_hue_increase.triggered.connect(self.set_colour_increase_hue)
+        self.action_colours_hue_decrease.triggered.connect(self.set_colour_decrease_hue)
+        self.action_colours_saturation_increase.triggered.connect(self.set_colour_increase_saturation)
+        self.action_colours_saturation_decrease.triggered.connect(self.set_colour_decrease_saturation)
+        self.action_colours_lightness_increase.triggered.connect(self.set_colour_increase_lightness)
+        self.action_colours_lightness_decrease.triggered.connect(self.set_colour_decrease_lightness)
+        self.action_colours_manage.triggered.connect(self.edit_saved_colours)
 
         # -- Playback (Sequence only)
         if self.sequence_effect:
@@ -386,6 +405,16 @@ class VisualEffectEditor(shared.TabData):
             self.tool_draw.setIcon(self.widgets.get_icon_qt("effects", "paint"))
             self.tool_eraser.setIcon(self.widgets.get_icon_qt("effects", "eraser"))
             self.tool_picker.setIcon(self.widgets.get_icon_qt("effects", "picker"))
+
+            # -- Colours
+            self.action_colours_picker.setIcon(self.widgets.get_icon_qt("general", "palette"))
+            self.action_colours_hue_increase.setIcon(self.widgets.get_icon_qt("effects", "more"))
+            self.action_colours_saturation_increase.setIcon(self.widgets.get_icon_qt("effects", "more"))
+            self.action_colours_lightness_increase.setIcon(self.widgets.get_icon_qt("effects", "more"))
+            self.action_colours_hue_decrease.setIcon(self.widgets.get_icon_qt("effects", "minus"))
+            self.action_colours_saturation_decrease.setIcon(self.widgets.get_icon_qt("effects", "minus"))
+            self.action_colours_lightness_decrease.setIcon(self.widgets.get_icon_qt("effects", "minus"))
+            self.action_colours_manage.setIcon(self.widgets.get_icon_qt("general", "edit"))
 
             # -- Playback
             self.playback_jump_start.setIcon(self.widgets.get_icon_qt("effects", "rewind"))
@@ -1427,6 +1456,7 @@ class VisualEffectEditor(shared.TabData):
         if not self.appdata.system_qt_theme:
             edit_btn.setIcon(self.widgets.get_icon_qt("general", "edit"))
         edit_btn.setText(self._("Edit"))
+        edit_btn.setStatusTip(self._("Modify or reorder your saved colours"))
         edit_btn.clicked.connect(self.edit_saved_colours)
 
         for colour in colours:
@@ -1652,26 +1682,35 @@ class VisualEffectEditor(shared.TabData):
         """
         for widget in [self.btn_hue_increase, self.btn_hue_decrease,
                        self.btn_saturation_increase, self.btn_saturation_decrease,
-                       self.btn_lightness_decrease, self.btn_lightness_increase]:
+                       self.btn_lightness_decrease, self.btn_lightness_increase,
+                       self.action_colours_hue_increase, self.action_colours_hue_decrease,
+                       self.action_colours_saturation_increase, self.action_colours_saturation_decrease,
+                       self.action_colours_lightness_increase, self.action_colours_lightness_decrease]:
             widget.setEnabled(True)
 
         if self.fx.hue_hex(self.current_colour, 0.05) == self.current_colour:
             self.btn_hue_increase.setEnabled(False)
+            self.action_colours_hue_increase.setEnabled(False)
 
         if self.fx.hue_hex(self.current_colour, -0.05) == self.current_colour:
             self.btn_hue_decrease.setEnabled(False)
+            self.action_colours_hue_decrease.setEnabled(False)
 
         if self.fx.saturate_hex(self.current_colour, 0.05) == self.current_colour:
             self.btn_saturation_increase.setEnabled(False)
+            self.action_colours_saturation_increase.setEnabled(False)
 
         if self.fx.saturate_hex(self.current_colour, -0.05) == self.current_colour:
             self.btn_saturation_decrease.setEnabled(False)
+            self.action_colours_saturation_decrease.setEnabled(False)
 
         if self.fx.lightness_hex(self.current_colour, 0.05) == self.current_colour:
             self.btn_lightness_increase.setEnabled(False)
+            self.action_colours_lightness_increase.setEnabled(False)
 
         if self.fx.lightness_hex(self.current_colour, -0.05) == self.current_colour:
             self.btn_lightness_decrease.setEnabled(False)
+            self.action_colours_lightness_decrease.setEnabled(False)
 
     def set_colour_increase_hue(self):
         """

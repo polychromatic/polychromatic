@@ -150,10 +150,28 @@
     <addaction name="separator"/>
     <addaction name="actionLoop"/>
    </widget>
+   <widget class="QMenu" name="menuColours">
+    <property name="title">
+     <string>Colours</string>
+    </property>
+    <addaction name="actionOpenColourPicker"/>
+    <addaction name="separator"/>
+    <addaction name="actionIncreaseHue"/>
+    <addaction name="actionDecreaseHue"/>
+    <addaction name="separator"/>
+    <addaction name="actionIncreaseSaturation"/>
+    <addaction name="actionDecreaseSaturation"/>
+    <addaction name="separator"/>
+    <addaction name="actionIncreaseLightness"/>
+    <addaction name="actionDecreaseLightness"/>
+    <addaction name="separator"/>
+    <addaction name="actionManageSavedColours"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuTools"/>
+   <addaction name="menuColours"/>
    <addaction name="menuPlayback"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -947,7 +965,8 @@ shorten the LED's lifespan.</string>
               <string>Change...</string>
              </property>
              <property name="icon">
-              <iconset theme="color"/>
+              <iconset theme="color">
+               <normaloff>.</normaloff>.</iconset>
              </property>
              <property name="toolButtonStyle">
               <enum>Qt::ToolButtonIconOnly</enum>
@@ -1915,6 +1934,126 @@ shorten the LED's lifespan.</string>
    </property>
    <property name="shortcut">
     <string>F6</string>
+   </property>
+  </action>
+  <action name="actionOpenColourPicker">
+   <property name="icon">
+    <iconset theme="color">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Open Colour Picker</string>
+   </property>
+   <property name="statusTip">
+    <string>Choose a custom colour using the system's colour picker</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionIncreaseHue">
+   <property name="icon">
+    <iconset theme="arrow-up">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Increase Hue</string>
+   </property>
+   <property name="statusTip">
+    <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="actionDecreaseHue">
+   <property name="icon">
+    <iconset theme="arrow-down">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Decrease Hue</string>
+   </property>
+   <property name="statusTip">
+    <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+H</string>
+   </property>
+  </action>
+  <action name="actionIncreaseSaturation">
+   <property name="icon">
+    <iconset theme="arrow-up">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Increase Saturation</string>
+   </property>
+   <property name="statusTip">
+    <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionDecreaseSaturation">
+   <property name="icon">
+    <iconset theme="arrow-down">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Decrease Saturation</string>
+   </property>
+   <property name="statusTip">
+    <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+T</string>
+   </property>
+  </action>
+  <action name="actionIncreaseLightness">
+   <property name="icon">
+    <iconset theme="arrow-up">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Increase Lightness</string>
+   </property>
+   <property name="statusTip">
+    <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionDecreaseLightness">
+   <property name="icon">
+    <iconset theme="arrow-down">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Decrease Lightness</string>
+   </property>
+   <property name="statusTip">
+    <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+L</string>
+   </property>
+  </action>
+  <action name="actionManageSavedColours">
+   <property name="icon">
+    <iconset theme="document-edit">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Saved Colours</string>
+   </property>
+   <property name="statusTip">
+    <string>Modify or reorder your saved colours</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
    </property>
   </action>
  </widget>
