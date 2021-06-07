@@ -227,12 +227,12 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="SaveToList">
+        <widget class="QToolButton" name="SaveToList">
          <property name="toolTip">
           <string extracomment="Colour Picker: Tooltip informing the user what the Save icon does">Save the current colour to the saved list</string>
          </property>
          <property name="text">
-          <string/>
+          <string>Add</string>
          </property>
          <property name="icon">
           <iconset theme="document-save">
@@ -241,12 +241,12 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="CloseSaveWidget">
+        <widget class="QToolButton" name="CloseSaveWidget">
          <property name="toolTip">
           <string extracomment="Colour Picker: Tooltip informing the user what the Cancel icon does">Cancel saving this colour</string>
          </property>
          <property name="text">
-          <string/>
+          <string>Cancel</string>
          </property>
          <property name="icon">
           <iconset theme="document-close">
@@ -329,7 +329,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="DeleteFromList">
+           <widget class="QToolButton" name="DeleteFromList">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -337,7 +337,7 @@
              <string extracomment="Colour Picker: Tooltip informing the user what the Delete icon does">Forget this colour from the list</string>
             </property>
             <property name="text">
-             <string/>
+             <string>Delete</string>
             </property>
             <property name="icon">
              <iconset theme="delete">
