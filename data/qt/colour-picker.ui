@@ -158,7 +158,7 @@
           <string extracomment="Colour Picker: Tooltip informing the user what the &quot;Change...&quot; button will do">Opens the system's colour picker</string>
          </property>
          <property name="text">
-          <string>Change...</string>
+          <string>Edit</string>
          </property>
          <property name="icon">
           <iconset theme="document-edit">
@@ -172,7 +172,7 @@
           <string extracomment="Colour Picker: Tooltip informing the user what the Save colour button does">Save this colour to the saved colour list</string>
          </property>
          <property name="text">
-          <string>Save</string>
+          <string>Add</string>
          </property>
          <property name="icon">
           <iconset theme="document-save">
@@ -314,7 +314,7 @@
         <widget class="QWidget" name="SavedColoursVList" native="true">
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="spacing">
-           <number>0</number>
+           <number>2</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -328,6 +328,23 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
+          <item>
+           <widget class="QToolButton" name="RenameFromList">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string extracomment="Colour Picker: Tooltip informing the user what the Rename icon does">Rename this colour</string>
+            </property>
+            <property name="text">
+             <string>Rename</string>
+            </property>
+            <property name="icon">
+             <iconset theme="edit-rename">
+              <normaloff>.</normaloff>.</iconset>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QToolButton" name="DeleteFromList">
             <property name="enabled">

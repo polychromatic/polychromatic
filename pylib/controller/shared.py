@@ -674,6 +674,7 @@ class ColourPicker(object):
         self.saved_colours = pref.load_file(appdata.paths.colours)
         self.monoscale = monoscale
         self.preview = preview
+        self.add_mode = "append"
 
         # UI Controls
         self.dialog = get_ui_widget(appdata, "colour-picker", q_toplevel=QDialog)
@@ -681,6 +682,7 @@ class ColourPicker(object):
         self.change_btn = self.dialog.findChild(QPushButton, "OpenPicker")
         self.list_save_btn = self.dialog.findChild(QToolButton, "SaveToList")
         self.list_del_btn = self.dialog.findChild(QToolButton, "DeleteFromList")
+        self.list_rename_btn = self.dialog.findChild(QToolButton, "RenameFromList")
         self.list_text_input = self.dialog.findChild(QLineEdit, "ColourName")
         self.save_widget = self.dialog.findChild(QWidget, "SaveWidget")
         self.save_widget.setHidden(True)
@@ -697,12 +699,14 @@ class ColourPicker(object):
             self.close_save_widget.setIcon(self.widgets.get_icon_qt("general", "close"))
             self.list_save_btn.setIcon(self.widgets.get_icon_qt("general", "save"))
             self.list_del_btn.setIcon(self.widgets.get_icon_qt("general", "delete"))
+            self.list_rename_btn.setIcon(self.widgets.get_icon_qt("general", "properties"))
             self.dialog_btns.button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save"))
             self.dialog_btns.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel"))
 
         # If the device only supports a monoscale of "RGB", use a fixed list.
         if monoscale:
             self.list_del_btn.setDisabled(True)
+            self.list_rename_btn.setDisabled(True)
             self.open_save_widget.setDisabled(True)
             self.open_save_widget.setHidden(True)
             self.dialog.findChild(QWidget, "SavedColoursVList").setHidden(True)
@@ -717,6 +721,7 @@ class ColourPicker(object):
         self.list_text_input.returnPressed.connect(self._save_to_list)
         self.list_save_btn.clicked.connect(self._save_to_list)
         self.list_del_btn.clicked.connect(self._delete_from_list)
+        self.list_rename_btn.clicked.connect(self._rename_list_item)
         self.saved_tree.itemSelectionChanged.connect(self._switch_colour)
 
         # Refresh UI data and open dialog
@@ -766,6 +771,7 @@ class ColourPicker(object):
         self.list_text_input.setText("")
         self.open_save_widget.setDisabled(False)
         self.list_del_btn.setDisabled(True)
+        self.list_rename_btn.setDisabled(True)
 
         for widget in self._get_tree_objects():
             if widget.colour_hex == new_hex:
@@ -774,6 +780,7 @@ class ColourPicker(object):
                 self.save_widget.setHidden(True)
                 self.open_save_widget.setDisabled(True)
                 self.list_del_btn.setDisabled(False)
+                self.list_rename_btn.setDisabled(False)
                 return
 
         self.saved_tree.clearSelection()
@@ -839,13 +846,17 @@ class ColourPicker(object):
 
         self._refresh_selected_colour(new_hex)
 
-    def _open_save_widget(self):
+    def _open_save_widget(self, replace=False):
         self.save_widget.setHidden(False)
         self.open_save_widget.setDisabled(True)
 
+        self.add_mode = "append"
+        if replace:
+            self.add_mode = "replace"
+
     def _close_save_widget(self):
         self.save_widget.setHidden(True)
-        self.open_save_widget.setDisabled(False)
+        self.open_save_widget.setDisabled(self.add_mode == "replace")
 
     def _on_save_input_change(self, text):
         self.list_save_btn.setEnabled(True if len(text) > 0 else False)
@@ -856,8 +867,14 @@ class ColourPicker(object):
         """
         new_name = self.list_text_input.text()
         new_hex = self.current_hex
-        item = self._add_to_tree(new_name, new_hex)
-        item.setSelected(True)
+
+        if self.add_mode == "append":
+            item = self._add_to_tree(new_name, new_hex)
+            item.setSelected(True)
+        elif self.add_mode == "replace":
+            item = self.saved_tree.selectedItems()[0]
+            item.setText(0, new_name)
+
         self._close_save_widget()
 
     def _delete_from_list(self):
@@ -870,6 +887,21 @@ class ColourPicker(object):
         except IndexError:
             # UI Hiccup - clicked too fast, last item in list, etc
             self.list_del_btn.setDisabled(True)
+            self.list_rename_btn.setDisabled(True)
+
+    def _rename_list_item(self):
+        """
+        Rename the selected colour from the Saved Colour list.
+        """
+        try:
+            item = self.saved_tree.selectedItems()[0]
+            name = item.text(0)
+            self.list_text_input.setText(name)
+            self._open_save_widget(replace=True)
+        except IndexError:
+            # UI Hiccup - clicked too fast, last item in list, etc
+            self.list_del_btn.setDisabled(True)
+            self.list_rename_btn.setDisabled(True)
 
     def _build_saved_colour_list(self):
         """
