@@ -298,6 +298,15 @@ class EffectsTab(shared.CommonFileTab):
         summary = self.widgets.create_summary_widget(icon_path, data["parsed"]["name"], indicators, buttons)
         summary.setMaximumHeight(170)
         layout.addWidget(summary)
+
+        # Show the file's summary text (if any)
+        summary_text = data["summary"]
+        if len(summary_text) > 0:
+            summary_label = QLabel()
+            summary_label.setText(summary_text)
+            summary_label.setWordWrap(True)
+            layout.addWidget(self.widgets.create_row_widget(self._("Summary"), [summary_label]))
+
         layout.addStretch()
 
     def edit_file(self):
