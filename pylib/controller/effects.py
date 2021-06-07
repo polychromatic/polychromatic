@@ -307,6 +307,34 @@ class EffectsTab(shared.CommonFileTab):
             summary_label.setWordWrap(True)
             layout.addWidget(self.widgets.create_row_widget(self._("Summary"), [summary_label]))
 
+        # Show other actions for this effect
+        def _edit_metadata():
+            # To prevent data loss, don't edit metadata here if the editor is open
+            if effect_path in self.editors.keys():
+                if self.editors[effect_path].alive:
+                    self.widgets.open_dialog(self.widgets.dialog_warning,
+                                            self._("File In Use"),
+                                            self._("This file is being edited in another window. Please switch to that window to make changes."))
+                    return
+
+            def _metadata_changed(newdata):
+                result, new_path = self.fileman.save_item(newdata, effect_path)
+                self.open_file(new_path)
+                if len(self.Sidebar.selectedItems()) > 0:
+                    self.Sidebar.selectedItems()[0].setText(0, newdata["name"])
+                    self.Sidebar.selectedItems()[0].setIcon(0, QIcon(common.get_full_path_for_save_data_icon(newdata["icon"])))
+
+            self.metadata_editor = EffectMetadataEditor(self.appdata, self.current_file_data, _metadata_changed)
+
+        btn_edit_meta = QToolButton()
+        btn_edit_meta.setText(self._("Edit Metadata"))
+        btn_edit_meta.setIcon(self.widgets.get_icon_qt("general", "properties"))
+        btn_edit_meta.clicked.connect(_edit_metadata)
+        btn_edit_meta.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+        other_actions = self.widgets.create_row_widget(self._("Other Actions"), [btn_edit_meta], vertical=True)
+        other_actions.findChild(QLabel).setContentsMargins(0, 6, 0, 6)
+        layout.addWidget(other_actions)
         layout.addStretch()
 
     def edit_file(self):
