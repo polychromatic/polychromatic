@@ -94,6 +94,9 @@ class ProcessManager():
         if not os.path.exists(pid_file):
             return None
 
+        if os.path.getsize(pid_file) == 0:
+            return None
+
         with open(pid_file, "r") as f:
             pid = int(f.read())
 
