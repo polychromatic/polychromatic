@@ -21,15 +21,15 @@ Name=Edit Effects
 Icon=/usr/share/polychromatic/img/general/effects.svg
 Exec=polychromatic-controller --open effects
 
-[Desktop Action presets]
-Name=Edit Presets
-Icon=/usr/share/polychromatic/img/general/presets.svg
-Exec=polychromatic-controller --open presets
+#[Desktop Action presets]
+#Name=Edit Presets
+#Icon=/usr/share/polychromatic/img/general/presets.svg
+#Exec=polychromatic-controller --open presets
 
-[Desktop Action triggers]
-Name=Edit Triggers
-Icon=/usr/share/polychromatic/img/general/triggers.svg
-Exec=polychromatic-controller --open triggers
+#[Desktop Action triggers]
+#Name=Edit Triggers
+#Icon=/usr/share/polychromatic/img/general/triggers.svg
+#Exec=polychromatic-controller --open triggers
 
 [Desktop Action tray-applet]
 Name=Tray Applet

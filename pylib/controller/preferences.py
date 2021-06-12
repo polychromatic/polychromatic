@@ -138,6 +138,10 @@ class PreferencesWindow(shared.TabData):
         self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(0)
         self.dialog.open()
 
+        # FIXME: Hide incomplete features
+        self.dialog.findChild(QComboBox, "LandingTabCombo").removeItem(3)
+        self.dialog.findChild(QComboBox, "LandingTabCombo").removeItem(2)
+
     def refresh_backend_status(self):
         """
         Refreshes the current status and enables/disables controls accordingly.

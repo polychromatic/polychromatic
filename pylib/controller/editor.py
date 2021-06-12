@@ -465,6 +465,11 @@ class VisualEffectEditor(shared.TabData):
         self._init_window()
         self.init_controls()
 
+        # FIXME: Hide incomplete features
+        for widget in [self.window.findChild(QAction, "actionEditTriggers")]:
+            widget.setDisabled(True)
+            widget.setVisible(False)
+
     def _init_window(self):
         """
         Prepare the window for the type of effect that'll be edited.

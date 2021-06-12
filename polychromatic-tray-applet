@@ -391,10 +391,10 @@ class PolychromaticTrayApplet():
             indicator.add_menu_item(menu, bulk_menu_item)
 
             # TODO: Placeholder, Presets not yet implemented
-            print("stub:preset menu")
-            presets_menu, presets_menu_item = indicator.create_submenu(_("Apply Preset"), False, self._get_icon("general", "presets"))
-            indicator.create_menu_item(presets_menu, "Placeholder", False)
-            indicator.add_menu_item(menu, presets_menu_item)
+            #print("stub:preset menu")
+            #presets_menu, presets_menu_item = indicator.create_submenu(_("Apply Preset"), False, self._get_icon("general", "presets"))
+            #indicator.create_menu_item(presets_menu, "Placeholder", False)
+            #indicator.add_menu_item(menu, presets_menu_item)
 
         # General Options
         indicator.create_seperator(menu)

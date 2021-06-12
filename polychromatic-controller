@@ -364,12 +364,20 @@ class MainWindow(QMainWindow):
         tab_menu_items[2].triggered.connect(lambda a: _change_tab_proxy(a, 2))
         tab_menu_items[3].triggered.connect(lambda a: _change_tab_proxy(a, 3))
 
-        # FIXME: Disable unavailable features
-        self.findChild(QAction, "actionImportEffect").setEnabled(False)
-        tab_buttons[2].setDisabled(True)
-        tab_buttons[3].setDisabled(True)
-        tab_menu_items[2].setDisabled(True)
-        tab_menu_items[3].setDisabled(True)
+        # FIXME: Hide incomplete features
+        tabs.removeTab(3)
+        tabs.removeTab(2)
+        for widget in [
+            tab_buttons[2], tab_buttons[3],
+            tab_menu_items[2], tab_menu_items[3],
+            self.findChild(QAction, "actionImportEffect"),
+            self.findChild(QAction, "actionNewPreset"),
+            self.findChild(QAction, "actionNewPresetNow"),
+            self.findChild(QAction, "actionDuplicate"),
+            self.findChild(QAction, "actionDelete"),
+        ]:
+            widget.setDisabled(True)
+            widget.setVisible(False)
 
         # Determine 'landing' tab to first open
         landing_tab = app.preferences["controller"]["landing_tab"]
