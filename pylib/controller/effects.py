@@ -63,7 +63,7 @@ class EffectsTab(shared.CommonFileTab):
         }
 
         subtitles = {
-            0: self._("Try creating your own effect or import an image or video."),
+            0: self._("Your own software effects appear here. Try creating one!"),
             1: self._("There's invalid data in this file. The file might be corrupt.")
         }
 
@@ -117,6 +117,10 @@ class EffectsTab(shared.CommonFileTab):
             return
 
         dialog = shared.get_ui_widget(self.appdata, "new-effect", QDialog)
+
+        # TODO: Not all effect types are implemented, create sequence one
+        self.new_file_stage_2(dialog, effects.TYPE_SEQUENCE)
+        return
 
         btn_layered = dialog.findChild(QToolButton, "NewLayered")
         btn_scripted = dialog.findChild(QToolButton, "NewScripted")
