@@ -94,10 +94,28 @@ class EffectsTab(shared.CommonFileTab):
         shared.clear_layout(layout)
         self.widgets.populate_empty_state(layout, icons[message_id], titles[message_id], subtitles[message_id], buttons[message_id])
 
+    def _check_for_device_new_file(self):
+        """
+        Makes sure there is a device connected required to create an effect.
+
+        The current codebase doesn't provide a mechanism to list all compatible
+        hardware yet, since effects need to store their rows/cols values.
+        """
+        if len(self.middleman.get_device_list()) == 0:
+            self.widgets.open_dialog(self.widgets.dialog_error,
+                                     self._("New Effect"),
+                                     self._("No devices found to create an effect for."),
+                                     self._("Make sure the device is connected and the backend is working."))
+            return False
+        return True
+
     def new_file(self):
         """
         Prompts the user which type of effect to create.
         """
+        if not self._check_for_device_new_file():
+            return
+
         dialog = shared.get_ui_widget(self.appdata, "new-effect", QDialog)
 
         btn_layered = dialog.findChild(QToolButton, "NewLayered")
