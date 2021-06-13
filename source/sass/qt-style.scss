@@ -240,31 +240,34 @@ QTabBar::tab:disabled {
     background-image: url([data]/img/bg/tabs.png);
     background-position: right top;
     background-repeat: no-repeat;
-    border-bottom: 2px solid $border-colour;
+    border-bottom: 1px solid $border-colour;
 
     > QToolButton,
     > QSpacerItem {
         background: transparent;
-        border: none;
-        border-bottom: 2px solid transparent;
+        border: 1px solid $border-colour;
+        border-bottom: 2px solid $border-colour;
     }
 
     QToolButton {
         color: $text-colour;
-        padding: 5px 4px;
+        padding: 4px;
         padding-left: 8px;
         padding-right: 2px;
         height: 16px;
     }
 
     QToolButton:hover {
-        border-bottom-color: lighten($border-colour, 20%);
-        color: lighten($text-colour, 10%);
+        border-color: lighten($border-colour, 10%);
+        color: darken($text-colour, 10%);
+        border-bottom: 2px solid transparent;
     }
 
     QToolButton::checked {
-        border-bottom-color: $primary;
+        background: $bg-secondary;
         color: $primary;
+        border-color: $primary;
+        border-bottom: 2px solid transparent;
     }
 
     QToolButton:disabled {
