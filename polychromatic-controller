@@ -397,13 +397,13 @@ class MainWindow(QMainWindow):
         pref_ver = pref.VERSION
         save_ver = app.preferences["config_version"]
         if save_ver > pref_ver:
-            details = "Polychromatic v{0}\nSave Data: {1} (application requires {2} or older)".format(VERSION, save_ver, pref_ver)
+            details = "Yours: {1}\nExpected: <={2}\nApplication Version: v{0}".format(VERSION, save_ver, pref_ver)
             widgets.open_dialog(widgets.dialog_warning,
                                 _("Incompatible Save Data"),
                                 "{0}\n\n{1}\n\n{2}".format(
                                     _("Polychromatic's configuration (including your effects and presets) have been previously saved in a newer version of this software."),
-                                    _("Running older versions of the software could corrupt your save data or cause impaired operation. This is unsupported."),
-                                    _("Consider updating the application, or reset your save data by deleting: ~/.config/polychromatic")),
+                                    _("While this older software version may run as expected, there is no guarantee everything will work as a result of this newer save data. This installation is unsupported."),
+                                    _("Consider updating the application, ignore this message or delete: ~/.config/polychromatic")),
                                 traceback=details)
 
         self._set_initial_window_position(self, "main")
