@@ -364,6 +364,14 @@ class MainWindow(QMainWindow):
         tab_menu_items[2].triggered.connect(lambda a: _change_tab_proxy(a, 2))
         tab_menu_items[3].triggered.connect(lambda a: _change_tab_proxy(a, 3))
 
+        # Reimplement ability to scroll over 'custom' tabs
+        real_tabs = self.findChild(QWidget, "MainTabWidget").tabBar()
+        custom_tabs = self.findChild(QWidget, "MainTabCustom")
+        def _scroll_over_custom_tabs(evt):
+            direction = 1 if evt.angleDelta().y() < 0 else -1
+            real_tabs.setCurrentIndex(real_tabs.currentIndex() + direction)
+        custom_tabs.wheelEvent = _scroll_over_custom_tabs
+
         # FIXME: Hide incomplete features
         tabs.removeTab(3)
         tabs.removeTab(2)
