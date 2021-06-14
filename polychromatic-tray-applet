@@ -168,6 +168,7 @@ class Indicator(object):
                 item.connect("activate", function, function_params)
 
             menu.append(item)
+            return item
 
     def add_menu_item(self, menu, menu_item):
         """
@@ -399,6 +400,30 @@ class PolychromaticTrayApplet():
         # General Options
         indicator.create_seperator(menu)
         self._create_menu_item_if_controller_present(menu, _("Open Controller"), None, self._get_icon("general", "controller"))
+
+        # When tray applet is only installed, show toggle for auto start
+        if not procpid.ProcessManager().is_component_installed("controller"):
+            def _toggle_auto_start(params=None):
+                new_value = not prefs["tray"]["autostart"]
+                prefs["tray"]["autostart"] = new_value
+                pref.save_file(pref.path.preferences, prefs)
+                _update_auto_start_toggle(new_value)
+
+            auto_start_item = indicator.create_menu_item(menu, "Autostart", True, _toggle_auto_start, None, self._get_icon("general", "tray-applet"))
+
+            def _update_auto_start_toggle(is_enabled):
+                # FIXME: HACK: Not framework agnostic!
+                img = Gtk.Image()
+                if is_enabled:
+                    auto_start_item.set_label(_("Disable automatic start at login"))
+                    img.set_from_file(self._get_icon("general", "close"))
+                else:
+                    auto_start_item.set_label(_("Start automatically at login"))
+                    img.set_from_file(self._get_icon("general", "ok"))
+                auto_start_item.set_image(img)
+
+            _update_auto_start_toggle(prefs["tray"]["autostart"])
+
         indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
         indicator.finalize()
 
