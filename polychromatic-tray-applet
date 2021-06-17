@@ -326,9 +326,6 @@ class PolychromaticTrayApplet():
         if len(devices) == 0:
             dbg.stdout("No devices found.", dbg.error, 1)
             indicator.create_menu_item(menu, _("No devices found."), False)
-            indicator.create_seperator(menu)
-            indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
-            indicator.create_menu_item(menu, _("Troubleshoot"), True, cb.launch_controller, "troubleshoot", self._get_icon("general", "preferences"))
 
         # Order devices A-Z for consistency
         sorted_devices = sorted(devices, key=lambda device: device["name"])
@@ -338,6 +335,11 @@ class PolychromaticTrayApplet():
 
         for device in unknown_devices:
             indicator.create_menu_item(menu, "{0} {1}".format(_("Unrecognised:"), device["name"]), False, None, None, device["form_factor"]["icon"])
+
+        if len(devices) == 0:
+            indicator.create_seperator(menu)
+            indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
+            indicator.create_menu_item(menu, _("Troubleshoot"), True, cb.launch_controller, "troubleshoot", self._get_icon("general", "preferences"))
 
         # When multiple devices are present, show 'apply to all' actions
         if len(devices) > 1:
