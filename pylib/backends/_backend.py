@@ -281,20 +281,24 @@ class Backend(object):
         """
         return self.backend_id + " does not support get_device_object()!"
 
-    def troubleshoot(self):
+    def troubleshoot(self, fn_progress_set_max, fn_progress_advance):
         """
         Perform troubleshooting steps to identify issues with the installation of
         the backend. This could check if the device is physically in the system, or the
         binary is accessible (/usr/bin/xyz), for instance.
 
-        If the backend is simple in nature, then this may not be needed.
+        If the backend is simple in nature, implementing a troubleshooter might not be necessary.
+
+        fn_progress_set_max and fn_progress_advance are functions passed to this function.
+        To optionally provide feedback using the progress bar, you can call fn_progress_set_max(int)
+        with the maximium value. Then, call fn_progress_advance() to add 1 to the progress bar.
 
         This should be implemented in pylib/troubleshoot/<backend>.py.
 
         Accepted return data types:
             (list)              Completed. Dictionary of results in format below.
-            (e)                 Exception details: Failed to run troubleshooting.
-            None                Not applicable.
+            (e)                 Exception details: Failed. User cannot continue with this troubleshooter.
+            None                Troubleshooter not avaliable (e.g. wrong OS platform)
 
         Expected data:
         [

@@ -43,6 +43,7 @@ def __get_razer_usb_pids():
                     razer_usb_pids.append(pid)
     return razer_usb_pids
 
+
 def _is_daemon_installed(_):
     return {
         "test_name": _("Daemon is installed"),
@@ -351,32 +352,38 @@ def _is_openrazer_up_to_date(_):
     }
 
 
-def troubleshoot(_):
+def troubleshoot(_, fn_progress_set_max, fn_progress_advance):
     """
     See: _backend.Backend.troubleshoot()
     """
     results = []
+    fn_progress_set_max(10)
 
     # Abort if running on a non-Linux system. Troubleshooting was written for Linux.
     if os.uname().sysname != "Linux":
         return None
 
     try:
-        # Perform the checks
-        results.append(_is_daemon_installed(_))
-        results.append(_is_pylib_installed(_))
-        results.append(_is_daemon_running(_))
+        # Perform the checks in a logical order
+        for test in [_is_daemon_installed, _is_pylib_installed,_is_daemon_running]:
+            results.append(test(_))
+            fn_progress_advance()
+
         results += _run_dkms_checks(_)
+        fn_progress_advance()
 
         # EFI systems only
         if os.path.exists("/sys/firmware/efi"):
             results.append(_is_secure_boot_enabled(_))
+        fn_progress_advance()
 
-        results.append(_is_razer_device_connected(_))
-        results.append(_is_user_in_plugdev_group(_))
-        results.append(_is_sysfs_plugdev_permissions_ok(_))
-        results.append(_check_device_support_list(_))
-        results.append(_is_openrazer_up_to_date(_))
+        for test in [_is_razer_device_connected,
+                     _is_user_in_plugdev_group,
+                     _is_sysfs_plugdev_permissions_ok,
+                     _check_device_support_list,
+                     _is_openrazer_up_to_date]:
+            results.append(test(_))
+            fn_progress_advance()
 
     except Exception as e:
         exception = common.get_exception_as_string(e)

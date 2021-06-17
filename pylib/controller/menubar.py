@@ -181,6 +181,12 @@ class MenuBar(object):
         bar = self.loading.findChild(QProgressBar, "ProgressBar")
         bar.setRange(0,0)
 
+        def _fn_progress_set_max(value):
+            bar.setMaximum(value)
+
+        def _fn_progress_advance():
+            bar.setValue(bar.value() + 1)
+
         self.loading.setWindowTitle(_("Troubleshooting..."))
         self.loading.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
         self.loading.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
@@ -279,7 +285,7 @@ class MenuBar(object):
                     label.setText(_("Waiting for backends to be ready..."))
                     time.sleep(0.1)
                 label.setText(_("Running troubleshooter..."))
-                self.result = self.appdata.middleman.troubleshoot(backend, self.appdata._)
+                self.result = self.appdata.middleman.troubleshoot(backend, self.appdata._, _fn_progress_set_max, _fn_progress_advance)
 
         # Run in separate thread just in case this takes longer on some systems
         self.thread = TroubleshootThread()

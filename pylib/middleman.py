@@ -227,7 +227,7 @@ class Middleman(object):
             if module.backend_id == backend:
                 return module.get_device_object(uid)
 
-    def troubleshoot(self, backend, i18n):
+    def troubleshoot(self, backend, i18n, fn_progress_set_max, fn_progress_advance):
         """
         Performs a series of troubleshooting steps to identify possible
         reasons why a particular backend is non-functional.
@@ -242,7 +242,7 @@ class Middleman(object):
             False           Troubleshooter failed
         """
         try:
-            return self.troubleshooters[backend](i18n)
+            return self.troubleshooters[backend](i18n, fn_progress_set_max, fn_progress_advance)
         except KeyError:
             # Troubleshooter not available for this backend
             return None
