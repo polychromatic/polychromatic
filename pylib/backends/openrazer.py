@@ -132,6 +132,10 @@ class Backend(_backend.Backend):
             return []
 
         for pid in unknown_list:
+            # Ignore Kitty headphones duplicate. 1532:0521 for headset, 1532:0F19 for Chroma (#328)
+            if pid == "0521":
+                continue
+
             devices.append({
                 "backend": self.backend_id,
                 "name": "{0}:{1}".format("1532", pid),
