@@ -60,7 +60,10 @@ class Middleman(object):
         except Exception as e:
             self.import_errors["openrazer"] = self._common.get_exception_as_string(e)
 
-        # -- Troubleshooter for OpenRazer
+    def init_troubleshooters(self):
+        """
+        Imports the modules that provide troubleshooting support.
+        """
         from .troubleshoot import openrazer as openrazer_troubleshoot
         self.troubleshooters["openrazer"] = openrazer_troubleshoot.troubleshoot
 

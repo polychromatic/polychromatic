@@ -34,7 +34,7 @@ from PyQt5.QtGui import QIcon, QFont, QFontDatabase
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, \
                             QToolButton, QTabWidget, QAction, QMenu, \
-                            QDesktopWidget
+                            QDesktopWidget, QLabel
 
 VERSION = "0.6.0"
 
@@ -102,7 +102,6 @@ class ApplicationData(object):
         self.middleman = None
         self.ready = False
         self.device_list = []
-
         self.menubar = None
         self.tab_devices = None
         self.tab_effects = None
@@ -137,6 +136,7 @@ class ApplicationData(object):
         # Subwindows
         self.ui_preferences = controller.preferences.PreferencesWindow(self)
 
+        self.main_window.findChild(QLabel, "GlobalStatus").setHidden(True)
         self.init_bg_thread()
         self.main_window.load()
 
@@ -144,16 +144,43 @@ class ApplicationData(object):
         """
         Backends will be initialised in this thread.
         """
-        class BackgroundThread(QThread):
+        class BackgroundThreadTimeout(QThread):
+            """
+            Informs the user if the middleman is taking too long to load.
+            """
+            @staticmethod
+            def run():
+                # FIXME: It works, but isn't thread safe! [QObject:setParent]
+                global_status_label = self.main_window.findChild(QLabel, "GlobalStatus")
+                time.sleep(2)
+                global_status_label.setText(self._("Waiting for backends to initalise..."))
+                global_status_label.setHidden(False)
+                time.sleep(10)
+                global_status_label.setText(global_status_label.text() + ' ' + self._("(this is taking an unusually long time, try running the troubleshooter)"))
+                time.sleep(50)
+                global_status_label.setText(self._("One of the backends might have crashed. Initalisation is taking too long!"))
+
+        class BackgroundThreadInit(QThread):
+            """
+            Initalizes the middleman in the background, so the application remains responsive.
+            """
             @staticmethod
             def run():
                 t_start = time.time()
-                self.dbg.stdout("Initalising backends...", dbg.action, 1)
-                self.middleman.init()
-                self.device_list = self.middleman.get_device_list()
 
                 def _enable_action(action, enabled=True):
                     self.main_window.findChild(QAction, action).setEnabled(enabled)
+
+                self.dbg.stdout("Initalising troubleshooters...", dbg.action, 1)
+                self.middleman.init_troubleshooters()
+
+                if "openrazer" in self.middleman.troubleshooters:
+                    _enable_action("actionTroubleshootOpenRazer")
+
+                # Misbehaving backends may take ages inside init()
+                self.dbg.stdout("Initalising backends...", dbg.action, 1)
+                self.middleman.init()
+                self.device_list = self.middleman.get_device_list()
 
                 # Enable OpenRazer functions if available
                 # See also: pylib.controller.preferences.refresh_backend_status()
@@ -166,17 +193,20 @@ class ApplicationData(object):
                 if "openrazer" in self.middleman.import_errors.keys():
                     _enable_action("actionOpenRazerAbout", False)
 
-                if "openrazer" in self.middleman.troubleshooters:
-                    _enable_action("actionTroubleshootOpenRazer")
-
                 t_end = time.time()
                 self.dbg.stdout("Backends loaded in {0}s.".format(str(round(t_end - t_start, 3))), dbg.action, 1)
                 self.ready = True
 
                 app.ui_preferences.refresh_backend_status()
 
-        self.bg_thread = BackgroundThread()
-        self.bg_thread.start()
+                # No longer need to inform user if initalization took too long
+                self.bg_thread_timeout.terminate()
+                self.main_window.findChild(QLabel, "GlobalStatus").setHidden(True)
+
+        self.bg_thread_init = BackgroundThreadInit()
+        self.bg_thread_init.start()
+        self.bg_thread_timeout = BackgroundThreadTimeout()
+        self.bg_thread_timeout.start()
 
 
 class MainWindow(QMainWindow):
