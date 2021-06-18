@@ -17,6 +17,7 @@ from .. import preferences
 from .. import procpid
 from . import shared
 from . import procviewer
+from . import troubleshooter
 
 from PyQt5.QtCore import Qt, QThread
 from PyQt5.QtGui import QBrush, QPixmap, QFont, QIcon
@@ -165,134 +166,6 @@ class MenuBar(object):
         self.mainwindow.findChild(QAction, "actionReinstateMenuBar").setVisible(False)
         self.appdata.preferences["controller"]["show_menu_bar"] = True
         preferences.save_file(self.appdata.paths.preferences, self.appdata.preferences)
-
-    def _run_troubleshooter(self, backend):
-        """
-        Run the troubleshooter and shows the results in a dialog box.
-        """
-        _ = self.appdata._
-        dbg = self.appdata.dbg
-
-        dbg.stdout("Running Troubleshooter for {0}...".format(backend), dbg.action, 1)
-        self.loading = shared.get_ui_widget(self.appdata, "loading", QDialog)
-
-        label = self.loading.findChild(QLabel, "Label")
-        label.setText(_("Running troubleshooter..."))
-        bar = self.loading.findChild(QProgressBar, "ProgressBar")
-        bar.setRange(0,0)
-
-        def _fn_progress_set_max(value):
-            bar.setMaximum(value)
-
-        def _fn_progress_advance():
-            bar.setValue(bar.value() + 1)
-
-        self.loading.setWindowTitle(_("Troubleshooting..."))
-        self.loading.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
-        self.loading.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
-        self.loading.open()
-
-        def _troubleshoot_complete():
-            _ = self.appdata._
-            results = self.thread.result
-            self.loading.close()
-
-            if type(results) == None:
-                self.widgets.open_dialog(self.widgets.dialog_warning,
-                                         _("Troubleshooting Failed"),
-                                         _("The troubleshooter for this backend is not available for this operating system."))
-                return
-            elif type(results) == str:
-                self.widgets.open_dialog(self.widgets.dialog_error,
-                                         _("Troubleshooting Failed"),
-                                         _("An exception was thrown while running the troubleshooter. This is probably a bug."),
-                                         None,
-                                         results)
-                return
-
-            self.result_window = shared.get_ui_widget(self.appdata, "troubleshooter", QDialog)
-            label = self.result_window.findChild(QLabel, "Title")
-            tree = self.result_window.findChild(QTreeWidget, "Results")
-            column = tree.invisibleRootItem()
-            btn_copy = self.result_window.findChild(QPushButton, "CopyToClipboard")
-
-            if not self.appdata.system_qt_theme:
-                self.result_window.findChild(QPushButton, "Close").setIcon(self.widgets.get_icon_qt("general", "close"))
-
-            all_passed = True
-            for result in results:
-                item = QTreeWidgetItem()
-
-                # "passed" must be either: True (Passed); False (Failed); None (Unknown)
-                if result["passed"] is True:
-                    item.setText(0, _("Passed"))
-                    item.setIcon(0, QIcon(common.get_icon("general", "success")))
-                elif result["passed"] is False:
-                    item.setText(0, _("Failed"))
-                    item.setIcon(0, QIcon(common.get_icon("general", "serious")))
-                else:
-                    item.setText(0, _("Unknown"))
-                    item.setIcon(0, QIcon(common.get_icon("general", "unknown")))
-
-                item.setText(1, result["test_name"])
-                item.copyable = False
-
-                # Provide suggestions on failures
-                if not result["passed"]:
-                    all_passed = False
-
-                    suggestions = result["suggestions"]
-                    for line in suggestions:
-                        subitem = QTreeWidgetItem()
-                        if line.startswith("$"):
-                            text = line
-                            subitem.setBackground(1, QBrush(Qt.black))
-                            subitem.setForeground(1, QBrush(Qt.green))
-                            subitem.copyable = True
-                        else:
-                            text = "• " + line
-                            subitem.setDisabled(True)
-                        subitem.setText(1, text)
-                        subitem.setToolTip(1, line)
-                        item.addChild(subitem)
-                column.addChild(item)
-
-            # Commands can be copied to clipboard for convenience
-            def _change_option():
-                selected = tree.selectedItems()[0]
-                btn_copy.setHidden(selected.copyable == False)
-            tree.itemSelectionChanged.connect(_change_option)
-
-            def _copy_to_clipboard():
-                selected_text = tree.selectedItems()[0].text(1).replace("$ ", "")
-                QApplication.clipboard().setText(selected_text)
-            btn_copy.setHidden(True)
-            btn_copy.clicked.connect(_copy_to_clipboard)
-
-            def _close_troubleshooter():
-                self.result_window.close()
-            self.result_window.findChild(QPushButton, "Close").clicked.connect(_close_troubleshooter)
-
-            tree.expandAll()
-            self.result_window.setWindowTitle(_("Troubleshooter for []").replace("[]", self.human_name))
-            if all_passed:
-                label.setText(_("Everything appears to be in working order!"))
-            self.result_window.open()
-
-        class TroubleshootThread(QThread):
-            def run(self):
-                while not self.appdata.ready:
-                    label.setText(_("Waiting for backends to be ready..."))
-                    time.sleep(0.1)
-                label.setText(_("Running troubleshooter..."))
-                self.result = self.appdata.middleman.troubleshoot(backend, self.appdata._, _fn_progress_set_max, _fn_progress_advance)
-
-        # Run in separate thread just in case this takes longer on some systems
-        self.thread = TroubleshootThread()
-        self.thread.appdata = self.appdata
-        self.thread.result = []
-        self.thread.finished.connect(_troubleshoot_complete)
-        self.thread.start()
 
     def open_preferences(self):
         self.appdata.ui_preferences.open_window()
@@ -551,7 +424,7 @@ class MenuBarOpenRazer(MenuBar):
             return "[Unknown]"
 
     def troubleshoot(self):
-        self._run_troubleshooter("openrazer")
+        self.troubleshooter = troubleshooter.TroubleshooterGUI(self.appdata, "openrazer", "OpenRazer")
 
     def about(self):
         self._refresh()
