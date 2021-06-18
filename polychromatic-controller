@@ -316,6 +316,15 @@ class MainWindow(QMainWindow):
             qapp.setFont(QFont("Play", 10, 0))
             controller.shared.load_qt_theme(app, self)
 
+        # Minimal modes
+        if args.open:
+            if args.open == "troubleshoot":
+                # TODO: Should support multiple backends!
+                return app.menubar.openrazer.troubleshoot()
+            elif args.open == "colours":
+                app.ui_preferences.modify_colours()
+                exit()
+
         # Prepare "native" tab widget and custom buttons acting as tabs for the design.
         tabs = self.findChild(QTabWidget, "MainTabWidget")
         tab_buttons = [
@@ -445,16 +454,6 @@ class MainWindow(QMainWindow):
                                 traceback=details)
 
         self._set_initial_window_position(self, "main")
-
-        # Minimal modes
-        if args.open:
-            if args.open == "troubleshoot":
-                # TODO: Should support multiple backends!
-                app.menubar.openrazer.troubleshoot()
-                return
-            elif args.open == "colours":
-                app.ui_preferences.modify_colours()
-                exit()
 
         # Showtime!
         self.show()
