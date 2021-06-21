@@ -155,7 +155,7 @@ class DevicesTab(shared.TabData):
             backend_name = middleman.BACKEND_ID_NAMES[backend]
 
             msg1 = _("An error occurred while reading this device. This could be either be a bug in Polychromatic or the [] backend.").replace("[]", backend_name)
-            msg2 = _("Try switching to this device again. If this keeps happening, raise an issue on the relevant project's repository.")
+            msg2 = _("Try switching to this device again. If this appears once more, try restarting the backend and application. Otherwise, please raise an issue on the relevant project's repository.")
 
             self.widgets.open_dialog(self.widgets.dialog_error, _("Backend Error"), msg1, msg2, device)
             self.open_bad_device(msg1, msg2, device)
@@ -583,7 +583,7 @@ class DevicesTab(shared.TabData):
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      _("Controller Error"),
                                      _("The request is invalid or unsupported at this time. This could be due to a programming error in the application."),
-                                    _("If this happens again, please create a bug via Help → Report a Bug."))
+                                    _("If this can be reproduced several times, please create a bug via Help → Report a Bug."))
         elif response == None:
             dbg.stdout("Device no longer available", dbg.error, 1)
             self.widgets.open_dialog(self.widgets.dialog_warning,
@@ -596,7 +596,7 @@ class DevicesTab(shared.TabData):
             print(response)
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      _("Backend Error"),
-                                     _("The request could not be completed due to an error."),
+                                     _("An error occurred while processing this request with [].").replace("[]", self.current_backend),
                                      traceback=response)
 
     def _open_loading(self):
