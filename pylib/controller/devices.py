@@ -575,6 +575,7 @@ class DevicesTab(shared.TabData):
         """
         dbg = self.dbg
         _ = self._
+        backend_name = middleman.BACKEND_ID_NAMES[self.current_backend]
 
         if response == True:
             dbg.stdout("Request successful", dbg.success, 1)
@@ -596,7 +597,7 @@ class DevicesTab(shared.TabData):
             print(response)
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      _("Backend Error"),
-                                     _("An error occurred while processing this request with [].").replace("[]", self.current_backend),
+                                     _("An error occurred while processing this request with [].").replace("[]", backend_name),
                                      traceback=response)
 
     def _open_loading(self):
