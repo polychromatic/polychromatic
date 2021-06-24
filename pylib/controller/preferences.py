@@ -74,8 +74,8 @@ class PreferencesWindow(shared.TabData):
         tabs = self.dialog.findChild(QTabWidget, "PreferencesTabs")
         tabs.setTabIcon(0, self.widgets.get_icon_qt("general", "controller"))
         tabs.setTabIcon(1, self.widgets.get_icon_qt("general", "tray-applet"))
-        tabs.setTabIcon(2, self.widgets.get_icon_qt("general", "profile-default"))
-        tabs.setTabIcon(3, self.widgets.get_icon_qt("general", "triggers"))
+        tabs.setTabIcon(2, self.widgets.get_icon_qt("effects", "paint"))
+        tabs.setTabIcon(3, self.widgets.get_icon_qt("general", "matrix"))
         tabs.setTabIcon(4, self.widgets.get_icon_qt("emblems", "software"))
 
         # Set Dialog Button Icons
@@ -121,7 +121,11 @@ class PreferencesWindow(shared.TabData):
             self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").setIcon(self.widgets.get_icon_qt("general", "refresh"))
             self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").setIcon(self.widgets.get_icon_qt("emblems", "utility"))
 
-        self.refresh_backend_status()
+        # Drop custom icons when using native themes
+        if self.appdata.system_qt_theme:
+            combo = self.dialog.findChild(QComboBox, "LandingTabCombo")
+            for i in range(0, combo.count()):
+                combo.setItemIcon(i, QIcon())
 
         # Prompt for a restart after changing these options
         def _cb_set_restart_flag():
@@ -135,12 +139,14 @@ class PreferencesWindow(shared.TabData):
 
         self.dialog.findChild(QComboBox, "TrayModeCombo").currentIndexChanged.connect(_cb_set_applet_flag)
 
-        self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(0)
-        self.dialog.open()
-
         # FIXME: Hide incomplete features
         self.dialog.findChild(QComboBox, "LandingTabCombo").removeItem(3)
         self.dialog.findChild(QComboBox, "LandingTabCombo").removeItem(2)
+
+        # Show time!
+        self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(0)
+        self.refresh_backend_status()
+        self.dialog.open()
 
     def refresh_backend_status(self):
         """

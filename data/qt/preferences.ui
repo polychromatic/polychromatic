@@ -37,9 +37,18 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="general">
+     <property name="iconSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="usesScrollButtons">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="controller">
       <attribute name="title">
-       <string>General</string>
+       <string>Controller</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
@@ -65,7 +74,7 @@
             <height>370</height>
            </rect>
           </property>
-          <layout class="QFormLayout" name="formLayout">
+          <layout class="QFormLayout" name="GeneralLayout">
            <property name="verticalSpacing">
             <number>10</number>
            </property>
@@ -107,6 +116,48 @@
              <property name="alignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
              </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="ToolbarStyleLabel">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Toolbar</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QComboBox" name="ToolbarStyle">
+             <item>
+              <property name="text">
+               <string>Follow System Style</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Icons Only</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Text Only</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Text Alongside Icons</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Text Under Icons</string>
+              </property>
+             </item>
             </widget>
            </item>
            <item row="4" column="0">
@@ -197,20 +248,7 @@
              </item>
             </widget>
            </item>
-           <item row="7" column="0">
-            <widget class="QLabel" name="SavedColoursLabel">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Saved Colours</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
+           <item row="7" column="1">
             <widget class="QWidget" name="AutoStartGroup" native="true">
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <property name="leftMargin">
@@ -226,107 +264,6 @@
                <number>0</number>
               </property>
              </layout>
-            </widget>
-           </item>
-           <item row="7" column="1">
-            <widget class="QWidget" name="SavedColoursGroup" native="true">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>0</height>
-              </size>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_7">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QPushButton" name="SavedColoursButton">
-                <property name="text">
-                 <string>Change...</string>
-                </property>
-                <property name="icon">
-                 <iconset theme="document-edit">
-                  <normaloff>.</normaloff>.</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="SavedColoursReset">
-                <property name="text">
-                 <string extracomment="Button">Reset to Default Colours</string>
-                </property>
-                <property name="icon">
-                 <iconset theme="document-revert">
-                  <normaloff>.</normaloff>.</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_4">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QComboBox" name="ToolbarStyle">
-             <item>
-              <property name="text">
-               <string>Follow System Style</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Icons Only</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Text Only</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Text Alongside Icons</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Text Under Icons</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="ToolbarStyleLabel">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Toolbar</string>
-             </property>
             </widget>
            </item>
           </layout>
@@ -348,6 +285,9 @@
          <property name="frameShadow">
           <enum>QFrame::Plain</enum>
          </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -360,7 +300,7 @@
             <height>370</height>
            </rect>
           </property>
-          <layout class="QFormLayout" name="formLayout_2">
+          <layout class="QFormLayout" name="TrayLayout">
            <property name="verticalSpacing">
             <number>10</number>
            </property>
@@ -514,23 +454,26 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="effects">
+     <widget class="QWidget" name="customise">
       <attribute name="title">
-       <string>Editor</string>
+       <string>Customise</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <widget class="QScrollArea" name="EffectsScrollArea">
+        <widget class="QScrollArea" name="CustomiseScrollArea">
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Plain</enum>
          </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="EffectsContents">
+         <widget class="QWidget" name="CustomiseContents">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -539,7 +482,117 @@
             <height>370</height>
            </rect>
           </property>
-          <layout class="QFormLayout" name="formLayout_3">
+          <layout class="QFormLayout" name="CustomiseLayout">
+           <property name="verticalSpacing">
+            <number>10</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="SavedColoursLabel">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Saved Colours</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QWidget" name="SavedColoursGroup" native="true">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>0</height>
+              </size>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="SavedColoursButton">
+                <property name="text">
+                 <string>Change...</string>
+                </property>
+                <property name="icon">
+                 <iconset theme="document-edit">
+                  <normaloff>.</normaloff>.</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="SavedColoursReset">
+                <property name="text">
+                 <string extracomment="Button">Reset to Default Colours</string>
+                </property>
+                <property name="icon">
+                 <iconset theme="document-revert">
+                  <normaloff>.</normaloff>.</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="editor">
+      <attribute name="title">
+       <string>Editor</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QScrollArea" name="EditorScrollArea">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="EditorContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>623</width>
+            <height>370</height>
+           </rect>
+          </property>
+          <layout class="QFormLayout" name="EditorLayout">
            <property name="verticalSpacing">
             <number>10</number>
            </property>
@@ -638,7 +691,7 @@
             <height>370</height>
            </rect>
           </property>
-          <layout class="QFormLayout" name="formLayout_4">
+          <layout class="QFormLayout" name="BackendLayout">
            <property name="verticalSpacing">
             <number>10</number>
            </property>
