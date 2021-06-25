@@ -95,6 +95,12 @@ def load_file(filepath):
         _validate("tray", "mode", int, 0)
         _validate("tray", "icon", str, common.get_default_tray_icon())
         _validate("tray", "autostart_delay", int, 0)
+        _validate("custom", "use_dpi_stages", bool, False)
+        _validate("custom", "dpi_stage_1", int, 0)
+        _validate("custom", "dpi_stage_2", int, 0)
+        _validate("custom", "dpi_stage_3", int, 0)
+        _validate("custom", "dpi_stage_4", int, 0)
+        _validate("custom", "dpi_stage_5", int, 0)
 
         for prefix in ["main", "editor"]:
             _validate("geometry", prefix + "_window_pos_x", int, 0)

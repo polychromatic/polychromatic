@@ -23,7 +23,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget, QPushButton, QTreeWidget, QLabel, \
                             QComboBox, QCheckBox, QDialog, QSpinBox, \
                             QDoubleSpinBox, QDialogButtonBox, QTabWidget, \
-                            QMessageBox
+                            QMessageBox, QAction, QToolButton
 
 
 class PreferencesWindow(shared.TabData):
@@ -53,6 +53,14 @@ class PreferencesWindow(shared.TabData):
             ["tray", "mode", QComboBox, "TrayModeCombo", False],
             ["tray", "autostart_delay", QSpinBox, "TrayDelaySpinner", 0],
 
+            # -- Customise
+            ["custom", "use_dpi_stages", QCheckBox, "DPIStagesAuto", True],
+            ["custom", "dpi_stage_1", QSpinBox, "DPIStage1", 0],
+            ["custom", "dpi_stage_2", QSpinBox, "DPIStage2", 0],
+            ["custom", "dpi_stage_3", QSpinBox, "DPIStage3", 0],
+            ["custom", "dpi_stage_4", QSpinBox, "DPIStage4", 0],
+            ["custom", "dpi_stage_5", QSpinBox, "DPIStage5", 0],
+
             # -- Editor
             ["editor", "live_preview", QCheckBox, "LivePreview", False],
             ["editor", "hide_key_labels", QCheckBox, "HideKeyLabels", False],
@@ -61,9 +69,12 @@ class PreferencesWindow(shared.TabData):
             ["editor", "show_saved_colour_shades", QCheckBox, "ShowSavedColourShades", False],
         ]
 
-    def open_window(self):
+    def open_window(self, open_tab=None):
         """
         Opens the Preferences window to change Polychromatic's options.
+
+        Parameters:
+            open_tab    (int)   Optionally jump to this specific tab index.
         """
         self.pref_data = pref.load_file(self.paths.preferences)
 
@@ -84,6 +95,7 @@ class PreferencesWindow(shared.TabData):
             self.dialog.findChild(QPushButton, "SavedColoursReset").setIcon(self.widgets.get_icon_qt("general", "reset"))
             self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save"))
             self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel"))
+            self.dialog.findChild(QToolButton, "DPIStagesReset").setIcon(self.widgets.get_icon_qt("general", "reset"))
 
         # Options
         for option in self.options:
@@ -91,6 +103,7 @@ class PreferencesWindow(shared.TabData):
 
         self.dialog.findChild(QPushButton, "SavedColoursButton").clicked.connect(self.modify_colours)
         self.dialog.findChild(QPushButton, "SavedColoursReset").clicked.connect(self.reset_colours)
+        self.dialog.findChild(QToolButton, "DPIStagesReset").clicked.connect(self._reset_dpi_stages_from_hardware)
 
         # Create Icon Picker
         def _set_new_tray_icon(new_icon):
@@ -133,19 +146,24 @@ class PreferencesWindow(shared.TabData):
 
         self.dialog.findChild(QCheckBox, "UseSystemQtTheme").stateChanged.connect(_cb_set_restart_flag)
 
-        # Restart the applet after changing these options
+        # Restart the tray applet after changing these options
         def _cb_set_applet_flag(i):
             self.restart_applet = True
 
         self.dialog.findChild(QComboBox, "TrayModeCombo").currentIndexChanged.connect(_cb_set_applet_flag)
+        self.dialog.findChild(QCheckBox, "DPIStagesAuto").stateChanged.connect(_cb_set_applet_flag)
+        self.dialog.findChild(QCheckBox, "DPIStagesAuto").stateChanged.connect(self._refresh_dpi_stages_state)
+        for i in range(1, 6):
+            self.dialog.findChild(QSpinBox, "DPIStage" + str(i)).valueChanged.connect(_cb_set_applet_flag)
 
         # FIXME: Hide incomplete features
         self.dialog.findChild(QComboBox, "LandingTabCombo").removeItem(3)
         self.dialog.findChild(QComboBox, "LandingTabCombo").removeItem(2)
 
         # Show time!
-        self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(0)
+        self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(open_tab if open_tab else 0)
         self.refresh_backend_status()
+        self._refresh_dpi_stages_state()
         self.dialog.open()
 
     def refresh_backend_status(self):
@@ -257,6 +275,9 @@ class PreferencesWindow(shared.TabData):
         else:
             self.menubar.hide_menu_bar()
 
+        # Force refresh of current tab
+        self.appdata.main_window.findChild(QAction, "actionRefreshTab").trigger()
+
         # Some options require a restart
         if self.prompt_restart:
             self.dbg.stdout("Program settings changed. Prompting to restart application.", self.dbg.action, 1)
@@ -280,6 +301,61 @@ class PreferencesWindow(shared.TabData):
             self.dbg.stdout("Tray applet settings changed. Will restart component.", self.dbg.success, 1)
             process = procpid.ProcessManager("tray-applet")
             process.reload()
+
+    def _refresh_dpi_stages_state(self):
+        """
+        Modifying DPI stages is only useful if a mouse is present and the user
+        wishes to use their own values.
+        """
+        label = self.dialog.findChild(QLabel, "DPIStagesLabel")
+        checkbox = self.dialog.findChild(QCheckBox, "DPIStagesAuto")
+        spinbox_widget = self.dialog.findChild(QWidget, "DPIStagesWidget")
+        spinbox_is_zero = self.dialog.findChild(QSpinBox, "DPIStage1").value() == 0
+
+        # Is there a mouse? Disable section if none is present.
+        mice_present = False
+
+        if self.appdata.device_list:
+            mice_present = len(self.appdata.middleman.get_filtered_device_list("mouse")) > 0
+
+        for control in [label, checkbox, spinbox_widget]:
+            control.setDisabled(not mice_present)
+
+        if not mice_present:
+            return
+
+        # Disable controls when using default DPI stages
+        spinbox_widget.setDisabled(checkbox.isChecked())
+
+        # Automatically populate default DPI stages if blank
+        if self.appdata.device_list and checkbox.isChecked() and spinbox_is_zero:
+            self._reset_dpi_stages_from_hardware()
+
+    def _reset_dpi_stages_from_hardware(self):
+        """
+        Reset user defined DPI stages to a DPI-capable mouse.
+        """
+        mice_present = len(self.appdata.middleman.get_filtered_device_list("mouse")) > 0
+        if not mice_present:
+            return
+
+        mouse_device = None
+        for device in self.appdata.device_list:
+            if device["form_factor"]["id"] == "mouse":
+                device = self.appdata.middleman.get_device(device["backend"], device["uid"])
+                if device["dpi_stages"]:
+                    mouse_device = device
+                    break
+
+        if mouse_device:
+            self.dbg.stdout("Setting user-defined DPI stages to '{0}'".format(device["name"]), self.dbg.action, 1)
+            default_dpi_stages = device["dpi_stages"]
+            try:
+                for i in range(1, 6):
+                    self.dialog.findChild(QSpinBox, "DPIStage" + str(i)).setValue(default_dpi_stages[i - 1])
+            except (IndexError, AttributeError):
+                # 5 stages not guaranteed
+                pass
 
     def modify_colours(self):
         """

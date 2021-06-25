@@ -23,7 +23,7 @@ from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \
                             QTreeWidget, QTreeWidgetItem, QLabel, QComboBox, \
                             QSpacerItem, QSizePolicy, QSlider, QCheckBox, \
                             QButtonGroup, QRadioButton, QDialog, QTableWidget, \
-                            QTableWidgetItem, QAction
+                            QTableWidgetItem, QAction, QHBoxLayout
 
 # Error codes
 ERROR_NO_DEVICE = 0
@@ -535,6 +535,10 @@ class DevicesTab(shared.TabData):
         value_y = dpi_widget.findChild(QLabel, "DPI_Y_Value")
         slider_lock = dpi_widget.findChild(QToolButton, "LockXY")
 
+        # Button group must be attached to class otherwise GC will destroy it
+        self.stage_buttons_group = QButtonGroup()
+        self.stage_buttons_group.setExclusive(False)
+
         if not self.appdata.system_qt_theme:
             slider_lock.setIcon(self.widgets.get_icon_qt("general", "lock"))
             # Button padding is too large for this small button
@@ -576,18 +580,22 @@ class DevicesTab(shared.TabData):
                 grid.setRowHeight(pos, new_size_x)
                 grid.setColumnWidth(pos, new_size_y)
 
-        # Change label while sliding
+        # Update controls/label while sliding
+        def _update_stage_controls():
+            for button in self.stage_buttons_group.buttons():
+                button.setChecked(slider_x.value() == slider_y.value() == button.dpi_value)
+
         def _slider_x_moved(value):
             value_x.setText(str(value))
-
             if slider_lock.isChecked():
                 slider_y.setValue(value)
+            _update_stage_controls()
 
         def _slider_y_moved(value):
             value_y.setText(str(value))
-
             if slider_lock.isChecked():
                 slider_x.setValue(value)
+            _update_stage_controls()
 
         slider_x.sliderMoved.connect(_slider_x_moved)
         slider_x.valueChanged.connect(_slider_x_moved)
@@ -596,6 +604,7 @@ class DevicesTab(shared.TabData):
 
         # Send request once dropped
         def _slider_dropped():
+            self.dbg.stdout("Setting DPI to {0}, {1}".format(slider_x.value(), slider_y.value()), self.dbg.action, 1)
             response = self.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, "", "dpi", [slider_x.value(), slider_y.value()], [])
             self._event_check_response(response)
 
@@ -606,8 +615,55 @@ class DevicesTab(shared.TabData):
         slider_x.valueChanged.connect(_refresh_grid_size)
         slider_y.valueChanged.connect(_refresh_grid_size)
 
+        # Prepare 'stage' buttons to quickly set default or user-defined stages
+        stage_widget = QWidget()
+        stage_widget.setLayout(QHBoxLayout())
+        stage_widget.layout().setContentsMargins(0, 0, 0, 0)
+        stages = device["dpi_stages"]
+
+        if self.appdata.preferences["custom"]["use_dpi_stages"]:
+            stages = []
+            for i in range(1, 6):
+                stages.append(self.appdata.preferences["custom"]["dpi_stage_" + str(i)])
+            stages.sort()
+
+        def _set_dpi_by_button(button):
+            slider_lock.setChecked(True)
+            slider_x.setValue(button.dpi_value)
+
+        def _edit_dpi_stages():
+            self.appdata.ui_preferences.open_window(2)
+
+        for index, value in enumerate(stages):
+            button = QToolButton()
+            button.setCheckable(True)
+            if device["dpi_x"] == device["dpi_y"] == value:
+                button.setChecked(True)
+            button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+            button.setText(str(value))
+            button.dpi_value = value
+
+            if index == 0:
+                button.setIcon(self.widgets.get_icon_qt("general", "dpi-slow"))
+            elif index == 4:
+                button.setIcon(self.widgets.get_icon_qt("general", "dpi-fast"))
+
+            stage_widget.layout().addWidget(button)
+            self.stage_buttons_group.addButton(button)
+
+        self.stage_buttons_group.buttonClicked.connect(_set_dpi_by_button)
+
+        edit_btn = QToolButton()
+        edit_btn.setText(self._("Edit DPI Stages"))
+        edit_btn.setToolTip(self._("Edit DPI Stages"))
+        edit_btn.setIcon(self.widgets.get_icon_qt("general", "edit"))
+        edit_btn.clicked.connect(_edit_dpi_stages)
+        stage_widget.layout().addWidget(edit_btn)
+
+        stage_widget.layout().addStretch()
+
         _refresh_grid_size()
-        return self.widgets.create_row_widget(self._("DPI"), [dpi_widget])
+        return self.widgets.create_row_widget(self._("DPI"), [stage_widget, dpi_widget], vertical=True)
 
     def _event_set_option(self, device, zone, option_id, option_data, colour_hex=[]):
         """
