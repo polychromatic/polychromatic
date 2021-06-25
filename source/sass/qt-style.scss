@@ -621,41 +621,67 @@ QRadioButton::indicator:checked:disabled {
 QComboBox {
     background: $bg-primary;
     border: 1px solid $border-colour;
-    border-radius: 3px;
-    padding: 3px 18px 3px 3px;
+    padding: 5px;
+    padding-right: 20px;
     min-width: 6em;
-}
 
-QComboBox:focus,
-QComboBox:hover {
-    background-color: lighten($bg-primary, 5%);
-    color: #fff;
-}
+    &:focus,
+    &:hover {
+        background: lighten($bg-primary, 5%);
+        color: #fff;
+    }
 
-QComboBox:on {
-    background: $secondary;
-    color: #fff;
-}
+    &:on {
+        background: $secondary;
+        color: #fff;
+    }
 
-QComboBox:off {
-    background: lighten($bg-secondary, 20%);
-    color: #fff;
-}
+    &:off {
+        background: lighten($bg-secondary, 20%);
+        color: #fff;
+    }
 
-QComboBox::down-arrow {
-    image: url([data]/qt/assets/dropdown.svg);
+    &::drop-down::button {
+        border: 0;
+    }
+
+    &::down-button {
+        subcontrol-origin: padding;
+        border: 0px solid $border-colour;
+        width: 12px;
+        image: url([data]/qt/assets/arrow_down.svg);
+    }
+
+    &::down-arrow {
+        subcontrol-origin: padding;
+        image: url([data]/qt/assets/arrow_down.svg);
+        border: 0px solid $border-colour;
+        width: 12px;
+
+        &:hover {
+            image: url([data]/qt/assets/arrow_down_hover.svg);
+        }
+
+        &:pressed,
+        &:disabled,
+        &:off {
+            image: url([data]/qt/assets/arrow_down_pressed.svg);
+        }
+    }
+
+    &:disabled {
+        background: $bg-disabled;
+        color: $text-disabled;
+    }
 }
 
 QComboBox QAbstractItemView {
     background: $bg-secondary;
     border: 1px solid $bg-primary;
+    padding: 0px;
+    margin: 0px;
     selection-background-color: $secondary;
     selection-color: #fff;
-}
-
-QComboBox:disabled {
-    background: $bg-disabled;
-    color: $text-disabled;
 }
 
 
@@ -723,6 +749,82 @@ QSpinBox,
 QDoubleSpinBox,
 QDateTimeEdit {
     background: $bg-primary;
+    border: 2px solid $border-colour;
+    color: $button-text-colour;
+    margin: 0;
+    padding: 4px;
+
+    &:focus {
+        background-color: darken($bg-primary, 5%);
+        border-color: darken($border-colour, 5%);
+        color: #fff;
+    }
+
+    &:hover {
+        background-color: lighten($bg-primary, 5%);
+        color: #fff;
+    }
+
+    &:disabled {
+        background: $bg-disabled;
+        color: $text-disabled;
+    }
+
+    &::up-button,
+    &::down-button {
+        border: 0px solid $border-colour;
+        width: 16px;
+    }
+
+    &::up-button {
+        subcontrol-origin: padding;
+        subcontrol-position: top right;
+    }
+
+    &::down-button {
+        subcontrol-origin: padding;
+        subcontrol-position: bottom right;
+    }
+
+    &::up-arrow,
+    &::down-arrow {
+        width: 12px;
+        height: 12px;
+    }
+
+    &::up-arrow {
+    image: url([data]/qt/assets/arrow_up.svg);
+
+        &:hover {
+            image: url([data]/qt/assets/arrow_up_hover.svg);
+        }
+
+        &:pressed {
+            image: url([data]/qt/assets/arrow_up_pressed.svg);
+        }
+
+        &:disabled,
+        &:off {
+            image: url([data]/qt/assets/arrow_up_disabled.svg);
+        }
+    }
+
+    &::down-arrow {
+        image: url([data]/qt/assets/arrow_down.svg);
+
+        &:hover {
+            image: url([data]/qt/assets/arrow_down_hover.svg);
+        }
+
+        &:pressed {
+            image: url([data]/qt/assets/arrow_down_pressed.svg);
+        }
+
+        &:disabled,
+        &:off {
+            image: url([data]/qt/assets/arrow_down_disabled.svg);
+        }
+    }
 }
 
 
