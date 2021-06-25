@@ -482,7 +482,7 @@ class PolychromaticTrayApplet():
             # Add DPI
             if zone == "main" and device["dpi_x"]:
                 dpi_menu, dpi_menu_item = indicator.create_submenu(_("DPI"), True, self._get_icon("general", "dpi"))
-                for item, dpi in enumerate(device["dpi_ranges"]):
+                for item, dpi in enumerate(device["dpi_stages"]):
                     icon = None
                     if item == 0:
                         icon = self._get_icon("general", "dpi-slow")

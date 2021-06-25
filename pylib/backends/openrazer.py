@@ -180,7 +180,7 @@ class Backend(_backend.Backend):
         dpi_y = None
         dpi_min = None
         dpi_max = None
-        dpi_ranges = []
+        dpi_stages = []
         poll_rate = None
 
         # Retrieve device variables
@@ -216,16 +216,16 @@ class Backend(_backend.Backend):
             dpi_min = 100
             dpi_max = rdevice.max_dpi
 
-            default_ranges = {
-                16000: [200, 800, 1800, 4500, 9000, 16000],
-                8200: [200, 800, 1800, 4800, 6400, 8200]
+            default_stages = {
+                16000: [800, 1800, 4500, 9000, 16000],
+                8200: [800, 1800, 4800, 6400, 8200]
             }
 
-            # Generate a range if a default isn't known
+            # Generate the DPI stages if they are not known
             try:
-                dpi_ranges = default_ranges[dpi_max]
+                dpi_stages = default_stages[dpi_max]
             except KeyError:
-                dpi_ranges = [
+                dpi_stages = [
                     int(dpi_max / 10),
                     int(dpi_max / 8),
                     int(dpi_max / 4),
@@ -691,7 +691,7 @@ class Backend(_backend.Backend):
             "summary": summary,
             "dpi_x": dpi_x,
             "dpi_y": dpi_y,
-            "dpi_ranges": dpi_ranges,
+            "dpi_stages": dpi_stages,
             "dpi_min": dpi_min,
             "dpi_max": dpi_max,
             "matrix": matrix,

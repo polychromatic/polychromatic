@@ -1097,7 +1097,7 @@ class DevicesTab(shared.TabData):
                 dpi.addChild(mkitem("DPI X", device["dpi_x"]))
                 if device["dpi_y"] > 0:
                     dpi.addChild(mkitem("DPI Y", device["dpi_y"]))
-                dpi.addChild(mkitem(_("Default Ranges"), ", ".join(map(str, device["dpi_ranges"]))))
+                dpi.addChild(mkitem(_("Default Stages"), ", ".join(map(str, device["dpi_stages"]))))
                 dpi.addChild(mkitem(_("Minimum"), device["dpi_min"]))
                 dpi.addChild(mkitem(_("Maximum"), device["dpi_max"]))
                 tree.addTopLevelItem(dpi)
