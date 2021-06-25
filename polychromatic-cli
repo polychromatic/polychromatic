@@ -511,12 +511,7 @@ if args.list_options:
             col_option = dbg.success + "dpi"
             col_param = dbg.success
             col_colours = dbg.grey + "-"
-
-            if details["dpi_single"]:
-                col_param += "{0}".format(details["dpi_x"])
-            else:
-                col_param += "{0},{1}".format(details["dpi_x"], details["dpi_y"])
-
+            col_param += "{0},{1}".format(details["dpi_x"], details["dpi_y"])
             col_param += " ({0}-{1})".format(details["dpi_min"], details["dpi_max"])
         _add_row()
 

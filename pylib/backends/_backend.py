@@ -162,7 +162,6 @@ class Backend(object):
             ],
             "dpi_x":            (int)   Device's DPI X value
             "dpi_y":            (int)   Device's DPI Y value
-            "dpi_single":       (bool)  Device only accepts one DPI value
             "dpi_ranges":       (list)  List of DPI ranges set by device
             "dpi_min":          (int)   Minimum DPI value supported by device
             "dpi_max":          (int)   Maximum DPI value supported by device
