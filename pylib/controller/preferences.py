@@ -77,11 +77,13 @@ class PreferencesWindow(shared.TabData):
             open_tab    (int)   Optionally jump to this specific tab index.
         """
         self.pref_data = pref.load_file(self.paths.preferences)
+        self.prompt_restart = False
+        self.restart_applet = False
 
         self.dialog = shared.get_ui_widget(self.appdata, "preferences", QDialog)
         self.dialog.findChild(QDialogButtonBox, "DialogButtons").accepted.connect(self._save_changes)
 
-        # Set Tab Icons
+        # Set icons for tabs
         tabs = self.dialog.findChild(QTabWidget, "PreferencesTabs")
         tabs.setTabIcon(0, self.widgets.get_icon_qt("general", "controller"))
         tabs.setTabIcon(1, self.widgets.get_icon_qt("general", "tray-applet"))
@@ -89,7 +91,7 @@ class PreferencesWindow(shared.TabData):
         tabs.setTabIcon(3, self.widgets.get_icon_qt("general", "matrix"))
         tabs.setTabIcon(4, self.widgets.get_icon_qt("emblems", "software"))
 
-        # Set Dialog Button Icons
+        # Set icons for controls
         if not self.appdata.system_qt_theme:
             self.dialog.findChild(QPushButton, "SavedColoursButton").setIcon(self.widgets.get_icon_qt("general", "edit"))
             self.dialog.findChild(QPushButton, "SavedColoursReset").setIcon(self.widgets.get_icon_qt("general", "reset"))
@@ -121,7 +123,7 @@ class PreferencesWindow(shared.TabData):
         self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").clicked.connect(self.menubar.openrazer.restart_daemon)
         self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").clicked.connect(self.menubar.openrazer.troubleshoot)
 
-        # Labels disguised as buttons
+        # Buttons disguised as labels
         view_log = self.dialog.findChild(QLabel, "OpenRazerLog")
         def view_log_clicked(QMouseEvent):
             if QMouseEvent.button() == Qt.LeftButton:
