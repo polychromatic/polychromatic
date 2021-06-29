@@ -110,7 +110,7 @@ class Backend(_backend.Backend):
                 "uid": uid,
                 "name": rdevice.name,
                 "serial": str(rdevice.serial),
-                "form_factor": self._get_form_factor(rdevice.type),
+                "form_factor": self._get_form_factor(rdevice),
                 "real_image": self._get_device_image(rdevice),
                 "zones": self._get_supported_zones(rdevice)
             })
@@ -126,7 +126,7 @@ class Backend(_backend.Backend):
         """
         devices = []
         unknown_list = self._get_unmanaged_razer_usb_pids()
-        form_factor = self._get_form_factor("unrecognised")
+        form_factor = self.common.get_form_factor(self._, "unrecognised")
 
         if not unknown_list:
             return []
@@ -158,7 +158,7 @@ class Backend(_backend.Backend):
         except Exception as e:
             return self.common.get_exception_as_string(e)
 
-        form_factor = self._get_form_factor(rdevice.type)
+        form_factor = self._get_form_factor(rdevice)
         real_image = self._get_device_image(rdevice)
 
         _vid_pid = self._get_device_vid_pid(rdevice)
@@ -242,7 +242,7 @@ class Backend(_backend.Backend):
 
         # Build an index of zones, parameters and what's currently set.
         _zones = self._get_supported_zones(rdevice)
-        zone_labels, zone_icons = self._get_zone_label_and_icons(_zones, name, self._get_form_factor(rdevice.type))
+        zone_labels, zone_icons = self._get_zone_label_and_icons(_zones, name, self._get_form_factor(rdevice))
         zone_options = {}
 
         def _device_has_zone_capability(capability):
@@ -905,10 +905,14 @@ class Backend(_backend.Backend):
 
         return True
 
-    def _get_form_factor(self, device_type):
+    def _get_form_factor(self, rdevice):
         """
         Convert the device type returned by OpenRazer to match one used within Polychromatic.
         """
+        device_name = rdevice.name
+        device_type = rdevice.type
+
+        # Some of these 'device types' originate from legacy OpenRazer versions
         openrazer_to_poly = {
             "firefly": "mousemat",
             "tartarus": "keypad",
@@ -920,6 +924,15 @@ class Backend(_backend.Backend):
             form_factor_id = openrazer_to_poly[device_type]
         else:
             form_factor_id = device_type
+
+        if device_name.find("Base Station") != -1:
+            form_factor_id = "stand"
+        elif device_name.find("Core") != -1:
+            form_factor_id = "gpu"
+        elif device_name.find("Nommo") != -1:
+            form_factor_id = "speaker"
+        elif device_name.find("Raptor") != -1:
+            form_factor_id = "display"
 
         return self.common.get_form_factor(self._, form_factor_id)
 
@@ -1369,7 +1382,7 @@ class Backend(_backend.Backend):
                                  int(rdevice.fx.advanced.cols),
                                  str(rdevice.name),
                                  self.backend_id,
-                                 self._get_form_factor(rdevice.type)["id"],
+                                 self._get_form_factor(rdevice)["id"],
                                  str(rdevice.serial),
                                  rdevice)
 

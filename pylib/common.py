@@ -22,6 +22,7 @@ from . import locales
 
 FORM_FACTORS = [
     "accessory",
+    "display",
     "fan",
     "gpu",
     "headset",
@@ -30,6 +31,8 @@ FORM_FACTORS = [
     "mouse",
     "mousemat",
     "ram",
+    "speaker",
+    "stand",
     "unrecognised"
 ]
 
@@ -179,6 +182,7 @@ def get_form_factor(_, form_factor_id):
 
     labels = {
         "accessory": _("USB Accessory"),
+        "display": _("Display"),
         "fan": _("Fan"),
         "gpu": _("Graphics Card"),
         "headset": _("Headset"),
@@ -187,6 +191,8 @@ def get_form_factor(_, form_factor_id):
         "mousemat": _("Mousemat"),
         "mouse": _("Mouse"),
         "ram": _("Memory"),
+        "speaker": _("Speaker"),
+        "stand": _("Stand"),
         "unrecognised": _("Unrecognised")
     }
 
