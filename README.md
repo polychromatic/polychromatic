@@ -71,7 +71,7 @@ Instructions for each supported distro are provided on the website:
 Installing packages from a software repository is recommended as this will keep
 the software up-to-date.
 
-Alternately, providing all the [dependencies](https://polychromatic.app/docs/dependencies/)
+Alternately, providing all the [dependencies](https://docs.polychromatic.app/dependencies/)
 are installed, you can run the application directly from the repository without
 installation. The `polychromatic-controller-dev` script will create an isolated
 configuration in `dev/config` as opposed to `~/.config/polychromatic`.
@@ -101,7 +101,7 @@ For bugs with Polychromatic, [please raise an issue here](https://github.com/pol
 ## Translations
 
 The software can speak multiple languages!
-[Here's a guide](https://polychromatic.app/docs/translations/) if you'd like to contribute.
+[Here's a guide](https://docs.polychromatic.app/translations/) if you'd like to contribute.
 
 Please note that there may be new and changed strings while this new
 version is being finalized.

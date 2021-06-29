@@ -11,7 +11,7 @@ Each backend is stored in its own module adjacent to this file. These are
 written by inheriting the "Backend" class below and added accordingly.
 
 Refer to the online documentation for more details:
-https://polychromatic.app/docs/
+https://docs.polychromatic.app/
 """
 
 from . import procpid

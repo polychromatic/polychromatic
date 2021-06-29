@@ -308,7 +308,7 @@ class MenuBar(object):
             license = f.read()
 
         links = [
-            [_("Documentation"), "https://polychromatic.app/docs/"],
+            [_("Documentation"), "https://docs.polychromatic.app/"],
             [_("Source Code"), "https://polychromatic.app/permalink/src/"],
             [_("Release Notes"), "https://polychromatic.app/permalink/latest/"],
             [_("Donate"), "https://polychromatic.app/permalink/donate/"]

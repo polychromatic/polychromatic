@@ -7,7 +7,7 @@
 Contains the parent "Backend" class that is inherited by all backends.
 
 Refer to the online documentation for more details:
-https://polychromatic.app/docs/
+https://docs.polychromatic.app/
 """
 
 import os
