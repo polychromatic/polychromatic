@@ -479,6 +479,14 @@ class PolychromaticTrayApplet():
                 elif option["type"] == "toggle":
                     indicator.add_menu_item(submenu, self.create_toggle_menu(device, zone, option))
 
+                # Option is a label, always show
+                elif option["type"] == "label":
+                    self.create_label_control(option, submenu)
+
+                # Option is a dialog, but will be shown in a separate menu
+                elif option["type"] == "dialog":
+                    indicator.add_menu_item(submenu, self.create_dialog_control(option))
+
             # Add DPI
             if zone == "main" and device["dpi_x"]:
                 dpi_menu, dpi_menu_item = indicator.create_submenu(_("DPI"), True, self._get_icon("general", "dpi"))
@@ -601,6 +609,25 @@ class PolychromaticTrayApplet():
         indicator.create_menu_item(submenu, _("On"), True, cb.set_option, [device, zone, option_id, True], icon_on)
         indicator.create_menu_item(submenu, _("Off"), True, cb.set_option, [device, zone, option_id, False], icon_off)
 
+        return submenu_item
+
+    def create_label_control(self, option, submenu):
+        """
+        Creates a label for permanent display. A new label will be created for
+        each line in the message.
+        """
+        indicator.create_seperator(submenu)
+        for index, line in enumerate([option["label"]] + option["message"].split("\n")):
+            indicator.create_menu_item(submenu, line, False, None, None, self._get_icon("general", "info") if index == 0 else None)
+        indicator.create_seperator(submenu)
+
+    def create_dialog_control(self, option):
+        """
+        Creates a submenu containing the message that would appear in a dialog.
+        """
+        submenu, submenu_item = indicator.create_submenu(option["button_text"], True, self._get_icon("general", "info"))
+        for line in option["message"].split("\n"):
+            indicator.create_menu_item(submenu, line, False)
         return submenu_item
 
     def _get_colour_icon(self, colour_hex):

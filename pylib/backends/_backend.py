@@ -183,11 +183,17 @@ class Backend(object):
             "zone_options": {   (dict)  Tells Polychromatic how to present the options.
                 "main": [       (dict)  Keys for each zone.
                     {
-                        # Required
-
+                        Required
+                        ==========================
                         "id":                   (str)   ID to identify later. Used for icon.
                         "label":                (str)   Human readable name for this option.
-                        "type":                 (str)   "effect", "slider", "toggle" or "multichoice"
+                        "type":                 (str)   One of the following:
+                                                        "effect"
+                                                        "slider"
+                                                        "toggle"
+                                                        "multichoice"
+                                                        "label"
+                                                        "dialog"
                         "parameters": [         (list)  Parameters for "effect" and "multichoice".
                             {
                                 "id":           (str)   ID to identify later. Used for icon if available.
@@ -199,17 +205,28 @@ class Backend(object):
                         ],
                         "colours":              (list)  List of hex values last used for this option (no parameters only)
 
-                        # Only for effect and toggle
-
+                        Only for "effect" and "toggle"
+                        ==========================
                         "active":               (bool)  Effect/option in use?
 
-                        # Only for slider
-
+                        Only for "slider"
+                        ==========================
                         "value":                (int)   Current value
                         "min":                  (int)   Start of range, e.g. 0
                         "max":                  (int)   End of range, e.g. 100
                         "step":                 (int)   Range intervals, e.g. 5
                         "suffix":               (str)   String to appear at the end in GUIs
+
+                        Only for "label" (controller/tray only)
+                        ==========================
+                        "message":              (str)   Text to display to the user. Use '\n' for new lines.
+                                                        Should use _ function for translation.
+
+                        Only for "dialog" (controller/tray only)
+                        ==========================
+                        "button_text":          (str)   Label for the button
+                        "message":              (str)   Text to display in the dialog box. Use '\n' for new lines.
+                                                        Should use _ function for translation.
                     }
                 ],
             }

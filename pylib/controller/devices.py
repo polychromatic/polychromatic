@@ -306,6 +306,12 @@ class DevicesTab(shared.TabData):
         elif option["type"] == "multichoice":
             return self.widgets.create_row_widget(option_label, self._create_control_select(device, zone, option))
 
+        elif option["type"] == "label":
+            return self.widgets.create_row_widget(option_label, self._create_control_label(device, zone, option))
+
+        elif option["type"] == "dialog":
+            return self.widgets.create_row_widget(option_label, self._create_control_dialog(device, zone, option))
+
     def _create_control_slider(self, device, zone, option):
         """
         Prepares and returns a slider for changing options.
@@ -382,6 +388,36 @@ class DevicesTab(shared.TabData):
 
         combo.currentIndexChanged.connect(_current_index_changed)
         return [combo]
+
+    def _create_control_label(self, device, zone, option):
+        """
+        Prepares and returns a control that just shows a string.
+        """
+        label = QLabel()
+        label.setText(option["message"])
+        return [label]
+
+    def _create_control_dialog(self, device, zone, option):
+        """
+        Prepares and returns a control that shows a message when clicking the button.
+        """
+        def _open_dialog():
+            dialog_title = middleman.BACKEND_ID_NAMES[device["backend"]]
+            self.widgets.open_dialog(self.widgets.dialog_generic,
+                                    dialog_title,
+                                    option["message"])
+
+        # Widget and layout keeps the button left-aligned
+        widget = QWidget()
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        widget.setLayout(layout)
+        button = QPushButton()
+        button.setText(option["button_text"])
+        button.clicked.connect(_open_dialog)
+        layout.addWidget(button)
+        layout.addStretch()
+        return [widget]
 
     def _create_effect_controls(self, zone, effect_options):
         """
