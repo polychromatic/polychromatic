@@ -11,8 +11,6 @@ Project URL: https://github.com/openrazer/openrazer
 """
 
 import os
-import glob
-import grp
 
 # Imported on demand:
 # import requests       _get_device_image() for retrieving device image URLs
@@ -1056,19 +1054,9 @@ class Backend(_backend.Backend):
         This usually means the installation is incomplete or the device is not
         supported by the driver.
         """
-        all_usb_pids = []
+        all_usb_pids = self.helpers.get_usb_pids_by_vid("1532")
         reg_pids = []
         unreg_pids = []
-
-        # Get list of USB VIDs and PIDs plugged into the system.
-        vendor_files = glob.glob("/sys/bus/usb/devices/*/idVendor")
-        for vendor in vendor_files:
-            with open(vendor, "r") as f:
-                vid = str(f.read()).strip().upper()
-                if vid == "1532":
-                    with open(os.path.dirname(vendor) + "/idProduct") as f:
-                        pid = str(f.read()).strip().upper()
-                        all_usb_pids.append(pid)
 
         # Get VIDs and PIDs from daemon to exclude them.
         if self.devices:
@@ -1105,16 +1093,6 @@ class Backend(_backend.Backend):
             "vid": vid,
             "pid": pid
         }
-
-    def _is_user_in_plugdev_group(self):
-        """
-        Check the groups of the currently logged in user to identify if it is
-        missing 'plugdev' as required by the daemon.
-        """
-        if "plugdev" in [grp.getgrgid(g).gr_name for g in os.getgroups()]:
-            return True
-        else:
-            return False
 
     def _get_device_image(self, rdevice):
         """

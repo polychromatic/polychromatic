@@ -10,7 +10,10 @@ Refer to the online documentation for more details:
 https://docs.polychromatic.app/
 """
 
+import glob
 import os
+import grp
+
 
 class Backend(object):
     """
@@ -29,6 +32,9 @@ class Backend(object):
 
         # The self.common module may contain useful functions for processing.
         self.common = common
+
+        # See BackendHelpers() for usage.
+        self.helpers = BackendHelpers()
 
         # Backend ID
         self.backend_id = "unknown"
@@ -324,3 +330,33 @@ class Backend(object):
             None                Not applicable.
         """
         return None
+
+
+class BackendHelpers():
+    """
+    Shared functions that are useful for backends.
+    """
+    def get_usb_pids_by_vid(self, vid_to_find):
+        """
+        Returns a integer list of USB PIDs for a VID plugged into the system.
+        """
+        vendor_files = glob.glob("/sys/bus/usb/devices/*/idVendor")
+        found_pids = []
+        for vendor in vendor_files:
+            with open(vendor, "r") as f:
+                vid = str(f.read()).strip().upper()
+                if vid == vid_to_find:
+                    with open(os.path.dirname(vendor) + "/idProduct") as f:
+                        pid = str(f.read()).strip().upper()
+                        found_pids.append(pid)
+        return found_pids
+
+    def is_user_in_group(self, group):
+        """
+        Check the user groups for the currently logged in user and returns a
+        boolean to indicate whether the specified group was found.
+        """
+        if group in [grp.getgrgid(g).gr_name for g in os.getgroups()]:
+            return True
+
+        return False

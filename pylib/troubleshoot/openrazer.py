@@ -23,6 +23,7 @@ import subprocess
 import shutil
 
 from .. import common
+from ..backends import _backend
 
 try:
     from openrazer import client as rclient
@@ -184,7 +185,6 @@ def _is_secure_boot_enabled(_):
 
 
 def _is_user_in_plugdev_group(_):
-    groups = subprocess.Popen(["groups"], stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
     return {
         "test_name": _("User account has been added to the 'plugdev' group"),
         "suggestions": [
@@ -192,7 +192,7 @@ def _is_user_in_plugdev_group(_):
             "$ sudo gpasswd -a $USER plugdev",
             _("If you've just installed, it is recommended to restart the computer."),
         ],
-        "passed": True if groups.find("plugdev") != -1 else False
+        "passed": _backend.BackendHelpers().is_user_in_group("plugdev")
     }
 
 
