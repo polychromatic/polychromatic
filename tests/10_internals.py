@@ -85,6 +85,11 @@ class PolychromaticTests(unittest.TestCase):
         ff = common.get_form_factor(self._, "keyboard")
         self.assertEqual(list(ff.keys()), ["id", "icon", "label"], "Unexpected get_form_factor() output")
 
+    def test_get_form_factor_all(self):
+        for form_factor_id in common.FORM_FACTORS:
+            ff = common.get_form_factor(self._, form_factor_id)
+        self.assertTrue(True, "Got exception processing form factors")
+
     def test_get_green_shades(self):
         shades = common.get_green_shades(self._)
         passed = True
