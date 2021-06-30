@@ -582,6 +582,21 @@ class Backend(_backend.Backend):
                         "colours": [] # n/a
                     })
 
+        # -- Key Mapping Info
+        if rdevice.type in ["keyboard", "keypad"]:
+            _init_main_if_empty()
+            zone_options["main"].append({
+                        "id": "key_info",
+                        "label": self._("Key Mapping"),
+                        "type": "dialog",
+                        "button_text": self._("About Key Mapping"),
+                        "message": self._("Currently, OpenRazer and Polychromatic do not support a convenient key rebinding feature. " + \
+                            "Polychromatic intends to integrate a key mapping solution in a future version.\n\n" + \
+                            "In the meantime, there are third party projects which provide key remapping agnostic to any input device.\n\nFor more information, visit:\n" + \
+                            "https://polychromatic.app/permalink/keymapping/"),
+                        "colours": [] # n/a
+                    })
+
         # Prepare summary of device.
         summary = []
         _multiple_zones = len(_zones) > 1
