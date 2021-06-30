@@ -564,6 +564,24 @@ class Backend(_backend.Backend):
                 "colours": [] # n/a
             })
 
+        # -- Macros Info
+        if rdevice.has("macro_mode_led_effect") and rdevice.type == "keyboard":
+            _init_main_if_empty()
+            zone_options["main"].append({
+                        "id": "macro_info",
+                        "label": self._("Macros"),
+                        "type": "dialog",
+                        "button_text": self._("About Macro Recording"),
+                        "message": self._("The OpenRazer daemon provides a simple on-the-fly macro recording feature. To use:\n\n" + \
+                            "1. Press FN+[M] to enter macro mode.\n" + \
+                            "2. Press the macro key to assign to. Only M1-M5 are supported.\n" + \
+                            "3. Press the keys in sequence to record.\n" + \
+                            "4. Press FN+[M] to exit macro mode.\n\n" + \
+                            "Macros are retained in memory until the daemon is stopped. The replay speed will be instantaneous.\n\n" + \
+                            "This is not a Polychromatic feature and could disappear in future. This application intends to integrate a key rebinding feature in a future version."),
+                        "colours": [] # n/a
+                    })
+
         # Prepare summary of device.
         summary = []
         _multiple_zones = len(_zones) > 1
