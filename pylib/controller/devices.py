@@ -14,6 +14,8 @@ from .. import preferences as pref
 from .. import middleman
 from . import shared
 
+import os
+import subprocess
 import time
 
 from PyQt5.QtCore import Qt, QSize, QMargins, QThread
@@ -272,6 +274,10 @@ class DevicesTab(shared.TabData):
             # -- DPI
             if zone == "main" and device["dpi_x"]:
                 widgets.append(self.special_controls.create_dpi_control(device))
+
+            # -- Mouse Acceleration
+            if zone == "main" and device["form_factor"]["id"] == "mouse":
+                widgets.append(self.special_controls.create_mouse_accel_control())
 
             # Group controls if there are multiple zones
             if multiple_zones:
@@ -1349,3 +1355,72 @@ class SpecialControls(shared.TabData):
         _refresh_grid_size()
 
         return self.widgets.create_row_widget(self._("DPI"), [stage_widget, dpi_widget], vertical=True)
+
+    def create_mouse_accel_control(self):
+        """
+        Creates a button that'll either:
+          - Open mouse acceleration settings for known desktop environments
+          - Or inform the user if desktop environment unknown.
+
+        Due to the diverse range of desktop environments, getting mouse
+        acceleration values isn't supported right now.
+        """
+        def _get_current_desktop_env():
+            try:
+                desktop_env = os.environ["XDG_CURRENT_DESKTOP"]
+
+                # Some distros add a prefix/suffix ("ubuntu", "X-")
+                if desktop_env.find("GNOME") != -1:
+                    return "GNOME"
+                elif desktop_env.find("Cinnamon") != -1:
+                    return "Cinnamon"
+                elif desktop_env in ["KDE", "MATE", "Pantheon", "LXQt"]:
+                    return desktop_env
+                return "Unknown"
+            except KeyError:
+                return "Unknown"
+
+        def _get_command():
+            desktop_env = _get_current_desktop_env()
+            desktop_to_cmd = {
+                "GNOME": "gnome-control-center mouse",
+                "Cinnamon": "cinnamon-settings mouse",
+                "KDE": "systemsettings5 mouse",
+                "MATE": "mate-mouse-properties",
+                "Pantheon": "io.elementary.switchboard settings://input/mouse",
+                "LXQt": "lxqt-config-input",
+            }
+            try:
+                return desktop_to_cmd[desktop_env]
+            except KeyError:
+                return None
+
+        def _open_mouse_settings():
+            command = _get_command()
+            if command:
+                self.dbg.stdout("Opening: " + command, self.dbg.action, 1)
+                subprocess.Popen(command.split(" "))
+                return
+
+            # Desktop environment unknown, inform the user for manual action.
+            self.widgets.open_dialog(self.widgets.dialog_generic,
+                                     self._("Mouse Acceleration"),
+                                     self._("This feature is provided by your operating system. Polychromatic doesn't recognise this desktop environment " + \
+                                            "to automatically open the settings window for you.\n\n" + \
+                                            "Look for 'mouse', 'input' or 'hardware' in your System Settings."))
+
+        widget = QWidget()
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        widget.setLayout(layout)
+        button = QToolButton()
+        button.setText(self._("Open Mouse Settings"))
+        button.setIconSize(QSize(24, 24))
+        button.setIcon(QIcon.fromTheme("input-mouse"))
+        button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        button.clicked.connect(_open_mouse_settings)
+        layout.addWidget(button)
+        layout.addStretch()
+
+        return self.widgets.create_row_widget(self._("Acceleration"), [widget])
+
