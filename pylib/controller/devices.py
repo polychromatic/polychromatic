@@ -820,7 +820,10 @@ class DevicesTab(shared.TabData):
         backend_name = middleman.BACKEND_ID_NAMES[backend]
 
         def _restart_backend():
-            self.middleman.restart(backend)
+            backend_to_restart_fn = {
+                "openrazer": self.appdata.menubar.openrazer.restart_daemon
+            }
+            backend_to_restart_fn[backend]()
 
         self.widgets.populate_empty_state(layout,
             common.get_icon("empty", "nodevice"),
