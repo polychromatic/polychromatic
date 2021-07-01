@@ -202,7 +202,7 @@ class MenuBar(object):
             }
             context = indexes[current_tab]
 
-        webbrowser.open("https://polychromatic.app/docs" + context)
+        webbrowser.open("https://docs.polychromatic.app" + context)
 
     def polychromatic_website(self):
         self._prompt_on_locale_change(self._("Website"))
