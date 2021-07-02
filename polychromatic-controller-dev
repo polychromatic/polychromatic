@@ -27,5 +27,8 @@ abort_on_error $?
 # Isolate configuration
 export POLYCHROMATIC_DEV_CFG=true
 
+# Uncomment to inspect the editor (navigate to localhost:9000 in Chromium)
+#export QTWEBENGINE_REMOTE_DEBUGGING=9000
+
 # Start!
 exec ./polychromatic-controller --verbose $params
