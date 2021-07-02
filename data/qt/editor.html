@@ -196,6 +196,9 @@
                     case "path":
                     case "rect":
                     case "circle":
+                        if (node.getAttribute("nochange") == "true")
+                            return;
+
                         node.style.fill = hexValue;
                         node.style.stroke = border_rgb;
 
