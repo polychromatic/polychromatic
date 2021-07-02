@@ -190,28 +190,37 @@
             // Fill in path(s) and make sure text is still visible.
             var text_rgb = _getTextColour(rgb);
             var border_rgb = _getLightnessColour(rgb, 0.33)
-            var children = element.childNodes;
-            for (i = 0; i < children.length; i++) {
-                var child = children[i];
-                switch(child.tagName) {
+
+            function _process_node(node) {
+                switch(node.tagName) {
                     case "path":
-                    case "g":
                     case "rect":
                     case "circle":
-                        child.style.fill = hexValue;
-                        child.style.stroke = border_rgb;
+                        node.style.fill = hexValue;
+                        node.style.stroke = border_rgb;
 
-                        // Except child paths that are just for decoration
-                        if (child.getAttribute("nostroke") == "true") {
-                            child.style.stroke = null;
-                            child.style.fill = text_rgb;
+                        // Except some paths that are just for decoration
+                        // For example, a symbol on a key
+                        if (node.getAttribute("nostroke") == "true") {
+                            node.style.stroke = null;
+                            node.style.fill = text_rgb;
                         }
                         break;
                     case "text":
-                        child.style.fill = text_rgb;
+                        node.style.fill = text_rgb;
                         break;
                 }
             }
+
+            element.childNodes.forEach(function(node) {
+                if (node.tagName === "g") {
+                    node.childNodes.forEach(function(subnode) {
+                        _process_node(subnode);
+                    });
+                    return;
+                }
+                _process_node(node);
+            });
         }
 
         function setLED(x, y, send_to_py, colourOverride) {
