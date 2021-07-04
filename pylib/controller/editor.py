@@ -1181,15 +1181,24 @@ class VisualEffectEditor(shared.TabData):
         self.webview_zoom_level = 1.0
         self._update_zoom_controls()
 
+    def _view_device_reload_ready(self):
+        """
+        Shared private function for when the user changes the graphic while
+        the editor is open. This ensures the state is loaded properly.
+        """
+        self.init_editor()
+        self.select_mode_draw()
+        self.device_renderer.set_colour(self.current_colour)
+        self.statusbar.showMessage(self._("Temporarily changed the graphic. To make permanent, edit the metadata."), 5000)
+
     def view_device_graphic(self):
         """
         Temporarily switch the visual editor graphic to the hardware graphic,
         if available.
         """
+        self.statusbar.showMessage(self._("Loading..."), 5000)
         hide_key_labels = not self.action_view_key_labels.isChecked()
-        self.device_renderer = DeviceRenderer(self.appdata, self, self.webview, self.init_editor, self.data["map_graphic"], self.data["map_rows"], self.data["map_cols"], hide_key_labels)
-        self.select_mode_draw()
-        self.statusbar.showMessage(self._("Temporarily changed the graphic. To make permanent, edit the metadata."), 5000)
+        self.device_renderer = DeviceRenderer(self.appdata, self, self.webview, self._view_device_reload_ready, self.data["map_graphic"], self.data["map_rows"], self.data["map_cols"], hide_key_labels)
 
         if self.data["map_device_icon"] in ["keyboard", "keypad"]:
             self.action_view_key_labels.setEnabled(True)
@@ -1199,10 +1208,10 @@ class VisualEffectEditor(shared.TabData):
         Temporarily switch the visual editor graphic to a grid, which allows
         drawing on any device.
         """
+        self.statusbar.showMessage(self._("Loading..."), 5000)
         hide_key_labels = not self.action_view_key_labels.isChecked()
-        self.device_renderer = DeviceRenderer(self.appdata, self, self.webview, self.init_editor, "", self.data["map_rows"], self.data["map_cols"], hide_key_labels)
-        self.select_mode_draw()
-        self.statusbar.showMessage(self._("Temporarily changed the graphic. To make permanent, edit the metadata."), 5000)
+        self.device_renderer = DeviceRenderer(self.appdata, self, self.webview, self._view_device_reload_ready, "", self.data["map_rows"], self.data["map_cols"], hide_key_labels)
+
         self.action_view_key_labels.setEnabled(False)
 
     def view_key_labels(self):
