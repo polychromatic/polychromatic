@@ -1841,6 +1841,10 @@ class DeviceRenderer(shared.TabData):
         # Set mode
         self.set_mode(VISUAL_MODE_ADD)
 
+        # Remove scroll bar theming if user prefers native (although they will look like Chromium instead)
+        if self.appdata.system_qt_theme:
+            self.webview.page().runJavaScript("document.querySelector('#polychromatic-qt-theme').remove()")
+
         # Run ready function
         if self.ready_fn:
             self.ready_fn()

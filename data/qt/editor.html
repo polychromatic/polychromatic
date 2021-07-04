@@ -84,6 +84,34 @@
             opacity: 1;
         }
     </style>
+    <style id="polychromatic-qt-theme">
+        ::-webkit-scrollbar {
+            background: black;
+            height: 0.98vw;
+            width: 0.98vw;
+            z-index: 100;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.5);
+            height: 0.25vw;
+            border: 0.1vw solid rgba(0, 0, 0, 0);
+            background-clip: padding-box;
+            z-index: 100;
+        }
+
+        ::-webkit-scrollbar-button {
+            width: 0;
+            height: 0;
+            display: none;
+            z-index: 100;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: black;
+            z-index: 100;
+        }
+    </style>
 </head>
 <body>
     <div id="viewport" class="mode-1" onmousedown="event.preventDefault()" draggable="false"></div>
