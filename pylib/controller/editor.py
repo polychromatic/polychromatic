@@ -1625,7 +1625,13 @@ class VisualEffectEditor(shared.TabData):
         """
         User draws a new position on the current frame.
         """
-        self.data["frames"][self.current_frame][str(x)][str(y)] = self.current_colour
+        try:
+            self.data["frames"][self.current_frame][str(x)][str(y)] = self.current_colour
+        except KeyError:
+            self.widgets.open_dialog(self.widgets.dialog_error,
+                                     self._("Out of Bounds"),
+                                     self._("There isn't a position for (X,Y) for this device. The graphic contains incorrect metadata or is incompatible for use with this device.").replace("(X,Y)", "({0},{1})".format(str(x), str(y))))
+            return
 
         if self.device_object:
             try:
