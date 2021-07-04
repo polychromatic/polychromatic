@@ -208,6 +208,10 @@ class Backend(_backend.Backend):
             matrix_rows = rdevice.fx.advanced.rows
             matrix_cols = rdevice.fx.advanced.cols
 
+            if rdevice.name == "Razer DeathStalker Chroma":
+                # See DeathStalkerChromaFX() in get_device_object()
+                matrix_cols = 6
+
         if rdevice.has("dpi"):
             dpi_x = rdevice.dpi[0]
             dpi_y = rdevice.dpi[1]
@@ -1388,6 +1392,22 @@ class Backend(_backend.Backend):
 
             def brightness(self, percent):
                 self._rdevice.brightness = percent
+
+        class DeathStalkerChromaFX(OpenRazerCustomFX):
+            """
+            This device has a matrix of 12x1, but every second LED (2,4,6,8,10,12)
+            actually blends with the previous LED (1,3,5,7,9,11) (#335)
+            """
+            def set(self, x, y, red, green, blue):
+                # Matrix is halfed. "Stretch" LEDs across two for one.
+                # 0-based: Even (normal), odd (blend)
+                # Example: [0] -> [0,1]  [5] -> [10,11]
+                self._rdevice.fx.advanced.matrix[y, (x * 2)] = (red, green, blue)
+                self._rdevice.fx.advanced.matrix[y, (x * 2) + 1] = (red, green, blue)
+
+        # Overrides for quirky devices
+        if rdevice.name == "Razer DeathStalker Chroma":
+            return DeathStalkerChromaFX(1, 6, str(rdevice.name), self.backend_id, self._get_form_factor(rdevice)["id"], str(rdevice.serial), rdevice)
 
         return OpenRazerCustomFX(int(rdevice.fx.advanced.rows),
                                  int(rdevice.fx.advanced.cols),
