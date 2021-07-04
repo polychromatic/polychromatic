@@ -6,17 +6,18 @@
     <style>
         html, body {
             background: linear-gradient(to bottom, rgba(0, 0, 0, 255), rgba(50, 50, 50, 255));
-            overflow: hidden;
             font-family: "Play", sans-serif;
-            height: 100vh;
-            width: 100vw;
+            overflow: auto;
+            min-height: max-content;
+            min-width: max-content;
+            margin: 0;
         }
 
         #viewport {
             cursor: pointer;
             display: flex;
-            height: 100vh;
-            width: 100vw;
+            min-height: 100vh;
+            min-width: 100vw;
         }
 
         #viewport svg {
@@ -70,7 +71,8 @@
             position: fixed;
             left: 0;
             right: 0;
-            bottom: 8px;
+            bottom: 1vh;
+            font-size: 2.5vh;
             margin: auto;
             color: gray;
             text-align: center;
