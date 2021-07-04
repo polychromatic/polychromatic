@@ -1835,9 +1835,8 @@ class DeviceRenderer(shared.TabData):
             self.editor.window.close()
 
         # Load the SVG into the viewport
-        name = self.graphic_name.replace("'", "&quot;")
         svg = self._get_graphic_svg().replace("'", "&quot;")
-        self.webview.page().runJavaScript("loadSVG('{0}', '{1}'); clearLED()".format(name, svg))
+        self.webview.page().runJavaScript("loadSVG('{0}'); clearLED()".format(svg))
 
         # Set mode
         self.set_mode(VISUAL_MODE_ADD)

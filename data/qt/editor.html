@@ -65,34 +65,30 @@
             cursor: pointer;
         }
 
-        #status-msg {
-            display: flex;
-            flex-direction: column;
+        #current-pos {
+            background: rgba(0,0,0,0.75);
             position: fixed;
-            left: 0;
+            top: 0;
             right: 0;
-            bottom: 1vh;
-            font-size: 2.5vh;
+            font-size: 3vh;
             margin: auto;
             color: gray;
             text-align: center;
             pointer-events: none;
+            padding: 0.25vw 0.5vw;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
-        #status-msg > div {
-            margin-top: auto;
-            margin-left: auto;
-            margin-right: auto;
+        #current-pos.visible {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
     <div id="viewport" class="mode-1" onmousedown="event.preventDefault()" draggable="false"></div>
 
-    <div id="status-msg">
-        <div id="current-graphic-name"></div>
-        <div id="current-pos">&nbsp;</div>
-    </div>
+    <div id="current-pos"></div>
 
     <script>
         var currentColour = "#00FF00";
@@ -101,11 +97,10 @@
         var viewport = document.querySelector("#viewport");
         var mode = 0;
 
-        function loadSVG(svg_name, svg_data) {
+        function loadSVG(svg_data) {
             //
             // Load the new graphic into the viewport.
             //
-            document.querySelector("#current-graphic-name").innerHTML = svg_name;
             viewport.innerHTML = svg_data;
             document.querySelector("svg").setAttribute("preserveAspectRatio", "xMinYMin");
 
@@ -129,6 +124,7 @@
             // Additionally, if the mouse is being drag clicked, set the LED too.
             //
             currentPos.innerHTML = `(${element.x}, ${element.y})`;
+            currentPos.classList.add("visible")
 
             if (mouseDown > 0)
                 setLED(element.x, element.y, true);
@@ -138,7 +134,7 @@
             //
             // Remove the current position when no longer hovering an LED.
             //
-            currentPos.innerHTML = "&nbsp;";
+            currentPos.classList.remove("visible")
         }
 
         // https://stackoverflow.com/a/5624139
