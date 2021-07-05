@@ -1187,8 +1187,8 @@ class VisualEffectEditor(shared.TabData):
         the editor is open. This ensures the state is loaded properly.
         """
         self.init_editor()
-        self.select_mode_draw()
         self.device_renderer.set_colour(self.current_colour)
+        self.device_renderer.set_mode(self.current_tool)
         self.statusbar.showMessage(self._("Temporarily changed the graphic. To make permanent, edit the metadata."), 5000)
 
     def view_device_graphic(self):
