@@ -1634,9 +1634,15 @@ class VisualEffectEditor(shared.TabData):
         """
         User draws a new position on the current frame.
         """
+        def _release_click():
+            """After an error dialog, the button ends up "stuck" in the webview."""
+            self.webview.page().runJavaScript("mouseDown = 0;")
+
         try:
             self.data["frames"][self.current_frame][str(x)][str(y)] = self.current_colour
         except KeyError:
+            _release_click()
+            self.dbg.stdout("Can't set LED ({0}, {1}) as out of bounds for device (or save data)".format(str(x), str(y)), self.dbg.error)
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      self._("Out of Bounds"),
                                      self._("There isn't a position for (X,Y) for this device. The graphic contains incorrect metadata or is incompatible for use with this device.").replace("(X,Y)", "({0},{1})".format(str(x), str(y))))
@@ -1648,6 +1654,7 @@ class VisualEffectEditor(shared.TabData):
                 self.device_object.set(int(x), int(y), rgb[0], rgb[1], rgb[2])
                 self.device_object.draw()
             except Exception as e:
+                _release_click()
                 self._live_preview_failed(e)
 
         self.set_modified(True)
