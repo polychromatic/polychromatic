@@ -532,6 +532,19 @@ class Backend(_backend.Backend):
                 "colours": [] # n/a
             })
 
+        # -- Sync DPI to hardware
+        if rdevice.has("dpi_stages"):
+            _init_main_if_empty()
+            zone_options["main"].append({
+                "id": "sync_dpi_stages",
+                "label": self._("DPI Buttons"),
+                "type": "button",
+                "button_text": self._("Sync DPI to Hardware"),
+                "parameters": [],
+                "active": True,
+                "colours": [] # n/a
+            })
+
         # -- Poll Rate
         if rdevice.has("poll_rate"):
             _init_main_if_empty()
@@ -927,6 +940,30 @@ class Backend(_backend.Backend):
                     rdevice.dpi = (int(option_data), 0)
                 else:
                     rdevice.dpi = (int(option_data[0]), int(option_data[1]))
+
+            elif option_id == "sync_dpi_stages":
+                # TODO: This can integrate better after the backend is refactored
+                # TODO: Polychromatic does not support custom X,Y values, so it's limited here.
+                # HACK: It's dirty, but directly access preferences, and use the values if enabled.
+                import json
+                pref_path = self.common.Paths().preferences
+                with open(pref_path, "r") as f:
+                    prefs = json.load(f)
+                custom = prefs["custom"]
+
+                if not custom["use_dpi_stages"]:
+                    return self._("Please set up the DPI stages in Polychromatic's preferences (under Customise).")
+
+                stages = []
+                for i in range(1, 6):
+                    stages.append(int(custom["dpi_stage_" + str(i)]))
+
+                # [active_stage, [stages: (x,y), (x,y) etc]
+                rdevice.dpi_stages = (1, [(stages[0], stages[0]),
+                                          (stages[1], stages[1]),
+                                          (stages[2], stages[2]),
+                                          (stages[3], stages[3]),
+                                          (stages[4], stages[4])])
 
             elif option_id == "poll_rate":
                 # Params: (int)
