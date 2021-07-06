@@ -505,6 +505,13 @@ if args.list_options:
 
                         _add_row()
 
+                elif option_type == "button":
+                    col_param = ""
+                    col_zone = dbg.success + zone
+                    col_option = dbg.success + control["id"]
+                    col_param = dbg.success + col_param
+                    _add_row()
+
         # DPI data
         if details["dpi_x"] or details["dpi_y"]:
             col_zone = dbg.grey + "-"

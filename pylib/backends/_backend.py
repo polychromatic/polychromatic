@@ -194,6 +194,7 @@ class Backend(object):
                                                         "multichoice"
                                                         "label"
                                                         "dialog"
+                                                        "button"
                         "parameters": [         (list)  Parameters for "effect" and "multichoice".
                             {
                                 "id":           (str)   ID to identify later. Used for icon if available.
@@ -227,6 +228,10 @@ class Backend(object):
                         "button_text":          (str)   Label for the button
                         "message":              (str)   Text to display in the dialog box. Use '\n' for new lines.
                                                         Should use _ function for translation.
+
+                        Only for "button"
+                        ==========================
+                        "button_text":          (str)   Label for the button
                     }
                 ],
             }

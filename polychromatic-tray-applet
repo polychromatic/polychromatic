@@ -476,6 +476,7 @@ class PolychromaticTrayApplet():
                 elif option["type"] == "slider":
                     indicator.add_menu_item(submenu, self.create_slider_menu(device, zone, option))
 
+                # Option is a boolean choice
                 elif option["type"] == "toggle":
                     indicator.add_menu_item(submenu, self.create_toggle_menu(device, zone, option))
 
@@ -486,6 +487,10 @@ class PolychromaticTrayApplet():
                 # Option is a dialog, but will be shown in a separate menu
                 elif option["type"] == "dialog":
                     indicator.add_menu_item(submenu, self.create_dialog_control(option))
+
+                # Option is a clickable one-way action with no feedback
+                elif option["type"] == "button":
+                    self.create_button_control(submenu, option, device, zone)
 
             # Add DPI
             if zone == "main" and device["dpi_x"]:
@@ -629,6 +634,12 @@ class PolychromaticTrayApplet():
         for line in option["message"].split("\n"):
             indicator.create_menu_item(submenu, line, False)
         return submenu_item
+
+    def create_button_control(self, submenu, option, device, zone):
+        """
+        Creates a menu item to execute a specific function without needing feedback.
+        """
+        indicator.create_menu_item(submenu, option["button_text"], True, cb.set_option, [device, zone, option["id"], None])
 
     def _get_colour_icon(self, colour_hex):
         """

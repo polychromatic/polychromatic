@@ -320,6 +320,9 @@ class DevicesTab(shared.TabData):
         elif option["type"] == "dialog":
             return self.widgets.create_row_widget(option_label, self._create_control_dialog(device, zone, option))
 
+        elif option["type"] == "button":
+            return self.widgets.create_row_widget(option_label, self._create_control_button(device, zone, option))
+
     def _create_control_slider(self, device, zone, option):
         """
         Prepares and returns a slider for changing options.
@@ -405,6 +408,20 @@ class DevicesTab(shared.TabData):
         label.setText(option["message"])
         return [label]
 
+    def _create_widget_wrapper_for_control(self, widgets=[]):
+        """
+        Shared function to keep controls presentable by providing a layout
+        and keeping the children aligned to the left.
+        """
+        widget = QWidget()
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        widget.setLayout(layout)
+        for child in widgets:
+            layout.addWidget(child)
+        layout.addStretch()
+        return widget
+
     def _create_control_dialog(self, device, zone, option):
         """
         Prepares and returns a control that shows a message when clicking the button.
@@ -415,17 +432,20 @@ class DevicesTab(shared.TabData):
                                     dialog_title,
                                     option["message"])
 
-        # Widget and layout keeps the button left-aligned
-        widget = QWidget()
-        layout = QHBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        widget.setLayout(layout)
-        button = QPushButton()
-        button.setText(option["button_text"])
+        button = QPushButton(option["button_text"])
         button.clicked.connect(_open_dialog)
-        layout.addWidget(button)
-        layout.addStretch()
-        return [widget]
+        return [self._create_widget_wrapper_for_control([button])]
+
+    def _create_control_button(self, device, zone, option):
+        """
+        Prepares and returns a button for the user to perform a one way action.
+        """
+        def _button_clicked():
+            self._event_set_option(device, zone, option["id"], None)
+
+        button = QPushButton(option["button_text"])
+        button.clicked.connect(_button_clicked)
+        return [self._create_widget_wrapper_for_control([button])]
 
     def _create_effect_controls(self, zone, effect_options):
         """
