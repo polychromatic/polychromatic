@@ -1026,6 +1026,14 @@ class Backend(_backend.Backend):
         except Exception:
             pass
 
+        # Look for charging classes, most devices do not support these.
+        try:
+            zone_to_device["charging"] = rdevice.fx.misc.charging
+            zone_to_device["fully_charged"] = rdevice.fx.misc.fully_charged
+            zone_to_device["fast_charging"] = rdevice.fx.misc.fast_charging
+        except Exception:
+            pass
+
         return zone_to_device[zone]
 
     def _device_has_zone_capability(self, rdevice, zone, capability):
@@ -1040,7 +1048,10 @@ class Backend(_backend.Backend):
             "scroll": "lighting_scroll",
             "backlight": "lighting_backlight",
             "left": "lighting_left",
-            "right": "lighting_right"
+            "right": "lighting_right",
+            "charging": "lighting_charging",
+            "fast_charging": "lighting_fast_charging",
+            "fully_charged": "lighting_fully_charged",
         }
         return rdevice.has(zone_to_capability[zone] + "_" + capability)
 
@@ -1062,6 +1073,12 @@ class Backend(_backend.Backend):
             zones.append("right")
         if rdevice.has("lighting_backlight"):
             zones.append("backlight")
+        if rdevice.has("lighting_charging"):
+            zones.append("charging")
+        if rdevice.has("lighting_fast_charging"):
+            zones.append("fast_charging")
+        if rdevice.has("lighting_fully_charged"):
+            zones.append("fully_charged")
 
         return zones
 
@@ -1090,7 +1107,10 @@ class Backend(_backend.Backend):
             "scroll": self._("Scroll Wheel"),
             "backlight": self._("Backlight"),
             "left": self._("Left"),
-            "right": self._("Right")
+            "right": self._("Right"),
+            "charging": self._("While Charging"),
+            "fast_charging": self._("While Fast Charging"),
+            "fully_charged": self._("When Fully Charged"),
         }
 
         for zone in zones:
