@@ -583,7 +583,11 @@ class PolychromaticTrayApplet():
         suffix = option["suffix"]
         min = int(option["min"])
         max = int(option["max"])
-        interval = int((max - min) / 4)
+        interval = option["step"]
+
+        if max == 100:
+            interval = int((max - min) / 4)
+
         for no in range(max, min - interval, 0 - interval):
             # Some IDs have submenu icons
             icon = None

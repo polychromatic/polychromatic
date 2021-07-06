@@ -581,6 +581,31 @@ class Backend(_backend.Backend):
                 "colours": [] # n/a
             })
 
+        # Low power and sleep mode are not exposed individually, but should do when battery is present
+        if rdevice.has("battery"):
+            _init_main_if_empty()
+
+            # -- Sleep Mode (in seconds)
+            try:
+                current_idle_secs = rdevice.get_idle_time()
+                current_idle_mins = current_idle_secs / 60
+
+                zone_options["main"].append({
+                    "id": "idle_time",
+                    "label": self._("Sleep mode after"),
+                    "type": "slider",
+                    "value": int(current_idle_mins),
+                    "min": 1,
+                    "max": 15,
+                    "step": 1,
+                    # TODO: Needs plural support
+                    "suffix": " " + self._("minute(s)"),
+                    "colours": [] # n/a
+                })
+            except Exception as e:
+                self.debug("Could not read get_idle_time. Ignoring.")
+                self.debug(str(e))
+
         # -- Macros Info
         if rdevice.has("macro_mode_led_effect") and rdevice.type == "keyboard":
             _init_main_if_empty()
@@ -968,6 +993,10 @@ class Backend(_backend.Backend):
             elif option_id == "poll_rate":
                 # Params: (int)
                 rdevice.poll_rate = int(option_data)
+
+            elif option_id == "idle_time":
+                # Params: (int) [in minutes]
+                rdevice.set_idle_time(option_data * 60)
 
             else:
                 return False
