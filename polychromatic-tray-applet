@@ -585,8 +585,10 @@ class PolychromaticTrayApplet():
         max = int(option["max"])
         interval = option["step"]
 
-        if max == 100:
+        if min == 0 and max == 100:
             interval = int((max - min) / 4)
+        elif min == 1 and max == 100:
+            interval = 10
 
         for no in range(max, min - interval, 0 - interval):
             # Some IDs have submenu icons

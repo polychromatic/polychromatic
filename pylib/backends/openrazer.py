@@ -606,6 +606,25 @@ class Backend(_backend.Backend):
                 self.debug("Could not read get_idle_time. Ignoring.")
                 self.debug(str(e))
 
+            # -- Low Power Mode (by percent)
+            try:
+                current_low_power = rdevice.get_low_battery_threshold()
+
+                zone_options["main"].append({
+                    "id": "low_battery_threshold",
+                    "label": self._("Low Power Mode"),
+                    "type": "slider",
+                    "value": int(current_low_power),
+                    "min": 1,
+                    "max": 100,
+                    "step": 1,
+                    "suffix": "%",
+                    "colours": [] # n/a
+                })
+            except Exception as e:
+                self.debug("Could not read get_low_battery_threshold. Ignoring.")
+                self.debug(str(e))
+
         # -- Macros Info
         if rdevice.has("macro_mode_led_effect") and rdevice.type == "keyboard":
             _init_main_if_empty()
@@ -997,6 +1016,10 @@ class Backend(_backend.Backend):
             elif option_id == "idle_time":
                 # Params: (int) [in minutes]
                 rdevice.set_idle_time(option_data * 60)
+
+            elif option_id == "low_battery_threshold":
+                # Params: (int)
+                rdevice.set_low_battery_threshold(option_data)
 
             else:
                 return False
