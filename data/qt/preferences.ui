@@ -774,7 +774,7 @@
            <item row="1" column="1">
             <widget class="QCheckBox" name="HideKeyLabels">
              <property name="text">
-              <string>Hide key labels for keyboards and keypads</string>
+              <string>Hide key labels</string>
              </property>
             </widget>
            </item>
@@ -788,14 +788,14 @@
            <item row="4" column="1">
             <widget class="QCheckBox" name="LivePreview">
              <property name="text">
-              <string>Preview effect on the actual hardware</string>
+              <string>Preview effect on the physical hardware</string>
              </property>
             </widget>
            </item>
            <item row="5" column="1">
             <widget class="QCheckBox" name="SuppressConfirmDialog">
              <property name="text">
-              <string>Suppress confirmation dialog boxes</string>
+              <string>Suppress delete confirmation dialog box</string>
              </property>
             </widget>
            </item>

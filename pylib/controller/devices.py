@@ -157,8 +157,8 @@ class DevicesTab(shared.TabData):
             _ = self._
             backend_name = middleman.BACKEND_ID_NAMES[backend]
 
-            msg1 = _("An error occurred while reading this device. This could be either be a bug in Polychromatic or the [] backend.").replace("[]", backend_name)
-            msg2 = _("Try switching to this device again. If this appears once more, try restarting the backend and application. Otherwise, please raise an issue on the relevant project's repository.")
+            msg1 = _("An error occurred while reading this device. This could be a bug in either Polychromatic or [].").replace("[]", backend_name)
+            msg2 = _("Try selecting this device again, or restart the backend and application. If this keeps happening, take note of the details below and report as a bug on the relevant project's issue tracker.")
 
             self.widgets.open_dialog(self.widgets.dialog_error, _("Backend Error"), msg1, msg2, device)
             self.open_bad_device(msg1, msg2, device)
@@ -265,7 +265,7 @@ class DevicesTab(shared.TabData):
                 for colour_no, colour_hex in enumerate(current_colours):
                     widgets.append(self._create_colour_control(colour_no, colour_hex, current_option_id, current_option_data, zone, device["monochromatic"]))
 
-            # Other controls (e.g. brightness, poll rate)
+            # Other controls (except "brightness" which has been processed already)
             for option in options:
                 if not option["type"] == "effect" and not option["id"] == "brightness":
                     widgets.append(self._create_row_control(device, zone, option))
@@ -611,9 +611,9 @@ class DevicesTab(shared.TabData):
         elif response == False:
             dbg.stdout("Invalid request!", dbg.error, 1)
             self.widgets.open_dialog(self.widgets.dialog_error,
-                                     _("Controller Error"),
-                                     _("The request is invalid or unsupported at this time. This could be due to a programming error in the application."),
-                                    _("If this can be reproduced several times, please create a bug via Help → Report a Bug."))
+                                     _("Backend Error"),
+                                     _("[] deemed this request to be invalid or unsupported. This could be caused by an implementation issue with Polychromatic's backend module for [].").replace("[]", backend_name),
+                                    _("If this message appears again, try restarting the backend/application, otherwise please report this as a bug."))
         elif response == None:
             dbg.stdout("Device no longer available", dbg.error, 1)
             self.widgets.open_dialog(self.widgets.dialog_warning,
@@ -626,7 +626,7 @@ class DevicesTab(shared.TabData):
             print(response)
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      _("Backend Error"),
-                                     _("An error occurred while processing this request with [].").replace("[]", backend_name),
+                                     _("[] encountered an error processing this request. Try restarting the backend/application. If this message keeps appearing, please report this as a bug on []'s issue tracker.").replace("[]", backend_name),
                                      traceback=response)
 
     def _open_loading(self):
@@ -826,7 +826,7 @@ class DevicesTab(shared.TabData):
             dbg.stdout("\n{0}\n------------------------------\n{1}\n".format(backend_name, exception), dbg.error)
             self.widgets.open_dialog(self.widgets.dialog_generic,
                                     _("Backend Error: []").replace("[]", backend_name),
-                                    _("Polychromatic won't be able to interact with devices available under [] until the problem has been resolved.").replace("[]", backend_name),
+                                    _("An error occurred trying to load []. The error below may provide a clue to what happened.").replace("[]", backend_name),
                                     info_text=_("The last line of the exception was:") + "\n" + exception.split("\n")[-1],
                                     traceback=exception)
 
@@ -848,9 +848,9 @@ class DevicesTab(shared.TabData):
         self.widgets.populate_empty_state(layout,
             common.get_icon("empty", "nodevice"),
             self._("Unrecognised Device"),
-            self._("The [name] backend hasn't registered this device.").replace("[name]", backend_name) + "\n\n" + \
+            self._("[] hasn't registered this device.").replace("[]", backend_name) + "\n\n" + \
                 self._("This could indicate an error initializing the backend or an installation problem.") + "\n" + \
-                self._("Alternately, this may happen if this hardware is not yet supported under this version of [name].").replace("[name]", backend_name),
+                self._("Alternately, this may happen if this hardware is not yet supported under this version of [].").replace("[]", backend_name),
             [
                 {
                     "label": "{0} {1}".format(self._("Restart"), backend_name),

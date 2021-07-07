@@ -1498,9 +1498,15 @@ class CommonFileTab(TabData):
             new_item.setSelected(True)
             self.open_file(new_item.action_data)
 
+        # FIXME: Incomplete features not ready
         msgs = {
-            "effects": self._("Delete this effect for good? There is no undo.\n'[]'\n\nPresets or triggers that use this effect will be unlinked.").replace("[]", name),
-            "presets": self._("Delete this preset for good? There is no undo.\n'[]'\n\nTriggers that use this preset will no longer function.").replace("[]", name),
+            "effects": self._("Permanently delete this effect?\n'[]'\n\nPresets and triggers that use this effect will be unlinked.").replace("[]", name),
+            "presets": self._("Permanently delete this preset?\n'[]'\n\nTriggers that use this preset will no longer function.").replace("[]", name),
+        }
+
+        msgs = {
+            "effects": self._("Permanently delete this effect? \n'[]'").replace("[]", name),
+            "presets": self._("Permanently delete this preset? \n'[]'").replace("[]", name),
         }
 
         self.widgets.open_dialog(self.widgets.dialog_warning,

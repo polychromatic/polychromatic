@@ -104,7 +104,7 @@ class EffectsTab(shared.CommonFileTab):
         if len(self.middleman.get_device_list()) == 0:
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      self._("New Effect"),
-                                     self._("No devices found to create an effect for."),
+                                     self._("No devices found. New effects require a compatible device to be present."),
                                      self._("Make sure the device is connected and the backend is working."))
             return False
         return True
