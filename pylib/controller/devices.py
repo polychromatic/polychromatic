@@ -1026,7 +1026,7 @@ class DevicesTab(shared.TabData):
             self.set_cursor_busy()
             root.takeChildren()
 
-            def mkitem(data, value="", icon=None):
+            def mkitem(data, value="", icon=None, disabled=False):
                 item = QTreeWidgetItem()
                 item.setText(0, data)
                 if type(value) in [str, int]:
@@ -1037,9 +1037,8 @@ class DevicesTab(shared.TabData):
                         item.setIcon(1, QIcon(common.get_icon("general", "success")))
                     else:
                         item.setText(1, _("No"))
-                        item.setIcon(1, QIcon(common.get_icon("general", "close")))
-                else:
-                    item.setText(1, _("(Unavailable or not applicable)"))
+                        item.setIcon(1, QIcon(common.get_icon("general", "negative")))
+                if disabled:
                     item.setDisabled(True)
                 if icon:
                     item.setIcon(1 if value != "" else 0, QIcon(icon))
@@ -1047,31 +1046,30 @@ class DevicesTab(shared.TabData):
 
             hw = mkitem(_("Hardware"))
             hw.addChild(mkitem(_("Name"), device["name"]))
-            hw.addChild(mkitem(_("Backend"), middleman.BACKEND_ID_NAMES[device["backend"]]))
+            hw.addChild(mkitem(_("Backend"), middleman.BACKEND_ID_NAMES[device["backend"]], common.get_icon("logo", device["backend"])))
             hw.addChild(mkitem(_("Internal Device ID"), str(device["uid"])))
-            hw.addChild(mkitem(_("Form Factor"), device["form_factor"]["label"], device["form_factor"]["icon"]))
-            hw.addChild(mkitem(_("Serial"), device["serial"]))
-            hw.addChild(mkitem(_("Image"), device["real_image"], device["real_image"]))
-            hw.addChild(mkitem(_("Monochromatic"), device["monochromatic"], common.get_icon("general", "ring-mono") if device["monochromatic"] else common.get_icon("tray", "ring")))
             if device["vid"]:
                 hw.addChild(mkitem("VID:PID", "{0}:{1}".format(device["vid"], device["pid"])))
             else:
                 hw.addChild(mkitem("VID:PID", None))
-            hw.addChild(mkitem(_("Firmware Version"), device["firmware_version"]))
-            hw.addChild(mkitem(_("Keyboard Layout"), device["keyboard_layout"]))
-            hw.addChild(mkitem(_("Matrix Supported"), device["matrix"]))
+            hw.addChild(mkitem(_("Form Factor"), device["form_factor"]["label"], device["form_factor"]["icon"]))
+            hw.addChild(mkitem(_("Serial"), device["serial"]))
+            hw.addChild(mkitem(_("Image"), device["real_image"], device["real_image"]))
+            if device["firmware_version"]:
+                hw.addChild(mkitem(_("Firmware Version"), device["firmware_version"]))
+            if device["keyboard_layout"]:
+                hw.addChild(mkitem(_("Keyboard Layout"), device["keyboard_layout"]))
+            tree.addTopLevelItem(hw)
+
+            # Custom Effects
+            cfx = mkitem(_("Custom Effects"))
+            cfx.addChild(mkitem(_("Supported"), device["matrix"], disabled=True if not device["matrix"] else False))
             if device["matrix"]:
                 dimensions = common.get_plural(device["matrix_rows"], _("1 row"), _("2 rows").replace("2", str(device["matrix_rows"])))
                 dimensions += ", " + common.get_plural(device["matrix_cols"], _("1 column"), _("2 columns").replace("2", str(device["matrix_cols"])))
-                hw.addChild(mkitem(_("Matrix Dimensions"), dimensions, common.get_icon("general", "matrix")))
+                cfx.addChild(mkitem(_("Matrix Dimensions"), dimensions, common.get_icon("general", "matrix")))
                 btn_test_matrix.setDisabled(False)
-            tree.addTopLevelItem(hw)
-
-            # Summary
-            summary = mkitem(_("Current Status"))
-            for state in device["summary"]:
-                summary.addChild(mkitem(state["label"], "", state["icon"]))
-            tree.addTopLevelItem(summary)
+            tree.addTopLevelItem(cfx)
 
             # DPI
             if device["dpi_x"]:
@@ -1080,14 +1078,26 @@ class DevicesTab(shared.TabData):
                 if device["dpi_y"] > 0:
                     dpi.addChild(mkitem("DPI Y", device["dpi_y"]))
                 dpi.addChild(mkitem(_("Default Stages"), ", ".join(map(str, device["dpi_stages"]))))
+                if self.appdata.preferences["custom"]["use_dpi_stages"]:
+                    custom_stages = []
+                    for i in range(1, 6):
+                        custom_stages.append(self.appdata.preferences["custom"]["dpi_stage_" + str(i)])
+                    dpi.addChild(mkitem(_("User DPI Stages"), ", ".join(map(str, custom_stages))))
+                else:
+                    dpi.addChild(mkitem(_("User DPI Stages"), self._("(Not used)"), disabled=True))
                 dpi.addChild(mkitem(_("Minimum"), device["dpi_min"]))
                 dpi.addChild(mkitem(_("Maximum"), device["dpi_max"]))
                 tree.addTopLevelItem(dpi)
-            else:
-                tree.addTopLevelItem(mkitem(_("DPI"), None))
+
+            # Summary
+            summary = mkitem(_("Summary"))
+            for state in device["summary"]:
+                summary.addChild(mkitem(state["label"], "", state["icon"]))
+            tree.addTopLevelItem(summary)
 
             # Zones
             zones = mkitem(_("Zones"))
+            exclude_expand = []
             for zone in device["zone_options"].keys():
                 label = device["zone_labels"][zone]
                 icon = device["zone_icons"][zone]
@@ -1099,6 +1109,7 @@ class DevicesTab(shared.TabData):
                     option_item = mkitem(option["label"], "", option_icon)
                     option_item.addChild(mkitem(_("Internal ID"), option["id"]))
                     option_item.addChild(mkitem(_("Type"), option["type"]))
+                    exclude_expand.append(option_item)
 
                     try:
                         if len(option["parameters"]) > 0:
@@ -1138,10 +1149,14 @@ class DevicesTab(shared.TabData):
                             option_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.dbg, colour_hex)))
 
                     zone_item.addChild(option_item)
+                    zone_item.setExpanded(False)
                 zones.addChild(zone_item)
-            tree.addTopLevelItem(zones)
 
+            tree.addTopLevelItem(zones)
             tree.expandAll()
+            for item in exclude_expand:
+                item.setExpanded(False)
+
             dialog.setWindowTitle("{0} - {1}".format(_("Device Information"), device["name"]))
             self.set_cursor_normal()
 
