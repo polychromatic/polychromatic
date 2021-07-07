@@ -29,7 +29,7 @@ import time
 import sys
 
 from PyQt5 import uic, QtCore
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import Qt, QThread
 from PyQt5.QtGui import QIcon, QFont, QFontDatabase
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, \
@@ -113,11 +113,6 @@ class ApplicationData(object):
         self.preferences = pref.load_file(self.paths.preferences)
         self.system_qt_theme = self.preferences["controller"]["system_qt_theme"]
         self.show_menu_bar = self.preferences["controller"]["show_menu_bar"]
-
-        # Preferences Variables
-        self.window_centered = 0
-        self.window_remember = 1
-        self.window_ignore = 2
 
     def load(self):
         """
@@ -261,10 +256,10 @@ class MainWindow(QMainWindow):
         """
         win_behaviour = app.preferences["controller"]["window_behaviour"]
 
-        if win_behaviour == app.window_ignore:
+        if win_behaviour == pref.WINDOW_BEHAVIOUR_IGNORE:
             return
 
-        if win_behaviour == app.window_centered:
+        if win_behaviour in [pref.WINDOW_BEHAVIOUR_CENTER, pref.WINDOW_BEHAVIOUR_MAXIMIZED]:
             frame = qmainwindow.frameGeometry()
 
             # DEPRECATED: QDesktopWidget(), but some distros ship an older Qt version (5.8, 5.12)
@@ -278,7 +273,10 @@ class MainWindow(QMainWindow):
             frame.moveCenter(center)
             qmainwindow.move(frame.topLeft())
 
-        elif win_behaviour == app.window_remember:
+        if win_behaviour == pref.WINDOW_BEHAVIOUR_MAXIMIZED:
+            qmainwindow.setWindowState(Qt.WindowMaximized)
+
+        if win_behaviour == pref.WINDOW_BEHAVIOUR_REMEMBER:
             dbg.stdout("Loading window geometry...", dbg.action, 1)
             pos_x = app.preferences["geometry"][key_prefix + "_window_pos_x"]
             pos_y = app.preferences["geometry"][key_prefix + "_window_pos_y"]
@@ -294,7 +292,7 @@ class MainWindow(QMainWindow):
         """
         win_behaviour = app.preferences["controller"]["window_behaviour"]
 
-        if win_behaviour == app.window_remember:
+        if win_behaviour == pref.WINDOW_BEHAVIOUR_REMEMBER:
             dbg.stdout("Saving window geometry...", dbg.action, 1)
             rect = qmainwindow.frameGeometry()
             app.preferences["geometry"][key_prefix + "_window_pos_x"] = rect.left()
@@ -464,7 +462,7 @@ class MainWindow(QMainWindow):
         entirely until the last editor window is closed.
         """
         # Save window position if preference set.
-        if app.preferences["controller"]["window_behaviour"] == app.window_remember:
+        if app.preferences["controller"]["window_behaviour"] == pref.WINDOW_BEHAVIOUR_REMEMBER:
             self._save_window_position(self, "main")
 
         dbg.stdout("Main window closed, goodbye!", dbg.success, 1)

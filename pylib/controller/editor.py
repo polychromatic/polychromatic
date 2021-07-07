@@ -506,7 +506,7 @@ class VisualEffectEditor(shared.TabData):
         self.appdata.main_window._set_initial_window_position(self.window, "editor")
 
         # -- If opening in the center, make better use of the screen space
-        centered = self.appdata.preferences["controller"]["window_behaviour"] == self.appdata.window_centered
+        centered = self.appdata.preferences["controller"]["window_behaviour"] == pref.WINDOW_BEHAVIOUR_CENTER
         already_small = self.window.height() > 1024 and self.window.width() > 768
         if centered and not already_small:
 
