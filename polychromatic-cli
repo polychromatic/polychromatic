@@ -229,7 +229,7 @@ if args.help:
         ],
         [
             dbg.action + "  -o, --option" + dbg.warning + " {name}",
-            dbg.normal + _("Change an option on the device")
+            dbg.normal + _("Set option on the device")
         ],
         [
             dbg.action + "  -p, --parameter" + dbg.warning + " {name}",
@@ -241,7 +241,7 @@ if args.help:
         ],
         [
             dbg.action + "  -e, --effect" + dbg.warning + " {name/path}",
-            dbg.normal + _("Apply a custom (software) effect by name or path")
+            dbg.normal + _("Set custom (software) effect by name or path")
         ],
         [
             "",
@@ -249,7 +249,7 @@ if args.help:
         ],
         [
             dbg.action + "  --dpi" + dbg.warning + " {X}[,Y]",
-            dbg.normal + _("Set how fast the cursor moves. Example: 1800 or 1800,800")
+            dbg.normal + _("Set dots per inch, affecting cursor speed. Example: 1800 or 1800,800")
         ],
         ["", ""],
         [
