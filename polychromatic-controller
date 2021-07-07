@@ -212,6 +212,12 @@ class MainWindow(QMainWindow):
         dbg.stdout("Initalising window...", dbg.action, 1)
         super(MainWindow, self).__init__()
 
+        # Check styles exist
+        if os.path.getsize(os.path.join(common.paths.data_dir, "qt", "style.qss")) < 100:
+            dbg.stdout("style.qss malformed! Maybe the application wasn't compiled properly?", dbg.error)
+            dbg.stdout("Forcing native theme.", dbg.warning)
+            app.system_qt_theme = True
+
         # Load UI and locales
         widget = uic.loadUi(os.path.join(common.paths.data_dir, "qt", "main.ui"), self)
         shared.translate_ui(app, widget)
