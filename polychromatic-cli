@@ -352,7 +352,10 @@ if args.list_devices:
 
     for device in unsupported_list:
         table.append([
-            "{0}{2}: {1}".format(dbg.error, device["name"], middleman_module.BACKEND_ID_NAMES[device["backend"]])
+            "{0}{1} {2}".format(dbg.error, _("Unrecognised:"), device["name"]),
+            "",
+            "",
+            ""
         ])
 
     print_columns(table, True)
