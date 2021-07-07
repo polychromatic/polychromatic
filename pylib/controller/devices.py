@@ -60,6 +60,8 @@ class DevicesTab(shared.TabData):
         Device tab opened. Populate the device and task lists, and open the
         properties for the first device (if applicable)
         """
+        self.set_title(self._("Devices"))
+
         # Open all 'sidebar' tree branches
         self.SidebarTree.expandAll()
         self.SidebarTree.setEnabled(True)

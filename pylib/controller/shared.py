@@ -231,6 +231,7 @@ class TabData(object):
         self.middleman = appdata.middleman
         self.main_window = appdata.main_window
         self.menubar = appdata.menubar
+        self.header_title = appdata.main_window.findChild(QLabel, "HeaderText")
 
     def set_tab(self):
         """
@@ -244,6 +245,12 @@ class TabData(object):
 
     def set_cursor_busy(self):
         self.main_window.setCursor(Qt.BusyCursor)
+
+    def set_title(self, title):
+        """
+        Change the title on the header that's just below the menu bar.
+        """
+        self.header_title.setText(title)
 
 
 class PolychromaticWidgets(object):
@@ -1330,6 +1337,7 @@ class CommonFileTab(TabData):
 
         # Specific to feature
         self.feature = "unknown"
+        self.tab_title = ""
         self.tasks = {
             "example": self._clear_tree
         }
@@ -1373,6 +1381,8 @@ class CommonFileTab(TabData):
         """
         The feature tab is opened.
         """
+        self.set_title(self.tab_title)
+
         # Open all tree branches
         self.Sidebar.expandAll()
 
