@@ -52,6 +52,7 @@ class MenuBar(object):
         # -- View
         self._bind_item("actionHideMenuBar", self.hide_menu_bar)
         self._bind_item("actionReinstateMenuBar", self.reinstate_menu_bar)
+        self._bind_item("actionForceRefresh", self.force_refresh)
         self._bind_item("actionPreferences", self.open_preferences)
 
         # -- Tools
@@ -101,6 +102,7 @@ class MenuBar(object):
         _set_icon("actionDuplicate", "general", "clone")
         _set_icon("actionDelete", "general", "delete")
         _set_icon("actionRefreshTab", "general", "refresh")
+        _set_icon("actionForceRefresh", "general", "refresh")
         _set_icon("actionPreferences", "general", "preferences")
 
         # -- View
@@ -166,6 +168,30 @@ class MenuBar(object):
         self.mainwindow.findChild(QAction, "actionReinstateMenuBar").setVisible(False)
         self.appdata.preferences["controller"]["show_menu_bar"] = True
         preferences.save_file(self.appdata.paths.preferences, self.appdata.preferences)
+
+    def _is_editor_running(self):
+        """
+        Returns a boolean to indicate whether an editor is currently running.
+        """
+        editors = self.appdata.tab_effects.editors
+        for editor in editors:
+            if editors[editor].alive:
+                return True
+        return False
+
+    def force_refresh(self):
+        """
+        Restarts the application execution so backends can be cleanly re-initalized.
+        This is useful when devices are inserted/removed.
+        """
+        if self._is_editor_running():
+            self.widgets.open_dialog(self.widgets.dialog_generic,
+                                    self.appdata._("Force Refresh"),
+                                    self.appdata._("Please close all editor windows before executing this action."))
+            return
+
+        procmgr = procpid.ProcessManager()
+        procmgr.restart_self(self.appdata.exec_path, self.appdata.exec_args)
 
     def open_preferences(self):
         self.appdata.ui_preferences.open_window()

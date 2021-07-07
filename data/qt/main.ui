@@ -685,6 +685,7 @@
     <addaction name="actionDelete"/>
     <addaction name="separator"/>
     <addaction name="actionRefreshTab"/>
+    <addaction name="actionForceRefresh"/>
     <addaction name="separator"/>
     <addaction name="actionPreferences"/>
    </widget>
@@ -1078,6 +1079,17 @@
    </property>
    <property name="text">
     <string>Import Effect...</string>
+   </property>
+  </action>
+  <action name="actionForceRefresh">
+   <property name="icon">
+    <iconset theme="view-refresh"/>
+   </property>
+   <property name="text">
+    <string>Force Refresh</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">Ctrl+F5</string>
    </property>
   </action>
  </widget>
