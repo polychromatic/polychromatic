@@ -364,6 +364,12 @@ QToolBar {
         padding: 4px;
         selection-background-color: transparent;
     }
+
+    &::separator {
+        background: $border-colour;
+        width: 2;
+        margin: 4px;
+    }
 }
 
 
