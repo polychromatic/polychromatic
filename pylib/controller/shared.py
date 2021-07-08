@@ -114,6 +114,12 @@ def get_ui_widget(appdata, name, q_toplevel=QWidget):
     # Process i18n strings for existing widgets
     translate_ui(appdata, widget)
 
+    # Combo boxes render a light line at the top/bottom under light themes
+    # Does not happen when combo boxes are created during runtime
+    if not appdata.system_qt_theme:
+        for combobox in widget.findChildren(QComboBox):
+            combobox.view().parentWidget().setStyleSheet('background: transparent')
+
     return widget
 
 
