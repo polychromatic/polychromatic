@@ -502,8 +502,11 @@ class VisualEffectEditor(shared.TabData):
             self.dock_layers.deleteLater()
             self.dock_properties.deleteLater()
 
-        # Window geometry
+        # Window properties & geometry
         self.appdata.main_window._set_initial_window_position(self.window, "editor")
+
+        if self.window.windowIcon().isNull():
+            self.window.setWindowIcon(QIcon(common.get_icon("general", "effects")))
 
         # -- If opening in the center, make better use of the screen space
         centered = self.appdata.preferences["controller"]["window_behaviour"] == pref.WINDOW_BEHAVIOUR_CENTER

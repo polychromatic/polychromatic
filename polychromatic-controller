@@ -232,11 +232,12 @@ class MainWindow(QMainWindow):
             self.findChild(QWidget, "MainTabWidget").tabBar().hide()
 
         # Set window attributes
-        self.setWindowIcon(QIcon(common.get_icon("general", "controller.svg")))
         self.setWindowTitle("Polychromatic")
-
         if common.paths.dev:
             self.setWindowTitle("Polychromatic {0} [dev]".format(get_versions()[0][1]))
+
+        if self.windowIcon().isNull():
+            self.setWindowIcon(QIcon(common.get_icon("general", "controller")))
 
         # Prepare Menu Bar
         self.findChild(QAction, "actionReinstateMenuBar").setVisible(False)
