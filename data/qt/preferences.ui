@@ -23,7 +23,8 @@
    <string>Preferences</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="preferences"/>
+   <iconset theme="preferences">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -50,9 +51,9 @@
       <attribute name="title">
        <string>Controller</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="layoutController">
        <item>
-        <widget class="QScrollArea" name="GeneralScrollArea">
+        <widget class="QScrollArea" name="ControllerScrollArea">
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
          </property>
@@ -65,7 +66,7 @@
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="GeneralContents">
+         <widget class="QWidget" name="ControllerContents">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -74,51 +75,120 @@
             <height>370</height>
            </rect>
           </property>
-          <layout class="QFormLayout" name="GeneralLayout">
+          <layout class="QFormLayout" name="ControllerLayout">
            <property name="verticalSpacing">
             <number>10</number>
            </property>
-           <item row="0" column="0">
-            <widget class="QLabel" name="AppearanceLabel">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string extracomment="Preferences Label">Appearance</string>
-             </property>
+           <item row="0" column="1">
+            <widget class="QWidget" name="UseSystemQtThemeGroup" native="true">
+             <layout class="QVBoxLayout" name="UseSystemQtThemeGroup_Layout">
+              <property name="spacing">
+               <number>4</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="UseSystemQtTheme">
+                <property name="text">
+                 <string extracomment="Preferences Checkbox">Use system theme</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="UseSystemQtThemeTip">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string extracomment="Text appears underneath a checkbox in the preferences dialog">GTK-based distros may not support this option out of the box. Additional steps may need required initially to use your native theme in Qt apps.</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QCheckBox" name="UseSystemQtTheme">
-             <property name="text">
-              <string extracomment="Preferences Checkbox">Use system Qt theme</string>
-             </property>
+           <item row="8" column="1">
+            <widget class="QWidget" name="AutoStartGroup" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+             </layout>
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QCheckBox" name="AlwaysHideMenuBar">
-             <property name="text">
-              <string extracomment="Preferences Checkbox">Hide menu bar</string>
-             </property>
+            <widget class="QWidget" name="AlwaysHideMenuBarGroup" native="true">
+             <layout class="QVBoxLayout" name="AlwaysHideMenuBarGroup_Layout">
+              <property name="spacing">
+               <number>4</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="AlwaysHideMenuBar">
+                <property name="text">
+                 <string extracomment="Preferences Checkbox">Hide menu bar</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="AlwaysHideMenuBarTip">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string extracomment="Text appears underneath a checkbox in the preferences dialog">Press Alt to temporarily show the menu bar while it is hidden.</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QLabel" name="AlwaysHideMenuBarTip">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string extracomment="Preferences Tip">Press Alt to temporarily show the menu bar while it is hidden.</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
+           <item row="2" column="0">
             <widget class="QLabel" name="ToolbarStyleLabel">
              <property name="minimumSize">
               <size>
@@ -129,9 +199,12 @@
              <property name="text">
               <string>Toolbar</string>
              </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="2" column="1">
             <widget class="QComboBox" name="ToolbarStyle">
              <item>
               <property name="text">
@@ -160,7 +233,7 @@
              </item>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="3" column="0">
             <widget class="QLabel" name="LandingTabLabel">
              <property name="minimumSize">
               <size>
@@ -173,7 +246,7 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="3" column="1">
             <widget class="QComboBox" name="LandingTabCombo">
              <item>
               <property name="text">
@@ -213,7 +286,7 @@
              </item>
             </widget>
            </item>
-           <item row="5" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="WindowBehaviourLabel">
              <property name="minimumSize">
               <size>
@@ -226,7 +299,7 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="4" column="1">
             <widget class="QComboBox" name="WindowBehaviourCombo">
              <property name="currentText">
               <string>Always open in the center</string>
@@ -253,22 +326,20 @@
              </item>
             </widget>
            </item>
-           <item row="7" column="1">
-            <widget class="QWidget" name="AutoStartGroup" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-             </layout>
+           <item row="0" column="0">
+            <widget class="QLabel" name="AppearanceLabel">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string extracomment="Preferences Label">Appearance</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
             </widget>
            </item>
           </layout>
@@ -281,7 +352,7 @@
       <attribute name="title">
        <string>Tray Applet</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="layoutTray">
        <item>
         <widget class="QScrollArea" name="TrayScrollArea">
          <property name="frameShape">
@@ -463,7 +534,7 @@
       <attribute name="title">
        <string>Customise</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
+      <layout class="QVBoxLayout" name="layoutCustomise">
        <item>
         <widget class="QScrollArea" name="CustomiseScrollArea">
          <property name="frameShape">
@@ -693,7 +764,8 @@
                  <string>Reset</string>
                 </property>
                 <property name="icon">
-                 <iconset theme="document-revert"/>
+                 <iconset theme="document-revert">
+                  <normaloff>.</normaloff>.</iconset>
                 </property>
                </widget>
               </item>
@@ -710,7 +782,7 @@
       <attribute name="title">
        <string>Editor</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QVBoxLayout" name="layoutEditor">
        <item>
         <widget class="QScrollArea" name="EditorScrollArea">
          <property name="frameShape">
@@ -755,6 +827,9 @@
              </property>
              <property name="text">
               <string>Appearance</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
              </property>
             </widget>
            </item>
@@ -809,7 +884,7 @@
       <attribute name="title">
        <string>Backends</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_6">
+      <layout class="QVBoxLayout" name="layoutBackend">
        <item>
         <widget class="QScrollArea" name="BackendScrollArea">
          <property name="frameShape">
