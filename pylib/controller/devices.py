@@ -992,12 +992,10 @@ class DevicesTab(shared.TabData):
         dialog = shared.get_ui_widget(self.appdata, "device-info", QDialog)
         tree = dialog.findChild(QTreeWidget, "DeviceTree")
         btn_close = dialog.findChild(QPushButton, "Close")
-        btn_refresh = dialog.findChild(QPushButton, "Refresh")
         btn_test_matrix = dialog.findChild(QPushButton, "TestMatrix")
 
         # Dialog Button Icons
         if not self.appdata.system_qt_theme:
-            btn_refresh.setIcon(self.widgets.get_icon_qt("general", "refresh"))
             btn_test_matrix.setIcon(self.widgets.get_icon_qt("general", "matrix"))
             btn_close.setIcon(self.widgets.get_icon_qt("general", "close"))
 
@@ -1158,7 +1156,6 @@ class DevicesTab(shared.TabData):
             return
 
         btn_close.clicked.connect(_close)
-        btn_refresh.clicked.connect(_populate_tree)
         btn_test_matrix.clicked.connect(_test_matrix)
         dialog.open()
         _populate_tree()
