@@ -685,6 +685,7 @@ class PolychromaticWidgets(object):
         """
         msgbox = QMessageBox()
         msgbox.setWindowTitle(title)
+        msgbox.setWindowFlag(Qt.Popup)
         msgbox.setText(text)
         msgbox.setIcon(dialog_type)
 
