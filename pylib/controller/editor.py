@@ -185,20 +185,20 @@ class VisualEffectEditor(shared.TabData):
 
         # -- Layer Dock
         self.layer_tree = self.window.findChild(QTreeWidget, "LayerTree")
-        self.btn_layer_delete = self.window.findChild(QToolButton, "LayerDelete")
-        self.btn_layer_duplicate = self.window.findChild(QToolButton, "LayerDuplicate")
-        self.btn_layer_move_down = self.window.findChild(QToolButton, "LayerMoveDown")
-        self.btn_layer_move_up = self.window.findChild(QToolButton, "LayerMoveUp")
-        self.btn_layer_new = self.window.findChild(QToolButton, "LayerNew")
+        self.btn_layer_delete = self.window.findChild(QPushButton, "LayerDelete")
+        self.btn_layer_duplicate = self.window.findChild(QPushButton, "LayerDuplicate")
+        self.btn_layer_move_down = self.window.findChild(QPushButton, "LayerMoveDown")
+        self.btn_layer_move_up = self.window.findChild(QPushButton, "LayerMoveUp")
+        self.btn_layer_new = self.window.findChild(QPushButton, "LayerNew")
 
         # -- Frame Dock
         self.frame_table = self.window.findChild(QTableWidget, "FramesTable")
 
-        self.btn_frame_new = self.window.findChild(QToolButton, "NewFrame")
-        self.btn_frame_delete = self.window.findChild(QToolButton, "DeleteFrame")
-        self.btn_frame_clone = self.window.findChild(QToolButton, "CloneFrame")
-        self.btn_frame_move_left = self.window.findChild(QToolButton, "MoveFrameLeft")
-        self.btn_frame_move_right = self.window.findChild(QToolButton, "MoveFrameRight")
+        self.btn_frame_new = self.window.findChild(QPushButton, "NewFrame")
+        self.btn_frame_delete = self.window.findChild(QPushButton, "DeleteFrame")
+        self.btn_frame_clone = self.window.findChild(QPushButton, "CloneFrame")
+        self.btn_frame_move_left = self.window.findChild(QPushButton, "MoveFrameLeft")
+        self.btn_frame_move_right = self.window.findChild(QPushButton, "MoveFrameRight")
 
         self.btn_playback_jump_start = self.window.findChild(QToolButton, "PlaybackJumpStart")
         self.btn_playback_jump_end = self.window.findChild(QToolButton, "PlaybackJumpEnd")
@@ -206,7 +206,7 @@ class VisualEffectEditor(shared.TabData):
         self.btn_playback_stop = self.window.findChild(QToolButton, "PlaybackStop")
         self.btn_playback_prev = self.window.findChild(QToolButton, "PlaybackPrev")
         self.btn_playback_next = self.window.findChild(QToolButton, "PlaybackNext")
-        self.btn_playback_loop = self.window.findChild(QToolButton, "PlaybackLoop")
+        self.btn_playback_loop = self.window.findChild(QCheckBox, "PlaybackLoop")
         self.spinner_playback_fps = self.window.findChild(QSpinBox, "PlaybackFPS")
         self.status_frame = QLabel()
 
@@ -215,17 +215,17 @@ class VisualEffectEditor(shared.TabData):
 
         self.current_colour_block = self.window.findChild(QWidget, "CurrentColourBlock")
         self.current_colour_textbox = self.window.findChild(QLineEdit, "CurrentColourTextBox")
-        self.btn_change_colour = self.window.findChild(QToolButton, "ChangeCurrentColour")
+        self.btn_change_colour = self.window.findChild(QPushButton, "ChangeCurrentColour")
 
         self.label_hue = self.window.findChild(QLabel, "HueLabel")
         self.label_saturation = self.window.findChild(QLabel, "SaturationLabel")
         self.label_lightness = self.window.findChild(QLabel, "LightnessLabel")
-        self.btn_hue_increase = self.window.findChild(QToolButton, "HueIncrease")
-        self.btn_hue_decrease = self.window.findChild(QToolButton, "HueDecrease")
-        self.btn_saturation_increase = self.window.findChild(QToolButton, "SaturationIncrease")
-        self.btn_saturation_decrease = self.window.findChild(QToolButton, "SaturationDecrease")
-        self.btn_lightness_increase = self.window.findChild(QToolButton, "LightnessIncrease")
-        self.btn_lightness_decrease = self.window.findChild(QToolButton, "LightnessDecrease")
+        self.btn_hue_increase = self.window.findChild(QPushButton, "HueIncrease")
+        self.btn_hue_decrease = self.window.findChild(QPushButton, "HueDecrease")
+        self.btn_saturation_increase = self.window.findChild(QPushButton, "SaturationIncrease")
+        self.btn_saturation_decrease = self.window.findChild(QPushButton, "SaturationDecrease")
+        self.btn_lightness_increase = self.window.findChild(QPushButton, "LightnessIncrease")
+        self.btn_lightness_decrease = self.window.findChild(QPushButton, "LightnessDecrease")
 
         self.action_colours_picker = self.window.findChild(QAction, "actionOpenColourPicker")
         self.action_colours_hue_increase = self.window.findChild(QAction, "actionIncreaseHue")
@@ -257,11 +257,11 @@ class VisualEffectEditor(shared.TabData):
         self.action_layer_up.triggered.connect(self.raise_layer)
         self.action_layer_down.triggered.connect(self.lower_layer)
 
-        self.btn_layer_new.triggered.connect(self.new_layer)
-        self.btn_layer_delete.triggered.connect(self.delete_layer)
-        self.btn_layer_duplicate.triggered.connect(self.duplicate_layer)
-        self.btn_layer_move_up.triggered.connect(self.raise_layer)
-        self.btn_layer_move_down.triggered.connect(self.lower_layer)
+        self.btn_layer_new.clicked.connect(self.new_layer)
+        self.btn_layer_delete.clicked.connect(self.delete_layer)
+        self.btn_layer_duplicate.clicked.connect(self.duplicate_layer)
+        self.btn_layer_move_up.clicked.connect(self.raise_layer)
+        self.btn_layer_move_down.clicked.connect(self.lower_layer)
 
         # -- Edit (Sequence)
         self.action_new_frame.triggered.connect(self.new_frame)
@@ -450,7 +450,6 @@ class VisualEffectEditor(shared.TabData):
             self.btn_playback_stop.setIcon(self.widgets.get_icon_qt("effects", "stop"))
             self.btn_playback_prev.setIcon(self.widgets.get_icon_qt("effects", "step-backward"))
             self.btn_playback_next.setIcon(self.widgets.get_icon_qt("effects", "step-forward"))
-            self.btn_playback_loop.setIcon(self.widgets.get_icon_qt("effects", "repeat"))
 
             # -- Colour Dock
             self.btn_change_colour.setIcon(self.widgets.get_icon_qt("general", "palette"))
@@ -534,15 +533,11 @@ class VisualEffectEditor(shared.TabData):
             self.window.move(frame.topLeft())
 
         # Toolbar style
-        toolbar_style = self.appdata.preferences["controller"]["toolbar_style"]
-        toolbar_styles = {
-            pref.TOOLBAR_STYLE_DEFAULT: Qt.ToolButtonFollowStyle,
-            pref.TOOLBAR_STYLE_ICONS_ONLY: Qt.ToolButtonIconOnly,
-            pref.TOOLBAR_STYLE_TEXT_ONLY: Qt.ToolButtonTextOnly,
-            pref.TOOLBAR_STYLE_ALONGSIDE: Qt.ToolButtonTextBesideIcon,
-            pref.TOOLBAR_STYLE_UNDER: Qt.ToolButtonTextUnderIcon
-        }
-        self.toolbar.setToolButtonStyle(toolbar_styles[toolbar_style])
+        self.widgets.set_toolbar_style(self.toolbar)
+
+        for button in [self.btn_frame_new, self.btn_frame_delete, self.btn_frame_clone,
+                       self.btn_frame_move_left, self.btn_frame_move_right]:
+            self.widgets.set_toolbar_style(button)
 
         # Adjust docks for optimum space
         if self.layered_effect:

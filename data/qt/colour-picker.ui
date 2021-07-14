@@ -227,12 +227,12 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="SaveToList">
+        <widget class="QPushButton" name="SaveToList">
          <property name="toolTip">
           <string extracomment="Colour Picker: Tooltip informing the user what the Save icon does">Save the current colour to the saved list</string>
          </property>
          <property name="text">
-          <string>Add</string>
+          <string notr="true"/>
          </property>
          <property name="icon">
           <iconset theme="document-save">
@@ -241,12 +241,12 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="CloseSaveWidget">
+        <widget class="QPushButton" name="CloseSaveWidget">
          <property name="toolTip">
           <string extracomment="Colour Picker: Tooltip informing the user what the Cancel icon does">Cancel saving this colour</string>
          </property>
          <property name="text">
-          <string>Cancel</string>
+          <string notr="true"/>
          </property>
          <property name="icon">
           <iconset theme="document-close">
@@ -329,15 +329,15 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QToolButton" name="RenameFromList">
+           <widget class="QPushButton" name="RenameFromList">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string extracomment="Colour Picker: Tooltip informing the user what the Rename icon does">Rename this colour</string>
+             <string extracomment="Colour Picker: Tooltip informing the user what the Rename icon does">Rename selected colour</string>
             </property>
             <property name="text">
-             <string>Rename</string>
+             <string notr="true"/>
             </property>
             <property name="icon">
              <iconset theme="edit-rename">
@@ -346,15 +346,15 @@
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="DeleteFromList">
+           <widget class="QPushButton" name="DeleteFromList">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string extracomment="Colour Picker: Tooltip informing the user what the Delete icon does">Forget this colour from the list</string>
+             <string extracomment="Colour Picker: Tooltip informing the user what the Delete icon does">Forget selected colour</string>
             </property>
             <property name="text">
-             <string>Delete</string>
+             <string notr="true"/>
             </property>
             <property name="icon">
              <iconset theme="delete">

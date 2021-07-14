@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
                             QLineEdit, QTextEdit, QTabWidget, QScrollArea, \
                             QButtonGroup, QFileDialog, QMenu, QAction, \
                             QDockWidget, QCheckBox, QSpinBox, QComboBox, \
-                            QTreeWidget, QDoubleSpinBox, QRadioButton
+                            QTreeWidget, QDoubleSpinBox, QRadioButton, QToolBar
 
 
 def load_qt_theme(appdata, window):
@@ -258,6 +258,19 @@ class TabData(object):
         """
         self.header_title.setText(title)
 
+    def create_widget_wrapper_for_control(self, widgets=[]):
+        """
+        Returns a 'wrapper' widget to neatly arrange widgets for a row.
+        """
+        widget = QWidget()
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        widget.setLayout(layout)
+        for child in widgets:
+            layout.addWidget(child)
+        layout.addStretch()
+        return widget
+
 
 class PolychromaticWidgets(object):
     """
@@ -293,6 +306,52 @@ class PolychromaticWidgets(object):
         qicon.addFile(icons[3], mode=QIcon.Selected)
         qicon.addFile(icons[3], mode=QIcon.Selected, state=QIcon.On)
         return qicon
+
+    def set_toolbar_style(self, widget):
+        """
+        Changes a button or widget to match a toolbar preference, accepts:
+        QPushButton, QToolButton, QToolBar
+
+        For a QPushButton, "Text under icons" won't be used as it is not
+        supported for this kind of button.
+        """
+        preferred_style = self.appdata.preferences["controller"]["toolbar_style"]
+
+        if type(widget) in [QToolButton, QToolBar]:
+            poly_to_qt = {
+                pref.TOOLBAR_STYLE_DEFAULT: Qt.ToolButtonFollowStyle,
+                pref.TOOLBAR_STYLE_ICONS_ONLY: Qt.ToolButtonIconOnly,
+                pref.TOOLBAR_STYLE_TEXT_ONLY: Qt.ToolButtonTextOnly,
+                pref.TOOLBAR_STYLE_ALONGSIDE: Qt.ToolButtonTextBesideIcon,
+                pref.TOOLBAR_STYLE_UNDER: Qt.ToolButtonTextUnderIcon
+            }
+            widget.setToolButtonStyle(poly_to_qt[preferred_style])
+            return
+
+        if not type(widget) == QPushButton:
+            raise TypeError
+
+        if preferred_style == pref.TOOLBAR_STYLE_DEFAULT:
+            # Determine what is currently in use then match a compatible equivalent.
+            app_style = self.appdata.main_window.toolButtonStyle()
+            try:
+                qt_to_poly = {
+                    Qt.ToolButtonIconOnly: pref.TOOLBAR_STYLE_ICONS_ONLY,
+                    Qt.ToolButtonTextOnly: pref.TOOLBAR_STYLE_TEXT_ONLY,
+                    Qt.ToolButtonTextBesideIcon: pref.TOOLBAR_STYLE_ALONGSIDE,
+                }
+                preferred_style = qt_to_poly[app_style]
+            except KeyError:
+                preferred_style = pref.TOOLBAR_STYLE_ALONGSIDE
+
+        if preferred_style == pref.TOOLBAR_STYLE_ICONS_ONLY:
+            if not widget.icon().isNull():
+                widget.setToolTip(widget.text() + ' ' + widget.toolTip())
+                widget.setText("")
+
+        elif preferred_style == pref.TOOLBAR_STYLE_TEXT_ONLY:
+            if len(widget.text()) > 0:
+                widget.setIcon(QIcon())
 
     def create_summary_widget(self, icon_path, title, indicators=[], buttons=[]):
         """
@@ -693,14 +752,14 @@ class ColourPicker(object):
         self.dialog = get_ui_widget(appdata, "colour-picker", q_toplevel=QDialog)
         self.dialog_btns = self.dialog.findChild(QDialogButtonBox, "buttonBox")
         self.change_btn = self.dialog.findChild(QPushButton, "OpenPicker")
-        self.list_save_btn = self.dialog.findChild(QToolButton, "SaveToList")
-        self.list_del_btn = self.dialog.findChild(QToolButton, "DeleteFromList")
-        self.list_rename_btn = self.dialog.findChild(QToolButton, "RenameFromList")
+        self.list_save_btn = self.dialog.findChild(QPushButton, "SaveToList")
+        self.list_del_btn = self.dialog.findChild(QPushButton, "DeleteFromList")
+        self.list_rename_btn = self.dialog.findChild(QPushButton, "RenameFromList")
         self.list_text_input = self.dialog.findChild(QLineEdit, "ColourName")
         self.save_widget = self.dialog.findChild(QWidget, "SaveWidget")
         self.save_widget.setHidden(True)
         self.open_save_widget = self.dialog.findChild(QPushButton, "OpenSaveWidget")
-        self.close_save_widget = self.dialog.findChild(QToolButton, "CloseSaveWidget")
+        self.close_save_widget = self.dialog.findChild(QPushButton, "CloseSaveWidget")
         self.saved_tree = self.dialog.findChild(QTreeWidget, "SavedColours")
         self.current_preview = self.dialog.findChild(QWidget, "CurrentPreview")
         self.current_label = self.dialog.findChild(QLabel, "CurrentLabel")

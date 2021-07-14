@@ -290,7 +290,7 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QToolButton" name="LayerMoveUp">
+            <widget class="QPushButton" name="LayerMoveUp">
              <property name="toolTip">
               <string extracomment="Appears as a tooltip or in the status bar when hovered">Raise the layer in the stack</string>
              </property>
@@ -298,22 +298,16 @@
               <string extracomment="Appears as a tooltip or in the status bar when hovered">Raise the layer in the stack</string>
              </property>
              <property name="text">
-              <string>Raise</string>
+              <string notr="true"/>
              </property>
              <property name="icon">
               <iconset theme="layer-raise">
                <normaloff>.</normaloff>.</iconset>
              </property>
-             <property name="toolButtonStyle">
-              <enum>Qt::ToolButtonIconOnly</enum>
-             </property>
-             <property name="arrowType">
-              <enum>Qt::NoArrow</enum>
-             </property>
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="LayerMoveDown">
+            <widget class="QPushButton" name="LayerMoveDown">
              <property name="toolTip">
               <string extracomment="Appears as a tooltip or in the status bar when hovered">Lower the layer in the stack</string>
              </property>
@@ -321,17 +315,11 @@
               <string extracomment="Appears as a tooltip or in the status bar when hovered">Lower the layer in the stack</string>
              </property>
              <property name="text">
-              <string>Lower</string>
+              <string notr="true"/>
              </property>
              <property name="icon">
               <iconset theme="layer-lower">
                <normaloff>.</normaloff>.</iconset>
-             </property>
-             <property name="toolButtonStyle">
-              <enum>Qt::ToolButtonIconOnly</enum>
-             </property>
-             <property name="arrowType">
-              <enum>Qt::NoArrow</enum>
              </property>
             </widget>
            </item>
@@ -373,7 +361,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QToolButton" name="LayerNew">
+         <widget class="QPushButton" name="LayerNew">
           <property name="toolTip">
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a new layer in the stack</string>
           </property>
@@ -381,19 +369,16 @@
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a new layer in the stack</string>
           </property>
           <property name="text">
-           <string>New</string>
+           <string notr="true"/>
           </property>
           <property name="icon">
            <iconset theme="list-add">
             <normaloff>.</normaloff>.</iconset>
           </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonIconOnly</enum>
-          </property>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="LayerDelete">
+         <widget class="QPushButton" name="LayerDelete">
           <property name="toolTip">
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Delete the selected layer</string>
           </property>
@@ -401,7 +386,7 @@
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Delete the selected layer</string>
           </property>
           <property name="text">
-           <string>Delete</string>
+           <string notr="true"/>
           </property>
           <property name="icon">
            <iconset theme="delete">
@@ -410,7 +395,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="LayerDuplicate">
+         <widget class="QPushButton" name="LayerDuplicate">
           <property name="toolTip">
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Duplicate the selected layer</string>
           </property>
@@ -418,7 +403,7 @@
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Duplicate the selected layer</string>
           </property>
           <property name="text">
-           <string>Duplicate</string>
+           <string notr="true"/>
           </property>
           <property name="icon">
            <iconset theme="document-duplicate">
@@ -530,7 +515,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QToolButton" name="NewFrame">
+         <widget class="QPushButton" name="NewFrame">
           <property name="toolTip">
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a blank frame after the current position</string>
           </property>
@@ -544,13 +529,10 @@
            <iconset theme="list-add">
             <normaloff>.</normaloff>.</iconset>
           </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonFollowStyle</enum>
-          </property>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="DeleteFrame">
+         <widget class="QPushButton" name="DeleteFrame">
           <property name="toolTip">
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Permanently delete this frame</string>
           </property>
@@ -564,13 +546,10 @@
            <iconset theme="delete">
             <normaloff>.</normaloff>.</iconset>
           </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonFollowStyle</enum>
-          </property>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="CloneFrame">
+         <widget class="QPushButton" name="CloneFrame">
           <property name="toolTip">
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Create a copy of the current frame after this position</string>
           </property>
@@ -584,13 +563,10 @@
            <iconset theme="document-duplicate">
             <normaloff>.</normaloff>.</iconset>
           </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonFollowStyle</enum>
-          </property>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="MoveFrameLeft">
+         <widget class="QPushButton" name="MoveFrameLeft">
           <property name="toolTip">
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step before the current position</string>
           </property>
@@ -604,13 +580,10 @@
            <iconset theme="object-rotate-left">
             <normaloff>.</normaloff>.</iconset>
           </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonFollowStyle</enum>
-          </property>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="MoveFrameRight">
+         <widget class="QPushButton" name="MoveFrameRight">
           <property name="toolTip">
            <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step after the current position</string>
           </property>
@@ -623,9 +596,6 @@
           <property name="icon">
            <iconset theme="object-rotate-right">
             <normaloff>.</normaloff>.</iconset>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonFollowStyle</enum>
           </property>
          </widget>
         </item>
@@ -758,7 +728,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QToolButton" name="PlaybackLoop">
+         <widget class="QCheckBox" name="PlaybackLoop">
           <property name="toolTip">
            <string>Toggle whether this effect should loop</string>
           </property>
@@ -767,10 +737,6 @@
           </property>
           <property name="text">
            <string>Loop</string>
-          </property>
-          <property name="icon">
-           <iconset theme="media-playlist-repeat">
-            <normaloff>.</normaloff>.</iconset>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -954,7 +920,7 @@ shorten the LED's lifespan.</string>
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="ChangeCurrentColour">
+            <widget class="QPushButton" name="ChangeCurrentColour">
              <property name="toolTip">
               <string extracomment="Tooltip when hovering over the &quot;custom&quot; button">Open System Colour Picker</string>
              </property>
@@ -962,14 +928,11 @@ shorten the LED's lifespan.</string>
               <string extracomment="Status bar hint when hovering over the &quot;custom&quot; button">Choose a custom colour using the system's colour picker</string>
              </property>
              <property name="text">
-              <string>Change...</string>
+              <string/>
              </property>
              <property name="icon">
               <iconset theme="color">
                <normaloff>.</normaloff>.</iconset>
-             </property>
-             <property name="toolButtonStyle">
-              <enum>Qt::ToolButtonIconOnly</enum>
              </property>
             </widget>
            </item>
@@ -1000,45 +963,18 @@ shorten the LED's lifespan.</string>
            <property name="verticalSpacing">
             <number>2</number>
            </property>
-           <item row="2" column="0">
-            <widget class="QToolButton" name="LightnessDecrease">
-             <property name="statusTip">
-              <string>Protip: You can scroll over these buttons to quickly change the corresponding HSL attribute!</string>
+           <item row="1" column="3">
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
-             <property name="text">
-              <string notr="true">-</string>
-             </property>
-             <property name="icon">
-              <iconset theme="list-remove">
-               <normaloff>.</normaloff>.</iconset>
-             </property>
-             <property name="iconSize">
+             <property name="sizeHint" stdset="0">
               <size>
-               <width>12</width>
-               <height>12</height>
+               <width>40</width>
+               <height>20</height>
               </size>
              </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QToolButton" name="LightnessIncrease">
-             <property name="statusTip">
-              <string>Protip: You can scroll over these buttons to quickly change the corresponding HSL attribute!</string>
-             </property>
-             <property name="text">
-              <string notr="true">+</string>
-             </property>
-             <property name="icon">
-              <iconset theme="list-add">
-               <normaloff>.</normaloff>.</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>10</width>
-               <height>10</height>
-              </size>
-             </property>
-            </widget>
+            </spacer>
            </item>
            <item row="0" column="2">
             <widget class="QLabel" name="HueLabel">
@@ -1047,20 +983,23 @@ shorten the LED's lifespan.</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="2">
-            <widget class="QLabel" name="LightnessLabel">
+           <item row="1" column="2">
+            <widget class="QLabel" name="SaturationLabel">
              <property name="text">
-              <string notr="true">Lightness</string>
+              <string notr="true">Saturation</string>
              </property>
             </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QToolButton" name="HueDecrease">
+            <widget class="QPushButton" name="HueDecrease">
+             <property name="toolTip">
+              <string>Decrease</string>
+             </property>
              <property name="statusTip">
               <string>Protip: You can scroll over these buttons to quickly change the corresponding HSL attribute!</string>
              </property>
              <property name="text">
-              <string notr="true">-</string>
+              <string notr="true"/>
              </property>
              <property name="icon">
               <iconset theme="list-remove">
@@ -1075,12 +1014,15 @@ shorten the LED's lifespan.</string>
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QToolButton" name="HueIncrease">
+            <widget class="QPushButton" name="HueIncrease">
+             <property name="toolTip">
+              <string>Increase</string>
+             </property>
              <property name="statusTip">
               <string>Protip: You can scroll over these buttons to quickly change the corresponding HSL attribute!</string>
              </property>
              <property name="text">
-              <string notr="true">+</string>
+              <string notr="true"/>
              </property>
              <property name="icon">
               <iconset theme="list-add">
@@ -1095,12 +1037,15 @@ shorten the LED's lifespan.</string>
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QToolButton" name="SaturationDecrease">
+            <widget class="QPushButton" name="SaturationDecrease">
+             <property name="toolTip">
+              <string>Decrease</string>
+             </property>
              <property name="statusTip">
               <string>Protip: You can scroll over these buttons to quickly change the corresponding HSL attribute!</string>
              </property>
              <property name="text">
-              <string notr="true">-</string>
+              <string notr="true"/>
              </property>
              <property name="icon">
               <iconset theme="list-remove">
@@ -1114,20 +1059,39 @@ shorten the LED's lifespan.</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
-            <widget class="QLabel" name="SaturationLabel">
-             <property name="text">
-              <string notr="true">Saturation</string>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="LightnessDecrease">
+             <property name="toolTip">
+              <string>Decrease</string>
              </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QToolButton" name="SaturationIncrease">
              <property name="statusTip">
               <string>Protip: You can scroll over these buttons to quickly change the corresponding HSL attribute!</string>
              </property>
              <property name="text">
-              <string notr="true">+</string>
+              <string notr="true"/>
+             </property>
+             <property name="icon">
+              <iconset theme="list-remove">
+               <normaloff>.</normaloff>.</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>12</width>
+               <height>12</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="SaturationIncrease">
+             <property name="toolTip">
+              <string>Increase</string>
+             </property>
+             <property name="statusTip">
+              <string>Protip: You can scroll over these buttons to quickly change the corresponding HSL attribute!</string>
+             </property>
+             <property name="text">
+              <string notr="true"/>
              </property>
              <property name="icon">
               <iconset theme="list-add">
@@ -1137,6 +1101,36 @@ shorten the LED's lifespan.</string>
               <size>
                <width>12</width>
                <height>12</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QLabel" name="LightnessLabel">
+             <property name="text">
+              <string notr="true">Lightness</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="LightnessIncrease">
+             <property name="toolTip">
+              <string>Increase</string>
+             </property>
+             <property name="statusTip">
+              <string>Protip: You can scroll over these buttons to quickly change the corresponding HSL attribute!</string>
+             </property>
+             <property name="text">
+              <string notr="true"/>
+             </property>
+             <property name="icon">
+              <iconset theme="list-add">
+               <normaloff>.</normaloff>.</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>10</width>
+               <height>10</height>
               </size>
              </property>
             </widget>

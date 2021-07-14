@@ -410,20 +410,6 @@ class DevicesTab(shared.TabData):
         label.setText(option["message"])
         return [label]
 
-    def _create_widget_wrapper_for_control(self, widgets=[]):
-        """
-        Shared function to keep controls presentable by providing a layout
-        and keeping the children aligned to the left.
-        """
-        widget = QWidget()
-        layout = QHBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        widget.setLayout(layout)
-        for child in widgets:
-            layout.addWidget(child)
-        layout.addStretch()
-        return widget
-
     def _create_control_dialog(self, device, zone, option):
         """
         Prepares and returns a control that shows a message when clicking the button.
@@ -436,7 +422,7 @@ class DevicesTab(shared.TabData):
 
         button = QPushButton(option["button_text"])
         button.clicked.connect(_open_dialog)
-        return [self._create_widget_wrapper_for_control([button])]
+        return [self.create_widget_wrapper_for_control([button])]
 
     def _create_control_button(self, device, zone, option):
         """
@@ -447,7 +433,7 @@ class DevicesTab(shared.TabData):
 
         button = QPushButton(option["button_text"])
         button.clicked.connect(_button_clicked)
-        return [self._create_widget_wrapper_for_control([button])]
+        return [self.create_widget_wrapper_for_control([button])]
 
     def _create_effect_controls(self, zone, effect_options):
         """
@@ -1365,11 +1351,10 @@ class SpecialControls(shared.TabData):
             self.appdata.ui_preferences.open_window(2)
 
         for index, value in enumerate(stages):
-            button = QToolButton()
+            button = QPushButton()
             button.setCheckable(True)
             if device["dpi_x"] == device["dpi_y"] == value:
                 button.setChecked(True)
-            button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
             button.setText(str(value))
             button.dpi_value = value
 
@@ -1383,8 +1368,8 @@ class SpecialControls(shared.TabData):
 
         self.stage_buttons_group.buttonClicked.connect(_set_dpi_by_button)
 
-        edit_btn = QToolButton()
-        edit_btn.setText(self._("Edit DPI Stages"))
+        edit_btn = QPushButton()
+        edit_btn.setText(self._("Edit"))
         edit_btn.setToolTip(self._("Edit DPI Stages"))
         edit_btn.setIcon(self.widgets.get_icon_qt("general", "edit"))
         edit_btn.clicked.connect(_edit_dpi_stages)
@@ -1453,11 +1438,10 @@ class SpecialControls(shared.TabData):
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         widget.setLayout(layout)
-        button = QToolButton()
+        button = QPushButton()
         button.setText(self._("Open Mouse Settings"))
         button.setIconSize(QSize(24, 24))
         button.setIcon(QIcon.fromTheme("input-mouse"))
-        button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         button.clicked.connect(_open_mouse_settings)
         layout.addWidget(button)
         layout.addStretch()

@@ -349,14 +349,14 @@ class EffectsTab(shared.CommonFileTab):
 
             self.metadata_editor = EffectMetadataEditor(self.appdata, self.current_file_data, _metadata_changed)
 
-        btn_edit_meta = QToolButton()
+        btn_edit_meta = QPushButton()
         btn_edit_meta.setText(self._("Edit Metadata"))
         btn_edit_meta.setIcon(self.widgets.get_icon_qt("general", "properties"))
         btn_edit_meta.clicked.connect(_edit_metadata)
-        btn_edit_meta.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        widget_edit_meta = self.create_widget_wrapper_for_control([btn_edit_meta])
 
-        other_actions = self.widgets.create_row_widget(self._("Other Actions"), [btn_edit_meta], vertical=True)
-        other_actions.findChild(QLabel).setContentsMargins(0, 6, 0, 6)
+        other_actions = self.widgets.create_row_widget(self._("Other Actions"), [widget_edit_meta], vertical=True)
+        other_actions.findChild(QLabel).setContentsMargins(0, 4, 0, 4)
         layout.addWidget(other_actions)
         layout.addStretch()
 
