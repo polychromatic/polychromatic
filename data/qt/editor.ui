@@ -1550,18 +1550,6 @@ shorten the LED's lifespan.</string>
     <string notr="true">Ctrl+N</string>
    </property>
   </action>
-  <action name="actionResetDocks">
-   <property name="icon">
-    <iconset theme="window">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Reset Dock Positions</string>
-   </property>
-   <property name="statusTip">
-    <string extracomment="Appears in the status bar when hovered">Reset your workspace back to the default view</string>
-   </property>
-  </action>
   <action name="actionZoomIn">
    <property name="icon">
     <iconset theme="zoom-in">

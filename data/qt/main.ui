@@ -695,50 +695,6 @@
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
-  <action name="actionNew_Effect">
-   <property name="text">
-    <string>New Effect...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
-   </property>
-  </action>
-  <action name="actionOnline_Help">
-   <property name="text">
-    <string>Online Help</string>
-   </property>
-   <property name="shortcut">
-    <string>F1</string>
-   </property>
-  </action>
-  <action name="actionReport_a_Bug">
-   <property name="text">
-    <string>Report a Bug...</string>
-   </property>
-  </action>
-  <action name="actionAbout_OpenRazer">
-   <property name="text">
-    <string>About OpenRazer</string>
-   </property>
-  </action>
-  <action name="actionAbout_Polychromatic">
-   <property name="text">
-    <string>About Polychromatic</string>
-   </property>
-  </action>
-  <action name="actionVisit_Website">
-   <property name="text">
-    <string>Visit Website</string>
-   </property>
-  </action>
-  <action name="actionQuit">
-   <property name="text">
-    <string>Quit</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Q</string>
-   </property>
-  </action>
   <action name="actionNewEffect">
    <property name="icon">
     <iconset theme="document-new">
@@ -830,7 +786,8 @@
   </action>
   <action name="actionHideMenuBar">
    <property name="icon">
-    <iconset theme="window-unpin"/>
+    <iconset theme="window-unpin">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Hide Menu Bar</string>
@@ -842,15 +799,6 @@
   <action name="actionDonate">
    <property name="text">
     <string>Donate</string>
-   </property>
-  </action>
-  <action name="actionAboutOpenRazer">
-   <property name="icon">
-    <iconset>
-     <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>
-   </property>
-   <property name="text">
-    <string>About OpenRazer</string>
    </property>
   </action>
   <action name="actionWebsite">
@@ -882,25 +830,6 @@
     <enum>QAction::QuitRole</enum>
    </property>
   </action>
-  <action name="actionRestart_Daemon">
-   <property name="icon">
-    <iconset>
-     <normaloff>../img/general/refresh.svg</normaloff>../img/general/refresh.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Restart Daemon</string>
-   </property>
-  </action>
-  <action name="actionOpen_Log_File">
-   <property name="text">
-    <string>Open Log File</string>
-   </property>
-  </action>
-  <action name="actionEdit_Configuration">
-   <property name="text">
-    <string>Edit Configuration</string>
-   </property>
-  </action>
   <action name="actionReleaseNotes">
    <property name="text">
     <string>What's New?</string>
@@ -909,15 +838,6 @@
   <action name="actionOpenRazerWebsite">
    <property name="text">
     <string>Website</string>
-   </property>
-  </action>
-  <action name="actionOpenRazerTroubleshoot">
-   <property name="icon">
-    <iconset>
-     <normaloff>../img/emblems/utility.svg</normaloff>../img/emblems/utility.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Troubleshoot...</string>
    </property>
   </action>
   <action name="actionOpenRazerReportBug">
@@ -935,7 +855,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="view-refresh"/>
+    <iconset theme="view-refresh">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Restart Daemon</string>
@@ -946,7 +867,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="folder"/>
+    <iconset theme="folder">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Open Log...</string>
@@ -957,7 +879,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="settings-configure"/>
+    <iconset theme="settings-configure">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Configure...</string>
@@ -1003,7 +926,8 @@
   </action>
   <action name="actionRestartTrayApplet">
    <property name="icon">
-    <iconset theme="view-refresh"/>
+    <iconset theme="view-refresh">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Restart Tray Applet</string>
@@ -1011,7 +935,8 @@
   </action>
   <action name="actionProcessViewer">
    <property name="icon">
-    <iconset theme="view-process-tree"/>
+    <iconset theme="view-process-tree">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>View Background Tasks</string>
@@ -1064,7 +989,8 @@
   </action>
   <action name="actionPreferences">
    <property name="icon">
-    <iconset theme="settings-configure"/>
+    <iconset theme="settings-configure">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Preferences</string>
@@ -1078,7 +1004,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="applications-utilities"/>
+    <iconset theme="applications-utilities">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Troubleshoot</string>
@@ -1110,7 +1037,8 @@
   </action>
   <action name="actionForceRefresh">
    <property name="icon">
-    <iconset theme="view-refresh"/>
+    <iconset theme="view-refresh">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Force Refresh</string>
