@@ -747,6 +747,9 @@
    <property name="text">
     <string>New Effect...</string>
    </property>
+   <property name="shortcut">
+    <string notr="true"/>
+   </property>
   </action>
   <action name="actionDevices">
    <property name="checkable">
@@ -831,6 +834,9 @@
    </property>
    <property name="text">
     <string>Hide Menu Bar</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
    </property>
   </action>
   <action name="actionDonate">
@@ -980,6 +986,9 @@
    <property name="text">
     <string>New Preset...</string>
    </property>
+   <property name="shortcut">
+    <string notr="true"/>
+   </property>
   </action>
   <action name="actionNewPresetNow">
    <property name="enabled">
@@ -987,6 +996,9 @@
    </property>
    <property name="text">
     <string>New Preset from Current Devices...</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
    </property>
   </action>
   <action name="actionRestartTrayApplet">
@@ -1016,6 +1028,9 @@
    <property name="text">
     <string>Keep the Menu Bar</string>
    </property>
+   <property name="shortcut">
+    <string notr="true"/>
+   </property>
   </action>
   <action name="actionDuplicate">
    <property name="enabled">
@@ -1027,6 +1042,9 @@
    </property>
    <property name="text">
     <string>Duplicate</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
    </property>
   </action>
   <action name="actionDelete">
@@ -1040,6 +1058,9 @@
    <property name="text">
     <string>Delete</string>
    </property>
+   <property name="shortcut">
+    <string notr="true"/>
+   </property>
   </action>
   <action name="actionPreferences">
    <property name="icon">
@@ -1047,6 +1068,9 @@
    </property>
    <property name="text">
     <string>Preferences</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
    </property>
   </action>
   <action name="actionTroubleshootOpenRazer">
@@ -1079,6 +1103,9 @@
    </property>
    <property name="text">
     <string>Import Effect...</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
    </property>
   </action>
   <action name="actionForceRefresh">

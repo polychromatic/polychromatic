@@ -1223,7 +1223,7 @@ shorten the LED's lifespan.</string>
     <string extracomment="Appears as a tooltip or in the status bar when hovered">Save the effect to disk, and close the editor</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+W</string>
+    <string notr="true">Ctrl+W</string>
    </property>
   </action>
   <action name="actionSave">
@@ -1259,7 +1259,7 @@ shorten the LED's lifespan.</string>
     <string>Undo any changes and reload from disk</string>
    </property>
    <property name="shortcut">
-    <string>F5</string>
+    <string notr="true">F5</string>
    </property>
   </action>
   <action name="actionExit">
@@ -1277,7 +1277,7 @@ shorten the LED's lifespan.</string>
     <string>Close the editor and discard any unsaved changes</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Q</string>
+    <string notr="true">Ctrl+Q</string>
    </property>
   </action>
   <action name="actionDraw">
@@ -1433,7 +1433,7 @@ shorten the LED's lifespan.</string>
     <string extracomment="Appears as a tooltip or in the status bar when hovered">Permanently delete the selected layer</string>
    </property>
    <property name="shortcut">
-    <string>Del</string>
+    <string extracomment="Keyboard Shortcut">Del</string>
    </property>
   </action>
   <action name="actionMove_Layer_Up">
@@ -1451,7 +1451,7 @@ shorten the LED's lifespan.</string>
     <string extracomment="Appears as a tooltip or in the status bar when hovered">Raise the layer in the stack</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Alt+Up</string>
+    <string extracomment="Keyboard Shortcut">Alt+Up</string>
    </property>
   </action>
   <action name="actionMove_Layer_Down">
@@ -1469,7 +1469,7 @@ shorten the LED's lifespan.</string>
     <string extracomment="Appears as a tooltip or in the status bar when hovered">Lower the layer in the stack</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Alt+Down</string>
+    <string extracomment="Keyboard Shortcut">Alt+Down</string>
    </property>
   </action>
   <action name="actionShift_Left">
@@ -1484,7 +1484,7 @@ shorten the LED's lifespan.</string>
     <string extracomment="Appears in the status bar when hovered">Push all LEDs on this layer/frame by one column to the left</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Ctrl+Shift+Left</string>
+    <string extracomment="Keyboard Shortcut">Ctrl+Shift+Left</string>
    </property>
   </action>
   <action name="actionShift_Right">
@@ -1499,7 +1499,7 @@ shorten the LED's lifespan.</string>
     <string extracomment="Appears in the status bar when hovered">Push all LEDs on this layer/frame by one column to the right</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Ctrl+Shift+Right</string>
+    <string extracomment="Keyboard Shortcut">Ctrl+Shift+Right</string>
    </property>
   </action>
   <action name="actionShift_Up">
@@ -1514,7 +1514,7 @@ shorten the LED's lifespan.</string>
     <string extracomment="Appears in the status bar when hovered">Push all LEDs on this layer/frame by one row upwards</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Ctrl+Shift+Up</string>
+    <string extracomment="Keyboard Shortcut">Ctrl+Shift+Up</string>
    </property>
   </action>
   <action name="actionShift_Down">
@@ -1529,7 +1529,7 @@ shorten the LED's lifespan.</string>
     <string extracomment="Appears in the status bar when hovered">Push all LEDs on this layer/frame by one row downwards</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Ctrl+Shift+Down</string>
+    <string extracomment="Keyboard Shortcut">Ctrl+Shift+Down</string>
    </property>
   </action>
   <action name="actionNew_Layer">
@@ -1622,7 +1622,7 @@ shorten the LED's lifespan.</string>
     <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step before the current position</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Alt+Left</string>
+    <string extracomment="Keyboard Shortcut">Alt+Left</string>
    </property>
   </action>
   <action name="actionMove_Frame_Right">
@@ -1640,7 +1640,7 @@ shorten the LED's lifespan.</string>
     <string extracomment="Appears as a tooltip or in the status bar when hovered">Place this frame a step after the current position</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Alt+Right</string>
+    <string extracomment="Keyboard Shortcut">Alt+Right</string>
    </property>
   </action>
   <action name="actionOnlineHelp">
@@ -1697,6 +1697,9 @@ shorten the LED's lifespan.</string>
    </property>
    <property name="statusTip">
     <string extracomment="Appears as a tooltip or in the status bar when hovered">Configure automation for this effect, such as time of day, or when a process is running</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
    </property>
   </action>
   <action name="actionNew_Frame">
@@ -1801,7 +1804,7 @@ shorten the LED's lifespan.</string>
     <string>Start playback</string>
    </property>
    <property name="shortcut">
-    <string>F8</string>
+    <string notr="true">F8</string>
    </property>
   </action>
   <action name="actionStop">
@@ -1819,7 +1822,7 @@ shorten the LED's lifespan.</string>
     <string>Pause playback</string>
    </property>
    <property name="shortcut">
-    <string>F8</string>
+    <string notr="true">F8</string>
    </property>
   </action>
   <action name="actionPreviousFrame">
@@ -1837,7 +1840,7 @@ shorten the LED's lifespan.</string>
     <string>Step backward one frame</string>
    </property>
    <property name="shortcut">
-    <string>Left</string>
+    <string extracomment="Keyboard Shortcut">Left</string>
    </property>
   </action>
   <action name="actionNextFrame">
@@ -1855,7 +1858,7 @@ shorten the LED's lifespan.</string>
     <string>Step forward one frame</string>
    </property>
    <property name="shortcut">
-    <string>Right</string>
+    <string extracomment="Keyboard Shortcut">Right</string>
    </property>
   </action>
   <action name="actionJumpStart">
@@ -1873,7 +1876,7 @@ shorten the LED's lifespan.</string>
     <string>Jump to the start of the sequence</string>
    </property>
    <property name="shortcut">
-    <string>Home</string>
+    <string extracomment="Keyboard Shortcut">Home</string>
    </property>
   </action>
   <action name="actionJumpEnd">
@@ -1891,7 +1894,7 @@ shorten the LED's lifespan.</string>
     <string>Jump to the last frame of the sequence</string>
    </property>
    <property name="shortcut">
-    <string>End</string>
+    <string extracomment="Keyboard Shortcut">End</string>
    </property>
   </action>
   <action name="actionLoop">
@@ -1927,7 +1930,7 @@ shorten the LED's lifespan.</string>
     <string>Show or hide the labels and symbols on keys</string>
    </property>
    <property name="shortcut">
-    <string>F6</string>
+    <string notr="true">F6</string>
    </property>
   </action>
   <action name="actionOpenColourPicker">
@@ -1942,7 +1945,7 @@ shorten the LED's lifespan.</string>
     <string>Choose a custom colour using the system's colour picker</string>
    </property>
    <property name="shortcut">
-    <string>F2</string>
+    <string notr="true">F2</string>
    </property>
   </action>
   <action name="actionIncreaseHue">
@@ -1957,7 +1960,7 @@ shorten the LED's lifespan.</string>
     <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+H</string>
+    <string notr="true">Ctrl+H</string>
    </property>
   </action>
   <action name="actionDecreaseHue">
@@ -1972,7 +1975,7 @@ shorten the LED's lifespan.</string>
     <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+H</string>
+    <string notr="true">Ctrl+Shift+H</string>
    </property>
   </action>
   <action name="actionIncreaseSaturation">
@@ -1987,7 +1990,7 @@ shorten the LED's lifespan.</string>
     <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+T</string>
+    <string notr="true">Ctrl+T</string>
    </property>
   </action>
   <action name="actionDecreaseSaturation">
@@ -2002,7 +2005,7 @@ shorten the LED's lifespan.</string>
     <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+T</string>
+    <string notr="true">Ctrl+Shift+T</string>
    </property>
   </action>
   <action name="actionIncreaseLightness">
@@ -2017,7 +2020,7 @@ shorten the LED's lifespan.</string>
     <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+L</string>
+    <string notr="true">Ctrl+L</string>
    </property>
   </action>
   <action name="actionDecreaseLightness">
@@ -2032,7 +2035,7 @@ shorten the LED's lifespan.</string>
     <string>Changes the HSL attribute for the current colour. Useful for blending colours!</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+L</string>
+    <string notr="true">Ctrl+Shift+L</string>
    </property>
   </action>
   <action name="actionManageSavedColours">
@@ -2047,7 +2050,7 @@ shorten the LED's lifespan.</string>
     <string>Modify or reorder your saved colours</string>
    </property>
    <property name="shortcut">
-    <string>F12</string>
+    <string notr="true">F12</string>
    </property>
   </action>
  </widget>
