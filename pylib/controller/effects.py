@@ -480,7 +480,8 @@ class EffectMetadataEditor(shared.TabData):
         # Mapping Configuration (non-scripted effects only)
         if not self.effect_type == effects.TYPE_SCRIPTED:
             # Populate device list
-            self._populate_devices()
+            if not self._populate_devices():
+                return
 
             # Select appropriate mapping mode
             if self.data["map_graphic"]:
@@ -559,8 +560,16 @@ class EffectMetadataEditor(shared.TabData):
             self.device_info[index]["cols"] = self.data["map_cols"]
             self.device_info[index]["rows"] = self.data["map_rows"]
 
+        # No devices to map
+        if self.map_device_combo.count() == 0:
+            self.widgets.open_dialog(self.widgets.dialog_error,
+                                     self._("New Effect"),
+                                     self._("No compatible devices found. Only individually addressable LED capable hardware can be used for effects."))
+            return False
+
         # Populate graphic list
         self._device_updated()
+        return True
 
     def _validate_fields(self):
         """
