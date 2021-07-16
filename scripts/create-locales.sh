@@ -51,7 +51,11 @@ for ui_file in $(ls *.ui); do
     intltool-extract --type="gettext/qtdesigner" $ui_file
     xgettext -a -c --qt $ui_file.h -o $ui_file.pot
     rm $ui_file.h
-    mv $ui_file.pot "$temp_dir/"
+
+    if [ -f "$ui_file.pot" ]; then
+        # No translatable strings in file
+        mv $ui_file.pot "$temp_dir/"
+    fi
 done
 
 # Extract strings from Python (.py) files
@@ -70,10 +74,10 @@ echo " done."
 
 # Concatenate pots into one file
 cd "$temp_dir"
-msgcat *.pot --use-first > "$repo_root/locale/polychromatic.pot"
+msgcat *.pot > "$repo_root/locale/polychromatic.pot"
 
 # Update existing translations
-echo -e "\nUpdating existing locales...\n"
+echo -e "\nMerging with existing locales...\n"
 cd "$repo_root/locale/"
 for po_file in $(ls *.po); do
     msgmerge $po_file polychromatic.pot -o $po_file.new
