@@ -134,7 +134,7 @@ def translate_ui(appdata, widget):
     for widget_type in [QLabel, QMenu, QAction, QPushButton, QToolButton, \
                         QTabWidget, QTreeWidgetItem, QDockWidget, QTreeWidget, \
                         QCheckBox, QRadioButton, QSpinBox, QDoubleSpinBox, \
-                        QComboBox]:
+                        QComboBox, QLineEdit, QGroupBox]:
         children = widget.findChildren(widget_type)
         for subwidget in children:
             _translate_widget(appdata, subwidget)
@@ -147,53 +147,61 @@ def translate_ui(appdata, widget):
 
 def _translate_widget(appdata, widget):
     """
-    Translates the strings of a widget that was loaded on-the-fly via uic.loadUi
+    Translates the strings of a widget loaded using uic.loadUi()
     """
     _ = appdata._
 
-    if type(widget) == QMenu:
-        widget.setTitle(_(widget.title()))
+    def _translate(set_function, string):
+        if string:
+            set_function(_(string))
+
+    if type(widget) == QWidget:
         return
+
+    if type(widget) in [QMenu, QGroupBox]:
+        return _translate(widget.setTitle, widget.title())
 
     if type(widget) == QDockWidget:
-        widget.setWindowTitle(_(widget.windowTitle()))
-        return
+        return _translate(widget.setWindowTitle, widget.windowTitle())
 
-    if type(widget) == QSpinBox or type(widget) == QDoubleSpinBox:
-        widget.setPrefix(_(widget.prefix()))
-        widget.setSuffix(_(widget.suffix()))
+    if type(widget) in [QSpinBox, QDoubleSpinBox]:
+        _translate(widget.setPrefix, widget.prefix())
+        _translate(widget.setSuffix, widget.suffix())
         return
 
     if type(widget) == QTabWidget:
         for index in range(0, widget.count()):
-            widget.setTabText(index, _(widget.tabText(0)))
-            widget.setTabToolTip(index, _(widget.tabToolTip(0)))
+            if not widget.tabText(index) == "":
+                widget.setTabText(index, _(widget.tabText(index)))
+            if not widget.tabToolTip(index) == "":
+                widget.setTabToolTip(index, _(widget.tabToolTip(index)))
         return
 
     if type(widget) == QComboBox:
         for index in range(0, widget.count()):
-            widget.setItemText(index, _(widget.itemText(0)))
+            if not widget.itemText(index) == "":
+                widget.setItemText(index, _(widget.itemText(index)))
         return
 
     if type(widget) == QTreeWidget:
         tree_root = widget.invisibleRootItem()
         for index in range(0, tree_root.childCount()):
             item = tree_root.child(index)
-            item.setText(0, _(item.text(0)))
+            for column in range(0, item.columnCount()):
+                if not item.text(index) == "":
+                    item.setText(column, _(item.text(index)))
 
-            if index in range(0, item.childCount()):
-                child = item.child(index)
-                child.setText(0, _(child.text(0)))
+            for subindex in range(0, item.childCount()):
+                child = item.child(subindex)
+                for column in range(0, item.columnCount()):
+                    if not child.text(subindex) == "":
+                        child.setText(column, _(child.text(subindex)))
         return
 
-    if type(widget) == QAction:
-        widget.setStatusTip(_(widget.statusTip()))
-
-    if type(widget) == QWidget:
-        return
-
-    widget.setText(_(widget.text()))
-    widget.setToolTip(_(widget.toolTip()))
+    # All other UI controls: QCheckBox, QLabel, QRadioButton, QPushButton, etc
+    _translate(widget.setText, widget.text())
+    _translate(widget.setToolTip, widget.toolTip())
+    _translate(widget.setStatusTip, widget.statusTip())
 
 
 def clear_layout(layout):

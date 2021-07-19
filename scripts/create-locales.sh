@@ -45,15 +45,24 @@ fi
 mkdir "$temp_dir"
 
 # Extract strings from Qt Designer (.ui) files
+# .ui (XML) --> .h (C) --> .pot
 echo -e "\nGenerating locales from Qt Designer files...\n"
 cd "$repo_root/data/qt/"
 for ui_file in $(ls *.ui); do
     intltool-extract --type="gettext/qtdesigner" $ui_file
-    xgettext -a -c --qt $ui_file.h -o $ui_file.pot
+    xgettext --extract-all --add-comments --qt $ui_file.h -o $ui_file.pot
     rm $ui_file.h
 
     if [ -f "$ui_file.pot" ]; then
-        # No translatable strings in file
+        # intltool-extract caused some characters to escape
+        sed -i 's/\&amp\;/\&/g' $ui_file.pot
+        sed -i 's/\&quot;/\\\"/g' $ui_file.pot
+
+        # intltool-extract lost whitespace for spinners suffixes
+        sed -i 's#second(s)# second(s)#g' $ui_file.pot
+        sed -i 's#fps# fps#g' $ui_file.pot
+
+        # File is ready to concatenate later
         mv $ui_file.pot "$temp_dir/"
     fi
 done
