@@ -81,9 +81,12 @@ for py_file in $(find . -name "*.py"); do
 done
 echo " done."
 
-# Concatenate pots into one file
+# Concatenate pots into one POT file
 cd "$temp_dir"
 msgcat *.pot > "$repo_root/locale/polychromatic.pot"
+
+# Append a string so the source language is set correctly
+sed -i '15 i "X-Source-Language: en_GB\\n"' "$repo_root/locale/polychromatic.pot"
 
 # Update existing translations
 echo -e "\nMerging with existing locales...\n"
