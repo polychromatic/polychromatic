@@ -276,7 +276,7 @@ class FlatFileManagement(object):
 
     def init_data(self, item_name, item_type=None):
         """
-        Initalize new blank data for this feature.
+        Initialise new blank data for this feature.
         The inheriting class should implement this accordingly.
 
         Returns (dict) containing new data.

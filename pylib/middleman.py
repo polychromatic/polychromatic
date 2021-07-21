@@ -35,7 +35,7 @@ class Middleman(object):
         self._common = common
         self._ = _
 
-        # List of initalised Backend() objects.
+        # List of initialised Backend() objects.
         self.backends = []
 
         # List of IDs for modules that are not present.
@@ -49,7 +49,7 @@ class Middleman(object):
 
     def init(self):
         """
-        Imports the modules and initalises the backend objects.
+        Imports the modules and initialises the backend objects.
         """
         # -- OpenRazer
         try:

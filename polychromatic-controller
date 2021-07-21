@@ -77,7 +77,7 @@ class ApplicationData(object):
         """
         Prepare the object.
         """
-        dbg.stdout("Initalising application...", dbg.action, 1)
+        dbg.stdout("Initialising application...", dbg.action, 1)
         self.main_window = None
         self.main_app = qapp
         self.dbg = dbg
@@ -148,16 +148,16 @@ class ApplicationData(object):
                 # FIXME: It works, but isn't thread safe! [QObject:setParent]
                 global_status_label = self.main_window.findChild(QLabel, "GlobalStatus")
                 time.sleep(2)
-                global_status_label.setText(self._("Waiting for backends to initalise..."))
+                global_status_label.setText(self._("Waiting for backends to initialise..."))
                 global_status_label.setHidden(False)
                 time.sleep(10)
                 global_status_label.setText(global_status_label.text() + ' ' + self._("(this is taking an unusually long time, try running the troubleshooter)"))
-                time.sleep(50)
-                global_status_label.setText(self._("One of the backends might have crashed. Initalisation is taking too long!"))
+                time.sleep(30)
+                global_status_label.setText(self._("Still waiting for backends to load, perhaps one of them is unresponsive?"))
 
         class BackgroundThreadInit(QThread):
             """
-            Initalizes the middleman in the background, so the application remains responsive.
+            Initialises the middleman in the background, so the application remains responsive.
             """
             @staticmethod
             def run():
@@ -166,14 +166,14 @@ class ApplicationData(object):
                 def _enable_action(action, enabled=True):
                     self.main_window.findChild(QAction, action).setEnabled(enabled)
 
-                self.dbg.stdout("Initalising troubleshooters...", dbg.action, 1)
+                self.dbg.stdout("Initialising troubleshooters...", dbg.action, 1)
                 self.middleman.init_troubleshooters()
 
                 if "openrazer" in self.middleman.troubleshooters:
                     _enable_action("actionTroubleshootOpenRazer")
 
                 # Misbehaving backends may take ages inside init()
-                self.dbg.stdout("Initalising backends...", dbg.action, 1)
+                self.dbg.stdout("Initialising backends...", dbg.action, 1)
                 self.middleman.init()
                 self.device_list = self.middleman.get_device_list()
 
@@ -194,7 +194,7 @@ class ApplicationData(object):
 
                 app.ui_preferences.refresh_backend_status()
 
-                # No longer need to inform user if initalization took too long
+                # No longer need to inform user if initialisation took too long
                 self.bg_thread_timeout.terminate()
                 self.main_window.findChild(QLabel, "GlobalStatus").setHidden(True)
 
@@ -209,7 +209,7 @@ class MainWindow(QMainWindow):
     The main window is the first window the user will use and interact with.
     """
     def __init__(self):
-        dbg.stdout("Initalising window...", dbg.action, 1)
+        dbg.stdout("Initialising window...", dbg.action, 1)
         super(MainWindow, self).__init__()
 
         # Check styles exist
@@ -259,7 +259,7 @@ class MainWindow(QMainWindow):
 
         Params:
             qmainwindow         QMainWindow() instance
-            key_prefix          Name of prefix for save data. Should be initialized in preferences.
+            key_prefix          Name of prefix for save data. Should be initialised in preferences.
         """
         win_behaviour = app.preferences["controller"]["window_behaviour"]
 
@@ -310,7 +310,7 @@ class MainWindow(QMainWindow):
 
     def load(self):
         """
-        Objects initalised. Proceed to load the main application window.
+        Objects initialised. Proceed to load the main application window.
         """
         widgets = shared.PolychromaticWidgets(app)
 

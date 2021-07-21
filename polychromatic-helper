@@ -149,7 +149,7 @@ class Bootstrapper(object):
 
         This instance will exit as soon as the checks have completed.
         """
-        # If backend(s) haven't initialized already, wait for them.
+        # If backend(s) haven't initialised already, wait for them.
         timeout = 10
         while len(self.middleman.backends) == 0 and timeout > 0:
             dbg.stdout("Still waiting for backends to be ready...", dbg.warning, 1)

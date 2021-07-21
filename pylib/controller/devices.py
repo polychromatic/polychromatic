@@ -837,7 +837,7 @@ class DevicesTab(shared.TabData):
             common.get_icon("empty", "nodevice"),
             self._("Unrecognised Device"),
             self._("[] hasn't registered this device.").replace("[]", backend_name) + "\n\n" + \
-                self._("This could indicate an error initializing the backend or an installation problem.") + "\n" + \
+                self._("This could indicate an error initialising the backend or an installation problem.") + "\n" + \
                 self._("Alternately, this may happen if this hardware is not yet supported under this version of [].").replace("[]", backend_name),
             [
                 {

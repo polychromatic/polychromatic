@@ -30,7 +30,7 @@ class Locales(object):
 
     def init(self):
         """
-        Initalises translations for the application.
+        Initialises translations for the application.
 
         Returns:
             gettext.translation() bound to an i18n variable.

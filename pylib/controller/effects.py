@@ -170,7 +170,7 @@ class EffectsTab(shared.CommonFileTab):
     def new_file_stage_2(self, old_dialog, effect_type):
         """
         Open the metadata window for the user to enter details for their new creation.
-        On successful initialization, the effect editor will open.
+        On successful initialisation, the effect editor will open.
 
         Params:
             old_dialog      QDialog() from new_file()

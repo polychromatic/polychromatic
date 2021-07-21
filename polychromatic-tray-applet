@@ -114,7 +114,7 @@ class Indicator(object):
         Params:
             icon_path       (str)       Absolute path to the icon
         """
-        dbg.stdout("Initializing " + self.names[self.mode], dbg.action, 1)
+        dbg.stdout("Initialising " + self.names[self.mode], dbg.action, 1)
 
         if self.mode == self.appindicator:
             self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", icon_path, appindicator.IndicatorCategory.APPLICATION_STATUS)
@@ -126,7 +126,7 @@ class Indicator(object):
             self.indicator.set_from_file(icon_path)
             self.indicator.set_visible(True)
 
-        dbg.stdout("Initialized " + self.names[self.mode], dbg.success, 1)
+        dbg.stdout("Initialised " + self.names[self.mode], dbg.success, 1)
 
     def create_menu(self):
         """
@@ -935,7 +935,7 @@ if __name__ == "__main__":
     args = parse_parameters()
     pref.init(_)
 
-    # Initalise devices
+    # Initialise devices
     middleman = middleman_mod.Middleman(dbg, common, _)
     middleman.init()
     device_list = middleman.get_device_list()

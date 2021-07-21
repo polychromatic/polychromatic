@@ -143,7 +143,7 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         for device in self.middleman.get_device_all():
             if device["matrix"]:
                 fx = self.middleman.get_device_object(device["backend"], device["uid"])
-        self.assertEqual(success, True, "Supported device(s) failed to initalize a matrix")
+        self.assertEqual(success, True, "Supported device(s) failed to initialise a matrix")
 
     def test_set_matrix_object(self):
         success = True

@@ -50,7 +50,7 @@ class VisualEffectEditor(shared.TabData):
     def __init__(self, appdata, fileman, save_path):
         """
         Load the effect from file for editing and show the editor window. The
-        file is expected to have been initialized (via EffectMetadataEditor) first.
+        file is expected to have been initialised (via EffectMetadataEditor) first.
 
         Params:
             appdata         ApplicationData() object
@@ -610,7 +610,7 @@ class VisualEffectEditor(shared.TabData):
 
     def init_device_preview(self):
         """
-        Initalize the objects for previewing the device on physical hardware.
+        Initialise the objects for previewing the device on physical hardware.
         """
         if not self.live_preview:
             return
@@ -663,12 +663,12 @@ class VisualEffectEditor(shared.TabData):
             self.device = None
             return
 
-        # Inform user if there's a problem initalizing the device object
+        # Inform user if there's a problem initialising the device object
         if type(self.device_object) == str:
             self.dbg.stdout("Device error! No preview.", self.dbg.error, 1)
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      self._("Backend Error"),
-                                     self._("An error occurred while initalizing '[]' for live preview.").replace("[]", device_name),
+                                     self._("An error occurred while initialising '[]' for live preview.").replace("[]", device_name),
                                      self._("Live preview has been disabled for this session."),
                                      self.device_object)
             self.device = None
@@ -1816,7 +1816,7 @@ class DeviceRenderer(shared.TabData):
         self.webview.loadFinished.connect(self.ready)
         url = QUrl("file://" + os.path.join(common.paths.data_dir, "qt", "editor.html"))
 
-        # Reload if web view previously initalized
+        # Reload if web view previously initialised
         if self.webview.page().url() == url:
             self.webview.reload()
         else:

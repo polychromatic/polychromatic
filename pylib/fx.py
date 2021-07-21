@@ -34,7 +34,7 @@ class FX(object):
     """
     def __init__(self, rows, cols, name, backend, form_factor, serial):
         """
-        Initalise essential variables - these are user facing variables.
+        Initialise essential variables - these are user facing variables.
 
         Params:
             rows        (int)   Number of rows, 0-based.

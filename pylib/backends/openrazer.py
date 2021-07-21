@@ -79,7 +79,7 @@ class Backend(_backend.Backend):
         """
         if not self.devman or force_refresh:
             try:
-                self.debug("Initalising Device Manager...")
+                self.debug("Initialising Device Manager...")
                 self.devman = rclient.DeviceManager()
                 self.devman.sync_effects = False
                 self.devices = self.devman.devices

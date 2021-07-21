@@ -181,7 +181,7 @@ class MenuBar(object):
 
     def force_refresh(self):
         """
-        Restarts the application execution so backends can be cleanly re-initalized.
+        Restarts the application execution so backends can be cleanly re-initialised.
         This is useful when devices are inserted/removed.
         """
         if self._is_editor_running():
@@ -362,7 +362,7 @@ class MenuBarOpenRazer(MenuBar):
 
     def _refresh(self):
         """
-        Initalizes the variables for this class, if not done so already.
+        Initialises the variables for this class, if not done so already.
         """
         self.module = self.appdata.middleman.get_backend("openrazer")
         self.running = True if self.module else False

@@ -342,7 +342,7 @@ class Backend(object):
     def restart(self):
         """
         User requests to restart the backend - which could be a daemon, background
-        task or some other process that initalises the devices.
+        task or some other process that initialises the devices.
 
         For some backends, this may not even be necessary.
 

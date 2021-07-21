@@ -1394,11 +1394,11 @@ class CommonFileTab(TabData):
     """
     def __init__(self, appdata, filemgr_class, content_widget_name, tree_widget_name):
         """
-        Initialize the tab.
+        Initialise the tab.
 
         Params:
             appdata                 ApplicationData() object
-            filemgr_class           Class to initalize (e.g. effects.EffectFileManagement)
+            filemgr_class           Class to initialise (e.g. effects.EffectFileManagement)
             content_widget_name     Name of QWidget containing the tab data
             tree_widget_name        Name of QTreeWidget containing tasks/file list.
         """
