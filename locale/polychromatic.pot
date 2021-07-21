@@ -8,20 +8,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-30 21:01+0000\n"
+"POT-Creation-Date: 2021-07-21 14:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Source-Language: en_GB\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: about.ui.h:1
 msgid "About the Application"
 msgstr ""
 
-#: about.ui.h:2
+#: about.ui.h:2 device-info.ui.h:7 inspect-matrix.ui.h:3 procviewer.ui.h:12
+#: troubleshooter.ui.h:9
 msgid "Close"
 msgstr ""
 
@@ -53,13 +55,14 @@ msgstr ""
 msgid "Current"
 msgstr ""
 
-#. Colour Picker: Tooltip informing the user what the &quot;Change...&quot; button will do
+#. Colour Picker: Tooltip informing the user what the \"Change...\" button will do
 #: colour-picker.ui.h:5
 msgid "Opens the system's colour picker"
 msgstr ""
 
-#: colour-picker.ui.h:6
-msgid "Change..."
+#: colour-picker.ui.h:6 pylib/controller/devices.py:1369
+#: pylib/controller/editor.py:1470 pylib/controller/effects.py:272
+msgid "Edit"
 msgstr ""
 
 #. Colour Picker: Tooltip informing the user what the Save colour button does
@@ -68,10 +71,11 @@ msgid "Save this colour to the saved colour list"
 msgstr ""
 
 #: colour-picker.ui.h:9
-msgid "Save"
+msgid "Add"
 msgstr ""
 
-#: colour-picker.ui.h:10
+#: colour-picker.ui.h:10 editor.ui.h:83 preferences.ui.h:49
+#: pylib/controller/editor.py:1628 pylib/controller/preferences.py:370
 msgid "Saved Colours"
 msgstr ""
 
@@ -89,12 +93,17 @@ msgstr ""
 msgid "Cancel saving this colour"
 msgstr ""
 
-#. Colour Picker: Tooltip informing the user what the Delete icon does
+#. Colour Picker: Tooltip informing the user what the Rename icon does
 #: colour-picker.ui.h:17
-msgid "Forget this colour from the list"
+msgid "Rename selected colour"
 msgstr ""
 
-#: device-info.ui.h:1
+#. Colour Picker: Tooltip informing the user what the Delete icon does
+#: colour-picker.ui.h:19
+msgid "Forget selected colour"
+msgstr ""
+
+#: device-info.ui.h:1 pylib/controller/devices.py:1144
 msgid "Device Information"
 msgstr ""
 
@@ -108,26 +117,34 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: device-info.ui.h:6
-msgid "Refresh"
-msgstr ""
-
-#: device-info.ui.h:7
+#: device-info.ui.h:6 pylib/controller/devices.py:1220
 msgid "Inspect Matrix"
 msgstr ""
 
-#: editor.ui.h:1
+#: dpi-control.ui.h:1
+msgid "DPI Control"
+msgstr ""
+
+#: dpi-control.ui.h:2
+msgid "Lock X/Y axis"
+msgstr ""
+
+#: dpi-control.ui.h:3
+msgid "Lock"
+msgstr ""
+
+#: editor.ui.h:1 pylib/controller/editor.py:847
 msgid "Effect Editor"
 msgstr ""
 
-#. The &amp; character is for keyboard navigation (when holding the ALT key)
-#: editor.ui.h:3
-msgid "&amp;File"
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:3 main.ui.h:12
+msgid "&File"
 msgstr ""
 
-#. The &amp; character is for keyboard navigation (when holding the ALT key)
-#: editor.ui.h:5
-msgid "&amp;Edit"
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:5 main.ui.h:21
+msgid "&Edit"
 msgstr ""
 
 #. Menu bar item: To move LEDs in a specific direction
@@ -135,51 +152,52 @@ msgstr ""
 msgid "Shift LEDs"
 msgstr ""
 
-#. The &amp; character is for keyboard navigation (when holding the ALT key)
-#: editor.ui.h:9
-msgid "&amp;View"
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:9 main.ui.h:14
+msgid "&View"
 msgstr ""
 
-#. The &amp; character is for keyboard navigation (when holding the ALT key)
-#: editor.ui.h:11
-msgid "&amp;Help"
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:11 main.ui.h:16
+msgid "&Help"
 msgstr ""
 
-#. The &amp; character is for keyboard navigation (when holding the ALT key)
+#. The & character is for keyboard navigation (when holding the ALT key)
 #: editor.ui.h:13
-msgid "&amp;Tool"
+msgid "&Tool"
 msgstr ""
 
 #: editor.ui.h:14
+msgid "Playback"
+msgstr ""
+
+#: editor.ui.h:15 pylib/controller/devices.py:979
+msgid "Colours"
+msgstr ""
+
+#: editor.ui.h:16
 msgid "Layers"
 msgstr ""
 
 #. Column title in effect editor
-#: editor.ui.h:16
+#: editor.ui.h:18
 msgid "Layer"
 msgstr ""
 
+#. #-#-#-#-#  editor.ui.pot (PACKAGE VERSION)  #-#-#-#-#
 #. Column title in effect editor
-#: editor.ui.h:18
+#: editor.ui.h:20 pylib/controller/devices.py:501
 msgid "Effect"
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:20
+#: editor.ui.h:22
 msgid "Raise the layer in the stack"
 msgstr ""
 
-#: editor.ui.h:21
-msgid "Raise"
-msgstr ""
-
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:23
-msgid "Lower the layer in the stack"
-msgstr ""
-
 #: editor.ui.h:24
-msgid "Lower"
+msgid "Lower the layer in the stack"
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
@@ -187,331 +205,574 @@ msgstr ""
 msgid "Create a new layer in the stack"
 msgstr ""
 
-#: editor.ui.h:27
-msgid "New"
-msgstr ""
-
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:29
+#: editor.ui.h:28
 msgid "Delete the selected layer"
 msgstr ""
 
-#: editor.ui.h:30
-msgid "Delete"
-msgstr ""
-
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:32
+#: editor.ui.h:30
 msgid "Duplicate the selected layer"
 msgstr ""
 
-#: editor.ui.h:33
-msgid "Duplicate"
-msgstr ""
-
-#: editor.ui.h:34
+#: editor.ui.h:31
 msgid "Properties"
 msgstr ""
 
-#: editor.ui.h:35
+#: editor.ui.h:32
 msgid "Main Toolbar"
 msgstr ""
 
-#: editor.ui.h:36
+#: editor.ui.h:33
 msgid "Frames"
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:38
+#: editor.ui.h:35
 msgid "Create a blank frame after the current position"
 msgstr ""
 
+#: editor.ui.h:36
+msgid "New"
+msgstr ""
+
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:40
+#: editor.ui.h:38
+msgid "Permanently delete this frame"
+msgstr ""
+
+#: editor.ui.h:39 main.ui.h:41 pylib/controller/effects.py:286
+msgid "Delete"
+msgstr ""
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:41
 msgid "Create a copy of the current frame after this position"
 msgstr ""
 
-#: editor.ui.h:41
+#: editor.ui.h:42 pylib/controller/effects.py:279
 msgid "Clone"
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:43
-msgid "Permanently delete this frame"
-msgstr ""
-
-#. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:45
+#: editor.ui.h:44
 msgid "Place this frame a step before the current position"
 msgstr ""
 
-#: editor.ui.h:46
+#: editor.ui.h:45
 msgid "Move Left"
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:48
+#: editor.ui.h:47
 msgid "Place this frame a step after the current position"
 msgstr ""
 
-#: editor.ui.h:49
+#: editor.ui.h:48
 msgid "Move Right"
 msgstr ""
 
+#: editor.ui.h:49
+msgid "Jump to the start of the sequence"
+msgstr ""
+
 #: editor.ui.h:50
-msgid "Colours"
+msgid "Jump to Start"
+msgstr ""
+
+#: editor.ui.h:51
+msgid "Step backward one frame"
+msgstr ""
+
+#: editor.ui.h:52
+msgid "Previous Frame"
+msgstr ""
+
+#: editor.ui.h:53
+msgid "Preview the effect from the beginning"
+msgstr ""
+
+#: editor.ui.h:54 pylib/controller/effects.py:265
+msgid "Play"
+msgstr ""
+
+#: editor.ui.h:55
+msgid "Stop playback"
+msgstr ""
+
+#: editor.ui.h:56
+msgid "Pause"
+msgstr ""
+
+#: editor.ui.h:57
+msgid "Step forward one frame"
+msgstr ""
+
+#: editor.ui.h:58
+msgid "Next Frame"
+msgstr ""
+
+#: editor.ui.h:59
+msgid "Jump to the last frame of the sequence"
+msgstr ""
+
+#: editor.ui.h:60
+msgid "Jump to End"
+msgstr ""
+
+#: editor.ui.h:61
+msgid "Toggle whether this effect should loop"
+msgstr ""
+
+#: editor.ui.h:62
+msgid "Loop"
+msgstr ""
+
+#: editor.ui.h:63
+msgid ""
+"Frames per second to play the sequence.\n"
+"\n"
+"Note that frame rates that are too high may not\n"
+"play properly due to bottlenecks with the driver, \n"
+"lighting firmware or software. This may potentially\n"
+"shorten the LED's lifespan."
+msgstr ""
+
+#: editor.ui.h:69
+msgid "Frames per second to play the sequence"
+msgstr ""
+
+#: editor.ui.h:70
+msgid " fps"
+msgstr ""
+
+#: editor.ui.h:71
+msgid "Current Colour"
+msgstr ""
+
+#. Tooltip when hovering over the \"custom\" button
+#: editor.ui.h:73
+msgid "Open System Colour Picker"
+msgstr ""
+
+#. Status bar hint when hovering over the \"custom\" button
+#: editor.ui.h:75
+msgid "Choose a custom colour using the system's colour picker"
+msgstr ""
+
+#: editor.ui.h:76
+msgid "Increase the Hue"
+msgstr ""
+
+#: editor.ui.h:77
+msgid "Hue"
+msgstr ""
+
+#: editor.ui.h:78
+msgid "Saturation"
+msgstr ""
+
+#: editor.ui.h:79
+msgid "Decrease"
+msgstr ""
+
+#: editor.ui.h:80
+msgid ""
+"Protip: You can scroll over these buttons to quickly change the "
+"corresponding HSL attribute!"
+msgstr ""
+
+#: editor.ui.h:81
+msgid "Increase"
+msgstr ""
+
+#: editor.ui.h:82
+msgid "Lightness"
 msgstr ""
 
 #. Menu bar item
-#: editor.ui.h:52
+#: editor.ui.h:85
 msgid "Save and Close"
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:54
+#: editor.ui.h:87
 msgid "Save the effect to disk, and close the editor"
 msgstr ""
 
+#. Menu bar item or dialog button
+#: editor.ui.h:89
+msgid "Save"
+msgstr ""
+
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:58
+#: editor.ui.h:91
 msgid "Save any unsaved data to disk, just in case!"
 msgstr ""
 
+#. #-#-#-#-#  editor.ui.pot (PACKAGE VERSION)  #-#-#-#-#
 #. Menu bar item - User wishes to discard their changes
-#: editor.ui.h:60
+#: editor.ui.h:93 pylib/controller/editor.py:918
 msgid "Revert"
 msgstr ""
 
-#: editor.ui.h:61
+#: editor.ui.h:94
 msgid "Undo any changes and reload from disk"
 msgstr ""
 
 #. Menu bar item
-#: editor.ui.h:63
+#: editor.ui.h:96
 msgid "Close and Discard Changes"
 msgstr ""
 
-#: editor.ui.h:64
+#: editor.ui.h:97
 msgid "Close the editor and discard any unsaved changes"
 msgstr ""
 
 #. Menu bar item
-#: editor.ui.h:66
+#: editor.ui.h:99
 msgid "Draw"
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:68
+#: editor.ui.h:101
 msgid "Draw the selected colour to LEDs by clicking or dragging over them"
 msgstr ""
 
 #. Menu bar item
-#: editor.ui.h:70
+#: editor.ui.h:103
 msgid "Picker"
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:72
+#: editor.ui.h:105
 msgid "Take an existing colour from an LED to draw with"
 msgstr ""
 
 #. Menu bar item
-#: editor.ui.h:74
+#: editor.ui.h:107
 msgid "Eraser"
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:76
+#: editor.ui.h:109
 msgid "Erase the colour from an LED by clicking or dragging over them"
 msgstr ""
 
 #. Menu bar toggle
-#: editor.ui.h:78
+#: editor.ui.h:111
 msgid "Device Graphic"
 msgstr ""
 
 #. Appears in the status bar when hovered
-#: editor.ui.h:80
+#: editor.ui.h:113
 msgid ""
 "Present the LEDs as a graphical represention of the actual hardware (where "
 "available)"
 msgstr ""
 
 #. Menu bar toggle
-#: editor.ui.h:82
+#: editor.ui.h:115
 msgid "Grid"
 msgstr ""
 
-#: editor.ui.h:83
+#: editor.ui.h:116
 msgid "Present the LEDs in a grid"
 msgstr ""
 
-#: editor.ui.h:84
+#: editor.ui.h:117
 msgid "Edit Metadata..."
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:86
+#: editor.ui.h:119
 msgid "Edit the name, icon and other related data for this effect"
 msgstr ""
 
-#: editor.ui.h:87
+#: editor.ui.h:120
 msgid "Duplicate Layer"
 msgstr ""
 
-#: editor.ui.h:88
+#: editor.ui.h:121
 msgid "Delete Layer"
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:90
+#: editor.ui.h:123
 msgid "Permanently delete the selected layer"
 msgstr ""
 
-#: editor.ui.h:91
+#. Keyboard Shortcut
+#: editor.ui.h:125
+msgid "Del"
+msgstr ""
+
+#: editor.ui.h:126
 msgid "Raise Layer"
 msgstr ""
 
-#: editor.ui.h:92
+#. Keyboard Shortcut
+#: editor.ui.h:128
+msgid "Alt+Up"
+msgstr ""
+
+#: editor.ui.h:129
 msgid "Lower Layer"
 msgstr ""
 
+#. Keyboard Shortcut
+#: editor.ui.h:131
+msgid "Alt+Down"
+msgstr ""
+
 #. Menu bar item: To move LEDs in a specific direction
-#: editor.ui.h:94
+#: editor.ui.h:133
 msgid "Shift Left"
 msgstr ""
 
 #. Appears in the status bar when hovered
-#: editor.ui.h:96
+#: editor.ui.h:135
 msgid "Push all LEDs on this layer/frame by one column to the left"
 msgstr ""
 
+#. Keyboard Shortcut
+#: editor.ui.h:137
+msgid "Ctrl+Shift+Left"
+msgstr ""
+
 #. Menu bar item: To move LEDs in a specific direction
-#: editor.ui.h:98
+#: editor.ui.h:139
 msgid "Shift Right"
 msgstr ""
 
 #. Appears in the status bar when hovered
-#: editor.ui.h:100
+#: editor.ui.h:141
 msgid "Push all LEDs on this layer/frame by one column to the right"
 msgstr ""
 
+#. Keyboard Shortcut
+#: editor.ui.h:143
+msgid "Ctrl+Shift+Right"
+msgstr ""
+
 #. Menu bar item: To move LEDs in a specific direction
-#: editor.ui.h:102
+#: editor.ui.h:145
 msgid "Shift Up"
 msgstr ""
 
 #. Appears in the status bar when hovered
-#: editor.ui.h:104
+#: editor.ui.h:147
 msgid "Push all LEDs on this layer/frame by one row upwards"
 msgstr ""
 
+#. Keyboard Shortcut
+#: editor.ui.h:149
+msgid "Ctrl+Shift+Up"
+msgstr ""
+
 #. Menu bar item: To move LEDs in a specific direction
-#: editor.ui.h:106
+#: editor.ui.h:151
 msgid "Shift Down"
 msgstr ""
 
 #. Appears in the status bar when hovered
-#: editor.ui.h:108
+#: editor.ui.h:153
 msgid "Push all LEDs on this layer/frame by one row downwards"
 msgstr ""
 
-#: editor.ui.h:109
+#. Keyboard Shortcut
+#: editor.ui.h:155
+msgid "Ctrl+Shift+Down"
+msgstr ""
+
+#: editor.ui.h:156
 msgid "New Layer..."
 msgstr ""
 
-#: editor.ui.h:110
-msgid "Reset Dock Positions"
-msgstr ""
-
-#. Appears in the status bar when hovered
-#: editor.ui.h:112
-msgid "Reset your workspace back to the default view"
-msgstr ""
-
-#: editor.ui.h:113
+#: editor.ui.h:157
 msgid "Zoom In"
 msgstr ""
 
 #. Appears in the status bar when hovered
-#: editor.ui.h:115
+#: editor.ui.h:159
 msgid "Enlarge the graphic or grid in the viewport"
 msgstr ""
 
-#: editor.ui.h:116
+#: editor.ui.h:160
 msgid "Zoom Out"
 msgstr ""
 
 #. Appears in the status bar when hovered
-#: editor.ui.h:118
+#: editor.ui.h:162
 msgid "Shrink the graphic or grid in the viewport"
 msgstr ""
 
-#: editor.ui.h:119
+#: editor.ui.h:163
 msgid "Reset Zoom"
 msgstr ""
 
 #. Appears in the status bar when hovered
-#: editor.ui.h:121
+#: editor.ui.h:165
 msgid "Reset the size of the graphic or grid in the viewport"
 msgstr ""
 
-#: editor.ui.h:122
+#: editor.ui.h:166
 msgid "Move Frame Left"
 msgstr ""
 
-#: editor.ui.h:123
+#. Keyboard Shortcut
+#: editor.ui.h:168
+msgid "Alt+Left"
+msgstr ""
+
+#: editor.ui.h:169
 msgid "Move Frame Right"
 msgstr ""
 
-#: editor.ui.h:124
+#. Keyboard Shortcut
+#: editor.ui.h:171
+msgid "Alt+Right"
+msgstr ""
+
+#: editor.ui.h:172 main.ui.h:23 pylib/controller/devices.py:765
+#: pylib/controller/devices.py:856 pylib/controller/menubar.py:216
 msgid "Online Help"
 msgstr ""
 
-#: editor.ui.h:125
+#: editor.ui.h:173 main.ui.h:27 pylib/controller/menubar.py:234
+#: pylib/controller/menubar.py:467
 msgid "Website"
 msgstr ""
 
-#: editor.ui.h:126
+#: editor.ui.h:174 main.ui.h:30 pylib/controller/menubar.py:238
 msgid "What's New?"
 msgstr ""
 
-#: editor.ui.h:127
+#: editor.ui.h:175 main.ui.h:24
 msgid "Report a Bug"
 msgstr ""
 
-#: editor.ui.h:128
+#: editor.ui.h:176 main.ui.h:26 pylib/controller/menubar.py:246
+#: pylib/controller/menubar.py:340
 msgid "Donate"
 msgstr ""
 
-#: editor.ui.h:129
+#: editor.ui.h:177 main.ui.h:28 preferences.ui.h:64
 msgid "About"
 msgstr ""
 
-#: editor.ui.h:130
+#: editor.ui.h:178
 msgid "Edit Triggers..."
 msgstr ""
 
 #. Appears as a tooltip or in the status bar when hovered
-#: editor.ui.h:132
+#: editor.ui.h:180
 msgid ""
 "Configure automation for this effect, such as time of day, or when a process "
 "is running"
 msgstr ""
 
-#: editor.ui.h:133
+#: editor.ui.h:181
 msgid "New Frame"
 msgstr ""
 
-#: editor.ui.h:134
+#: editor.ui.h:182 pylib/controller/editor.py:1528
 msgid "Delete Frame"
 msgstr ""
 
-#: editor.ui.h:135
+#: editor.ui.h:183
 msgid "Clone Frame"
 msgstr ""
 
-#: effect-metadata-editor.ui.h:1
+#: editor.ui.h:184
+msgid "Start playback"
+msgstr ""
+
+#. #-#-#-#-#  procviewer.ui.pot (PACKAGE VERSION)  #-#-#-#-#
+#. Button to stop all background tasks
+#: editor.ui.h:185 procviewer.ui.h:11
+msgid "Stop"
+msgstr ""
+
+#: editor.ui.h:186
+msgid "Pause playback"
+msgstr ""
+
+#. #-#-#-#-#  editor.ui.pot (PACKAGE VERSION)  #-#-#-#-#
+#. Keyboard Shortcut
+#: editor.ui.h:188 pylib/backends/openrazer.py:320
+#: pylib/backends/openrazer.py:1161
+msgid "Left"
+msgstr ""
+
+#. #-#-#-#-#  editor.ui.pot (PACKAGE VERSION)  #-#-#-#-#
+#. Keyboard Shortcut
+#: editor.ui.h:190 pylib/backends/openrazer.py:318
+#: pylib/backends/openrazer.py:1162
+msgid "Right"
+msgstr ""
+
+#. Keyboard Shortcut
+#: editor.ui.h:192
+msgid "Home"
+msgstr ""
+
+#. Keyboard Shortcut
+#: editor.ui.h:194
+msgid "End"
+msgstr ""
+
+#: editor.ui.h:195
+msgid "Show Key Labels"
+msgstr ""
+
+#: editor.ui.h:196
+msgid "Show or hide the labels and symbols on keys"
+msgstr ""
+
+#: editor.ui.h:197
+msgid "Open Colour Picker"
+msgstr ""
+
+#: editor.ui.h:198
+msgid "Increase Hue"
+msgstr ""
+
+#: editor.ui.h:199
+msgid ""
+"Changes the HSL attribute for the current colour. Useful for blending "
+"colours!"
+msgstr ""
+
+#: editor.ui.h:200
+msgid "Decrease Hue"
+msgstr ""
+
+#: editor.ui.h:201
+msgid "Increase Saturation"
+msgstr ""
+
+#: editor.ui.h:202
+msgid "Decrease Saturation"
+msgstr ""
+
+#: editor.ui.h:203
+msgid "Increase Lightness"
+msgstr ""
+
+#: editor.ui.h:204
+msgid "Decrease Lightness"
+msgstr ""
+
+#: editor.ui.h:205
+msgid "Edit Saved Colours"
+msgstr ""
+
+#: editor.ui.h:206 pylib/controller/editor.py:1471
+msgid "Modify or reorder your saved colours"
+msgstr ""
+
+#: effect-metadata-editor.ui.h:1 pylib/controller/effects.py:353
 msgid "Edit Metadata"
 msgstr ""
 
@@ -519,7 +780,7 @@ msgstr ""
 msgid "Effect Details"
 msgstr ""
 
-#: effect-metadata-editor.ui.h:3
+#: effect-metadata-editor.ui.h:3 pylib/controller/devices.py:1032
 msgid "Name"
 msgstr ""
 
@@ -533,61 +794,40 @@ msgid "Author"
 msgstr ""
 
 #: effect-metadata-editor.ui.h:7
-msgid "Icon"
-msgstr ""
-
-#: effect-metadata-editor.ui.h:8
-msgid "Summary"
-msgstr ""
-
-#: effect-metadata-editor.ui.h:9
-msgid "Revision"
-msgstr ""
-
-#: effect-metadata-editor.ui.h:10
-msgid "This counter increments each time the effect is saved."
-msgstr ""
-
-#: effect-metadata-editor.ui.h:11
 msgid "Author URL"
 msgstr ""
 
-#: effect-metadata-editor.ui.h:12
+#: effect-metadata-editor.ui.h:8 preferences.ui.h:42
+msgid "Icon"
+msgstr ""
+
+#: effect-metadata-editor.ui.h:9 pylib/controller/devices.py:1077
+#: pylib/controller/effects.py:331
+msgid "Summary"
+msgstr ""
+
+#: effect-metadata-editor.ui.h:10 pylib/controller/devices.py:1031
 msgid "Hardware"
 msgstr ""
 
-#: effect-metadata-editor.ui.h:13
+#: effect-metadata-editor.ui.h:11 procviewer.ui.h:6
 msgid "Device"
 msgstr ""
 
-#: effect-metadata-editor.ui.h:14
+#: effect-metadata-editor.ui.h:12
 msgid "Mapping"
 msgstr ""
 
-#: effect-metadata-editor.ui.h:15
+#: effect-metadata-editor.ui.h:13
+msgid "Use a graphic resembling this device:"
+msgstr ""
+
+#: effect-metadata-editor.ui.h:14
 msgid "Use a grid"
 msgstr ""
 
-#: effect-metadata-editor.ui.h:16
-msgid "Use a graphic resembling this device"
-msgstr ""
-
-#: effect-script-editor.ui.h:1
-msgid "Script Editor"
-msgstr ""
-
-#. Label
-#: effect-script-editor.ui.h:11
-msgid "Compatible Devices"
-msgstr ""
-
-#: effect-script-editor.ui.h:12
-msgid "Any"
-msgstr ""
-
-#. Radio button when editing effect metadata
-#: effect-script-editor.ui.h:22
-msgid "Use a graphic similar to the device"
+#: effect-metadata-editor.ui.h:15
+msgid "Preview"
 msgstr ""
 
 #. Appears at the top of the icon picker when the user selects a GIF as their tray icon
@@ -595,7 +835,7 @@ msgstr ""
 msgid "Heads up! Animated GIFs are not supported by all desktop environments."
 msgstr ""
 
-#: icon-picker.ui.h:3
+#: icon-picker.ui.h:3 preferences.ui.h:34 pylib/controller/procviewer.py:167
 msgid "Tray Applet"
 msgstr ""
 
@@ -631,8 +871,9 @@ msgid ""
 "the physical device."
 msgstr ""
 
+#. #-#-#-#-#  loading.ui.pot (PACKAGE VERSION)  #-#-#-#-#
 #. Generic loading text
-#: loading.ui.h:2
+#: loading.ui.h:2 pylib/controller/procviewer.py:109
 msgid "Please wait..."
 msgstr ""
 
@@ -640,19 +881,20 @@ msgstr ""
 msgid "Polychromatic"
 msgstr ""
 
-#: main.ui.h:2
+#: main.ui.h:2 preferences.ui.h:19 pylib/controller/devices.py:63
 msgid "Devices"
 msgstr ""
 
-#: main.ui.h:3
+#: main.ui.h:3 preferences.ui.h:20 pylib/controller/devices.py:968
+#: pylib/controller/effects.py:36
 msgid "Effects"
 msgstr ""
 
-#: main.ui.h:4
+#: main.ui.h:4 preferences.ui.h:21 pylib/controller/presets.py:28
 msgid "Presets"
 msgstr ""
 
-#: main.ui.h:5
+#: main.ui.h:5 preferences.ui.h:22
 msgid "Triggers"
 msgstr ""
 
@@ -670,117 +912,91 @@ msgstr ""
 msgid "Close Application"
 msgstr ""
 
-#. The &amp; character is for keyboard navigation (when holding the ALT key)
+#. The & character is for keyboard navigation (when holding the ALT key)
 #: main.ui.h:18
-msgid "&amp;Tools"
+msgid "&Tools"
 msgstr ""
 
 #: main.ui.h:19
 msgid "OpenRazer"
 msgstr ""
 
-#: main.ui.h:20
-msgid "Troubleshoot"
-msgstr ""
-
-#: main.ui.h:23
+#: main.ui.h:22
 msgid "New Effect..."
 msgstr ""
 
-#: main.ui.h:24
-msgid "Ctrl+N"
-msgstr ""
-
-#: main.ui.h:26
-msgid "F1"
-msgstr ""
-
-#: main.ui.h:27
-msgid "Report a Bug..."
-msgstr ""
-
-#: main.ui.h:28
-msgid "About OpenRazer"
-msgstr ""
-
-#: main.ui.h:29
-msgid "About Polychromatic"
-msgstr ""
-
-#: main.ui.h:30
-msgid "Visit Website"
-msgstr ""
-
-#: main.ui.h:31
-msgid "Quit"
-msgstr ""
-
-#: main.ui.h:32
-msgid "Ctrl+Q"
-msgstr ""
-
-#: main.ui.h:34
+#: main.ui.h:25 pylib/controller/menubar.py:161
 msgid "Hide Menu Bar"
 msgstr ""
 
-#: main.ui.h:38
+#: main.ui.h:29
+msgid "Quit"
+msgstr ""
+
+#: main.ui.h:31
 msgid "Restart Daemon"
 msgstr ""
 
-#: main.ui.h:39
-msgid "Open Log File"
-msgstr ""
-
-#: main.ui.h:40
-msgid "Edit Configuration"
-msgstr ""
-
-#: main.ui.h:42
-msgid "Troubleshoot..."
-msgstr ""
-
-#: main.ui.h:43
+#: main.ui.h:32
 msgid "Open Log..."
 msgstr ""
 
-#: main.ui.h:44
+#: main.ui.h:33
 msgid "Configure..."
 msgstr ""
 
-#: main.ui.h:45
+#: main.ui.h:34
+msgid "About OpenRazer"
+msgstr ""
+
+#: main.ui.h:35
 msgid "New Preset..."
 msgstr ""
 
-#: main.ui.h:46
+#: main.ui.h:36
 msgid "New Preset from Current Devices..."
 msgstr ""
 
-#: main.ui.h:47
+#: main.ui.h:37
 msgid "Restart Tray Applet"
 msgstr ""
 
-#: main.ui.h:48
-msgid "Restart Background Tasks"
+#: main.ui.h:38
+msgid "View Background Tasks"
 msgstr ""
 
-#: main.ui.h:49
+#: main.ui.h:39
 msgid "Keep the Menu Bar"
 msgstr ""
 
-#: main.ui.h:52
+#: main.ui.h:40
+msgid "Duplicate"
+msgstr ""
+
+#: main.ui.h:42 preferences.ui.h:1
 msgid "Preferences"
 msgstr ""
 
-#. Troubleshoot option
-#: main.ui.h:54
-msgid "OpenRazer Driver/Daemon"
+#: main.ui.h:43 preferences.ui.h:66 pylib/controller/devices.py:757
+#: pylib/controller/devices.py:771 pylib/controller/devices.py:850
+msgid "Troubleshoot"
 msgstr ""
 
-#: main.ui.h:56
+#: main.ui.h:44 procviewer.ui.h:7
+msgid "Refresh"
+msgstr ""
+
+#: main.ui.h:45
 msgid "Import Effect..."
 msgstr ""
 
-#: new-effect.ui.h:1
+#: main.ui.h:46 pylib/controller/menubar.py:189
+msgid "Force Refresh"
+msgstr ""
+
+#: new-effect.ui.h:1 pylib/controller/effects.py:44
+#: pylib/controller/effects.py:79 pylib/controller/effects.py:107
+#: pylib/controller/effects.py:550 pylib/controller/effects.py:566
 msgid "New Effect"
 msgstr ""
 
@@ -793,8 +1009,9 @@ msgstr ""
 msgid "Create simple effects using a layer-based system"
 msgstr ""
 
+#. #-#-#-#-#  new-effect.ui.pot (PACKAGE VERSION)  #-#-#-#-#
 #. Button when creating a new effect
-#: new-effect.ui.h:6
+#: new-effect.ui.h:6 pylib/controller/effects.py:302
 msgid "Layered"
 msgstr ""
 
@@ -802,8 +1019,9 @@ msgstr ""
 msgid "Create an animated (or static) using frames and pixels"
 msgstr ""
 
+#. #-#-#-#-#  new-effect.ui.pot (PACKAGE VERSION)  #-#-#-#-#
 #. Button when creating a new effect
-#: new-effect.ui.h:9
+#: new-effect.ui.h:9 pylib/controller/effects.py:304
 msgid "Sequence"
 msgstr ""
 
@@ -811,9 +1029,10 @@ msgstr ""
 msgid "Write the effect using the Python programming language"
 msgstr ""
 
+#. #-#-#-#-#  new-effect.ui.pot (PACKAGE VERSION)  #-#-#-#-#
 #. Button when creating a new effect
-#: new-effect.ui.h:12
-msgid "Scripted"
+#: new-effect.ui.h:12 pylib/controller/effects.py:303
+msgid "Script"
 msgstr ""
 
 #. Shown when creating a new effect
@@ -825,80 +1044,81 @@ msgstr ""
 msgid "OpenRazer Configuration"
 msgstr ""
 
-#: openrazer-config.ui.h:2
+#. Tab button for configuring OpenRazer
+#: openrazer-config.ui.h:3
+msgid "Daemon"
+msgstr ""
+
+#: openrazer-config.ui.h:4
 msgid ""
 "These settings only apply to the OpenRazer daemon. They are not supported by "
 "this application."
 msgstr ""
 
 #. Checkbox for configuring OpenRazer
-#: openrazer-config.ui.h:4
+#: openrazer-config.ui.h:6
 msgid "Enable verbose logging"
 msgstr ""
 
 #. Checkbox for configuring OpenRazer
-#: openrazer-config.ui.h:6
+#: openrazer-config.ui.h:8
 msgid "Sync effects across devices"
 msgstr ""
 
 #. Hint text for configuring OpenRazer
-#: openrazer-config.ui.h:8
+#: openrazer-config.ui.h:10
 msgid ""
-"This option is automatically disabled as it impairs Polychromatic's "
-"operation.\n"
-"Use &quot;Apply to All&quot; instead."
+"This feature is incompatible. Use \"Apply to All\" from the Devices tab."
 msgstr ""
 
 #. Checkbox for configuring OpenRazer
-#: openrazer-config.ui.h:11
-msgid "Turn off devices when screen saver / lock screen is present"
+#: openrazer-config.ui.h:12
+msgid "Turn off devices when screen saver / lock screen is activated"
 msgstr ""
 
 #. Checkbox for configuring OpenRazer
-#: openrazer-config.ui.h:13
+#: openrazer-config.ui.h:14
 msgid "Periodically notify battery status (for supported devices)"
 msgstr ""
 
 #. Label for configuring OpenRazer
-#: openrazer-config.ui.h:15
+#: openrazer-config.ui.h:16
 msgid "Notification Frequency"
 msgstr ""
 
 #. Suffix for a spinner control
-#: openrazer-config.ui.h:17
+#: openrazer-config.ui.h:18
 msgid "seconds"
 msgstr ""
 
-#. Checkbox for configuring OpenRazer
 #: openrazer-config.ui.h:19
-msgid "Enable key statistics"
+msgid "Apply persistence settings on daemon start"
 msgstr ""
 
-#. Hint text for configuring OpenRazer
-#: openrazer-config.ui.h:21
+#: openrazer-config.ui.h:20
 msgid ""
-"Collects number of keypresses per hour per key to generate a heatmap. This "
-"is currently unused."
+"If you have a Polychromatic trigger configured to run at start-up, it is "
+"recommended to turn this option off."
 msgstr ""
 
 #. Tab button for configuring OpenRazer
-#: openrazer-config.ui.h:23
+#: openrazer-config.ui.h:22
 msgid "Client"
 msgstr ""
 
-#: openrazer-config.ui.h:24
+#: openrazer-config.ui.h:23
 msgid ""
 "These settings will be used by Polychromatic when interfacing with the "
 "OpenRazer daemon."
 msgstr ""
 
 #. Checkbox for configuring OpenRazer
-#: openrazer-config.ui.h:26
+#: openrazer-config.ui.h:25
 msgid "Download device images"
 msgstr ""
 
 #. Hint text for configuring OpenRazer
-#: openrazer-config.ui.h:28
+#: openrazer-config.ui.h:27
 msgid ""
 "OpenRazer stores image URLs pointing to a CDN. These images may be "
 "proprietary. This application retrieves images for your devices once and "
@@ -906,22 +1126,24 @@ msgid ""
 msgstr ""
 
 #. Label for configuring OpenRazer
-#: openrazer-config.ui.h:30
+#: openrazer-config.ui.h:29
 msgid "Ripple Refresh Rate"
 msgstr ""
 
 #: preferences.ui.h:2
-msgid "General"
-msgstr ""
-
-#. Preferences Label
-#: preferences.ui.h:4
-msgid "Appearance"
+msgid "Controller"
 msgstr ""
 
 #. Preferences Checkbox
+#: preferences.ui.h:4
+msgid "Use system theme"
+msgstr ""
+
+#. Text appears underneath a checkbox in the preferences dialog
 #: preferences.ui.h:6
-msgid "Use system Qt theme"
+msgid ""
+"GTK-based distros may not support this option out of the box. Additional "
+"steps may need required initially to use your native theme in Qt apps."
 msgstr ""
 
 #. Preferences Checkbox
@@ -929,1075 +1151,1337 @@ msgstr ""
 msgid "Hide menu bar"
 msgstr ""
 
-#. Preferences Tip
+#. Text appears underneath a checkbox in the preferences dialog
 #: preferences.ui.h:10
 msgid "Press Alt to temporarily show the menu bar while it is hidden."
 msgstr ""
 
-#. Preferences Label
+#: preferences.ui.h:11
+msgid "Toolbar"
+msgstr ""
+
 #: preferences.ui.h:12
-msgid "Landing Tab"
+msgid "Follow System Style"
+msgstr ""
+
+#: preferences.ui.h:13
+msgid "Icons Only"
+msgstr ""
+
+#: preferences.ui.h:14
+msgid "Text Only"
+msgstr ""
+
+#: preferences.ui.h:15
+msgid "Text Alongside Icons"
+msgstr ""
+
+#: preferences.ui.h:16
+msgid "Text Under Icons"
 msgstr ""
 
 #. Preferences Label
 #: preferences.ui.h:18
+msgid "Landing Tab"
+msgstr ""
+
+#. Preferences Label
+#: preferences.ui.h:24
 msgid "Window Behaviour"
 msgstr ""
 
 #. Preferences dropdown option
-#: preferences.ui.h:20
+#: preferences.ui.h:26
 msgid "Always open in the center"
 msgstr ""
 
 #. Preferences dropdown option
-#: preferences.ui.h:22
+#: preferences.ui.h:28
 msgid "Remember last position and size"
 msgstr ""
 
 #. Preferences dropdown option
-#: preferences.ui.h:24
+#: preferences.ui.h:30
 msgid "Let the window manager decide"
 msgstr ""
 
-#. Button
-#: preferences.ui.h:28
-msgid "Reset to Default Colours"
+#: preferences.ui.h:31
+msgid "Maximized at start"
 msgstr ""
 
 #. Preferences Label
-#: preferences.ui.h:31
+#: preferences.ui.h:33
+msgid "Appearance"
+msgstr ""
+
+#. Preferences Label
+#: preferences.ui.h:36
 msgid "Behaviour"
 msgstr ""
 
-#: preferences.ui.h:32
+#: preferences.ui.h:37
 msgid "Start the tray applet when I log on"
 msgstr ""
 
 #. Preferences Label
-#: preferences.ui.h:34
+#: preferences.ui.h:39
 msgid "Renderer"
 msgstr ""
 
-#: preferences.ui.h:35
+#: preferences.ui.h:40
 msgid "Default (AppIndicator3)"
 msgstr ""
 
-#: preferences.ui.h:36
+#: preferences.ui.h:41
 msgid "GTK Status Icon (Legacy)"
 msgstr ""
 
 #. Preferences Label
-#: preferences.ui.h:39
+#: preferences.ui.h:44
 msgid "Autostart Delay"
 msgstr ""
 
 #. Suffix for a spinner control
-#: preferences.ui.h:41
-msgid "second(s)"
+#: preferences.ui.h:46
+msgid " second(s)"
 msgstr ""
 
-#: preferences.ui.h:42
+#: preferences.ui.h:47
 msgid ""
 "On some desktop environments, due to race conditions, it may be necessary to "
 "wait so the applet's icon or device list is loaded properly."
 msgstr ""
 
-#: preferences.ui.h:43
+#: preferences.ui.h:48
+msgid "Customise"
+msgstr ""
+
+#: preferences.ui.h:50 pylib/controller/shared.py:614
+#: pylib/controller/shared.py:671
+msgid "Change..."
+msgstr ""
+
+#. #-#-#-#-#  preferences.ui.pot (PACKAGE VERSION)  #-#-#-#-#
+#. Button
+#: preferences.ui.h:52 pylib/controller/preferences.py:382
+msgid "Reset to Default Colours"
+msgstr ""
+
+#: preferences.ui.h:53
+msgid "DPI Stages"
+msgstr ""
+
+#: preferences.ui.h:54
+msgid "Automatically determine from hardware"
+msgstr ""
+
+#: preferences.ui.h:55
+msgid "Reset to defaults"
+msgstr ""
+
+#: preferences.ui.h:56
+msgid "Reset"
+msgstr ""
+
+#: preferences.ui.h:57
 msgid "Editor"
 msgstr ""
 
-#: preferences.ui.h:44
-msgid "Preview effect on the actual hardware"
-msgstr ""
-
-#: preferences.ui.h:45
+#: preferences.ui.h:58
 msgid "Use system cursors"
 msgstr ""
 
-#: preferences.ui.h:46
-msgid "Preview"
+#: preferences.ui.h:59
+msgid "Hide key labels"
 msgstr ""
 
-#: preferences.ui.h:47
-msgid "Background Tasks"
-msgstr ""
-
-#. Information text in the Preferences' Background Tasks tab
-#: preferences.ui.h:49
-msgid ""
-"To provide features of this application, some additional processes are "
-"spawned."
-msgstr ""
-
-#. Column header in Preferences for Background Tasks
-#: preferences.ui.h:51
-msgid "Task"
-msgstr ""
-
-#. Column header in Preferences for Background Tasks
-#: preferences.ui.h:55
-msgid "Memory Usage"
-msgstr ""
-
-#. Button to stop all background tasks
-#: preferences.ui.h:58
-msgid "Stop All"
-msgstr ""
-
-#. Button to restart all background tasks
 #: preferences.ui.h:60
-msgid "Restart All"
+msgid "Show shades for my saved colours"
 msgstr ""
 
 #: preferences.ui.h:61
-msgid "Total Background Memory Usage: 0 MiB"
+msgid "Preview effect on the physical hardware"
 msgstr ""
 
 #: preferences.ui.h:62
+msgid "Suppress delete confirmation dialog box"
+msgstr ""
+
+#: preferences.ui.h:63
 msgid "Backends"
 msgstr ""
 
-#: pylib/backends/openrazer.py:259 pylib/backends/openrazer.py:272
+#: preferences.ui.h:65
+msgid "Configure"
+msgstr ""
+
+#: preferences.ui.h:67 pylib/controller/devices.py:844
+msgid "Restart"
+msgstr ""
+
+#: preferences.ui.h:68
+msgid "View Log"
+msgstr ""
+
+#: procviewer.ui.h:1
+msgid "Background Tasks"
+msgstr ""
+
+#. Informative text in the Process Viewer window
+#: procviewer.ui.h:3
+msgid ""
+"To provide background features (like software effects and triggers), "
+"additional processes may be spawned."
+msgstr ""
+
+#. Column header for Process Viewer window
+#: procviewer.ui.h:5
+msgid "Task"
+msgstr ""
+
+#. #-#-#-#-#  procviewer.ui.pot (PACKAGE VERSION)  #-#-#-#-#
+#. Button to restart all background tasks
+#: procviewer.ui.h:9 pylib/controller/procviewer.py:138
+msgid "Restart All"
+msgstr ""
+
+#: pylib/backends/openrazer.py:263 pylib/backends/openrazer.py:276
+#: pylib/controller/devices.py:955
 msgid "Brightness"
 msgstr ""
 
-#: pylib/backends/openrazer.py:282
+#: pylib/backends/openrazer.py:286
 msgid "None"
 msgstr ""
 
-#: pylib/backends/openrazer.py:283
+#: pylib/backends/openrazer.py:287 pylib/common.py:553
+#: pylib/controller/editor.py:858
 msgid "Spectrum"
 msgstr ""
 
-#: pylib/backends/openrazer.py:284
+#: pylib/backends/openrazer.py:288 pylib/common.py:554
+#: pylib/controller/editor.py:857
 msgid "Wave"
 msgstr ""
 
-#: pylib/backends/openrazer.py:285
+#: pylib/backends/openrazer.py:289 pylib/common.py:556
 msgid "Reactive"
 msgstr ""
 
-#: pylib/backends/openrazer.py:286
+#: pylib/backends/openrazer.py:290 pylib/common.py:555 tests/10_internals.py:45
 msgid "Breath"
 msgstr ""
 
-#: pylib/backends/openrazer.py:287
+#: pylib/backends/openrazer.py:291
 msgid "Ripple"
 msgstr ""
 
-#: pylib/backends/openrazer.py:288
+#: pylib/backends/openrazer.py:292
 msgid "Starlight"
 msgstr ""
 
-#: pylib/backends/openrazer.py:289
+#: pylib/backends/openrazer.py:293
 msgid "Pulsate"
 msgstr ""
 
-#: pylib/backends/openrazer.py:290
+#: pylib/backends/openrazer.py:294
 msgid "Blink"
 msgstr ""
 
-#: pylib/backends/openrazer.py:291
+#: pylib/backends/openrazer.py:295 pylib/common.py:557
+#: pylib/controller/editor.py:854
 msgid "Static"
 msgstr ""
 
-#: pylib/backends/openrazer.py:308 pylib/backends/openrazer.py:974
+#: pylib/backends/openrazer.py:312 pylib/backends/openrazer.py:1172
+#: pylib/controller/preferences.py:188 pylib/controller/troubleshooter.py:129
 msgid "Unknown"
 msgstr ""
 
-#: pylib/backends/openrazer.py:314 pylib/backends/openrazer.py:967
-msgid "Right"
-msgstr ""
-
-#: pylib/backends/openrazer.py:316 pylib/backends/openrazer.py:966
-msgid "Left"
-msgstr ""
-
-#: pylib/backends/openrazer.py:320
+#: pylib/backends/openrazer.py:324
 msgid "Up"
 msgstr ""
 
-#: pylib/backends/openrazer.py:322
+#: pylib/backends/openrazer.py:326
 msgid "Down"
 msgstr ""
 
-#: pylib/backends/openrazer.py:326
+#: pylib/backends/openrazer.py:330
 msgid "Clockwise"
 msgstr ""
 
-#: pylib/backends/openrazer.py:328
+#: pylib/backends/openrazer.py:332
 msgid "Anti-clockwise"
 msgstr ""
 
-#: pylib/backends/openrazer.py:351 pylib/backends/openrazer.py:421
-#: pylib/backends/openrazer.py:457
+#: pylib/backends/openrazer.py:355 pylib/backends/openrazer.py:425
+#: pylib/backends/openrazer.py:461
 msgid "Random"
 msgstr ""
 
-#: pylib/backends/openrazer.py:360 pylib/backends/openrazer.py:422
-#: pylib/backends/openrazer.py:458
+#: pylib/backends/openrazer.py:364 pylib/backends/openrazer.py:426
+#: pylib/backends/openrazer.py:462
 msgid "Single"
 msgstr ""
 
-#: pylib/backends/openrazer.py:370 pylib/backends/openrazer.py:463
+#: pylib/backends/openrazer.py:374 pylib/backends/openrazer.py:467
 msgid "Fast"
 msgstr ""
 
-#: pylib/backends/openrazer.py:377 pylib/backends/openrazer.py:464
+#: pylib/backends/openrazer.py:381 pylib/backends/openrazer.py:468
 msgid "Medium"
 msgstr ""
 
-#: pylib/backends/openrazer.py:384 pylib/backends/openrazer.py:465
+#: pylib/backends/openrazer.py:388 pylib/backends/openrazer.py:469
 msgid "Slow"
 msgstr ""
 
-#: pylib/backends/openrazer.py:391
+#: pylib/backends/openrazer.py:395
 msgid "Very Slow"
 msgstr ""
 
-#: pylib/backends/openrazer.py:423 pylib/backends/openrazer.py:459
+#: pylib/backends/openrazer.py:427 pylib/backends/openrazer.py:463
 msgid "Dual"
 msgstr ""
 
-#: pylib/backends/openrazer.py:424
+#: pylib/backends/openrazer.py:428
 msgid "Triple"
 msgstr ""
 
-#: pylib/backends/openrazer.py:499
+#: pylib/backends/openrazer.py:504
 msgid "Game Mode"
 msgstr ""
 
-#: pylib/backends/openrazer.py:533
-msgid "Poll Rate"
-msgstr ""
-
-#: pylib/backends/openrazer.py:575 pylib/backends/openrazer.py:584
-msgid "(Multiple)"
-msgstr ""
-
-#: pylib/backends/openrazer.py:589
-msgid "On"
-msgstr ""
-
-#: pylib/backends/openrazer.py:594
-msgid "Off"
-msgstr ""
-
-#: pylib/backends/openrazer.py:606
-msgid "Game Mode Enabled"
-msgstr ""
-
-#: pylib/backends/openrazer.py:963
-msgid "Logo"
-msgstr ""
-
-#: pylib/backends/openrazer.py:964
-msgid "Scroll Wheel"
-msgstr ""
-
-#: pylib/backends/openrazer.py:965
-msgid "Backlight"
-msgstr ""
-
-#: pylib/backends/openrazer.py:977
-msgid "Hex Ring"
-msgstr ""
-
-#: pylib/backends/openrazer.py:981
-msgid "Laptop Lid"
-msgstr ""
-
-#: pylib/common.py:153
-msgid "USB Accessory"
-msgstr ""
-
-#: pylib/common.py:154
-msgid "Keyboard"
-msgstr ""
-
-#: pylib/common.py:155
-msgid "Mouse"
-msgstr ""
-
-#: pylib/common.py:156
-msgid "Mousemat"
-msgstr ""
-
-#: pylib/common.py:157
-msgid "Keypad"
-msgstr ""
-
-#: pylib/common.py:158
-msgid "Headset"
-msgstr ""
-
-#: pylib/common.py:159
-msgid "External Graphics Enclosure"
-msgstr ""
-
-#: pylib/common.py:160
-msgid "Unrecognised"
-msgstr ""
-
-#: pylib/common.py:180
-msgid "Green"
-msgstr ""
-
-#: pylib/controller/devices.py:142
-msgid ""
-"An error occurred while reading this device. This could be either be a bug "
-"in Polychromatic or the [] backend."
-msgstr ""
-
-#: pylib/controller/devices.py:143
-msgid ""
-"Try switching to this device again. If this keeps happening, raise an issue "
-"on the relevant project's repository."
-msgstr ""
-
-#: pylib/controller/devices.py:145 pylib/controller/devices.py:550
-msgid "Backend Error"
-msgstr ""
-
-#: pylib/controller/devices.py:172
-msgid "Device Info"
-msgstr ""
-
-#: pylib/controller/devices.py:298
-msgid "Enabled"
-msgstr ""
-
-#: pylib/controller/devices.py:448
-msgid "Effect Mode"
-msgstr ""
-
-#: pylib/controller/devices.py:458
-msgid "Primary Colour"
-msgstr ""
-
-#: pylib/controller/devices.py:459
-msgid "Secondary Colour"
-msgstr ""
-
-#: pylib/controller/devices.py:460
-msgid "Tertiary Colour"
-msgstr ""
-
-#: pylib/controller/devices.py:465
-msgid "Colour []"
-msgstr ""
-
-#: pylib/controller/devices.py:475
-msgid "Change []"
-msgstr ""
-
-#: pylib/controller/devices.py:510 pylib/controller/devices.py:893
-#: pylib/controller/devices.py:902
+#: pylib/backends/openrazer.py:528 pylib/controller/devices.py:1060
+#: pylib/controller/devices.py:1379
 msgid "DPI"
 msgstr ""
 
-#: pylib/controller/devices.py:536
-msgid "Controller Error"
+#: pylib/backends/openrazer.py:540
+msgid "DPI Buttons"
 msgstr ""
 
-#: pylib/controller/devices.py:537
+#: pylib/backends/openrazer.py:542
+msgid "Sync DPI to Hardware"
+msgstr ""
+
+#: pylib/backends/openrazer.py:577
+msgid "Poll Rate"
+msgstr ""
+
+#: pylib/backends/openrazer.py:595
+msgid "Sleep mode after"
+msgstr ""
+
+#: pylib/backends/openrazer.py:602
+msgid "minute(s)"
+msgstr ""
+
+#: pylib/backends/openrazer.py:615
+msgid "Low Power Mode"
+msgstr ""
+
+#: pylib/backends/openrazer.py:633
+msgid "Macros"
+msgstr ""
+
+#: pylib/backends/openrazer.py:635
+msgid "About Macro Recording"
+msgstr ""
+
+#: pylib/backends/openrazer.py:636
 msgid ""
-"The request is invalid or unsupported at this time. This could be due to a "
-"programming error in the application."
+"The OpenRazer daemon provides a simple on-the-fly macro recording feature. "
+"To use:\n"
+"\n"
+"1. Press FN+[M] to enter macro mode.\n"
+"2. Press the macro key to assign to. Only M1-M5 are supported.\n"
+"3. Press the keys in sequence to record.\n"
+"4. Press FN+[M] to exit macro mode.\n"
+"\n"
+"Macros are retained in memory until the daemon is stopped. The replay speed "
+"will be instantaneous.\n"
+"\n"
+"This is not a Polychromatic feature and could disappear in future. This "
+"application intends to integrate a key rebinding feature in a future version."
 msgstr ""
 
-#: pylib/controller/devices.py:538
-msgid "If this happens again, please create a bug via Help → Report a Bug."
+#: pylib/backends/openrazer.py:651
+msgid "Key Mapping"
 msgstr ""
 
-#: pylib/controller/devices.py:542
+#: pylib/backends/openrazer.py:653
+msgid "About Key Mapping"
+msgstr ""
+
+#: pylib/backends/openrazer.py:654
+msgid ""
+"Currently, OpenRazer and Polychromatic do not support a convenient key "
+"rebinding feature. Polychromatic intends to integrate a key mapping solution "
+"in a future version.\n"
+"\n"
+"In the meantime, there are third party projects which provide key remapping "
+"agnostic to any input device.\n"
+"\n"
+"For more information, visit:\n"
+"https://polychromatic.app/permalink/keymapping/"
+msgstr ""
+
+#: pylib/backends/openrazer.py:696 pylib/backends/openrazer.py:705
+msgid "(Multiple)"
+msgstr ""
+
+#: pylib/backends/openrazer.py:710
+msgid "On"
+msgstr ""
+
+#: pylib/backends/openrazer.py:715
+msgid "Off"
+msgstr ""
+
+#: pylib/backends/openrazer.py:727
+msgid "Game Mode Enabled"
+msgstr ""
+
+#: pylib/backends/openrazer.py:999
+msgid ""
+"Please set up the DPI stages in Polychromatic's preferences (under "
+"Customise)."
+msgstr ""
+
+#: pylib/backends/openrazer.py:1158
+msgid "Logo"
+msgstr ""
+
+#: pylib/backends/openrazer.py:1159
+msgid "Scroll Wheel"
+msgstr ""
+
+#: pylib/backends/openrazer.py:1160
+msgid "Backlight"
+msgstr ""
+
+#: pylib/backends/openrazer.py:1163
+msgid "While Charging"
+msgstr ""
+
+#: pylib/backends/openrazer.py:1164
+msgid "While Fast Charging"
+msgstr ""
+
+#: pylib/backends/openrazer.py:1165
+msgid "When Fully Charged"
+msgstr ""
+
+#: pylib/backends/openrazer.py:1175
+msgid "Hex Ring"
+msgstr ""
+
+#: pylib/backends/openrazer.py:1179
+msgid "Laptop Lid"
+msgstr ""
+
+#: pylib/common.py:184
+msgid "USB Accessory"
+msgstr ""
+
+#: pylib/common.py:185
+msgid "Display"
+msgstr ""
+
+#: pylib/common.py:186
+msgid "Fan"
+msgstr ""
+
+#: pylib/common.py:187
+msgid "Graphics Card"
+msgstr ""
+
+#: pylib/common.py:188
+msgid "Headset"
+msgstr ""
+
+#: pylib/common.py:189
+msgid "Keyboard"
+msgstr ""
+
+#: pylib/common.py:190
+msgid "Keypad"
+msgstr ""
+
+#: pylib/common.py:191
+msgid "Mousemat"
+msgstr ""
+
+#: pylib/common.py:192
+msgid "Mouse"
+msgstr ""
+
+#: pylib/common.py:193
+msgid "Memory"
+msgstr ""
+
+#: pylib/common.py:194
+msgid "Speaker"
+msgstr ""
+
+#: pylib/common.py:195
+msgid "Stand"
+msgstr ""
+
+#: pylib/common.py:196
+msgid "Unrecognised"
+msgstr ""
+
+#: pylib/common.py:216 pylib/preferences.py:428
+msgid "Green"
+msgstr ""
+
+#: pylib/controller/devices.py:162
+msgid ""
+"An error occurred while reading this device. This could be a bug in either "
+"Polychromatic or []."
+msgstr ""
+
+#: pylib/controller/devices.py:163
+msgid ""
+"Try selecting this device again, or restart the backend and application. If "
+"this keeps happening, take note of the details below and report as a bug on "
+"the relevant project's issue tracker."
+msgstr ""
+
+#: pylib/controller/devices.py:165 pylib/controller/devices.py:602
+#: pylib/controller/devices.py:616 pylib/controller/editor.py:636
+#: pylib/controller/editor.py:670 pylib/controller/editor.py:1091
+msgid "Backend Error"
+msgstr ""
+
+#: pylib/controller/devices.py:196
+msgid "Preset:"
+msgstr ""
+
+#: pylib/controller/devices.py:208
+msgid "Playing:"
+msgstr ""
+
+#: pylib/controller/devices.py:220
+msgid "Device Info"
+msgstr ""
+
+#: pylib/controller/devices.py:365
+msgid "Enabled"
+msgstr ""
+
+#: pylib/controller/devices.py:548
+msgid "Effect Mode"
+msgstr ""
+
+#: pylib/controller/devices.py:558
+msgid "Primary Colour"
+msgstr ""
+
+#: pylib/controller/devices.py:559
+msgid "Secondary Colour"
+msgstr ""
+
+#: pylib/controller/devices.py:560
+msgid "Tertiary Colour"
+msgstr ""
+
+#: pylib/controller/devices.py:565
+msgid "Colour []"
+msgstr ""
+
+#: pylib/controller/devices.py:575
+msgid "Change []"
+msgstr ""
+
+#: pylib/controller/devices.py:603
+msgid ""
+"[] deemed this request to be invalid or unsupported. This could be caused by "
+"an implementation issue with Polychromatic's backend module for []."
+msgstr ""
+
+#: pylib/controller/devices.py:604
+msgid ""
+"If this message appears again, try restarting the backend/application, "
+"otherwise please report this as a bug."
+msgstr ""
+
+#: pylib/controller/devices.py:608
 msgid "Device Unavailable"
 msgstr ""
 
-#: pylib/controller/devices.py:543
+#: pylib/controller/devices.py:609
 msgid ""
 "The request could not be completed due to devices being removed/inserted."
 msgstr ""
 
-#: pylib/controller/devices.py:544
+#: pylib/controller/devices.py:610
 msgid "Please refresh and try again."
 msgstr ""
 
-#: pylib/controller/devices.py:551
-msgid "The request could not be completed due to an error."
+#: pylib/controller/devices.py:617
+msgid ""
+"[] encountered an error processing this request. Try restarting the backend/"
+"application. If this message keeps appearing, please report this as a bug on "
+"[]'s issue tracker."
 msgstr ""
 
-#: pylib/controller/devices.py:576
+#: pylib/controller/devices.py:743
 msgid "No devices connected"
 msgstr ""
 
-#: pylib/controller/devices.py:577
+#: pylib/controller/devices.py:744
 msgid "No backends loaded"
 msgstr ""
 
-#: pylib/controller/devices.py:578
+#: pylib/controller/devices.py:745
 msgid "No backends installed"
 msgstr ""
 
-#: pylib/controller/devices.py:582
+#: pylib/controller/devices.py:749
 msgid ""
 "Plug in a compatible device to control its lighting effects and features"
 msgstr ""
 
-#: pylib/controller/devices.py:583
+#: pylib/controller/devices.py:750
 msgid "Consult the logs and troubleshooter for hints on fixing this problem"
 msgstr ""
 
-#: pylib/controller/devices.py:584
+#: pylib/controller/devices.py:751
 msgid "Install a compatible backend to configure lighting effects"
 msgstr ""
 
-#: pylib/controller/devices.py:613
+#: pylib/controller/devices.py:780
 msgid "Show Error Details"
 msgstr ""
 
-#: pylib/controller/devices.py:649
+#: pylib/controller/devices.py:816
 msgid "Backend Error: []"
 msgstr ""
 
-#: pylib/controller/devices.py:650
+#: pylib/controller/devices.py:817
+msgid ""
+"An error occurred trying to load []. The error below may provide a clue to "
+"what happened."
+msgstr ""
+
+#: pylib/controller/devices.py:818
 msgid "The last line of the exception was:"
 msgstr ""
 
-#: pylib/controller/devices.py:668
+#: pylib/controller/devices.py:838
 msgid "Unrecognised Device"
 msgstr ""
 
-#: pylib/controller/devices.py:669
-msgid "The [name] backend hasn't registered this device."
+#: pylib/controller/devices.py:839
+msgid "[] hasn't registered this device."
 msgstr ""
 
-#: pylib/controller/devices.py:670
+#: pylib/controller/devices.py:840
 msgid ""
-"This could indicate an error initializing the backend or an installation "
+"This could indicate an error initialising the backend or an installation "
 "problem."
 msgstr ""
 
-#: pylib/controller/devices.py:671
+#: pylib/controller/devices.py:841
 msgid ""
 "Alternately, this may happen if this hardware is not yet supported under "
-"this version of [name]."
+"this version of []."
 msgstr ""
 
-#: pylib/controller/devices.py:674
-msgid "Restart"
-msgstr ""
-
-#: pylib/controller/devices.py:703
+#: pylib/controller/devices.py:873
 msgid "Error Details"
 msgstr ""
 
-#: pylib/controller/devices.py:705
+#: pylib/controller/devices.py:875
 msgid "There was a problem opening this device"
 msgstr ""
 
-#: pylib/controller/devices.py:708
+#: pylib/controller/devices.py:878
 msgid "View Details"
 msgstr ""
 
-#: pylib/controller/devices.py:852
+#: pylib/controller/devices.py:1020
 msgid "Yes"
 msgstr ""
 
-#: pylib/controller/devices.py:855
+#: pylib/controller/devices.py:1023
 msgid "No"
 msgstr ""
 
-#: pylib/controller/devices.py:858
-msgid "(Unavailable or not applicable)"
-msgstr ""
-
-#: pylib/controller/devices.py:866
+#: pylib/controller/devices.py:1033
 msgid "Backend"
 msgstr ""
 
-#: pylib/controller/devices.py:867
-msgid "Internal Backend ID"
+#: pylib/controller/devices.py:1034
+msgid "Internal Device ID"
 msgstr ""
 
-#: pylib/controller/devices.py:868
+#: pylib/controller/devices.py:1039
 msgid "Form Factor"
 msgstr ""
 
-#: pylib/controller/devices.py:869
+#: pylib/controller/devices.py:1040
 msgid "Serial"
 msgstr ""
 
-#: pylib/controller/devices.py:870
+#: pylib/controller/devices.py:1041
 msgid "Image"
 msgstr ""
 
-#: pylib/controller/devices.py:871
-msgid "Monochromatic"
-msgstr ""
-
-#: pylib/controller/devices.py:876
+#: pylib/controller/devices.py:1043
 msgid "Firmware Version"
 msgstr ""
 
-#: pylib/controller/devices.py:877
+#: pylib/controller/devices.py:1045
 msgid "Keyboard Layout"
 msgstr ""
 
-#: pylib/controller/devices.py:878
-msgid "Matrix Supported"
+#: pylib/controller/devices.py:1049
+msgid "Custom Effects"
 msgstr ""
 
-#: pylib/controller/devices.py:881
+#: pylib/controller/devices.py:1050
+msgid "Supported"
+msgstr ""
+
+#: pylib/controller/devices.py:1052 pylib/controller/effects.py:599
+msgid "1 row"
+msgstr ""
+
+#: pylib/controller/devices.py:1052 pylib/controller/effects.py:599
+msgid "2 rows"
+msgstr ""
+
+#: pylib/controller/devices.py:1053 pylib/controller/effects.py:600
+msgid "1 column"
+msgstr ""
+
+#: pylib/controller/devices.py:1053 pylib/controller/effects.py:600
+msgid "2 columns"
+msgstr ""
+
+#: pylib/controller/devices.py:1054
 msgid "Matrix Dimensions"
 msgstr ""
 
-#: pylib/controller/devices.py:881
-msgid "[1] row(s), [2] column(s)"
+#: pylib/controller/devices.py:1064
+msgid "Default Stages"
 msgstr ""
 
-#: pylib/controller/devices.py:886
-msgid "Current Status"
+#: pylib/controller/devices.py:1069 pylib/controller/devices.py:1071
+msgid "User DPI Stages"
 msgstr ""
 
-#: pylib/controller/devices.py:896
-msgid "Supports 2 Dimensions"
+#: pylib/controller/devices.py:1071
+msgid "(Not used)"
 msgstr ""
 
-#: pylib/controller/devices.py:897
-msgid "Default Ranges"
-msgstr ""
-
-#: pylib/controller/devices.py:898 pylib/controller/devices.py:943
+#: pylib/controller/devices.py:1072 pylib/controller/devices.py:1123
 msgid "Minimum"
 msgstr ""
 
-#: pylib/controller/devices.py:899 pylib/controller/devices.py:944
+#: pylib/controller/devices.py:1073 pylib/controller/devices.py:1124
 msgid "Maximum"
 msgstr ""
 
-#: pylib/controller/devices.py:905
+#: pylib/controller/devices.py:1083
 msgid "Zones"
 msgstr ""
 
-#: pylib/controller/devices.py:915 pylib/controller/devices.py:923
+#: pylib/controller/devices.py:1094 pylib/controller/devices.py:1103
 msgid "Internal ID"
 msgstr ""
 
-#: pylib/controller/devices.py:916
+#: pylib/controller/devices.py:1095
 msgid "Type"
 msgstr ""
 
-#: pylib/controller/devices.py:920
+#: pylib/controller/devices.py:1100
 msgid "Parameters"
 msgstr ""
 
-#: pylib/controller/devices.py:924
+#: pylib/controller/devices.py:1104
 msgid "Internal Data"
 msgstr ""
 
-#: pylib/controller/devices.py:925 pylib/controller/devices.py:936
+#: pylib/controller/devices.py:1105 pylib/controller/devices.py:1116
+#: pylib/controller/preferences.py:193
 msgid "Active"
 msgstr ""
 
-#: pylib/controller/devices.py:928 pylib/controller/devices.py:953
+#: pylib/controller/devices.py:1108 pylib/controller/devices.py:1133
 msgid "Colour Input []"
 msgstr ""
 
-#: pylib/controller/devices.py:942
+#: pylib/controller/devices.py:1122
 msgid "Current Value"
 msgstr ""
 
-#: pylib/controller/devices.py:945
+#: pylib/controller/devices.py:1125
 msgid "Interval"
 msgstr ""
 
-#: pylib/controller/devices.py:1026
+#: pylib/controller/devices.py:1209
 msgid "Coordinate: X,Y"
 msgstr ""
 
-#: pylib/controller/devices.py:1028
+#: pylib/controller/devices.py:1211
 msgid "Coordinate: (Multiple)"
 msgstr ""
 
-#: pylib/controller/editor.py:326
+#: pylib/controller/devices.py:1370
+msgid "Edit DPI Stages"
+msgstr ""
+
+#: pylib/controller/devices.py:1429
+msgid "Mouse Acceleration"
+msgstr ""
+
+#: pylib/controller/devices.py:1430
+msgid ""
+"This feature is provided by your operating system. Polychromatic doesn't "
+"recognise this desktop environment to automatically open the settings window "
+"for you.\n"
+"\n"
+"Look for 'mouse', 'input' or 'hardware' in your System Settings."
+msgstr ""
+
+#: pylib/controller/devices.py:1439
+msgid "Open Mouse Settings"
+msgstr ""
+
+#: pylib/controller/devices.py:1446
+msgid "Acceleration"
+msgstr ""
+
+#: pylib/controller/editor.py:578
 msgid "Columns: []"
 msgstr ""
 
-#: pylib/controller/editor.py:327
+#: pylib/controller/editor.py:579
 msgid "Rows: []"
 msgstr ""
 
-#: pylib/controller/editor.py:371
+#: pylib/controller/editor.py:582
+msgid "(Not Set)"
+msgstr ""
+
+#: pylib/controller/editor.py:637
+msgid ""
+"Live preview isn't possible yet as the backends haven't finished "
+"initialising."
+msgstr ""
+
+#: pylib/controller/editor.py:638
+msgid ""
+"They might be ready now, try again. Or, choose Ignore to continue without a "
+"live preview on physical hardware."
+msgstr ""
+
+#: pylib/controller/editor.py:649
 msgid "Missing Device"
 msgstr ""
 
-#: pylib/controller/editor.py:372
+#: pylib/controller/editor.py:650
 msgid ""
-"The device '[]' is assigned to this effect, but was not detected on this "
-"system."
+"This effect is designed for a device named '[]', but it wasn't detected."
 msgstr ""
 
-#: pylib/controller/editor.py:373 pylib/controller/editor.py:384
-#: pylib/controller/editor.py:394 pylib/controller/editor.py:619
+#: pylib/controller/editor.py:651 pylib/controller/editor.py:662
+#: pylib/controller/editor.py:672 pylib/controller/editor.py:1093
 msgid "Live preview has been disabled for this session."
 msgstr ""
 
-#: pylib/controller/editor.py:382
+#: pylib/controller/editor.py:660 pylib/controller/shared.py:1529
+#: pylib/controller/shared.py:1538
 msgid "File Error"
 msgstr ""
 
-#: pylib/controller/editor.py:383
+#: pylib/controller/editor.py:661
 msgid ""
 "The device '[]' is assigned to this effect, but does not support individual "
 "addressable LEDs."
 msgstr ""
 
-#: pylib/controller/editor.py:393
-msgid "An error occurred while initalizing '[]' for live preview."
+#: pylib/controller/editor.py:671
+msgid "An error occurred while initialising '[]' for live preview."
 msgstr ""
 
-#: pylib/controller/editor.py:418
+#: pylib/controller/editor.py:807
 msgid "Unsaved Changes"
 msgstr ""
 
-#: pylib/controller/editor.py:419
+#: pylib/controller/editor.py:808
 msgid "This effect was modified. Would you like to save these changes?"
 msgstr ""
 
-#: pylib/controller/editor.py:453
+#: pylib/controller/editor.py:855
 msgid "Gradient"
 msgstr ""
 
-#: pylib/controller/editor.py:454
+#: pylib/controller/editor.py:856
 msgid "Pulsing"
 msgstr ""
 
-#: pylib/controller/editor.py:457
+#: pylib/controller/editor.py:859
 msgid "Cycling"
 msgstr ""
 
-#: pylib/controller/editor.py:458
+#: pylib/controller/editor.py:860
 msgid "Run Scripted Effect"
 msgstr ""
 
-#: pylib/controller/editor.py:486
+#: pylib/controller/editor.py:888 pylib/controller/preferences.py:267
 msgid "Save Error"
 msgstr ""
 
-#: pylib/controller/editor.py:487
+#: pylib/controller/editor.py:889 pylib/controller/preferences.py:268
 msgid "Save failed. Please check the permissions and try again."
 msgstr ""
 
-#: pylib/controller/editor.py:492
+#: pylib/controller/editor.py:894
 msgid "Saved to: []"
 msgstr ""
 
-#: pylib/controller/editor.py:517
+#: pylib/controller/editor.py:919
 msgid "Reload the effect from disk? Any unsaved data will be lost!"
 msgstr ""
 
-#: pylib/controller/editor.py:618
+#: pylib/controller/editor.py:1092
 msgid "An error occurred while sending the frame to the hardware."
 msgstr ""
 
-#: pylib/controller/editor.py:717
-msgid "There is no graphic assigned to this device: []"
-msgstr ""
-
-#: pylib/controller/editor.py:718
-msgid ""
-"Specify a graphic by editing the metadata, and then this option will be "
-"available."
-msgstr ""
-
-#: pylib/controller/editor.py:723 pylib/controller/editor.py:732
+#: pylib/controller/editor.py:1190
 msgid "Temporarily changed the graphic. To make permanent, edit the metadata."
 msgstr ""
 
-#: pylib/controller/editor.py:878
-msgid "Custom..."
+#: pylib/controller/editor.py:1197 pylib/controller/editor.py:1209
+msgid "Loading..."
 msgstr ""
 
-#: pylib/controller/editor.py:979
+#: pylib/controller/editor.py:1223
+msgid ""
+"Temporarily changed the graphic. To make permanent, edit the application's "
+"preferences."
+msgstr ""
+
+#: pylib/controller/editor.py:1347
+msgid "Frame [1] of [10]"
+msgstr ""
+
+#: pylib/controller/editor.py:1529
+msgid "Permanently delete this frame? There is no undo."
+msgstr ""
+
+#: pylib/controller/editor.py:1530
+msgid ""
+"Tip: This confirmation can be suppressed via the Editor tab under "
+"Preferences."
+msgstr ""
+
+#: pylib/controller/editor.py:1614
+msgid "Choose Brush Colour"
+msgstr ""
+
+#: pylib/controller/editor.py:1645
+msgid "Out of Bounds"
+msgstr ""
+
+#: pylib/controller/editor.py:1646
+msgid ""
+"There isn't a position for (X,Y) for this device. The graphic contains "
+"incorrect metadata or is incompatible for use with this device."
+msgstr ""
+
+#: pylib/controller/editor.py:1668
 msgid "This LED is empty - nothing to erase here!"
 msgstr ""
 
-#: pylib/controller/editor.py:1000
+#: pylib/controller/editor.py:1689
 msgid "This LED is empty - no colour to pick here!"
 msgstr ""
 
-#: pylib/controller/editor.py:1059
+#: pylib/controller/editor.py:1837
+msgid "Controller Error"
+msgstr ""
+
+#: pylib/controller/editor.py:1838
 msgid ""
 "Failed to load the Qt Web Engine. Unfortunately, editing won't be possible."
 msgstr ""
 
-#: pylib/controller/editor.py:1060
+#: pylib/controller/editor.py:1839
 msgid ""
 "Make sure the application (and its dependencies) are installed and "
 "configured correctly."
 msgstr ""
 
-#: pylib/controller/editor.py:1092
+#: pylib/controller/editor.py:1873
 msgid "Missing File"
 msgstr ""
 
-#: pylib/controller/editor.py:1093
-msgid ""
-"This effect was mapped with a graphic named '[]' which wasn't found on this "
-"system."
+#: pylib/controller/editor.py:1874
+msgid "This effect is mapped to a graphic named '[]', but it's not installed."
 msgstr ""
 
-#: pylib/controller/editor.py:1094
+#: pylib/controller/editor.py:1875
 msgid ""
 "The grid will be used instead. A different graphic can be chosen by editing "
 "the metadata."
 msgstr ""
 
-#: pylib/controller/effects.py:45 pylib/controller/effects.py:88
-msgid "Import Effect"
-msgstr ""
-
-#: pylib/controller/effects.py:65
+#: pylib/controller/effects.py:62
 msgid "It's empty here!"
 msgstr ""
 
-#: pylib/controller/effects.py:66
-msgid "This one doesn't work!"
+#: pylib/controller/effects.py:63
+msgid "Error loading effect"
 msgstr ""
 
-#: pylib/controller/effects.py:70
-msgid "Try creating your own effect or import an image or video."
+#: pylib/controller/effects.py:67
+msgid "Your own software effects appear here. Try creating one!"
 msgstr ""
 
-#: pylib/controller/effects.py:71
+#: pylib/controller/effects.py:68
+msgid "There's invalid data in this file. The file might be corrupt."
+msgstr ""
+
+#: pylib/controller/effects.py:108
 msgid ""
-"This effect couldn't be loaded due to an error. The file might be corrupt."
+"No devices found. New effects require a compatible device to be present."
 msgstr ""
 
-#: pylib/controller/effects.py:213
-msgid "Play"
+#: pylib/controller/effects.py:109
+msgid "Make sure the device is connected and the backend is working."
 msgstr ""
 
-#: pylib/controller/effects.py:220
-msgid "Edit"
+#: pylib/controller/effects.py:229
+msgid "Backend Not Ready"
 msgstr ""
 
-#: pylib/controller/effects.py:264
+#: pylib/controller/effects.py:230
+msgid ""
+"The application is still waiting for the backends to finish initialising so "
+"you can pick a device to map your new effect."
+msgstr ""
+
+#: pylib/controller/effects.py:231
+msgid "This might be ready in a few moments."
+msgstr ""
+
+#: pylib/controller/effects.py:339 pylib/controller/effects.py:374
 msgid "File In Use"
 msgstr ""
 
-#: pylib/controller/effects.py:265
+#: pylib/controller/effects.py:340
+msgid ""
+"This file is being edited in another window. Please switch to that window to "
+"make changes."
+msgstr ""
+
+#: pylib/controller/effects.py:358
+msgid "Other Actions"
+msgstr ""
+
+#: pylib/controller/effects.py:375
 msgid ""
 "This file is being edited in another window. Please close that editor first."
 msgstr ""
 
-#: pylib/controller/effects.py:329
+#: pylib/controller/effects.py:457
 msgid "Choose Effect Icon"
 msgstr ""
 
-#: pylib/controller/effects.py:373
+#: pylib/controller/effects.py:567
 msgid ""
-"This effect was created for \"[]\" which isn't present. Choose another "
-"device to map."
+"No compatible devices found. Only individually addressable LED capable "
+"hardware can be used for effects."
 msgstr ""
 
-#: pylib/controller/menubar.py:109
+#: pylib/controller/menubar.py:162
 msgid "The menu bar is now hidden. To temporarily reveal, press Alt."
 msgstr ""
 
-#: pylib/controller/menubar.py:130
-msgid "Running troubleshooter..."
+#: pylib/controller/menubar.py:190
+msgid "Please close all editor windows before executing this action."
 msgstr ""
 
-#: pylib/controller/menubar.py:134
-msgid "Troubleshooting..."
-msgstr ""
-
-#: pylib/controller/menubar.py:146 pylib/controller/menubar.py:151
-msgid "Troubleshooting Failed"
-msgstr ""
-
-#: pylib/controller/menubar.py:147
+#: pylib/controller/menubar.py:213
 msgid ""
-"The troubleshooter for this backend is not available for this operating "
-"system."
+"Polychromatic is about to open a web page for this resource. Unfortunately, "
+"it is only available in English at this time."
 msgstr ""
 
-#: pylib/controller/menubar.py:152
-msgid ""
-"The troubleshooter was not expecting that! The process failed as an "
-"exception was thrown."
+#: pylib/controller/menubar.py:242
+msgid "Report Bug"
 msgstr ""
 
-#: pylib/controller/menubar.py:168
-msgid "Passed"
-msgstr ""
-
-#: pylib/controller/menubar.py:168
-msgid "Failed"
-msgstr ""
-
-#: pylib/controller/menubar.py:191
-msgid "Troubleshooter for []"
-msgstr ""
-
-#: pylib/controller/menubar.py:193
-msgid "Everything appears to be in working order!"
-msgstr ""
-
-#: pylib/controller/menubar.py:305
+#: pylib/controller/menubar.py:323
 msgid "About []"
 msgstr ""
 
-#: pylib/controller/menubar.py:319
+#: pylib/controller/menubar.py:337
 msgid "Documentation"
 msgstr ""
 
-#: pylib/controller/menubar.py:320 pylib/controller/menubar.py:449
+#: pylib/controller/menubar.py:338 pylib/controller/menubar.py:468
 msgid "Source Code"
 msgstr ""
 
-#: pylib/controller/menubar.py:321 pylib/controller/menubar.py:450
+#: pylib/controller/menubar.py:339 pylib/controller/menubar.py:469
 msgid "Release Notes"
 msgstr ""
 
-#: pylib/controller/menubar.py:390
+#: pylib/controller/menubar.py:408
 msgid "Restarting the backend/application..."
 msgstr ""
 
-#: pylib/controller/menubar.py:400
+#: pylib/controller/menubar.py:419
 msgid "Restart Backend?"
 msgstr ""
 
-#: pylib/controller/menubar.py:401
+#: pylib/controller/menubar.py:420
 msgid ""
 "Restarting this backend will also restart Polychromatic. Any unsaved data "
 "will be lost. Continue?"
 msgstr ""
 
-#: pylib/controller/preferences.py:96
+#: pylib/controller/preferences.py:116
 msgid "Choose Tray Applet Icon"
 msgstr ""
 
-#: pylib/controller/preferences.py:128
-msgid "Not in use"
+#: pylib/controller/preferences.py:198
+msgid "Not Installed"
 msgstr ""
 
-#: pylib/controller/preferences.py:133
-msgid "Currently in use."
+#: pylib/controller/preferences.py:202
+msgid "Error loading the module"
 msgstr ""
 
-#: pylib/controller/preferences.py:138
-msgid "Not installed."
-msgstr ""
-
-#: pylib/controller/preferences.py:142
-msgid "Error loading the module."
-msgstr ""
-
-#: pylib/controller/preferences.py:259
+#: pylib/controller/preferences.py:292
 msgid "Restart Required"
 msgstr ""
 
-#: pylib/controller/preferences.py:260
+#: pylib/controller/preferences.py:293
 msgid ""
 "To apply these changes, the application must be restarted. Any unsaved "
 "changes will be lost."
 msgstr ""
 
-#: pylib/controller/preferences.py:294
+#: pylib/controller/preferences.py:383
 msgid "All colours in the list will be reset. Continue?"
 msgstr ""
 
-#: pylib/controller/shared.py:918
+#: pylib/controller/procviewer.py:104
+msgid "Restarting..."
+msgstr ""
+
+#: pylib/controller/procviewer.py:164
+msgid "Playing software effect"
+msgstr ""
+
+#: pylib/controller/procviewer.py:170
+msgid "No longer running"
+msgstr ""
+
+#: pylib/controller/shared.py:1049
 msgid "Image Files"
 msgstr ""
 
-#: pylib/controller/shared.py:919
+#: pylib/controller/shared.py:1050
 msgid "PNG Image"
 msgstr ""
 
-#: pylib/controller/shared.py:920
+#: pylib/controller/shared.py:1051
 msgid "JPEG Image"
 msgstr ""
 
-#: pylib/controller/shared.py:921
+#: pylib/controller/shared.py:1052
 msgid "GIF Image"
 msgstr ""
 
-#: pylib/controller/shared.py:922
+#: pylib/controller/shared.py:1053
 msgid "SVG Image"
 msgstr ""
 
-#: pylib/controller/shared.py:923
+#: pylib/controller/shared.py:1054
 msgid "All Files"
 msgstr ""
 
-#: pylib/controller/shared.py:1031
+#: pylib/controller/shared.py:1159
 msgid "When Steam is installed, icons from your games will appear here."
 msgstr ""
 
-#: pylib/controller/shared.py:1033
+#: pylib/controller/shared.py:1161
 msgid "Drag and drop icons here, or add them by pressing the Import button."
 msgstr ""
 
-#: pylib/controller/shared.py:1035
+#: pylib/controller/shared.py:1163
 msgid "No icons found!"
 msgstr ""
 
-#: pylib/controller/shared.py:1172
+#: pylib/controller/shared.py:1290
 msgid "Import Custom Icon"
 msgstr ""
 
-#: pylib/controller/shared.py:1397
-msgid "The data is invalid."
+#: pylib/controller/shared.py:1518
+msgid "The file contains invalid data."
 msgstr ""
 
-#: pylib/controller/shared.py:1398
+#: pylib/controller/shared.py:1519
 msgid "The file no longer exists. Please refresh the page."
 msgstr ""
 
-#: pylib/controller/shared.py:1399
+#: pylib/controller/shared.py:1520
 msgid "This file was saved in a newer version of this program."
 msgstr ""
 
-#: pylib/controller/shared.py:1405
+#: pylib/controller/shared.py:1526
 msgid "Unspecified error: []"
 msgstr ""
 
-#: pylib/controller/shared.py:1409
+#: pylib/controller/shared.py:1530
 msgid "This file cannot be opened:"
 msgstr ""
 
-#: pylib/controller/shared.py:1418
+#: pylib/controller/shared.py:1539
 msgid ""
 "The operation could not be completed due to an error processing this file."
 msgstr ""
 
-#: pylib/controller/shared.py:1419
+#: pylib/controller/shared.py:1540
 msgid "Please make sure the file permissions are recursively correct:"
 msgstr ""
 
-#: pylib/controller/shared.py:1473
-msgid "Delete Effect?"
-msgstr ""
-
-#: pylib/controller/shared.py:1474
-msgid "Delete Preset?"
-msgstr ""
-
-#: pylib/controller/shared.py:1478
+#: pylib/controller/shared.py:1594
 msgid ""
-"Delete '[]' effect? This cannot be undone.\n"
+"Permanently delete this effect?\n"
+"'[]'\n"
 "\n"
-"Presets that use this effect will be unlinked."
+"Presets and triggers that use this effect will be unlinked."
 msgstr ""
 
-#: pylib/controller/shared.py:1479
+#: pylib/controller/shared.py:1595
 msgid ""
-"Delete '[]' preset? This cannot be undone.\n"
+"Permanently delete this preset?\n"
+"'[]'\n"
 "\n"
-"Triggers that automatically activate this preset will no longer function."
+"Triggers that use this preset will no longer function."
 msgstr ""
 
-#: pylib/controller/shared.py:1506
+#: pylib/controller/shared.py:1599
+msgid ""
+"Permanently delete this effect? \n"
+"'[]'"
+msgstr ""
+
+#: pylib/controller/shared.py:1600
+msgid ""
+"Permanently delete this preset? \n"
+"'[]'"
+msgstr ""
+
+#: pylib/controller/shared.py:1604
+msgid "Confirm Deletion"
+msgstr ""
+
+#: pylib/controller/shared.py:1627 pylib/fileman.py:329
 msgid "[] (Copy)"
 msgstr ""
 
-#: pylib/effects.py:164
+#: pylib/controller/troubleshooter.py:85
+msgid "Waiting for backends to be ready..."
+msgstr ""
+
+#: pylib/controller/troubleshooter.py:88 pylib/controller/troubleshooter.py:93
+msgid "Running troubleshooter..."
+msgstr ""
+
+#: pylib/controller/troubleshooter.py:94
+msgid "Troubleshooting..."
+msgstr ""
+
+#: pylib/controller/troubleshooter.py:108
+#: pylib/controller/troubleshooter.py:113
+msgid "Troubleshooting Failed"
+msgstr ""
+
+#: pylib/controller/troubleshooter.py:109
+msgid ""
+"The troubleshooter for this backend is not available for this operating "
+"system."
+msgstr ""
+
+#: pylib/controller/troubleshooter.py:114
+msgid ""
+"An exception was thrown while running the troubleshooter. This is probably a "
+"bug."
+msgstr ""
+
+#: pylib/controller/troubleshooter.py:123
+msgid "Passed"
+msgstr ""
+
+#: pylib/controller/troubleshooter.py:126
+msgid "Failed"
+msgstr ""
+
+#: pylib/controller/troubleshooter.py:160
+msgid "Troubleshooter for []"
+msgstr ""
+
+#: pylib/controller/troubleshooter.py:162
+msgid "Everything appears to be in working order!"
+msgstr ""
+
+#: pylib/effects.py:170
 msgid "Layer 1"
 msgstr ""
 
-#: pylib/locales.py:70
-msgid "English (US)"
-msgstr ""
-
-#: pylib/locales.py:71
-msgid "English (British)"
-msgstr ""
-
-#: pylib/locales.py:72
-msgid "Greek"
-msgstr ""
-
-#: pylib/locales.py:73
-msgid "German"
-msgstr ""
-
-#: pylib/locales.py:74
-msgid "French"
-msgstr ""
-
-#: pylib/locales.py:75
-msgid "Russian"
-msgstr ""
-
-#: pylib/locales.py:76
-msgid "Japanese"
-msgstr ""
-
-#: pylib/locales.py:77
-msgid "Spanish"
-msgstr ""
-
-#: pylib/locales.py:78
-msgid "Italian"
-msgstr ""
-
-#: pylib/locales.py:79
-msgid "Portuguese (Portugal)"
-msgstr ""
-
-#: pylib/locales.py:80
-msgid "Portuguese (Brazil)"
-msgstr ""
-
-#: pylib/locales.py:81
-msgid "English (US, Macintosh)"
-msgstr ""
-
-#: pylib/preferences.py:344
+#: pylib/preferences.py:426
 msgid "White"
 msgstr ""
 
-#: pylib/preferences.py:345
+#: pylib/preferences.py:427
 msgid "Red"
 msgstr ""
 
-#: pylib/preferences.py:347
+#: pylib/preferences.py:429
 msgid "Blue"
 msgstr ""
 
-#: pylib/preferences.py:348
+#: pylib/preferences.py:430
 msgid "Aqua"
 msgstr ""
 
-#: pylib/preferences.py:349
+#: pylib/preferences.py:431
 msgid "Orange"
 msgstr ""
 
-#: pylib/preferences.py:350
+#: pylib/preferences.py:432
 msgid "Pink"
 msgstr ""
 
-#: pylib/preferences.py:351
+#: pylib/preferences.py:433
 msgid "Purple"
 msgstr ""
 
-#: pylib/preferences.py:352
+#: pylib/preferences.py:434
 msgid "Yellow"
 msgstr ""
 
-#: pylib/preferences.py:353
+#: pylib/preferences.py:435
 msgid "Light Grey"
 msgstr ""
 
-#: pylib/preferences.py:354
+#: pylib/preferences.py:436
 msgid "Dark Grey"
 msgstr ""
 
-#: pylib/preferences.py:355
+#: pylib/preferences.py:437
 msgid "Black"
 msgstr ""
 
@@ -2005,98 +2489,184 @@ msgstr ""
 msgid "Daemon is installed"
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:51 pylib/troubleshoot/openrazer.py:93
+#: pylib/troubleshoot/openrazer.py:52 pylib/troubleshoot/openrazer.py:349
 msgid "Install the 'openrazer-meta' package for your distribution."
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:64
+#: pylib/troubleshoot/openrazer.py:72
 msgid "Daemon is running"
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:65
+#: pylib/troubleshoot/openrazer.py:74
 msgid ""
-"Start the daemon from the terminal. Look out for any errors: $ openrazer-"
-"daemon -Fv"
+"Start the daemon from the terminal. Run this command and look for errors:"
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:71
+#: pylib/troubleshoot/openrazer.py:83
 msgid "Python library is installed"
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:72
-msgid ""
-"Install the 'python3-openrazer' package for your distribution. Check your "
-"PYTHONPATH is correct."
+#: pylib/troubleshoot/openrazer.py:85
+msgid "Install the 'python3-openrazer' package for your distribution."
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:92
+#: pylib/troubleshoot/openrazer.py:86
+msgid "Check the PYTHONPATH environment variable is correct."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:110
 msgid "DKMS sources are installed"
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:98
+#: pylib/troubleshoot/openrazer.py:112
+msgid "Install the 'openrazer-driver-dkms' package for your distribution."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:118
 msgid "DKMS module has been built for this kernel version"
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:99
+#: pylib/troubleshoot/openrazer.py:120
 msgid ""
-"Ensure the correct Linux kernel headers are installed. Try re-installing the "
-"DKMS module (replacing 2.x.x with the version of OpenRazer installed) $ sudo "
-"dkms install -m openrazer-driver/2.x.x"
+"Ensure you have the correct Linux kernel headers package installed for your "
+"distribution."
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:109
-msgid "DKMS module can be loaded"
+#: pylib/troubleshoot/openrazer.py:121
+msgid ""
+"Your distro's package system might not have rebuilt the DKMS module (this "
+"can happen with kernel or OpenRazer updates). Try running:"
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:110 pylib/troubleshoot/openrazer.py:120
-msgid "For full error details, run $ sudo modprobe razerkbd"
+#: pylib/troubleshoot/openrazer.py:133
+msgid "DKMS module can be probed"
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:119
+#: pylib/troubleshoot/openrazer.py:135 pylib/troubleshoot/openrazer.py:148
+msgid "For full error details, run:"
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:146
 msgid "DKMS module is currently loaded"
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:136
+#: pylib/troubleshoot/openrazer.py:150 pylib/troubleshoot/openrazer.py:193
+msgid "If you've just installed, it is recommended to restart the computer."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:160
+msgid ""
+"Secure Boot prevents the driver from loading, as OpenRazer's kernel modules "
+"built by DKMS are usually unsigned."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:168 pylib/troubleshoot/openrazer.py:178
 msgid "Check Secure Boot (EFI) status"
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:137
+#: pylib/troubleshoot/openrazer.py:170
 msgid ""
-"Secure boot is currently enabled. OpenRazer's kernel modules are unsigned, "
-"so these cannot be loaded while Secure Boot is enabled. Either disable "
-"Secure Boot in the EFI firmware settings, or sign the modules yourself."
+"Secure boot is enabled. Turn it off in the system's EFI settings or sign the "
+"modules yourself."
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:144
+#: pylib/troubleshoot/openrazer.py:180
+msgid ""
+"Unable to automatically check. If it's enabled, turn it off in the system's "
+"EFI settings or sign the modules yourself."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:189
 msgid "User account has been added to the 'plugdev' group"
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:145
+#: pylib/troubleshoot/openrazer.py:191
+msgid "Run this command, log out, then log back in to the computer:"
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:211 pylib/troubleshoot/openrazer.py:221
+msgid "Device can be accessed using plugdev permissions"
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:213
 msgid ""
-"If you've recently installed, you may need to restart the computer. "
-"Otherwise, run this command, log out, then log back in to the computer: $ "
-"sudo gpasswd -a $USER plugdev"
+"Restarting the daemon or replugging the hardware usually fixes the problem."
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:156
-msgid "Check OpenRazer log for plugdev permission errors"
+#: pylib/troubleshoot/openrazer.py:214
+msgid "If not, the udev rules for your distribution need investigating."
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:157
+#: pylib/troubleshoot/openrazer.py:215
+msgid "Restart the daemon to clear this message."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:223
+msgid "The log does not exist. Start the daemon and try again."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:233
+msgid "Razer hardware is present for kernel"
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:235
+msgid "The Linux kernel does not see hardware with a VID of 1532."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:236
+msgid "Check the device and USB port is working. Try a different port."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:256 pylib/troubleshoot/openrazer.py:285
+msgid "Check device compatibility"
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:258 pylib/troubleshoot/openrazer.py:339
+msgid "Unable to retrieve this data from OpenRazer's website."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:259 pylib/troubleshoot/openrazer.py:340
 msgid ""
-"Restarting (or replugging) usually fixes the problem. Clear the log to reset "
-"this message."
+"Check the OpenRazer website to confirm your device is listed as supported."
 msgstr ""
 
-#: pylib/troubleshoot/openrazer.py:221
-msgid "Check for unsupported hardware"
-msgstr ""
-
-#: pylib/troubleshoot/openrazer.py:222
+#: pylib/troubleshoot/openrazer.py:260 pylib/troubleshoot/openrazer.py:341
 msgid ""
-"Review the OpenRazer repository to confirm support for your device. Ensure "
-"you have the latest version installed and this version does include support "
-"for your device."
+"If you're checking OpenRazer's GitHub repository, check the 'stable' branch."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:287
+msgid ""
+"The following PIDs are not supported in the latest stable release of "
+"OpenRazer:"
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:289
+msgid ""
+"Check OpenRazer's issues and pull requests to see the status for your "
+"device. Create an issue if necessary."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:326 pylib/troubleshoot/openrazer.py:337
+#: pylib/troubleshoot/openrazer.py:347
+msgid "OpenRazer is the latest version"
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:328
+msgid "There is a new version of OpenRazer available."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:329
+msgid ""
+"New versions add support for more devices and address device-specific issues."
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:330
+msgid "Your version: 0.0.0"
+msgstr ""
+
+#: pylib/troubleshoot/openrazer.py:331
+msgid "Latest version: 0.0.0"
 msgstr ""
 
 #: troubleshooter.ui.h:1
@@ -2116,4 +2686,8 @@ msgstr ""
 #. Column header for the troubleshooting results
 #: troubleshooter.ui.h:7
 msgid "Check"
+msgstr ""
+
+#: troubleshooter.ui.h:8
+msgid "Copy to Clipboard"
 msgstr ""
