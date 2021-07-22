@@ -32,13 +32,13 @@ jobs:
         ./scripts/build-styles.sh
         ./scripts/build-locales.sh
 
-    - name: Test Polychromatic Internals
+    - name: Run Polychromatic Unit Tests
       run: |
-        ./scripts/run-unit-test.sh "10_internals"
-        ./scripts/run-unit-test.sh "11_effects"
-        ./scripts/run-unit-test.sh "12_fx"
+        ./scripts/run-unit-test.sh ./tests/unit/internals.py
+        ./scripts/run-unit-test.sh ./tests/unit/effects.py
+        ./scripts/run-unit-test.sh ./tests/unit/fx.py
 
-    - name: Test OpenRazer Backend
+    - name: Test OpenRazer Integration
       run: |
         eval $(sudo dbus-launch --sh-syntax)
-        sudo -E ./tests/20_openrazer_daemon.sh "$GITHUB_WORKSPACE/openrazer"
+        sudo -E ./tests/integration/openrazer/run_daemon.sh "$GITHUB_WORKSPACE/openrazer"

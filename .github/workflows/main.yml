@@ -42,19 +42,19 @@ jobs:
 
     - name: Validate JSON
       run: |
-        ./scripts/validate-json.py
+        ./tests/lint/validate-json.py
 
     - name: Validate SCSS
       run: |
-        ./scripts/validate-scss.sh
+        ./tests/lint/validate-scss.sh
 
     - name: Validate Python
       run: |
-        ./scripts/validate-py.sh
+        ./tests/lint/validate-py.sh
 
     - name: Validate man (scdoc)
       run: |
-        ./scripts/validate-scdoc.sh
+        ./tests/lint/validate-scdoc.sh
 
     - name: 'Test Meson/Ninja Build'
       run: |

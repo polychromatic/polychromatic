@@ -17,13 +17,6 @@ if [ -z "$pylint" ]; then
     exit 1
 fi
 
-errors=false
-function check_status() {
-    if [ $? != 0 ]; then
-        errors=true
-    fi
-}
-
 $pylint --errors-only \
     --disable="relative-beyond-top-level" \
     --disable="no-name-in-module" \
@@ -34,8 +27,6 @@ $pylint --errors-only \
     pylib/*/*.py \
     pylib/*.py
 
-check_status $?
-
-if [ $errors == true ]; then
+if [ $? != 0 ]; then
     exit 1
 fi

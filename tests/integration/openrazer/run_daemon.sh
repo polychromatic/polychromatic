@@ -7,7 +7,7 @@
 # the root of the OpenRazer repository, or as the first parameter.
 #
 
-POLYCHROMATIC="$(dirname $0)/../"
+POLYCHROMATIC="$(dirname $0)/../../../"
 POLYCHROMATIC="$(realpath $POLYCHROMATIC)"
 
 if [ ! -z "$1" ]; then
@@ -60,7 +60,7 @@ sleep 2
 
 # Perform the test!
 cd "$POLYCHROMATIC"
-$POLYCHROMATIC/scripts/run-unit-test.sh "21_openrazer"
+./scripts/run-unit-test.sh ./tests/integration/openrazer/openrazer_test.py
 result=$?
 
 # Stop fake driver / daemon
