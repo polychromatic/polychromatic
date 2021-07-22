@@ -7,7 +7,7 @@
 #   - Dart SASS (sass)
 #
 
-cd $(dirname "$0")/../source/sass/
+cd $(dirname "$0")/../sources/qt-theme/
 
 # Find an implementation of SASS to use.
 sassc=$(which sassc 2>/dev/null)
@@ -24,12 +24,12 @@ cp ./_gradient.css ../../data/qt/style.qss
 
 if [ ! -z "$sassc" ]; then
     echo -n "Compiling Qt theme using 'sassc'..."
-    sassc ./qt-style.scss ../../data/qt/style.css.tmp --sass --style compressed
+    sassc ./stylesheet.scss ../../data/qt/style.css.tmp --sass --style compressed
     result=$?
 
 elif [ ! -z "$sass" ]; then
     echo "Compiling Qt theme using 'sass'..."
-    sass ./qt-style.scss ../../data/qt/style.css.tmp --style=compressed --no-source-map
+    sass ./stylesheet.scss ../../data/qt/style.css.tmp --style=compressed --no-source-map
     result=$?
 fi
 

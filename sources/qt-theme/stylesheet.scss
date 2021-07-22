@@ -230,14 +230,14 @@ QTabBar::tab:disabled {
 **********************************************************/
 #Header {
     background-color: $bg-secondary;
-    background-image: url([data]/img/bg/header.png);
+    background-image: url([data]/img/header/header.png);
     background-position: right bottom;
     background-repeat: no-repeat;
 }
 
 #MainTabCustom {
     background-color: $bg-secondary;
-    background-image: url([data]/img/bg/tabs.png);
+    background-image: url([data]/img/header/tabs.png);
     background-position: right top;
     background-repeat: no-repeat;
     border-bottom: 1px solid $border-colour;
@@ -286,7 +286,7 @@ QMenuBar {
 }
 
 QMenuBar#MainMenubar {
-    background-image: url([data]/img/bg/menubar.png);
+    background-image: url([data]/img/header/menubar.png);
     background-position: right bottom;
     background-repeat: no-repeat;
 }

@@ -45,13 +45,13 @@ install_subdir('pylib',
                install_dir : join_paths(py_install_dir, 'polychromatic'),
                strip_directory : true)
 
-install_subdir('source/hicolor',
+install_subdir('sources/hicolor',
                install_dir : join_paths(get_option('datadir'), 'icons'))
 
-install_data('source/launchers/polychromatic.desktop',
+install_data('sources/launchers/polychromatic.desktop',
              install_dir : join_paths(get_option('datadir'), 'applications'))
 
-install_data('source/launchers/polychromatic-autostart.desktop',
+install_data('sources/launchers/polychromatic-autostart.desktop',
              install_dir : join_paths(get_option('sysconfdir'), 'xdg/autostart'))
 
 subdir('locale')

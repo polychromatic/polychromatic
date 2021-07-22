@@ -10,7 +10,7 @@ fi
 
 temp_file=$(mktemp)
 
-sassc source/sass/qt-style.scss $temp_file --sass --style compressed
+sassc sources/qt-theme/stylesheet.scss $temp_file --sass --style compressed
 if [ $? != 0 ]; then
     exit 1
 fi
