@@ -120,6 +120,11 @@ def get_ui_widget(appdata, name, q_toplevel=QWidget):
         for combobox in widget.findChildren(QComboBox):
             combobox.view().parentWidget().setStyleSheet('background: transparent')
 
+    # Theme icons inside a QDialogButtonBox widget
+    dialog_buttons = widget.findChild(QDialogButtonBox)
+    if dialog_buttons:
+        PolychromaticWidgets(appdata).set_dialog_buttons_icons(dialog_buttons)
+
     return widget
 
 
@@ -360,6 +365,33 @@ class PolychromaticWidgets(object):
         elif preferred_style == pref.TOOLBAR_STYLE_TEXT_ONLY:
             if len(widget.text()) > 0:
                 widget.setIcon(QIcon())
+
+    def set_dialog_buttons_icons(self, qdialogbuttonbox):
+        """
+        Applies Polychromatic styling to buttons inside a QDialogButtonBox.
+        """
+        if self.appdata.system_qt_theme:
+            return
+
+        icons = {
+            QDialogButtonBox.Ok: ["general", "ok"],
+            QDialogButtonBox.Cancel: ["general", "cancel"],
+            QDialogButtonBox.Yes: ["general", "ok"],
+            QDialogButtonBox.No: ["general", "cancel"],
+            QDialogButtonBox.Retry: ["general", "refresh"],
+            QDialogButtonBox.Ignore: ["general", "cancel"],
+            QDialogButtonBox.Save: ["general", "save"],
+            QDialogButtonBox.Discard: ["general", "delete"],
+        }
+
+        for std_btn in icons.keys():
+            button = qdialogbuttonbox.button(std_btn)
+            if button:
+                try:
+                    button.setIcon(self.get_icon_qt(icons[std_btn][0], icons[std_btn][1]))
+                except KeyError:
+                    # None specified. Strip icon (to avoid native theme mixing)
+                    button.setIcon(QIcon())
 
     def create_summary_widget(self, icon_path, title, indicators=[], buttons=[]):
         """
@@ -673,23 +705,23 @@ class PolychromaticWidgets(object):
         container.layout().addStretch()
         return container
 
-    def open_dialog(self, dialog_type, title, text, info_text="", traceback="", buttons=[], default_button=None, actions={}):
+    def open_dialog(self, dialog_type, title, text, info_text="", details="", buttons=[QMessageBox.Ok], default_button=None, actions={}):
         """
-        Opens a modal dialogue box to inform of a situation.
+        Opens a modal dialogue box to inform or confirm a decision.
 
-        If no functions are passed to the 'ok', 'cancel', etc functions, then the
-        dialog will just show a message and then close with no further action.
+        If the buttons are unspecified, the dialog will just show a message
+        with an "OK" button that takes no further action.
 
         Params:
             dialog_type     (str)   One of self.dialog_* variable above.
             title           (str)   Window title
             text            (str)   Description of what happened.
             info_text       (str)   (Optional) Informative text of next steps.
-            traceback       (str)   (Optional) More details of the problem
-            buttons         (list)  (Optional) QMessageBox.* buttons to display
-            default_button  (obj)   (Optional) QMessageBox.* button to default to.
-            actions         (dict)  (Optional) Functions to run after dismissing.
-                                    E.g. {QMessageBox.Ok = name_of_function, ...}
+                                    Appears under text. macOS styles differently.
+            details         (str)   (Optional) Monospace output of the problem
+            buttons         (list)  (Optional) QMessageBox.* of buttons to display
+            default_button  (obj)   (Optional) QMessageBox.* of initial default button
+            actions         (dict)  (Optional) Bind a QMessageBox.* to function
         """
         msgbox = QMessageBox()
         msgbox.setWindowTitle(title)
@@ -704,28 +736,23 @@ class PolychromaticWidgets(object):
         if info_text:
             msgbox.setInformativeText(info_text);
 
-        for button in buttons:
-            msgbox.addButton(button)
+        for std_btn in buttons:
+            msgbox.addButton(std_btn)
+            button = msgbox.buttons()[-1]
 
-        if default_button:
-            msgbox.setDefaultButton(default_button)
+            if std_btn == default_button:
+                msgbox.setDefaultButton(button)
 
-        if not buttons:
-            msgbox.addButton(QMessageBox.Ok)
-            msgbox.setDefaultButton(QMessageBox.Ok)
+            if std_btn in actions.keys():
+                button.clicked.connect(actions[std_btn])
 
-        if traceback:
-            msgbox.setDetailedText(traceback)
+        if details:
+            msgbox.setDetailedText(details)
             msgbox.findChild(QTextEdit).setMinimumWidth(600)
 
-        def _dialog_closed(result):
-            for action in actions.keys():
-                if result == action:
-                    actions[action]()
+        dialog_buttons = msgbox.findChild(QDialogButtonBox)
+        self.set_dialog_buttons_icons(dialog_buttons)
 
-        # TODO: Use own icons for dialog (when Polychromatic Qt theme is used)
-
-        msgbox.finished.connect(_dialog_closed)
         msgbox.exec()
 
 
@@ -781,8 +808,6 @@ class ColourPicker(object):
             self.list_save_btn.setIcon(self.widgets.get_icon_qt("general", "save"))
             self.list_del_btn.setIcon(self.widgets.get_icon_qt("general", "delete"))
             self.list_rename_btn.setIcon(self.widgets.get_icon_qt("general", "properties"))
-            self.dialog_btns.button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save"))
-            self.dialog_btns.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel"))
 
         # If the device only supports a monoscale of "RGB", use a fixed list.
         if monoscale:
@@ -1074,8 +1099,6 @@ class IconPicker(object):
         if not self.appdata.system_qt_theme:
             self.custom_icon_add.setIcon(self.widgets.get_icon_qt("general", "import"))
             self.custom_icon_del.setIcon(self.widgets.get_icon_qt("general", "delete"))
-            self.dialog_btns.button(QDialogButtonBox.Ok).setIcon(self.widgets.get_icon_qt("general", "ok"))
-            self.dialog_btns.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel"))
             self.tabs.setTabIcon(0, self.widgets.get_icon_qt("general", "tray-applet"))
             self.tabs.setTabIcon(1, self.widgets.get_icon_qt("emblems", "misc"))
             self.tabs.setTabIcon(2, self.widgets.get_icon_qt("emblems", "software"))
@@ -1520,7 +1543,7 @@ class CommonFileTab(TabData):
         self.widgets.open_dialog(self.widgets.dialog_error,
                                  self._("File Error"),
                                  self._("This file cannot be opened:") + "\n" + path,
-                                 reason)
+                                 info_text=reason)
 
     def _show_file_error(self, traceback=None):
         """
@@ -1529,7 +1552,8 @@ class CommonFileTab(TabData):
         self.widgets.open_dialog(self.widgets.dialog_error,
                                  self._("File Error"),
                                  self._("The operation could not be completed due to an error processing this file."),
-                                 self._("Please make sure the file permissions are recursively correct:") + '\n' + common.paths.config, traceback)
+                                 info_text=self._("Please make sure the file permissions are recursively correct:") + '\n' + common.paths.config,
+                                 details=traceback)
 
     def new_file(self):
         """
@@ -1577,7 +1601,6 @@ class CommonFileTab(TabData):
             if item_index > self.FilesBranch.childCount() - 1:
                 item_index = self.FilesBranch.childCount() - 1
 
-            print("todo:new_item: -1 but don't throw exception?")
             new_item = self.FilesBranch.child(item_index)
             new_item.setSelected(True)
             self.open_file(new_item.action_data)
@@ -1596,10 +1619,9 @@ class CommonFileTab(TabData):
         self.widgets.open_dialog(self.widgets.dialog_warning,
                                  self._("Confirm Deletion"),
                                  msgs[self.feature],
-                                 None, None,
-                                 [QMessageBox.Yes, QMessageBox.No],
-                                 QMessageBox.Yes,
-                                 {QMessageBox.Yes: _file_delete_confirmed})
+                                 buttons=[QMessageBox.Yes, QMessageBox.No],
+                                 default_button=QMessageBox.Yes,
+                                 actions={QMessageBox.Yes: _file_delete_confirmed})
 
     def clone_file(self):
         """

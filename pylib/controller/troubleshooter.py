@@ -112,8 +112,7 @@ class TroubleshooterGUI(QObject):
             return self.widgets.open_dialog(self.widgets.dialog_error,
                                             self._("Troubleshooting Failed"),
                                             self._("An exception was thrown while running the troubleshooter. This is probably a bug."),
-                                            None,
-                                            results)
+                                            details=results)
 
         for result in results:
             item = QTreeWidgetItem()

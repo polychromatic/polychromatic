@@ -106,7 +106,7 @@ class EffectsTab(shared.CommonFileTab):
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      self._("New Effect"),
                                      self._("No devices found. New effects require a compatible device to be present."),
-                                     self._("Make sure the device is connected and the backend is working."))
+                                     info_text=self._("Make sure the device is connected and the backend is working."))
             return False
         return True
 
@@ -134,9 +134,6 @@ class EffectsTab(shared.CommonFileTab):
         btn_layered.setIcon(self.widgets.get_icon_qt("effects", "layered"))
         btn_scripted.setIcon(self.widgets.get_icon_qt("effects", "scripted"))
         btn_sequence.setIcon(self.widgets.get_icon_qt("effects", "sequence"))
-
-        if not self.appdata.system_qt_theme:
-            dialog_buttons.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "close"))
 
         # Hovering over a button will show the tooltip as a label too
         def _hover_button(event, button):
@@ -226,11 +223,14 @@ class EffectsTab(shared.CommonFileTab):
                 action = "cancel"
 
             self.widgets.open_dialog(self.widgets.dialog_warning,
-                                        self._("Backend Not Ready"),
-                                        self._("The application is still waiting for the backends to finish initialising so you can pick a device to map your new effect."),
-                                        self._("This might be ready in a few moments."),
-                                        buttons=[QMessageBox.Cancel, QMessageBox.Ignore, QMessageBox.Retry],
-                                        actions={QMessageBox.Ignore: do_ignore, QMessageBox.Retry: do_retry})
+                                     self._("Backend Not Ready"),
+                                     self._("The application is still waiting for the backends to finish initialising so you can pick a device to map your new effect."),
+                                     info_text=self._("This might be ready in a few moments."),
+                                     buttons=[QMessageBox.Ignore, QMessageBox.Retry],
+                                     actions={
+                                         QMessageBox.Ignore: do_ignore,
+                                         QMessageBox.Retry: do_retry
+                                     })
 
             if action == "cancel":
                 return
@@ -336,8 +336,8 @@ class EffectsTab(shared.CommonFileTab):
             if effect_path in self.editors.keys():
                 if self.editors[effect_path].alive:
                     self.widgets.open_dialog(self.widgets.dialog_warning,
-                                            self._("File In Use"),
-                                            self._("This file is being edited in another window. Please switch to that window to make changes."))
+                                             self._("File In Use"),
+                                             self._("This file is being edited in another window. Please switch to that window to make changes."))
                     return
 
             def _metadata_changed(newdata):
@@ -502,11 +502,6 @@ class EffectMetadataEditor(shared.TabData):
         self.map_graphic_grid.toggled.connect(self._set_map_grid)
         self.map_graphic_svg.toggled.connect(self._set_mode_graphic)
         self.map_graphic_list.currentIndexChanged.connect(self._update_graphic_preview)
-
-        # Set icons
-        if not self.appdata.system_qt_theme:
-            self.buttons.button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "close"))
-            self.buttons.button(QDialogButtonBox.Ok).setIcon(self.widgets.get_icon_qt("general", "ok"))
 
         # Showtime!
         self._validate_fields()

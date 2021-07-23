@@ -162,7 +162,7 @@ class DevicesTab(shared.TabData):
             msg1 = _("An error occurred while reading this device. This could be a bug in either Polychromatic or [].").replace("[]", backend_name)
             msg2 = _("Try selecting this device again, or restart the backend and application. If this keeps happening, take note of the details below and report as a bug on the relevant project's issue tracker.")
 
-            self.widgets.open_dialog(self.widgets.dialog_error, _("Backend Error"), msg1, msg2, device)
+            self.widgets.open_dialog(self.widgets.dialog_error, _("Backend Error"), msg1, info_text=msg2, details=device)
             self.open_bad_device(msg1, msg2, device)
             return
 
@@ -416,9 +416,7 @@ class DevicesTab(shared.TabData):
         """
         def _open_dialog():
             dialog_title = middleman.BACKEND_ID_NAMES[device["backend"]]
-            self.widgets.open_dialog(self.widgets.dialog_generic,
-                                    dialog_title,
-                                    option["message"])
+            self.widgets.open_dialog(self.widgets.dialog_generic, dialog_title, option["message"])
 
         button = QPushButton(option["button_text"])
         button.clicked.connect(_open_dialog)
@@ -601,7 +599,7 @@ class DevicesTab(shared.TabData):
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      _("Backend Error"),
                                      _("[] deemed this request to be invalid or unsupported. This could be caused by an implementation issue with Polychromatic's backend module for [].").replace("[]", backend_name),
-                                    _("If this message appears again, try restarting the backend/application, otherwise please report this as a bug."))
+                                     _("If this message appears again, try restarting the backend/application, otherwise please report this as a bug."))
         elif response == None:
             dbg.stdout("Device no longer available", dbg.error, 1)
             self.widgets.open_dialog(self.widgets.dialog_warning,
@@ -615,7 +613,7 @@ class DevicesTab(shared.TabData):
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      _("Backend Error"),
                                      _("[] encountered an error processing this request. Try restarting the backend/application. If this message keeps appearing, please report this as a bug on []'s issue tracker.").replace("[]", backend_name),
-                                     traceback=response)
+                                     details=response)
 
     def _open_loading(self):
         """
@@ -816,7 +814,7 @@ class DevicesTab(shared.TabData):
                                     _("Backend Error: []").replace("[]", backend_name),
                                     _("An error occurred trying to load []. The error below may provide a clue to what happened.").replace("[]", backend_name),
                                     info_text=_("The last line of the exception was:") + "\n" + exception.split("\n")[-1],
-                                    traceback=exception)
+                                    details=exception)
 
     def open_unknown_device(self, backend):
         """

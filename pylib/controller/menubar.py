@@ -186,8 +186,8 @@ class MenuBar(object):
         """
         if self._is_editor_running():
             self.widgets.open_dialog(self.widgets.dialog_generic,
-                                    self.appdata._("Force Refresh"),
-                                    self.appdata._("Please close all editor windows before executing this action."))
+                                     self.appdata._("Force Refresh"),
+                                     self.appdata._("Please close all editor windows before executing this action."))
             return
 
         procmgr = procpid.ProcessManager()
@@ -418,10 +418,9 @@ class MenuBarOpenRazer(MenuBar):
         self.widgets.open_dialog(self.widgets.dialog_generic,
                                  self.appdata._("Restart Backend?"),
                                  self.appdata._("Restarting this backend will also restart Polychromatic. Any unsaved data will be lost. Continue?"),
-                                 None, None,
-                                 [QMessageBox.Ok, QMessageBox.Cancel],
-                                 QMessageBox.Ok,
-                                 {QMessageBox.Ok: _reload_openrazer})
+                                 buttons=[QMessageBox.Ok, QMessageBox.Cancel],
+                                 default_button=QMessageBox.Ok,
+                                 actions={QMessageBox.Ok: _reload_openrazer})
 
     def _get_dbus_version(self):
         """

@@ -95,8 +95,6 @@ class PreferencesWindow(shared.TabData):
         if not self.appdata.system_qt_theme:
             self.dialog.findChild(QPushButton, "SavedColoursButton").setIcon(self.widgets.get_icon_qt("general", "edit"))
             self.dialog.findChild(QPushButton, "SavedColoursReset").setIcon(self.widgets.get_icon_qt("general", "reset"))
-            self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save"))
-            self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel"))
             self.dialog.findChild(QToolButton, "DPIStagesReset").setIcon(self.widgets.get_icon_qt("general", "reset"))
 
         # Options
@@ -291,12 +289,9 @@ class PreferencesWindow(shared.TabData):
             self.widgets.open_dialog(self.widgets.dialog_generic,
                                      self._("Restart Required"),
                                      self._("To apply these changes, the application must be restarted. Any unsaved changes will be lost."),
-                                     None, None,
-                                     [QMessageBox.Ok, QMessageBox.Ignore],
-                                     QMessageBox.Ok,
-                                     {
-                                        QMessageBox.Ok: _cb_restart_now
-                                     })
+                                     buttons=[QMessageBox.Ok, QMessageBox.Ignore],
+                                     default_button=QMessageBox.Ok,
+                                     actions={QMessageBox.Ok: _cb_restart_now})
 
         # Reload tray applet
         if self.restart_applet:
@@ -381,10 +376,9 @@ class PreferencesWindow(shared.TabData):
         self.widgets.open_dialog(self.widgets.dialog_generic,
                                  self._("Reset to Default Colours"),
                                  self._("All colours in the list will be reset. Continue?"),
-                                 None, None,
-                                 [QMessageBox.Ok, QMessageBox.Cancel],
-                                 QMessageBox.Ok,
-                                 {QMessageBox.Ok: _cb_reset_colours})
+                                 buttons=[QMessageBox.Ok, QMessageBox.Cancel],
+                                 default_button=QMessageBox.Ok,
+                                 actions={QMessageBox.Ok: _cb_reset_colours})
 
 
 class OpenRazerPreferences(shared.TabData):
@@ -448,11 +442,6 @@ class OpenRazerPreferences(shared.TabData):
 
         self.dialog = shared.get_ui_widget(self.appdata, "openrazer-config", QDialog)
         self.dialog.findChild(QDialogButtonBox, "DialogButtons").accepted.connect(self._save_and_restart)
-
-        # Set Dialog Button Icons
-        if not self.appdata.system_qt_theme:
-            self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Save).setIcon(self.widgets.get_icon_qt("general", "save"))
-            self.dialog.findChild(QDialogButtonBox, "DialogButtons").button(QDialogButtonBox.Cancel).setIcon(self.widgets.get_icon_qt("general", "cancel"))
 
         # razer.conf
         for key in self.keys:

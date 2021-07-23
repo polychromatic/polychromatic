@@ -382,8 +382,8 @@ class MainWindow(QMainWindow):
                                     _("Controller Error"),
                                     _("Eeks! An uncaught exception was thrown while loading the tab.") + '\n\n' + \
                                     _("The application will attempt to continue, but get ready in case something breaks again!"),
-                                    _("This may be reported as a bug on the project's issue tracker."),
-                                    traceback=traceback)
+                                    info_text=_("This may be reported as a bug on the project's issue tracker."),
+                                    details=traceback)
             self.unsetCursor()
 
         def _change_tab_proxy(button, index):
@@ -452,11 +452,10 @@ class MainWindow(QMainWindow):
             details = "Yours: {1}\nExpected: <={2}\nApplication Version: v{0}".format(VERSION, save_ver, pref_ver)
             widgets.open_dialog(widgets.dialog_warning,
                                 _("Incompatible Save Data"),
-                                "{0}\n\n{1}\n\n{2}".format(
-                                    _("Polychromatic's configuration (including your effects and presets) have been previously saved in a newer version of this software."),
-                                    _("While this older software version may run as expected, there is no guarantee everything will work as a result of this newer save data. This installation is unsupported."),
-                                    _("Consider updating the application, ignore this message or delete: ~/.config/polychromatic")),
-                                traceback=details)
+                                _("Polychromatic's configuration (including your effects and presets) have been previously saved in a newer version of this software.") + \
+                                _("While this older software version may run as expected, there is no guarantee everything will work as a result of this newer save data. This installation is unsupported.") + \
+                                _("Consider updating the application, ignore this message or delete: ~/.config/polychromatic"),
+                                details=details)
 
         self._set_initial_window_position(self, "main")
 

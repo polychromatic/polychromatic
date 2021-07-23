@@ -637,7 +637,10 @@ class VisualEffectEditor(shared.TabData):
                                         self._("Live preview isn't possible yet as the backends haven't finished initialising."),
                                         self._("They might be ready now, try again. Or, choose Ignore to continue without a live preview on physical hardware."),
                                         buttons=[QMessageBox.Retry, QMessageBox.Ignore],
-                                        actions={QMessageBox.Retry: do_retry, QMessageBox.Ignore: do_ignore})
+                                        actions={
+                                            QMessageBox.Retry: do_retry,
+                                            QMessageBox.Ignore: do_ignore
+                                        })
 
             if retry:
                 return self.init_device_preview()
@@ -670,7 +673,7 @@ class VisualEffectEditor(shared.TabData):
                                      self._("Backend Error"),
                                      self._("An error occurred while initialising '[]' for live preview.").replace("[]", device_name),
                                      self._("Live preview has been disabled for this session."),
-                                     self.device_object)
+                                     details=self.device_object)
             self.device = None
             self.device_object = None
             return
@@ -806,10 +809,9 @@ class VisualEffectEditor(shared.TabData):
             self.widgets.open_dialog(self.widgets.dialog_warning,
                                      self._("Unsaved Changes"),
                                      self._("This effect was modified. Would you like to save these changes?"),
-                                     None, None,
-                                     [QMessageBox.Save, QMessageBox.Discard, QMessageBox.Cancel],
-                                     QMessageBox.Save,
-                                     {
+                                     buttons=[QMessageBox.Save, QMessageBox.Discard, QMessageBox.Cancel],
+                                     default_button=QMessageBox.Save,
+                                     actions={
                                         QMessageBox.Save: _do_save,
                                         QMessageBox.Discard: _do_not_save
                                      })
@@ -910,14 +912,12 @@ class VisualEffectEditor(shared.TabData):
             self.appdata.tab_effects.edit_file()
             self.closeEvent()
 
-        buttons = [QMessageBox.Yes, QMessageBox.No]
-        actions = {
-            QMessageBox.Yes: _do_reload
-        }
         self.widgets.open_dialog(self.widgets.dialog_warning,
                                  self._("Revert"),
                                  self._("Reload the effect from disk? Any unsaved data will be lost!"),
-                                 None, None, buttons, QMessageBox.Yes, actions)
+                                 buttons=[QMessageBox.Yes, QMessageBox.No],
+                                 default_button=QMessageBox.Yes,
+                                 actions={QMessageBox.Yes: _do_reload})
 
     # ----------------------------
     # Common
@@ -1090,8 +1090,8 @@ class VisualEffectEditor(shared.TabData):
         self.widgets.open_dialog(self.widgets.dialog_error,
                                  self._("Backend Error"),
                                  self._("An error occurred while sending the frame to the hardware."),
-                                 self._("Live preview has been disabled for this session."),
-                                 common.get_exception_as_string(e))
+                                 info_text=self._("Live preview has been disabled for this session."),
+                                 details=common.get_exception_as_string(e))
 
     # ----------------------------
     # Tools
@@ -1527,13 +1527,10 @@ class VisualEffectEditor(shared.TabData):
         self.widgets.open_dialog(self.widgets.dialog_warning,
                                  self._("Delete Frame"),
                                  self._("Permanently delete this frame? There is no undo."),
-                                 self._("Tip: This confirmation can be suppressed via the Editor tab under Preferences."),
-                                 None,
-                                 [QMessageBox.Yes, QMessageBox.No],
-                                 QMessageBox.Yes,
-                                 {
-                                    QMessageBox.Yes: _do_delete_frame
-                                 })
+                                 info_text=self._("Tip: This confirmation can be suppressed via the Editor tab under Preferences."),
+                                 buttons=[QMessageBox.Yes, QMessageBox.No],
+                                 default_button=QMessageBox.Yes,
+                                 actions={QMessageBox.Yes: _do_delete_frame})
 
     def clone_frame(self):
         """
@@ -1836,7 +1833,7 @@ class DeviceRenderer(shared.TabData):
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      self._("Controller Error"),
                                      self._("Failed to load the Qt Web Engine. Unfortunately, editing won't be possible."),
-                                     self._("Make sure the application (and its dependencies) are installed and configured correctly."))
+                                     info_text=self._("Make sure the application (and its dependencies) are installed and configured correctly."))
             self.editor.window.close()
 
         # Load the SVG into the viewport
@@ -1872,7 +1869,7 @@ class DeviceRenderer(shared.TabData):
             self.widgets.open_dialog(self.widgets.dialog_warning,
                                      self._("Missing File"),
                                      self._("This effect is mapped to a graphic named '[]', but it's not installed.".replace("[]", self.graphic_filename)),
-                                     self._("The grid will be used instead. A different graphic can be chosen by editing the metadata."))
+                                     info_text=self._("The grid will be used instead. A different graphic can be chosen by editing the metadata."))
             return self._generate_grid_svg()
 
         if self.hide_key_labels:
