@@ -113,6 +113,10 @@ class VisualEffectEditor(shared.TabData):
         self.device_object = None
         self.init_device_preview()
 
+        # Set up webview paths
+        self.webview.page().profile().setCachePath(pref.path.webview_cache)
+        self.webview.page().profile().setPersistentStoragePath(pref.path.webview_cache)
+
         # Assign widgets to variables
         # -- Menu Bar/Toolbar - File
         self.action_save_apply = self.window.findChild(QAction, "actionSaveApply")

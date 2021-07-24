@@ -66,6 +66,7 @@ class Paths(object):
     # Cached directories
     assets_cache = os.path.join(cache, "assets")
     effects_cache = os.path.join(cache, "effects")
+    webview_cache = os.path.join(cache, "editor")
 
     # Subdirectories
     effects = os.path.join(config, "effects")
@@ -84,7 +85,7 @@ class Paths(object):
 
     # Create folders if they do not exist.
     for folder in [config, presets, custom_icons, states, effects,
-                   cache, assets_cache, effects_cache]:
+                   cache, assets_cache, effects_cache, webview_cache]:
         if not os.path.exists(folder):
             os.makedirs(folder)
 
