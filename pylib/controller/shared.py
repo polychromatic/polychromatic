@@ -750,6 +750,15 @@ class PolychromaticWidgets(object):
             msgbox.setDetailedText(details)
             msgbox.findChild(QTextEdit).setMinimumWidth(600)
 
+        if not self.appdata.system_qt_theme:
+            icon_path = common.get_icon("dialog", "info")
+            if dialog_type == self.dialog_error:
+                icon_path = common.get_icon("dialog", "error")
+            elif dialog_type == self.dialog_warning:
+                icon_path = common.get_icon("dialog", "warning")
+
+            msgbox.setIconPixmap(QPixmap(icon_path))
+
         dialog_buttons = msgbox.findChild(QDialogButtonBox)
         self.set_dialog_buttons_icons(dialog_buttons)
 
