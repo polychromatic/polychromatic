@@ -38,8 +38,8 @@ Depends: python3 (>= 3.6.0),
          python3-requests,
          python3-setproctitle,
          ${misc:Depends},
-Suggests: python3-openrazer,
-          openrazer-daemon
+Suggests: python3-openrazer (>= 3.0.1),
+          openrazer-daemon (>= 3.0.1)
 Breaks: polychromatic (<= 0.5.0)
 Description: RGB lighting utility (common files)
  A vendor agnostic suite of front-end applications that configures peripheral
