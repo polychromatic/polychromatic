@@ -40,13 +40,14 @@ Depends: python3 (>= 3.6.0),
          ${misc:Depends},
 Suggests: python3-openrazer,
           openrazer-daemon
+Breaks: polychromatic (<= 0.5.0)
 Description: RGB lighting utility (common files)
  A vendor agnostic suite of front-end applications that configures peripheral
  lighting (such as RGB keyboards and mice) via a graphical, command line or
  tray applet interface.
  .
  This package contains shared data files, backend modules and a background
- userspace helper application required to use Polychromatic.
+ userspace helper application to provide specific features.
 
 Package: polychromatic-controller
 Architecture: all
@@ -56,6 +57,7 @@ Depends: polychromatic-common,
          python3-pyqt5.qtsvg,
          python3-pyqt5.qtwebengine,
          ${misc:Depends},
+Breaks: polychromatic (<= 0.5.0)
 Description: RGB lighting utility (Qt interface)
  A vendor agnostic suite of front-end applications that configures peripheral
  lighting (such as RGB keyboards and mice) via a graphical, command line or
@@ -71,6 +73,7 @@ Depends: polychromatic-common,
          gir1.2-gtk-3.0,
          gir1.2-appindicator3-0.1,
          ${misc:Depends},
+Breaks: polychromatic (<= 0.5.0)
 Description: RGB lighting utility (GTK-based AppIndicator)
  A vendor agnostic suite of front-end applications that configures peripheral
  lighting (such as RGB keyboards and mice) via a graphical, command line or
@@ -84,6 +87,7 @@ Architecture: all
 Depends: polychromatic-common,
          python3,
          ${misc:Depends},
+Breaks: polychromatic (<= 0.5.0)
 Description: RGB lighting utility (CLI interface)
  A vendor agnostic suite of front-end applications that configures peripheral
  lighting (such as RGB keyboards and mice) via a graphical, command line or
