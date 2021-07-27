@@ -1,0 +1,33 @@
+/**********************************************************
+  Polychromatic Qt stylesheet - a custom dark theme using
+  the accent colours on top of the 'Fusion' style.
+**********************************************************/
+/* Background for the scroll area */
+QScrollArea > QWidget > QWidget {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(50, 50, 50, 255));
+}
+
+/* Tree Arrows - SCSS cannot process '!' in class name */
+QTreeView::branch:has-siblings:!adjoins-item {
+    border-image: url([data]/qt/assets/tree_line.svg) 0;
+}
+
+QTreeView::branch:has-siblings:adjoins-item {
+    border-image: url([data]/qt/assets/tree_line_split.svg) 0;
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+    border-image: url([data]/qt/assets/tree_line_end.svg) 0;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url([data]/qt/assets/tree_closed.svg);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url([data]/qt/assets/tree_open.svg);
+}
