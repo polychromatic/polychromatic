@@ -329,6 +329,9 @@ class MainWindow(QMainWindow):
             elif args.open == "colours":
                 app.ui_preferences.modify_colours()
                 exit()
+            elif args.open == "preferences":
+                app.ui_preferences.open_window()
+                return
 
         # Prepare "native" tab widget and custom buttons acting as tabs for the design.
         tabs = self.findChild(QTabWidget, "MainTabWidget")
@@ -434,6 +437,19 @@ class MainWindow(QMainWindow):
         # Determine 'landing' tab to first open
         landing_tab = app.preferences["controller"]["landing_tab"]
 
+        if args.open:
+            try:
+                param_to_index = {
+                    "devices": 0,
+                    "effects": 1,
+                    "presets": 2,
+                    "triggers": 3,
+                }
+                landing_tab = param_to_index[args.open]
+            except KeyError:
+                # Not applicable
+                pass
+
         if landing_tab >= 0 and landing_tab <= len(tab_objects):
             # Signal triggered upon switching tab in the widget.
             _change_tab_proxy(None, landing_tab)
@@ -510,8 +526,10 @@ def parse_parameters():
     open_choices = [
         "devices",
         "effects",
-        "presets",
-        "triggers",
+        # TODO: Hide unavailable features
+        #"presets",
+        #"triggers",
+        "preferences",
         "troubleshoot",
         "colours"
     ]
