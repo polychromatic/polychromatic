@@ -1048,10 +1048,16 @@ class IconPicker(object):
     preset or tray applet.
 
     For convenience, installed applications and Steam games will be listed as
-    icon sources (except for the tray applet)
+    icon sources (excluded in tray applet)
     """
-    purpose_generic = 0
-    purpose_tray_icon_only = 1
+    PURPOSE_GENERIC = 0
+    PURPOSE_TRAY_ONLY = 1
+
+    INDEX_TRAY = 0
+    INDEX_EMBLEMS = 1
+    INDEX_APPS = 2
+    INDEX_STEAM = 3
+    INDEX_CUSTOM = 4
 
     def __init__(self, appdata, callback_fn, current_icon, title, purpose=0):
         """
@@ -1079,6 +1085,7 @@ class IconPicker(object):
             self._("SVG Image") + " (*.svg)",
             self._("All Files") + " (*)"
         ]
+        self.custom_empty = True
 
         # UI Controls
         self.dialog = get_ui_widget(appdata, "icon-picker", q_toplevel=QDialog)
@@ -1097,51 +1104,48 @@ class IconPicker(object):
         self.icons_steam = self.dialog.findChild(QWidget, "SteamSet")
         self.icons_custom = self.dialog.findChild(QWidget, "CustomSet")
         self.tab_index_widgets = {
-            0: self.icons_tray,
-            1: self.icons_emblems,
-            2: self.icons_apps,
-            3: self.icons_steam,
-            4: self.icons_custom
+            self.INDEX_TRAY: self.icons_tray,
+            self.INDEX_EMBLEMS: self.icons_emblems,
+            self.INDEX_APPS: self.icons_apps,
+            self.INDEX_STEAM: self.icons_steam,
+            self.INDEX_CUSTOM: self.icons_custom
         }
 
         # Set Dialog Button Icons
         if not self.appdata.system_qt_theme:
-            self.custom_icon_add.setIcon(self.widgets.get_icon_qt("general", "import"))
+            self.custom_icon_add.setIcon(self.widgets.get_icon_qt("general", "folder"))
             self.custom_icon_del.setIcon(self.widgets.get_icon_qt("general", "delete"))
-            self.tabs.setTabIcon(0, self.widgets.get_icon_qt("general", "tray-applet"))
-            self.tabs.setTabIcon(1, self.widgets.get_icon_qt("emblems", "misc"))
-            self.tabs.setTabIcon(2, self.widgets.get_icon_qt("emblems", "software"))
-            self.tabs.setTabIcon(3, self.widgets.get_icon_qt("emblems", "steam"))
-            self.tabs.setTabIcon(4, self.widgets.get_icon_qt("general", "folder"))
-
-        # Prepare tabs for icon sets
-        for widget in [self.icons_tray, self.icons_emblems, self.icons_apps, self.icons_steam, self.icons_custom]:
-            widget.setLayout(QFlowLayout())
+            self.tabs.setTabIcon(self.INDEX_TRAY, self.widgets.get_icon_qt("general", "tray-applet"))
+            self.tabs.setTabIcon(self.INDEX_EMBLEMS, self.widgets.get_icon_qt("emblems", "misc"))
+            self.tabs.setTabIcon(self.INDEX_APPS, self.widgets.get_icon_qt("emblems", "software"))
+            self.tabs.setTabIcon(self.INDEX_STEAM, self.widgets.get_icon_qt("emblems", "steam"))
+            self.tabs.setTabIcon(self.INDEX_CUSTOM, self.widgets.get_icon_qt("general", "folder"))
 
         # Gather icon data
         list_tray = pref.load_file(os.path.join(common.paths.data_dir, "img", "tray", "icons.json"))
         list_emblems = pref.load_file(os.path.join(common.paths.data_dir, "img", "emblems", "icons.json"))
-        if not self.purpose == self.purpose_tray_icon_only:
+        if not self.purpose == self.PURPOSE_TRAY_ONLY:
             list_apps = self._get_application_icons()
             list_steam = self._get_steam_icons()
         list_custom = glob.glob(common.paths.custom_icons + "/*")
+        self.custom_empty = True if len(list_custom) == 0 else False
 
         # Populate icon tabs
         all_icon_buttons = []
-        self._load_icon_set(1, list_emblems)
-        self._load_icon_set(4, list_custom)
-        if self.purpose == self.purpose_tray_icon_only:
-            self._load_icon_set(0, list_tray)
+        self._load_icon_set(self.INDEX_EMBLEMS, list_emblems)
+        self._load_icon_set(self.INDEX_CUSTOM, list_custom)
+        if self.purpose == self.PURPOSE_TRAY_ONLY:
+            self._load_icon_set(self.INDEX_TRAY, list_tray)
         else:
-            self._load_icon_set(2, list_apps)
-            self._load_icon_set(3, list_steam)
+            self._load_icon_set(self.INDEX_APPS, list_apps)
+            self._load_icon_set(self.INDEX_STEAM, list_steam)
 
         # When changing tray applet icon, limit the selection
-        if self.purpose == self.purpose_tray_icon_only:
-            self.tabs.removeTab(2)
-            self.tabs.removeTab(2)
+        if self.purpose == self.PURPOSE_TRAY_ONLY:
+            self.tabs.removeTab(self.INDEX_STEAM)
+            self.tabs.removeTab(self.INDEX_APPS)
         else:
-            self.tabs.removeTab(0)
+            self.tabs.removeTab(self.INDEX_TRAY)
 
         # TODO: Scroll to selected item
 
@@ -1175,20 +1179,12 @@ class IconPicker(object):
             .icon_path      Relative/absolute path
             .tab_index      Tab index (for setting active state)
         """
-        widget = self.tab_index_widgets[tab_index]
-
+        # No icons for category?
         if len(icon_list) == 0:
-            label = QLabel()
-            if tab_index == 3:
-                label.setText(self._("When Steam is installed, icons from your games will appear here."))
-            elif tab_index == 4:
-                label.setText(self._("Drag and drop icons here, or add them by pressing the Import button."))
-            else:
-                label.setText(self._("No icons found!"))
-            label.setAlignment(Qt.AlignCenter)
-            label.setMargin(4)
-            widget.layout().addWidget(label)
-            return
+            return self._load_empty_set(tab_index)
+
+        tab_widget = self.tab_index_widgets[tab_index]
+        tab_widget.setLayout(QFlowLayout())
 
         # Tray applet supports animated GIFs.
         def _load_animated_gif(button):
@@ -1209,7 +1205,7 @@ class IconPicker(object):
         # Populate the list
         for icon_path in icon_list:
             button = self._make_icon_button(icon_path, tab_index)
-            widget.layout().addWidget(button)
+            tab_widget.layout().addWidget(button)
 
             if icon_path.endswith(".gif"):
                 _load_animated_gif(button)
@@ -1220,6 +1216,50 @@ class IconPicker(object):
                 button.setChecked(True)
                 self.tabs.setCurrentIndex(button.tab_index)
                 break
+
+    def _load_empty_set(self, tab_index):
+        """
+        Shows an empty message for the specified tab when there are no icons
+        available to choose from.
+        """
+        tab_widget = self.tab_index_widgets[tab_index]
+        tab_widget.setLayout(QVBoxLayout())
+
+        widget = QWidget()
+        widget.setObjectName("empty_" + str(tab_index))
+        widget.setLayout(QVBoxLayout())
+        widget.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+
+        label = QLabel()
+        label.setWordWrap(True)
+        label.setAlignment(Qt.AlignHCenter)
+        label.setMargin(4)
+
+        images = {
+            self.INDEX_STEAM: common.get_icon("empty", "steam"),
+            self.INDEX_CUSTOM: common.get_icon("empty", "custom"),
+        }
+
+        messages = {
+            self.INDEX_STEAM: self._("When Steam is installed, icons from your games will appear here."),
+            self.INDEX_CUSTOM: self._("Drag and drop icons here, or add them by pressing the Import button.")
+        }
+
+        try:
+            label.setText(messages[tab_index])
+        except KeyError:
+            label.setText(self._("No icons found!"))
+
+        image = QLabel()
+        image.setAlignment(Qt.AlignHCenter)
+        if tab_index in images.keys():
+            image.setPixmap(QPixmap(images[tab_index]))
+
+        widget.layout().addStretch()
+        widget.layout().addWidget(image)
+        widget.layout().addWidget(label)
+        widget.layout().addStretch()
+        return tab_widget.layout().addWidget(widget)
 
     def _make_icon_button(self, icon_path, tab_index):
         """
@@ -1284,6 +1324,13 @@ class IconPicker(object):
         """
         target_path = os.path.join(common.paths.custom_icons, os.path.basename(source_path))
 
+        # Reset layout if new icons are to be added
+        if self.custom_empty:
+            self.custom_empty = False
+            self.icons_custom.findChild(QWidget, "empty_" + str(self.INDEX_CUSTOM)).deleteLater()
+            QWidget().setLayout(self.icons_custom.layout())
+            self.icons_custom.setLayout(QFlowLayout())
+
         # Prevent duplicates
         while os.path.exists(target_path):
             self.dbg.stdout("Custom icon filename already exists: " + target_path, self.dbg.warning, 1)
@@ -1294,7 +1341,7 @@ class IconPicker(object):
             self.dbg.stdout("Adding custom icon: " + source_path, self.dbg.action, 1)
             shutil.copy(source_path, target_path)
             button = self._make_icon_button(target_path, 4)
-            self.tab_index_widgets[4].layout().addWidget(button)
+            self.tab_index_widgets[self.INDEX_CUSTOM].layout().addWidget(button)
 
         # Set as selected
         self.tabs.setCurrentIndex(self.tabs.count() - 1)
@@ -1312,6 +1359,9 @@ class IconPicker(object):
         load_qt_theme(self.appdata, browser)
 
         files = browser.getOpenFileNames(caption=self._("Import Custom Icon"), filter=";;".join(self.custom_icon_filters))[0]
+
+        if len(files) == 0:
+            return
 
         for f in files:
             if f.startswith("/"):
