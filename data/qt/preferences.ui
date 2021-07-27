@@ -44,9 +44,6 @@
        <height>20</height>
       </size>
      </property>
-     <property name="usesScrollButtons">
-      <bool>false</bool>
-     </property>
      <widget class="QWidget" name="controller">
       <attribute name="title">
        <string>Controller</string>
@@ -177,11 +174,20 @@
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
                  <string extracomment="Text appears underneath a checkbox in the preferences dialog">Press Alt to temporarily show the menu bar while it is hidden.</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -504,11 +510,11 @@
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>450</width>
-                  <height>50</height>
-                 </size>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
                 <property name="text">
                  <string>On some desktop environments, due to race conditions, it may be necessary to wait so the applet's icon or device list is loaded properly.</string>

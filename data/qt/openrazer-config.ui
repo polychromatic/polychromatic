@@ -122,6 +122,12 @@
          <property name="enabled">
           <bool>false</bool>
          </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string extracomment="Hint text for configuring OpenRazer">This feature is incompatible. Use &quot;Apply to All&quot; from the Devices tab.</string>
          </property>
@@ -193,6 +199,12 @@
         <widget class="QLabel" name="restore_persistence_note">
          <property name="enabled">
           <bool>false</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
          <property name="text">
           <string>If you have a Polychromatic trigger configured to run at start-up, it is recommended to turn this option off.</string>

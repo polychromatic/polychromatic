@@ -482,6 +482,9 @@ class OpenRazerPreferences(shared.TabData):
                 spinner = self.dialog.findChild(QDoubleSpinBox, filename)
                 spinner.setValue(float(data))
 
+        # TODO: Not implemented yet
+        self.dialog.findChild(QLabel, "restore_persistence_note").setHidden(True)
+
         self.dialog.open()
 
     def _save_and_restart(self):
