@@ -224,6 +224,42 @@ QTabBar::tab:disabled {
     color: $text-disabled;
 }
 
+QTabBar QToolButton {
+    padding: 0;
+
+    &::left-arrow {
+        image: url([data]/qt/assets/arrow_left.svg);
+
+        &:hover {
+            image: url([data]/qt/assets/arrow_left_hover.svg);
+        }
+
+        &:pressed {
+            image: url([data]/qt/assets/arrow_left_pressed.svg);
+        }
+
+        &:disabled {
+            image: url([data]/qt/assets/arrow_left_disabled.svg);
+        }
+    }
+
+    &::right-arrow {
+        image: url([data]/qt/assets/arrow_right.svg);
+
+        &:hover {
+            image: url([data]/qt/assets/arrow_right_hover.svg);
+        }
+
+        &:pressed {
+            image: url([data]/qt/assets/arrow_right_pressed.svg);
+        }
+
+        &:disabled {
+            image: url([data]/qt/assets/arrow_right_disabled.svg);
+        }
+    }
+}
+
 
 /**********************************************************
   Header/Tabs
