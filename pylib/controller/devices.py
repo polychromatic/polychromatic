@@ -1215,6 +1215,7 @@ class DevicesTab(shared.TabData):
         table.setFocus()
         table.setCurrentCell(0, 0)
         self.dialog.adjustSize()
+        self.dialog.resize(QSize(self.dialog.width() + 5, self.dialog.height()))
         self.dialog.setWindowTitle(self._("Inspect Matrix") + " - " + fx.name)
         self.dialog.open()
 
