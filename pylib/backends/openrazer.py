@@ -1051,6 +1051,8 @@ class Backend(_backend.Backend):
 
         if device_name.find("Base Station") != -1:
             form_factor_id = "stand"
+        elif device_name.find("Blade") != -1:
+            form_factor_id = "laptop"
         elif device_name.find("Core") != -1:
             form_factor_id = "gpu"
         elif device_name.find("Nommo") != -1:
