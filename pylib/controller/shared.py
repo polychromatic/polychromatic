@@ -513,6 +513,7 @@ class PolychromaticWidgets(object):
         group.setTitle(title)
         group.setLayout(QGridLayout())
         group.layout().setAlignment(Qt.AlignTop)
+        group.layout().setContentsMargins(QMargins(0, 6, 0, 6))
         return group
 
     def create_row_widget(self, label_text, widgets=[], vertical=False, wrap=False):
@@ -536,8 +537,9 @@ class PolychromaticWidgets(object):
         label = QLabel()
         label.setText(label_text)
         label.setAlignment(Qt.AlignTop)
-        label.setMinimumWidth(150)
-        label.setMaximumWidth(150)
+        label.setWordWrap(True)
+        label.setMinimumWidth(120)
+        label.setMaximumWidth(120)
 
         # Right - Add controls
         inner_widget = QWidget()

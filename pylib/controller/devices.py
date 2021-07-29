@@ -454,7 +454,7 @@ class DevicesTab(shared.TabData):
             button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
             button.setIcon(QIcon(common.get_icon("options", fx_id)))
             button.setMinimumHeight(70)
-            button.setMinimumWidth(70)
+            button.setMinimumWidth(105)
             button.effect = effect
             button.zone = zone
             self.btn_grps[zone].addButton(button)
