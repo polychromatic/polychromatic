@@ -73,7 +73,7 @@
             font-size: 3vh;
             margin: auto;
             color: gray;
-            text-align: center;
+            text-align: right;
             pointer-events: none;
             padding: 0.25vw 0.5vw;
             opacity: 0;
@@ -151,7 +151,7 @@
             // Update the current position text when hovering over an LED.
             // Additionally, if the mouse is being drag clicked, set the LED too.
             //
-            currentPos.innerHTML = `(${element.x}, ${element.y})`;
+            currentPos.innerHTML = `(${element.x}, ${element.y})<br>${_rgbStringToHex(element.style.fill)}`;
             currentPos.classList.add("visible")
 
             if (mouseDown > 0)
@@ -173,6 +173,17 @@
                 g: parseInt(result[2], 16),
                 b: parseInt(result[3], 16)
             } : null;
+        }
+
+        function _rgbStringToHex(string) {
+            rgb = string.replace("rgb(", "").replace(")", "").split(",")
+
+            function toHex(i) {
+                let hex = parseInt(i).toString(16);
+                return hex.length == 1 ? "0" + hex.toUpperCase() : hex.toUpperCase();
+            }
+
+            return "#" + toHex(rgb[0]) + toHex(rgb[1]) + toHex(rgb[2])
         }
 
         function _getTextColour(rgb) {
