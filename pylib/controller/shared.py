@@ -790,7 +790,6 @@ class ColourPicker(object):
         self.callback_fn = callback_fn
         self.callback_data = callback_data
         self.title = title
-        self.saved_colours = pref.load_file(appdata.paths.colours)
         self.monoscale = monoscale
         self.preview = preview
         self.add_mode = "append"
@@ -827,7 +826,6 @@ class ColourPicker(object):
             self.open_save_widget.setDisabled(True)
             self.open_save_widget.setHidden(True)
             self.dialog.findChild(QWidget, "SavedColoursVList").setHidden(True)
-            self.saved_colours = common.get_green_shades(self.appdata._)
 
         # Connect signals when interacting with UI controls
         self.dialog_btns.accepted.connect(self._apply_colour)
@@ -1026,19 +1024,14 @@ class ColourPicker(object):
         """
         self.saved_tree.invisibleRootItem().takeChildren()
 
-        for index, colour in enumerate(self.saved_colours):
-            try:
-                name = colour["name"]
-                value = colour["hex"]
-                if not common.validate_hex(value):
-                    raise KeyError
-            except KeyError:
-                self.appdata.dbg.stdout("colours.json: Discarding invalid data for item {0}: {1}".format(str(index), str(colour)), self.appdata.dbg.error)
-                continue
+        if self.monoscale:
+            colour_list = common.get_green_shades(self.appdata._)
+        else:
+            colour_list = pref.get_colour_list(self.appdata._)
 
-            item = self._add_to_tree(name, value)
-
-            if self.current_hex == item.colour_hex:
+        for index, colour in enumerate(colour_list):
+            item = self._add_to_tree(colour["name"], colour["hex"])
+            if self.current_hex == colour["hex"]:
                 item.setSelected(True)
                 if index > 5:
                     self.saved_tree.scrollToItem(item)

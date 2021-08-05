@@ -395,6 +395,34 @@ def upgrade_old_pref():
     dbg.stdout("Configuration successfully upgraded.", dbg.success)
 
 
+def get_colour_list(_):
+    """
+    Returns the user's saved colour list, validated for consistency.
+    Format: [{"name": <str>, "hex": <str>}, {...}]
+    """
+    colours = []
+    colour_list = load_file(path.colours)
+
+    if not type(colour_list) == list:
+        dbg.stdout("colours.json is malformed! Will backup and reset.", dbg.error)
+        os.renames(path.colours, path.colours + ".bak")
+        init(_)
+        colour_list = load_file(path.colours)
+
+    for colour in colour_list:
+        try:
+            name = colour["name"]
+            value = colour["hex"]
+            if not common.validate_hex(value):
+                raise KeyError
+            colours.append(colour)
+        except (KeyError, TypeError):
+            dbg.stdout("colours.json: Invalid item: {0}".format(str(colour)), dbg.error)
+            continue
+
+    return colours
+
+
 def get_custom_icons():
     """
     Returns a list of all the icons currently stored in the user's "custom icons"

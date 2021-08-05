@@ -942,7 +942,7 @@ if __name__ == "__main__":
 
     # Load data into memory
     prefs = pref.load_file(common.paths.preferences)
-    saved_colours = pref.load_file(common.paths.colours)
+    saved_colours = pref.get_colour_list(_)
     colours_mono = common.get_green_shades(_)
     fileman_effects = effects.EffectFileManagement(i18n, _, dbg)
 
