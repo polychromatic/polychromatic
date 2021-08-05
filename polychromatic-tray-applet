@@ -516,6 +516,7 @@ class PolychromaticTrayApplet():
         if device["matrix"]:
             # FIXME: Consider scripted effects too!
             effect_items = fileman_effects.get_item_list_by_key_filter("map_device", device_name)
+            effect_items = sorted(effect_items, key=lambda item: item["name"])
             effects_menu, effects_menu_item = indicator.create_submenu(_("Effects"), True, self._get_icon("general", "effects"))
 
             if len(effect_items) > 0:
