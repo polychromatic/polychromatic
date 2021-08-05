@@ -646,14 +646,15 @@ class PolychromaticWidgets(object):
         btn.current_hex = current_hex
 
         # Dynamic function allows changing the initial colour upon opening the picker later.
-        def _change_colour(new_hex):
+        def _change_colour(new_hex, data=None):
             btn.current_hex = new_hex
             preview.setStyleSheet("QWidget {{ background-color: {0} }}".format(new_hex))
+            callback_fn(new_hex, data)
         btn.change_colour = _change_colour
 
         # Connect the signal
         def _clicked_change_colour():
-            picker = ColourPicker(self.appdata, callback_fn, callback_data, btn.current_hex, title, monoscale, preview)
+            picker = ColourPicker(self.appdata, _change_colour, callback_data, btn.current_hex, title, monoscale, preview)
         btn.clicked.connect(_clicked_change_colour)
 
         # Put it all together
@@ -844,6 +845,7 @@ class ColourPicker(object):
         self._refresh_selected_colour(current_hex)
         self.saved_tree.setColumnWidth(0, 140)
         self.dialog.setWindowTitle(title)
+        self._select_current_colour()
         self.dialog.exec()
 
     def _switch_colour(self):
@@ -1031,7 +1033,15 @@ class ColourPicker(object):
 
         for index, colour in enumerate(colour_list):
             item = self._add_to_tree(colour["name"], colour["hex"])
-            if self.current_hex == colour["hex"]:
+
+    def _select_current_colour(self):
+        """
+        Once Qt initialises, we're ready to select the current colour from the list.
+        """
+        tree = self.saved_tree.invisibleRootItem()
+        for index, item in enumerate(tree.takeChildren()):
+            tree.addChild(item)
+            if item.colour_hex.upper() == self.current_hex.upper():
                 item.setSelected(True)
                 if index > 5:
                     self.saved_tree.scrollToItem(item)
