@@ -556,6 +556,13 @@ class OpenRazerPreferences(shared.TabData):
         import configparser
         config = configparser.ConfigParser()
         config.read(self.conf_path)
+
+        if group not in config:
+            config[group] = {}
         config[group][key_name] = str(value)
+
+        if not os.path.exists(os.path.dirname(self.conf_path)):
+            os.makedirs(os.path.dirname(self.conf_path))
+
         with open(self.conf_path, "w") as f:
             config.write(f)
