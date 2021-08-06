@@ -762,6 +762,9 @@ class PolychromaticWidgets(object):
 
             msgbox.setIconPixmap(QPixmap(icon_path))
 
+        if self.appdata.system_qt_theme:
+            msgbox.setStyleSheet("QTextEdit { font-family: monospace; }")
+
         dialog_buttons = msgbox.findChild(QDialogButtonBox)
         self.set_dialog_buttons_icons(dialog_buttons)
 
@@ -1220,6 +1223,12 @@ class IconPicker(object):
             if button.icon_path == self.current_icon:
                 button.setChecked(True)
                 self.tabs.setCurrentIndex(button.tab_index)
+
+                if tab_index == self.INDEX_CUSTOM:
+                    self.custom_icon_del.setEnabled(True)
+
+                # TODO: Scroll down to item. Refactor into list widget?
+
                 break
 
     def _load_empty_set(self, tab_index):

@@ -619,11 +619,11 @@ class EffectMetadataEditor(shared.TabData):
         else:
             self.map_graphic_svg.setEnabled(False)
             self.map_graphic_list.setEnabled(False)
-            self.map_graphic_grid.setChecked(self.map_graphic_list.count() == 0)
+            self.map_graphic_grid.setChecked(True)
 
         # For new effects, auto select the first graphic
         if is_new_file:
-            self.map_graphic_svg.setChecked(True)
+            self.map_graphic_svg.setChecked(True if self.map_graphic_list.count() > 0 else False)
             self._auto_detect_suitable_graphic()
 
         # For existing effects, (re)select the correct graphic in list

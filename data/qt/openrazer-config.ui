@@ -183,6 +183,9 @@
             <property name="suffix">
              <string extracomment="Suffix for a spinner control"> seconds</string>
             </property>
+            <property name="maximum">
+             <number>86400</number>
+            </property>
            </widget>
           </item>
          </layout>
