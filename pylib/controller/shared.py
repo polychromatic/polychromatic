@@ -436,7 +436,10 @@ class PolychromaticWidgets(object):
         buttons_widget = summary.findChild(QWidget, "SummaryButtons")
 
         title_widget.setText(title)
-        title_widget.setStyleSheet("QLabel { color: lime; font-size: 17px; }")
+        title_widget.setStyleSheet("QLabel {{ font-size: 17px; {0} }}".format("color: lime;" if not self.appdata.system_qt_theme else ""))
+
+        if self.appdata.system_qt_theme:
+            summary.setStyleSheet("#Summary {{ background: {0} }}".format(summary.palette().alternateBase().color().name()))
 
         # Populate Image
         if os.path.exists(icon_path):
