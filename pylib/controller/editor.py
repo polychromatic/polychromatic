@@ -1059,6 +1059,7 @@ class VisualEffectEditor(shared.TabData):
                 return
 
             self.dbg.stdout("Metadata changed, refreshing...", self.dbg.action, 1)
+            self.action_view_device_graphic.setDisabled(True if not newdata["map_graphic"] else False)
             self.set_modified(True)
             self.data = newdata
             self.view_device_graphic()
