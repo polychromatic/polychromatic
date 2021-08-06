@@ -328,7 +328,7 @@ class DeviceMapGraphics(object):
             return None
 
         with open(os.path.join(self.map_dir, filename)) as f:
-            return str(f.readlines()).replace("\n", "")
+            return " ".join(f.readlines()).replace("\\", "\\\\").replace("\n", "")
 
     def get_svg_grid(self, cols, rows):
         """
