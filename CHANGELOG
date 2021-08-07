@@ -1,3 +1,45 @@
+# 0.7.0
+
+  * Controller: Drop WebKitGTK. Now uses PyQt5.
+  * Controller: New UI design and menus.
+  * Controller: New custom effect editor with support for frame-based animations.
+  * Controller: New device graphics to map against.
+  * Controller: Add option to hide key labels in editor.
+  * Controller: New troubleshooter for OpenRazer.
+  * Controller: New configuration editor for OpenRazer.
+  * Controller: New 'Apply to All' feature.
+  * Controller: New preferences interface.
+  * Controller: New 'Device Info' and 'Inspect Matrix' options.
+  * Controller: New colour picker and saved colour list management.
+  * Controller: New icon picker - add support for (low-res) Steam games and custom icons.
+  * Controller: New DPI picker, with support for independent X/Y axis.
+  * Controller: Warn when using incompatible configuration.
+  * Controller: Add support for native system theme (distro-dependent)
+  * Controller: Add window behaviour and toolbar preferences.
+  * Controller: Add ability to refresh view.
+  * Controller: Drop --print-device-info parameter (use 'Device Info' instead)
+  * Tray: New menu design.
+  * Tray: Add support for GTK Status Icon.
+  * Tray: New option to delay autostart (to fix race conditions)
+  * CLI: New command line interface (polychromatic-cli)
+  * Helper: Replaces the tray applet autostart desktop launcher.
+  * Helper: New background process to run software effects.
+  * OpenRazer: No longer a hard dependency.
+  * OpenRazer: Add support for multizoned hardware.
+  * OpenRazer: Add support for battery status, sleep and low power modes.
+  * Support custom effects for all compatible hardware.
+  * Add option to open mouse preferences.
+  * Add option to define DPI range.
+  * Add information about macros and key remapping.
+  * Add XDG desktop actions to desktop launcher.
+  * New modular backend.
+  * New icons and/or updated.
+  * New (partial) translations: pt_BR, fr_FR, fi_FI, ru, nl, zh_CN
+  * Change shebang to '/usr/bin/python3'
+  * Build: Change build system to meson/ninja.
+  * Build: Switch from 'lessc' to 'sassc'
+  * Build: New locale scripts. Source language is now en_GB.
+
 # 0.3.12
 
   * The DPI/Poll Rate labels were hard to read.
