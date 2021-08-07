@@ -1,4 +1,4 @@
-![Polychromatic](.github/logo.png)
+![Polychromatic](.github/logo.svg)
 
 An open source RGB lighting management front-end application to customise
 [OpenRazer] peripherals on GNU/Linux. Soon to be vendor agnostic!
@@ -6,27 +6,10 @@ An open source RGB lighting management front-end application to customise
 [![Build](https://github.com/polychromatic/polychromatic/workflows/Build/badge.svg?event=push)](https://github.com/polychromatic/polychromatic/actions?query=workflow%3ABuild)
 [![Unit Tests](https://github.com/polychromatic/polychromatic/workflows/Unit%20Tests/badge.svg?event=push)](https://github.com/polychromatic/polychromatic/actions?query=workflow%3A%22Unit+Tests%22)
 [![GitHub Release](https://img.shields.io/github/release/polychromatic/polychromatic.svg)](https://github.com/polychromatic/polychromatic/releases)
-[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/polychromatic/polychromatic/blob/master/LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.8.6-blue.svg)](#)
 
-![Screenshot of Polychromatic's v1.0.0 Controller interface](.github/controller@2x.webp)
-
-<p align="center">
-The next generation of the software (v1.0.0) - not released yet!
-</p>
+![Screenshot of Polychromatic v0.7.0 Controller](.github/controller@2x.webp)
 
 ### [https://polychromatic.app](https://polychromatic.app)
-
----
-
-## v0.3.12 Notice
-
-This README (and branch) is for the next generation of the software still in
-development. For the older release (v0.3.12) designed for Razer BlackWidow Chroma
-and is compatible with most Razer hardware that was supported before 2018, see the
-[stable branch](https://github.com/polychromatic/polychromatic/tree/stable-python38).
-
-v1.0.0 is aimed to be released for beta testing as soon as humanly possible!
 
 
 ## About
@@ -39,27 +22,33 @@ The software aims to make it easy to create and co-ordinate lighting effects
 that work across all compatible hardware, even if you switch to another brand
 also supported by Polychromatic.
 
+<!--
 Presets and triggers enables you to switch your lighting on-the-fly
 to match the application or game that's currently playing.
+-->
 
-[View Features & Screenshots](https://polychromatic.app/about/) (v0.3.12)
+[View Features](https://polychromatic.app/features/) |
+[View Screenshots](https://polychromatic.app/screenshots/) |
+[View FAQs and Documentation](https://docs.polychromatic.app/)
 
 
 ## Device Support
 
-Polychromatic on its own is just a front-end, it needs at least one backend
+Polychromatic on its own is just a frontend, it needs at least one backend
 installed to provide the actual communication with the hardware.
 
 **Currently, [OpenRazer](https://openrazer.github.io) is the only supported
 backend at the moment.** (Being vendor agnostic is a fairly new objective!)
 
-To check your Razer device is supported, check out the
-[supported devices grid](https://openrazer.github.io/#devices) on the OpenRazer website.
+In future, this project would like to add support for:
 
-In future, this project aims to add support for:
+* [OpenRGB](https://github.com/polychromatic/polychromatic/issues/340) - supports many brands, including GPU, MB and RAM modules.
+* [phue](https://github.com/polychromatic/polychromatic/issues/296) - for Philips Hue support
 
-* [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) - supports many brands, including GPU, MB and RAM modules.
-* [Philips Hue (phue)](https://github.com/polychromatic/polychromatic/issues/296)
+> **Note:** Between v0.7.0 and the next version, there will be some major
+> refactoring in the backend classes.
+
+[View Device List](https://polychromatic.app/devices/)
 
 
 ## Download
@@ -73,8 +62,11 @@ the software up-to-date.
 
 Alternately, providing all the [dependencies](https://docs.polychromatic.app/dependencies/)
 are installed, you can run the application directly from the repository without
-installation. The `polychromatic-controller-dev` script will create an isolated
-configuration in `dev/config` as opposed to `~/.config/polychromatic`.
+installation.  Your configuration and cache is isolated to a `savedatadev` directory
+when running via `polychromatic-controller-dev`. To isolate for other components,
+set this environment variable:
+
+    export POLYCHROMATIC_DEV_CFG=true
 
 **Are you on the cutting edge?**
 
@@ -95,7 +87,7 @@ installation. Polychromatic includes a troubleshooter to identify common problem
 Should you still be stuck, [check if an issue already exists](https://github.com/openrazer/openrazer/issues),
 and that your hardware is supported before [creating a new issue](https://github.com/openrazer/openrazer/issues/new).
 
-For bugs with Polychromatic, [please raise an issue here](https://github.com/polychromatic/polychromatic/issues/new).
+For bugs with Polychromatic, [please raise an issue here](https://github.com/polychromatic/polychromatic/issues/).
 
 
 ## Translations
@@ -103,15 +95,11 @@ For bugs with Polychromatic, [please raise an issue here](https://github.com/pol
 The software can speak multiple languages!
 [Here's a guide](https://docs.polychromatic.app/translations/) if you'd like to contribute.
 
-Please note that there may be new and changed strings while this new
-version is being finalized.
-
 
 ## Donations
 
 If you love this software and wish to leave a little something to excite the
 developer, you're welcome to do so [via paypal.me](https://www.paypal.me/LukeHorwell).
 Thank you for your generosity!
-
 
 [OpenRazer]: https://openrazer.github.io
