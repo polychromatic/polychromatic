@@ -1,0 +1,2356 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-23 17:16+0100\n"
+"PO-Revision-Date: 2021-03-27 13:45+0100\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.2\n"
+"Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: nl\n"
+
+#: about.ui.h:1
+msgid "About the Application"
+msgstr "Over dit programma"
+
+#: about.ui.h:2
+msgid "Close"
+msgstr "Sluiten"
+
+#. Column header to view the application's version information
+#: about.ui.h:4
+msgid "Version"
+msgstr "Versie"
+
+#: about.ui.h:5
+msgid "Component"
+msgstr "Onderdeel"
+
+#. Column header to view the application's license information
+#: about.ui.h:7
+msgid "License"
+msgstr "Licentie"
+
+#. Column header to view links for an application or backend
+#: about.ui.h:9
+msgid "Links"
+msgstr "Links"
+
+#: colour-picker.ui.h:1
+msgid "Select a Colour"
+msgstr "Kies een kleur"
+
+#. The currently selected colour in the Colour Picker dialog box
+#: colour-picker.ui.h:3
+msgid "Current"
+msgstr "Huidige kleur"
+
+#. Colour Picker: Tooltip informing the user what the &quot;Change...&quot; button will do
+#: colour-picker.ui.h:5
+msgid "Opens the system's colour picker"
+msgstr "Opent de kleurkiezer van het systeem"
+
+#: colour-picker.ui.h:6
+msgid "Change..."
+msgstr "Wijzigen…"
+
+#. Colour Picker: Tooltip informing the user what the Save colour button does
+#: colour-picker.ui.h:8
+msgid "Save this colour to the saved colour list"
+msgstr "Bewaar deze kleur op de lijst met opgeslagen kleuren"
+
+#: colour-picker.ui.h:9
+msgid "Save"
+msgstr "Opslaan"
+
+#: colour-picker.ui.h:10
+msgid "Saved Colours"
+msgstr "Opgeslagen kleuren"
+
+#: colour-picker.ui.h:11
+msgid "Add the current colour to your saved colours list by giving it a name"
+msgstr ""
+"Voeg de huidige kleur toe aan je opgeslagen kleuren door deze te voorzien "
+"van een naam"
+
+#. Colour Picker: Tooltip informing the user what the Save icon does
+#: colour-picker.ui.h:13
+msgid "Save the current colour to the saved list"
+msgstr "Bewaar de huidige kleur op de lijst met opgeslagen kleuren"
+
+#. Colour Picker: Tooltip informing the user what the Cancel icon does
+#: colour-picker.ui.h:15
+msgid "Cancel saving this colour"
+msgstr "Annuleren"
+
+#. Colour Picker: Tooltip informing the user what the Delete icon does
+#: colour-picker.ui.h:17
+msgid "Forget this colour from the list"
+msgstr "Kleur verwijderen"
+
+#: device-info.ui.h:1
+msgid "Device Information"
+msgstr "Apparaatinformatie"
+
+#. First column header for Device Info
+#: device-info.ui.h:3
+msgid "Data"
+msgstr "Gegevens"
+
+#. Second column header for Device Info
+#: device-info.ui.h:5
+msgid "Value"
+msgstr "Waarde"
+
+#: device-info.ui.h:6
+msgid "Refresh"
+msgstr "Verversen"
+
+#: device-info.ui.h:7
+msgid "Inspect Matrix"
+msgstr "Matrix inspecteren"
+
+#: editor.ui.h:1
+msgid "Effect Editor"
+msgstr "Effectbewerker"
+
+#. The &amp; character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:3
+msgid "&amp;File"
+msgstr "&amp;Bestand"
+
+#. The &amp; character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:5
+msgid "&amp;Edit"
+msgstr "B&amp;ewerken"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:7
+msgid "Shift LEDs"
+msgstr "Kleurrichting verschuiven"
+
+#. The &amp; character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:9
+msgid "&amp;View"
+msgstr "Bee&amp;ld"
+
+#. The &amp; character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:11
+msgid "&amp;Help"
+msgstr "&amp;Hulp"
+
+#. The &amp; character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:13
+msgid "&amp;Tool"
+msgstr "Hulpmi&amp;ddel"
+
+#: editor.ui.h:14
+msgid "Playback"
+msgstr "Afspelen"
+
+#: editor.ui.h:15
+msgid "Layers"
+msgstr "Lagen"
+
+#. Column title in effect editor
+#: editor.ui.h:17
+msgid "Layer"
+msgstr "Laag"
+
+#. Column title in effect editor
+#: editor.ui.h:19
+msgid "Effect"
+msgstr "Effect"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:21
+msgid "Raise the layer in the stack"
+msgstr "Verschuif de laag omhoog"
+
+#: editor.ui.h:22
+msgid "Raise"
+msgstr "Omhoog"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:24
+msgid "Lower the layer in the stack"
+msgstr "Verschuif de laag omlaag"
+
+#: editor.ui.h:25
+msgid "Lower"
+msgstr "Omlaag"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:27
+msgid "Create a new layer in the stack"
+msgstr "Maak een nieuwe laag aan"
+
+#: editor.ui.h:28
+msgid "New"
+msgstr "Nieuw"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:30
+msgid "Delete the selected layer"
+msgstr "Wis de geselecteerde laag"
+
+#: editor.ui.h:31
+msgid "Delete"
+msgstr "Wissen"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:33
+msgid "Duplicate the selected layer"
+msgstr "Kloon de geselecteerde laag"
+
+#: editor.ui.h:34
+msgid "Duplicate"
+msgstr "Klonen"
+
+#: editor.ui.h:35
+msgid "Properties"
+msgstr "Eigenschappen"
+
+#: editor.ui.h:36
+msgid "Main Toolbar"
+msgstr "Hoofdwerkbalk"
+
+#: editor.ui.h:37
+msgid "Frames"
+msgstr "Frames"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:39
+msgid "Create a blank frame after the current position"
+msgstr "Voeg een blanco frame toe na de huidige positie"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:41
+msgid "Permanently delete this frame"
+msgstr "Verwijder dit frame permanent"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:43
+msgid "Create a copy of the current frame after this position"
+msgstr "Voeg een kopie van het huidige frame toe na de huidige positie"
+
+#: editor.ui.h:44
+msgid "Clone"
+msgstr "Klonen"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:46
+msgid "Place this frame a step before the current position"
+msgstr "Plaats dit frame vóór de huidige positie"
+
+#: editor.ui.h:47
+msgid "Move Left"
+msgstr "Naar links verplaatsen"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:49
+msgid "Place this frame a step after the current position"
+msgstr "Plaats dit frame ná de huidige positie"
+
+#: editor.ui.h:50
+msgid "Move Right"
+msgstr "Naar rechts verplaatsen"
+
+#: editor.ui.h:51
+msgid "Jump to the start of the sequence"
+msgstr "Ga naar het begin van de reeks"
+
+#: editor.ui.h:52
+msgid "Jump to Start"
+msgstr "Ga naar begin"
+
+#: editor.ui.h:53
+msgid "Step backward one frame"
+msgstr "Ga één frame terug"
+
+#: editor.ui.h:54
+msgid "Previous Frame"
+msgstr "Vorig frame"
+
+#: editor.ui.h:55
+msgid "Preview the effect from the beginning"
+msgstr "Speel een voorvertoning af vanaf het begin"
+
+#: editor.ui.h:56
+msgid "Play"
+msgstr "Voorvertonen"
+
+#: editor.ui.h:57
+msgid "Stop playback"
+msgstr "Voorvertoning stoppen"
+
+#: editor.ui.h:58
+msgid "Pause"
+msgstr "Onderbreken"
+
+#: editor.ui.h:59
+msgid "Step forward one frame"
+msgstr "Ga één frame vooruit"
+
+#: editor.ui.h:60
+msgid "Next Frame"
+msgstr "Volgend frame"
+
+#: editor.ui.h:61
+msgid "Jump to the last frame of the sequence"
+msgstr "Ga naar het einde van de reeks"
+
+#: editor.ui.h:62
+msgid "Jump to End"
+msgstr "Ga naar einde"
+
+#: editor.ui.h:63
+msgid "Toggle whether this effect should loop"
+msgstr "Geef aan of het effect moet worden herhaald"
+
+#: editor.ui.h:64
+msgid "Loop"
+msgstr "Herhalen"
+
+#: editor.ui.h:65
+msgid ""
+"Frames per second to play the sequence.\n"
+"\n"
+"Note that frame rates that are too high may not\n"
+"play properly due to bottlenecks with the driver, \n"
+"lighting firmware or software. This may potentially\n"
+"shorten the LED's lifespan."
+msgstr ""
+"Het aantal frames per seconde waarmee de reeks moet worden afgespeeld.\n"
+"\n"
+"Let op: hogere framesnelheden kunnen mogelijk tot\n"
+"problemen leiden omdat het stuurprogramma, de\n"
+"firmware of software dit niet aankan. Ook kan het leiden\n"
+"tot een kortere levensduur van de ledverlichting."
+
+#: editor.ui.h:71
+msgid "Frames per second to play the sequence"
+msgstr "Aantal frames per seconde waarmee de reeks moet worden afgespeeld"
+
+#: editor.ui.h:72
+msgid "fps"
+msgstr "fps"
+
+#: editor.ui.h:73
+msgid "Colours"
+msgstr "Kleuren"
+
+#. Menu bar item
+#: editor.ui.h:75
+msgid "Save and Close"
+msgstr "Opslaan en sluiten"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:77
+msgid "Save the effect to disk, and close the editor"
+msgstr "Sla het effect op op de schijf en sluit de bewerker"
+
+#: editor.ui.h:78
+msgid "Ctrl+W"
+msgstr "Ctrl+W"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:82
+msgid "Save any unsaved data to disk, just in case!"
+msgstr "Sla voor alle zekerheid niet-opgeslagen gegevens op!"
+
+#. Menu bar item - User wishes to discard their changes
+#: editor.ui.h:84
+msgid "Revert"
+msgstr "Terugdraaien"
+
+#: editor.ui.h:85
+msgid "Undo any changes and reload from disk"
+msgstr "Maak alle wijzigingen ongedaan en herlaad vanaf schijf"
+
+#: editor.ui.h:86
+msgid "F5"
+msgstr "F5"
+
+#. Menu bar item
+#: editor.ui.h:88
+msgid "Close and Discard Changes"
+msgstr "Sluiten en wijzigingen verwerpen"
+
+#: editor.ui.h:89
+msgid "Close the editor and discard any unsaved changes"
+msgstr "Sluit de bewerker en verwerp niet-opgeslagen wijzigingen"
+
+#: editor.ui.h:90
+msgid "Ctrl+Q"
+msgstr "Ctrl+Q"
+
+#. Menu bar item
+#: editor.ui.h:92
+msgid "Draw"
+msgstr "Tekenen"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:94
+msgid "Draw the selected colour to LEDs by clicking or dragging over them"
+msgstr ""
+"Voorzie de ledverlichting van een kleur door de ledlampjes aan te klikken of "
+"eroverheen te tekenen"
+
+#. Menu bar item
+#: editor.ui.h:96
+msgid "Picker"
+msgstr "Kiezer"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:98
+msgid "Take an existing colour from an LED to draw with"
+msgstr "Kies een bestaande tekenkleur uit een ledlampje"
+
+#. Menu bar item
+#: editor.ui.h:100
+msgid "Eraser"
+msgstr "Gum"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:102
+msgid "Erase the colour from an LED by clicking or dragging over them"
+msgstr ""
+"Wis de kleur van een ledlampje door deze aan te klikken of eroverheen te "
+"gummen"
+
+#. Menu bar toggle
+#: editor.ui.h:104
+msgid "Device Graphic"
+msgstr "Apparaatafbeelding"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:106
+msgid ""
+"Present the LEDs as a graphical represention of the actual hardware (where "
+"available)"
+msgstr "Toon de ledverlichting zoals op de hardware zelf (indien beschikbaar)"
+
+#. Menu bar toggle
+#: editor.ui.h:108
+msgid "Grid"
+msgstr "Rooster"
+
+#: editor.ui.h:109
+msgid "Present the LEDs in a grid"
+msgstr "Toon de ledverlichting op een rooster"
+
+#: editor.ui.h:110
+msgid "Edit Metadata..."
+msgstr "Metagegevens aanpassen…"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:112
+msgid "Edit the name, icon and other related data for this effect"
+msgstr ""
+"Voer de naam, het pictogram en andere bijbehorende gegevens in van dit effect"
+
+#: editor.ui.h:113
+msgid "Duplicate Layer"
+msgstr "Laag klonen"
+
+#: editor.ui.h:114
+msgid "Delete Layer"
+msgstr "Laag wissen"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:116
+msgid "Permanently delete the selected layer"
+msgstr "Wis de geselecteerde laag permanent"
+
+#: editor.ui.h:117
+msgid "Del"
+msgstr "Del"
+
+#: editor.ui.h:118
+msgid "Raise Layer"
+msgstr "Omhoog"
+
+#: editor.ui.h:119
+msgid "Lower Layer"
+msgstr "Omlaag"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:121
+msgid "Shift Left"
+msgstr "Naar links"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:123
+msgid "Push all LEDs on this layer/frame by one column to the left"
+msgstr "Verschuif alle ledlampjes op deze laag/dit frame één kolom naar links"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:125
+msgid "Shift Right"
+msgstr "Naar rechts"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:127
+msgid "Push all LEDs on this layer/frame by one column to the right"
+msgstr "Verschuif alle ledlampjes op deze laag/dit frame één kolom naar rechts"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:129
+msgid "Shift Up"
+msgstr "Omhoog"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:131
+msgid "Push all LEDs on this layer/frame by one row upwards"
+msgstr "Verschuif alle ledlampjes op deze laag/dit frame één rij omhoog"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:133
+msgid "Shift Down"
+msgstr "Omlaag"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:135
+msgid "Push all LEDs on this layer/frame by one row downwards"
+msgstr "Verschuif alle ledlampjes op deze laag/dit frame één rij omlaag"
+
+#: editor.ui.h:136
+msgid "New Layer..."
+msgstr "Nieuwe laag…"
+
+#: editor.ui.h:137
+msgid "Reset Dock Positions"
+msgstr "Standaard dockposities herstellen"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:139
+msgid "Reset your workspace back to the default view"
+msgstr "Zet het werkblad terug op de standaardweergave"
+
+#: editor.ui.h:140
+msgid "Zoom In"
+msgstr "Inzoomen"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:142
+msgid "Enlarge the graphic or grid in the viewport"
+msgstr "Vergroot de afbeelding of het rooster"
+
+#: editor.ui.h:143
+msgid "Zoom Out"
+msgstr "Uitzoomen"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:145
+msgid "Shrink the graphic or grid in the viewport"
+msgstr "Verklein de afbeelding of het rooster"
+
+#: editor.ui.h:146
+msgid "Reset Zoom"
+msgstr "Standaard zoomniveau"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:148
+msgid "Reset the size of the graphic or grid in the viewport"
+msgstr "Zet de afbeelding of het rooster terug op het standaard zoomniveau"
+
+#: editor.ui.h:149
+msgid "Move Frame Left"
+msgstr "Naar links verplaatsen"
+
+#: editor.ui.h:150
+msgid "Move Frame Right"
+msgstr "Naar rechts verplaatsen"
+
+#: editor.ui.h:151
+msgid "Online Help"
+msgstr "Online-hulp"
+
+#: editor.ui.h:152
+msgid "Website"
+msgstr "Website"
+
+#: editor.ui.h:153
+msgid "What's New?"
+msgstr "Wat is er nieuw?"
+
+#: editor.ui.h:154
+msgid "Report a Bug"
+msgstr "Bug melden"
+
+#: editor.ui.h:155
+msgid "Donate"
+msgstr "Doneren"
+
+#: editor.ui.h:156
+msgid "About"
+msgstr "Over"
+
+#: editor.ui.h:157
+msgid "Edit Triggers..."
+msgstr "Triggers bewerken…"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:159
+msgid ""
+"Configure automation for this effect, such as time of day, or when a process "
+"is running"
+msgstr ""
+"Automatiseer het effect, bijv. door een tijdstip in te stellen of bij welk "
+"proces het moet worden getoond"
+
+#: editor.ui.h:160
+msgid "New Frame"
+msgstr "Nieuw frame"
+
+#: editor.ui.h:161
+msgid "Delete Frame"
+msgstr "Frame verwijderen"
+
+#: editor.ui.h:162
+msgid "Clone Frame"
+msgstr "Frame klonen"
+
+#: editor.ui.h:163
+msgid "Start playback"
+msgstr "Voorvertoning starten"
+
+#: editor.ui.h:164
+msgid "F8"
+msgstr "F8"
+
+#: editor.ui.h:165
+msgid "Stop"
+msgstr "Stoppen"
+
+#: editor.ui.h:166
+msgid "Pause playback"
+msgstr "Voorvertoning onderbreken"
+
+#: editor.ui.h:167
+msgid "Left"
+msgstr "Links"
+
+#: editor.ui.h:168
+msgid "Right"
+msgstr "Rechts"
+
+#: editor.ui.h:169
+msgid "Home"
+msgstr "Home"
+
+#: editor.ui.h:170
+msgid "End"
+msgstr "End"
+
+#: editor.ui.h:171
+msgid "Show Key Labels"
+msgstr "Toetslabels tonen"
+
+#: editor.ui.h:172
+msgid "Show or hide the labels and symbols on keys"
+msgstr "Toont of verberg toetslabels en -symbolen"
+
+#: editor.ui.h:173
+msgid "F6"
+msgstr "F6"
+
+#: effect-metadata-editor.ui.h:1
+msgid "Edit Metadata"
+msgstr "Metagegevens aanpassen"
+
+#: effect-metadata-editor.ui.h:2
+msgid "Effect Details"
+msgstr "Effectdetails"
+
+#: effect-metadata-editor.ui.h:3
+msgid "Name"
+msgstr "Naam"
+
+#. Placeholder example text for an effect name
+#: effect-metadata-editor.ui.h:5
+msgid "Untitled Effect"
+msgstr "Naamloos effect"
+
+#: effect-metadata-editor.ui.h:6
+msgid "Author"
+msgstr "Maker"
+
+#: effect-metadata-editor.ui.h:7
+msgid "Author URL"
+msgstr "Website van maker"
+
+#: effect-metadata-editor.ui.h:8
+msgid "Icon"
+msgstr "Pictogram"
+
+#: effect-metadata-editor.ui.h:9
+msgid "Summary"
+msgstr "Samenvatting"
+
+#: effect-metadata-editor.ui.h:10
+msgid "Hardware"
+msgstr "Hardware"
+
+#: effect-metadata-editor.ui.h:11
+msgid "Device"
+msgstr "Apparaat"
+
+#: effect-metadata-editor.ui.h:12
+msgid "Mapping"
+msgstr "Toewijzing"
+
+#: effect-metadata-editor.ui.h:13
+msgid "Use a graphic resembling this device:"
+msgstr "Toon een afbeelding van het apparaat:"
+
+#: effect-metadata-editor.ui.h:14
+msgid "Use a grid"
+msgstr "Toon een rooster"
+
+#: effect-metadata-editor.ui.h:15
+msgid "Preview"
+msgstr "Voorvertoning"
+
+#. Appears at the top of the icon picker when the user selects a GIF as their tray icon
+#: icon-picker.ui.h:2
+msgid "Heads up! Animated GIFs are not supported by all desktop environments."
+msgstr ""
+"Let op: bewegende gif-afbeeldingen worden niet door alle werkomgevingen "
+"ondersteund."
+
+#: icon-picker.ui.h:3
+msgid "Tray Applet"
+msgstr "Systeemvakpictogram"
+
+#. Icon Picker: Tab name for built-in graphics
+#: icon-picker.ui.h:5
+msgid "Emblems"
+msgstr "Emblemen"
+
+#. Icon Picker: Tab name for software installed on the user's system
+#: icon-picker.ui.h:7
+msgid "Applications"
+msgstr "Programma's"
+
+#. Icon Picker: Tab name for the user to store their own icons
+#: icon-picker.ui.h:9
+msgid "Custom"
+msgstr "Aangepast"
+
+#. Tooltip hovering over the icon picker's browse button
+#: icon-picker.ui.h:11
+msgid "Browse for an icon to import"
+msgstr "Kies een te importeren pictogram"
+
+#. Tooltip hovering over the icon picker's delete button
+#: icon-picker.ui.h:13
+msgid "Delete this custom icon from your list"
+msgstr "Verwijder dit pictogram van de lijst"
+
+#. Help text when inspecting a device's matrix
+#: inspect-matrix.ui.h:2
+msgid ""
+"Use the arrow keys, click or drag on the table below to light up that LED on "
+"the physical device."
+msgstr ""
+"Gebruik de pijltjestoetsen, klik of sleep op de tabel om het ledlampje op "
+"het apparaat op te laten lichten."
+
+#. Generic loading text
+#: loading.ui.h:2
+msgid "Please wait..."
+msgstr "Even geduld…"
+
+#: main.ui.h:1
+msgid "Polychromatic"
+msgstr "Polychromatic"
+
+#: main.ui.h:2
+msgid "Devices"
+msgstr "Apparaten"
+
+#: main.ui.h:3
+msgid "Effects"
+msgstr "Effecten"
+
+#: main.ui.h:4
+msgid "Presets"
+msgstr "Voorinstellingen"
+
+#: main.ui.h:5
+msgid "Triggers"
+msgstr "Triggers"
+
+#. Heading containing buttons for the specific feature
+#: main.ui.h:7
+msgid "Tasks"
+msgstr "Taken"
+
+#. Button to a section for activating settings to all devices
+#: main.ui.h:9
+msgid "Apply to All"
+msgstr "Toepassen op alles"
+
+#: main.ui.h:10
+msgid "Close Application"
+msgstr "Programma sluiten"
+
+#. The &amp; character is for keyboard navigation (when holding the ALT key)
+#: main.ui.h:18
+msgid "&amp;Tools"
+msgstr "Hulpmi&amp;ddelen"
+
+#: main.ui.h:19
+msgid "OpenRazer"
+msgstr "OpenRazer"
+
+#: main.ui.h:20
+msgid "Troubleshoot"
+msgstr "Probleemoplossing"
+
+#: main.ui.h:23
+msgid "New Effect..."
+msgstr "Nieuw effect…"
+
+#: main.ui.h:24
+msgid "Ctrl+N"
+msgstr "Ctrl+N"
+
+#: main.ui.h:26
+msgid "F1"
+msgstr "F1"
+
+#: main.ui.h:27
+msgid "Report a Bug..."
+msgstr "Bug melden…"
+
+#: main.ui.h:28
+msgid "About OpenRazer"
+msgstr "Over OpenRazer"
+
+#: main.ui.h:29
+msgid "About Polychromatic"
+msgstr "Over Polychromatic"
+
+#: main.ui.h:30
+msgid "Visit Website"
+msgstr "Website openen"
+
+#: main.ui.h:31
+msgid "Quit"
+msgstr "Afsluiten"
+
+#: main.ui.h:34
+msgid "Hide Menu Bar"
+msgstr "Menubalk verbergen"
+
+#: main.ui.h:38
+msgid "Restart Daemon"
+msgstr "Achtergronddienst herstarten"
+
+#: main.ui.h:39
+msgid "Open Log File"
+msgstr "Logboek openen"
+
+#: main.ui.h:40
+msgid "Edit Configuration"
+msgstr "Instellingen aanpassen"
+
+#: main.ui.h:42
+msgid "Troubleshoot..."
+msgstr "Probleemoplossing…"
+
+#: main.ui.h:43
+msgid "Open Log..."
+msgstr "Logboek openen…"
+
+#: main.ui.h:44
+msgid "Configure..."
+msgstr "Instellen…"
+
+#: main.ui.h:45
+msgid "New Preset..."
+msgstr "Nieuwe voorinstelling…"
+
+#: main.ui.h:46
+msgid "New Preset from Current Devices..."
+msgstr "Nieuwe voorinstelling op basis van huidige apparaten…"
+
+#: main.ui.h:47
+msgid "Restart Tray Applet"
+msgstr "Systeemvakpictogram herstarten"
+
+#: main.ui.h:48
+msgid "View Background Tasks"
+msgstr "Achtergrondtaken tonen"
+
+#: main.ui.h:49
+msgid "Keep the Menu Bar"
+msgstr "Menubalk tonen"
+
+#: main.ui.h:52
+msgid "Preferences"
+msgstr "Instellingen"
+
+#. Troubleshoot option
+#: main.ui.h:54
+msgid "OpenRazer Driver/Daemon"
+msgstr "OpenRazer-stuurprogramma/-achtergronddienst"
+
+#: main.ui.h:56
+msgid "Import Effect..."
+msgstr "Effect importeren…"
+
+#: new-effect.ui.h:1
+msgid "New Effect"
+msgstr "Nieuw effect"
+
+#. Shown when creating a new effect
+#: new-effect.ui.h:3
+msgid "Please choose the type of effect to create."
+msgstr "Kies het soort effect dat je wilt creëren."
+
+#: new-effect.ui.h:4
+msgid "Create simple effects using a layer-based system"
+msgstr "Creëer eenvoudig effecten middels een op lagen gebaseerd systeem"
+
+#. Button when creating a new effect
+#: new-effect.ui.h:6
+msgid "Layered"
+msgstr "Lagen"
+
+#: new-effect.ui.h:7
+msgid "Create an animated (or static) using frames and pixels"
+msgstr "Creëer een bewegend (of statisch) effect middels frames en pixels"
+
+#. Button when creating a new effect
+#: new-effect.ui.h:9
+msgid "Sequence"
+msgstr "Reeks"
+
+#: new-effect.ui.h:10
+msgid "Write the effect using the Python programming language"
+msgstr "Programmeer een effect met de Python-programmeertaal"
+
+#. Button when creating a new effect
+#: new-effect.ui.h:12
+msgid "Script"
+msgstr "Script"
+
+#. Shown when creating a new effect
+#: new-effect.ui.h:14
+msgid "Hover for more details"
+msgstr "Houdt de cursor erboven voor meer informatie"
+
+#: openrazer-config.ui.h:1
+msgid "OpenRazer Configuration"
+msgstr "OpenRazer-instellingen"
+
+#: openrazer-config.ui.h:2
+msgid ""
+"These settings only apply to the OpenRazer daemon. They are not supported by "
+"this application."
+msgstr ""
+"Deze instellingen zijn alleen van toepassing op de OpenRazer-"
+"achtergronddienst en worden niet ondersteund door dit programma."
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:4
+msgid "Enable verbose logging"
+msgstr "Uitgebreid logboek aanleggen"
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:6
+msgid "Sync effects across devices"
+msgstr "Effecten synchroon laten lopen tussen apparaten"
+
+#. Hint text for configuring OpenRazer
+#: openrazer-config.ui.h:8
+msgid ""
+"This option is automatically disabled as it impairs Polychromatic's "
+"operation.\n"
+"Use &quot;Apply to All&quot; instead."
+msgstr ""
+"Deze instelling is automatisch uitgeschakeld omdat Polychromatic hier niet "
+"mee om kan gaan.\n"
+"Gebruik in plaats daarvan &quot;Toepassen op alles&quot;."
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:11
+msgid "Turn off devices when screen saver / lock screen is present"
+msgstr ""
+"Apparaten uitschakelen als de schermbeveiliging of het vergrendelscherm "
+"actief is"
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:13
+msgid "Periodically notify battery status (for supported devices)"
+msgstr "Batterijniveau tonen via melding (alleen ondersteunde apparaten)"
+
+#. Label for configuring OpenRazer
+#: openrazer-config.ui.h:15
+msgid "Notification Frequency"
+msgstr "Meldingsfrequentie"
+
+#. Suffix for a spinner control
+#: openrazer-config.ui.h:17
+msgid "seconds"
+msgstr "seconden"
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:19
+msgid "Enable key statistics"
+msgstr "Toetsstatistieken bijhouden"
+
+#. Hint text for configuring OpenRazer
+#: openrazer-config.ui.h:21
+msgid ""
+"Collects number of keypresses per hour per key to generate a heatmap. This "
+"is currently unused."
+msgstr ""
+"Verzamelt het aantal toetsaanslagen per uur om een overzichtskaart samen te "
+"stellen. Momenteel werkt dit nog niet."
+
+#. Tab button for configuring OpenRazer
+#: openrazer-config.ui.h:23
+msgid "Client"
+msgstr "Client"
+
+#: openrazer-config.ui.h:24
+msgid ""
+"These settings will be used by Polychromatic when interfacing with the "
+"OpenRazer daemon."
+msgstr ""
+"Deze instellingen worden gebruikt door Polychromatic tijdens het "
+"communiceren met de OpenRazer-achtergronddienst."
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:26
+msgid "Download device images"
+msgstr "Apparaatafbeeldingen opslaan"
+
+#. Hint text for configuring OpenRazer
+#: openrazer-config.ui.h:28
+msgid ""
+"OpenRazer stores image URLs pointing to a CDN. These images may be "
+"proprietary. This application retrieves images for your devices once and "
+"caches them locally."
+msgstr ""
+"OpenRazer bewaart afbeeldingslinks die verwijzen naar een CDN. Deze "
+"afbeeldingen kunnen een niet-vrije licentie hebben. Dit programma haalt "
+"afbeeldingen eenmaal op en cachet ze lokaal."
+
+#. Label for configuring OpenRazer
+#: openrazer-config.ui.h:30
+msgid "Ripple Refresh Rate"
+msgstr "Rimpel-ververssnelheid"
+
+#: preferences.ui.h:2
+msgid "General"
+msgstr "Algemeen"
+
+#. Preferences Label
+#: preferences.ui.h:4
+msgid "Appearance"
+msgstr "Vormgeving"
+
+#. Preferences Checkbox
+#: preferences.ui.h:6
+msgid "Use system Qt theme"
+msgstr "Qt-systeemthema gebruiken"
+
+#. Preferences Checkbox
+#: preferences.ui.h:8
+msgid "Hide menu bar"
+msgstr "Menubalk verbergen"
+
+#. Preferences Tip
+#: preferences.ui.h:10
+msgid "Press Alt to temporarily show the menu bar while it is hidden."
+msgstr "Druk op Alt om de menubalk tijdelijk te tonen als deze verborgen is."
+
+#. Preferences Label
+#: preferences.ui.h:12
+msgid "Landing Tab"
+msgstr "Standaard tabblad"
+
+#. Preferences Label
+#: preferences.ui.h:18
+msgid "Window Behaviour"
+msgstr "Venstergedrag"
+
+#. Preferences dropdown option
+#: preferences.ui.h:20
+msgid "Always open in the center"
+msgstr "Altijd op midden van scherm plaatsen"
+
+#. Preferences dropdown option
+#: preferences.ui.h:22
+msgid "Remember last position and size"
+msgstr "Recentste vensterpositie en -grootte onthouden"
+
+#. Preferences dropdown option
+#: preferences.ui.h:24
+msgid "Let the window manager decide"
+msgstr "Instellingen van vensterbeheerder volgen"
+
+#. Button
+#: preferences.ui.h:28
+msgid "Reset to Default Colours"
+msgstr "Standaardkleuren terugzetten"
+
+#: preferences.ui.h:29
+msgid "Follow System Style"
+msgstr "Systeeminstelling gebruiken"
+
+#: preferences.ui.h:30
+msgid "Icons Only"
+msgstr "Alleen pictogrammen"
+
+#: preferences.ui.h:31
+msgid "Text Only"
+msgstr "Alleen tekst"
+
+#: preferences.ui.h:32
+msgid "Text Alongside Icons"
+msgstr "Tekst naast pictogrammen"
+
+#: preferences.ui.h:33
+msgid "Text Under Icons"
+msgstr "Tekst onder pictogrammen"
+
+#: preferences.ui.h:34
+msgid "Toolbar"
+msgstr "Werkbalk"
+
+#. Preferences Label
+#: preferences.ui.h:37
+msgid "Behaviour"
+msgstr "Gedrag"
+
+#: preferences.ui.h:38
+msgid "Start the tray applet when I log on"
+msgstr "Systeemvakpictogram automatisch opstarten"
+
+#. Preferences Label
+#: preferences.ui.h:40
+msgid "Renderer"
+msgstr "Renderer"
+
+#: preferences.ui.h:41
+msgid "Default (AppIndicator3)"
+msgstr "Standaard (AppIndicator3)"
+
+#: preferences.ui.h:42
+msgid "GTK Status Icon (Legacy)"
+msgstr "GTK-statuspictogram (verouderd)"
+
+#. Preferences Label
+#: preferences.ui.h:45
+msgid "Autostart Delay"
+msgstr "Vertraging automatisch opstarten"
+
+#. Suffix for a spinner control
+#: preferences.ui.h:47
+msgid "second(s)"
+msgstr "seconde(n)"
+
+#: preferences.ui.h:48
+msgid ""
+"On some desktop environments, due to race conditions, it may be necessary to "
+"wait so the applet's icon or device list is loaded properly."
+msgstr ""
+"Op sommige werkomgevingen, in specifieke gevallen, kan het nodig zijn om het "
+"automatisch opstarten te vertragen om het systeemvakpictogram juist te laten "
+"werken."
+
+#: preferences.ui.h:49
+msgid "Editor"
+msgstr "Bewerker"
+
+#: preferences.ui.h:50
+msgid "Preview effect on the actual hardware"
+msgstr "Effect voorvertonen op de hardware zelf"
+
+#: preferences.ui.h:51
+msgid "Use system cursors"
+msgstr "Systeemcursors gebruiken"
+
+#: preferences.ui.h:52
+msgid "Suppress confirmation dialog boxes"
+msgstr "Geen bevestigingsvensters tonen"
+
+#: preferences.ui.h:53
+msgid "Hide key labels for keyboards and keypads"
+msgstr "Toetslabels op toetsenborden en numpads verbergen"
+
+#: preferences.ui.h:54
+msgid "Backends"
+msgstr "Backends"
+
+#: procviewer.ui.h:1
+msgid "Background Tasks"
+msgstr "Achtergrondtaken"
+
+#. Informative text in the Process Viewer window
+#: procviewer.ui.h:3
+msgid ""
+"To provide background features (like software effects and triggers), "
+"additional processes may be spawned."
+msgstr ""
+"Er kunnen aanvullende processen benodigd zijn om bepaalde achtergrondtaken "
+"uit te voeren (zoals effecten en aanroepingen)."
+
+#. Column header for Process Viewer window
+#: procviewer.ui.h:5
+msgid "Task"
+msgstr "Taak"
+
+#. Button to restart all background tasks
+#: procviewer.ui.h:9
+msgid "Restart All"
+msgstr "Alles herstarten"
+
+#: pylib/backends/openrazer.py:259 pylib/backends/openrazer.py:272
+msgid "Brightness"
+msgstr "Helderheid"
+
+#: pylib/backends/openrazer.py:282
+msgid "None"
+msgstr "Geen"
+
+#: pylib/backends/openrazer.py:283
+msgid "Spectrum"
+msgstr "Spectrum"
+
+#: pylib/backends/openrazer.py:284
+msgid "Wave"
+msgstr "Golf"
+
+#: pylib/backends/openrazer.py:285
+msgid "Reactive"
+msgstr "Reactief"
+
+#: pylib/backends/openrazer.py:286
+msgid "Breath"
+msgstr "Adem"
+
+#: pylib/backends/openrazer.py:287
+msgid "Ripple"
+msgstr "Rimpel"
+
+#: pylib/backends/openrazer.py:288
+msgid "Starlight"
+msgstr "Ster"
+
+#: pylib/backends/openrazer.py:289
+msgid "Pulsate"
+msgstr "Pulseren"
+
+#: pylib/backends/openrazer.py:290
+msgid "Blink"
+msgstr "Knipperen"
+
+#: pylib/backends/openrazer.py:291
+msgid "Static"
+msgstr "Statisch"
+
+#: pylib/backends/openrazer.py:308 pylib/backends/openrazer.py:987
+msgid "Unknown"
+msgstr "Onbekend"
+
+#: pylib/backends/openrazer.py:320
+msgid "Up"
+msgstr "Omhoog"
+
+#: pylib/backends/openrazer.py:322
+msgid "Down"
+msgstr "Omlaag"
+
+#: pylib/backends/openrazer.py:326
+msgid "Clockwise"
+msgstr "Naar rechts draaien"
+
+#: pylib/backends/openrazer.py:328
+msgid "Anti-clockwise"
+msgstr "Naar links draaien"
+
+#: pylib/backends/openrazer.py:351 pylib/backends/openrazer.py:421
+#: pylib/backends/openrazer.py:457
+msgid "Random"
+msgstr "Willekeurig"
+
+#: pylib/backends/openrazer.py:360 pylib/backends/openrazer.py:422
+#: pylib/backends/openrazer.py:458
+msgid "Single"
+msgstr "Eentonig"
+
+#: pylib/backends/openrazer.py:370 pylib/backends/openrazer.py:463
+msgid "Fast"
+msgstr "Snel"
+
+#: pylib/backends/openrazer.py:377 pylib/backends/openrazer.py:464
+msgid "Medium"
+msgstr "Gemiddeld"
+
+#: pylib/backends/openrazer.py:384 pylib/backends/openrazer.py:465
+msgid "Slow"
+msgstr "Langzaam"
+
+#: pylib/backends/openrazer.py:391
+msgid "Very Slow"
+msgstr "Erg langzaam"
+
+#: pylib/backends/openrazer.py:423 pylib/backends/openrazer.py:459
+msgid "Dual"
+msgstr "Tweetonig"
+
+#: pylib/backends/openrazer.py:424
+msgid "Triple"
+msgstr "Drietonig"
+
+#: pylib/backends/openrazer.py:499
+msgid "Game Mode"
+msgstr "Gamemodus"
+
+#: pylib/backends/openrazer.py:533
+msgid "Poll Rate"
+msgstr "Peilsnelheid"
+
+#: pylib/backends/openrazer.py:575 pylib/backends/openrazer.py:584
+msgid "(Multiple)"
+msgstr "(meerdere)"
+
+#: pylib/backends/openrazer.py:589
+msgid "On"
+msgstr "Aan"
+
+#: pylib/backends/openrazer.py:594
+msgid "Off"
+msgstr "Uit"
+
+#: pylib/backends/openrazer.py:606
+msgid "Game Mode Enabled"
+msgstr "Gamemodus ingeschakeld"
+
+#: pylib/backends/openrazer.py:976
+msgid "Logo"
+msgstr "Logo"
+
+#: pylib/backends/openrazer.py:977
+msgid "Scroll Wheel"
+msgstr "Scrollwiel"
+
+#: pylib/backends/openrazer.py:978
+msgid "Backlight"
+msgstr "Achtergrondverlichting"
+
+#: pylib/backends/openrazer.py:990
+msgid "Hex Ring"
+msgstr "Hexagonale ring"
+
+#: pylib/backends/openrazer.py:994
+msgid "Laptop Lid"
+msgstr "Laptopdeksel"
+
+#: pylib/common.py:164
+msgid "USB Accessory"
+msgstr "USB-accessoire"
+
+#: pylib/common.py:165
+msgid "Keyboard"
+msgstr "Toetsenbord"
+
+#: pylib/common.py:166
+msgid "Mouse"
+msgstr "Muis"
+
+#: pylib/common.py:167
+msgid "Mousemat"
+msgstr "Muismat"
+
+#: pylib/common.py:168
+msgid "Keypad"
+msgstr "Numpad"
+
+#: pylib/common.py:169
+msgid "Headset"
+msgstr "Koptelefoon"
+
+#: pylib/common.py:170
+msgid "External Graphics Enclosure"
+msgstr "Behuizing van externe videokaart"
+
+#: pylib/common.py:171
+msgid "Unrecognised"
+msgstr "Niet-herkend"
+
+#: pylib/common.py:191
+msgid "Green"
+msgstr "Groen"
+
+#: pylib/controller/devices.py:142
+msgid ""
+"An error occurred while reading this device. This could be either be a bug "
+"in Polychromatic or the [] backend."
+msgstr ""
+"Er is een fout opgetreden tijdens het herkennen van dit apparaat. Dit kan "
+"wijzen op een bug in Polychromatic of het []-backend."
+
+#: pylib/controller/devices.py:143
+msgid ""
+"Try switching to this device again. If this keeps happening, raise an issue "
+"on the relevant project's repository."
+msgstr ""
+"Probeer dit apparaat opnieuw te kiezen. Als het probleem zich blijft "
+"voortdoen, open dan een 'issue' op de projectpagina."
+
+#: pylib/controller/devices.py:145 pylib/controller/devices.py:583
+msgid "Backend Error"
+msgstr "Backendfout"
+
+#: pylib/controller/devices.py:176
+msgid "Preset:"
+msgstr "Voorinstelling:"
+
+#: pylib/controller/devices.py:188
+msgid "Playing:"
+msgstr "Aan het afspelen:"
+
+#: pylib/controller/devices.py:200
+msgid "Device Info"
+msgstr "Apparaatinformatie"
+
+#: pylib/controller/devices.py:331
+msgid "Enabled"
+msgstr "Ingeschakeld"
+
+#: pylib/controller/devices.py:481
+msgid "Effect Mode"
+msgstr "Effectmodus"
+
+#: pylib/controller/devices.py:491
+msgid "Primary Colour"
+msgstr "Primaire kleur"
+
+#: pylib/controller/devices.py:492
+msgid "Secondary Colour"
+msgstr "Secundaire kleur"
+
+#: pylib/controller/devices.py:493
+msgid "Tertiary Colour"
+msgstr "Tertiaire kleur"
+
+#: pylib/controller/devices.py:498
+msgid "Colour []"
+msgstr "Kleur: []"
+
+#: pylib/controller/devices.py:508
+msgid "Change []"
+msgstr "[] wijzigen"
+
+#: pylib/controller/devices.py:543 pylib/controller/devices.py:927
+#: pylib/controller/devices.py:936
+msgid "DPI"
+msgstr "DPI"
+
+#: pylib/controller/devices.py:569
+msgid "Controller Error"
+msgstr "Controllerfout"
+
+#: pylib/controller/devices.py:570
+msgid ""
+"The request is invalid or unsupported at this time. This could be due to a "
+"programming error in the application."
+msgstr ""
+"Dit verzoek is ongeldig of wordt momenteel niet ondersteund. Het kan wijzen "
+"op een programmeerfout in dit programma."
+
+#: pylib/controller/devices.py:571
+msgid "If this happens again, please create a bug via Help → Report a Bug."
+msgstr ""
+"Als dit blijft gebeuren, open dan een bugmelding via Hulp → Bug melden."
+
+#: pylib/controller/devices.py:575
+msgid "Device Unavailable"
+msgstr "Apparaat is niet beschikbaar"
+
+#: pylib/controller/devices.py:576
+msgid ""
+"The request could not be completed due to devices being removed/inserted."
+msgstr ""
+"Het verzoek kan niet worden afgehandeld omdat er apparaten worden af- of "
+"aangekoppeld."
+
+#: pylib/controller/devices.py:577
+msgid "Please refresh and try again."
+msgstr "Herlaad en probeer het opnieuw."
+
+#: pylib/controller/devices.py:584
+msgid "The request could not be completed due to an error."
+msgstr "Dit verzoek kan niet worden afgehandeld wegens een foutmelding."
+
+#: pylib/controller/devices.py:609
+msgid "No devices connected"
+msgstr "Geen apparaten aangekoppeld"
+
+#: pylib/controller/devices.py:610
+msgid "No backends loaded"
+msgstr "Geen backends geladen"
+
+#: pylib/controller/devices.py:611
+msgid "No backends installed"
+msgstr "Geen backends geïnstalleerd"
+
+#: pylib/controller/devices.py:615
+msgid ""
+"Plug in a compatible device to control its lighting effects and features"
+msgstr ""
+"Plu een compatibel apparaat in om de lichteffecten en functies ervan te "
+"bedienen"
+
+#: pylib/controller/devices.py:616
+msgid "Consult the logs and troubleshooter for hints on fixing this problem"
+msgstr ""
+"Raadpleeg het logboek en de probleemoplossing voor tips omtrent het "
+"verhelpen van dit probleem"
+
+#: pylib/controller/devices.py:617
+msgid "Install a compatible backend to configure lighting effects"
+msgstr "Installeer een compatibel backend om de lichteffecten in te stellen"
+
+#: pylib/controller/devices.py:646
+msgid "Show Error Details"
+msgstr "Foutmeldingsinformatie tonen"
+
+#: pylib/controller/devices.py:682
+msgid "Backend Error: []"
+msgstr "Backendfout: []"
+
+#: pylib/controller/devices.py:683
+msgid "The last line of the exception was:"
+msgstr "De laatste regel van de uitzondering is:"
+
+#: pylib/controller/devices.py:701
+msgid "Unrecognised Device"
+msgstr "Niet-herkend apparaat"
+
+#: pylib/controller/devices.py:702
+msgid "The [name] backend hasn't registered this device."
+msgstr "Het [name]-backend heeft dit apparaat niet geregistreerd."
+
+#: pylib/controller/devices.py:703
+msgid ""
+"This could indicate an error initializing the backend or an installation "
+"problem."
+msgstr ""
+"Dit kan wijzen op een fout tijdens het initialiseren van het backend of een "
+"installatieprobleem."
+
+#: pylib/controller/devices.py:704
+msgid ""
+"Alternately, this may happen if this hardware is not yet supported under "
+"this version of [name]."
+msgstr ""
+"Ook kan dit gebeuren als de hardware nog niet wordt ondersteund door deze "
+"versie van [name]."
+
+#: pylib/controller/devices.py:707
+msgid "Restart"
+msgstr "Herstarten"
+
+#: pylib/controller/devices.py:736
+msgid "Error Details"
+msgstr "Foutmeldingsinformatie"
+
+#: pylib/controller/devices.py:738
+msgid "There was a problem opening this device"
+msgstr "Er is een probleem opgetreden bij het openen van het apparaat"
+
+#: pylib/controller/devices.py:741
+msgid "View Details"
+msgstr "Details tonen"
+
+#: pylib/controller/devices.py:885
+msgid "Yes"
+msgstr "Ja"
+
+#: pylib/controller/devices.py:888
+msgid "No"
+msgstr "Nee"
+
+#: pylib/controller/devices.py:891
+msgid "(Unavailable or not applicable)"
+msgstr "(niet beschikbaar of niet van toepassing)"
+
+#: pylib/controller/devices.py:899
+msgid "Backend"
+msgstr "Backend"
+
+#: pylib/controller/devices.py:900
+msgid "Internal Backend ID"
+msgstr "Interne backend-id"
+
+#: pylib/controller/devices.py:901
+msgid "Form Factor"
+msgstr "Vormfactor"
+
+#: pylib/controller/devices.py:902
+msgid "Serial"
+msgstr "Serienummer"
+
+#: pylib/controller/devices.py:903
+msgid "Image"
+msgstr "Afbeelding"
+
+#: pylib/controller/devices.py:904
+msgid "Monochromatic"
+msgstr "Monochromatic"
+
+#: pylib/controller/devices.py:909
+msgid "Firmware Version"
+msgstr "Firmware-versie"
+
+#: pylib/controller/devices.py:910
+msgid "Keyboard Layout"
+msgstr "Toetsenbordindeling"
+
+#: pylib/controller/devices.py:911
+msgid "Matrix Supported"
+msgstr "Matrix wordt ondersteund"
+
+#: pylib/controller/devices.py:913
+msgid "1 row"
+msgstr "1 rij"
+
+#: pylib/controller/devices.py:913
+msgid "2 rows"
+msgstr "2 rijen"
+
+#: pylib/controller/devices.py:914
+msgid "1 column"
+msgstr "1 kolom"
+
+#: pylib/controller/devices.py:914
+msgid "2 columns"
+msgstr "2 kolommen"
+
+#: pylib/controller/devices.py:915
+msgid "Matrix Dimensions"
+msgstr "Matrix-afmetingen"
+
+#: pylib/controller/devices.py:920
+msgid "Current Status"
+msgstr "Huidige status"
+
+#: pylib/controller/devices.py:930
+msgid "Supports 2 Dimensions"
+msgstr "Ondersteunt 2 dimensies"
+
+#: pylib/controller/devices.py:931
+msgid "Default Ranges"
+msgstr "Standaardbereik"
+
+#: pylib/controller/devices.py:932 pylib/controller/devices.py:977
+msgid "Minimum"
+msgstr "Minimum"
+
+#: pylib/controller/devices.py:933 pylib/controller/devices.py:978
+msgid "Maximum"
+msgstr "Maximum"
+
+#: pylib/controller/devices.py:939
+msgid "Zones"
+msgstr "Zones"
+
+#: pylib/controller/devices.py:949 pylib/controller/devices.py:957
+msgid "Internal ID"
+msgstr "Interne id"
+
+#: pylib/controller/devices.py:950
+msgid "Type"
+msgstr "Soort"
+
+#: pylib/controller/devices.py:954
+msgid "Parameters"
+msgstr "Aanvullende opties"
+
+#: pylib/controller/devices.py:958
+msgid "Internal Data"
+msgstr "Interne gegevens"
+
+#: pylib/controller/devices.py:959 pylib/controller/devices.py:970
+msgid "Active"
+msgstr "Actief"
+
+#: pylib/controller/devices.py:962 pylib/controller/devices.py:987
+msgid "Colour Input []"
+msgstr "Kleurinvoer []"
+
+#: pylib/controller/devices.py:976
+msgid "Current Value"
+msgstr "Huidige waarde"
+
+#: pylib/controller/devices.py:979
+msgid "Interval"
+msgstr "Tussenpoos"
+
+#: pylib/controller/devices.py:1060
+msgid "Coordinate: X,Y"
+msgstr "Coördinaat: X,Y"
+
+#: pylib/controller/devices.py:1062
+msgid "Coordinate: (Multiple)"
+msgstr "Coördinaat: (meerdere)"
+
+#: pylib/controller/editor.py:491
+msgid "Columns: []"
+msgstr "Aantal kolommen: []"
+
+#: pylib/controller/editor.py:492
+msgid "Rows: []"
+msgstr "Aantal rijen: []"
+
+#: pylib/controller/editor.py:495
+msgid "(Not Set)"
+msgstr "(niet ingesteld)"
+
+#: pylib/controller/editor.py:540
+msgid "Missing Device"
+msgstr "Ontbrekend apparaat"
+
+#: pylib/controller/editor.py:541
+msgid ""
+"This effect is designed for a device named '[]', but it wasn't detected."
+msgstr ""
+"Dit effect is ontworpen voor '[]', maar dit apparaat is niet aangetroffen."
+
+#: pylib/controller/editor.py:542 pylib/controller/editor.py:553
+#: pylib/controller/editor.py:563 pylib/controller/editor.py:984
+msgid "Live preview has been disabled for this session."
+msgstr "De live-voorvertoning is uitgeschakeld in deze sessie."
+
+#: pylib/controller/editor.py:551
+msgid "File Error"
+msgstr "Bestandsfout"
+
+#: pylib/controller/editor.py:552
+msgid ""
+"The device '[]' is assigned to this effect, but does not support individual "
+"addressable LEDs."
+msgstr ""
+"'[]' is toegewezen aan dit effect, maar dit apparaat ondersteunt geen "
+"individuele aanpasbare ledlampjes."
+
+#: pylib/controller/editor.py:562
+msgid "An error occurred while initalizing '[]' for live preview."
+msgstr ""
+"Er is een fout opgetreden tijdens het initialiseren van de live-"
+"voorvertoning bij '[]'."
+
+#: pylib/controller/editor.py:698
+msgid "Unsaved Changes"
+msgstr "Niet-opgeslagen aanpassingen"
+
+#: pylib/controller/editor.py:699
+msgid "This effect was modified. Would you like to save these changes?"
+msgstr "Dit effect is aangepast. Wil je de aanpassingen opslaan?"
+
+#: pylib/controller/editor.py:746
+msgid "Gradient"
+msgstr "Kleurverloop"
+
+#: pylib/controller/editor.py:747
+msgid "Pulsing"
+msgstr "Pulsering"
+
+#: pylib/controller/editor.py:750
+msgid "Cycling"
+msgstr "Wisseling"
+
+#: pylib/controller/editor.py:751
+msgid "Run Scripted Effect"
+msgstr "Gescript effect uitvoeren"
+
+#: pylib/controller/editor.py:779
+msgid "Save Error"
+msgstr "Fout tijdens opslaan"
+
+#: pylib/controller/editor.py:780
+msgid "Save failed. Please check the permissions and try again."
+msgstr "Het opslaan is mislukt. Controleer de rechten en probeer het opnieuw."
+
+#: pylib/controller/editor.py:785
+msgid "Saved to: []"
+msgstr "Opgeslagen in: []"
+
+#: pylib/controller/editor.py:810
+msgid "Reload the effect from disk? Any unsaved data will be lost!"
+msgstr ""
+"Wil je het effect opnieuw inlezen? Alle niet-opgeslagen gegevens gaan "
+"verloren!"
+
+#: pylib/controller/editor.py:983
+msgid "An error occurred while sending the frame to the hardware."
+msgstr ""
+"Er is een fout opgetreden tijdens het versturen van het frame naar de "
+"hardware."
+
+#: pylib/controller/editor.py:1081 pylib/controller/editor.py:1094
+msgid "Temporarily changed the graphic. To make permanent, edit the metadata."
+msgstr ""
+"De afbeelding is tijdelijk gewijzigd. Pas de metagegevens aan om dit "
+"permanent te maken."
+
+#: pylib/controller/editor.py:1105
+msgid ""
+"Temporarily changed the graphic. To make permanent, edit the application's "
+"preferences."
+msgstr ""
+"De afbeelding is tijdelijk gewijzigd. Pas de instellingen aan om dit "
+"permanent te maken."
+
+#: pylib/controller/editor.py:1229
+msgid "Frame [1] of [10]"
+msgstr "Frame [1] van [10]"
+
+#: pylib/controller/editor.py:1332
+msgid "Custom..."
+msgstr "Aangepast…"
+
+#: pylib/controller/editor.py:1406
+msgid "Permanently delete this frame? There is no undo."
+msgstr ""
+"Wil je dit frame permanent verwijderen? Dit kan niet ongedaan worden gemaakt."
+
+#: pylib/controller/editor.py:1407
+msgid ""
+"Tip: This confirmation can be suppressed via the Editor tab under "
+"Preferences."
+msgstr ""
+"Tip: deze vraag kan worden verborgen op het 'Bewerker'-tabblad in de "
+"instellingen."
+
+#: pylib/controller/editor.py:1502
+msgid "This LED is empty - nothing to erase here!"
+msgstr "Dit ledlampje is blanco, dus er valt niks te verwijderen!"
+
+#: pylib/controller/editor.py:1523
+msgid "This LED is empty - no colour to pick here!"
+msgstr "Dit ledlampje is blanco, dus er valt geen kleur te kiezen!"
+
+#: pylib/controller/editor.py:1584
+msgid ""
+"Failed to load the Qt Web Engine. Unfortunately, editing won't be possible."
+msgstr ""
+"QtWebEngine kan niet worden geladen - hierdoor is bewerken helaas niet "
+"mogelijk."
+
+#: pylib/controller/editor.py:1585
+msgid ""
+"Make sure the application (and its dependencies) are installed and "
+"configured correctly."
+msgstr ""
+"Zorg dat het programma (en alle bijbehorende afhankelijkheden) juist "
+"geïnstalleerd en ingesteld zijn."
+
+#: pylib/controller/editor.py:1616
+msgid "Missing File"
+msgstr "Ontbrekend bestand"
+
+#: pylib/controller/editor.py:1617
+msgid "This effect is mapped to a graphic named '[]', but it's not installed."
+msgstr ""
+"Dit effect is toegewezen aan een afbeelding genaamd '[]', maar deze is "
+"onvindbaar."
+
+#: pylib/controller/editor.py:1618
+msgid ""
+"The grid will be used instead. A different graphic can be chosen by editing "
+"the metadata."
+msgstr ""
+"In plaats daarvan wordt het rooster gebruikt. Pas de metagegevens aan om een "
+"andere afbeelding te kiezen."
+
+#: pylib/controller/effects.py:63
+msgid "It's empty here!"
+msgstr "Het is hier erg leeg!"
+
+#: pylib/controller/effects.py:64
+msgid "Error loading effect"
+msgstr "Fout tijdens laden van effect"
+
+#: pylib/controller/effects.py:68
+msgid "Try creating your own effect or import an image or video."
+msgstr "Creëer je eigen effect of importeer een afbeelding of video."
+
+#: pylib/controller/effects.py:69
+msgid "There's invalid data in this file. The file might be corrupt."
+msgstr ""
+"Dit bestand bevat ongeldige gegevens - waarschijnlijk is het beschadigd."
+
+#: pylib/controller/effects.py:222
+msgid "Edit"
+msgstr "Bewerken"
+
+#: pylib/controller/effects.py:287
+msgid "File In Use"
+msgstr "Bestand is in gebruik"
+
+#: pylib/controller/effects.py:288
+msgid ""
+"This file is being edited in another window. Please close that editor first."
+msgstr "Dit bestand wordt al bewerkt in een ander venster - sluit dat eerst."
+
+#: pylib/controller/effects.py:370
+msgid "Choose Effect Icon"
+msgstr "Effectpictogram kiezen"
+
+#: pylib/controller/menubar.py:110
+msgid "The menu bar is now hidden. To temporarily reveal, press Alt."
+msgstr ""
+"De menubalk is nu verborgen. Druk op Alt om de menubalk tijdelijk te tonen."
+
+#: pylib/controller/menubar.py:131
+msgid "Running troubleshooter..."
+msgstr "Bezig met uitvoeren van probleemoplossing…"
+
+#: pylib/controller/menubar.py:135
+msgid "Troubleshooting..."
+msgstr "Probleemoplossing…"
+
+#: pylib/controller/menubar.py:147 pylib/controller/menubar.py:152
+msgid "Troubleshooting Failed"
+msgstr "Probleemoplossing mislukt"
+
+#: pylib/controller/menubar.py:148
+msgid ""
+"The troubleshooter for this backend is not available for this operating "
+"system."
+msgstr ""
+"De probleemoplossing, behorende bij dit backend, is niet beschikbaar op dit "
+"besturingssysteem."
+
+#: pylib/controller/menubar.py:153
+msgid ""
+"The troubleshooter was not expecting that! The process failed as an "
+"exception was thrown."
+msgstr ""
+"De probleemoplossing verwachtte niet dat het proces zou mislukken door een "
+"uitzondering."
+
+#: pylib/controller/menubar.py:169
+msgid "Passed"
+msgstr "Geslaagd"
+
+#: pylib/controller/menubar.py:169
+msgid "Failed"
+msgstr "Mislukt"
+
+#: pylib/controller/menubar.py:192
+msgid "Troubleshooter for []"
+msgstr "Probleemoplossing van []"
+
+#: pylib/controller/menubar.py:194
+msgid "Everything appears to be in working order!"
+msgstr "Alles lijkt keurig te werken!"
+
+#: pylib/controller/menubar.py:225
+msgid ""
+"Polychromatic is about to open a web page for this resource. Unfortunately, "
+"it is only available in English at this time."
+msgstr ""
+"Polychromatic staat op het punt om een bij deze bron behorende website te "
+"openen. Helaas is deze bron momenteel alleen beschikbaar in het Engels."
+
+#: pylib/controller/menubar.py:254
+msgid "Report Bug"
+msgstr "Bug melden"
+
+#: pylib/controller/menubar.py:335
+msgid "About []"
+msgstr "Over []"
+
+#: pylib/controller/menubar.py:349
+msgid "Documentation"
+msgstr "Documentatie"
+
+#: pylib/controller/menubar.py:350 pylib/controller/menubar.py:480
+msgid "Source Code"
+msgstr "Broncode"
+
+#: pylib/controller/menubar.py:351 pylib/controller/menubar.py:481
+msgid "Release Notes"
+msgstr "Wijzigingslog"
+
+#: pylib/controller/menubar.py:420
+msgid "Restarting the backend/application..."
+msgstr "Bezig met herstarten van backend/programma…"
+
+#: pylib/controller/menubar.py:431
+msgid "Restart Backend?"
+msgstr "Backend herstarten?"
+
+#: pylib/controller/menubar.py:432
+msgid ""
+"Restarting this backend will also restart Polychromatic. Any unsaved data "
+"will be lost. Continue?"
+msgstr ""
+"Door het backend te herstarten, wordt Polychromatic eveneens herstart. Niet-"
+"opgeslagen gegevens gaan verloren. Weet je het zeker?"
+
+#: pylib/controller/preferences.py:99
+msgid "Choose Tray Applet Icon"
+msgstr "Systeemvakpictogram kiezen"
+
+#: pylib/controller/preferences.py:125
+msgid "Not in use"
+msgstr "Niet in gebruik"
+
+#: pylib/controller/preferences.py:130
+msgid "Currently in use."
+msgstr "Momenteel niet in gebruik."
+
+#: pylib/controller/preferences.py:135
+msgid "Not installed."
+msgstr "Niet geïnstalleerd."
+
+#: pylib/controller/preferences.py:139
+msgid "Error loading the module."
+msgstr "De module kan niet worden geladen."
+
+#: pylib/controller/preferences.py:241
+msgid "Restart Required"
+msgstr "Herstart vereist"
+
+#: pylib/controller/preferences.py:242
+msgid ""
+"To apply these changes, the application must be restarted. Any unsaved "
+"changes will be lost."
+msgstr ""
+"Herstart Polychromatic om de wijzigingen toe te passen. Niet-opgeslagen "
+"gegevens gaan verloren."
+
+#: pylib/controller/preferences.py:277
+msgid "All colours in the list will be reset. Continue?"
+msgstr "Alle kleuren op deze lijst worden teruggezet. Weet je het zeker?"
+
+#: pylib/controller/procviewer.py:104
+msgid "Restarting..."
+msgstr "Bezig met herstarten…"
+
+#: pylib/controller/procviewer.py:164
+msgid "Playing software effect"
+msgstr "Bezig met afspelen van software-effect"
+
+#: pylib/controller/procviewer.py:170
+msgid "No longer running"
+msgstr "Niet meer actief"
+
+#: pylib/controller/shared.py:918
+msgid "Image Files"
+msgstr "Afbeeldingsbestanden"
+
+#: pylib/controller/shared.py:919
+msgid "PNG Image"
+msgstr "PNG-afbeelding"
+
+#: pylib/controller/shared.py:920
+msgid "JPEG Image"
+msgstr "JPEG-afbeelding"
+
+#: pylib/controller/shared.py:921
+msgid "GIF Image"
+msgstr "GIF-afbeelding"
+
+#: pylib/controller/shared.py:922
+msgid "SVG Image"
+msgstr "SVG-afbeelding"
+
+#: pylib/controller/shared.py:923
+msgid "All Files"
+msgstr "Alle bestanden"
+
+#: pylib/controller/shared.py:1031
+msgid "When Steam is installed, icons from your games will appear here."
+msgstr ""
+"Als Steam geïnstalleerd is, dan worden de pictogrammen van je games hier "
+"getoond."
+
+#: pylib/controller/shared.py:1033
+msgid "Drag and drop icons here, or add them by pressing the Import button."
+msgstr ""
+"Sleep pictogrammen hierheen of voeg ze toe middels de knop 'Importeren'."
+
+#: pylib/controller/shared.py:1035
+msgid "No icons found!"
+msgstr "Geen pictogrammen aangetroffen!"
+
+#: pylib/controller/shared.py:1172
+msgid "Import Custom Icon"
+msgstr "Eigen pictogram importeren"
+
+#: pylib/controller/shared.py:1397
+msgid "The file contains invalid data."
+msgstr "Dit bestand bevat ongeldige gegevens."
+
+#: pylib/controller/shared.py:1398
+msgid "The file no longer exists. Please refresh the page."
+msgstr "Dit bestand bestaat niet meer - herlaad de pagina."
+
+#: pylib/controller/shared.py:1399
+msgid "This file was saved in a newer version of this program."
+msgstr "Dit bestand is opgeslagen met een nieuwere versie van dit programma."
+
+#: pylib/controller/shared.py:1405
+msgid "Unspecified error: []"
+msgstr "Onbekende foutmelding: []"
+
+#: pylib/controller/shared.py:1409
+msgid "This file cannot be opened:"
+msgstr "Dit bestand kan niet worden geopend:"
+
+#: pylib/controller/shared.py:1418
+msgid ""
+"The operation could not be completed due to an error processing this file."
+msgstr ""
+"De handeling kan niet worden afgerond vanwege een tijdens het verwerken "
+"ontstane fout."
+
+#: pylib/controller/shared.py:1419
+msgid "Please make sure the file permissions are recursively correct:"
+msgstr "Zorg dat de bestandsrechten recursief goed staan:"
+
+#: pylib/controller/shared.py:1473
+msgid "Delete Effect?"
+msgstr "Effect verwijderen?"
+
+#: pylib/controller/shared.py:1474
+msgid "Delete Preset?"
+msgstr "Voorinstelling verwijderen?"
+
+#: pylib/controller/shared.py:1478
+msgid ""
+"Delete '[]' effect? This cannot be undone.\n"
+"\n"
+"Presets that use this effect will be unlinked."
+msgstr ""
+"Wil je het effect '[]' verwijderen? Dit kan niet ongedaan worden gemaakt.\n"
+"\n"
+"Let op: aan dit effect gekoppelde voorinstellingen worden ontkoppeld."
+
+#: pylib/controller/shared.py:1479
+msgid ""
+"Delete '[]' preset? This cannot be undone.\n"
+"\n"
+"Triggers that automatically activate this preset will no longer function."
+msgstr ""
+"Wil je de voorinstelling '[]' verwijderen? Dit kan niet ongedaan worden "
+"gemaakt.\n"
+"\n"
+"Let op: aan deze voorinstelling gekoppelde triggers zullen niet meer werken."
+
+#: pylib/controller/shared.py:1506
+msgid "[] (Copy)"
+msgstr "[] (kopie)"
+
+#: pylib/effects.py:166
+msgid "Layer 1"
+msgstr "Laag 1"
+
+#: pylib/preferences.py:417
+msgid "White"
+msgstr "Wit"
+
+#: pylib/preferences.py:418
+msgid "Red"
+msgstr "Rood"
+
+#: pylib/preferences.py:420
+msgid "Blue"
+msgstr "Blauw"
+
+#: pylib/preferences.py:421
+msgid "Aqua"
+msgstr "Aqua"
+
+#: pylib/preferences.py:422
+msgid "Orange"
+msgstr "Oranje"
+
+#: pylib/preferences.py:423
+msgid "Pink"
+msgstr "Roze"
+
+#: pylib/preferences.py:424
+msgid "Purple"
+msgstr "Paars"
+
+#: pylib/preferences.py:425
+msgid "Yellow"
+msgstr "Geel"
+
+#: pylib/preferences.py:426
+msgid "Light Grey"
+msgstr "Lichtgrijs"
+
+#: pylib/preferences.py:427
+msgid "Dark Grey"
+msgstr "Donkergrijs"
+
+#: pylib/preferences.py:428
+msgid "Black"
+msgstr "Zwart"
+
+#: pylib/troubleshoot/openrazer.py:50
+msgid "Daemon is installed"
+msgstr "De achtergronddienst is geïnstalleerd"
+
+#: pylib/troubleshoot/openrazer.py:51
+msgid "Install the 'openrazer-meta' package for your distribution."
+msgstr "Installeer het pakket 'openrazer-meta'."
+
+#: pylib/troubleshoot/openrazer.py:64
+msgid "Daemon is running"
+msgstr "De achtergronddienst is actief"
+
+#: pylib/troubleshoot/openrazer.py:65
+msgid ""
+"Start the daemon from the terminal. Look out for any errors: $ openrazer-"
+"daemon -Fv"
+msgstr ""
+"Start de achtergronddienst vanuit een terminalvenster en let op "
+"foutmeldingen: $ openrazer-daemon -Fv"
+
+#: pylib/troubleshoot/openrazer.py:71
+msgid "Python library is installed"
+msgstr "De Python-bibliotheek is geïnstalleerd"
+
+#: pylib/troubleshoot/openrazer.py:72
+msgid ""
+"Install the 'python3-openrazer' package for your distribution. Check your "
+"PYTHONPATH is correct."
+msgstr ""
+"Installeer het pakket 'python3-openrazer' en controleer of PYTHONPATH juist "
+"is ingesteld."
+
+#: pylib/troubleshoot/openrazer.py:93
+msgid "DKMS sources are installed"
+msgstr "De DKMS-bronnen zijn geïnstalleerd"
+
+#: pylib/troubleshoot/openrazer.py:94
+msgid "Install the 'openrazer-driver-dkms' package for your distribution."
+msgstr "Installeer het pakket 'openrazer-driver-dkms'."
+
+#: pylib/troubleshoot/openrazer.py:99
+msgid "DKMS module has been built for this kernel version"
+msgstr "De DKMS-module is geschikt voor deze kernelversie"
+
+#: pylib/troubleshoot/openrazer.py:100
+msgid ""
+"Ensure the correct Linux kernel headers package for your distribution is "
+"installed. Try re-installing the DKMS module: $ sudo dkms install -m "
+"openrazer-driver/x.x.x"
+msgstr ""
+"Zorg dat het pakket met de juiste Linux-kernelheaders geïnstalleerd is. "
+"Probeer desnoods de DKMS-module opnieuw te installeren: $ sudo dkms install -"
+"m openrazer-driver/x.x.x"
+
+#: pylib/troubleshoot/openrazer.py:110
+msgid "DKMS module can be loaded"
+msgstr "De DKMS-module kan worden geladen"
+
+#: pylib/troubleshoot/openrazer.py:111 pylib/troubleshoot/openrazer.py:121
+msgid "For full error details, run $ sudo modprobe razerkbd"
+msgstr ""
+"Voer de opdracht $ sudo modprobe razerkbd uit om de volledige foutmelding te "
+"bekijken"
+
+#: pylib/troubleshoot/openrazer.py:120
+msgid "DKMS module is currently loaded"
+msgstr "De DKMS-module is geladen"
+
+#: pylib/troubleshoot/openrazer.py:137
+msgid "Check Secure Boot (EFI) status"
+msgstr "(EFI) Secure Boot-status controleren"
+
+#: pylib/troubleshoot/openrazer.py:138
+msgid ""
+"Secure boot is currently enabled. OpenRazer's kernel modules are unsigned, "
+"so these cannot be loaded while Secure Boot is enabled. Either disable "
+"Secure Boot in the EFI firmware settings, or sign the modules yourself."
+msgstr ""
+"Secure boot is momenteel ingeschakeld. OpenRazer's kernelmodules zijn niet "
+"ondertekend, waardoor ze niet kunnen worden geladen zolang Secure Boot is "
+"ingeschakeld. Schakel Secure Boot uit in de EFI-firmware-instellingen of "
+"onderteken de modules handmatig."
+
+#: pylib/troubleshoot/openrazer.py:145
+msgid "User account has been added to the 'plugdev' group"
+msgstr "Het gebruikersaccount is toegevoegd aan de 'plugdev'-groep"
+
+#: pylib/troubleshoot/openrazer.py:146
+msgid ""
+"If you've recently installed, you may need to restart the computer. "
+"Otherwise, run this command, log out, then log back in to the computer: $ "
+"sudo gpasswd -a $USER plugdev"
+msgstr ""
+"Als je Polychromatic onlangs geïnstalleerd hebt, moet je waarschijnlijk de "
+"computer herstarten. Als dat niet zo is, voer dan de volgende opdracht uit "
+"en log uit en weer in: $ sudo gpasswd -a $USER plugdev"
+
+#: pylib/troubleshoot/openrazer.py:157
+msgid "Check OpenRazer log for plugdev permission errors"
+msgstr "Raadpleeg het OpenRazer-logboek en zoek naar plugdev-toegangsfouten"
+
+#: pylib/troubleshoot/openrazer.py:158
+msgid ""
+"Restarting (or replugging) usually fixes the problem. Clear the log to reset "
+"this message."
+msgstr ""
+"Start je computer opnieuw op (of plug het apparaat opnieuw in) - dat "
+"verhelpt meestal het probleem. Wis daarna het logboek."
+
+#: pylib/troubleshoot/openrazer.py:222
+msgid "Check for unsupported hardware"
+msgstr "Controleren op niet-ondersteunde hardware"
+
+#: pylib/troubleshoot/openrazer.py:223
+msgid ""
+"Review the OpenRazer repository to confirm support for your device. Ensure "
+"you have the latest version installed and this version does include support "
+"for your device."
+msgstr ""
+"Ga naar de OpenRazer-repo om te controleren of je apparaat wordt "
+"ondersteund. Zorg dat je over de nieuwste versie beschikt en deze je "
+"hardware ondersteunt."
+
+#: troubleshooter.ui.h:1
+msgid "Troubleshooter"
+msgstr "Probleemoplossing"
+
+#. Shown when the troubleshooter successfully
+#: troubleshooter.ui.h:3
+msgid "Troubleshooting complete!"
+msgstr "Probleemoplossing voltooid!"
+
+#. Column header for the troubleshooting results
+#: troubleshooter.ui.h:5
+msgid "Result"
+msgstr "Resultaat"
+
+#. Column header for the troubleshooting results
+#: troubleshooter.ui.h:7
+msgid "Check"
+msgstr "Controleren"
