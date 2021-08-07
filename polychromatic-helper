@@ -38,7 +38,7 @@ import importlib
 import signal
 import sys
 
-VERSION = "0.6.0"
+VERSION = "0.7.0"
 
 # Import modules if running relatively.
 if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
