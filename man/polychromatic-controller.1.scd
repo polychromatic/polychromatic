@@ -2,24 +2,42 @@ polychromatic-controller(1)
 
 # NAME
 
-Polychromatic - Graphical front-end for the OpenRazer daemon.
+Polychromatic - RGB lighting management software for GNU/Linux
 
 # SYNOPSIS
 
-*polychromatic-controller* [*-h* _--help_] [*-v* _--verbose_]  [*-vv* _--debug_]
+*polychromatic-controller* [OPTIONS]
 
 # DESCRIPTION
 
-A graphical front-end for managing Razer peripherals powered by the OpenRazer
-daemon. This includes changing lighting effects, changing brightness and
-creating key light profiles for applications/games.
+This is the main graphical user interface portion of Polychromatic, based on
+PyQt5. All features of the software are accessible here.
 
 # OPTIONS
 
 *-h*, *--help*
 	Shows the help information.
+
 *-v*, *--verbose*
-	Outputs more details about the operation of the application.
-*-vv*, *--debug*
-	Same as --verbose, but also outputs details of the flow of data being passed
-	between WebKit2 and Python.
+	Prints more details about the application's operation.
+
+*--version*
+	Prints version information:
+		- Software version
+		- Commit hash (when run from the repository directory)
+		- Internal save data revision
+		- Python version
+		- Qt version
+
+*--locale [lang]*
+	Force the application to display in a specific locale.
+	For example, "fr_FR" or "nl".
+
+*--open [tab/dialog]*
+	Opens the software to a specific a tab or dialog.
+
+	_Tab_: devices, effects
+
+	_Dialog_: preferences, troubleshoot, colours
+
+	After a dialog is closed, the software will quit.
