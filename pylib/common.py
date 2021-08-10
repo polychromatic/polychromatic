@@ -42,6 +42,23 @@ class Paths(object):
     """
     Initialises the paths for data files, configuration and caches.
     """
+    def _get_data_directory():
+        """
+        For development/opt, this is normally adjacent to the application executable.
+        For system-wide installs, this is generally /usr/share/polychromatic.
+        """
+        module_path = __file__
+
+        if os.path.exists(os.path.join(os.path.dirname(module_path), "../data/img/")):
+            return os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))
+
+        for directory in ["/usr/local/share/polychromatic", "/usr/share/polychromatic"]:
+            if os.path.exists(directory):
+                return directory
+
+        print("Cannot locate data directory! Please check your installation.")
+        exit(1)
+
     # Config/cache (XDG) directories
     try:
         config = os.path.join(os.environ["XDG_CONFIG_HOME"], "polychromatic")
@@ -91,26 +108,7 @@ class Paths(object):
             os.makedirs(folder)
 
     # Data directory
-    # -- For development/opt, this is normally adjacent to the application executable.
-    # -- For system-wide installs, this is generally /usr/share/polychromatic.
-    module_path = __file__
-    data_dir = None
-    possible_data_dirs = [
-        os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/")),
-        "/usr/local/share/polychromatic",
-        "/usr/share/polychromatic",
-    ]
-    for directory in possible_data_dirs:
-        if os.path.exists(directory):
-            data_dir = directory
-            break
-
-    if not data_dir:
-        print("Cannot locate data directory! Tried:")
-        for directory in possible_data_dirs:
-            print(" - " + directory)
-        print("\nPlease check all the files are installed properly.")
-        exit(1)
+    data_dir = _get_data_directory()
 
     # Runtime directory (for PIDs)
     try:
