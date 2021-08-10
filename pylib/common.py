@@ -599,7 +599,7 @@ def get_versions(base_version):
             git_commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode("UTF-8")
 
             try:
-                version = subprocess.check_output(["git", "describe"]).strip().decode("UTF-8")[1:]
+                version = subprocess.check_output(["git", "describe", "--tags"]).strip().decode("UTF-8")[1:]
             except subprocess.CalledProcessError:
                 # Git may throw error "no names found" if repository was shallow cloned or has no tags
                 version = "{0}-git-{1}".format(base_version, git_commit[:7])

@@ -22,7 +22,7 @@ def run_command(cmd):
 
 
 # Determine package version
-ver_raw = run_command("git describe")[1:]
+ver_raw = run_command("git describe --tags")[1:]
 ver_parts = ver_raw.split("-")
 if len(ver_parts) == 3:
     # Example: 0.6.0-41-g59319b6
