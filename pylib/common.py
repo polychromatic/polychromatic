@@ -42,7 +42,66 @@ class Paths(object):
     """
     Initialises the paths for data files, configuration and caches.
     """
-    def _get_data_directory():
+    def __init__(self):
+        # Config/cache (XDG) directories
+        try:
+            self.config = os.path.join(os.environ["XDG_CONFIG_HOME"], "polychromatic")
+        except KeyError:
+            self.config = os.path.join(os.path.expanduser("~"), ".config", "polychromatic")
+
+        try:
+            self.cache = os.path.join(os.environ["XDG_CACHE_HOME"], "polychromatic")
+        except KeyError:
+            self.cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
+
+        # Development only
+        self.dev = False
+        try:
+            if os.environ["POLYCHROMATIC_DEV_CFG"] == "true":
+                # __file__ = pylib/common.py
+                self.cache = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "savedatadev", "cache"))
+                self.config = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "savedatadev", "config"))
+                self.dev = True
+        except KeyError:
+            self.dev = False
+
+        # Cached directories
+        self.assets_cache = os.path.join(self.cache, "assets")
+        self.effects_cache = os.path.join(self.cache, "effects")
+        self.webview_cache = os.path.join(self.cache, "editor")
+
+        # Subdirectories
+        self.effects = os.path.join(self.config, "effects")
+        self.presets = os.path.join(self.config, "presets")
+        self.custom_icons = os.path.join(self.config, "custom_icons")
+        self.states = os.path.join(self.config, "states")
+
+        # Files
+        self.preferences = os.path.join(self.config, "preferences.json")
+        self.colours = os.path.join(self.config, "colours.json")
+
+        # Legacy (<= v0.3.12)
+        self.old_profile_folder = os.path.join(self.config, "profiles")
+        self.old_profile_backups = os.path.join(self.config, "backups")
+        self.old_devicestate = os.path.join(self.config, "devicestate.json")
+
+        # Create folders if they do not exist.
+        for folder in [self.config, self.presets, self.custom_icons,
+                       self.states, self.effects, self.cache, self.assets_cache,
+                       self.effects_cache, self.webview_cache]:
+            if not os.path.exists(folder):
+                os.makedirs(folder)
+
+        # Data directory
+        self.data_dir = self._get_data_directory()
+
+        # Runtime directory (for PIDs)
+        try:
+            self.pid_dir = os.path.join(os.environ["XDG_RUNTIME_DIR"], "polychromatic")
+        except KeyError:
+            self.pid_dir = "/tmp/polychromatic"
+
+    def _get_data_directory(self):
         """
         For development/opt, this is normally adjacent to the application executable.
         For system-wide installs, this is generally /usr/share/polychromatic.
@@ -58,63 +117,6 @@ class Paths(object):
 
         print("Cannot locate data directory! Please check your installation.")
         exit(1)
-
-    # Config/cache (XDG) directories
-    try:
-        config = os.path.join(os.environ["XDG_CONFIG_HOME"], "polychromatic")
-    except KeyError:
-        config = os.path.join(os.path.expanduser("~"), ".config", "polychromatic")
-
-    try:
-        cache = os.path.join(os.environ["XDG_CACHE_HOME"], "polychromatic")
-    except KeyError:
-        cache = os.path.join(os.path.expanduser("~"), ".cache", "polychromatic")
-
-    # Development only
-    dev = False
-    try:
-        if os.environ["POLYCHROMATIC_DEV_CFG"] == "true":
-            # __file__ = pylib/common.py
-            cache = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "savedatadev", "cache"))
-            config = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "savedatadev", "config"))
-            dev = True
-    except KeyError:
-        dev = False
-
-    # Cached directories
-    assets_cache = os.path.join(cache, "assets")
-    effects_cache = os.path.join(cache, "effects")
-    webview_cache = os.path.join(cache, "editor")
-
-    # Subdirectories
-    effects = os.path.join(config, "effects")
-    presets = os.path.join(config, "presets")
-    custom_icons = os.path.join(config, "custom_icons")
-    states = os.path.join(config, "states")
-
-    # Files
-    preferences = os.path.join(config, "preferences.json")
-    colours = os.path.join(config, "colours.json")
-
-    # Legacy (<= v0.3.12)
-    old_profile_folder = os.path.join(config, "profiles")
-    old_profile_backups = os.path.join(config, "backups")
-    old_devicestate = os.path.join(config, "devicestate.json")
-
-    # Create folders if they do not exist.
-    for folder in [config, presets, custom_icons, states, effects,
-                   cache, assets_cache, effects_cache, webview_cache]:
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-
-    # Data directory
-    data_dir = _get_data_directory()
-
-    # Runtime directory (for PIDs)
-    try:
-        pid_dir = os.path.join(os.environ["XDG_RUNTIME_DIR"], "polychromatic")
-    except KeyError:
-        pid_dir = "/tmp/polychromatic"
 
 
 class Debugging(object):
