@@ -125,18 +125,26 @@ def _run_dkms_checks(_):
     })
 
     # Can the DKMS module be loaded?
-    modprobe = subprocess.Popen(["modprobe", "-n", "razerkbd"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-    output = modprobe.communicate()[0].decode("utf-8")
-    code = modprobe.returncode
-
-    subresults.append({
-        "test_name": _("DKMS module can be probed"),
-        "suggestions": [
-            _("For full error details, run:"),
-            "$ sudo modprobe razerkbd",
-        ],
-        "passed": True if code == 0 else False
-    })
+    try:
+        modprobe = subprocess.Popen(["modprobe", "-n", "razerkbd"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+        output = modprobe.communicate()[0].decode("utf-8")
+        code = modprobe.returncode
+        subresults.append({
+            "test_name": _("DKMS module can be probed"),
+            "suggestions": [
+                _("For full error details, run:"),
+                "$ sudo modprobe razerkbd",
+            ],
+            "passed": True if code == 0 else False
+        })
+    except FileNotFoundError:
+        subresults.append({
+            "test_name": _("DKMS module can be probed"),
+            "suggestions": [
+                _("Unable to check. 'modprobe' is not installed."),
+            ],
+            "passed": None
+        })
 
     # Is a 'razer' DKMS module loaded right now?
     lsmod = subprocess.Popen(["lsmod"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
