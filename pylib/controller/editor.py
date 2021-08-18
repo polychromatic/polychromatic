@@ -163,6 +163,9 @@ class VisualEffectEditor(shared.TabData):
         self.tool_eraser = self.window.findChild(QAction, "actionEraser")
         self.tool_picker = self.window.findChild(QAction, "actionColourPicker")
 
+        # -- Menu Bar/Dock - Colours
+        self.menu_colours = self.window.findChild(QMenu, "menuColours")
+
         # -- Menu Bar/Dock - Playback
         self.playback_menu = self.window.findChild(QMenu, "menuPlayback")
         self.playback_jump_start = self.window.findChild(QAction, "actionJumpStart")
@@ -1393,7 +1396,7 @@ class VisualEffectEditor(shared.TabData):
                 self.action_new_frame, self.btn_frame_new,
                 self.action_clone_frame, self.btn_frame_clone,
 
-                self.menu_shift, self.menu_edit, self.menu_tools,
+                self.menu_shift, self.menu_edit, self.menu_tools, self.menu_colours,
                 self.action_shift_left, self.action_shift_right,
                 self.action_shift_up, self.action_shift_down
             ]:
