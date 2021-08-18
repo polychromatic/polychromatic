@@ -160,6 +160,10 @@ class PreferencesWindow(shared.TabData):
         self.dialog.findChild(QComboBox, "LandingTabCombo").removeItem(3)
         self.dialog.findChild(QComboBox, "LandingTabCombo").removeItem(2)
 
+        # Disable tray applet tab if not installed
+        if not procpid.ProcessManager().is_component_installed("tray-applet"):
+            tabs.setTabEnabled(1, False)
+
         # Show time!
         self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(open_tab if open_tab else 0)
         self.refresh_backend_status()

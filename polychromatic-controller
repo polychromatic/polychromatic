@@ -47,6 +47,7 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
         import pylib.controller as controller
         import pylib.effects as effects
         import pylib.middleman as middleman
+        import pylib.procpid as procpid
         import pylib.controller.shared as shared
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
@@ -61,6 +62,7 @@ else:
         import polychromatic.controller as controller
         import polychromatic.effects as effects
         import polychromatic.middleman as middleman
+        import polychromatic.procpid as procpid
         import polychromatic.controller.shared as shared
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
@@ -460,6 +462,10 @@ class MainWindow(QMainWindow):
 
         # Bind actions to menu bar
         self.findChild(QAction, "actionQuitApp").triggered.connect(self.quit_app)
+
+        # Disable tray applet actions if not installed
+        if not procpid.ProcessManager().is_component_installed("tray-applet"):
+            self.findChild(QAction, "actionRestartTrayApplet").setDisabled(True)
 
         # Warn if configuration is newer then this version.
         pref_ver = pref.VERSION
