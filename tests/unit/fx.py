@@ -8,7 +8,7 @@ import pylib.fx as fx
 import unittest
 
 
-class PolychromaticTests(unittest.TestCase):
+class TestFX(unittest.TestCase):
     """
     Test the internals of Polychromatic.
     """

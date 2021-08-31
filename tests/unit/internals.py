@@ -13,7 +13,7 @@ import os
 import unittest
 
 
-class PolychromaticTests(unittest.TestCase):
+class TestInternals(unittest.TestCase):
     """
     Test the internals of Polychromatic.
     """

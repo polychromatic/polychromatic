@@ -15,7 +15,7 @@ import os
 import unittest
 
 
-class PolychromaticTests(unittest.TestCase):
+class TestEffects(unittest.TestCase):
     """
     Test the internals of Polychromatic.
     """

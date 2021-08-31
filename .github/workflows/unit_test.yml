@@ -34,9 +34,7 @@ jobs:
 
     - name: Run Polychromatic Unit Tests
       run: |
-        ./scripts/run-unit-test.sh ./tests/unit/internals.py
-        ./scripts/run-unit-test.sh ./tests/unit/effects.py
-        ./scripts/run-unit-test.sh ./tests/unit/fx.py
+        ./scripts/run-unit-tests.sh
 
     - name: Test OpenRazer Integration
       run: |

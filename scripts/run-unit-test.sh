@@ -9,7 +9,7 @@ test_path="$1"
 
 cd "$(dirname $0)/../"
 export PATH=$(realpath .):$PATH
-export PYTHONPATH="$(realpath .)"
+export PYTHONPATH="$(realpath .)$(python3 -c "import sys; print(':'.join(sys.path))")"
 
 if [ -z "$test_path" ]; then
     echo "Usage: $(basename "$0") <path>"
