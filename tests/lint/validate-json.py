@@ -19,6 +19,7 @@ for path in files:
         print("Invalid JSON: " + path)
         print(str(e))
         passed = False
+        continue
 
     if path.endswith("icons.json"):
         for icon in data:
