@@ -550,18 +550,30 @@ class Backend(_backend.Backend):
             _init_main_if_empty()
             params = []
 
-            # Poll rates are fixed
-            poll_rate_ranges = [125, 500, 1000]
+            poll_rate_ranges = [125, 500, 1000, 2000, 4000, 8000]
             ids = {
                 125: "poll_low",
                 500: "poll_mid",
-                1000: "poll_high"
+                1000: "poll_high",
+                2000: "poll_hyper_2k",
+                4000: "poll_hyper_4k",
+                8000: "poll_hyper_8k"
             }
             labels = {
                 125: "125 Hz (~8 ms)",
                 500: "500 Hz (~2 ms)",
-                1000: "1000 Hz (~1 ms)"
+                1000: "1000 Hz (~1 ms)",
+                2000: "2000 Hz (~0.5 ms)",
+                4000: "4000 Hz (~0.25 ms)",
+                8000: "8000 Hz (~0.125 ms)"
             }
+
+            supported_poll_rates = [125, 500, 1000]
+            if rdevice.has("supported_poll_rates"):
+                supported_poll_rates = rdevice.supported_poll_rates
+            poll_rate_ranges = [x for x in poll_rate_ranges if x in supported_poll_rates]
+            ids = {k: v for k, v in ids.items() if k in supported_poll_rates}
+            labels = {k: v for k, v in labels.items() if k in supported_poll_rates}
 
             for rate in poll_rate_ranges:
                 params.append({
