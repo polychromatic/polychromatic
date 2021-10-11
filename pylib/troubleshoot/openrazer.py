@@ -91,42 +91,58 @@ def _is_pylib_installed(_):
     }
 
 
-def _run_dkms_checks(_):
-    dkms_installed_src = None
-    dkms_installed_built = None
-    dkms_version = "<version>"
-    uname = os.uname()
-    kernel_version = uname.release
-    subresults = []
+def _is_driver_src_installed(_):
+    driver_version = "<version>"
 
     if PYTHON_LIB_PRESENT:
-        dkms_version = rclient.__version__
-        expected_dkms_src = "/var/lib/dkms/openrazer-driver/{0}".format(dkms_version)
-        expected_dkms_build = "/var/lib/dkms/openrazer-driver/kernel-{0}-{1}".format(uname.release, uname.machine)
+        driver_version = rclient.__version__
 
-        # Is the OpenRazer DKMS module installed?
-        dkms_installed_src = True if os.path.exists(expected_dkms_src) else False
-        dkms_installed_built = True if os.path.exists(expected_dkms_build) else False
+    expected_src_path = "/var/lib/dkms/openrazer-driver/{0}".format(driver_version)
 
-    subresults.append({
-        "test_name": _("DKMS sources are installed"),
+    if not os.path.exists("/var/lib/dkms"):
+        return {
+            "test_name": _("Kernel module sources are installed for DKMS"),
+            "suggestions": [
+                _("OpenRazer is a kernel module, typically built using DKMS."),
+                _("Install the 'openrazer-driver-dkms' package for your distribution."),
+                _("Some distributions (like Gentoo) may use an alternate system to DKMS."),
+            ],
+            "passed": None
+        }
+
+    return {
+        "test_name": _("Kernel module sources are installed for DKMS"),
         "suggestions": [
+            _("OpenRazer is a kernel module, typically built using DKMS."),
             _("Install the 'openrazer-driver-dkms' package for your distribution."),
         ],
-        "passed": dkms_installed_src
-    })
+        "passed": True if os.path.exists(expected_src_path) else False
+    }
 
-    subresults.append({
-        "test_name": _("DKMS module has been built for this kernel version"),
+
+def _is_driver_built(_):
+    uname = os.uname()
+    kernel_version = uname.release
+    driver_version = "<version>"
+
+    if PYTHON_LIB_PRESENT:
+        driver_version = rclient.__version__
+
+    modules = glob.glob("/lib/modules/{0}/**/razer*.ko*".format(kernel_version), recursive=True)
+    modules += glob.glob("/usr/lib/{0}/**/razer*.ko*".format(kernel_version), recursive=True)
+
+    return {
+        "test_name": _("Kernel module has been built for this kernel"),
         "suggestions": [
             _("Ensure you have the correct Linux kernel headers package installed for your distribution."),
-            _("Your distro's package system might not have rebuilt the DKMS module (this can happen with kernel or OpenRazer updates). Try running:"),
-            "$ sudo dkms install -m openrazer-driver/x.x.x".replace("x.x.x", dkms_version),
+            _("Your distro's package system might not have rebuilt the module for this kernel. Try running:"),
+            "$ sudo dkms install -m openrazer-driver/x.x.x".replace("x.x.x", driver_version),
         ],
-        "passed": dkms_installed_built
-    })
+        "passed": len(modules) >= len(OPENRAZER_MODULES)
+    }
 
-    # Can the DKMS module be loaded?
+
+def _can_driver_be_probed(_):
     try:
         results = []
         for module in OPENRAZER_MODULES:
@@ -134,8 +150,8 @@ def _run_dkms_checks(_):
             output = modprobe.communicate()[0].decode("utf-8")
             results.append(True if modprobe.returncode == 0 else False)
 
-        subresults.append({
-            "test_name": _("DKMS module can be probed"),
+        return {
+            "test_name": _("Kernel module can be probed"),
             "suggestions": [
                 "{0} {1}".format(_("OpenRazer uses these modules:"), ", ".join(OPENRAZER_MODULES)),
                 _("For full error details, run this and substitute 'razerkbd' as necessary:"),
@@ -143,22 +159,34 @@ def _run_dkms_checks(_):
                 _("No output from this command indicates success."),
             ],
             "passed": True if True in results else False
-        })
+        }
     except FileNotFoundError:
-        subresults.append({
-            "test_name": _("DKMS module can be probed"),
+        return {
+            "test_name": _("Kernel module can be probed"),
             "suggestions": [
-                _("Could not check as 'modprobe' is not installed."),
+                _("Could not check as '[]' is not installed.").replace("[]", "modprobe"),
+                "{0} {1}".format(_("OpenRazer uses these modules:"), ", ".join(OPENRAZER_MODULES)),
             ],
             "passed": None
-        })
+        }
 
-    # Is a 'razer' DKMS module loaded right now?
-    lsmod = subprocess.Popen(["lsmod"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-    output = lsmod.communicate()[0].decode("utf-8")
 
-    subresults.append({
-        "test_name": _("DKMS module is currently loaded"),
+def _is_driver_loaded(_):
+    try:
+        lsmod = subprocess.Popen(["lsmod"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+        output = lsmod.communicate()[0].decode("utf-8")
+    except FileNotFoundError:
+        return {
+            "test_name": _("Kernel module is loaded"),
+            "suggestions": [
+                "{0} {1}".format(_("OpenRazer uses these modules:"), ", ".join(OPENRAZER_MODULES)),
+                _("Could not check as '[]' is not installed.").replace("[]", "lsmod"),
+            ],
+            "passed": None
+        }
+
+    return {
+        "test_name": _("Kernel module is loaded"),
         "suggestions": [
             "{0} {1}".format(_("OpenRazer uses these modules:"), ", ".join(OPENRAZER_MODULES)),
             _("For full error details, run this and substitute 'razerkbd' as necessary:"),
@@ -167,9 +195,7 @@ def _run_dkms_checks(_):
             _("If you've just installed, it is recommended to restart the computer."),
         ],
         "passed": True if output.find("razer") != -1 else False
-    })
-
-    return subresults
+    }
 
 
 def _is_secure_boot_enabled(_):
@@ -397,12 +423,15 @@ def troubleshoot(_, fn_progress_set_max, fn_progress_advance):
 
     try:
         # Perform the checks in a logical order
-        for test in [_is_daemon_installed, _is_pylib_installed,_is_daemon_running]:
+        for test in [_is_daemon_installed,
+                     _is_pylib_installed,
+                     _is_driver_src_installed,
+                     _is_driver_built,
+                     _can_driver_be_probed,
+                     _is_driver_loaded,
+                     _is_daemon_running]:
             results.append(test(_))
             fn_progress_advance()
-
-        results += _run_dkms_checks(_)
-        fn_progress_advance()
 
         # EFI systems only
         if os.path.exists("/sys/firmware/efi"):
