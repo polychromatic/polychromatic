@@ -339,7 +339,7 @@ class DevicesTab(shared.TabData):
 
         # Qt bug: Ticks won't appear with stylesheet
         slider.setTickPosition(QSlider.TicksBelow)
-        slider.setTickInterval(option["max"] / 10)
+        slider.setTickInterval(int(option["max"] / 10))
 
         label = QLabel()
         label.setText(str(option["value"]) + option["suffix"])
