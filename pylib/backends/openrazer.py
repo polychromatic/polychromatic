@@ -1015,11 +1015,11 @@ class Backend(_backend.Backend):
 
             elif option_id == "idle_time":
                 # Params: (int) [in minutes]
-                rdevice.set_idle_time(option_data * 60)
+                rdevice.set_idle_time(int(option_data) * 60)
 
             elif option_id == "low_battery_threshold":
                 # Params: (int)
-                rdevice.set_low_battery_threshold(option_data)
+                rdevice.set_low_battery_threshold(int(option_data))
 
             else:
                 return False
