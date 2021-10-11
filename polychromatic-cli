@@ -568,6 +568,10 @@ if args.dpi:
         if verbose:
             dbg.stdout("Setting DPI for {0}: {1}".format(device_name, dpi_values))
 
+        if not device["dpi_x"]:
+            # Devices like DeathAdder 3.5G uses a fixed DPI X value, which expects one integer only.
+            dpi_values = int(dpi_values[0])
+
         result = middleman.set_device_state(device["backend"], device["uid"], device["serial"], None, "dpi", dpi_values, [])
 
         if result == False:
