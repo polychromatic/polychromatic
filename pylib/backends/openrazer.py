@@ -10,6 +10,7 @@ and parses this for Polychromatic to use.
 Project URL: https://github.com/openrazer/openrazer
 """
 
+import glob
 import os
 
 # Imported on demand:
@@ -295,7 +296,7 @@ class Backend(_backend.Backend):
                 "static": self._("Static")
             }
 
-            for effect in ["none", "spectrum", "wave", "reactive", "ripple", "static", "pulsate", "blinking"]:
+            for effect in ["none", "spectrum", "wave", "reactive", "ripple", "static", "blinking"]:
                 if _device_has_zone_capability(effect):
                     effect_option = {
                         "id": effect,
@@ -485,6 +486,29 @@ class Backend(_backend.Backend):
                             effect_option["parameters"].append(param_key)
 
                 options.append(effect_option)
+
+            # Older hardware that use the "BW2013" protocol
+            try:
+                if "razer.device.lighting.bw2013" in rdevice._available_features.keys():
+                    options.append({
+                        "id": "bw2013_pulsate",
+                        "type": "effect",
+                        "label": self._("Pulsate"),
+                        "parameters": [],
+                        "colours": [],
+                        "active": False
+                    })
+                    options.append({
+                        "id": "bw2013_static",
+                        "type": "effect",
+                        "label": self._("Static"),
+                        "parameters": [],
+                        "colours": [],
+                        "active": False
+                    })
+            except Exception as e:
+                self.debug("Workaround for BW2013 may be broken!")
+                self.debug(self.common.get_exception_as_string(e))
 
             # Finished building options list
             zone_options[zone] = options
@@ -913,12 +937,6 @@ class Backend(_backend.Backend):
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_2", colour_hex[1])
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_3", colour_hex[2])
 
-            elif option_id == "pulsate":
-                # Params: <red> <green> <blue>
-                rzone.pulsate(colour_1[0], colour_1[1], colour_1[2])
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "pulsate")
-                self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
-
             elif option_id == "ripple" and option_data == "single":
                 # Params: <red> <green> <blue> <speed>
                 rzone.ripple(colour_1[0], colour_1[1], colour_1[2], self.ripple_refresh_rate)
@@ -971,6 +989,12 @@ class Backend(_backend.Backend):
                 rzone.static(colour_1[0], colour_1[1], colour_1[2])
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "effect", "static")
                 self._write_persistence_storage_fallback(rdevice, zone, rzone, "colour_1", colour_hex[0])
+
+            elif option_id == "bw2013_pulsate":
+                self._workaround_bw2013_pylib(rdevice, "pulsate")
+
+            elif option_id == "bw2013_static":
+                self._workaround_bw2013_pylib(rdevice, "static")
 
             # Other
             elif option_id == "game_mode":
@@ -1028,6 +1052,26 @@ class Backend(_backend.Backend):
             return self.common.get_exception_as_string(e)
 
         return True
+
+    def _workaround_bw2013_pylib(self, rdevice, effect):
+        """
+        Due to bugs in the OpenRazer Python library, older devices cannot change
+        their effect to 'pulsate' or 'static' (the latter doesn't appear as a
+        capability either)
+
+        As a workaround, bypass the pylib and echo directly to the sysfs driver.
+
+        See also: #345, openrazer/openrazer#1575
+        """
+        vidpid = self._get_device_vid_pid(rdevice)
+        matrix_file = glob.glob("/sys/bus/hid/drivers/razer*/*{0}:{1}*/matrix_effect_{2}".format(vidpid["vid"], vidpid["pid"], effect), recursive=True)
+
+        if not matrix_file:
+            raise FileNotFoundError
+
+        self.debug("Workaround BW2013 pylib: Sending byte via " + matrix_file[0])
+        with open(matrix_file[0], "w") as f:
+            f.write("1")
 
     def _get_form_factor(self, rdevice):
         """
