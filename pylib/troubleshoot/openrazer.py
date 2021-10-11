@@ -31,6 +31,7 @@ try:
 except Exception:
     PYTHON_LIB_PRESENT = False
 
+OPENRAZER_MODULES = ["razerkbd", "razermouse", "razeraccessory", "razerkraken"]
 
 def __get_razer_usb_pids():
     razer_usb_pids = []
@@ -126,22 +127,27 @@ def _run_dkms_checks(_):
 
     # Can the DKMS module be loaded?
     try:
-        modprobe = subprocess.Popen(["modprobe", "-n", "razerkbd"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-        output = modprobe.communicate()[0].decode("utf-8")
-        code = modprobe.returncode
+        results = []
+        for module in OPENRAZER_MODULES:
+            modprobe = subprocess.Popen(["modprobe", "-n", module], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+            output = modprobe.communicate()[0].decode("utf-8")
+            results.append(True if modprobe.returncode == 0 else False)
+
         subresults.append({
             "test_name": _("DKMS module can be probed"),
             "suggestions": [
-                _("For full error details, run:"),
+                "{0} {1}".format(_("OpenRazer uses these modules:"), ", ".join(OPENRAZER_MODULES)),
+                _("For full error details, run this and substitute 'razerkbd' as necessary:"),
                 "$ sudo modprobe razerkbd",
+                _("No output from this command indicates success."),
             ],
-            "passed": True if code == 0 else False
+            "passed": True if True in results else False
         })
     except FileNotFoundError:
         subresults.append({
             "test_name": _("DKMS module can be probed"),
             "suggestions": [
-                _("Unable to check. 'modprobe' is not installed."),
+                _("Could not check as 'modprobe' is not installed."),
             ],
             "passed": None
         })
@@ -153,8 +159,10 @@ def _run_dkms_checks(_):
     subresults.append({
         "test_name": _("DKMS module is currently loaded"),
         "suggestions": [
-            _("For full error details, run:"),
+            "{0} {1}".format(_("OpenRazer uses these modules:"), ", ".join(OPENRAZER_MODULES)),
+            _("For full error details, run this and substitute 'razerkbd' as necessary:"),
             "$ sudo modprobe razerkbd",
+            _("No output from this command indicates success."),
             _("If you've just installed, it is recommended to restart the computer."),
         ],
         "passed": True if output.find("razer") != -1 else False
