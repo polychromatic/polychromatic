@@ -17,6 +17,7 @@ a lot of the common driver issues.
 """
 
 import glob
+import grp
 import requests
 import os
 import subprocess
@@ -207,38 +208,53 @@ def _is_user_in_plugdev_group(_):
             _("Run this command, log out, then log back in to the computer:"),
             "$ sudo gpasswd -a $USER plugdev",
             _("If you've just installed, it is recommended to restart the computer."),
+            _("This is required so that your user account (and daemon) has permission to access the driver files in /sys/bus/hid/drivers"),
         ],
         "passed": _backend.BackendHelpers().is_user_in_group("plugdev")
     }
 
 
 def _is_sysfs_plugdev_permissions_ok(_):
-    log_path = os.path.join(os.path.expanduser("~"), ".local/share/openrazer/logs/razer.log")
-
-    if os.path.exists(log_path):
-        with open(log_path) as f:
-            full_log = f.read()
-
-        session_start = full_log.rfind("Initialising Daemon")
-        session_log = full_log[session_start:]
-        perm_ok = session_log.find("not owned by plugdev") == -1
-
+    if not os.path.exists("/sys/bus/hid/drivers/"):
         return {
             "test_name": _("Device can be accessed using plugdev permissions"),
             "suggestions": [
-                _("Restarting the daemon or replugging the hardware usually fixes the problem."),
-                _("If not, the udev rules for your distribution need investigating."),
-                _("Restart the daemon to clear this message."),
+                _("Unable to check as the drivers sysfs path for this Linux kernel is non-standard."),
             ],
-            "passed": perm_ok
+            "passed": None
         }
+
+    razer_modules = glob.glob("/sys/bus/hid/drivers/razer*")
+    if not razer_modules:
+        return {
+            "test_name": _("Device can be accessed using plugdev permissions"),
+            "suggestions": [
+                _("Unable to check because OpenRazer's modules are not loaded."),
+            ],
+            "passed": None
+        }
+
+    # Gather file list
+    sysfs_files = []
+    for driver in razer_modules:
+        for prefix in ["device_", "matrix_"]:
+            sysfs_files += glob.glob("{0}/*/{1}*".format(driver, prefix))
+
+    # Check sample of sysfs files have the correct group permission
+    results = []
+    for sysfile in sysfs_files:
+        gid = os.stat(sysfile).st_gid
+        group_name = grp.getgrgid(gid)[0]
+        results.append(True if group_name == "plugdev" else False)
 
     return {
         "test_name": _("Device can be accessed using plugdev permissions"),
         "suggestions": [
-            _("The log does not exist. Start the daemon and try again."),
+            _("Permissions for OpenRazer's device files (/sys/bus/hid/drivers) are not set correctly. They should be owned as root:plugdev (owner/group)"),
+            _("Replugging the hardware and then restarting the daemon usually fixes the problem."),
+            _("Alternately, improperly configured udev rules (such as a missing PID) may cause this to happen."),
         ],
-        "passed": None
+        "passed": False if False in results else True
     }
 
 
