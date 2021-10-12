@@ -70,9 +70,12 @@ Make sure you have installed the [dependencies](https://docs.polychromatic.app/d
 
 Providing all the [dependencies](https://docs.polychromatic.app/dependencies/)
 (including build ones) are installed, you can run the application directly from
-the Git repository folder without installing. Your configuration and cache is isolated
-to a `savedatadev` directory when running via `polychromatic-controller-dev`.
-To isolate the tray applet and command line interfaces, set this environment variable:
+the Git repository folder without installing. Obtained the source code by either
+running `git clone` or [downloading a copy as a zip folder](https://github.com/polychromatic/polychromatic/archive/refs/heads/master.zip).
+
+Your configuration and cache is isolated into a `savedatadev` directory when
+running via `polychromatic-controller-dev`. To isolate the tray applet and
+command line interfaces, set this environment variable:
 
     export POLYCHROMATIC_DEV_CFG=true
 
@@ -123,7 +126,7 @@ ninja -C build install
 
 For [OpenRazer] users, occasionally, issues are caused by an improper driver
 installation. Polychromatic includes a troubleshooter to identify common problems.
-[See our FAQs on OpenRazer](https://docs.polychromatic.app/openrazer/#my-device-is-not-listed-what-do-i-do)
+[See our FAQs on OpenRazer](https://docs.polychromatic.app/openrazer/#my-device-is-showing-up-as-unrecognised)
 if your device is not showing up or shows an error when changing settings.
 
 For bugs specific to Polychromatic, [please raise an issue here](https://github.com/polychromatic/polychromatic/issues/).
