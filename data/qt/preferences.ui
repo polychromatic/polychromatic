@@ -113,7 +113,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string extracomment="Text appears underneath a checkbox in the preferences dialog">GTK-based distros may not support this option out of the box. Additional steps may needed for your native theme to work in Qt apps.</string>
+                 <string extracomment="Text appears underneath a checkbox in the preferences dialog">Not all distros support this option out of the box. Additional steps may be required before your theme displays in Qt apps on a GTK desktop.</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>

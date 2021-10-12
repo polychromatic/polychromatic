@@ -164,6 +164,16 @@ class PreferencesWindow(shared.TabData):
         if not procpid.ProcessManager().is_component_installed("tray-applet"):
             tabs.setTabEnabled(1, False)
 
+        # Show/hide hints depending on current environment
+        try:
+            current_desktop = os.environ["XDG_CURRENT_DESKTOP"]
+
+            # Hide native Qt theme hint on Qt desktops.
+            if current_desktop in ["KDE", "LXQt"]:
+                self.dialog.findChild(QLabel, "UseSystemQtThemeTip").hide()
+        except KeyError:
+            pass
+
         # Show time!
         self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(open_tab if open_tab else 0)
         self.refresh_backend_status()
