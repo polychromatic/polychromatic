@@ -14,22 +14,20 @@ Files: polychromatic-cli
 Copyright: 2017-2021, Luke Horwell <code@horwell.me>
 License: GPL-3+
 
-Files: data/*
-       .github/*
+Files: .*
        CHANGELOG
-       INSTALL
-       LICENSE
-       README.md
+       data/*
        debian/*
+       .github/*
+       LICENSE
        man/*
        meson.build
-       meson_options.txt
        polychromatic-controller-dev
        pylib/*
+       README.md
        scripts/*
        sources/*
        tests/*
-       .*
 Copyright: 2015-2021, Luke Horwell <code@horwell.me>
 License: GPL-3+
 
