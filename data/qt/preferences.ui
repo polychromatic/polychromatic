@@ -395,18 +395,14 @@
               </size>
              </property>
              <property name="text">
-              <string extracomment="Preferences Label">Behaviour</string>
+              <string extracomment="Preferences Label">Enabled</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QCheckBox" name="TrayAutoStart">
-             <property name="text">
-              <string>Start the tray applet when I log on</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
+           <item row="2" column="0">
             <widget class="QLabel" name="TrayModeLabel">
              <property name="minimumSize">
               <size>
@@ -419,7 +415,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
+           <item row="2" column="1">
             <widget class="QComboBox" name="TrayModeCombo">
              <item>
               <property name="text">
@@ -438,7 +434,7 @@
              </item>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="3" column="0">
             <widget class="QLabel" name="TrayIconLabel">
              <property name="minimumSize">
               <size>
@@ -451,14 +447,14 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="3" column="1">
             <widget class="QLabel" name="TrayIconPickerPlaceholder">
              <property name="text">
               <string notr="true"/>
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="TrayDelayLabel">
              <property name="minimumSize">
               <size>
@@ -471,7 +467,7 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="4" column="1">
             <widget class="QWidget" name="TrayDelayWidget" native="true">
              <property name="minimumSize">
               <size>
@@ -518,6 +514,56 @@
                 </property>
                 <property name="text">
                  <string>On some desktop environments, due to race conditions, it may be necessary to wait so the applet's icon or device list is loaded properly.</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QWidget" name="TrayAutoStartGroup" native="true">
+             <layout class="QVBoxLayout" name="TrayAutoStartGroup_Layout">
+              <property name="spacing">
+               <number>4</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="TrayAutoStart">
+                <property name="text">
+                 <string>Start the tray applet when I log on</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="TrayAutoStartTip">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string extracomment="Text appears underneath a checkbox in the preferences dialog">Your desktop enviroment might not support this feature.</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -578,6 +624,9 @@
              </property>
              <property name="text">
               <string>Saved Colours</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
              </property>
             </widget>
            </item>
@@ -833,9 +882,6 @@
              </property>
              <property name="text">
               <string>Appearance</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
              </property>
             </widget>
            </item>

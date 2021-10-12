@@ -164,6 +164,9 @@ class PreferencesWindow(shared.TabData):
         if not procpid.ProcessManager().is_component_installed("tray-applet"):
             tabs.setTabEnabled(1, False)
 
+        tray_hint = self.dialog.findChild(QLabel, "TrayAutoStartTip")
+        tray_hint.hide()
+
         # Show/hide hints depending on current environment
         try:
             current_desktop = os.environ["XDG_CURRENT_DESKTOP"]
@@ -171,6 +174,11 @@ class PreferencesWindow(shared.TabData):
             # Hide native Qt theme hint on Qt desktops.
             if current_desktop in ["KDE", "LXQt"]:
                 self.dialog.findChild(QLabel, "UseSystemQtThemeTip").hide()
+
+            # Some environments deprecated the tray.
+            for desktop in ["GNOME", "Pantheon"]:
+                if current_desktop.lower().find(desktop.lower()) >= 0:
+                    tray_hint.show()
         except KeyError:
             pass
 
