@@ -58,36 +58,75 @@ Instructions for each supported distro are provided on the website:
 * <https://polychromatic.app/download/>
 
 Installing packages from a software repository is recommended as this will keep
-the software up-to-date.
+the software up-to-date, and your package system will keep track of dependencies.
 
-Alternately, providing all the [dependencies](https://docs.polychromatic.app/dependencies/)
-are installed, you can run the application directly from the repository without
-installation.  Your configuration and cache is isolated to a `savedatadev` directory
-when running via `polychromatic-controller-dev`. To isolate for other components,
-set this environment variable:
+
+If you need to test a specific change, grab an artifact [from the Actions tab](https://github.com/polychromatic/polychromatic/actions?query=workflow%3ABuild)
+and extract to a folder (GitHub requires you to be signed in to download these).
+Make sure you have installed the [dependencies](https://docs.polychromatic.app/dependencies/).
+
+
+## Hacking / Contributing
+
+Providing all the [dependencies](https://docs.polychromatic.app/dependencies/)
+(including build ones) are installed, you can run the application directly from
+the Git repository folder without installing. Your configuration and cache is isolated
+to a `savedatadev` directory when running via `polychromatic-controller-dev`.
+To isolate the tray applet and command line interfaces, set this environment variable:
 
     export POLYCHROMATIC_DEV_CFG=true
 
-**Are you on the cutting edge?**
+Then run the desired application:
 
-On Ubuntu, add [`ppa:polychromatic/edge`]. Arch users can install [`polychromatic-git`] from the AUR.
+    ./polychromatic-controller-dev
+    ./polychromatic-tray-applet
+    ./polychromatic-cli
 
-Alternately, grab the latest build [from the Actions tab.](https://github.com/polychromatic/polychromatic/actions?query=workflow%3ABuild)
-GitHub requires you to be signed in to download these.
+While most of the project isn't compiled like conventional software, there are
+a couple of pieces that do:
 
-[`ppa:polychromatic/edge`]: https://launchpad.net/~polychromatic/+archive/ubuntu/edge
-[`polychromatic-git`]: https://aur.archlinux.org/packages/polychromatic-git/
+    ./scripts/build-styles.sh
+    ./scripts/build-locales.sh
+
+These are performed by `polychromatic-controller-dev` and only need to be
+performed once, unless there's been code changes.
+
+
+## Building
+
+If you have custom installation requirements, Polychromatic can be put together
+using [Meson] and [Ninja].
+
+* You’ll need an implementation of SASS to compile Polychromatic’s Controller Qt styling.
+  `sassc` is widely available, but there’s other implementations that could be used.
+
+* `intltool` is required for compiling translations.
+
+* `git` is needed for retrieving the source code.
+
+To build:
+
+```
+git clone https://github.com/polychromatic/polychromatic.git
+cd polychromatic
+meson build
+ninja -C build install
+```
+
+[View Dependencies](https://docs.polychromatic.app/dependencies/)
+
+[Meson]: https://mesonbuild.com/
+[Ninja]: https://ninja-build.org/
 
 
 ## Something not working?
 
 For [OpenRazer] users, occasionally, issues are caused by an improper driver
 installation. Polychromatic includes a troubleshooter to identify common problems.
+[See our FAQs on OpenRazer](https://docs.polychromatic.app/openrazer/#my-device-is-not-listed-what-do-i-do)
+if your device is not showing up or shows an error when changing settings.
 
-Should you still be stuck, [check if an issue already exists](https://github.com/openrazer/openrazer/issues),
-and that your hardware is supported before [creating a new issue](https://github.com/openrazer/openrazer/issues/new).
-
-For bugs with Polychromatic, [please raise an issue here](https://github.com/polychromatic/polychromatic/issues/).
+For bugs specific to Polychromatic, [please raise an issue here](https://github.com/polychromatic/polychromatic/issues/).
 
 
 ## Translations
