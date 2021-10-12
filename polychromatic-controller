@@ -215,7 +215,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         # Check styles exist
-        if os.path.getsize(os.path.join(common.paths.data_dir, "qt", "style.qss")) < 100:
+        qt_style = os.path.join(common.paths.data_dir, "qt", "style.qss")
+        if os.path.exists(qt_style) and os.path.getsize(qt_style) < 100:
             dbg.stdout("style.qss malformed! Maybe the application wasn't compiled properly?", dbg.error)
             dbg.stdout("Forcing native theme.", dbg.warning)
             app.system_qt_theme = True
