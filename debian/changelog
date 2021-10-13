@@ -1,3 +1,25 @@
+polychromatic (0.7.1) focal; urgency=low
+
+  * Controller: Change keyboard shortcuts for changing HSL in editor.
+  * Controller: Fix crash on Python 3.10.
+  * Controller: Fix crash when styles were missing.
+  * Controller: Fix controls that were supposed to be in a disabled state.
+  * Controller: Fix retrieval of versions in About dialogs.
+  * Controller: Add support for future setting changes in OpenRazer Preferences.
+  * Controller: Improvements to OpenRazer troubleshooter.
+  * General: Fix crash if there was a "data" Python module.
+  * General: Swap positions of logo/scroll wheel in UI.
+  * General: Fix error setting idle_time and low_battery_threshold.
+  * General: Fix error setting Pulsate/Static for BlackWidow 2013-era keyboards.
+  * General: Fix graphics for charging zones.
+  * Tray: Add support for Ayatana Indicators.
+  * CLI: Fix error setting DPI for certain mice.
+  * Add StartupWMClass to launcher.
+  * Minor spelling corrections.
+  * Depend on AyatanaAppIndicator3 instead of AppIndicator3.
+
+ -- Luke Horwell <code@horwell.me>  Wed, 13 Oct 2021 20:14:56 +0100
+
 polychromatic (0.7.0) focal; urgency=low
 
   * Controller: Drop WebKitGTK. Now uses PyQt5.
