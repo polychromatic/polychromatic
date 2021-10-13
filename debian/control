@@ -68,10 +68,10 @@ Depends: polychromatic-common,
          python3,
          python3-gi,
          gir1.2-gtk-3.0,
-         gir1.2-appindicator3-0.1,
+         gir1.2-ayatanaappindicator3-0.1,
          ${misc:Depends},
 Breaks: polychromatic (<= 0.5.0)
-Description: RGB lighting utility (GTK-based AppIndicator)
+Description: RGB lighting utility (Indicator applet)
  RGB lighting management software for GNU/Linux, available as
  a graphical, command line and tray applet interface.
  .

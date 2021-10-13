@@ -19,7 +19,7 @@
 """
 Control devices from the desktop environment's indicator applet or system tray.
 
-Works as an AppIndicator (GTK) or GTK Status Icon.
+Supports AppIndicator, Ayatana Indicators or GTK Status Icon.
 """
 
 import atexit
@@ -36,14 +36,22 @@ gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
 from gi.repository import Gtk, Gdk
 
+VERSION = "0.7.0"
+SUPPORTED = ["GtkStatusIcon"]
+
+try:
+    gi.require_version('AyatanaAppIndicator3', '0.1')
+    from gi.repository import AyatanaAppIndicator3
+    SUPPORTED.append("AyatanaAppIndicator3")
+except (ImportError, ValueError):
+    pass
+
 try:
     gi.require_version("AppIndicator3", "0.1")
-    from gi.repository import AppIndicator3 as appindicator
-    APPINDICATOR = True
-except:
-    APPINDICATOR = False
-
-VERSION = "0.7.0"
+    from gi.repository import AppIndicator3
+    SUPPORTED.append("AppIndicator3")
+except (ImportError, ValueError):
+    pass
 
 # Import modules if running relatively.
 if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
@@ -74,6 +82,8 @@ else:
 
 
 class Indicator(object):
+    # TODO: Refactor into classes
+
     def __init__(self):
         """
         List of technologies that can power the indicator/applet/tray icon.
@@ -84,28 +94,42 @@ class Indicator(object):
         self.root_menu = None
         self.mode = prefs["tray"]["mode"]
 
-        # 0 will use the default, unless it is unavailable.
-        if self.mode == pref.TRAY_DEFAULT:
-            self.mode = pref.TRAY_APPINDICATOR
+        # Try to find a suitable renderer.
+        if self.mode == pref.TRAY_AUTO:
+            if "AyatanaAppIndicator3" in SUPPORTED:
+                self.mode = pref.TRAY_AYATANA
+            elif "AppIndicator3" in SUPPORTED:
+                self.mode = pref.TRAY_APPINDICATOR
+            else:
+                self.mode = pref.TRAY_GTK_STATUS
 
-        # TODO: Refactor into classes
-        self.appindicator = pref.TRAY_APPINDICATOR
-        self.gtk_status_icon = pref.TRAY_GTK_STATUS
         self.names = {
-            self.appindicator: "AppIndicator",
-            self.gtk_status_icon: "GTKStatusIcon"
+            pref.TRAY_APPINDICATOR: "AppIndicator3",
+            pref.TRAY_GTK_STATUS: "GTKStatusIcon",
+            pref.TRAY_AYATANA: "AyatanaAppIndicator3",
         }
 
         # User may pass a parameter to force a different indicator.
         if args.force_appindicator:
-            self.mode = self.appindicator
+            self.mode = pref.TRAY_APPINDICATOR
+        elif args.force_ayatana:
+            self.mode = pref.TRAY_AYATANA
         elif args.force_gtk_status:
-            self.mode = self.gtk_status_icon
+            self.mode = pref.TRAY_GTK_STATUS
 
         # Checks the specified mode is available.
-        if self.mode == self.appindicator and not APPINDICATOR:
-            dbg.stdout("AppIndicator is not available, falling back to GTKStatusIcon...", dbg.warning)
-            self.mode = self.gtk_status_icon
+        # Fallback order: Ayatana -> AppIndicator3 -> GTK Status
+        if self.mode == pref.TRAY_APPINDICATOR and not "AppIndicator3" in SUPPORTED:
+            dbg.stdout("AppIndicator3 not available, falling back to AyatanaAppIndicator3...", dbg.warning)
+            self.mode = pref.TRAY_AYATANA
+
+        if self.mode == pref.TRAY_AYATANA and not "AyatanaAppIndicator3" in SUPPORTED:
+            dbg.stdout("AyatanaAppIndicator3 not available, falling back to AppIndicator3...", dbg.warning)
+            self.mode = pref.TRAY_APPINDICATOR
+
+        if self.mode == pref.TRAY_APPINDICATOR and not "AppIndicator3" in SUPPORTED:
+            dbg.stdout("AppIndicator3 not available, falling back to GTK Status Icon...", dbg.warning)
+            self.mode = pref.TRAY_GTK_STATUS
 
     def setup(self, icon_path):
         """
@@ -114,13 +138,13 @@ class Indicator(object):
         Params:
             icon_path       (str)       Absolute path to the icon
         """
-        dbg.stdout("Initialising " + self.names[self.mode], dbg.action, 1)
+        dbg.stdout("Initialising " + self.names[self.mode] + "...", dbg.action, 1)
 
-        if self.mode == self.appindicator:
+        if self.mode in [pref.TRAY_APPINDICATOR, pref.TRAY_AYATANA]:
             self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", icon_path, appindicator.IndicatorCategory.APPLICATION_STATUS)
             self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
 
-        elif self.mode == self.gtk_status_icon:
+        elif self.mode == pref.TRAY_GTK_STATUS:
             self.indicator = Gtk.StatusIcon()
             self.indicator.set_name("polychromatic-tray-applet")
             self.indicator.set_from_file(icon_path)
@@ -132,7 +156,7 @@ class Indicator(object):
         """
         Returns the root menu object.
         """
-        if self.mode in [self.appindicator, self.gtk_status_icon]:
+        if self.mode in [pref.TRAY_APPINDICATOR, pref.TRAY_AYATANA, pref.TRAY_GTK_STATUS]:
             self.root_menu = Gtk.Menu()
             return self.root_menu
 
@@ -148,7 +172,7 @@ class Indicator(object):
             function_params     (list)  Functions to pass the callback function.
             icon_path           (str)   Path to image file.
         """
-        if self.mode in [self.appindicator, self.gtk_status_icon]:
+        if self.mode in [pref.TRAY_APPINDICATOR, pref.TRAY_AYATANA, pref.TRAY_GTK_STATUS]:
             if icon_path and os.path.exists(icon_path):
                 item = Gtk.ImageMenuItem(label=label)
                 item.set_sensitive(enabled)
@@ -189,7 +213,7 @@ class Indicator(object):
             menu                Menu object (to contain new child menu items)
             item                Menu item object (for appending to parent menu)
         """
-        if self.mode in [self.appindicator, self.gtk_status_icon]:
+        if self.mode in [pref.TRAY_APPINDICATOR, pref.TRAY_AYATANA, pref.TRAY_GTK_STATUS]:
             if icon_path and os.path.exists(icon_path):
                 item = Gtk.ImageMenuItem(label=label)
                 item.set_sensitive(enabled)
@@ -216,7 +240,7 @@ class Indicator(object):
         Params:
             menu                (obj)   create_menu() or create_submenu() object.
         """
-        if self.mode in [self.appindicator, self.gtk_status_icon]:
+        if self.mode in [pref.TRAY_APPINDICATOR, pref.TRAY_AYATANA, pref.TRAY_GTK_STATUS]:
             sep = Gtk.SeparatorMenuItem()
             sep.show()
             self.add_menu_item(menu, sep)
@@ -225,11 +249,11 @@ class Indicator(object):
         """
         Connects the event for when the menu is opened/clicked.
         """
-        if self.mode == self.appindicator:
+        if self.mode in [pref.TRAY_APPINDICATOR, pref.TRAY_AYATANA]:
             self.indicator.set_title("Polychromatic")
             self.indicator.set_menu(self.root_menu)
 
-        elif self.gtk_status_icon:
+        elif pref.TRAY_GTK_STATUS:
             def _show_menu_cb(widget, button, time, data=None):
                 self.root_menu.show_all()
                 self.root_menu.popup(None, None, Gtk.StatusIcon.position_menu, self.indicator, button, time)
@@ -867,8 +891,9 @@ def parse_parameters():
     parser.add_argument("-v", "--verbose", help=_("Be verbose to stdout"), action="store_true")
     parser.add_argument("--version", help=_("Print program version and exit"), action="store_true")
     parser.add_argument("--locale", help=_("Force a specific locale, e.g. de_DE"), action="store")
-    parser.add_argument("--force-appindicator", help=_("Use AppIndicator for rendering"), action="store_true")
-    parser.add_argument("--force-gtk-status", help=_("Use legacy GTK Status Icon for rendering"), action="store_true")
+    parser.add_argument("--force-appindicator", help=_("Render using AppIndicator3"), action="store_true")
+    parser.add_argument("--force-ayatana", help=_("Render using Ayatana Indicators"), action="store_true")
+    parser.add_argument("--force-gtk-status", help=_("Render using GTK Status (legacy)"), action="store_true")
 
     args = parser.parse_args()
 
@@ -879,9 +904,7 @@ def parse_parameters():
             print("Commit:", git_commit)
         print("Save Data:", pref.VERSION)
         print("Python:", py_version)
-
-        if APPINDICATOR:
-            print("GTK:", "{0}.{1}.{2}".format(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION))
+        print("GTK:", "{0}.{1}.{2}".format(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION))
         exit(0)
 
     if args.verbose:
@@ -935,6 +958,12 @@ if __name__ == "__main__":
 
     args = parse_parameters()
     pref.init(_)
+
+    # Which AppIndicator? Both use the same API.
+    if "AyatanaAppIndicator3" in SUPPORTED:
+        appindicator = AyatanaAppIndicator3
+    elif "AppIndicator3" in SUPPORTED:
+        appindicator = AppIndicator3
 
     # Initialise devices
     middleman = middleman_mod.Middleman(dbg, common, _)

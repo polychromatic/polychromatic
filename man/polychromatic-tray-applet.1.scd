@@ -35,13 +35,17 @@ through an AppIndicator or GTK Status Icon.
 
 *--force-appindicator*
 	Override the user's preferences and start the tray applet using the
-	AppIndicator3 bindings. This is the default option and is widely compatible
+	AppIndicator3 bindings.
+
+*--force-ayatana*
+	Override the user's preferences and start the tray applet using the
+	Ayatana Indicator bindings. This is the default option and is widely compatible
 	with most desktop environments.
 
 *--force-gtk-status*
 	Override the user's preferences and start the tray applet using the
 	legacy GTK Status Icon. This is a deprecated GTK feature, but may work
-	on environments where AppIndicator3 is not supported.
+	on distributions where application indicators are not supported.
 
 # NOTES
 

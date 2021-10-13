@@ -419,7 +419,7 @@
             <widget class="QComboBox" name="TrayModeCombo">
              <item>
               <property name="text">
-               <string>Default (AppIndicator3)</string>
+               <string>Automatic</string>
               </property>
              </item>
              <item>
@@ -430,6 +430,11 @@
              <item>
               <property name="text">
                <string>GTK Status Icon (Legacy)</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Ayatana Indicators</string>
               </property>
              </item>
             </widget>

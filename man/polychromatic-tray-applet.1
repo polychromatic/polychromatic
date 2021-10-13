@@ -5,7 +5,7 @@
 .nh
 .ad l
 .\" Begin generated content:
-.TH "polychromatic-tray-applet" "1" "2021-08-08"
+.TH "polychromatic-tray-applet" "1" "2021-10-13"
 .P
 .SH NAME
 .P
@@ -94,7 +94,13 @@ For example, "fr_FR" or "nl".\&
 \fB--force-appindicator\fR
 .RS 4
 Override the user's preferences and start the tray applet using the
-AppIndicator3 bindings.\& This is the default option and is widely compatible
+AppIndicator3 bindings.\&
+.P
+.RE
+\fB--force-ayatana\fR
+.RS 4
+Override the user's preferences and start the tray applet using the
+Ayatana Indicator bindings.\& This is the default option and is widely compatible
 with most desktop environments.\&
 .P
 .RE
@@ -102,7 +108,7 @@ with most desktop environments.\&
 .RS 4
 Override the user's preferences and start the tray applet using the
 legacy GTK Status Icon.\& This is a deprecated GTK feature, but may work
-on environments where AppIndicator3 is not supported.\&
+on distributions where application indicators are not supported.\&
 .P
 .RE
 .SH NOTES
