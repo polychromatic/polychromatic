@@ -430,21 +430,22 @@ class OpenRazerPreferences(shared.TabData):
             except KeyError:
                 self.conf_path = "/home/$USER/.config/openrazer/razer.conf"
 
-        self.keys = [
-            # "Group", "Item", <data type>
-            ["General", "verbose_logging", bool],
-            #["Startup", "sync_effects_enabled", bool],
-            ["Startup", "devices_off_on_screensaver", bool],
-            ["Startup", "mouse_battery_notifier", bool],
-            ["Startup", "mouse_battery_notifier_freq", int],
-            ["Startup", "restore_persistence", bool],
-        ]
-
+        # Client settings
         self.client = [
             # "Filename", <data type>
             ["allow_image_download", int],
             ["ripple_refresh_rate", float]
         ]
+
+    def _get_openrazer_version(self):
+        """
+        Returns the current version of OpenRazer in decimal format: <major.minor>, e.g. 3.1
+        """
+        openrazer = self.appdata.middleman.get_backend("openrazer")
+        if openrazer:
+            version = openrazer.version.split(".")[:2]
+            return float("{0}.{1}".format(version[0], version[1]))
+        return 0
 
     def open_log(self):
         self.menubar.openrazer.open_log()
@@ -462,21 +463,38 @@ class OpenRazerPreferences(shared.TabData):
             os.system("xdg-open file://{0}".format(self.conf_path))
             return
 
+        # Determine settings suitable for this version
+        version = self._get_openrazer_version()
+        self.keys = [
+            # "Object Name",                "Group",    "Item",                         <data type>
+            ["verbose_logging",             "General",  "verbose_logging",              bool],
+            ["devices_off_on_screensaver",  "Startup",  "devices_off_on_screensaver",   bool],
+            ["restore_persistence",         "Startup",  "restore_persistence",          bool],
+        ]
+
+        if version >= 3.2:
+            self.keys.append(["battery_notifier", "Startup", "battery_notifier", bool])
+            self.keys.append(["battery_notifier_freq", "Startup", "battery_notifier_freq", int])
+        else:
+            self.keys.append(["battery_notifier", "Startup", "mouse_battery_notifier", bool])
+            self.keys.append(["battery_notifier_freq", "Startup", "mouse_battery_notifier_freq", int])
+
         self.dialog = shared.get_ui_widget(self.appdata, "openrazer-config", QDialog)
         self.dialog.findChild(QDialogButtonBox, "DialogButtons").accepted.connect(self._save_and_restart)
 
         # razer.conf
         for key in self.keys:
-            group = key[0]
-            key_name = key[1]
-            data_type = key[2]
+            object_name = key[0]
+            group = key[1]
+            key_name = key[2]
+            data_type = key[3]
 
             if data_type == bool:
-                chkbox = self.dialog.findChild(QCheckBox, key_name)
+                chkbox = self.dialog.findChild(QCheckBox, object_name)
                 chkbox.setChecked(self._read_config(group, key_name, bool))
 
             elif data_type == int:
-                spinner = self.dialog.findChild(QSpinBox, key_name)
+                spinner = self.dialog.findChild(QSpinBox, object_name)
                 spinner.setValue(self._read_config(group, key_name, int))
 
         # Client
@@ -515,14 +533,15 @@ class OpenRazerPreferences(shared.TabData):
         """
         # razer.conf
         for key in self.keys:
-            group = key[0]
-            key_name = key[1]
-            data_type = key[2]
+            object_name = key[0]
+            group = key[1]
+            key_name = key[2]
+            data_type = key[3]
 
             if data_type == bool:
-                value = self.dialog.findChild(QCheckBox, key_name).isChecked()
+                value = self.dialog.findChild(QCheckBox, object_name).isChecked()
             elif data_type == int:
-                value = self.dialog.findChild(QSpinBox, key_name).value()
+                value = self.dialog.findChild(QSpinBox, object_name).value()
             else:
                 continue
 

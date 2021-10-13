@@ -147,7 +147,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="mouse_battery_notifier">
+        <widget class="QCheckBox" name="battery_notifier">
          <property name="text">
           <string extracomment="Checkbox for configuring OpenRazer">Periodically notify battery status (for supported devices)</string>
          </property>
@@ -172,14 +172,14 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="mouse_battery_notifier_freq_label">
+           <widget class="QLabel" name="battery_notifier_freq_label">
             <property name="text">
              <string extracomment="Label for configuring OpenRazer">Notification Frequency</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="mouse_battery_notifier_freq">
+           <widget class="QSpinBox" name="battery_notifier_freq">
             <property name="suffix">
              <string extracomment="Suffix for a spinner control"> seconds</string>
             </property>
