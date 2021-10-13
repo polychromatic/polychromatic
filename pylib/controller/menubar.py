@@ -424,15 +424,14 @@ class MenuBarOpenRazer(MenuBar):
 
     def _get_dbus_version(self):
         """
-        For about dialog, get the DBUS version (used by the OpenRazer driver)
+        For about dialog, get the D-Bus version (used by the OpenRazer driver)
         """
         dbg = self.appdata.dbg
         try:
             output = subprocess.Popen(["dbus-daemon", "--version"], stdout=subprocess.PIPE).communicate()[0]
-            first_line = str(output).split("\\n")[0]
-            return first_line.split(" ")[-1]
+            return output.decode("UTF-8").split("\n")[0].split(" ")[-1]
         except Exception:
-            dbg.stdout("Unable to get DKMS version! Ignoring...", dbg.warning)
+            dbg.stdout("Unable to get D-Bus version! Ignoring.", dbg.warning)
             return "[Unknown]"
 
     def _get_dkms_version(self):
@@ -442,10 +441,10 @@ class MenuBarOpenRazer(MenuBar):
         dbg = self.appdata.dbg
         try:
             output = subprocess.Popen(["dkms", "--version"], stdout=subprocess.PIPE).communicate()[0]
-            first_line = str(output).split("\\n")[0]
-            return first_line.split(":")[1].strip()
+            # Output: "dkms:2.8" or "dkms-2.8.6"
+            return output.decode("UTF-8").strip()[5:]
         except Exception:
-            dbg.stdout("Unable to get DKMS version! Ignoring...", dbg.warning)
+            dbg.stdout("Unable to get DKMS version! Ignoring.", dbg.warning)
             return "[Unknown]"
 
     def troubleshoot(self):
