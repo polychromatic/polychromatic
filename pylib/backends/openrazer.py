@@ -1161,10 +1161,10 @@ class Backend(_backend.Backend):
 
         if rdevice.has("lighting"):
             zones.append("main")
-        if rdevice.has("lighting_logo") or rdevice.has("lighting_logo_active"):
-            zones.append("logo")
         if rdevice.has("lighting_scroll") or rdevice.has("lighting_scroll_active"):
             zones.append("scroll")
+        if rdevice.has("lighting_logo") or rdevice.has("lighting_logo_active"):
+            zones.append("logo")
         if rdevice.has("lighting_left"):
             zones.append("left")
         if rdevice.has("lighting_right"):
