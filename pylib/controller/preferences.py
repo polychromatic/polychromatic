@@ -200,7 +200,6 @@ class PreferencesWindow(shared.TabData):
         self.dialog.findChild(QPushButton, "OpenRazerSettings").setDisabled(openrazer_disabled)
         self.dialog.findChild(QPushButton, "OpenRazerAbout").setDisabled(openrazer_disabled)
         self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").setDisabled(openrazer_disabled)
-        self.dialog.findChild(QPushButton, "OpenRazerTroubleshoot").setDisabled(openrazer_disabled)
         self.dialog.findChild(QLabel, "OpenRazerLog").setDisabled(openrazer_disabled)
 
         # Backend Status
