@@ -385,10 +385,9 @@ class MainWindow(QMainWindow):
                 traceback = common.get_exception_as_string(e)
                 print(traceback)
                 widgets.open_dialog(widgets.dialog_error,
-                                    _("Controller Error"),
-                                    _("Eeks! An uncaught exception was thrown while loading the tab.") + '\n\n' + \
-                                    _("The application will attempt to continue, but get ready in case something breaks again!"),
-                                    info_text=_("This may be reported as a bug on the project's issue tracker."),
+                                    _("Polychromatic Error"),
+                                    _("Unable to load the tab properly due to an error.") + "\n\n" + \
+                                    _("See below for technical details. Consider reporting this as a bug on this project's issue tracker."),
                                     details=traceback)
             self.unsetCursor()
 
@@ -474,7 +473,7 @@ class MainWindow(QMainWindow):
         if save_ver > pref_ver:
             details = "Yours: {1}\nExpected: <={2}\nApplication Version: v{0}".format(VERSION, save_ver, pref_ver)
             widgets.open_dialog(widgets.dialog_warning,
-                                _("Incompatible Save Data"),
+                                _("Save Data Version Mismatch"),
                                 _("Polychromatic's configuration (including your effects and presets) have been previously saved in a newer version of this software.") + \
                                 _("While this older software version may run as expected, there is no guarantee everything will work as a result of this newer save data. This installation is unsupported.") + \
                                 _("Consider updating the application, ignore this message or delete: ~/.config/polychromatic"),
