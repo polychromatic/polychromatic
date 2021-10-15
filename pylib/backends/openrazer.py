@@ -612,7 +612,7 @@ class Backend(_backend.Backend):
             # -- Sleep Mode (in seconds)
             try:
                 current_idle_secs = rdevice.get_idle_time()
-                current_idle_mins = current_idle_secs / 60
+                current_idle_mins = int(current_idle_secs / 60)
 
                 zone_options["main"].append({
                     "id": "idle_time",

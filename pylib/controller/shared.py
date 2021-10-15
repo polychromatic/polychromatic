@@ -580,7 +580,7 @@ class PolychromaticWidgets(object):
         # Center graphic
         image = QLabel()
         pixmap_src = QPixmap(icon_path)
-        pixmap = pixmap_src.scaled(750 / 2, 500 / 2, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap = pixmap_src.scaled(int(750 / 2), int(500 / 2), Qt.KeepAspectRatio, Qt.SmoothTransformation)
         image.setPixmap(pixmap)
         image.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         image.setAlignment(Qt.AlignCenter)
