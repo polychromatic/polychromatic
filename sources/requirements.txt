@@ -1,0 +1,21 @@
+# ============================
+# Polychromatic Dependencies
+# ============================
+# This file is provided for convenience for custom Python installations.
+# None of the build systems use this file.
+
+# == Used by all programs ==
+colorama
+colour
+requests
+setproctitle
+
+# == For Controller only ==
+PyQt5
+PyQtWebEngine
+
+# == For Tray Applet only ==
+PyGObject
+
+# == Backend libraries ==
+# ??? openrazer (not published on pip, use distribution packages)
