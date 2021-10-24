@@ -574,20 +574,31 @@ class Backend(_backend.Backend):
             _init_main_if_empty()
             params = []
 
-            # Poll rates are fixed
-            poll_rate_ranges = [125, 500, 1000]
             ids = {
                 125: "poll_low",
                 500: "poll_mid",
-                1000: "poll_high"
+                1000: "poll_high",
+                2000: "poll_hyper",
+                4000: "poll_hyper_4000",
+                8000: "poll_hyper_8000"
             }
             labels = {
                 125: "125 Hz (~8 ms)",
                 500: "500 Hz (~2 ms)",
-                1000: "1000 Hz (~1 ms)"
+                1000: "1000 Hz (~1 ms)",
+                2000: "2000 Hz (~0.5 ms)",
+                4000: "4000 Hz (~0.25 ms)",
+                8000: "8000 Hz (~0.125 ms)"
             }
 
-            for rate in poll_rate_ranges:
+            # OpenRazer <= 3.1.0 were hardcoded
+            supported_poll_rates = [125, 500, 1000]
+
+            # OpenRazer >= 3.2.0 provides the list
+            if rdevice.has("supported_poll_rates"):
+                supported_poll_rates = rdevice.supported_poll_rates
+
+            for rate in supported_poll_rates:
                 params.append({
                     "id": ids[rate],
                     "label": labels[rate],
