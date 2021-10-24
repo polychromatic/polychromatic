@@ -161,6 +161,7 @@ class Bootstrapper(object):
             dbg.stdout("Timed out waiting for backends to load, or they are non-functional.", dbg.error)
 
         # Determine what to do for devices upon login.
+        # TODO: Refactor into functions
         login_trigger_set = False
         state_files = glob.glob(os.path.join(common.paths.states, "*.json"))
 
@@ -190,11 +191,16 @@ class Bootstrapper(object):
         # Start Tray Applet
         if self.preferences["tray"]["autostart"]:
             delay = self.preferences["tray"]["autostart_delay"]
-            if delay > 0:
-                dbg.stdout("Starting tray applet in {0} second(s)...".format(delay), dbg.action, 1)
-                time.sleep(delay)
             process = procpid.ProcessManager("tray-applet")
-            process.start_component()
+
+            if process.is_component_installed("tray-applet"):
+                if delay > 0:
+                    dbg.stdout("Starting tray applet in {0} second(s)...".format(delay), dbg.action, 1)
+                    time.sleep(delay)
+                process.start_component()
+            else:
+                dbg.stdout("Tray applet not installed. Skipping.", dbg.warning, 1)
+
     def monitor_triggers(self):
         """
         Triggers may monitor different entities (e.g. time, a file or event)
