@@ -28,7 +28,7 @@ from ..backends import _backend
 
 try:
     from openrazer import client as rclient
-    PYTHON_LIB_PRESENT = True
+    PYTHON_LIB_PRESENT = False
 except Exception:
     PYTHON_LIB_PRESENT = False
 
@@ -84,7 +84,7 @@ def _is_pylib_installed(_):
     return {
         "test_name": _("Python library is installed"),
         "suggestions": [
-            _("Install the 'python3-openrazer' package for your distribution."),
+            _("Install the 'python-openrazer' or 'python3-openrazer' package for your distribution."),
             _("Check the PYTHONPATH environment variable is correct."),
         ],
         "passed": PYTHON_LIB_PRESENT
