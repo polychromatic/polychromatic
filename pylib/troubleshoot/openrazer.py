@@ -404,9 +404,9 @@ def _is_openrazer_up_to_date(_):
     return {
         "test_name": _("OpenRazer is the latest version"),
         "suggestions": [
-            _("Install the 'openrazer-meta' package for your distribution.")
+            _("Unable to check because the Python library is not installed.")
         ],
-        "passed": False
+        "passed": None
     }
 
 
