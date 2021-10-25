@@ -92,12 +92,14 @@ def _is_pylib_installed(_):
 
 
 def _is_driver_src_installed(_):
-    driver_version = "<version>"
-
-    if PYTHON_LIB_PRESENT:
-        driver_version = rclient.__version__
-
-    expected_src_path = "/var/lib/dkms/openrazer-driver/{0}".format(driver_version)
+    if not PYTHON_LIB_PRESENT:
+        return {
+            "test_name": _("Kernel module sources are installed for DKMS"),
+            "suggestions": [
+                _("Unable to check because the Python library is not installed.")
+            ],
+            "passed": None
+        }
 
     if not os.path.exists("/var/lib/dkms"):
         return {
@@ -109,6 +111,9 @@ def _is_driver_src_installed(_):
             ],
             "passed": None
         }
+
+    driver_version = rclient.__version__
+    expected_src_path = "/var/lib/dkms/openrazer-driver/{0}".format(driver_version)
 
     return {
         "test_name": _("Kernel module sources are installed for DKMS"),
