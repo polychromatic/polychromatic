@@ -1,13 +1,15 @@
-name: Build
+name: CI
 
 on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    name: Build
+    runs-on: ubuntu-latest
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
 
     - name: Install Dependencies
       run: |
@@ -52,11 +54,11 @@ jobs:
       run: |
         ./tests/lint/validate-py.sh
 
-    - name: Validate man (scdoc)
+    - name: Validate Manual
       run: |
         ./tests/lint/validate-scdoc.sh
 
-    - name: 'Test Meson/Ninja Build'
+    - name: Test Meson and Ninja
       run: |
         meson build --prefix=/tmp/pkg/
         ninja -C build install
@@ -69,14 +71,14 @@ jobs:
       run: |
         ./scripts/build-locales.sh
 
-    - name: Create Build
+    - name: Create Artifact
       run: |
         ./scripts/create-files-for-opt.sh /tmp/dist
 
-    - name: Upload Build
+    - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: polychromatic-${{github.sha}}
+        name: polychromatic-run${{github.run_number}}
         path: /tmp/dist/
 
     - name: Test Debian Packaging
@@ -103,3 +105,43 @@ jobs:
       run: |
         git fetch --unshallow --tags
         ./scripts/packaging/prepare-edge-ppa.sh ./
+
+  unit_tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+
+        # Build Dependencies
+        sudo apt-get install gettext sassc
+
+        # Application Dependencies
+        sudo apt-get install python3-colorama python3-colour python3-requests python3-setproctitle imagemagick
+        sudo apt-get install gir1.2-gtk-3.0 gir1.2-appindicator3-0.1
+        sudo apt-get install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtwebengine
+
+    - name: Install OpenRazer Backend
+      run: |
+        git clone https://github.com/openrazer/openrazer --depth=1 "$GITHUB_WORKSPACE/openrazer"
+        sudo add-apt-repository ppa:openrazer/daily
+        sudo apt-get install openrazer-daemon python3-openrazer dbus-x11
+
+    - name: Development Build
+      run: |
+        ./scripts/build-styles.sh
+        ./scripts/build-locales.sh
+
+    - name: Run Polychromatic Unit Tests
+      run: |
+        ./scripts/run-unit-tests.sh
+
+    - name: Test OpenRazer Integration
+      run: |
+        eval $(sudo dbus-launch --sh-syntax)
+        sudo -E ./tests/integration/openrazer/run_daemon.sh "$GITHUB_WORKSPACE/openrazer"
