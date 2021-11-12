@@ -171,5 +171,6 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
     def test_cli_set_parameter(self):
         self.assertEqual(self._got_exception_running_command(["./polychromatic-cli", "--no-pretty-column", "-o", "wave", "-p", "1"]), False, "CLI failed to set option with parameter")
 
+
 if __name__ == '__main__':
     unittest.main()
