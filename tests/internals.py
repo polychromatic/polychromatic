@@ -1,8 +1,3 @@
-#!/usr/bin/python3
-#
-# Working directory should be the repository root.
-#
-
 import pylib.common as common
 import pylib.controller as controller
 import pylib.locales as locales
@@ -147,6 +142,3 @@ class TestInternals(unittest.TestCase):
         state = procpid.DeviceSoftwareState("POLY000001")
         state.clear_preset()
         self.assertEqual(state.get_preset(), None, "Could not clear preset state")
-
-if __name__ == '__main__':
-    unittest.main()

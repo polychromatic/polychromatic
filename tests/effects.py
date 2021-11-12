@@ -1,8 +1,3 @@
-#!/usr/bin/python3
-#
-# Working directory should be the repository root.
-#
-
 import pylib.common as common
 import pylib.locales as locales
 import pylib.preferences as preferences
@@ -265,7 +260,3 @@ class TestEffects(unittest.TestCase):
         params = handler.get_parameters()
         # Number: Value not set, should return default.
         self.assertEqual(params["test_number"], 48, "Script parameter returned incorrect value!")
-
-
-if __name__ == '__main__':
-    unittest.main()

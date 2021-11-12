@@ -44,19 +44,19 @@ jobs:
 
     - name: Validate JSON
       run: |
-        ./tests/lint/validate-json.py
+        ./scripts/validate-json.py
 
     - name: Validate SCSS
       run: |
-        ./tests/lint/validate-scss.sh
+        ./scripts/validate-scss.sh
 
     - name: Validate Python
       run: |
-        ./tests/lint/validate-py.sh
+        ./scripts/validate-py.sh
 
     - name: Validate Manual
       run: |
-        ./tests/lint/validate-scdoc.sh
+        ./scripts/validate-scdoc.sh
 
     - name: Test Meson and Ninja
       run: |
@@ -137,11 +137,11 @@ jobs:
         ./scripts/build-styles.sh
         ./scripts/build-locales.sh
 
-    - name: Run Polychromatic Unit Tests
+    - name: Test Polychromatic
       run: |
-        ./scripts/run-unit-tests.sh
+        ./tests/run.sh --verbose
 
-    - name: Test OpenRazer Integration
+    - name: Test OpenRazer Backend
       run: |
         eval $(sudo dbus-launch --sh-syntax)
-        sudo -E ./tests/integration/openrazer/run_daemon.sh "$GITHUB_WORKSPACE/openrazer"
+        sudo -E ./tests/openrazer/run_daemon.sh "$GITHUB_WORKSPACE/openrazer"

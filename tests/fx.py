@@ -1,8 +1,3 @@
-#!/usr/bin/python3
-#
-# Working directory should be the repository root.
-#
-
 import pylib.fx as fx
 
 import unittest
@@ -65,6 +60,3 @@ class TestFX(unittest.TestCase):
         # Gradient from black to white to black, across 10 steps. Midpoint should be white.
         gradient = self.fx.gradient(["#000000", "#FFFFFF", "#000000"], 6)
         self.assertEqual(gradient[2].upper(), "#FFFFFF", "Cannot verify gradient is accurate")
-
-if __name__ == '__main__':
-    unittest.main()
