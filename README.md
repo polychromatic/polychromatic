@@ -3,9 +3,8 @@
 An open source RGB lighting management front-end application to customise
 [OpenRazer] peripherals on GNU/Linux. Soon to be vendor agnostic!
 
-[![Build](https://github.com/polychromatic/polychromatic/workflows/Build/badge.svg?event=push)](https://github.com/polychromatic/polychromatic/actions?query=workflow%3ABuild)
-[![Unit Tests](https://github.com/polychromatic/polychromatic/workflows/Unit%20Tests/badge.svg?event=push)](https://github.com/polychromatic/polychromatic/actions?query=workflow%3A%22Unit+Tests%22)
-[![GitHub Release](https://img.shields.io/github/release/polychromatic/polychromatic.svg)](https://github.com/polychromatic/polychromatic/releases)
+[![Build Status](https://github.com/polychromatic/polychromatic/actions/workflows/main.yml/badge.svg?branch=master&event=push)](https://github.com/polychromatic/polychromatic/actions?query=branch%3Amaster+event%3Apush)
+[![Current Release](https://img.shields.io/github/release/polychromatic/polychromatic.svg)](https://github.com/polychromatic/polychromatic/releases)
 
 ![Screenshot of Polychromatic v0.7.0 Controller](.github/controller@2x.webp)
 
