@@ -28,7 +28,7 @@ from ..backends import _backend
 
 try:
     from openrazer import client as rclient
-    PYTHON_LIB_PRESENT = False
+    PYTHON_LIB_PRESENT = True
 except Exception:
     PYTHON_LIB_PRESENT = False
 
