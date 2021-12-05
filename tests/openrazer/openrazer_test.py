@@ -367,15 +367,41 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         game_mode = self.get_option(device, "game_mode", "main")
         game_mode.apply(True)
 
-    def test_battery_idle_time(self):
-        device = self.get_device("Razer Atheris (Receiver)")
+    def test_battery_idle_time_set_only(self):
+        device = self.get_device("Razer Ouroboros")
         idle_time = self.get_option(device, "idle_time", "main")
         idle_time.apply(10)
+        # 'get' is powered by fallback persistence
+        device.refresh()
+        idle_time.refresh()
+        self.assertEqual(idle_time.value, 10, "Could not set or get idle_time (device = set only)")
 
-    def test_battery_low_power(self):
+    def test_battery_low_power_set_only(self):
+        device = self.get_device("Razer Ouroboros")
+        low_bat_thres = self.get_option(device, "low_battery_threshold", "main")
+        low_bat_thres.apply(50)
+        # 'get' is powered by fallback persistence
+        device.refresh()
+        low_bat_thres.refresh()
+        self.assertEqual(low_bat_thres.value, 50, "Could not set or get low_battery_threshold (device = set only)")
+
+    def test_battery_idle_time_set_get(self):
+        device = self.get_device("Razer Basilisk X HyperSpeed")
+        idle_time = self.get_option(device, "idle_time", "main")
+        idle_time.apply(10)
+        # 'get' is retrieved from device
+        device.refresh()
+        idle_time.refresh()
+        self.assertEqual(idle_time.value, 10, "Could not set or get idle_time (device = get/set)")
+
+    def test_battery_low_power_set_get(self):
         device = self.get_device("Razer Basilisk X HyperSpeed")
         low_bat_thres = self.get_option(device, "low_battery_threshold", "main")
         low_bat_thres.apply(50)
+        # 'get' is retrieved from device
+        device.refresh()
+        low_bat_thres.refresh()
+        self.assertEqual(low_bat_thres.value, 50, "Could not set or get low_battery_threshold (device = get/set)")
 
     def test_all_options_no_duplicates(self):
         for device in self.openrazer.get_devices():
@@ -421,22 +447,22 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
 
     def test_persistence_colour_bytes(self):
         rdevice = self.get_rdevice("Razer Mamba Tournament Edition")
-        persistence = OpenRazerPersistence(rdevice.fx, "main", rdevice.serial, self.openrazer.persistence_fallback_path)
+        persistence = OpenRazerPersistence(rdevice.fx)
         persistence._convert_colour_bytes(rdevice.fx)
 
     def test_persistence_refresh(self):
         rdevice = self.get_rdevice("Razer Mamba Tournament Edition")
-        persistence = OpenRazerPersistence(rdevice.fx, "main", rdevice.serial, self.openrazer.persistence_fallback_path)
+        persistence = OpenRazerPersistence(rdevice.fx)
         persistence.refresh()
 
     def test_persistence_fallback_read(self):
         rdevice = self.get_rdevice("Razer Mamba Tournament Edition")
-        persistence = OpenRazerPersistenceFallback(rdevice.fx, "main", rdevice.serial, self.openrazer.persistence_fallback_path)
+        persistence = OpenRazerPersistenceFallback("main", rdevice.serial, self.openrazer.persistence_fallback_path)
         persistence.refresh()
 
     def test_persistence_fallback_write(self):
         rdevice = self.get_rdevice("Razer Mamba Tournament Edition")
-        persistence = OpenRazerPersistenceFallback(rdevice.fx, "main", rdevice.serial, self.openrazer.persistence_fallback_path)
+        persistence = OpenRazerPersistenceFallback("main", rdevice.serial, self.openrazer.persistence_fallback_path)
         persistence.save("effect", "static")
 
 
