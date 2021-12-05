@@ -274,7 +274,8 @@ class OpenRazerBackend(Backend):
         """
         if self.persistence_supported:
             return OpenRazerPersistence(rzone)
-        return OpenRazerPersistenceFallback(rzone, zone.zone_id, serial, self.persistence_fallback_path)
+
+        return OpenRazerPersistenceFallback(zone.zone_id, serial, self.persistence_fallback_path)
 
     def _get_dpi_object(self, rdevice):
         """
@@ -1171,7 +1172,7 @@ class OpenRazerBackend(Backend):
         try:
             if "razer.device.lighting.bw2013" in rdevice._available_features.keys():
                 vidpid = self._get_device_vid_pid(rdevice)
-                persistence = OpenRazerPersistenceFallback(None, "main", rdevice.serial, self.persistence_fallback_path)
+                persistence = OpenRazerPersistenceFallback("main", rdevice.serial, self.persistence_fallback_path)
 
                 try:
                     matrix_file_pulsate = glob.glob("/sys/bus/hid/drivers/razer*/*{0}:{1}*/matrix_effect_pulsate".format(vidpid["vid"], vidpid["pid"]), recursive=True)[0]
@@ -1319,45 +1320,53 @@ class OpenRazerBackend(Backend):
     def _get_battery_options(self, rdevice):
         """
         Returns a list of Backend.Option derivative objects for power saving features.
+
+        In OpenRazer >= 3.2.0, low power and sleep mode are exposed as individual capabilities.
         """
         options = []
+        persistence = OpenRazerPersistenceFallback("main", rdevice.serial, self.persistence_fallback_path)
 
-        # Low power and sleep mode are not exposed as individual capabilities.
-        # Most battery powered devices don't support these.
-        try:
-            # This is the amount of time before the device enters "sleep mode"
-            class IdleTimeOption(Backend.SliderOption):
-                def __init__(self, rdevice):
+        # This is the amount of time before the device enters "sleep mode"
+        if rdevice.has("get_idle_time") or rdevice.has("set_idle_time"):
+            class IdleTimeOptionSetOnly(Backend.SliderOption):
+                def __init__(self, rdevice, persistence):
                     # Device stores idle time in seconds. Present as minutes.
                     super().__init__()
                     self._rdevice = rdevice
+                    self._persistence = persistence
                     self.uid = "idle_time"
                     self.min = 1
                     self.max = 15
 
                 def refresh(self):
-                    self.value = int(self._rdevice.get_idle_time()) / 60
+                    self.value = int(int(self._persistence.get("idle_time")) / 60)
 
                 def apply(self, new_value):
                     self._rdevice.set_idle_time(int(new_value) * 60)
+                    self._persistence.save("idle_time", int(new_value) * 60)
 
-            idle_time = IdleTimeOption(rdevice)
+            class IdleTimeOptionSetGet(IdleTimeOptionSetOnly):
+                def refresh(self):
+                    self.value = int(self._rdevice.get_idle_time() / 60)
+
+            if rdevice.has("get_idle_time"):
+                idle_time = IdleTimeOptionSetGet(rdevice, persistence)
+            else:
+                idle_time = IdleTimeOptionSetOnly(rdevice, persistence)
+
             idle_time.label = self._("Sleep mode after")
             idle_time.icon = self.get_icon("options", "sleep")
-            idle_time.suffix = self._("minute")
-            idle_time.suffix_plural = self._("minutes")
+            idle_time.suffix = ' ' + self._("minute")
+            idle_time.suffix_plural = ' ' + self._("minutes")
             options.append(idle_time)
 
-        except Exception as e:
-            self.debug("Device has battery, but does not support 'idle_time'")
-            self.debug(str(e))
-
-        try:
-            # This is the battery percentage before the device enters a low power mode.
-            class LowBatteryThresholdOption(Backend.SliderOption):
-                def __init__(self, rdevice):
+        # This is the battery percentage before the device enters a low power mode.
+        if rdevice.has("get_low_battery_threshold") or rdevice.has("set_low_battery_threshold"):
+            class LowBatteryThresholdOptionSetOnly(Backend.SliderOption):
+                def __init__(self, rdevice, persistence):
                     super().__init__()
                     self._rdevice = rdevice
+                    self._persistence = persistence
                     self.uid = "low_battery_threshold"
                     self.min = 1
                     self.max = 100
@@ -1365,19 +1374,24 @@ class OpenRazerBackend(Backend):
                     self.suffix_plural = "%"
 
                 def refresh(self):
-                    self.value = int(self._rdevice.get_low_battery_threshold())
+                    self.value = int(self._persistence.get("low_battery_threshold"))
 
                 def apply(self, new_value):
                     self._rdevice.set_low_battery_threshold(int(new_value))
+                    self._persistence.save("low_battery_threshold", int(new_value))
 
-            low_bat_thres = LowBatteryThresholdOption(rdevice)
-            low_bat_thres.label = self._("Low Power Mode")
-            low_bat_thres.icon = self.get_icon("options", "low_battery")
-            options.append(low_bat_thres)
+            class LowBatteryThresholdOptionSetGet(LowBatteryThresholdOptionSetOnly):
+                def refresh(self):
+                    self.value = int(self._rdevice.get_low_battery_threshold())
 
-        except Exception as e:
-            self.debug("Device has battery, but does not support 'low_battery_threshold'")
-            self.debug(str(e))
+            if rdevice.has("get_low_battery_threshold"):
+                low_power = LowBatteryThresholdOptionSetGet(rdevice, persistence)
+            else:
+                low_power = LowBatteryThresholdOptionSetOnly(rdevice, persistence)
+
+            low_power.label = self._("Low Power Mode")
+            low_power.icon = self.get_icon("options", "low_battery")
+            options.append(low_power)
 
         return options
 
@@ -1452,7 +1466,7 @@ class OpenRazerPersistence(object):
         "speed": 2,
     }
 
-    def __init__(self, rzone, zone_id=None, serial=None, path=None):
+    def __init__(self, rzone):
         self.rzone = rzone
 
     def _convert_colour_bytes(self, rzone):
@@ -1494,8 +1508,7 @@ class OpenRazerPersistenceFallback(OpenRazerPersistence):
     """
     Use a file-based persistence for backwards compatibility (<= 2.9.0)
     """
-    def __init__(self, rzone, zone_id, serial, path):
-        self.rzone = rzone
+    def __init__(self, zone_id, serial, path):
         self.zone_id = zone_id
         self.serial = serial
         self.persistence_path = path
@@ -1527,8 +1540,15 @@ class OpenRazerPersistenceFallback(OpenRazerPersistence):
             self.state["colour_3"],
         ]
 
+    def get(self, key):
+        file_path = self._get_key_path(key)
+        if os.path.exists(file_path):
+            with open(file_path) as f:
+                return str(f.readline())
+        return "0"
+
     def save(self, key, value):
         if not os.path.exists(self.persistence_path):
             os.makedirs(self.persistence_path)
         with open(self._get_key_path(key), "w") as f:
-            f.write(value)
+            f.write(str(value))
