@@ -576,6 +576,7 @@ class Backend(_backend.Backend):
 
             ids = {
                 125: "poll_low",
+                250: "poll_low_250",
                 500: "poll_mid",
                 1000: "poll_high",
                 2000: "poll_hyper",
@@ -584,6 +585,7 @@ class Backend(_backend.Backend):
             }
             labels = {
                 125: "125 Hz (~8 ms)",
+                250: "250 Hz (~4 ms)",
                 500: "500 Hz (~2 ms)",
                 1000: "1000 Hz (~1 ms)",
                 2000: "2000 Hz (~0.5 ms)",
