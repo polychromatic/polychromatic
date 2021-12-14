@@ -1233,34 +1233,25 @@ class OpenRazerBackend(Backend):
         Returns a Backend.Option derivative object for setting a mouse's poll rate.
         """
         current_rate = int(rdevice.poll_rate)
+        parameters = []
 
-        # OpenRazer <= 3.1.0 had unexposed hardcoded values
+        # OpenRazer <= 3.1.0 were hardcoded (not exposed via API)
         supported_poll_rates = [125, 500, 1000]
 
         # OpenRazer >= 3.2.0 provides the list
         if rdevice.has("supported_poll_rates"):
             supported_poll_rates = rdevice.supported_poll_rates
 
-        labels = {
-            125: self._("125 Hz (8 msecs)"),
-            500: self._("500 Hz (2 msecs)"),
-            1000: self._("1000 Hz (1 msec)"),
-            2000: self._("2000 Hz (0.5 msec)"),
-            4000: self._("4000 Hz (0.25 msec)"),
-            8000: self._("8000 Hz (0.125 msec)"),
-        }
-
-        parameters = []
-
         for rate in supported_poll_rates:
             param = Backend.Option.Parameter()
             param.data = rate
             param.active = True if current_rate == rate else False
 
-            try:
-                param.label = labels[rate]
-            except KeyError:
-                param.label = "{0} Hz".format(str(rate))
+            # 500 Hz  = 2 millisecond latency
+            # 1000 Hz = 1 millisecond latency
+            # 2000 Hz = 0.5 millisecond latency
+            msecs = float(1000 / rate)
+            param.label = self._("X Hz (Y msec latency)").replace("X", str(rate)).replace("Y", str(int(msecs) if msecs.is_integer() else msecs))
 
             if rate > 1000:
                 param.icon = self.get_icon("params", "poll_hyper")
