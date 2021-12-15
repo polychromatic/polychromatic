@@ -1,8 +1,5 @@
-#!/usr/bin/python3
-#
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2020-2021 Luke Horwell <code@horwell.me>
-#
 """
 This module controls the 'Presets' tab of the Controller GUI.
 """

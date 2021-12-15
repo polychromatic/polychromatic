@@ -1,8 +1,5 @@
-#!/usr/bin/python3
-#
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2020-2021 Luke Horwell <code@horwell.me>
-#
 """
 Provides a common class for handling save data across features of the
 application that utilise individual JSON files, such as effects and presets.

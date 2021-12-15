@@ -1,8 +1,5 @@
-#!/usr/bin/python3
-#
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2020-2021 Luke Horwell <code@horwell.me>
-#
 """
 This module contains the events when clicking on interactive menu bar components.
 """

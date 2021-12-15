@@ -1,8 +1,5 @@
-#!/usr/bin/python3
-#
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2020-2021 Luke Horwell <code@horwell.me>
-#
 """
 This module is a higher level interface for custom effects that transparently
 connects to the supported backend, regardless of driver.
