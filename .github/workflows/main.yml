@@ -27,13 +27,10 @@ jobs:
         # Build System
         sudo apt-get install meson
 
-        # Debian Packaging
-        sudo apt-get install debhelper devscripts
-
         # Locales
         sudo apt-get install gettext intltool
 
-        # Backend: OpenRazer
+        # Install OpenRazer Python library for validation
         sudo add-apt-repository ppa:openrazer/daily
         sudo apt-get install python3-openrazer
 
@@ -81,6 +78,65 @@ jobs:
         name: polychromatic-run${{github.run_number}}
         path: /tmp/dist/
 
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+
+        # Build Dependencies
+        sudo apt-get install gettext sassc
+
+        # Application Dependencies
+        sudo apt-get install python3-colorama python3-colour python3-requests python3-setproctitle imagemagick
+        sudo apt-get install gir1.2-gtk-3.0 gir1.2-appindicator3-0.1
+        sudo apt-get install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtwebengine
+
+    - name: Install OpenRazer
+      run: |
+        git clone https://github.com/openrazer/openrazer --depth=1 "$GITHUB_WORKSPACE/openrazer"
+        sudo add-apt-repository ppa:openrazer/daily
+        sudo apt-get install openrazer-daemon python3-openrazer dbus-x11
+
+    - name: Build
+      run: |
+        ./scripts/build-styles.sh
+        ./scripts/build-locales.sh
+
+    - name: Unit Tests
+      run: |
+        ./tests/run.sh --verbose
+
+    - name: Integration Tests with OpenRazer
+      run: |
+        eval $(sudo dbus-launch --sh-syntax)
+        sudo -E ./tests/openrazer/run_daemon.sh "$GITHUB_WORKSPACE/openrazer"
+
+  edge:
+    name: Deploy to Launchpad
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+
+        # Build Dependencies
+        sudo apt-get install sassc meson gettext intltool
+
+        # Debian Packaging
+        sudo apt-get install debhelper devscripts
+
     - name: Test Debian Packaging
       run: |
         git clean -df
@@ -100,48 +156,8 @@ jobs:
       env:
         BOT_GPG_KEY_BASE64: ${{ secrets.BOT_GPG_KEY_BASE64 }}
 
-    - name: Upload Packages to Launchpad
+    - name: Upload to Launchpad PPA
       if: ${{ github.event_name == 'push' && github.repository == 'polychromatic/polychromatic' && github.ref == 'refs/heads/master' }}
       run: |
         git fetch --unshallow --tags
         ./scripts/packaging/prepare-edge-ppa.sh ./
-
-  unit_tests:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update
-
-        # Build Dependencies
-        sudo apt-get install gettext sassc
-
-        # Application Dependencies
-        sudo apt-get install python3-colorama python3-colour python3-requests python3-setproctitle imagemagick
-        sudo apt-get install gir1.2-gtk-3.0 gir1.2-appindicator3-0.1
-        sudo apt-get install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtwebengine
-
-    - name: Install OpenRazer Backend
-      run: |
-        git clone https://github.com/openrazer/openrazer --depth=1 "$GITHUB_WORKSPACE/openrazer"
-        sudo add-apt-repository ppa:openrazer/daily
-        sudo apt-get install openrazer-daemon python3-openrazer dbus-x11
-
-    - name: Development Build
-      run: |
-        ./scripts/build-styles.sh
-        ./scripts/build-locales.sh
-
-    - name: Test Polychromatic
-      run: |
-        ./tests/run.sh --verbose
-
-    - name: Test OpenRazer Backend
-      run: |
-        eval $(sudo dbus-launch --sh-syntax)
-        sudo -E ./tests/openrazer/run_daemon.sh "$GITHUB_WORKSPACE/openrazer"
