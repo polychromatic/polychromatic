@@ -15,20 +15,81 @@ Refer to the online documentation for more details:
 https://docs.polychromatic.app/
 """
 
+from ..fx import FX
 import glob
 import os
 import grp
 
 
-class Backend(object):
+class BackendBase(object):
+    """
+    All backends inherit from this class. Contains useful functions and any
+    reimplementations from Polychromatic's base class.
+    """
+    def __init__(self, base):
+        self.backend_id = "Unknown"
+        self._base = base
+
+        # Pass a function for translating strings in UI messages. Ignore for debug() messages.
+        self._ = base._
+
+    def debug(self, message=""):
+        """
+        Use this function to output messages to the user when they have verbose enabled.
+        This may be useful when users are diagnosing issues.
+        """
+        self._base.dbg.stdout("[{0}] {1}".format(self.backend_id, str(message)), self._base.dbg.debug, 1)
+
+    def get_backend_storage_path(self):
+        """
+        Returns a path for storing data for the backend.
+        """
+        config_path = os.path.join(self._base.paths.config, "backends", self.backend_id)
+        if not os.path.exists(config_path):
+            os.makedirs(config_path)
+        return config_path
+
+    def get_form_factor(self, form_factor="unrecognised"):
+        """
+        Return a form factor dictionary for Polychromatic.
+
+        See common.get_form_factor() for the dictionary output.
+        See common.FORM_FACTORS for a list of valid IDs to pass to this function.
+        """
+        return self._base.common.get_form_factor(self._, form_factor)
+
+    def get_icon(self, folder="", name=""):
+        """
+        Return an icon path from: data/img/<folder>/<name>.svg
+        The file extension is omitted.
+        """
+        return self._base.common.get_icon(folder, name)
+
+    def get_exception_as_string(self, e):
+        """
+        Returns a traceback in string format. Use this to relay error messages to the user.
+
+        try:
+            <something that might fail>
+        except Exception as e:
+            return self.get_exception_as_string(e)
+        """
+        return self._base.common.get_exception_as_string(e)
+
+    def __repr__(self):
+        return self.backend_id
+
+
+class Backend(BackendBase):
     """
     A backend implementing the communication required between this software
     and a driver/daemon.
+
+    Most functions are stubs and must be reimplemented.
     """
-    def __init__(self, dbg, common, _):
-        """
-        Backend identification, variables and storage path for the backend.
-        """
+    def __init__(self, *args):
+        super().__init__(*args)
+
         # Set the Backend ID here
         # (Also to be added in ../middleman.py)
         self.backend_id = "unknown"
@@ -48,78 +109,19 @@ class Backend(object):
         self.releases_url = ""
         self.license = "GPLv3"
 
-        # Use this for translating UI messages
-        self._ = _
-
         # This module may contain useful functions. See BackendHelpers() for usage.
         self.helpers = BackendHelpers()
 
-        # Private variables - don't worry about these. Do not use directly.
-        self._common = common
-        self._dbg = dbg
-
-        def __repr__(self):
-            return self.backend_id
-
-    #####################################################################
-    # Functions that may be useful for the implemented module
-    #####################################################################
-    def debug(self, message=""):
-        """
-        Use this function to output messages to the user when they have verbose enabled.
-        This may be useful when users are diagnosing issues.
-        """
-        self._dbg.stdout("[{0}] {1}".format(self.backend_id, str(message)), self._dbg.debug, 1)
-
-    def get_config_store_path(self):
-        """
-        Returns a path for the backend to use for storing data, such as device
-        images or client/connection options.
-        """
-        config_path = os.path.join(self._common.paths.config, "backends", self.backend_id)
-        if not os.path.exists(config_path):
-            os.makedirs(config_path)
-        return config_path
-
-    def get_form_factor(self, form_factor="unrecognised"):
-        """
-        Return a form factor dictionary for Polychromatic.
-
-        See common.get_form_factor() for the dictionary output.
-        See common.FORM_FACTORS for a list of valid IDs to pass to this function.
-        """
-        return self._common.get_form_factor(self._, form_factor)
-
-    def get_icon(self, folder="", name=""):
-        """
-        Return an icon path from: data/img/<folder>/<name>.svg
-        The file extension is omitted.
-        """
-        return self._common.get_icon(folder, name)
-
-    def get_exception_as_string(self, e):
-        """
-        Returns a traceback in string format. Use this to relay error messages to the user.
-
-        try:
-            <something that might fail>
-        except Exception as e:
-            return self.get_exception_as_string(e)
-        """
-        return self._common.get_exception_as_string(e)
-
-    #####################################################################
-    # These are stubs and must be implemented by the backend's module.
-    #####################################################################
     def init(self):
         """
-        Perform the logic for initalizing the backend here, such as connecting
-        to the daemon using the necessary library.
+        Perform the logic for initalizing the backend, such as connecting
+        to a daemon using the necessary library.
 
-        Returns a boolean to indicate success or failure.
+        Return:
+            - True      Success!
+            - (str)     Traceback/error message. Cannot use backend.
         """
         raise NotImplementedError
-        return False
 
     class UnknownDeviceItem(object):
         """
@@ -260,14 +262,19 @@ class Backend(object):
                 """
                 raise NotImplementedError
 
-        class Matrix(object):
+        class Matrix(FX):
             """
-            An object holding data and objects for individual LED software-driven lighting.
+            An object holding data and objects for individual LED software-driven lighting,
+            if supported by the device.
 
-            Devices with firmware or NAND/flash memory that isn't designed for software
-            programming should not implement this feature, as it may damage the hardware.
+            Devices with NAND/flash memory that isn't designed for repeated usage
+            should not implement this feature, as it may damage the hardware.
+
+            See also: fx.FX()
             """
             def __init__(self):
+                self.name = "Unknown Device"
+                self.form_factor_id = "unrecognised"
                 self.rows = 0
                 self.cols = 0
 
@@ -279,7 +286,7 @@ class Backend(object):
 
             def set(self, x=0, y=0, red=255, green=255, blue=255):
                 """
-                Set a colour for the specified co-ordinate.
+                Set a colour at the specified co-ordinate.
                 """
                 raise NotImplementedError
 
@@ -295,10 +302,16 @@ class Backend(object):
                 """
                 raise NotImplementedError
 
+            def brightness(self, percent):
+                """
+                Set the global brightness of the LEDs. Could be used for fade effects globally.
+                """
+                raise NotImplementedError
+
         class Zone(object):
             """
             An object that describes a specific lighting area of the hardware.
-            If the device has no concept of this or monolithic, call this zone "main".
+            If the device has no concept of this or is monolithic, call this zone "main".
             """
             def __init__(self):
                 # Internal ID
@@ -362,12 +375,18 @@ class Backend(object):
             """
             Refresh the active variable for the option and that of any parameters.
             If the option doesn't have an active state, ignore this function.
+
+            Nothing is returned from this function. However, if an exception occurs
+            or is manually raised, an error will be shown to the user.
             """
             return
 
         def apply(self, data=None):
             """
             Execute the action on the device. The "data" argument varies by option type.
+
+            Nothing is returned from this function. However, if an exception occurs
+            or is manually raised, an error will be shown to the user.
             """
             raise NotImplementedError
 

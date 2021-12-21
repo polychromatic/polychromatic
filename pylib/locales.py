@@ -1,13 +1,10 @@
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2017-2021 Luke Horwell <code@horwell.me>
 """
-This module contains shared locale strings for Polychromatic. Usually used
-when referenced by the backend module.
+Contains the UI localization for Polychromatic. Powered by GNU's gettext.
 """
-
 import os
 import gettext
-from . import common
 
 
 class Locales(object):
@@ -15,8 +12,7 @@ class Locales(object):
     Supports localisation through the application by utilising gettext to know
     which locale is in use, and get the "_" object for processing strings.
     """
-    def __init__(self, bin_path, force_locale=""):
-        self.bin_path = bin_path
+    def __init__(self, force_locale=""):
         self.locale = force_locale
         self.locale_path = None
         self.translation = None
@@ -32,13 +28,13 @@ class Locales(object):
         Returns:
             gettext.translation() bound to an i18n variable.
         """
-        whereami = os.path.abspath(os.path.join(os.path.dirname(self.bin_path)))
+        is_pylib = os.path.dirname(__file__).split("/")[-1] == "pylib"
 
-        if os.path.exists(os.path.join(whereami, "locale")):
-            # Using relative path (development or /opt/ build)
-            self.locale_path = os.path.join(whereami, "locale/")
+        if is_pylib:
+            # Use relative path (development or standalone build)
+            self.locale_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "locale/"))
         else:
-            # Using system path or source (en_GB) if none found
+            # Use system path
             self.locale_path = "/usr/share/locale/"
 
         self.translation = gettext.translation("polychromatic", localedir=self.locale_path, fallback=True, languages=[self.locale])

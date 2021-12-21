@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 #
-# Assumes working directory is repository root.
+# Assumes run_daemon.sh is running.
+#
 # The tests target the latest version of OpenRazer from the 'master' branch.
 #
 import os
@@ -8,10 +9,9 @@ import random
 import unittest
 
 # Polychromatic Modules
-from pylib import common as common
+from pylib import base
 from pylib.backends._backend import Backend
 from pylib.backends.openrazer import OpenRazerBackend, OpenRazerPersistence, OpenRazerPersistenceFallback
-from pylib import preferences as pref
 
 # External
 import openrazer.client
@@ -24,12 +24,9 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
     """
     @classmethod
     def setUpClass(self):
-        # Skeletons of required parameters
-        dbg = common.Debugging()
-        def _(string):
-            return string
-        pref.init(_)
-        self.openrazer = OpenRazerBackend(dbg, common, _)
+        self.base = base.PolychromaticBase()
+        self.base.init_base("", [])
+        self.openrazer = OpenRazerBackend(self.base)
 
     @classmethod
     def get_rdevice(self, name):
@@ -79,7 +76,7 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         self.assertTrue(self.openrazer.init(), "OpenRazerBackend could not init")
 
     def test_client_override(self):
-        ripple_override_path = os.path.join(self.openrazer.get_config_store_path(), "ripple_refresh_rate")
+        ripple_override_path = os.path.join(self.openrazer.get_backend_storage_path(), "ripple_refresh_rate")
 
         # Perform what the GUI would do
         with open(ripple_override_path, "w") as f:
@@ -156,6 +153,14 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         device.matrix.clear()
         device.matrix.set(0, 0, 255, 0, 0)
         device.matrix.draw()
+
+    def test_device_matrix_name(self):
+        device = self.get_device("Razer BlackWidow Ultimate 2016")
+        self.assertEqual(device.matrix.name, "Razer BlackWidow Ultimate 2016")
+
+    def test_device_matrix_form_factor_id(self):
+        device = self.get_device("Razer BlackWidow Chroma")
+        self.assertEqual(device.matrix.form_factor_id, "keyboard")
 
     def test_zone_logo_laptop(self):
         # The second zone (logo) for some Blade models are the laptop lid

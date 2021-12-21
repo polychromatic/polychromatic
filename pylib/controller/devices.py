@@ -510,7 +510,7 @@ class DevicesTab(shared.TabData):
         """
         Checks the result of the request to the backend. Upon failure, inform the user.
         """
-        print("stub:_event_check_response")
+        print("fixme:stub:_event_check_response")
         return True
 
         dbg = self.dbg
@@ -852,13 +852,14 @@ class DevicesTab(shared.TabData):
             layout.addWidget(group)
 
         def _apply_button_clicked(button):
+            print("stub:_apply_button_clicked")
             self.set_cursor_busy()
-            if button.option_id:
+            #if button.option_id:
                 # Setting effect/brightness
-                self.middleman.set_bulk_option(button.option_id, button.option_data, button.required_colours)
-            else:
+                #self.middleman.set_bulk_option(button.option_id, button.option_data, button.required_colours)
+            #else:
                 # Setting colour
-                self.middleman.set_bulk_colour(button.colour)
+                #self.middleman.set_bulk_colour(button.colour)
             self.set_cursor_normal()
 
         self.btn_grps["all"].buttonClicked.connect(_apply_button_clicked)
@@ -921,7 +922,7 @@ class DevicesTab(shared.TabData):
 
             hw = mkitem(_("Hardware"))
             hw.addChild(mkitem(_("Name"), device.name))
-            hw.addChild(mkitem(_("Backend"), backend.name, os.path.join(common.paths.data_dir, "img", "logo", backend.logo)))
+            hw.addChild(mkitem(_("Backend"), backend.name, os.path.join(self.paths.data_dir, "img", "logo", backend.logo)))
             if device.vid:
                 hw.addChild(mkitem("VID:PID", "{0}:{1}".format(device.vid, device.pid)))
             else:
@@ -1008,7 +1009,7 @@ class DevicesTab(shared.TabData):
                     elif isinstance(option, Backend.ButtonOption):
                         option_type = _("Button")
 
-                    option_item.addChild(mkitem(_("Identifier"), option.uid))
+                    option_item.addChild(mkitem(_("Option ID"), option.uid))
                     option_item.addChild(mkitem(_("Type"), option_type))
                     option_item.addChild(mkitem(_("Active"), option.active))
 
@@ -1016,7 +1017,7 @@ class DevicesTab(shared.TabData):
                         param_parent = mkitem(_("Parameters"))
                         for param in option.parameters:
                             param_item = mkitem(param.label, "", param.icon)
-                            param_item.addChild(mkitem(_("Raw Data"), param.data))
+                            param_item.addChild(mkitem(_("Parameter ID"), param.data))
                             param_item.addChild(mkitem(_("Active"), param.active))
                             if param.colours_required:
                                 param_item.addChild(_get_colour_item(option, param.colours_required))

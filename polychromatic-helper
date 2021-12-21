@@ -20,7 +20,7 @@
 A multipurpose "helper" process that runs in the background to control separate
 operations of Polychromatic, such as:
 
-- Handle the playback of custom "software" effects.
+- Playing a "software" effect for a particular device.
 - Autostart the tray applet and resume previous software settings.
 - Monitor and process automatic rules (triggers).
 
@@ -44,12 +44,11 @@ VERSION = "0.7.3"
 # Import modules if running relatively.
 if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
     try:
+        from pylib.base import PolychromaticBase
         import pylib.common as common
         import pylib.effects as effects
         import pylib.preferences as preferences
         import pylib.procpid as procpid
-        import pylib.middleman as middleman
-        import pylib.locales as locales
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -57,30 +56,26 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
 # Import modules if installed system-wide.
 else:
     try:
+        from polychromatic.base import PolychromaticBase
         import polychromatic.common as common
         import polychromatic.effects as effects
         import polychromatic.preferences as preferences
         import polychromatic.procpid as procpid
-        import polychromatic.middleman as middleman
-        import polychromatic.locales as locales
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
         raise e
 
 
-class Bootstrapper(object):
+class PolychromaticHelper(PolychromaticBase):
     """
     Processes the request from the command line and summons the relevant
     process or code within the helper.
     """
     def __init__(self):
-        """
-        Parse the parameters.
-        """
+        self.init_base(__file__, sys.argv)
         self.args = self._parse_parameters()
-        self.preferences = preferences.load_file(common.paths.preferences)
-        self.middleman = middleman.Middleman(dbg, common, _)
+        self.preferences = preferences.load_file(self.paths.preferences)
         self.middleman.init()
 
     def start(self):
@@ -94,7 +89,7 @@ class Bootstrapper(object):
             self.run_fx(self.args.run_fx, self.args.device_name, self.args.device_serial)
 
         else:
-            dbg.stdout("This executable is intended to be invoked by another Polychromatic process.", dbg.warning)
+            self.dbg.stdout("This executable is intended to be invoked by another Polychromatic process.", self.dbg.warning)
             exit(1)
 
     def _parse_parameters(self):
@@ -126,13 +121,13 @@ class Bootstrapper(object):
             exit(0)
 
         if args.verbose:
-            dbg.verbose_level = 1
-            dbg.stdout("Verbose enabled", dbg.action, 1)
+            self.dbg.verbose_level = 1
+            self.dbg.stdout("Verbose enabled", self.dbg.action, 1)
 
         try:
             if os.environ["POLYCHROMATIC_DEV_CFG"] == "true":
-                dbg.verbose_level = 1
-                dbg.stdout("Verbose enabled (development mode)", dbg.action, 1)
+                self.dbg.verbose_level = 1
+                self.dbg.stdout("Verbose enabled (development mode)", self.dbg.action, 1)
         except KeyError:
             pass
 
@@ -153,18 +148,18 @@ class Bootstrapper(object):
         # If backend(s) haven't initialised already, wait for them.
         timeout = 10
         while len(self.middleman.backends) == 0 and timeout > 0:
-            dbg.stdout("Still waiting for backends to be ready...", dbg.warning, 1)
+            self.dbg.stdout("Still waiting for backends to be ready...", self.dbg.warning, 1)
             time.sleep(2)
             timeout = timeout - 1
             self.middleman.init()
 
         if len(self.middleman.backends) == 0:
-            dbg.stdout("Timed out waiting for backends to load, or they are unavailable.", dbg.error)
+            self.dbg.stdout("Timed out waiting for backends to load, or they are unavailable.", self.dbg.error)
 
         # Determine what to do for devices upon login.
         # TODO: Refactor into functions
         login_trigger_set = False
-        state_files = glob.glob(os.path.join(common.paths.states, "*.json"))
+        state_files = glob.glob(os.path.join(self.paths.states, "*.json"))
 
         # -- Clear the preset states
         #    There is no guarantee the hardware matched the previous preset
@@ -175,7 +170,7 @@ class Bootstrapper(object):
 
         # -- Activate the login preset (if enabled)
         if login_trigger_set:
-            dbg.stdout("Activating login trigger...", dbg.action, 1)
+            self.dbg.stdout("Activating login trigger...", self.dbg.action, 1)
             print("stub:login trigger")
 
         # -- Resume effect states (if any)
@@ -186,7 +181,7 @@ class Bootstrapper(object):
                 state = procpid.DeviceSoftwareState(serial)
                 effect = state.get_effect()
                 if effect:
-                    dbg.stdout("Resuming effect '{0}' on device serial '{1}'.".format(effect["name"], serial), dbg.action, 1)
+                    self.dbg.stdout("Resuming effect '{0}' on device serial '{1}'.".format(effect["name"], serial), self.dbg.action, 1)
                     procmgr.start_component(["--run-fx", effect["path"], "--device-serial", serial])
 
         # Start Tray Applet
@@ -196,11 +191,11 @@ class Bootstrapper(object):
 
             if process.is_component_installed("tray-applet"):
                 if delay > 0:
-                    dbg.stdout("Starting tray applet in {0} second(s)...".format(delay), dbg.action, 1)
+                    self.dbg.stdout("Starting tray applet in {0} second(s)...".format(delay), self.dbg.action, 1)
                     time.sleep(delay)
                 process.start_component()
             else:
-                dbg.stdout("Tray applet not installed. Skipping.", dbg.warning, 1)
+                self.dbg.stdout("Tray applet not installed. Skipping.", self.dbg.warning, 1)
 
     def monitor_triggers(self):
         """
@@ -224,23 +219,23 @@ class Bootstrapper(object):
         if serial:
             device = self.middleman.get_device_by_serial(serial)
             if not device:
-                dbg.stdout(f"{serial}: Device not found. Cannot play effect!", dbg.error)
+                self.dbg.stdout(f"{serial}: Device not found. Cannot play effect!", self.dbg.error)
                 exit(1)
         else:
             device = self.middleman.get_device_by_name(name)
             if not device:
-                dbg.stdout(f"{name}: Device not found. Cannot play effect!", dbg.error)
+                self.dbg.stdout(f"{name}: Device not found. Cannot play effect!", self.dbg.error)
                 exit(1)
             serial = device.serial
 
         if not device.matrix:
-            dbg.stdout(f"{device.name}: Custom effects unsupported!", dbg.error)
+            self.dbg.stdout(f"{device.name}: Custom effects unsupported!", self.dbg.error)
             exit(1)
 
         # Prepare objects (PID, state and effect data)
         process = procpid.ProcessManager(serial)
         state = procpid.DeviceSoftwareState(serial)
-        filemgr = effects.EffectFileManagement(i18n, _, dbg)
+        filemgr = effects.EffectFileManagement()
 
         effect_data = filemgr.get_item(path)
         effect_name = effect_data["parsed"]["name"]
@@ -251,7 +246,7 @@ class Bootstrapper(object):
         process.set_component_pid()
         state.set_effect(effect_name, effect_icon, path)
 
-        dbg.stdout(f"{device.name}: Starting playback: {effect_name}", dbg.success, 1)
+        self.dbg.stdout(f"{device.name}: Starting playback: {effect_name}", self.dbg.success, 1)
         playback = EffectPlayback(device, device.matrix, effect_data)
 
         if effect_type == effects.TYPE_LAYERED:
@@ -261,11 +256,11 @@ class Bootstrapper(object):
         elif effect_type == effects.TYPE_SEQUENCE:
             playback.play_sequence()
         else:
-            dbg.stdout("Unknown effect type!", dbg.error)
+            self.dbg.stdout("Unknown effect type!", self.dbg.error)
             exit(1)
 
 
-class EffectPlayback(object):
+class EffectPlayback(PolychromaticBase):
     """
     Handles the background processing of Polychromatic's formats of effects.
 
@@ -316,41 +311,41 @@ class EffectPlayback(object):
                     exit(0)
 
     def play_scripted(self, json_path):
-        fileman = effects.EffectFileManagement(i18n, _, dbg)
+        fileman = effects.EffectFileManagement()
         handler = effects.ScriptedEffectHandler(fileman, json_path)
 
         # Check script integrity
-        dbg.stdout("Checking script integrity...", dbg.action, 1)
+        self.dbg.stdout("Checking script integrity...", self.dbg.action, 1)
         if not handler.get_integrity_check() or handler.get_modules() == None:
-            dbg.stdout("Refusing to run effect as integrity checks failed.", dbg.error)
+            self.dbg.stdout("Refusing to run effect as integrity checks failed.", self.dbg.error)
             exit(1)
-        dbg.stdout("Script integrity OK!", dbg.success, 1)
+        self.dbg.stdout("Script integrity OK!", self.dbg.success, 1)
 
         # Check OS, device, modules and parameters
-        dbg.stdout("Checking environment...", dbg.action, 1)
+        self.dbg.stdout("Checking environment...", self.dbg.action, 1)
         if not handler.can_run_on_platform():
-            dbg.stdout("Script is not designed to run on this operating system.", dbg.error)
+            self.dbg.stdout("Script is not designed to run on this operating system.", self.dbg.error)
             exit(1)
 
         if not handler.is_device_compatible(self.device):
-            dbg.stdout("Script is not compatible this device!", dbg.error)
+            self.dbg.stdout("Script is not compatible this device!", self.dbg.error)
             exit(1)
 
         if not handler.can_find_modules():
-            dbg.stdout("\n\nThis effect depends on Python libraries which were not found.\nPlease install the packages for them and try again.\n", dbg.error)
+            self.dbg.stdout("\n\nThis effect depends on Python libraries which were not found.\nPlease install the packages for them and try again.\n", self.dbg.error)
 
             modules = handler.get_import_results()
             for module in modules:
                 loaded = modules[module]
                 if not loaded:
-                    dbg.stdout("- " + module, dbg.error)
+                    self.dbg.stdout("- " + module, self.dbg.error)
             print("\n")
             exit(1)
 
         params = handler.get_parameters()
 
         # Import the external script as a module and execute the play() function.
-        dbg.stdout("Now chainloading into {0} ...".format(handler.script_path), dbg.action, 1)
+        self.dbg.stdout("Now chainloading into {0} ...".format(handler.script_path), self.dbg.action, 1)
         script_dir = os.path.dirname(handler.script_path)
         module_name = os.path.basename(handler.script_path).replace(".py", "")
 
@@ -363,11 +358,11 @@ class EffectPlayback(object):
             print("--------------------------------------------------")
             runtime.play(self.matrix, params)
         except Exception as e:
-            dbg.stdout("\nYikes! This effect has crashed!\n", dbg.error)
+            self.dbg.stdout("\nYikes! This effect has crashed!\n", self.dbg.error)
             print(common.get_exception_as_string(e))
             exit(1)
 
-        dbg.stdout("\nThe script reached the end.\n", dbg.success, 1)
+        self.dbg.stdout("\nThe script reached the end.\n", self.dbg.success, 1)
         exit(0)
 
     def play_layered(self):
@@ -378,14 +373,8 @@ if __name__ == "__main__":
     # Appear as its own process.
     setproctitle.setproctitle("polychromatic-helper")
 
-    # i18n is not used for this process.
-    i18n = locales.Locales(__file__)
-    def _(string):
-        return string
-
     # CTRL+C to terminate the process
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-    dbg = common.Debugging()
-    helper = Bootstrapper()
+    helper = PolychromaticHelper()
     helper.start()

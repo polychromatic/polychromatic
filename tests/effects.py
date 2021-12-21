@@ -22,7 +22,7 @@ class TestEffects(unittest.TestCase):
         self.paths = common.paths
         preferences.init(self._)
 
-        self.fileman = effects.EffectFileManagement(self.i18n, self._, self.dbg)
+        self.fileman = effects.EffectFileManagement()
 
         # Dummy content
         self.fileman.save_item(self.fileman.init_data("Test 1", effects.TYPE_LAYERED))

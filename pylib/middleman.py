@@ -35,13 +35,12 @@ class Middleman(object):
     The 'middleman' that processes the data between Polychromatic's applications
     by blending all the backends together.
     """
-    def __init__(self, dbg, common, _):
+    def __init__(self):
         """
         Stores variables for the sessions.
         """
-        self._dbg = dbg
-        self._common = common
-        self._ = _
+        # The PolychromaticBase() object, passed to backends later.
+        self._base = None
 
         # List of initialized Backend() objects.
         self.backends = []
@@ -72,7 +71,7 @@ class Middleman(object):
         def _load_backend_module(backend_id):
             try:
                 module = BACKEND_MODULES[backend_id]
-                backend = module(self._dbg, self._common, self._)
+                backend = module(self._base)
                 if backend.init():
                     self.backends.append(backend)
                 else:
@@ -80,7 +79,7 @@ class Middleman(object):
             except (ImportError, ModuleNotFoundError):
                 self.not_installed.append(backend_id)
             except Exception as e:
-                self.import_errors[backend_id] = self._common.get_exception_as_string(e)
+                self.import_errors[backend_id] = common.get_exception_as_string(e)
 
             try:
                 self.troubleshooters[backend_id] = TROUBLESHOOT_MODULES[backend_id]
@@ -208,9 +207,7 @@ class Middleman(object):
         except KeyError:
             # Troubleshooter not available for this backend
             return None
-        except Exception as e:
-            # Troubleshooter crashed
-            return common.get_exception_as_string(e)
+        # TODO: Catch errors via interfaces
 
     def restart(self, backend):
         """
@@ -361,4 +358,3 @@ class Middleman(object):
 
         if state.get_preset():
             state.clear_preset()
-

@@ -4,6 +4,7 @@
 This module controls the 'Preferences' window of the Controller GUI.
 """
 
+from ..base import PolychromaticBase
 from .. import common
 from .. import effects
 from .. import locales
@@ -193,7 +194,7 @@ class PreferencesWindow(shared.TabData):
             return
 
         # See also: polychromatic_controller.Applicationdata.init_bg_thread.BackgroundThread()
-        openrazer_disabled = self.appdata.middleman.is_backend_running("openrazer")
+        openrazer_disabled = self.middleman.is_backend_running("openrazer")
         self.dialog.findChild(QPushButton, "OpenRazerSettings").setDisabled(openrazer_disabled)
         self.dialog.findChild(QPushButton, "OpenRazerAbout").setDisabled(openrazer_disabled)
         self.dialog.findChild(QPushButton, "OpenRazerRestartDaemon").setDisabled(openrazer_disabled)
@@ -285,7 +286,7 @@ class PreferencesWindow(shared.TabData):
             return False
 
         # Update memory for the rest of the application
-        self.appdata.preferences = self.pref_data
+        PolychromaticBase.preferences = self.pref_data
 
         # Instant reload
         if self.pref_data["controller"]["show_menu_bar"] == True:
@@ -302,7 +303,7 @@ class PreferencesWindow(shared.TabData):
             procmgr = procpid.ProcessManager()
 
             def _cb_restart_now():
-                procmgr.restart_self(self.appdata.exec_path, self.appdata.exec_args)
+                procmgr.restart_self(self.exec_path, self.exec_args)
 
             self.widgets.open_dialog(self.widgets.dialog_generic,
                                      self._("Restart Required"),
@@ -328,7 +329,7 @@ class PreferencesWindow(shared.TabData):
         spinbox_is_zero = self.dialog.findChild(QSpinBox, "DPIStage1").value() == 0
 
         # Is there a mouse? Disable section if none is present.
-        mice_present = len(self.appdata.middleman.get_devices_by_form_factor("mouse")) > 0
+        mice_present = len(self.middleman.get_devices_by_form_factor("mouse")) > 0
 
         for control in [label, checkbox, spinbox_widget]:
             control.setDisabled(not mice_present)
@@ -340,18 +341,19 @@ class PreferencesWindow(shared.TabData):
         spinbox_widget.setDisabled(checkbox.isChecked())
 
         # Automatically populate default DPI stages if blank
-        if self.appdata.device_list and checkbox.isChecked() and spinbox_is_zero:
+        if len(self.middleman.get_devices()) > 0 and checkbox.isChecked() and spinbox_is_zero:
             self._reset_dpi_stages_from_hardware()
 
     def _reset_dpi_stages_from_hardware(self):
         """
         Reset user defined DPI stages to a DPI-capable mouse.
         """
-        mice = len(self.appdata.middleman.get_devices_by_form_factor("mouse")) > 0
+        devices = self.middleman.get_devices_by_form_factor("mouse")
+        mice = len(devices) > 0
         if not mice:
             return
 
-        device = mice[0]
+        device = devices[0]
         if not device.dpi or not device.dpi.stages:
             return
 
@@ -429,7 +431,7 @@ class OpenRazerPreferences(shared.TabData):
         """
         Returns the current version of OpenRazer in decimal format: <major.minor>, e.g. 3.1
         """
-        openrazer = self.appdata.middleman.get_backend("openrazer")
+        openrazer = self.middleman.get_backend("openrazer")
         if openrazer:
             version = openrazer.version.split(".")[:2]
             return float("{0}.{1}".format(version[0], version[1]))

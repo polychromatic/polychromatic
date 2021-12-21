@@ -10,6 +10,7 @@ import json
 import os
 import shutil
 
+from .base import PolychromaticBase as PolychromaticBase
 from . import common
 from .preferences import VERSION as VERSION
 
@@ -19,21 +20,13 @@ ERROR_BAD_DATA = -101
 ERROR_MISSING_FILE = -102
 
 
-class FlatFileManagement(object):
+class FlatFileManagement(PolychromaticBase):
     """
     Provides common functions for parsing a flat file structure of JSON files.
     This is used for storage for the application's feature offerings, such as
     effects and presets.
     """
-    def __init__(self, i18n, _, dbg, ):
-        """
-        Store variables for the session.
-        """
-        self.i18n = i18n
-        self._ = _
-        self.dbg = dbg
-
-        # Internal name of feature
+    def __init__(self):
         self.feature = "unknown"
 
         # Paths to where save data can be found for this feature.
@@ -114,10 +107,10 @@ class FlatFileManagement(object):
         possible_paths.append(icon_path)
 
         # Try relative (custom) icons
-        possible_paths.append(os.path.join(common.paths.custom_icons, icon_path))
+        possible_paths.append(os.path.join(self.paths.custom_icons, icon_path))
 
         # Try relative (built-in) icons
-        possible_paths.append(os.path.join(common.paths.data_dir, icon_path))
+        possible_paths.append(os.path.join(self.paths.data_dir, icon_path))
 
         for path in possible_paths:
             if os.path.exists(path):

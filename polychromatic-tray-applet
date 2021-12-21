@@ -56,13 +56,11 @@ except (ImportError, ValueError):
 # Import modules if running relatively.
 if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
     try:
-        import pylib.preferences as pref
-        import pylib.common as common
+        from pylib.base import PolychromaticBase as PolychromaticBase
+        from pylib.backends._backend import Backend
         import pylib.effects as effects
-        import pylib.locales as locales
-        import pylib.middleman as middleman_mod
+        import pylib.preferences as pref
         import pylib.procpid as procpid
-        from pylib.backends._backend import Backend as Backend
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -70,20 +68,18 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
 # Import modules if installed system-wide.
 else:
     try:
-        import polychromatic.preferences as pref
-        import polychromatic.common as common
+        from polychromatic.base import PolychromaticBase as PolychromaticBase
+        from polychromatic.backends._backend import Backend
         import polychromatic.effects as effects
-        import polychromatic.locales as locales
-        import polychromatic.middleman as middleman_mod
+        import polychromatic.preferences as pref
         import polychromatic.procpid as procpid
-        from polychromatic.backends._backend import Backend as Backend
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
         raise e
 
 
-class Indicator(object):
+class Indicator(PolychromaticBase):
     # TODO: Refactor into classes
 
     def __init__(self):
@@ -94,7 +90,7 @@ class Indicator(object):
         """
         self.indicator = None
         self.root_menu = None
-        self.mode = prefs["tray"]["mode"]
+        self.mode = self.preferences["tray"]["mode"]
 
         # Try to find a suitable renderer.
         if self.mode == pref.TRAY_AUTO:
@@ -122,15 +118,15 @@ class Indicator(object):
         # Checks the specified mode is available.
         # Fallback order: Ayatana -> AppIndicator3 -> GTK Status
         if self.mode == pref.TRAY_APPINDICATOR and not "AppIndicator3" in SUPPORTED:
-            dbg.stdout("AppIndicator3 not available, falling back to AyatanaAppIndicator3...", dbg.warning)
+            self.dbg.stdout("AppIndicator3 not available, falling back to AyatanaAppIndicator3...", self.dbg.warning)
             self.mode = pref.TRAY_AYATANA
 
         if self.mode == pref.TRAY_AYATANA and not "AyatanaAppIndicator3" in SUPPORTED:
-            dbg.stdout("AyatanaAppIndicator3 not available, falling back to AppIndicator3...", dbg.warning)
+            self.dbg.stdout("AyatanaAppIndicator3 not available, falling back to AppIndicator3...", self.dbg.warning)
             self.mode = pref.TRAY_APPINDICATOR
 
         if self.mode == pref.TRAY_APPINDICATOR and not "AppIndicator3" in SUPPORTED:
-            dbg.stdout("AppIndicator3 not available, falling back to GTK Status Icon...", dbg.warning)
+            self.dbg.stdout("AppIndicator3 not available, falling back to GTK Status Icon...", self.dbg.warning)
             self.mode = pref.TRAY_GTK_STATUS
 
     def setup(self, icon_path):
@@ -140,7 +136,7 @@ class Indicator(object):
         Params:
             icon_path       (str)       Absolute path to the icon
         """
-        dbg.stdout("Initialising " + self.names[self.mode] + "...", dbg.action, 1)
+        self.dbg.stdout("Initialising " + self.names[self.mode] + "...", self.dbg.action, 1)
 
         if self.mode in [pref.TRAY_APPINDICATOR, pref.TRAY_AYATANA]:
             self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", icon_path, appindicator.IndicatorCategory.APPLICATION_STATUS)
@@ -152,7 +148,7 @@ class Indicator(object):
             self.indicator.set_from_file(icon_path)
             self.indicator.set_visible(True)
 
-        dbg.stdout("Initialised " + self.names[self.mode], dbg.success, 1)
+        self.dbg.stdout("Initialised " + self.names[self.mode], self.dbg.success, 1)
 
     def create_menu(self):
         """
@@ -267,26 +263,23 @@ class Indicator(object):
             self.indicator.connect("activate", _click_menu_cb)
 
 
-class PolychromaticTrayApplet():
+class PolychromaticTrayApplet(PolychromaticBase):
     """
     Provides the logic for providing quick access to device options from the
     system tray or notification area.
     """
-    def __init__(self):
-        pass
-
     def start(self):
         """
         Begin execution of the tray applet.
         """
         # Show error if no backends are available
-        if len(middleman.backends) == 0:
-            self._setup_failed(_("No backends available"), common.get_icon("general", "unknown"))
+        if len(self.middleman.backends) == 0:
+            self._setup_failed(self._("No backends available"), self.common.get_icon("general", "unknown"))
             return False
 
         # Build the applet
         self.build_indicator()
-        dbg.stdout("Finished setting up applet.", dbg.success, 1)
+        self.dbg.stdout("Finished setting up applet.", self.dbg.success, 1)
 
     def _get_icon(self, img_dir, icon):
         """
@@ -296,13 +289,13 @@ class PolychromaticTrayApplet():
             img_dir         (str)   Folder inside img, e.g. "effects"
             icon            (str)   Filename excluding the extension.
         """
-        return common.get_icon(img_dir, icon)
+        return self.common.get_icon(img_dir, icon)
 
     def _get_tray_icon(self):
         """
         Returns path for tray icon.
         """
-        return common.get_tray_icon(dbg, prefs["tray"]["icon"])
+        return self.common.get_tray_icon(dbg, self.preferences["tray"]["icon"])
 
     def _create_menu_item_if_controller_present(self, menu, label, open_to, icon_path=None):
         """
@@ -317,23 +310,23 @@ class PolychromaticTrayApplet():
         """
         A simple menu is displayed when something goes wrong.
         """
-        dbg.stdout("Assembling error applet...", dbg.action, 1)
+        self.dbg.stdout("Assembling error applet...", self.dbg.action, 1)
 
-        error_icon = common.get_tray_icon(dbg, "img/tray/error.svg")
+        error_icon = self.common.get_tray_icon(dbg, "img/tray/error.svg")
         indicator.setup(error_icon)
 
         menu = indicator.create_menu()
         indicator.create_menu_item(menu, message, False, None, None, icon_path)
         indicator.create_seperator(menu)
-        indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
-        self._create_menu_item_if_controller_present(menu, _("Troubleshoot"), "troubleshoot", self._get_icon("general", "preferences"))
+        indicator.create_menu_item(menu, self._("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
+        self._create_menu_item_if_controller_present(menu, self._("Troubleshoot"), "troubleshoot", self._get_icon("general", "preferences"))
         indicator.create_seperator(menu)
-        self._create_menu_item_if_controller_present(menu, _("Open Controller"), None, self._get_icon("general", "controller"))
-        indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
+        self._create_menu_item_if_controller_present(menu, self._("Open Controller"), None, self._get_icon("general", "controller"))
+        indicator.create_menu_item(menu, self._("Quit"), True, cb.quit)
 
         indicator.finalize()
 
-        dbg.stdout(message, dbg.error)
+        self.dbg.stdout(message, self.dbg.error)
 
     def build_indicator(self):
         """
@@ -341,14 +334,14 @@ class PolychromaticTrayApplet():
         """
         indicator.setup(self._get_tray_icon())
 
-        dbg.stdout("Creating menus...", dbg.action, 1)
+        self.dbg.stdout("Creating menus...", self.dbg.action, 1)
         menu = indicator.create_menu()
 
         # List devices and their submenus.
-        devices = middleman.device_cache
+        devices = self.middleman.get_devices()
         if len(devices) == 0:
-            dbg.stdout("No devices found.", dbg.error, 1)
-            indicator.create_menu_item(menu, _("No devices found"), False, icon_path=self._get_icon("general", "unknown"))
+            self.dbg.stdout("No devices found.", self.dbg.error, 1)
+            indicator.create_menu_item(menu, self._("No devices found"), False, icon_path=self._get_icon("general", "unknown"))
 
         # Order devices A-Z for consistency
         sorted_devices = sorted(devices, key=lambda device: device.name)
@@ -356,47 +349,49 @@ class PolychromaticTrayApplet():
         for device in sorted_devices:
             indicator.add_menu_item(menu, self.build_device_submenu(device))
 
-        for device in unknown_devices:
-            indicator.create_menu_item(menu, "{0} {1}".format(_("Unrecognised:"), device.name), False, icon_path=device.form_factor["icon"])
+        for device in self.middleman.get_unsupported_devices():
+            indicator.create_menu_item(menu, "{0} {1}".format(self._("Unrecognised:"), device.name), False, icon_path=device.form_factor["icon"])
 
         if len(devices) == 0:
             indicator.create_seperator(menu)
-            indicator.create_menu_item(menu, _("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
-            indicator.create_menu_item(menu, _("Troubleshoot"), True, cb.launch_controller, "troubleshoot", self._get_icon("general", "preferences"))
+            indicator.create_menu_item(menu, self._("Refresh"), True, cb.retry_applet, None, self._get_icon("general", "refresh"))
+            indicator.create_menu_item(menu, self._("Troubleshoot"), True, cb.launch_controller, "troubleshoot", self._get_icon("general", "preferences"))
 
         # When multiple devices are present, show 'apply to all' actions
         if len(devices) > 1:
-            bulk_menu, bulk_menu_item = indicator.create_submenu(_("Apply to All"), True, self._get_icon("devices", "all"))
+            bulk_menu, bulk_menu_item = indicator.create_submenu(self._("Apply to All"), True, self._get_icon("devices", "all"))
+            indicator.create_seperator(menu)
+            indicator.add_menu_item(menu, bulk_menu_item)
             print("fixme:bulk apply options")
 
         # General Options
         indicator.create_seperator(menu)
-        self._create_menu_item_if_controller_present(menu, _("Open Controller"), None, self._get_icon("general", "controller"))
+        self._create_menu_item_if_controller_present(menu, self._("Open Controller"), None, self._get_icon("general", "controller"))
 
         # When tray applet is only installed, show toggle for auto start
         if not procpid.ProcessManager().is_component_installed("controller"):
             def _toggle_auto_start(params=None):
-                new_value = not prefs["tray"]["autostart"]
-                prefs["tray"]["autostart"] = new_value
-                pref.save_file(pref.path.preferences, prefs)
+                new_value = not self.preferences["tray"]["autostart"]
+                self.preferences["tray"]["autostart"] = new_value
+                pref.save_file(app.paths.preferences, self.preferences)
                 _update_auto_start_toggle(new_value)
 
-            auto_start_item = indicator.create_menu_item(menu, _("Autostart"), True, _toggle_auto_start, None, self._get_icon("general", "tray-applet"))
+            auto_start_item = indicator.create_menu_item(menu, self._("Autostart"), True, _toggle_auto_start, None, self._get_icon("general", "tray-applet"))
 
             def _update_auto_start_toggle(is_enabled):
                 # FIXME: HACK: Not framework agnostic!
                 img = Gtk.Image()
                 if is_enabled:
-                    auto_start_item.set_label(_("Disable automatic start at login"))
+                    auto_start_item.set_label(self._("Disable automatic start at login"))
                     img.set_from_file(self._get_icon("general", "close"))
                 else:
-                    auto_start_item.set_label(_("Start automatically at login"))
+                    auto_start_item.set_label(self._("Start automatically at login"))
                     img.set_from_file(self._get_icon("general", "ok"))
                 auto_start_item.set_image(img)
 
-            _update_auto_start_toggle(prefs["tray"]["autostart"])
+            _update_auto_start_toggle(self.preferences["tray"]["autostart"])
 
-        indicator.create_menu_item(menu, _("Quit"), True, cb.quit)
+        indicator.create_menu_item(menu, self._("Quit"), True, cb.quit)
         indicator.finalize()
 
     def build_device_submenu(self, device):
@@ -408,7 +403,7 @@ class PolychromaticTrayApplet():
         can_set_colours = False
 
         submenu, submenu_item = indicator.create_submenu(device.name, True, device_icon)
-        dbg.stdout("- " + device.name, dbg.action, 1)
+        self.dbg.stdout("- " + device.name, self.dbg.action, 1)
 
         for zone in device.zones:
             # Create label when multiple zones are present
@@ -453,12 +448,12 @@ class PolychromaticTrayApplet():
 
         # Add DPI
         if device.dpi:
-            dpi_menu, dpi_menu_item = indicator.create_submenu(_("DPI"), True, self._get_icon("general", "dpi"))
+            dpi_menu, dpi_menu_item = indicator.create_submenu(self._("DPI"), True, self._get_icon("general", "dpi"))
 
             dpi_stages = device.dpi.stages
-            if prefs["custom"]["use_dpi_stages"]:
+            if self.preferences["custom"]["use_dpi_stages"]:
                 for i in range(1, 6):
-                    dpi_stages.append(prefs["custom"]["dpi_stage_" + str(i)])
+                    dpi_stages.append(self.preferences["custom"]["dpi_stage_" + str(i)])
 
             for item, value in enumerate(dpi_stages):
                 icon = None
@@ -472,22 +467,22 @@ class PolychromaticTrayApplet():
         if device.matrix:
             effect_items = fileman_effects.get_item_list_by_key_filter("map_device", device.name)
             effect_items = sorted(effect_items, key=lambda item: item["name"])
-            effects_menu, effects_menu_item = indicator.create_submenu(_("Effects"), True, self._get_icon("general", "effects"))
+            effects_menu, effects_menu_item = indicator.create_submenu(self._("Effects"), True, self._get_icon("general", "effects"))
 
             if len(effect_items) > 0:
                 for item in effect_items:
                      indicator.create_menu_item(effects_menu, item["name"], True, cb.set_custom_effect, [device, item["path"]], item["icon"])
             else:
-                indicator.create_menu_item(effects_menu, _("No custom effects"), False)
+                indicator.create_menu_item(effects_menu, self._("No custom effects"), False)
 
             indicator.create_seperator(submenu)
             indicator.add_menu_item(submenu, effects_menu_item)
             indicator.create_seperator(effects_menu)
-            indicator.create_menu_item(effects_menu, _("Edit Effects..."), True, cb.launch_controller, "effects", self._get_icon("general", "edit"))
+            indicator.create_menu_item(effects_menu, self._("Edit Effects..."), True, cb.launch_controller, "effects", self._get_icon("general", "edit"))
 
         # Colour (repeats last effect)
         if can_set_colours:
-            colour_menu, colour_menu_item = indicator.create_submenu(_("Primary Colour"), True, self._get_icon("general", "palette"))
+            colour_menu, colour_menu_item = indicator.create_submenu(self._("Primary Colour"), True, self._get_icon("general", "palette"))
 
             index = colours_mono if device.monochromatic else saved_colours
 
@@ -497,15 +492,15 @@ class PolychromaticTrayApplet():
                     hex_value = index[pos]["hex"]
                     indicator.create_menu_item(colour_menu, name, True, cb.set_colour_primary, [device, hex_value], self._get_colour_icon(hex_value))
                 except Exception:
-                    dbg.stdout("Ignoring invalid colour data at index position " + str(pos), dbg.error)
+                    self.dbg.stdout("Ignoring invalid colour data at index position " + str(pos), self.dbg.error)
 
             if not device.monochromatic:
                 indicator.create_seperator(colour_menu)
-                indicator.create_menu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [device], self._get_icon("general", "palette"))
-                self._create_menu_item_if_controller_present(colour_menu, _("Edit Colours..."), "colours", self._get_icon("general", "edit"))
+                indicator.create_menu_item(colour_menu, self._("Custom..."), True, cb.set_custom_colour, [device], self._get_icon("general", "palette"))
+                self._create_menu_item_if_controller_present(colour_menu, self._("Edit Colours..."), "colours", self._get_icon("general", "edit"))
 
             if multiple_zones:
-                indicator.create_menu_item(submenu, _("All Zones"), False, icon_path=device_icon)
+                indicator.create_menu_item(submenu, self._("All Zones"), False, icon_path=device_icon)
             indicator.add_menu_item(submenu, colour_menu_item)
 
         return submenu_item
@@ -556,8 +551,8 @@ class PolychromaticTrayApplet():
         submenu, submenu_item = indicator.create_submenu(option.label, True, option.icon)
 
         # Some IDs have submenu icons
-        label_enable = option.label_enable if option.label_enable else _("On")
-        label_disable = option.label_disable if option.label_disable else _("Off")
+        label_enable = option.label_enable if option.label_enable else self._("On")
+        label_disable = option.label_disable if option.label_disable else self._("Off")
         indicator.create_menu_item(submenu, label_enable, True, cb.apply_option, [option, True, 0, None], option.icon_enable)
         indicator.create_menu_item(submenu, label_disable, True, cb.apply_option, [option, False, 0, None], option.icon_disable)
 
@@ -580,7 +575,7 @@ class PolychromaticTrayApplet():
         Params:
             colour_hex      Hex value, e.g. "#00FF00"
         """
-        return common.generate_colour_bitmap(dbg, colour_hex)
+        return self.common.generate_colour_bitmap(dbg, colour_hex)
 
 
 class Callback():
@@ -630,7 +625,7 @@ class Callback():
 
         # If this is an effect, stop any software effects currently running.
         if isinstance(option, Backend.EffectOption):
-            middleman.stop_software_effect(device.serial)
+            app.middleman.stop_software_effect(device.serial)
 
         # If the user set a primary colour in this session, use that.
         global primary_colour
@@ -656,9 +651,10 @@ class Callback():
         global primary_colour
         primary_colour = hex_value
 
+        # FIXME: Broken?
         dbg.stdout("Applying colour '{0}' to all zones in '{1}'".format(hex_value, device.name), dbg.action, 1)
         # TODO: Catch errors
-        middleman.set_colour_for_active_effect_device(device, hex_value)
+        app.middleman.set_colour_for_active_effect_device(device, hex_value)
 
     @staticmethod
     def set_dpi(item, attr):
@@ -724,7 +720,7 @@ class Callback():
             # Apply colour to device
             dbg.stdout("Set custom colour for {0} to '{1}'".format(device.name, hex_value), dbg.debug, 1)
             # TODO: Catch errors
-            middleman.set_colour_for_active_effect_device(device, hex_value)
+            app.middleman.set_colour_for_active_effect_device(device, hex_value)
 
         color_selection_dlg.destroy()
 
@@ -742,8 +738,6 @@ class Callback():
         dbg.stdout("Playing effect '{0}' on '{1}'".format(path, device_name), dbg.debug, 1)
         procmgr = procpid.ProcessManager("helper")
         procmgr.start_component(["--run-fx", path, "--device-name", device_name])
-
-
 
 
 def parse_parameters():
@@ -764,7 +758,7 @@ def parse_parameters():
     args = parser.parse_args()
 
     if args.version:
-        app_version, git_commit, py_version = common.get_versions(VERSION)
+        app_version, git_commit, py_version = app.common.get_versions(VERSION)
         print("Polychromatic", app_version)
         if git_commit:
             print("Commit:", git_commit)
@@ -785,8 +779,7 @@ def parse_parameters():
         pass
 
     if args.locale:
-        i18n = locales.Locales(__file__, args.locale)
-        _ = i18n.init()
+        app.reinit_locales(args.locale)
 
     return args
 
@@ -795,10 +788,13 @@ if __name__ == "__main__":
     # Appear as its own process.
     setproctitle.setproctitle("polychromatic-tray-applet")
 
-    # Global variables
-    i18n = locales.Locales(__file__)
-    _ = i18n.init()
-    dbg = common.Debugging()
+    # TODO: Refactor later
+    app = PolychromaticTrayApplet()
+    dbg = app.dbg
+    middleman = app.middleman
+    common = app.common
+    _ = app._
+    args = parse_parameters()
 
     # Handle signals sent to process
     def _restart_applet(num, frame):
@@ -823,7 +819,6 @@ if __name__ == "__main__":
     process.set_component_pid()
 
     args = parse_parameters()
-    pref.init(_)
 
     # Which AppIndicator? Both use the same API.
     if "AyatanaAppIndicator3" in SUPPORTED:
@@ -832,16 +827,14 @@ if __name__ == "__main__":
         appindicator = AppIndicator3
 
     # Initialise devices
-    middleman = middleman_mod.Middleman(dbg, common, _)
-    middleman.init()
-    device_list = middleman.get_devices()
-    unknown_devices = middleman.get_unsupported_devices()
+    app.init_base(__file__, sys.argv)
+    app.middleman.init()
+    # TODO: Add menu option to show error details (for middleman.import_errors)
 
     # Load data into memory
-    prefs = pref.load_file(common.paths.preferences)
     saved_colours = pref.get_colour_list(_)
     colours_mono = common.get_green_shades(_)
-    fileman_effects = effects.EffectFileManagement(i18n, _, dbg)
+    fileman_effects = effects.EffectFileManagement()
     primary_colour = None
 
     # Initialise the indicator

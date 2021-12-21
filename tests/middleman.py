@@ -1,5 +1,6 @@
 from _dummy import DummyBackend as DummyBackend
 
+import pylib.base as base
 import pylib.common as common
 import pylib.locales as locales
 import pylib.middleman as middleman
@@ -15,17 +16,15 @@ class TestMiddleman(unittest.TestCase):
     """
     @classmethod
     def setUpClass(self):
-        self._ = locales.Locales("polychromatic").init()
-        self.dbg = common.Debugging()
-        self.paths = common.paths
-        preferences.init(self._)
-
-        self.middleman = middleman.Middleman(self.dbg, common, self._)
-
         # Override all modules with the dummy
         middleman.BACKEND_NAMES = {"dummy": "Dummy Backend"}
         middleman.BACKEND_MODULES = {"dummy": DummyBackend}
         middleman.TROUBLESHOOT_MODULES = {"dummy": DummyBackend.troubleshoot}
+
+        self.base = base.PolychromaticBase()
+        self.base.init_base("", [])
+        self.middleman = middleman.Middleman()
+        self.middleman._base = self.base
         self.middleman.init()
 
         if not self.middleman.backends:

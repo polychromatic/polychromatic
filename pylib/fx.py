@@ -1,8 +1,8 @@
 # Polychromatic is licensed under the GPLv3.
 # Copyright (C) 2020-2021 Luke Horwell <code@horwell.me>
 """
-This module is a higher level interface for custom effects that transparently
-connects to the supported backend, regardless of driver.
+This module is a higher level interface for custom effects for devices that
+support it, regardless of vendor.
 
 This is used internally for rendering software effects as well as "scripted"
 effects written by users.
@@ -29,63 +29,48 @@ class FX(object):
 
     All classes stubbed as NotImplementedError should be implemented.
     """
-    def __init__(self, rows, cols, name, backend, form_factor, serial):
-        """
-        Initialise essential variables - these are user facing variables.
-
-        Params:
-            rows        (int)   Number of rows, 0-based.
-            cols        (int)   Number of cols, 0-based.
-            name        (str)   Hardware's name
-            backend     (str)   ID of the backend
-            form_factor (str)   ID of the form factor
-            serial      (str)   Hardware's serial number
-        """
-        self.rows = rows
-        self.cols = cols
-        self.name = name
-        self.backend = backend
-        self.form_factor = form_factor
+    def __init__(self):
+        self.name = "Unknown Device"
+        self.form_factor_id = "unrecognised"
+        self.rows = 0
+        self.cols = 0
 
     #######################################################
     # To be implemented by the backend
+    #   See also: _backend.DeviceItem.Matrix()
     #######################################################
-    def set(self, x, y, red, green, blue):
+    def init(self):
         """
-        Dummy implementation for the backend to set an LED position to the
-        specified red, green and blue values for drawing later.
+        Prepare the device for custom frames. If unnecessary, this can be ignored.
+        """
+        return
 
-        The X and Y positions should be 0-based.
-
-        Input:  (x, y, red, green, blue)
+    def set(self, x=0, y=0, red=255, green=255, blue=255):
+        """
+        Set a colour at the specified co-ordinate.
         """
         raise NotImplementedError
 
     def draw(self):
         """
-        Dummy implementation for the backend to submit the new matrix to the
-        hardware.
+        Send the data to the hardware to be displayed.
         """
         raise NotImplementedError
 
     def clear(self):
         """
-        Dummy implementation for the backend to clear the matrix, essentially
-        turning off all the LEDs.
+        Reset all LEDs to an off state.
         """
         raise NotImplementedError
 
     def brightness(self, percent):
         """
-        Dummy implementation for the backend to set the brightness of all the
-        LEDs. Could be used for fade effects globally.
-
-        Input: percent (int between 0-100)
+        Set the global brightness of the LEDs. Could be used for fade effects globally.
         """
         raise NotImplementedError
 
     #######################################################
-    # Helper functions for scripting effects
+    # Functions for scripting
     #######################################################
     def rgb_to_hex(self, red, green, blue):
         """
