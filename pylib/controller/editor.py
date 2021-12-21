@@ -65,7 +65,7 @@ class VisualEffectEditor(shared.TabData):
         self.current_tool = VISUAL_MODE_ADD
         self.layer_labels = self._get_layer_labels()
         self.webview_zoom_level = 1.0
-        self.fx = FX(0, 0, "dummy", "", "", "")
+        self.fx = FX()
 
         # Effect type
         self.effect_type = self.data["type"]
@@ -105,7 +105,7 @@ class VisualEffectEditor(shared.TabData):
         self.device_renderer = None
 
         # Device (live preview)
-        self.live_preview = self.appdata.preferences["editor"]["live_preview"]
+        self.live_preview = self.preferences["editor"]["live_preview"]
         self.device = None
         self.matrix = None
         self.init_device_preview()
@@ -512,7 +512,7 @@ class VisualEffectEditor(shared.TabData):
             self.window.setWindowIcon(QIcon(common.get_icon("general", "effects")))
 
         # -- If opening in the center, make better use of the screen space
-        centered = self.appdata.preferences["controller"]["window_behaviour"] == pref.WINDOW_BEHAVIOUR_CENTER
+        centered = self.preferences["controller"]["window_behaviour"] == pref.WINDOW_BEHAVIOUR_CENTER
         already_small = self.window.height() > 1024 and self.window.width() > 768
         if centered and not already_small:
 
@@ -561,7 +561,7 @@ class VisualEffectEditor(shared.TabData):
         self.current_frame = 0
 
         # Show Key Labels
-        hide_key_labels = self.appdata.preferences["editor"]["hide_key_labels"]
+        hide_key_labels = self.preferences["editor"]["hide_key_labels"]
         if not hide_key_labels:
             self.action_view_key_labels.setChecked(True)
 
@@ -1429,14 +1429,14 @@ class VisualEffectEditor(shared.TabData):
         Intended for use with sequence effects, the "pixel art" style of editing.
         In addition, saved colours will have lighter/darker colours generated.
         """
-        colours = pref.load_file(common.paths.colours)
+        colours = pref.load_file(self.paths.colours)
 
         # Current colour (picker) and label
         def _set_custom_colour(new_hex, data):
             self._set_current_colour(new_hex)
 
             # Regenerate the colour list if the list has changed.
-            if colours != pref.load_file(common.paths.colours):
+            if colours != pref.load_file(self.paths.colours):
                 self.dbg.stdout("Colour list changed, reloading dock...", self.dbg.action, 1)
                 self.load_colours()
 
@@ -1449,7 +1449,7 @@ class VisualEffectEditor(shared.TabData):
             button.setFlat(True)
             button.setToolTip("{0} ({1})".format(name, hex_value))
             button.setStyleSheet("QPushButton { border: none; background: none; padding: 0; margin: 0; }")
-            button.setIcon(QIcon(common.generate_colour_bitmap(self.appdata.dbg, hex_value, 32)))
+            button.setIcon(QIcon(common.generate_colour_bitmap(self.dbg, hex_value, 32)))
             button.clicked.connect(lambda a: self._set_current_colour(hex_value))
             parent_widget.layout().addWidget(button)
 
@@ -1467,7 +1467,7 @@ class VisualEffectEditor(shared.TabData):
 
         for colour in colours:
             shades = [-45, -30, -15, 0, 15, 30]
-            if not self.appdata.preferences["editor"]["show_saved_colour_shades"]:
+            if not self.preferences["editor"]["show_saved_colour_shades"]:
                 shades = [0]
             for percent in shades:
                 percent = float(percent / 100)
@@ -1805,7 +1805,7 @@ class DeviceRenderer(shared.TabData):
 
         # Wait until the webview has fully loaded, then load the graphic.
         self.webview.loadFinished.connect(self.ready)
-        url = QUrl("file://" + os.path.join(common.paths.data_dir, "qt", "editor.html"))
+        url = QUrl("file://" + os.path.join(self.paths.data_dir, "qt", "editor.html"))
 
         # Reload if web view previously initialised
         if self.webview.page().url() == url:

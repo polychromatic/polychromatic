@@ -351,7 +351,7 @@ def upgrade_old_pref():
                 # Prepare new format
                 _fx_i18n = locales.Locales("polychromatic")
                 _fx__ = _fx_i18n.init()
-                fileman = effects.EffectFileManagement(_fx_i18n, _fx__, dbg)
+                fileman = effects.EffectFileManagement()
                 newdata = fileman.init_data(olddata["name"], effects.TYPE_SEQUENCE)
 
                 # Migrate data from old format

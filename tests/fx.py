@@ -5,11 +5,11 @@ import unittest
 
 class TestFX(unittest.TestCase):
     """
-    Test the internals of Polychromatic.
+    Test the FX 'helper' API calls for effects to use. Excludes device-specific features.
     """
     @classmethod
     def setUpClass(self):
-        self.fx = fx.FX(6, 22, "Dummy Device", None, "keyboard", "XXXXXXXX")
+        self.fx = fx.FX()
 
     @classmethod
     def tearDownClass(self):

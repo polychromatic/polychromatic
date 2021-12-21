@@ -514,7 +514,7 @@ class EffectMetadataEditor(shared.TabData):
         is_new_file = len(self.data["name"]) == 0
         found_device_name = False
 
-        for device in self.appdata.middleman.get_devices():
+        for device in self.middleman.get_devices():
             if not device or not device.matrix:
                 continue
 
@@ -633,7 +633,7 @@ class EffectMetadataEditor(shared.TabData):
         the best graphic (as there could be multiple with the same cols/rows)
         """
         self.map_graphic_list.setCurrentIndex(0)
-        current_locale = self.locales.get_current_locale()
+        current_locale = self.i18n.get_current_locale()
 
         # Pick graphic closely matching device name and locale (if applicable)
         device_name = self.map_device_combo.currentText()

@@ -30,13 +30,14 @@ import sys
 # Import modules if running relatively.
 if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
     try:
+        import pylib.base as base_class
         import pylib.preferences as pref
         import pylib.common as common
         import pylib.effects as effects
         import pylib.fileman as fileman
         import pylib.locales as locales
         import pylib.procpid as procpid
-        import pylib.middleman as middleman_module
+        import pylib.middleman as middleman
         from pylib.backends._backend import Backend as Backend
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
@@ -45,6 +46,7 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
 # Import modules if installed system-wide.
 else:
     try:
+        import polychromatic.base as base_class
         import polychromatic.preferences as pref
         import polychromatic.common as common
         import polychromatic.effects as effects
@@ -62,10 +64,11 @@ else:
 ########################################
 # Set up variables
 ########################################
-dbg = common.Debugging()
-i18n = locales.Locales(__file__)
-_ = i18n.init()
-pref.init(_)
+# TODO: Refactor later
+base = base_class.PolychromaticBase()
+base.init_base(__file__, sys.argv)
+dbg = base.dbg
+_ = base._
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 verbose = False
 
@@ -191,8 +194,7 @@ if args.version:
     exit(0)
 
 if args.locale:
-    i18n = locales.Locales(__file__, args.locale)
-    _ = i18n.init()
+    base.reinit_locales(args.locale)
 
 if args.verbose:
     dbg.verbose_level = 1
@@ -268,7 +270,7 @@ if args.help:
             dbg.normal + _("Do not print with pretty columns")
         ],
         [
-            dbg.action + "  --locale" + dbg.warning + " \"" + i18n.get_current_locale() + "\"",
+            dbg.action + "  --locale" + dbg.warning + " \"" + base.i18n.get_current_locale() + "\"",
             dbg.normal + _("Force a specific language, e.g. de_DE")
         ],
         [
@@ -289,28 +291,27 @@ if args.help:
 ########################################
 if verbose:
     dbg.stdout("Loading backends...", dbg.action)
-middleman = middleman_module.Middleman(dbg, common, _)
-middleman.init()
+base.middleman.init()
 
 if verbose:
-    dbg.stdout("Loaded {0} backend(s):".format(len(middleman.backends)), dbg.success)
-    for backend in middleman.backends:
-        dbg.stdout(" - {0}".format(middleman_module.BACKEND_NAMES[backend.backend_id]), dbg.success)
+    dbg.stdout("Loaded {0} backend(s):".format(len(base.middleman.backends)), dbg.success)
+    for backend in base.middleman.backends:
+        dbg.stdout(" - {0}".format(middleman.BACKEND_NAMES[backend.backend_id]), dbg.success)
 
-    if len(middleman.not_installed) > 0:
-        dbg.stdout("Not installed: " + ", ".join(middleman.not_installed), dbg.debug)
+    if len(base.middleman.not_installed) > 0:
+        dbg.stdout("Not installed: " + ", ".join(base.middleman.not_installed), dbg.debug)
 
-    if len(middleman.bad_init) > 0:
+    if len(base.middleman.bad_init) > 0:
         dbg.stdout("Unsuccessful:", dbg.warning)
-        for backend in middleman.bad_init:
+        for backend in base.middleman.bad_init:
             dbg.stdout(" - {0}".format(backend.backend_id), dbg.warning)
 
-    if len(middleman.import_errors) > 0:
+    if len(base.middleman.import_errors) > 0:
         dbg.stdout("Errors:", dbg.warning)
-        for error in middleman.import_errors:
+        for error in base.middleman.import_errors:
             dbg.stdout(" - {0}".format(error), dbg.warning)
 
-if len(middleman.backends) == 0:
+if len(base.middleman.backends) == 0:
     dbg.stdout(_("No backends available."), dbg.error)
     exit(1)
 
@@ -318,7 +319,7 @@ device_list = []
 unsupported_list = []
 
 if args.name:
-    device = middleman.get_device_by_name(str(args.name))
+    device = base.middleman.get_device_by_name(str(args.name))
     if device:
         device_list = [device]
     else:
@@ -326,7 +327,7 @@ if args.name:
         exit(1)
 
 elif args.serial:
-    device= middleman.get_device_by_serial(str(args.serial))
+    device= base.middleman.get_device_by_serial(str(args.serial))
     if device:
         device_list = [device]
     else:
@@ -334,15 +335,15 @@ elif args.serial:
         exit(1)
 
 elif args.device:
-    device_list = middleman.get_devices_by_form_factor(args.device)
+    device_list = base.middleman.get_devices_by_form_factor(args.device)
     if not device_list:
         dbg.stdout("{0} {1}".format(_("No devices found that match this form factor:"), args.device), dbg.error)
         dbg.stdout("{0} {1}".format(_("Avaliable form factors:"), ", ".join(common.FORM_FACTORS)), dbg.error)
         exit(1)
 
 else:
-    device_list = middleman.get_devices()
-    unsupported_list = middleman.get_unsupported_devices()
+    device_list = base.middleman.get_devices()
+    unsupported_list = base.middleman.get_unsupported_devices()
 
 device_list = sorted(device_list, key=lambda device: device.name)
 
@@ -507,7 +508,7 @@ if args.dpi:
 # Set custom software effect
 ########################################
 if args.effect:
-    effectman = effects.EffectFileManagement(i18n, _, dbg)
+    effectman = effects.EffectFileManagement()
     requested_path = None
 
     # User specifies absolute path
@@ -599,7 +600,7 @@ def _get_parameter_object(option, param_id):
 
 
 def _apply_option(device, option, parameter, colours):
-    middleman.stop_software_effect(device.serial)
+    base.middleman.stop_software_effect(device.serial)
     try:
         option.colours = colours
         option.apply(parameter)

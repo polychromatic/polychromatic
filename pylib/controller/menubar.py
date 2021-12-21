@@ -9,6 +9,7 @@ import time
 import subprocess
 import webbrowser
 
+from ..base import PolychromaticBase
 from .. import common
 from .. import preferences
 from .. import procpid
@@ -24,7 +25,7 @@ from PyQt5.QtWidgets import QWidget, QMenuBar, QMenu, QAction, QLabel, QDialog, 
                             QApplication
 
 
-class MenuBar(object):
+class MenuBar(PolychromaticBase):
     """
     Allows the user to quickly change the existing state of the device right now.
     """
@@ -80,7 +81,7 @@ class MenuBar(object):
 
     def _load_icons(self):
         """
-        Load icons for the menu bar if Polychromatics' theme is used.
+        Load icons for the menu bar if Polychromatic's theme is used.
         """
         if self.appdata.system_qt_theme:
             return
@@ -152,8 +153,8 @@ class MenuBar(object):
         """
         self.menubar.hide()
         self.mainwindow.findChild(QAction, "actionReinstateMenuBar").setVisible(True)
-        self.appdata.preferences["controller"]["show_menu_bar"] = False
-        preferences.save_file(self.appdata.paths.preferences, self.appdata.preferences)
+        self.preferences["controller"]["show_menu_bar"] = False
+        preferences.save_file(self.paths.preferences, self.preferences)
         self.widgets.open_dialog(self.widgets.dialog_generic,
                                  self._("Hide Menu Bar"),
                                  self._("The menu bar is now hidden. To temporarily reveal, press Alt."))
@@ -163,8 +164,8 @@ class MenuBar(object):
         Keep the menu bar between sessions
         """
         self.mainwindow.findChild(QAction, "actionReinstateMenuBar").setVisible(False)
-        self.appdata.preferences["controller"]["show_menu_bar"] = True
-        preferences.save_file(self.appdata.paths.preferences, self.appdata.preferences)
+        self.preferences["controller"]["show_menu_bar"] = True
+        preferences.save_file(self.paths.preferences, self.preferences)
 
     def _is_editor_running(self):
         """
@@ -183,12 +184,12 @@ class MenuBar(object):
         """
         if self._is_editor_running():
             self.widgets.open_dialog(self.widgets.dialog_generic,
-                                     self.appdata._("Force Refresh"),
-                                     self.appdata._("Please close all editor windows before executing this action."))
+                                     self._("Force Refresh"),
+                                     self._("Please close all editor windows before executing this action."))
             return
 
         procmgr = procpid.ProcessManager()
-        procmgr.restart_self(self.appdata.exec_path, self.appdata.exec_args)
+        procmgr.restart_self(self.exec_path, self.exec_args)
 
     def open_preferences(self):
         self.appdata.ui_preferences.open_window()
@@ -204,10 +205,10 @@ class MenuBar(object):
         """
         Informs the user if the resource they click is only available in English.
         """
-        if not self.appdata.locales.get_current_locale().startswith("en"):
+        if not self.i18n.get_current_locale().startswith("en"):
             self.widgets.open_dialog(self.widgets.dialog_generic,
                                      title,
-                                     self.appdata._("Polychromatic is about to open a web page for this resource. Unfortunately, it is only available in English at this time."))
+                                     self._("Polychromatic is about to open a web page for this resource. Unfortunately, it is only available in English at this time."))
 
     def online_help(self):
         self._prompt_on_locale_change(self._("Online Help"))
@@ -256,7 +257,6 @@ class MenuBar(object):
             links           (list)  List of links: [["label": "url"]]
         """
         about = shared.get_ui_widget(self.appdata, "about", QDialog)
-        _ = self.appdata._
 
         # Logo
         about_icon = about.findChild(QLabel, "AppIcon")
@@ -317,24 +317,23 @@ class MenuBar(object):
             close.setIcon(self.widgets.get_icon_qt("general", "close"))
 
         window_title = ' '.join(sub[:1].upper() + sub[1:] for sub in title.split(' '))
-        about.setWindowTitle(_("About []").replace("[]", window_title))
+        about.setWindowTitle(self._("About []").replace("[]", window_title))
         about.setWindowIcon(QIcon(logo))
         about.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
         about.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
         about.exec()
 
     def about_polychromatic(self):
-        _ = self.appdata._
         logo = common.get_icon("logo", "polychromatic")
 
         with open(os.path.join(self.appdata.paths.data_dir, "licenses/app.txt"), "r") as f:
             license = f.read()
 
         links = [
-            [_("Documentation"), "https://docs.polychromatic.app/"],
-            [_("Source Code"), "https://polychromatic.app/permalink/src/"],
-            [_("Release Notes"), "https://polychromatic.app/permalink/latest/"],
-            [_("Donate"), "https://polychromatic.app/permalink/donate/"]
+            [self._("Documentation"), "https://docs.polychromatic.app/"],
+            [self._("Source Code"), "https://polychromatic.app/permalink/src/"],
+            [self._("Release Notes"), "https://polychromatic.app/permalink/latest/"],
+            [self._("Donate"), "https://polychromatic.app/permalink/donate/"]
         ]
 
         versions = self.appdata.versions
@@ -361,7 +360,7 @@ class MenuBarOpenRazer(MenuBar):
         """
         Initialises the variables for this class, if not done so already.
         """
-        self.module = self.appdata.middleman.get_backend("openrazer")
+        self.module = self.middleman.get_backend("openrazer")
         self.running = True if self.module else False
 
     def website(self):
@@ -402,7 +401,7 @@ class MenuBarOpenRazer(MenuBar):
             self.loading = shared.get_ui_widget(self.appdata, "loading", QDialog)
 
             label = self.loading.findChild(QLabel, "Label")
-            label.setText(self.appdata._("Restarting the backend/application..."))
+            label.setText(self._("Restarting the backend/application..."))
             self.loading.show()
             common.run_thread(_reload_openrazer_thread)
 
@@ -410,11 +409,11 @@ class MenuBarOpenRazer(MenuBar):
             self.appdata.middleman.get_backend("openrazer").restart()
             procmgr = procpid.ProcessManager()
             procmgr.restart_all()
-            procmgr.restart_self(self.appdata.exec_path, self.appdata.exec_args)
+            procmgr.restart_self(self.exec_path, self.exec_args)
 
         self.widgets.open_dialog(self.widgets.dialog_generic,
-                                 self.appdata._("Restart Backend?"),
-                                 self.appdata._("Restarting this backend will also restart Polychromatic. Any unsaved data will be lost. Continue?"),
+                                 self._("Restart Backend?"),
+                                 self._("Restarting this backend will also restart Polychromatic. Any unsaved data will be lost. Continue?"),
                                  buttons=[QMessageBox.Ok, QMessageBox.Cancel],
                                  default_button=QMessageBox.Ok,
                                  actions={QMessageBox.Ok: _reload_openrazer})
@@ -423,25 +422,23 @@ class MenuBarOpenRazer(MenuBar):
         """
         For about dialog, get the D-Bus version (used by the OpenRazer driver)
         """
-        dbg = self.appdata.dbg
         try:
             output = subprocess.Popen(["dbus-daemon", "--version"], stdout=subprocess.PIPE).communicate()[0]
             return output.decode("UTF-8").split("\n")[0].split(" ")[-1]
         except Exception:
-            dbg.stdout("Unable to get D-Bus version! Ignoring.", dbg.warning)
+            self.dbg.stdout("Unable to get D-Bus version! Ignoring.", self.dbg.warning)
             return "[Unknown]"
 
     def _get_dkms_version(self):
         """
         For about dialog, get the DMKS version (used by the OpenRazer driver)
         """
-        dbg = self.appdata.dbg
         try:
             output = subprocess.Popen(["dkms", "--version"], stdout=subprocess.PIPE).communicate()[0]
             # Output: "dkms:2.8" or "dkms-2.8.6"
             return output.decode("UTF-8").strip()[5:]
         except Exception:
-            dbg.stdout("Unable to get DKMS version! Ignoring.", dbg.warning)
+            self.dbg.stdout("Unable to get DKMS version! Ignoring.", self.dbg.warning)
             return "[Unknown]"
 
     def troubleshoot(self):
@@ -449,22 +446,20 @@ class MenuBarOpenRazer(MenuBar):
 
     def about(self):
         self._refresh()
-        _ = self.appdata._
 
         # Cannot show details if backend is not running
         if not self.running:
-            dbg = self.appdata.dbg
-            dbg.stdout("Cannot open OpenRazer about dialog as backend is not loaded!", dbg.error)
+            self.dbg.stdout("Cannot open OpenRazer about dialog as backend is not loaded!", self.dbg.error)
             return
 
         logo = common.get_icon("logo", "openrazer")
         links = [
-            [_("Website"), self.url_website],
-            [_("Source Code"), self.url_src],
-            [_("Release Notes"), self.url_latest]
+            [self._("Website"), self.url_website],
+            [self._("Source Code"), self.url_src],
+            [self._("Release Notes"), self.url_latest]
         ]
 
-        with open(os.path.join(self.appdata.paths.data_dir, "licenses/GPLv2.txt"), "r") as f:
+        with open(os.path.join(self.paths.data_dir, "licenses/GPLv2.txt"), "r") as f:
             license = f.read()
 
         versions = [

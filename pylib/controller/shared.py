@@ -4,6 +4,7 @@
 This module contains widgets shared across the Controller GUI.
 """
 
+from ..base import PolychromaticBase
 from .. import common
 from .. import locales
 from .. import preferences as pref
@@ -233,18 +234,14 @@ def set_pixmap_for_label(qlabel, icon_path, icon_size=24):
     qlabel.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
 
-class TabData(object):
+# TODO: Refactor later. New class name
+class TabData(PolychromaticBase):
     """
     This parent class is inherited by all tab objects storing common variables.
     """
     def __init__(self, appdata):
         self.appdata = appdata
         self.widgets = PolychromaticWidgets(appdata)
-        self.locales = appdata.locales
-        self.dbg = appdata.dbg
-        self.paths = appdata.paths
-        self._ = appdata._
-        self.middleman = appdata.middleman
         self.main_window = appdata.main_window
         self.menubar = appdata.menubar
         self.header_title = appdata.main_window.findChild(QLabel, "HeaderText")
@@ -283,7 +280,8 @@ class TabData(object):
         return widget
 
 
-class PolychromaticWidgets(object):
+# TODO: Review and move to new ControllerBase class?
+class PolychromaticWidgets(PolychromaticBase):
     """
     Code for building some of the common UI elements of the Controller application.
     """
@@ -326,7 +324,7 @@ class PolychromaticWidgets(object):
         For a QPushButton, "Text under icons" won't be used as it is not
         supported for this kind of button.
         """
-        preferred_style = self.appdata.preferences["controller"]["toolbar_style"]
+        preferred_style = self.preferences["controller"]["toolbar_style"]
 
         if type(widget) in [QToolButton, QToolBar]:
             poly_to_qt = {
@@ -772,7 +770,7 @@ class PolychromaticWidgets(object):
         msgbox.exec()
 
 
-class ColourPicker(object):
+class ColourPicker(PolychromaticBase):
     """
     The colour picker dialog allows the user to quickly choose a colour or
     hand over to the system's colour picker (which on Linux, would be Qt's native picker)
@@ -934,7 +932,7 @@ class ColourPicker(object):
                 "name": item.colour_name,
                 "hex": item.colour_hex
             })
-        pref.save_file(self.appdata.paths.colours, colour_list)
+        pref.save_file(self.paths.colours, colour_list)
 
         # Reload the tray applet to use new colour list
         process = procpid.ProcessManager("tray-applet")
@@ -1031,9 +1029,9 @@ class ColourPicker(object):
         self.saved_tree.invisibleRootItem().takeChildren()
 
         if self.monoscale:
-            colour_list = common.get_green_shades(self.appdata._)
+            colour_list = common.get_green_shades(self._)
         else:
-            colour_list = pref.get_colour_list(self.appdata._)
+            colour_list = pref.get_colour_list(self._)
 
         for index, colour in enumerate(colour_list):
             item = self._add_to_tree(colour["name"], colour["hex"])
@@ -1051,7 +1049,7 @@ class ColourPicker(object):
                     self.saved_tree.scrollToItem(item)
 
 
-class IconPicker(object):
+class IconPicker(PolychromaticBase):
     """
     The icon picker dialog allows the user to choose an icon for an effect,
     preset or tray applet.
@@ -1078,8 +1076,6 @@ class IconPicker(object):
             purpose         (bool)  One of the IconPicker.* integers to specify intended behaviour.
         """
         self.appdata = appdata
-        self._ = appdata._
-        self.dbg = appdata.dbg
         self.widgets = PolychromaticWidgets(appdata)
         self.current_icon = current_icon
         self.callback_fn = callback_fn
@@ -1131,12 +1127,12 @@ class IconPicker(object):
             self.tabs.setTabIcon(self.INDEX_CUSTOM, self.widgets.get_icon_qt("general", "folder"))
 
         # Gather icon data
-        list_tray = pref.load_file(os.path.join(common.paths.data_dir, "img", "tray", "icons.json"))
-        list_emblems = pref.load_file(os.path.join(common.paths.data_dir, "img", "emblems", "icons.json"))
+        list_tray = pref.load_file(os.path.join(self.paths.data_dir, "img", "tray", "icons.json"))
+        list_emblems = pref.load_file(os.path.join(self.paths.data_dir, "img", "emblems", "icons.json"))
         if not self.purpose == self.PURPOSE_TRAY_ONLY:
             list_apps = self._get_application_icons()
             list_steam = self._get_steam_icons()
-        list_custom = glob.glob(common.paths.custom_icons + "/*")
+        list_custom = glob.glob(self.paths.custom_icons + "/*")
         self.custom_empty = True if len(list_custom) == 0 else False
 
         # Populate icon tabs
@@ -1337,7 +1333,7 @@ class IconPicker(object):
         Adds the specified icon to the user's custom icons set. This may also
         be triggered by dropping graphics.
         """
-        target_path = os.path.join(common.paths.custom_icons, os.path.basename(source_path))
+        target_path = os.path.join(self.paths.custom_icons, os.path.basename(source_path))
 
         # Reset layout if new icons are to be added
         if self.custom_empty:
@@ -1502,7 +1498,7 @@ class CommonFileTab(TabData):
         super().__init__(appdata)
 
         # Class variables
-        self.fileman = filemgr_class(appdata.locales, appdata._, appdata.dbg)
+        self.fileman = filemgr_class()
         self.current_file_data = {}
         self.current_file_path = ""
 
@@ -1626,7 +1622,7 @@ class CommonFileTab(TabData):
         self.widgets.open_dialog(self.widgets.dialog_error,
                                  self._("File Error"),
                                  self._("The operation could not be completed due to an error processing this file."),
-                                 info_text=self._("Please make sure the file permissions are recursively correct:") + '\n' + common.paths.config,
+                                 info_text=self._("Please make sure the file permissions are recursively correct:") + '\n' + self.paths.config,
                                  details=traceback)
 
     def new_file(self):

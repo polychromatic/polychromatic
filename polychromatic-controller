@@ -38,15 +38,16 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, \
 
 VERSION = "0.7.3"
 
+
 # Import modules if running relatively.
 if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
     try:
-        import pylib.preferences as pref
+        from pylib.base import PolychromaticBase
         import pylib.common as common
-        import pylib.locales as locales
         import pylib.controller as controller
         import pylib.effects as effects
         import pylib.middleman as middleman
+        import pylib.preferences as pref
         import pylib.procpid as procpid
         import pylib.controller.shared as shared
     except (ImportError, Exception) as e:
@@ -56,12 +57,12 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
 # Import modules if installed system-wide.
 else:
     try:
-        import polychromatic.preferences as pref
+        from polychromatic.base import PolychromaticBase
         import polychromatic.common as common
-        import polychromatic.locales as locales
         import polychromatic.controller as controller
         import polychromatic.effects as effects
         import polychromatic.middleman as middleman
+        import polychromatic.preferences as pref
         import polychromatic.procpid as procpid
         import polychromatic.controller.shared as shared
     except (ImportError, Exception) as e:
@@ -70,22 +71,16 @@ else:
         raise e
 
 
-class ApplicationData(object):
+class ApplicationData(PolychromaticBase):
     """
     Shared data that is globally accessible throughout the application.
     This includes save data variables and objects for each tab.
     """
-    def __init__(self, qapp, dbg, _, paths, hidpi):
-        """
-        Prepare the object.
-        """
-        dbg.stdout("Initialising application...", dbg.action, 1)
+    def __init__(self, qapp, hidpi):
+        self.dbg.stdout("Initialising application...", self.dbg.action, 1)
+        self.locales = self.i18n
         self.main_window = None
         self.main_app = qapp
-        self.dbg = dbg
-        self.locales = i18n
-        self._ = _
-        self.paths = paths
         self.exec_path = __file__
         self.exec_args = sys.argv
         self.hidpi = hidpi
@@ -101,7 +96,6 @@ class ApplicationData(object):
         self.secondary_colour_inactive = "#808080"  # $secondary (desaturated)
 
         # Assigned in load() later
-        self.middleman = None
         self.ready = False
         self.menubar = None
         self.tab_devices = None
@@ -119,8 +113,8 @@ class ApplicationData(object):
         """
         Show the main window and spawn a thread to load the rest of the application.
         """
+        self.init_base(__file__, sys.argv)
         self.main_window = MainWindow()
-        self.middleman = middleman.Middleman(dbg, common, _)
 
         # Menu bar & tabs
         self.tab_devices = controller.devices.DevicesTab(self)
@@ -149,12 +143,12 @@ class ApplicationData(object):
                 # FIXME: It works, but isn't thread safe! [QObject:setParent]
                 global_status_label = self.main_window.findChild(QLabel, "GlobalStatus")
                 time.sleep(2)
-                global_status_label.setText(self._("Waiting for backends to initialise..."))
+                global_status_label.setText(app._("Waiting for backends to initialise..."))
                 global_status_label.setHidden(False)
                 time.sleep(10)
-                global_status_label.setText(global_status_label.text() + ' ' + self._("(this is taking an unusually long time, try running the troubleshooter)"))
+                global_status_label.setText(global_status_label.text() + ' ' + app._("(this is taking an unusually long time, try running the troubleshooter)"))
                 time.sleep(30)
-                global_status_label.setText(self._("Still waiting for backends to load, perhaps one of them is unresponsive?"))
+                global_status_label.setText(app._("Still waiting for backends to load, perhaps one of them is unresponsive?"))
 
         class BackgroundThreadInit(QThread):
             """
@@ -168,7 +162,7 @@ class ApplicationData(object):
                     self.main_window.findChild(QAction, action).setEnabled(enabled)
 
                 # Misbehaving backends may take ages inside init()
-                self.dbg.stdout("Initialising backends...", dbg.action, 1)
+                self.dbg.stdout("Initialising backends...", self.dbg.action, 1)
                 self.middleman.init()
 
                 # Enable OpenRazer functions if available
@@ -186,7 +180,7 @@ class ApplicationData(object):
                     _enable_action("actionOpenRazerAbout", False)
 
                 t_end = time.time()
-                self.dbg.stdout("Backends loaded in {0}s.".format(str(round(t_end - t_start, 3))), dbg.action, 1)
+                self.dbg.stdout("Backends loaded in {0}s.".format(str(round(t_end - t_start, 3))), self.dbg.action, 1)
                 self.ready = True
 
                 app.ui_preferences.refresh_backend_status()
@@ -203,21 +197,21 @@ class ApplicationData(object):
 
 class MainWindow(QMainWindow):
     """
-    The main window is the first window the user will use and interact with.
+    This is the primary window the user will use and interact with.
     """
     def __init__(self):
         dbg.stdout("Initialising window...", dbg.action, 1)
         super(MainWindow, self).__init__()
 
         # Check styles exist
-        qt_style = os.path.join(common.paths.data_dir, "qt", "style.qss")
+        qt_style = os.path.join(app.paths.data_dir, "qt", "style.qss")
         if os.path.exists(qt_style) and os.path.getsize(qt_style) < 100:
             dbg.stdout("style.qss malformed! Maybe the application wasn't compiled properly?", dbg.error)
             dbg.stdout("Forcing native theme.", dbg.warning)
             app.system_qt_theme = True
 
         # Load UI and locales
-        widget = uic.loadUi(os.path.join(common.paths.data_dir, "qt", "main.ui"), self)
+        widget = uic.loadUi(os.path.join(app.paths.data_dir, "qt", "main.ui"), self)
         shared.translate_ui(app, widget)
 
         # Show the correct tab widgets
@@ -231,7 +225,7 @@ class MainWindow(QMainWindow):
 
         # Set window attributes
         self.setWindowTitle("Polychromatic")
-        if common.paths.dev:
+        if app.paths.dev:
             self.setWindowTitle("Polychromatic {0} [dev]".format(get_versions()[0][1]))
 
         if self.windowIcon().isNull():
@@ -304,7 +298,7 @@ class MainWindow(QMainWindow):
             app.preferences["geometry"][key_prefix + "_window_pos_y"] = rect.top()
             app.preferences["geometry"][key_prefix + "_window_size_x"] = rect.width()
             app.preferences["geometry"][key_prefix + "_window_size_y"] = rect.height()
-            pref.save_file(common.paths.preferences, app.preferences)
+            pref.save_file(app.paths.preferences, app.preferences)
 
     def load(self):
         """
@@ -315,7 +309,7 @@ class MainWindow(QMainWindow):
         # Polychromatic's Qt theme is based on Fusion, uses the "Play" font.
         if not app.system_qt_theme:
             qapp.setStyle("Fusion")
-            QFontDatabase.addApplicationFont(os.path.join(common.paths.data_dir, "qt", "fonts", "Play_regular.ttf"))
+            QFontDatabase.addApplicationFont(os.path.join(app.paths.data_dir, "qt", "fonts", "Play_regular.ttf"))
             qapp.setFont(QFont("Play", 10, 0))
             controller.shared.load_qt_theme(app, self)
 
@@ -380,9 +374,9 @@ class MainWindow(QMainWindow):
                 traceback = common.get_exception_as_string(e)
                 print(traceback)
                 widgets.open_dialog(widgets.dialog_error,
-                                    _("Polychromatic Error"),
-                                    _("Unable to load the tab properly due to an error.") + "\n\n" + \
-                                    _("See below for technical details. Consider reporting this as a bug on this project's issue tracker."),
+                                    app._("Polychromatic Error"),
+                                    app._("Unable to load the tab properly due to an error.") + "\n\n" + \
+                                    app._("See below for technical details. Consider reporting this as a bug on this project's issue tracker."),
                                     details=traceback)
             self.unsetCursor()
 
@@ -468,10 +462,10 @@ class MainWindow(QMainWindow):
         if save_ver > pref_ver:
             details = "Yours: {1}\nExpected: <={2}\nApplication Version: v{0}".format(VERSION, save_ver, pref_ver)
             widgets.open_dialog(widgets.dialog_warning,
-                                _("Save Data Version Mismatch"),
-                                _("Polychromatic's configuration (including your effects and presets) have been previously saved in a newer version of this software.") + \
-                                _("While this older software version may run as expected, there is no guarantee everything will work as a result of this newer save data. This installation is unsupported.") + \
-                                _("Consider updating the application, ignore this message or delete: ~/.config/polychromatic"),
+                                app._("Save Data Version Mismatch"),
+                                app._("Polychromatic's configuration (including your effects and presets) have been previously saved in a newer version of this software.") + \
+                                app._("While this older software version may run as expected, there is no guarantee everything will work as a result of this newer save data. This installation is unsupported.") + \
+                                app._("Consider updating the application, ignore this message or delete: ~/.config/polychromatic"),
                                 details=details)
 
         self._set_initial_window_position(self, "main")
@@ -557,9 +551,7 @@ def parse_parameters():
         dbg.verbose_level = 1
 
     if args.locale:
-        global i18n
-        i18n = locales.Locales(__file__, args.locale)
-        _ = i18n.init()
+        app.reinit_locales(args.locale)
 
     return args
 
@@ -567,13 +559,13 @@ def parse_parameters():
 if __name__ == "__main__":
     setproctitle.setproctitle("polychromatic-controller")
 
-    dbg = common.Debugging()
-    i18n = locales.Locales(__file__)
-    _ = i18n.init()
-    VERSIONS = get_versions()
+    # TODO: Refactor later
+    base = PolychromaticBase()
+    dbg = base.dbg
+    _ = base._
 
+    VERSIONS = get_versions()
     args = parse_parameters()
-    pref.init(_)
 
     # Improve resolution for HiDPI displays
     HIDPI = False
@@ -585,6 +577,7 @@ if __name__ == "__main__":
         QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
     qapp = QApplication(sys.argv)
-    app = ApplicationData(qapp, dbg, _, common.paths, HIDPI)
+    app = ApplicationData(qapp, HIDPI)
+
     app.load()
     qapp.exec_()

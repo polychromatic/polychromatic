@@ -44,7 +44,7 @@ class OpenRazerBackend(Backend):
         # Variables for OpenRazer
         self.devman = None
         self.persistence_supported = True
-        self.persistence_fallback_path = os.path.join(self.get_config_store_path(), "persistence")
+        self.persistence_fallback_path = os.path.join(self.get_backend_storage_path(), "persistence")
 
         # Client Settings
         # FIXME: Move image download to Controller only!
@@ -90,7 +90,7 @@ class OpenRazerBackend(Backend):
         ~/.config/polychromatic/backends/openrazer/
         """
         def _get_override(filename, data_type, default):
-            path = os.path.join(self.get_config_store_path(), filename)
+            path = os.path.join(self.get_backend_storage_path(), filename)
             if not os.path.exists(path):
                 return default
 
@@ -138,7 +138,7 @@ class OpenRazerBackend(Backend):
 
             device = Backend.UnknownDeviceItem()
             device.name = "{0}:{1}".format("1532", pid)
-            device.backend_id = self.backend_id
+            device.form_factor = self.get_form_factor()
             unreg_pids.append(device)
 
         return unreg_pids
@@ -202,7 +202,6 @@ class OpenRazerBackend(Backend):
         device = OpenRazerDeviceItem()
         device._rdevice = rdevice
         device.name = str(rdevice.name)
-        device.backend_id = self.backend_id
         device.form_factor = self._get_form_factor(rdevice)
         device.real_image = self._get_device_image(rdevice)
         device.serial = serial
@@ -222,7 +221,7 @@ class OpenRazerBackend(Backend):
             device.dpi = self._get_dpi_object(rdevice)
 
         if rdevice.has("lighting_led_matrix"):
-            device.matrix = self._get_matrix_object(rdevice)
+            device.matrix = self._get_matrix_object(rdevice, device)
 
         # Initialize zones
         device.zones = self._get_zone_objects(rdevice)
@@ -366,14 +365,15 @@ class OpenRazerBackend(Backend):
         """
         return Backend.Option()
 
-    def _get_matrix_object(self, rdevice):
+    def _get_matrix_object(self, rdevice, device):
         """
         Returns a Backend.DeviceItem.Matrix object.
         """
         class OpenRazerMatrix(Backend.DeviceItem.Matrix):
             def __init__(self, rdevice):
-                super().__init__()
                 self._rdevice = rdevice
+                self.name = device.name
+                self.form_factor_id = device.form_factor["id"]
                 self.rows = int(rdevice.fx.advanced.rows)
                 self.cols = int(rdevice.fx.advanced.cols)
 
@@ -385,6 +385,9 @@ class OpenRazerBackend(Backend):
 
             def clear(self):
                 self._rdevice.fx.advanced.matrix.reset()
+
+            def brightness(self):
+                print("todo:stub:_get_matrix_object.brightness")
 
         class DeathStalkerMatrix(OpenRazerMatrix):
             """
@@ -521,7 +524,7 @@ class OpenRazerBackend(Backend):
         except KeyError:
             return ""
 
-        image_dir = os.path.join(self.get_config_store_path(), "images")
+        image_dir = os.path.join(self.get_backend_storage_path(), "images")
 
         if not os.path.exists(image_dir):
             self.debug("Creating folder for device images: " + image_dir)

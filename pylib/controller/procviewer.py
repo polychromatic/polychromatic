@@ -4,6 +4,7 @@
 This module controls the 'Background Tasks' window accessible from the menu bar.
 """
 
+from ..base import PolychromaticBase
 from .. import common
 from .. import procpid
 from . import shared
@@ -19,7 +20,7 @@ from PyQt5.QtWidgets import QWidget, QDialog, QPushButton, QTreeWidget, \
                             QLabel, QTreeWidgetItem
 
 
-class ProcessViewer():
+class ProcessViewer(PolychromaticBase):
     """
     The process viewer provides details into the procpid module implementation.
     Allows the user to view processes spawned by Polychromatic, stop them or
@@ -28,8 +29,6 @@ class ProcessViewer():
     def __init__(self, appdata):
         self.appdata = appdata
         self.widgets = shared.PolychromaticWidgets(appdata)
-        self.dbg = appdata.dbg
-        self._ = appdata._
 
         # Session
         self.dialog_is_open = True
@@ -147,7 +146,7 @@ class ProcessViewer():
     def _refresh_list(self):
         procmgr = procpid.ProcessManager()
         components = procmgr._get_component_pid_list()
-        device_list = self.appdata.middleman.get_devices()
+        device_list = self.middleman.get_devices()
 
         tree = self.dialog.findChild(QTreeWidget, "TasksTree")
         tree.clear()
@@ -167,19 +166,18 @@ class ProcessViewer():
                 task = self._("No longer running")
                 task_icon = common.get_icon("general", "cancel")
 
-            device = ""
-            device_icon = None
-            for device_item in device_list:
-                if device_item["serial"] == component:
-                    device = device_item["name"]
-                    device_icon = device_item["form_factor"]["icon"]
+            # TODO: Refactor later
+            running_device = None
+            for device in device_list:
+                if device.serial == component:
+                    running_device = device
 
             item = QTreeWidgetItem()
             item.setText(0, task)
             item.setIcon(0, QIcon(task_icon))
-            item.setText(1, device)
-            if device_icon:
-                item.setIcon(1, QIcon(device_icon))
+            if running_device:
+                item.setText(1, running_device.name)
+                item.setIcon(1, QIcon(running_device.form_factor["icon"]))
             item.setText(2, pid)
             item._component = component
 

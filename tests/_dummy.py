@@ -7,6 +7,9 @@ class DummyMatrix(Backend.DeviceItem.Matrix):
     """
     A simulated matrix that does absolutely nothing.
     """
+    def __init__(self, *args):
+        pass
+
     def set(self, x, y, r, g, b):
         pass
 

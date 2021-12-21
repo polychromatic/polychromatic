@@ -1,3 +1,4 @@
+import pylib.base as base
 import pylib.common as common
 import pylib.controller as controller
 import pylib.locales as locales
@@ -14,37 +15,35 @@ class TestInternals(unittest.TestCase):
     """
     @classmethod
     def setUpClass(self):
-        pass
+        self.base = base.PolychromaticBase()
+        self.base.init_base("", [])
 
     @classmethod
     def tearDownClass(self):
         pass
 
     def setUp(self):
-        self._ = locales.Locales("polychromatic").init()
-        self.dbg = common.Debugging()
-        self.paths = common.paths
-        preferences.init(self._)
+        pass
 
     def tearDown(self):
         pass
 
     def test_locales_can_be_set(self):
-        i18n = locales.Locales("polychromatic", "de_DE")
+        i18n = locales.Locales("de_DE")
         _ = i18n.init()
         self.assertEqual(i18n.get_current_locale(), "de_DE", "Could not set up a German locale")
 
     def test_locales_can_translate_strings(self):
-        _ = locales.Locales("polychromatic", "de_DE").init()
+        _ = locales.Locales("de_DE").init()
         # EN: Breath | DE: Atem
         self.assertEqual(_("Breath"), "Atem", "Could not translate text in German")
 
     def test_locales_can_translate_colours(self):
-        _ = locales.Locales("polychromatic", "de_DE").init()
-        if os.path.exists(self.paths.colours):
-            os.remove(self.paths.colours)
+        _ = locales.Locales("de_DE").init()
+        if os.path.exists(self.base.paths.colours):
+            os.remove(self.base.paths.colours)
         preferences.init(_)
-        colours = preferences.load_file(self.paths.colours)
+        colours = preferences.load_file(self.base.paths.colours)
         passed = False
         for item in colours:
             # EN: Green | DE: Grün
@@ -53,40 +52,40 @@ class TestInternals(unittest.TestCase):
         self.assertTrue(passed, "Could not translate colour strings")
 
     def test_config_pref_read(self):
-        data = preferences.load_file(self.paths.preferences)
+        data = preferences.load_file(self.base.paths.preferences)
         self.assertFalse(data["controller"]["system_qt_theme"], "Could not init or read preferences file")
 
     def test_config_pref_write(self):
-        newdata = preferences.load_file(self.paths.preferences)
+        newdata = preferences.load_file(self.base.paths.preferences)
         newdata["controller"]["landing_tab"] = 2
-        preferences.save_file(self.paths.preferences, newdata)
+        preferences.save_file(self.base.paths.preferences, newdata)
 
-        data = preferences.load_file(self.paths.preferences)
+        data = preferences.load_file(self.base.paths.preferences)
         self.assertEqual(data["controller"]["landing_tab"], 2, "Could not write to preferences file")
 
     def test_config_pref_force_invalid_data(self):
-        newdata = preferences.load_file(self.paths.preferences)
+        newdata = preferences.load_file(self.base.paths.preferences)
         newdata["controller"]["system_qt_theme"] = 123456
-        preferences.save_file(self.paths.preferences, newdata)
+        preferences.save_file(self.base.paths.preferences, newdata)
 
         # load_file._validate() should correct this
-        data = preferences.load_file(self.paths.preferences)
+        data = preferences.load_file(self.base.paths.preferences)
         self.assertFalse(data["controller"]["system_qt_theme"], "Invalid data was not corrected")
 
     def test_data_path(self):
-        self.assertTrue(self.paths.data_dir.endswith("/data"), "Unexpected development data directory path")
+        self.assertTrue(self.base.paths.data_dir.endswith("/data"), "Unexpected development data directory path")
 
     def test_get_form_factor(self):
-        ff = common.get_form_factor(self._, "keyboard")
+        ff = common.get_form_factor(self.base._, "keyboard")
         self.assertEqual(list(ff.keys()), ["id", "icon", "label"], "Unexpected get_form_factor() output")
 
     def test_get_form_factor_all(self):
         for form_factor_id in common.FORM_FACTORS:
-            ff = common.get_form_factor(self._, form_factor_id)
+            ff = common.get_form_factor(self.base._, form_factor_id)
         self.assertTrue(True, "Got exception processing form factors")
 
     def test_get_green_shades(self):
-        shades = common.get_green_shades(self._)
+        shades = common.get_green_shades(self.base._)
         passed = True
         for shade in shades:
             if shade["hex"][1:3] != "00" or shade["hex"][5:7] != "00":
@@ -107,10 +106,10 @@ class TestInternals(unittest.TestCase):
         self.assertIsNotNone(common.get_icon("general", "controller"), "Could not retrieve an icon")
 
     def test_colour_bitmap(self):
-        self.assertIsNotNone(common.generate_colour_bitmap(self.dbg, "#00FF00"), "Could not generate a colour bitmap")
+        self.assertIsNotNone(common.generate_colour_bitmap(self.base.dbg, "#00FF00"), "Could not generate a colour bitmap")
 
     def test_asset_bitmaps(self):
-        icons = common.get_icon_styles(self.dbg, "general", "controller", "#FF0000", "#00FF00", "#0000FF", "#FFFFFF", "#000000", "#808080")
+        icons = common.get_icon_styles(self.base.dbg, "general", "controller", "#FF0000", "#00FF00", "#0000FF", "#FFFFFF", "#000000", "#808080")
         self.assertEqual(len(icons), 4, "Could not generate icon bitmap")
 
     def test_rgb_to_hex(self):

@@ -32,14 +32,10 @@ class EffectFileManagement(fileman.FlatFileManagement):
     """
     Provides common functions for parsing the custom effects.
     """
-    def __init__(self, i18n, _, dbg):
-        """
-        Store variables for the session.
-        """
-        super().__init__(i18n, _, dbg)
+    def __init__(self):
         self.feature = "effects"
-        self.factory_path = os.path.join(common.paths.data_dir, "effects")
-        self.local_path = common.paths.effects
+        self.factory_path = os.path.join(self.paths.data_dir, "effects")
+        self.local_path = self.paths.effects
 
     def get_item(self, path):
         """
