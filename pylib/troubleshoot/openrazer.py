@@ -22,6 +22,7 @@ import requests
 import os
 import subprocess
 import shutil
+import sys
 
 from .. import common
 from ..backends import _backend
@@ -81,12 +82,22 @@ def _is_daemon_running(_):
 
 
 def _is_pylib_installed(_):
+    py_version = sys.version.split(" ")[0]
+    suggestions = [_("Install 'python-openrazer' or 'python3-openrazer' for your distribution.")]
+
+    if sys.executable.startswith("/usr/bin"):
+        suggestions.append(_("Make sure the modules are installed for the correct Python version. Try re-installing."))
+    else:
+        suggestions.append(_("Your Python installation looks custom. Check your PATH and PYTHONPATH."))
+
+    suggestions.append(_("Currently running Python 3.10.0 from /usr/bin/python3").replace("3.10.0", py_version).replace("/usr/bin/python3", sys.executable))
+
+    for path in sys.path:
+        suggestions.append("  -- " + _("Tried path:") + " " + path)
+
     return {
         "test_name": _("Python library is installed"),
-        "suggestions": [
-            _("Install the 'python-openrazer' or 'python3-openrazer' package for your distribution."),
-            _("Check the PYTHONPATH environment variable is correct."),
-        ],
+        "suggestions": suggestions,
         "passed": PYTHON_LIB_PRESENT
     }
 
