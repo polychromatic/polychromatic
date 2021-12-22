@@ -135,6 +135,10 @@ class Backend(_backend.Backend):
             if pid == "0521":
                 continue
 
+            # Ignore Razer Seiren X. No RGB support (openrazer/openrazer#1058)
+            elif pid == "0511":
+                continue
+
             devices.append({
                 "backend": self.backend_id,
                 "name": "{0}:{1}".format("1532", pid),
