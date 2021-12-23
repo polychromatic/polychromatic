@@ -4,11 +4,9 @@
 # Copyright (C) 2020-2021 Luke Horwell <code@horwell.me>
 #
 """
-This module collates data from installed backends for supported devices.
-Polychromatic's applications will process this data.
+Provides the "middle ground" between each backend and Polychromatic's interfaces.
 
-Each backend is stored in its own module adjacent to this file. These are
-written by inheriting the "Backend" class below and added accordingly.
+The code that provides each backend is stored in "backends" directory.
 
 Refer to the online documentation for more details:
 https://docs.polychromatic.app/
@@ -16,11 +14,24 @@ https://docs.polychromatic.app/
 
 from . import procpid
 from . import common
+from .backends._backend import Backend
 
-BACKEND_ID_NAMES = {
+from .backends import openrazer as openrazer_backend
+from .troubleshoot import openrazer as openrazer_troubleshoot
+
+BACKEND_NAMES = {
 #   "backend ID": "human readable string"
     "openrazer": "OpenRazer"
 }
+
+BACKEND_MODULES = {
+    "openrazer": openrazer_backend.OpenRazerBackend
+}
+
+TROUBLESHOOT_MODULES = {
+    "openrazer": openrazer_troubleshoot.troubleshoot
+}
+
 
 class Middleman(object):
     """
@@ -35,37 +46,53 @@ class Middleman(object):
         self._common = common
         self._ = _
 
-        # List of initialised Backend() objects.
+        # List of initialized Backend() objects.
         self.backends = []
 
-        # List of IDs for modules that are not present.
+        # List of Backend() modules that failed to init().
+        self.bad_init = []
+
+        # List of backend string IDs that are not present.
         self.not_installed = []
 
-        # Keys referencing troubleshoot() functions, if available.
+        # Dictionary of backend IDs referencing troubleshoot() functions, if available.
+        #   e.g. "openrazer": TROUBLESHOOT_MODULES.get("openrazer")
         self.troubleshooters = {}
 
         # Keys containing human readable strings for modules that failed to import.
+        #   e.g. "openrazer": "Exception: xyz"
         self.import_errors = {}
+
+        # List of DeviceItem() objects.
+        self.device_cache = []
 
     def init(self):
         """
-        Imports the modules and initialises the backend objects.
+        Initialise the backend objects. This should be called when the user interface
+        is ready. Note that this thread may potentially be blocked if the backend
+        hangs while it initialises.
         """
-        # -- OpenRazer
-        try:
-            from .backends import openrazer as openrazer
-            self.backends.append(openrazer.Backend(self._dbg, self._common, self._))
-        except (ImportError, ModuleNotFoundError):
-            self.not_installed.append("openrazer")
-        except Exception as e:
-            self.import_errors["openrazer"] = self._common.get_exception_as_string(e)
+        def _load_backend_module(backend_id):
+            try:
+                module = BACKEND_MODULES[backend_id]
+                backend = module(self._dbg, self._common, self._)
+                if backend.init():
+                    self.backends.append(backend)
+                else:
+                    self.bad_init.append(backend)
+            except (ImportError, ModuleNotFoundError):
+                self.not_installed.append(backend_id)
+            except Exception as e:
+                self.import_errors[backend_id] = self._common.get_exception_as_string(e)
 
-    def init_troubleshooters(self):
-        """
-        Imports the modules that provide troubleshooting support.
-        """
-        from .troubleshoot import openrazer as openrazer_troubleshoot
-        self.troubleshooters["openrazer"] = openrazer_troubleshoot.troubleshoot
+            try:
+                self.troubleshooters[backend_id] = TROUBLESHOOT_MODULES[backend_id]
+            except NameError:
+                # Backend does not have a troubleshooter.
+                pass
+
+        for backend_id in BACKEND_NAMES.keys():
+            _load_backend_module(backend_id)
 
     def get_backend(self, backend_id):
         """
@@ -76,14 +103,15 @@ class Middleman(object):
                 return module
         return None
 
-    def get_backends(self):
+    def is_backend_running(self, backend_id):
         """
-        Returns a list of backend IDs that are currently running.
+        Returns a boolean to indicate whether a specific backend ID is running
+        and was successfully initialized.
         """
-        backends = []
         for module in self.backends:
-            backends.append(module.backend_id)
-        return backends
+            if module.backend_id == backend_id:
+                return True
+        return False
 
     def get_versions(self):
         """
@@ -94,138 +122,73 @@ class Middleman(object):
             versions[module.backend_id] = module.version
         return versions
 
-    def get_device_list(self):
+    def _reload_device_cache_if_empty(self):
         """
-        Returns a list of connected devices.
+        Reload the cache of DeviceItem()'s if it hasn't been initalized yet.
         """
-        devices = []
-        for module in self.backends:
-            m_devices = module.get_device_list()
-            if type(m_devices) == list:
-                devices = devices + m_devices
-        return devices
+        if self.device_cache:
+            return
 
-    def get_filtered_device_list(self, form_factor):
+        for module in self.backends:
+            device_list = module.get_devices()
+            if type(device_list) == list:
+                self.device_cache = self.device_cache + device_list
+
+    def reload_device_cache(self):
         """
-        Returns a list of connected devices filtered by a form factor.
+        Clear the device object cache and reload.
         """
-        new_list = []
-        devices = self.get_device_list()
-        for device in devices:
-            if device["form_factor"]["id"] == form_factor:
-                new_list.append(device)
-        return new_list
+        self.device_cache = []
+        self._reload_device_cache_if_empty()
+
+    def get_devices(self):
+        """
+        Returns a list of DeviceItem() objects.
+        """
+        self._reload_device_cache_if_empty()
+        return self.device_cache
 
     def get_device_by_name(self, name):
         """
-        Returns a summary of a device by looking up its name.
-
-        None is returned if the device cannot be found (e.g. not connected)
+        Returns a fresh DeviceItem() by looking up its device name, or None if
+        there is no device with that name.
         """
-        devices = self.get_device_list()
-        for device in devices:
-            if device["name"] == name:
+        for backend in self.backends:
+            device = backend.get_device_by_name(name)
+            if isinstance(device, Backend.DeviceItem):
                 return device
         return None
 
     def get_device_by_serial(self, serial):
         """
-        Returns a get_device() object by looking up its serial number.
-
-        None is returned if the device cannot be found (e.g. not connected)
+        Returns a fresh DeviceItem() object by looking up its serial number, or
+        None if there is no device with that serial string.
         """
-        for module in self.backends:
-            device = module.get_device_by_serial(serial)
-            if device:
+        for backend in self.backends:
+            device = backend.get_device_by_serial(serial)
+            if isinstance(device, Backend.DeviceItem):
                 return device
         return None
+
+    def get_devices_by_form_factor(self, form_factor_id):
+        """
+        Returns a list of DeviceItem()'s based on the form factor specified, or empty list.
+        """
+        self._reload_device_cache_if_empty()
+        devices = []
+        for device in self.device_cache:
+            if device.form_factor["id"] == form_factor_id:
+                devices.append(device)
+        return devices
 
     def get_unsupported_devices(self):
         """
         Returns a list of connected devices that cannot be controlled by their backend.
         """
-        devices = []
-        for module in self.backends:
-            m_devices = module.get_unsupported_devices()
-            if type(m_devices) == list:
-                devices = devices + m_devices
-        return devices
-
-    def get_device(self, backend, uid):
-        """
-        Returns a dictionary describing the state of a device.
-
-        In event of an error, an error string is returned to inform the user.
-        """
-        device = None
-
-        for module in self.backends:
-            if module.backend_id == backend:
-                try:
-                    device = module.get_device(uid)
-                except Exception as e:
-                    device = common.get_exception_as_string(e)
-
-        # In case of error, return immediately
-        if type(device) in [None, str]:
-            return device
-
-        # In addition, append state data
-        state = procpid.DeviceSoftwareState(device["serial"])
-        device["state"] = {}
-        device["state"]["effect"] = state.get_effect()
-        device["state"]["preset"] = state.get_preset()
-
-        return device
-
-    def get_device_all(self):
-        """
-        Returns a list containing every get_device() dictionary. Devices that
-        encounter an error are skipped.
-        """
-        device_list = self.get_device_list()
-        devices = []
-        for device_item in device_list:
-            device = self.get_device(device_item["backend"], device_item["uid"])
-            if type(device) == dict:
-                devices.append(device)
-        return devices
-
-    def set_device_state(self, backend, uid, serial, zone, option_id, option_data, colour_hex):
-        """
-        Sends a request to the the device, like setting the brightness, the hardware
-        effect or a hardware property (such as DPI).
-
-        See _backend.Backend.set_device_state() for parameters and data types.
-        """
-        # Check the states and stop/clear them (e.g. device was playing a software effect)
-        if not option_id in ["brightness", "poll_rate", "dpi", "game_mode"]:
-            process = procpid.ProcessManager(serial)
-            state = procpid.DeviceSoftwareState(serial)
-
-            if state.get_effect() or process.is_another_instance_is_running():
-                process.stop()
-                state.clear_effect()
-
-            if state.get_preset():
-                state.clear_preset()
-
-        for module in self.backends:
-            if module.backend_id == backend:
-                return module.set_device_state(uid, zone, option_id, option_data, colour_hex)
-
-        # Refresh Controller, if it is running.
-        proc_controller = procpid.ProcessManager("controller")
-        proc_controller.reload()
-
-    def get_device_object(self, backend, uid):
-        """
-        Returns a 'device' object that can be used for drawing frames to a device
-        that supports individual addressable LEDs ("matrix")
-        """
-        for module in self.backends:
-            if module.backend_id == backend:
-                return module.get_device_object(uid)
+        unknown_devices = []
+        for backend in self.backends:
+            unknown_devices = unknown_devices + backend.get_unsupported_devices()
+        return unknown_devices
 
     def troubleshoot(self, backend, i18n, fn_progress_set_max, fn_progress_advance):
         """
@@ -235,6 +198,8 @@ class Middleman(object):
         Params:
             backend         (str)       ID of backend to check
             i18n            (obj)       _ function for translating strings
+            fn_progress_set_max         See _backend.Backend.troubleshoot()
+            fn_progress_advance         See _backend.Backend.troubleshoot()
 
         Returns:
             (list)          Results from the troubleshooter
@@ -258,195 +223,145 @@ class Middleman(object):
             if module.backend_id == backend:
                 return module.restart()
 
-    def _get_current_device_option(self, device, zone=None):
+    def get_active_effect(self, zone):
         """
-        Return the currently 'active' option, its parameter and colour(s), if applicable.
-        Usually this would be an effect.
-
-        Params:
-            device          (dict)      middleman.get_device() object
-            zone            (str)       (Optional) Get data for this specific zone.
-
-        Returns list:
-        [option_id, option_data, colour_hex]
+        Return the first active Backend.EffectOption from the specified zone.
         """
-        option_id = None
-        option_data = None
-        colour_hex = []
-        colour_count = 0
-        found_option = None
-        param = None
+        for option in zone.options:
+            if isinstance(option, Backend.EffectOption) and option.active:
+                return option
 
-        if zone:
-            zones = [zone]
-        else:
-            # Find an active effect in all zones, uses the last matched one.
-            zones = device["zone_options"].keys()
-
-        for zone in zones:
-            for option in device["zone_options"][zone]:
-                if not "active" in option.keys():
-                    continue
-
-                if not option["type"] == "effect":
-                    continue
-
-                if option["active"] == True:
-                    found_option = option
-                    option_id = option["id"]
-
-                    try:
-                        if len(option["parameters"]) == 0:
-                            break
-                        else:
-                            for param in option["parameters"]:
-                                if param["active"] == True:
-                                    option_data = param["data"]
-                                    colour_hex = param["colours"]
-                    except KeyError:
-                        # Toggle or slider do not have a 'parameters' key
-                        pass
-
-        if not found_option:
-            return [None, None, None]
-
-        if not param:
-            colour_hex = found_option["colours"]
-
-        return [option_id, option_data, colour_hex]
-
-    def replay_active_effect(self, backend, uid, zone):
+    def get_active_parameter(self, option):
         """
-        Replays the 'active' effect. This may be used, for example, to restore
-        the effect that was being played before the matrix was tested or being
-        previewed in the editor.
+        Return the active Backend.Option.Parameter from the specified option.
         """
-        device = self.get_device(backend, uid)
-        serial = device["serial"]
-        state = procpid.DeviceSoftwareState(serial)
+        for param in option.parameters:
+            if param.active:
+                return param
 
-        # Device was playing a software effect, resume that.
+    def get_active_colours_required(self, option):
+        """
+        Return the number of colours required for the specified option.
+        When parameters are present, there may be a different number of colours.
+        """
+        param = self.get_active_parameter(option)
+        if param:
+            return param.colours_required
+        return option.colours_required
+
+    def get_default_parameter(self, option):
+        """
+        Return the default Backend.Option.Parameter() object for an option.
+
+        There should only be one default, so the first one will be returned.
+        If there are no defaults, the first parameter will be returned.
+        """
+        if not option.parameters:
+            return None
+
+        for param in option.parameters:
+            if param.default:
+                return param
+
+        return option.parameters[0]
+
+    def _apply_option_with_same_params(self, option):
+        """
+        Re-apply the specified Backend.Option() instance, using the same
+        parameters and colours.
+        """
+        if option.parameters:
+            param_data = option.parameters[0].data
+            for param in option.parameters:
+                if param.active:
+                    param_data = param.data
+            option.apply(param_data)
+
+        elif isinstance(option, Backend.ToggleOption):
+            option.apply(option.active)
+
+        elif isinstance(option, Backend.SliderOption):
+            option.apply(option.value)
+
+        elif isinstance(option, (Backend.EffectOption, Backend.MultipleChoiceOption)):
+            option.apply()
+
+    def replay_active_effect(self, device):
+        """
+        Re-applies the 'active' effect for all zones on the device.
+
+        For example, this may be used to restore previously played effect prior to
+        opening the effect editor which was physically previewing on the hardware.
+        """
+        # TODO: Catch error?
+        device.refresh()
+
+        # Was the device playing a software effect?
+        state = procpid.DeviceSoftwareState(device.serial)
         effect = state.get_effect()
         if effect:
             procmgr = procpid.ProcessManager("helper")
-            procmgr.start_component(["--run-fx", effect["path"], "--device-serial", serial])
+            procmgr.start_component(["--run-fx", effect["path"], "--device-serial", device.serial])
             return
 
-        # Device was set to a hardware effect, apply that.
-        option_id, option_data, colour_hex = self._get_current_device_option(device, zone)
-        if option_id:
-            return self.set_device_state(backend, uid, device["serial"], zone, option_id, option_data, colour_hex)
+        # Was the device running a hardware effect?
+        for zone in device.zones:
+            option = self.get_active_effect(zone)
+            if option:
+                if option.active:
+                    self._apply_option_with_same_params(option)
 
-    def set_device_colour(self, device, zone, hex_value, colour_pos=0):
+    def set_colour_for_option(self, option, hex_value, colour_pos=0):
         """
-        Replays the currently selected effect (option_id) with the same parameters
-        (option_data) but with a different (0-based) colour.
-
-        The return code is the same as set_device_state()
-        """
-        option_id, option_data, colour_hex = self._get_current_device_option(device, zone)
-        if not colour_hex:
-            return False
-        colour_hex[colour_pos] = hex_value
-        return self.set_device_state(device["backend"], device["uid"], device["serial"], zone, option_id, option_data, colour_hex)
-
-    def set_bulk_option(self, option_id, option_data, colours_needed):
-        """
-        The "Apply to All" function that will set all of the devices to the specified
-        effect (option ID and option parameter), such as "breath" and "single", or
-        "static" and None.
-
-        The colour for the device will be re-used from a previous selection.
+        Set a new colour for the specified option.
 
         Params:
-            option_id           (str)
-            option_data         (str)
-            colours_needed      (int)
-
-        Parameters may be determined by the common.get_bulk_apply_options() function.
-
-        Return is null.
+            option      (obj)   Backend.Option() inherited object
+            hex_value   (str)   New #RRGGBB string
+            colour_pos  (int)   (Optional) Position to append. 0 = Primary, 1 = Secondary, etc
         """
-        self._dbg.stdout("Setting all devices to '{0}' (parameter: {1})".format(option_id, option_data), self._dbg.action, 1)
+        option.colours[colour_pos] = hex_value
+        self._apply_option_with_same_params(option)
 
-        devices = self.get_device_all()
-        for device in devices:
-            name = device["name"]
-            backend = device["backend"]
-            uid = device["uid"]
-            serial = device["serial"]
-            colour_hex = []
-
-            for zone in device["zone_options"].keys():
-                # Skip if the device's zone/options doesn't support this request
-                skip = True
-                for option in device["zone_options"][zone]:
-                    if option["id"] == option_id:
-                        skip = False
-                        colour_hex = option["colours"]
-                        break
-
-                if skip:
-                    continue
-
-                # TODO: Use default colours
-                while len(colour_hex) < colours_needed:
-                    colour_hex.append("#00FF00")
-
-                self._dbg.stdout("- {0} [{1}]".format(name, zone), self._dbg.action, 1)
-                result = self.set_device_state(backend, uid, serial, zone, option_id, option_data, colour_hex)
-                if result == True:
-                    self._dbg.stdout("Request OK", self._dbg.success, 1)
-                elif result == False:
-                    self._dbg.stdout("Bad request!", self._dbg.error, 1)
-                else:
-                    self._dbg.stdout("Error: " + str(result), self._dbg.error, 1)
-
-    def set_bulk_colour(self, new_colour_hex):
+    def set_colour_for_active_effect_zone(self, zone, hex_value, colour_pos=0):
         """
-        The "Apply to All" function that will set all of the devices to the specified
-        primary colour. Some devices may not be playing an effect that uses a colour
-        (e.g. wave, spectrum) and as such, this will cause no effect.
+        Set a new colour for the effect that's active in the specified zone.
 
         Params:
-            new_colour_hex      (str)
-
-        Return is null.
+            zone        (obj)   Backend.DeviceItem.Zone() object
+            hex_value   (str)   New #RRGGBB string
+            colour_pos  (int)   (Optional) Position to append. 0 = Primary, 1 = Secondary, etc
         """
-        self._dbg.stdout("Setting all primary colours to {0}".format(new_colour_hex), self._dbg.action, 1)
+        option = self.get_active_effect(zone)
+        if option:
+            return self.set_colour_for_option(option, hex_value, colour_pos)
 
-        devices = self.get_device_all()
-        for device in devices:
-            option_id, option_data, colour_hex = self._get_current_device_option(device)
-            name = device["name"]
-            backend = device["backend"]
-            uid = device["uid"]
-            serial = device["serial"]
+    def set_colour_for_active_effect_device(self, device, hex_value, colour_pos=0):
+        """
+        Set a new colour for all the device's active effects.
 
-            # Skip devices that do not support this option
-            if not option_id:
-                continue
+        Params:
+            device      (obj)   Backend.DeviceItem() object
+            hex_value   (str)   New #RRGGBB string
+            colour_pos  (int)   (Optional) Position to append. 0 = Primary, 1 = Secondary, etc
+        """
+        for zone in device.zones:
+            option = self.get_active_effect(zone)
+            if option:
+                self.set_colour_for_option(option, hex_value, colour_pos)
 
-            for zone in device["zone_options"].keys():
-                # Skip if the device's zone/options doesn't support this request
-                skip = True
-                for option in device["zone_options"][zone]:
-                    if option["id"] == option_id:
-                        skip = False
-                        break
+    def stop_software_effect(self, serial):
+        """
+        Prior to applying a hardware effect, make sure any software effects
+        have stopped.
+        """
+        process = procpid.ProcessManager(serial)
+        state = procpid.DeviceSoftwareState(serial)
 
-                    if not option["colours"]:
-                        continue
+        if state.get_effect() or process.is_another_instance_is_running():
+            process.stop()
+            state.clear_effect()
 
-                if skip:
-                    continue
-
-                self._dbg.stdout("- {0} [{1}]".format(name, zone), self._dbg.action, 1)
-                result = self.set_device_colour(device, zone, new_colour_hex)
-                if result == True:
-                    self._dbg.stdout("Request OK", self._dbg.success, 1)
-                elif result == False:
-                    self._dbg.stdout("Bad request!", self._dbg.error, 1)
-                else:
-                    self._dbg.stdout("Error: " + str(result), self._dbg.error, 1)
+        if state.get_preset():
+            state.clear_preset()
 

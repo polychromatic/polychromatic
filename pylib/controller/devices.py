@@ -13,6 +13,7 @@ from .. import locales
 from .. import preferences as pref
 from .. import middleman
 from . import shared
+from ..backends._backend import Backend as Backend
 
 import os
 import subprocess
@@ -42,9 +43,7 @@ class DevicesTab(shared.TabData):
         self.special_controls = SpecialControls(appdata)
 
         # Session
-        self.current_backend = None
-        self.current_uid = None
-        self.current_serial = None
+        self.current_device = None
         self.load_thread = None
 
         # UI Elements
@@ -82,40 +81,41 @@ class DevicesTab(shared.TabData):
 
         # Recache the device list
         self.SidebarTree.parent().show()
-        self.appdata.device_list = self.middleman.get_device_list()
+        device_list = self.middleman.get_devices()
         unknown_device_list = self.middleman.get_unsupported_devices()
 
         # Clear device entries
         devices_branch.takeChildren()
-        for device_item in self.appdata.device_list:
+
+        for device in device_list:
             item = QTreeWidgetItem()
-            item.setText(0, device_item["name"])
-            item.setIcon(0, QIcon(device_item["form_factor"]["icon"]))
+            item.setText(0, device.name)
+            item.setIcon(0, QIcon(device.form_factor["icon"]))
             item.section = "device"
-            item.backend = device_item["backend"]
-            item.uid = device_item["uid"]
+            item.device_item = device
             devices_branch.addChild(item)
 
         devices_branch.sortChildren(0, Qt.AscendingOrder)
 
-        for device_item in unknown_device_list:
+        for device in unknown_device_list:
             item = QTreeWidgetItem()
-            item.setText(0, device_item["name"])
-            item.setIcon(0, QIcon(device_item["form_factor"]["icon"]))
+            item.setText(0, device.name)
+            item.setIcon(0, QIcon(device.form_factor["icon"]))
             item.section = "device-unknown"
-            item.backend = device_item["backend"]
+            item.device_item = device
             devices_branch.addChild(item)
 
         # Only show tasks when there are multiple devices present
-        if len(self.appdata.device_list) > 1:
+        if len(device_list) > 1:
             tasks_branch.setHidden(False)
         else:
             tasks_branch.setHidden(True)
 
         # Backends loaded, but no usable devices
-        if len(self.appdata.device_list) == 0 and len(unknown_device_list) > 0:
-            devices_branch.child(0).setSelected(True)
-            self.open_unknown_device(devices_branch.child(0).backend)
+        if len(device_list) == 0 and len(unknown_device_list) > 0:
+            first_item = devices_branch.child(0)
+            first_item.setSelected(True)
+            self.open_unknown_device(first_item.device_item)
 
         # All backends failed to load
         elif len(self.middleman.backends) == 0 and len(self.middleman.import_errors) > 0:
@@ -126,14 +126,14 @@ class DevicesTab(shared.TabData):
             self._open_no_backend_found(ERROR_NO_BACKEND)
 
         # Backends present, but no devices listed
-        elif len(self.appdata.device_list) == 0:
+        elif len(device_list) == 0:
             self._open_no_backend_found(ERROR_NO_DEVICE)
 
         # Open the first device initially
-        if len(self.appdata.device_list) > 0:
+        if len(device_list) > 0:
             first_item = devices_branch.child(0)
             first_item.setSelected(True)
-            self.open_device(first_item.backend, first_item.uid)
+            self.open_device(first_item.device_item)
 
     def _sidebar_changed(self, item):
         """
@@ -143,75 +143,33 @@ class DevicesTab(shared.TabData):
         if item.section == "apply-to-all":
             self.open_apply_to_all()
         elif item.section == "device-unknown":
-            self.open_unknown_device(item.backend)
+            self.open_unknown_device(item.device_item)
         elif item.section == "device":
-            self.open_device(item.backend, item.uid)
+            self.open_device(item.device_item)
 
-    def open_device(self, backend, uid):
+    def open_device(self, device):
         """
-        Show details and controls to instant change the current parameters for
-        the specified device.
+        Show details and controls for changing the current hardware state
+        of the specified device.
         """
+        self.current_device = device
+
         self.set_cursor_busy()
-        device = self.middleman.get_device(backend, uid)
-
-        if type(device) in [None, str]:
-            _ = self._
-            backend_name = middleman.BACKEND_ID_NAMES[backend]
-
-            msg1 = _("An error occurred while reading this device. This could be a bug in either Polychromatic or [].").replace("[]", backend_name)
-            msg2 = _("Try selecting this device again, or restart the backend and application. If this keeps happening, take note of the details below and report as a bug on the relevant project's issue tracker.")
-
-            self.widgets.open_dialog(self.widgets.dialog_error, _("Backend Error"), msg1, info_text=msg2, details=device)
-            self.open_bad_device(msg1, msg2, device)
-            return
-
-        self.current_backend = backend
-        self.current_uid = uid
-        self.current_serial = device["serial"]
-
         layout = self.Contents.layout()
         shared.clear_layout(layout)
 
-        # Show the device's name, image and a summarised status
-        real_image = device["real_image"]
-        if not device["real_image"]:
+        # Show a summary of the device state
+        real_image = device.real_image
+        if not device.real_image:
             real_image = common.get_icon("devices", "noimage")
 
         indicators = []
-        for item in device["summary"]:
-            indicators.append({
-                "icon": item["icon"],
-                "label": item["label"]
-            })
 
         # The summary indicators only show current effect/preset when set
-        state_effect = device["state"]["effect"]
-        state_preset = device["state"]["preset"]
+        # TODO: Split to _get_summary() function?
+        print("fixme:device state")
 
-        if state_preset:
-            indicators = [
-                {
-                    "icon": None,
-                    "label": self._("Preset:")
-                },
-                {
-                    "icon": state_preset["icon"],
-                    "label": state_preset["name"]
-                }
-            ]
 
-        elif state_effect:
-            indicators = [
-                {
-                    "icon": None,
-                    "label": self._("Playing:")
-                },
-                {
-                    "icon": state_effect["icon"],
-                    "label": state_effect["name"]
-                }
-            ]
 
         buttons = [
             {
@@ -223,67 +181,78 @@ class DevicesTab(shared.TabData):
             }
         ]
 
-        summary = self.widgets.create_summary_widget(real_image, device["name"], indicators, buttons)
+        summary = self.widgets.create_summary_widget(real_image, device.name, indicators, buttons)
         layout.addWidget(summary)
 
-        # Create controls for available options
-        multiple_zones = len(device["zone_options"].keys()) > 1
-
-        for zone in device["zone_options"].keys():
-            current_option_id, current_option_data, current_colours = middleman.Middleman._get_current_device_option(middleman.Middleman, device, zone)
-            zone_label = device["zone_labels"][zone]
+        device.refresh()
+        for zone in device.zones:
             widgets = []
+            first_zone = True if device.zones[0] == zone else False
 
-            # Effect options will be collected and presented as a group of buttons
-            options = device["zone_options"][zone]
-            effect_options = []
+            # Effects are all 'collapsed' into one row. When encountering the first
+            # effect, remember the index to insert here later.
+            has_effects = False
+            effects_index = 0
 
-            # Show brightness first (if present)
-            for option in options:
-                if option["id"] == "brightness":
-                    widgets.append(self._create_row_control(device, zone, option))
-
-            # Effects
-            for option in options:
-                if option["type"] == "effect":
-                    if state_effect:
-                        # Ignore active hardware effect when software effect is in use.
-                        option["active"] = False
-                        current_option_id = None
-
-                    effect_options.append(option)
+            for index, option in enumerate(zone.options):
+                if isinstance(option, Backend.EffectOption):
+                    if not has_effects:
+                        has_effects = True
+                        effects_index = index
                     continue
 
-            if len(effect_options) > 0:
-                effect_controls = self._create_effect_controls(zone, effect_options)
-                param_controls = self._create_effect_parameter_controls(zone, current_option_id, effect_options)
-                if effect_controls:
-                    widgets.append(effect_controls)
-                if param_controls:
-                    widgets.append(param_controls)
+                widgets.append(self._create_row_control(option))
 
-            # Colours
-            if current_colours and len(current_colours) > 0:
-                for colour_no, colour_hex in enumerate(current_colours):
-                    widgets.append(self._create_colour_control(colour_no, colour_hex, current_option_id, current_option_data, zone, device["monochromatic"]))
+            # Controls for effects, its parameters and colours
+            def _get_effect_options(zone, force_inactive):
+                options = []
+                for option in zone.options:
+                    # Override active flag when software effect is running.
+                    if force_inactive:
+                        option.active = False
 
-            # Other controls (except "brightness" which has been processed already)
-            for option in options:
-                if not option["type"] == "effect" and not option["id"] == "brightness":
-                    widgets.append(self._create_row_control(device, zone, option))
+                    if isinstance(option, Backend.EffectOption):
+                        options.append(option)
 
-            # Polychromatic-specific interfaces
-            # -- DPI
-            if zone == "main" and device["dpi_x"]:
-                widgets.append(self.special_controls.create_dpi_control(device))
+                return options
 
-            # -- Mouse Acceleration
-            if zone == "main" and device["form_factor"]["id"] == "mouse":
-                widgets.append(self.special_controls.create_mouse_accel_control())
+            # FIXME: Reinstate "state_effect" check
+            effect_options = _get_effect_options(zone, False)
+            active_effect = self.middleman.get_active_effect(zone)
+            effect_row = self._create_effect_controls(zone, effect_options)
+            if effect_row:
+                widgets.insert(effects_index, effect_row)
+                effects_index += 1
 
-            # Group controls if there are multiple zones
-            if multiple_zones:
-                group = self.widgets.create_group_widget(zone_label)
+            # Show parameters and colours for selected effect (if applicable)
+            if active_effect:
+                param_row = self._create_effect_parameter_controls(device, zone, active_effect)
+                if param_row:
+                    widgets.insert(effects_index, param_row)
+                    effects_index += 1
+
+                colours_required = self.middleman.get_active_colours_required(active_effect)
+                if colours_required > 0:
+                    for pos in range(0, colours_required):
+                        widgets.insert(effects_index, self._create_colour_control(device, zone, pos, active_effect.colours))
+                        effects_index += 1
+
+            # General device controls
+            if first_zone:
+                # -- Mouse DPI
+                if device.dpi:
+                    widgets.append(self.special_controls.create_dpi_control(device))
+
+                # TODO: Button to set compatible software effects here
+
+                # -- Mouse Acceleration
+                # TODO: Move to middleman for all interfaces?
+                if device.form_factor == "mouse":
+                    widgets.append(self.special_controls.create_mouse_accel_control())
+
+            # Before adding to the main layout, use group boxes if there's multiple zones
+            if len(device.zones) > 1:
+                group = self.widgets.create_group_widget(zone.label)
                 for widget in widgets:
                     group.layout().addWidget(widget)
                 layout.addWidget(group)
@@ -298,197 +267,173 @@ class DevicesTab(shared.TabData):
         """
         Reloads the current device page.
         """
-        self.open_device(self.current_backend, self.current_uid)
+        self.open_device(self.current_device)
 
-    def _create_row_control(self, device, zone, option):
+    def _create_row_control(self, option):
         """
-        Returns a row widget consisting of the correct controls and bindings.
+        Returns a list of widgets for the specified option.
         """
-        option_id = option["id"]
-        option_label = option["label"]
+        if isinstance(option, Backend.SliderOption):
+            return self.widgets.create_row_widget(option.label, self._create_control_slider(option))
 
-        if option["type"] == "slider":
-            return self.widgets.create_row_widget(option_label, self._create_control_slider(device, zone, option))
+        elif isinstance(option, Backend.ToggleOption):
+            return self.widgets.create_row_widget(option.label, self._create_control_toggle(option))
 
-        elif option["type"] == "toggle":
-            return self.widgets.create_row_widget(option_label, self._create_control_toggle(device, zone, option))
+        elif isinstance(option, Backend.MultipleChoiceOption):
+            return self.widgets.create_row_widget(option.label, self._create_control_select(option))
 
-        elif option["type"] == "multichoice":
-            return self.widgets.create_row_widget(option_label, self._create_control_select(device, zone, option))
+        # FIXME: DialogOption deprecated. Use button instead.
+        elif isinstance(option, Backend.DialogOption):
+            return self.widgets.create_row_widget(option.label, self._create_control_dialog(option))
 
-        elif option["type"] == "label":
-            return self.widgets.create_row_widget(option_label, self._create_control_label(device, zone, option))
+        elif isinstance(option, Backend.ButtonOption):
+            return self.widgets.create_row_widget(option.label, self._create_control_button(option))
 
-        elif option["type"] == "dialog":
-            return self.widgets.create_row_widget(option_label, self._create_control_dialog(device, zone, option))
-
-        elif option["type"] == "button":
-            return self.widgets.create_row_widget(option_label, self._create_control_button(device, zone, option))
-
-    def _create_control_slider(self, device, zone, option):
+    def _create_control_slider(self, option):
         """
-        Prepares and returns a slider for changing options.
+        Returns a list of controls that make up a slider for changing a variable option.
         """
         slider = QSlider(Qt.Horizontal)
-        slider.setValue(option["value"])
-        slider.setMinimum(option["min"])
-        slider.setMaximum(option["max"])
-        slider.setSingleStep(option["step"])
-        slider.setPageStep(option["step"] * 2)
+        slider.setValue(option.value)
+        slider.setMinimum(option.min)
+        slider.setMaximum(option.max)
+        slider.setSingleStep(option.step)
+        slider.setPageStep(option.step * 2)
         slider.setMaximumWidth(150)
 
-        # Qt bug: Ticks won't appear with stylesheet
+        # BUG: Qt: Ticks don't appear with stylesheet
         slider.setTickPosition(QSlider.TicksBelow)
-        slider.setTickInterval(int(option["max"] / 10))
+        slider.setTickInterval(int(option.max / 10))
 
         label = QLabel()
-        label.setText(str(option["value"]) + option["suffix"])
+        suffix = option.suffix if option.value == 1 else option.suffix_plural
+        label.setText(str(option.value) + suffix)
 
         # Change label while sliding
         def _slider_moved(value):
-            label.setText(str(value) + option["suffix"])
+            suffix = option.suffix if value == 1 else option.suffix_plural
+            label.setText(str(value) + suffix)
         slider.sliderMoved.connect(_slider_moved)
         slider.valueChanged.connect(_slider_moved)
 
         # Send request once dropped
         def _slider_dropped():
-            self._event_set_option(device, zone, option["id"], slider.value())
+            self.dbg.stdout(f"{self.current_device.name}: Applying option {option.uid} with value: {str(slider.value())}", self.dbg.action, 1)
+            # TODO: Error checking with _event_check_response
+            option.apply(slider.value())
         slider.sliderReleased.connect(_slider_dropped)
         slider.valueChanged.connect(_slider_dropped)
 
         return [slider, label]
 
-    def _create_control_toggle(self, device, zone, option):
+    def _create_control_toggle(self, option):
         """
-        Prepares and returns a toggle for changing options.
+        Returns a list of controls that make up a toggle for a binary choices.
         """
-        checkbox = QCheckBox(self._("Enabled"))
+        checkbox = QCheckBox(option.label_toggle)
 
-        if option["active"]:
-            checkbox.setChecked(option["active"])
+        if option.active:
+            checkbox.setChecked(option.active)
 
         def _state_changed():
-            self._event_set_option(device, zone, option["id"], checkbox.isChecked())
+            onoff = "on" if checkbox.isChecked() else "off"
+            self.dbg.stdout(f"{self.current_device.name}: Turning {onoff} option {option.uid}", self.dbg.action, 1)
+            # TODO: Error checking with _event_check_response
+            option.apply(checkbox.isChecked())
 
         checkbox.stateChanged.connect(_state_changed)
         return [checkbox]
 
-    def _create_control_select(self, device, zone, option):
+    def _create_control_select(self, option):
         """
-        Prepares and returns a dropdown for changing options.
+        Returns a list of controls that make up a multiple choice dropdown.
         """
-        params = option["parameters"]
-        current_index = 0
-
+        params = option.parameters
+        selected_index = 0
         combo = QComboBox()
         combo.setIconSize(QSize(16, 16))
-        for i, param in enumerate(params):
-            icon_path = common.get_icon("params", param["id"])
-            combo.addItem(param["label"])
 
-            if icon_path:
-                combo.setItemIcon(combo.count() - 1, QIcon(icon_path))
+        for index, param in enumerate(params):
+            combo.addItem(param.label)
+            if param.icon:
+                combo.setItemIcon(combo.count() - 1, QIcon(param.icon))
+            if param.active:
+                selected_index = index
 
-            if param["active"] is True:
-                current_index = i
-            i = i + 1
-
-        combo.setCurrentIndex(current_index)
+        combo.setCurrentIndex(selected_index)
 
         def _current_index_changed(index):
             param = params[index]
-            self._event_set_option(device, zone, option["id"], param["data"])
+            self.dbg.stdout(f"{self.current_device.name}: Setting option {option.uid} to {param.data}", self.dbg.action, 1)
+            # TODO: Error checking with _event_check_response
+            option.apply(param.data)
 
         combo.currentIndexChanged.connect(_current_index_changed)
         return [combo]
 
-    def _create_control_label(self, device, zone, option):
-        """
-        Prepares and returns a control that just shows a string.
-        """
-        label = QLabel()
-        label.setText(option["message"])
-        return [label]
+    def _create_control_dialog(self, option):
+        print("fixme:_create_control_dialog")
+        return []
+        #def _open_dialog():
+            #dialog_title = middleman.BACKEND_NAMES[device["backend"]]
+            #self.widgets.open_dialog(self.widgets.dialog_generic, dialog_title, option["message"])
 
-    def _create_control_dialog(self, device, zone, option):
-        """
-        Prepares and returns a control that shows a message when clicking the button.
-        """
-        def _open_dialog():
-            dialog_title = middleman.BACKEND_ID_NAMES[device["backend"]]
-            self.widgets.open_dialog(self.widgets.dialog_generic, dialog_title, option["message"])
+        #button = QPushButton(option["button_text"])
+        #button.clicked.connect(_open_dialog)
+        #return [self.create_widget_wrapper_for_control([button])]
 
-        button = QPushButton(option["button_text"])
-        button.clicked.connect(_open_dialog)
-        return [self.create_widget_wrapper_for_control([button])]
-
-    def _create_control_button(self, device, zone, option):
+    def _create_control_button(self, option):
         """
-        Prepares and returns a button for the user to perform a one way action.
+        Returns a list of controls for the user to perform one click actions.
         """
         def _button_clicked():
-            self._event_set_option(device, zone, option["id"], None)
+            self.dbg.stdout(f"{self.current_device.name}: Clicking option {option.uid}", self.dbg.action, 1)
+            # TODO: Error checking with _event_check_response
+            option.apply()
 
-        button = QPushButton(option["button_text"])
+        button = QPushButton(option.button_label)
         button.clicked.connect(_button_clicked)
         return [self.create_widget_wrapper_for_control([button])]
 
-    def _create_effect_controls(self, zone, effect_options):
+    def _create_effect_controls(self, zone, options):
         """
-        Groups all options with the "effect" type and present them as larger buttons.
+        Return a row widget containing the specified options. These are grouped
+        together and will be presented as larger buttons.
         """
         widgets = []
         self.btn_grps[zone] = QButtonGroup()
 
-        for effect in effect_options:
-            fx_id = effect["id"]
-            fx_params = effect["parameters"]
-            fx_string = effect["label"]
-            fx_active = effect["active"]
-            fx_colours = effect["colours"]
-
+        for option in options:
             button = QToolButton()
-            button.setText(fx_string)
+            button.setText(option.label)
             button.setCheckable(True)
             button.setIconSize(QSize(40, 40))
             button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-            button.setIcon(QIcon(common.get_icon("options", fx_id)))
+            if option.icon:
+                button.setIcon(QIcon(option.icon))
             button.setMinimumHeight(70)
             button.setMinimumWidth(105)
-            button.effect = effect
-            button.zone = zone
+            button.option = option
             self.btn_grps[zone].addButton(button)
 
-            if fx_active:
+            if option.active:
                 button.setChecked(True)
 
             widgets.append(button)
 
         def _clicked_effect_button(button):
-            effect = button.effect
-            zone = button.zone
-            param_count = len(effect["parameters"])
-            option_id = effect["id"]
-            option_data = None
-            colour_hex = []
+            option = button.option
+            param = self.middleman.get_default_parameter(option)
+            self.middleman.stop_software_effect(self.current_device.serial)
 
-            # Use saved colour, if available for this effect
-            if len(effect["parameters"]) == 0:
-                colour_hex = effect["colours"]
+            # TODO: Error checking with _event_check_response
+            if param:
+                self.dbg.stdout(f"{self.current_device.name}: Setting effect {option.uid} (with parameter {str(param.data)}')", self.dbg.action, 1)
+                option.apply(param.data)
+            else:
+                self.dbg.stdout(f"{self.current_device.name}: Setting effect {option.uid} (no parameters)", self.dbg.action, 1)
+                option.apply()
 
-            # For effects with parameters, the second one will be used as the first may be 'random' or 'off'.
-            if param_count > 0:
-                if param_count == 1:
-                    param = effect["parameters"][0]
-                elif param_count >= 2:
-                    param = effect["parameters"][1]
-
-                option_data = param["data"]
-                colour_hex = param["colours"]
-
-            self.dbg.stdout("Setting effect {0} (data: {1}) on {2} device {3} (zone: {4}, colours: {5})".format(option_id, str(option_data), self.current_backend, self.current_uid, zone, str(colour_hex)), self.dbg.action, 1)
-            response = self.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, zone, option_id, option_data, colour_hex)
-            self._event_check_response(response)
             self.reload_device()
 
         self.btn_grps[zone].buttonClicked.connect(_clicked_effect_button)
@@ -498,99 +443,82 @@ class DevicesTab(shared.TabData):
 
         return self.widgets.create_row_widget(self._("Effect"), widgets, wrap=True)
 
-    def _create_effect_parameter_controls(self, zone, effect_id, effect_options):
+    def _create_effect_parameter_controls(self, device, zone, option):
         """
-        Creates a set of radio buttons for changing the current effect's parameter.
+        Returns a list of row widgets that change the active effect's parameters.
         """
-        widgets = []
+        if not option.parameters:
+            return None
 
         def _clicked_param_button():
-            for radio in self.btn_grps["radio_param_" + zone]:
+            for radio in self.btn_grps["radio_param_" + zone.zone_id]:
                 if not radio.isChecked():
                     continue
 
-                self.dbg.stdout("Setting parameter {} for {} on {} device {} (zone: {}, colours: {})".format(radio.option_data, radio.option_id, self.current_backend, self.current_uid, radio.zone, str(radio.colour_hex)), self.dbg.action, 1)
-                self.middleman.set_device_state(self.current_backend, self.current_uid, self.current_serial, radio.zone, radio.option_id, radio.option_data, radio.colour_hex)
+                self.dbg.stdout(f"{device.name}: Setting parameter for '{option.uid}' to '{radio.param.data}'", self.dbg.action, 1)
+
+                # TODO: Error checking with _event_check_response
+                option.apply(radio.param.data)
                 self.reload_device()
 
-        for effect in effect_options:
-            if not effect["id"] == effect_id:
-                continue
+        def _make_button(param):
+            radio = QRadioButton()
+            radio.setText(param.label)
+            radio.clicked.connect(_clicked_param_button)
+            radio.option = option
+            radio.param = param
 
-            for param in effect["parameters"]:
-                label = param["label"]
+            if param.active:
+                radio.setChecked(True)
 
-                radio = QRadioButton()
-                radio.setText(label)
-                radio.clicked.connect(_clicked_param_button)
+            if param.icon:
+                radio.setIcon(QIcon(param.icon))
+                radio.setIconSize(QSize(22, 22))
+            return radio
 
-                radio.option_id = effect_id
-                radio.option_data = param["data"]
-                radio.zone = zone
-                radio.colour_hex = param["colours"]
+        widgets = []
+        for param in option.parameters:
+            widgets.append(_make_button(param))
 
-                if param["active"]:
-                    radio.setChecked(True)
-
-                icon = common.get_icon("params", param["id"])
-                if icon:
-                    radio.setIcon(QIcon(icon))
-                    radio.setIconSize(QSize(22, 22))
-
-                widgets.append(radio)
-
-        if not widgets:
-            return None
-
-        self.btn_grps["radio_param_" + zone] = widgets
+        self.btn_grps["radio_param_" + zone.zone_id] = widgets
         return self.widgets.create_row_widget(self._("Effect Mode"), widgets, vertical=True)
 
-    def _create_colour_control(self, colour_no, colour_hex, option_id, option_data, zone, monochromatic):
+    def _create_colour_control(self, device, zone, pos, colours):
         """
-        Creates a row control for setting the current colour for the specified
-        option (effect)
-
-        colour_no is 0-based. 0 = Primary, 1 = Secondary, etc
+        Returns a row widget to set a colour at a specified position for the active option/parameter.
+        Position is 0-based, so 0 = primary, 1 = secondary, etc
         """
         pretty_labels = {
             0: self._("Primary Colour"),
             1: self._("Secondary Colour"),
-            2: self._("Tertiary Colour")
+            2: self._("Tertiary Colour"),
         }
-        try:
-            label = pretty_labels[colour_no]
-        except KeyError:
-            label = self._("Colour []").replace("[]", str(colour_no))
 
-        _set_data = {"zone": zone, "colour_no": colour_no}
+        try:
+            label = pretty_labels[pos]
+        except KeyError:
+            label = self._("Colour 4").replace("4", str(pos))
 
         def _set_new_colour(new_hex, data):
-            device = self.middleman.get_device(self.current_backend, self.current_uid)
-            self.dbg.stdout("Setting colour of current effect on {0} device {1} (zone: {2}, colour {3}: {4})".format(device["backend"], device["uid"], data["zone"], str(data["colour_no"]), new_hex), self.dbg.action, 1)
-            response = self.middleman.set_device_colour(device, data["zone"], new_hex, data["colour_no"])
-            self._event_check_response(response)
+            self.dbg.stdout(f"{self.current_device.name}: Setting {label.lower()} to {new_hex} for active option in zone {zone.zone_id}", self.dbg.action, 1)
+            # TODO: Error checking with _event_check_response
+            self.middleman.set_colour_for_active_effect_zone(zone, new_hex, pos)
 
-        return self.widgets.create_row_widget(label, [self.widgets.create_colour_control(colour_hex, _set_new_colour, _set_data, self._("Change []").replace("[]", label), monochromatic)])
+        _set_data = {"zone": zone, "colour_no": pos}
 
-    def _event_set_option(self, device, zone, option_id, option_data, colour_hex=[]):
-        """
-        After clicking or changing an option, send this change to the backend.
-        """
-        backend = device["backend"]
-        uid = device["uid"]
-        serial = device["serial"]
-        self.dbg.stdout("Setting option '{0}' on {1} ({2} device {3})".format(option_id, device["name"], backend, uid), self.dbg.action, 1)
-        self.dbg.stdout("  -> Zone: {0} | Param: {1} | Colours: {2}".format(zone, option_data, colour_hex), self.dbg.action, 1)
-        response = self.middleman.set_device_state(backend, uid, serial, zone, option_id, option_data, colour_hex)
-        self._event_check_response(response)
+        colour_widget = self.widgets.create_colour_control(colours[pos], _set_new_colour, _set_data, self._("Change []").replace("[]", label), device.monochromatic)
+        return self.widgets.create_row_widget(label, [colour_widget])
 
     def _event_check_response(self, response):
         """
         Checks the result of the request to the backend. Upon failure, inform the user.
         """
+        print("stub:_event_check_response")
+        return True
+
         dbg = self.dbg
         _ = self._
-        backend_name = middleman.BACKEND_ID_NAMES[self.current_backend]
+        backend_name = self.middleman.get_backend(self.current_device.backend_id).name
 
         if response == True:
             dbg.stdout("Request successful", dbg.success, 1)
@@ -807,7 +735,7 @@ class DevicesTab(shared.TabData):
         _ = self._
 
         for backend_id in self.middleman.import_errors.keys():
-            backend_name = middleman.BACKEND_ID_NAMES[backend_id]
+            backend_name = middleman.BACKEND_NAMES[backend_id]
             exception = self.middleman.import_errors[backend_id].strip()
             dbg.stdout("\n{0}\n------------------------------\n{1}\n".format(backend_name, exception), dbg.error)
             self.widgets.open_dialog(self.widgets.dialog_generic,
@@ -816,20 +744,20 @@ class DevicesTab(shared.TabData):
                                     info_text=_("The last line of the exception was:") + "\n" + exception.split("\n")[-1],
                                     details=exception)
 
-    def open_unknown_device(self, backend):
+    def open_unknown_device(self, unknown_device):
         """
         Show guidance on a device that could be controlled, but isn't possible right now.
         """
         layout = self.Contents.layout()
         shared.clear_layout(layout)
 
-        backend_name = middleman.BACKEND_ID_NAMES[backend]
+        backend_name = middleman.BACKEND_NAMES[unknown_device.backend_id]
 
         def _restart_backend():
             backend_to_restart_fn = {
                 "openrazer": self.appdata.menubar.openrazer.restart_daemon
             }
-            backend_to_restart_fn[backend]()
+            backend_to_restart_fn[unknown_device.backend_id]()
 
         self.widgets.populate_empty_state(layout,
             common.get_icon("empty", "nodevice"),
@@ -883,17 +811,15 @@ class DevicesTab(shared.TabData):
 
     def open_apply_to_all(self):
         """
-        Show options for setting options that apply to all connected devices, where
-        the option is supported.
+        Populate a list of common options to expressly set that work for all connected devices.
         """
         self.set_cursor_busy()
         layout = self.Contents.layout()
         shared.clear_layout(layout)
 
-        bulk = common.get_bulk_apply_options(self._, self.middleman.get_device_all())
+        print("stub:open_apply_to_all()")
+        return
 
-        effects = bulk["effects"]
-        brightnesses = bulk["brightness"]
 
         # For creating controls
         self.btn_grps["all"] = QButtonGroup()
@@ -940,41 +866,10 @@ class DevicesTab(shared.TabData):
 
         self.btn_grps["all"].buttonClicked.connect(_apply_button_clicked)
 
-        # Brightness
-        if len(brightnesses) > 0:
-            widgets = []
-            for brightness in brightnesses:
-                option_id = brightness["id"]
-                option_data = brightness["data"]
-                label = brightness["label"]
-                icon = common.get_icon("options", str(option_data))
-                widgets.append(_create_button(label, icon, option_id, option_data))
 
-            add_to_page(self._("Brightness"), widgets)
 
-        # Options
-        if len(effects) > 0:
-            widgets = []
-            for option in effects:
-                option_id = option["id"]
-                option_data = option["data"]
-                required_colours = option["required_colours"]
-                label = option["label"]
-                icon = common.get_icon("options", str(option_id))
-                widgets.append(_create_button(label, icon, option_id, option_data, option_colours=required_colours))
 
-            add_to_page(self._("Effects"), widgets)
 
-        # Colours
-        if len(effects) > 0:
-            widgets = []
-            for colour in pref.load_file(self.paths.colours):
-                label = colour["name"]
-                data = colour["hex"]
-                icon = common.generate_colour_bitmap(self.dbg, data, 40)
-                widgets.append(_create_button(label, icon, None, None, colour=data))
-
-            add_to_page(self._("Colours"), widgets)
 
         layout.addStretch()
         self.set_cursor_normal()
@@ -1019,116 +914,126 @@ class DevicesTab(shared.TabData):
                         item.setIcon(1, QIcon(common.get_icon("general", "success")))
                     else:
                         item.setText(1, _("No"))
-                        item.setIcon(1, QIcon(common.get_icon("general", "negative")))
                 if disabled:
                     item.setDisabled(True)
                 if icon:
                     item.setIcon(1 if value != "" else 0, QIcon(icon))
                 return item
 
+            backend = self.middleman.get_backend(device.backend_id)
+
             hw = mkitem(_("Hardware"))
-            hw.addChild(mkitem(_("Name"), device["name"]))
-            hw.addChild(mkitem(_("Backend"), middleman.BACKEND_ID_NAMES[device["backend"]], common.get_icon("logo", device["backend"])))
-            hw.addChild(mkitem(_("Internal Device ID"), str(device["uid"])))
-            if device["vid"]:
-                hw.addChild(mkitem("VID:PID", "{0}:{1}".format(device["vid"], device["pid"])))
+            hw.addChild(mkitem(_("Name"), device.name))
+            hw.addChild(mkitem(_("Backend"), backend.name, os.path.join(common.paths.data_dir, "img", "logo", backend.logo)))
+            if device.vid:
+                hw.addChild(mkitem("VID:PID", "{0}:{1}".format(device.vid, device.pid)))
             else:
                 hw.addChild(mkitem("VID:PID", None))
-            hw.addChild(mkitem(_("Form Factor"), device["form_factor"]["label"], device["form_factor"]["icon"]))
-            hw.addChild(mkitem(_("Serial"), device["serial"]))
-            hw.addChild(mkitem(_("Image"), device["real_image"], device["real_image"]))
-            if device["firmware_version"]:
-                hw.addChild(mkitem(_("Firmware Version"), device["firmware_version"]))
-            if device["keyboard_layout"]:
-                hw.addChild(mkitem(_("Keyboard Layout"), device["keyboard_layout"]))
+            hw.addChild(mkitem(_("Form Factor"), device.form_factor["label"], device.form_factor["icon"]))
+            hw.addChild(mkitem(_("Serial"), device.serial))
+            if device.real_image:
+                hw.addChild(mkitem(_("Image"), device.real_image, device.real_image))
+            else:
+                real_image = mkitem(_("Image"), _("(Unspecified)"))
+                real_image.setDisabled(True)
+                hw.addChild(real_image)
+            if device.firmware_version:
+                hw.addChild(mkitem(_("Firmware Version"), device.firmware_version))
+            if device.keyboard_layout:
+                hw.addChild(mkitem(_("Keyboard Layout"), device.keyboard_layout))
             tree.addTopLevelItem(hw)
 
-            # Custom Effects
+            # Software Effects
             cfx = mkitem(_("Custom Effects"))
-            cfx.addChild(mkitem(_("Supported"), device["matrix"], disabled=True if not device["matrix"] else False))
-            if device["matrix"]:
-                dimensions = common.get_plural(device["matrix_rows"], _("1 row"), _("2 rows").replace("2", str(device["matrix_rows"])))
-                dimensions += ", " + common.get_plural(device["matrix_cols"], _("1 column"), _("2 columns").replace("2", str(device["matrix_cols"])))
-                cfx.addChild(mkitem(_("Matrix Dimensions"), dimensions, common.get_icon("general", "matrix")))
+            fx_supported = True if device.matrix else False
+            cfx.addChild(mkitem(_("Supported"), fx_supported, disabled=not fx_supported))
+            if device.matrix:
                 btn_test_matrix.setDisabled(False)
+                dimensions = common.get_plural(device.matrix.rows, _("1 row"), _("2 rows").replace("2", str(device.matrix.rows)))
+                dimensions += ", " + common.get_plural(device.matrix.cols, _("1 column"), _("2 columns").replace("2", str(device.matrix.cols)))
+                cfx.addChild(mkitem(_("Matrix Dimensions"), dimensions, common.get_icon("general", "matrix")))
+
+                if device.monochromatic:
+                    cfx.addChild(mkitem(_("Colour Range"), _("256 colours"), common.get_icon("params", "triple")))
+                else:
+                    cfx.addChild(mkitem(_("Colour Range"), _("16 million colours"), common.get_icon("tray", "ring")))
             tree.addTopLevelItem(cfx)
 
             # DPI
-            if device["dpi_x"]:
+            if device.dpi:
                 dpi = mkitem(_("DPI"))
-                dpi.addChild(mkitem("DPI X", device["dpi_x"]))
-                if device["dpi_y"] > 0:
-                    dpi.addChild(mkitem("DPI Y", device["dpi_y"]))
-                dpi.addChild(mkitem(_("Default Stages"), ", ".join(map(str, device["dpi_stages"]))))
+                dpi.addChild(mkitem("Current DPI", f"({device.dpi.x}, {device.dpi.y})"))
+                dpi.addChild(mkitem(_("Default Stages"), ", ".join(map(str, device.dpi.stages))))
                 if self.appdata.preferences["custom"]["use_dpi_stages"]:
                     custom_stages = []
                     for i in range(1, 6):
                         custom_stages.append(self.appdata.preferences["custom"]["dpi_stage_" + str(i)])
                     dpi.addChild(mkitem(_("User DPI Stages"), ", ".join(map(str, custom_stages))))
                 else:
-                    dpi.addChild(mkitem(_("User DPI Stages"), self._("(Not used)"), disabled=True))
-                dpi.addChild(mkitem(_("Minimum"), device["dpi_min"]))
-                dpi.addChild(mkitem(_("Maximum"), device["dpi_max"]))
+                    dpi.addChild(mkitem(_("User DPI Stages"), self._("(Not set)"), disabled=True))
+                dpi.addChild(mkitem(_("Minimum"), device.dpi.min))
+                dpi.addChild(mkitem(_("Maximum"), device.dpi.max))
                 tree.addTopLevelItem(dpi)
 
             # Summary
-            summary = mkitem(_("Summary"))
-            for state in device["summary"]:
-                summary.addChild(mkitem(state["label"], "", state["icon"]))
-            tree.addTopLevelItem(summary)
+            # TODO: Summary needs reimplementing
+            #summary = mkitem(_("Summary"))
+            #for state in device.summary:
+                #summary.addChild(mkitem(state["label"], "", state["icon"]))
+            #tree.addTopLevelItem(summary)
+
+            def _get_colour_item(option, colours_required):
+                item = mkitem(_("Colours"), str(colours_required))
+                for index in range(0, colours_required):
+                    colour_hex = option.colours[index]
+                    item.addChild(mkitem(_("Input 0").replace("0", str(index + 1)), colour_hex, common.generate_colour_bitmap(self.dbg, colour_hex)))
+                return item
 
             # Zones
             zones = mkitem(_("Zones"))
             exclude_expand = []
-            for zone in device["zone_options"].keys():
-                label = device["zone_labels"][zone]
-                icon = device["zone_icons"][zone]
+            for zone in device.zones:
+                zone_item = mkitem(zone.label, "", zone.icon)
 
-                zone_item = mkitem(label, "", icon)
-
-                for option in device["zone_options"][zone]:
-                    option_icon = common.get_icon("options", option["id"])
-                    option_item = mkitem(option["label"], "", option_icon)
-                    option_item.addChild(mkitem(_("Internal ID"), option["id"]))
-                    option_item.addChild(mkitem(_("Type"), option["type"]))
+                for option in zone.options:
+                    option_item = mkitem(option.label, "", option.icon)
                     exclude_expand.append(option_item)
 
-                    try:
-                        if len(option["parameters"]) > 0:
-                            param_parent = mkitem(_("Parameters"))
-                            for param in option["parameters"]:
-                                param_item = mkitem(param["label"], "", common.get_icon("params", param["id"]))
-                                param_item.addChild(mkitem(_("Internal ID"), param["id"]))
-                                param_item.addChild(mkitem(_("Internal Data"), param["data"]))
-                                param_item.addChild(mkitem(_("Active"), param["active"]))
-                                if param["colours"]:
-                                    for colour_no, colour_hex in enumerate(option["colours"]):
-                                        param_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.dbg, colour_hex)))
-                                param_parent.addChild(param_item)
-                            option_item.addChild(param_parent)
-                    except KeyError:
-                        # N/A: Parameters only for effect/multichoice
-                        pass
+                    option_type = "Unknown"
+                    if isinstance(option, Backend.EffectOption):
+                        option_type = _("Effect")
+                    elif isinstance(option, Backend.ToggleOption):
+                        option_type = _("Toggle")
+                    elif isinstance(option, Backend.SliderOption):
+                        option_type = _("Slider")
+                    elif isinstance(option, Backend.MultipleChoiceOption):
+                        option_type = _("Dropdown")
+                    elif isinstance(option, Backend.ButtonOption):
+                        option_type = _("Button")
 
-                    try:
-                        option_item.addChild(mkitem(_("Active"), option["active"]))
-                    except KeyError:
-                        # N/A: Only for effect/toggles
-                        pass
+                    option_item.addChild(mkitem(_("Identifier"), option.uid))
+                    option_item.addChild(mkitem(_("Type"), option_type))
+                    option_item.addChild(mkitem(_("Active"), option.active))
 
-                    try:
-                        option_item.addChild(mkitem(_("Current Value"), str(option["value"]) + option["suffix"]))
-                        option_item.addChild(mkitem(_("Minimum"), option["min"]))
-                        option_item.addChild(mkitem(_("Maximum"), option["max"]))
-                        option_item.addChild(mkitem(_("Interval"), option["step"]))
-                    except KeyError:
-                        # N/A: Only for slider
-                        pass
+                    if option.parameters:
+                        param_parent = mkitem(_("Parameters"))
+                        for param in option.parameters:
+                            param_item = mkitem(param.label, "", param.icon)
+                            param_item.addChild(mkitem(_("Raw Data"), param.data))
+                            param_item.addChild(mkitem(_("Active"), param.active))
+                            if param.colours_required:
+                                param_item.addChild(_get_colour_item(option, param.colours_required))
+                            param_parent.addChild(param_item)
+                        option_item.addChild(param_parent)
 
-                    # Colours (entire option, no parameters)
-                    if option["colours"] and not option["parameters"]:
-                        for colour_no, colour_hex in enumerate(option["colours"]):
-                            option_item.addChild(mkitem(_("Colour Input []").replace("[]", str(colour_no)), colour_hex, common.generate_colour_bitmap(self.dbg, colour_hex)))
+                    if isinstance(option, Backend.SliderOption):
+                        option_item.addChild(mkitem(_("Current Value"), f"{str(option.value)} {option.suffix}"))
+                        option_item.addChild(mkitem(_("Minimum"), option.min))
+                        option_item.addChild(mkitem(_("Maximum"), option.max))
+                        option_item.addChild(mkitem(_("Interval"), option.step))
+
+                    if option.colours_required:
+                        option_item.addChild(_get_colour_item(option, option.colours_required))
 
                     zone_item.addChild(option_item)
                     zone_item.setExpanded(False)
@@ -1139,32 +1044,25 @@ class DevicesTab(shared.TabData):
             for item in exclude_expand:
                 item.setExpanded(False)
 
-            dialog.setWindowTitle("{0} - {1}".format(_("Device Information"), device["name"]))
+            dialog.setWindowTitle("{0} - {1}".format(_("Device Information"), device.name))
             self.set_cursor_normal()
 
         def _test_matrix():
             dialog.accept()
-            self._test_device_matrix()
+            self._test_device_matrix(device)
 
-        # Gather data, and exit if an error occurs
-        device = self.middleman.get_device(self.current_backend, self.current_uid)
-        self._event_check_response(device)
-
-        if device in [str, None, False]:
-            return
-
+        device = self.current_device
         btn_close.clicked.connect(_close)
         btn_test_matrix.clicked.connect(_test_matrix)
         dialog.open()
         _populate_tree()
 
-    def _test_device_matrix(self):
+    def _test_device_matrix(self, device):
         """
         Opens a dialogue box to allow the user to test the individual key
         lighting for their device.
         """
         _ = self._
-        fx = self.middleman.get_device_object(self.current_backend, self.current_uid)
 
         # Dialog Controls
         self.dialog = shared.get_ui_widget(self.appdata, "inspect-matrix", QDialog)
@@ -1178,17 +1076,17 @@ class DevicesTab(shared.TabData):
             btn_close.setIcon(self.widgets.get_icon_qt("general", "close"))
 
         def _close_test():
-            # WARNING: Hardcoded 'main' zone for matrix logic
-            self.middleman.replay_active_effect(self.current_backend, self.current_uid, "main")
+            self.middleman.replay_active_effect(device)
             self.dialog.accept()
 
         # Populate table
-        for x in range(0, fx.cols):
+        for x in range(0, device.matrix.cols):
             table.insertColumn(x)
             header = QTableWidgetItem()
             header.setText(str(x))
             table.setHorizontalHeaderItem(x, header)
-        for y in range(0, fx.rows):
+
+        for y in range(0, device.matrix.rows):
             table.insertRow(y)
             header = QTableWidgetItem()
             header.setText(str(y))
@@ -1196,9 +1094,9 @@ class DevicesTab(shared.TabData):
 
         def _set_pos():
             indexes = table.selectedIndexes()
-            fx.clear()
+            device.matrix.clear()
             for index in indexes:
-                fx.set(index.column(), index.row(), 255, 255, 255)
+                device.matrix.set(index.column(), index.row(), 255, 255, 255)
             if len(indexes) == 0:
                 cur_pos.setText("")
             elif len(indexes) == 1:
@@ -1207,7 +1105,7 @@ class DevicesTab(shared.TabData):
                 cur_pos.setText(_("Coordinate: X,Y").replace("X", str(x)).replace("Y", str(y)))
             elif len(indexes) > 1:
                 cur_pos.setText(_("Coordinate: (Multiple)"))
-            fx.draw()
+            device.matrix.draw()
 
         # Connect signals and set focus
         btn_close.clicked.connect(_close_test)
@@ -1216,7 +1114,7 @@ class DevicesTab(shared.TabData):
         table.setCurrentCell(0, 0)
         self.dialog.adjustSize()
         self.dialog.resize(QSize(self.dialog.width() + 5, self.dialog.height()))
-        self.dialog.setWindowTitle(self._("Inspect Matrix") + " - " + fx.name)
+        self.dialog.setWindowTitle(self._("Inspect Matrix") + " - " + device.name)
         self.dialog.open()
 
 
@@ -1233,9 +1131,8 @@ class SpecialControls(shared.TabData):
         """
         Creates a sophicated control for setting the DPI X/Y values.
 
-        If a device has unusual requirements or only works on single axis,
-        this control shouldn't be used (unspecify "dpi_x") and have the backend
-        module define an option to handle the DPI setting.
+        If a device has fixed requirements, Backend.DeviceItem.DPI shouldn't be used
+        and instead be implemented as an MultipleChoiceOption or SliderOption.
         """
         dpi_widget = shared.get_ui_widget(self.appdata, "dpi-control", QWidget)
 
@@ -1259,17 +1156,17 @@ class SpecialControls(shared.TabData):
 
         # Set up slider parameters and initial values
         for slider in [slider_x, slider_y]:
-            slider.setMinimum(device["dpi_min"])
-            slider.setMaximum(device["dpi_max"])
+            slider.setMinimum(device.dpi.min)
+            slider.setMaximum(device.dpi.max)
             slider.setSingleStep(100)
             slider.setPageStep(200)
 
-        slider_x.setValue(device["dpi_x"])
-        slider_y.setValue(device["dpi_y"])
-        value_x.setText(str(device["dpi_x"]))
-        value_y.setText(str(device["dpi_y"]))
+        slider_x.setValue(device.dpi.x)
+        slider_y.setValue(device.dpi.y)
+        value_x.setText(str(device.dpi.x))
+        value_y.setText(str(device.dpi.y))
 
-        if int(device["dpi_x"]) == int(device["dpi_y"]):
+        if int(device.dpi.x) == int(device.dpi.y):
             slider_lock.setChecked(True)
 
         # Update grid when moving sliders
@@ -1315,10 +1212,9 @@ class SpecialControls(shared.TabData):
 
         # Send request once dropped
         def _slider_dropped():
-            self.dbg.stdout("Setting DPI to {0}, {1}".format(slider_x.value(), slider_y.value()), self.dbg.action, 1)
-            tab_devices = self.appdata.tab_devices
-            response = self.middleman.set_device_state(tab_devices.current_backend, tab_devices.current_uid, tab_devices.current_serial, "", "dpi", [slider_x.value(), slider_y.value()], [])
-            tab_devices._event_check_response(response)
+            self.dbg.stdout(f"${device.name}: Setting DPI to {0}, {1}".format(slider_x.value(), slider_y.value()), self.dbg.action, 1)
+            # TODO: Error checking with _event_check_response
+            device.dpi.set(slider_x.value(), slider_y.value())
 
         # TODO: In future, only update after 'mouse drop' or scroll release.
         # Currently it's difficult under stock QSlider. Dragging with mouse only isn't great.
@@ -1331,7 +1227,7 @@ class SpecialControls(shared.TabData):
         stage_widget = QWidget()
         stage_widget.setLayout(QHBoxLayout())
         stage_widget.layout().setContentsMargins(0, 0, 0, 0)
-        stages = device["dpi_stages"]
+        stages = device.dpi.stages
 
         if self.appdata.preferences["custom"]["use_dpi_stages"]:
             stages = []
@@ -1349,7 +1245,7 @@ class SpecialControls(shared.TabData):
         for index, value in enumerate(stages):
             button = QPushButton()
             button.setCheckable(True)
-            if device["dpi_x"] == device["dpi_y"] == value:
+            if device.dpi.x == device.dpi.y == value:
                 button.setChecked(True)
             button.setText(str(value))
             button.dpi_value = value
@@ -1370,7 +1266,6 @@ class SpecialControls(shared.TabData):
         edit_btn.setIcon(self.widgets.get_icon_qt("general", "edit"))
         edit_btn.clicked.connect(_edit_dpi_stages)
         stage_widget.layout().addWidget(edit_btn)
-
         stage_widget.layout().addStretch()
 
         _refresh_grid_size()

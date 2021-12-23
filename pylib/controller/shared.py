@@ -273,7 +273,8 @@ class TabData(object):
 
     def create_widget_wrapper_for_control(self, widgets=[]):
         """
-        Returns a 'wrapper' widget to neatly arrange widgets for a row.
+        Returns a widget surrounding the input list of elements, so they
+        are neatly arranged for display on a row.
         """
         widget = QWidget()
         layout = QHBoxLayout()

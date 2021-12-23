@@ -497,19 +497,19 @@ class ScriptedEffectHandler(object):
 
     def is_device_compatible(self, device):
         """
-        Reads a get_device() object or item from get_device_list() and returns
-        a boolean to indicate whether it is supported.
+        Reads a Backend.DeviceItem() and returns a boolean to indicate whether
+        it is supported.
         """
         # Effect isn't restricted to specific device form factors
         if not self.data["designed_for"]:
             return True
 
         # Effect 'certifies' a specific device
-        if device["name"] in self.data["optimised_for"]:
+        if device.name in self.data["optimised_for"]:
             return True
 
         # Effect is designed to run on this form factor
-        if device["form_factor"]["id"] in self.data["designed_for"]:
+        if device.form_factor["id"] in self.data["designed_for"]:
             return True
 
         return False

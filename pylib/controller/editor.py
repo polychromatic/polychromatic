@@ -110,7 +110,7 @@ class VisualEffectEditor(shared.TabData):
         # Device (live preview)
         self.live_preview = self.appdata.preferences["editor"]["live_preview"]
         self.device = None
-        self.device_object = None
+        self.matrix = None
         self.init_device_preview()
 
         # Set up webview paths
@@ -661,10 +661,11 @@ class VisualEffectEditor(shared.TabData):
                                         self._("Live preview has been disabled for this session."))
             return
 
-        self.device_object = self.middleman.get_device_object(self.device["backend"], self.device["uid"])
+        if self.device and self.device.matrix:
+            self.matrix = self.device.matrix
 
         # Inform the user if attempting to use an unsupported device
-        if self.device_object == None:
+        if self.device and not self.matrix:
             self.dbg.stdout("Device not supported! No preview.", self.dbg.error, 1)
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      self._("File Error"),
@@ -673,20 +674,8 @@ class VisualEffectEditor(shared.TabData):
             self.device = None
             return
 
-        # Inform user if there's a problem initialising the device object
-        if type(self.device_object) == str:
-            self.dbg.stdout("Device error! No preview.", self.dbg.error, 1)
-            self.widgets.open_dialog(self.widgets.dialog_error,
-                                     self._("Backend Error"),
-                                     self._("An error occurred while initialising '[]' for live preview.").replace("[]", device_name),
-                                     self._("Live preview has been disabled for this session."),
-                                     details=self.device_object)
-            self.device = None
-            self.device_object = None
-            return
-
         # Stop any other effects running on the hardware
-        serial = self.device["serial"]
+        serial = self.device.serial
         state = procpid.DeviceSoftwareState(serial)
         process = procpid.ProcessManager(serial)
         if state.get_effect() or process.is_another_instance_is_running():
@@ -834,8 +823,8 @@ class VisualEffectEditor(shared.TabData):
         # If live preview was active, restore original state
         if self.live_preview and self.device:
             self.dbg.stdout("Restoring original device state...", self.dbg.action, 1)
-            for zone in self.device["zones"]:
-                self.middleman.replay_active_effect(self.device["backend"], self.device["uid"], zone)
+            for zone in self.device.zones:
+                self.middleman.replay_active_effect(self.device)
 
         # Window geometry
         self.appdata.main_window._save_window_position(self.window, "editor")
@@ -1094,7 +1083,7 @@ class VisualEffectEditor(shared.TabData):
 
         # Disable live preview for session
         self.device = None
-        self.device_object = None
+        self.matrix = None
         self.widgets.open_dialog(self.widgets.dialog_error,
                                  self._("Backend Error"),
                                  self._("An error occurred while sending the frame to the hardware."),
@@ -1325,7 +1314,7 @@ class VisualEffectEditor(shared.TabData):
 
         When 'playback_mode' is on, UI controls will not be updated.
         """
-        fx = self.device_object
+        fx = self.matrix
         self.device_renderer.clear()
 
         if fx:
@@ -1651,11 +1640,11 @@ class VisualEffectEditor(shared.TabData):
                                      self._("There isn't a position for (X,Y) for this device. The graphic contains incorrect metadata or is incompatible for use with this device.").replace("(X,Y)", "({0},{1})".format(str(x), str(y))))
             return
 
-        if self.device_object:
+        if self.matrix:
             try:
-                rgb = self.device_object.hex_to_rgb(self.current_colour)
-                self.device_object.set(int(x), int(y), rgb[0], rgb[1], rgb[2])
-                self.device_object.draw()
+                rgb = common.hex_to_rgb(self.current_colour)
+                self.matrix.set(int(x), int(y), rgb[0], rgb[1], rgb[2])
+                self.matrix.draw()
             except Exception as e:
                 _release_click()
                 self._live_preview_failed(e)
@@ -1673,10 +1662,10 @@ class VisualEffectEditor(shared.TabData):
             self.statusbar.showMessage(self._("This LED is empty - nothing to erase here!"), 5000)
             return
 
-        if self.device_object:
+        if self.matrix:
             try:
-                self.device_object.set(int(x), int(y), 0, 0, 0)
-                self.device_object.draw()
+                self.matrix.set(int(x), int(y), 0, 0, 0)
+                self.matrix.draw()
             except Exception as e:
                 self._live_preview_failed(e)
 

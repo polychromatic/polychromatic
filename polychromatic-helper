@@ -20,13 +20,14 @@
 A multipurpose "helper" process that runs in the background to control separate
 operations of Polychromatic, such as:
 
-- Playback of custom effects on specific hardware.
+- Handle the playback of custom "software" effects.
+- Autostart the tray applet and resume previous software settings.
 - Monitor and process automatic rules (triggers).
-- Autostart the tray applet and resume previous settings.
 
 The helper intends to be as lightweight and minimal as possible as there could
 be multple helper processes running simultaneously. It also is designed to be
-'terminated' without fuss as Polychromatic will record PIDs for the processes.
+'terminated' without fuss as Polychromatic will record and validate PIDs to
+track alive or dead processes.
 """
 import argparse
 import glob
@@ -158,7 +159,7 @@ class Bootstrapper(object):
             self.middleman.init()
 
         if len(self.middleman.backends) == 0:
-            dbg.stdout("Timed out waiting for backends to load, or they are non-functional.", dbg.error)
+            dbg.stdout("Timed out waiting for backends to load, or they are unavailable.", dbg.error)
 
         # Determine what to do for devices upon login.
         # TODO: Refactor into functions
@@ -222,33 +223,18 @@ class Bootstrapper(object):
         # Load device
         if serial:
             device = self.middleman.get_device_by_serial(serial)
-
             if not device:
-                dbg.stdout("Device with serial '{0}' not found. Cannot play effect!".format(serial), dbg.error)
+                dbg.stdout(f"{serial}: Device not found. Cannot play effect!", dbg.error)
                 exit(1)
-            elif type(device) == str:
-                dbg.stdout("Failed to load device serial '{0}'. Error details:\n{1}".format(serial, device), dbg.error)
-                exit(1)
-
         else:
             device = self.middleman.get_device_by_name(name)
-
             if not device:
-                dbg.stdout("Device '{0}' not found. Cannot play effect!".format(name), dbg.error)
+                dbg.stdout(f"{name}: Device not found. Cannot play effect!", dbg.error)
                 exit(1)
-            elif type(device) == str:
-                dbg.stdout("Failed to load device '{0}'. Error details:\n{1}".format(name, device), dbg.error)
-                exit(1)
+            serial = device.serial
 
-            serial = device["serial"]
-
-        # Load device object (fx)
-        fx = self.middleman.get_device_object(device["backend"], device["uid"])
-        if not fx:
-            dbg.stdout("Device with serial '{0}' does not support custom effects!".format(serial), dbg.error)
-            exit(1)
-        elif type(fx) == str:
-            dbg.stdout("Failed to get device object for serial '{0}'. Error details:\n{1}".format(serial, fx), dbg.error)
+        if not device.matrix:
+            dbg.stdout(f"{device.name}: Custom effects unsupported!", dbg.error)
             exit(1)
 
         # Prepare objects (PID, state and effect data)
@@ -265,8 +251,8 @@ class Bootstrapper(object):
         process.set_component_pid()
         state.set_effect(effect_name, effect_icon, path)
 
-        dbg.stdout("Starting playback of '{0}' on {1} device {2}".format(effect_name, device["backend"], device["uid"]), dbg.success, 1)
-        playback = EffectPlayback(device, fx, effect_data)
+        dbg.stdout(f"{device.name}: Starting playback: {effect_name}", dbg.success, 1)
+        playback = EffectPlayback(device, device.matrix, effect_data)
 
         if effect_type == effects.TYPE_LAYERED:
             playback.play_layered()
@@ -287,15 +273,15 @@ class EffectPlayback(object):
     - 'Scripted' have control over the fx object for more complex processing.
     - 'Layered' is a computed set of scripted effects processed on a layer basis.
     """
-    def __init__(self, device, fx, data):
+    def __init__(self, device, matrix, data):
         """
         Params:
-            device      middleman.get_device() object
-            fx          middleman.get_device_object() object
+            device      Backend.DeviceItem() object
+            matrix      Backend.DeviceItem.Matrix() object
             data        Contents of the effect's JSON to run.
         """
         self.device = device
-        self.fx = fx
+        self.matrix = matrix
         self.data = data
 
     def play_sequence(self):
@@ -309,19 +295,18 @@ class EffectPlayback(object):
         while True:
             current = current + 1
             frame = frames[current]
-            self.fx.clear()
+            self.matrix.clear()
 
             for x in frame.keys():
                 for y in frame[x].keys():
                     try:
-                        hex_value = frame[str(x)][str(y)]
-                        rgb = self.fx.hex_to_rgb(hex_value)
-                        self.fx.set(int(x), int(y), rgb[0], rgb[1], rgb[2])
+                        rgb = common.hex_to_rgb(frame[str(x)][str(y)])
+                        self.matrix.set(int(x), int(y), rgb[0], rgb[1], rgb[2])
                     except KeyError:
                         # Expected, no data stored for this position
                         continue
 
-            self.fx.draw()
+            self.matrix.draw()
             time.sleep(1 / fps)
 
             if current == total_frames:
@@ -376,7 +361,7 @@ class EffectPlayback(object):
         # Showtime!
         try:
             print("--------------------------------------------------")
-            runtime.play(self.fx, params)
+            runtime.play(self.matrix, params)
         except Exception as e:
             dbg.stdout("\nYikes! This effect has crashed!\n", dbg.error)
             print(common.get_exception_as_string(e))
