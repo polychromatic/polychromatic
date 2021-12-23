@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, \
                             QToolButton, QTabWidget, QAction, QMenu, \
                             QDesktopWidget, QLabel
 
-VERSION = "0.7.2"
+VERSION = "0.7.3"
 
 # Import modules if running relatively.
 if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
