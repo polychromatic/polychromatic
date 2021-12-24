@@ -28,9 +28,9 @@ class Locales(object):
         Returns:
             gettext.translation() bound to an i18n variable.
         """
-        is_pylib = os.path.dirname(__file__).split("/")[-1] == "pylib"
+        is_relative = os.path.exists(os.path.join(os.path.dirname(__file__), "..", "data", "img"))
 
-        if is_pylib:
+        if is_relative:
             # Use relative path (development or standalone build)
             self.locale_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "locale/"))
         else:

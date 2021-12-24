@@ -566,7 +566,7 @@ class Backend(BackendBase):
         To optionally provide feedback using the progress bar, you can call fn_progress_set_max(int)
         with the maximium value. Then, call fn_progress_advance() to add 1 to the progress bar.
 
-        Troubleshooting code should be implemented in pylib/troubleshoot/<backend>.py.
+        Troubleshooting code should be implemented in polychromatic/troubleshoot/<backend>.py.
 
         Return:
             - (list)  A list of dictionary results in format below.

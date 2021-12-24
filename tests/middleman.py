@@ -1,10 +1,10 @@
 from _dummy import DummyBackend as DummyBackend
 
-import pylib.base as base
-import pylib.common as common
-import pylib.locales as locales
-import pylib.middleman as middleman
-import pylib.preferences as preferences
+import polychromatic.base as base
+import polychromatic.common as common
+import polychromatic.locales as locales
+import polychromatic.middleman as middleman
+import polychromatic.preferences as preferences
 
 import os
 import unittest

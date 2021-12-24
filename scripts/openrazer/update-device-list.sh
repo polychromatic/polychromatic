@@ -34,8 +34,8 @@ sleep 2
 # Use OpenRazer Python library to discover new devices
 echo "Discovering new devices..."
 python3 <<EOF
-from pylib.backends.openrazer import OpenRazerBackend
-from pylib import common
+from polychromatic.backends.openrazer import OpenRazerBackend
+from polychromatic import common
 import json
 
 def _(d): return d

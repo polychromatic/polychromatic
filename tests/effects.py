@@ -1,8 +1,8 @@
-import pylib.common as common
-import pylib.locales as locales
-import pylib.preferences as preferences
-import pylib.effects as effects
-import pylib.fileman as fileman
+import polychromatic.common as common
+import polychromatic.locales as locales
+import polychromatic.preferences as preferences
+import polychromatic.effects as effects
+import polychromatic.fileman as fileman
 
 import glob
 import json

@@ -36,39 +36,16 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, \
                             QToolButton, QTabWidget, QAction, QMenu, \
                             QDesktopWidget, QLabel
 
+from polychromatic.base import PolychromaticBase
+import polychromatic.common as common
+import polychromatic.controller as controller
+import polychromatic.effects as effects
+import polychromatic.middleman as middleman
+import polychromatic.preferences as pref
+import polychromatic.procpid as procpid
+import polychromatic.controller.shared as shared
+
 VERSION = "0.7.3"
-
-
-# Import modules if running relatively.
-if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
-    try:
-        from pylib.base import PolychromaticBase
-        import pylib.common as common
-        import pylib.controller as controller
-        import pylib.effects as effects
-        import pylib.middleman as middleman
-        import pylib.preferences as pref
-        import pylib.procpid as procpid
-        import pylib.controller.shared as shared
-    except (ImportError, Exception) as e:
-        print("Failed to import modules relatively.\n")
-        raise e
-
-# Import modules if installed system-wide.
-else:
-    try:
-        from polychromatic.base import PolychromaticBase
-        import polychromatic.common as common
-        import polychromatic.controller as controller
-        import polychromatic.effects as effects
-        import polychromatic.middleman as middleman
-        import polychromatic.preferences as pref
-        import polychromatic.procpid as procpid
-        import polychromatic.controller.shared as shared
-    except (ImportError, Exception) as e:
-        print("Polychromatic's modules could not be imported.")
-        print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
-        raise e
 
 
 class ApplicationData(PolychromaticBase):
@@ -166,7 +143,7 @@ class ApplicationData(PolychromaticBase):
                 self.middleman.init()
 
                 # Enable OpenRazer functions if available
-                # See also: pylib.controller.preferences.refresh_backend_status()
+                # See also: polychromatic.controller.preferences.refresh_backend_status()
                 if not "openrazer" in self.middleman.not_installed:
                     _enable_action("actionOpenRazerConfigure")
                     _enable_action("actionOpenRazerOpenLog")

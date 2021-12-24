@@ -9,9 +9,9 @@ import random
 import unittest
 
 # Polychromatic Modules
-from pylib import base
-from pylib.backends._backend import Backend
-from pylib.backends.openrazer import OpenRazerBackend, OpenRazerPersistence, OpenRazerPersistenceFallback
+from polychromatic import base
+from polychromatic.backends._backend import Backend
+from polychromatic.backends.openrazer import OpenRazerBackend, OpenRazerPersistence, OpenRazerPersistenceFallback
 
 # External
 import openrazer.client

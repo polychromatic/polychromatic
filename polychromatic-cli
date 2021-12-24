@@ -27,38 +27,15 @@ import signal
 import os
 import sys
 
-# Import modules if running relatively.
-if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
-    try:
-        import pylib.base as base_class
-        import pylib.preferences as pref
-        import pylib.common as common
-        import pylib.effects as effects
-        import pylib.fileman as fileman
-        import pylib.locales as locales
-        import pylib.procpid as procpid
-        import pylib.middleman as middleman
-        from pylib.backends._backend import Backend as Backend
-    except (ImportError, Exception) as e:
-        print("Failed to import modules relatively.\n")
-        raise e
-
-# Import modules if installed system-wide.
-else:
-    try:
-        import polychromatic.base as base_class
-        import polychromatic.preferences as pref
-        import polychromatic.common as common
-        import polychromatic.effects as effects
-        import polychromatic.fileman as fileman
-        import polychromatic.locales as locales
-        import polychromatic.procpid as procpid
-        import polychromatic.middleman as middleman_module
-        from polychromatic.backends._backend import Backend as Backend
-    except (ImportError, Exception) as e:
-        print("Polychromatic's modules could not be imported.")
-        print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
-        raise e
+import polychromatic.base as base_class
+import polychromatic.preferences as pref
+import polychromatic.common as common
+import polychromatic.effects as effects
+import polychromatic.fileman as fileman
+import polychromatic.locales as locales
+import polychromatic.procpid as procpid
+import polychromatic.middleman as middleman_module
+from polychromatic.backends._backend import Backend as Backend
 
 
 ########################################
@@ -296,7 +273,7 @@ base.middleman.init()
 if verbose:
     dbg.stdout("Loaded {0} backend(s):".format(len(base.middleman.backends)), dbg.success)
     for backend in base.middleman.backends:
-        dbg.stdout(" - {0}".format(middleman.BACKEND_NAMES[backend.backend_id]), dbg.success)
+        dbg.stdout(" - {0}".format(middleman_module.BACKEND_NAMES[backend.backend_id]), dbg.success)
 
     if len(base.middleman.not_installed) > 0:
         dbg.stdout("Not installed: " + ", ".join(base.middleman.not_installed), dbg.debug)
