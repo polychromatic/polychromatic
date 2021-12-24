@@ -1,9 +1,9 @@
-import pylib.base as base
-import pylib.common as common
-import pylib.controller as controller
-import pylib.locales as locales
-import pylib.preferences as preferences
-import pylib.procpid as procpid
+import polychromatic.base as base
+import polychromatic.common as common
+import polychromatic.controller as controller
+import polychromatic.locales as locales
+import polychromatic.preferences as preferences
+import polychromatic.procpid as procpid
 
 import os
 import unittest

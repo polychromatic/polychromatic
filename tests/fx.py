@@ -1,4 +1,4 @@
-import pylib.fx as fx
+import polychromatic.fx as fx
 
 import unittest
 

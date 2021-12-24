@@ -30,11 +30,16 @@ import signal
 import setproctitle
 import subprocess
 from shutil import which
-
 import gi
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
 from gi.repository import Gtk, Gdk
+
+from polychromatic.base import PolychromaticBase as PolychromaticBase
+from polychromatic.backends._backend import Backend
+import polychromatic.effects as effects
+import polychromatic.preferences as pref
+import polychromatic.procpid as procpid
 
 VERSION = "0.7.3"
 SUPPORTED = ["GtkStatusIcon"]
@@ -52,31 +57,6 @@ try:
     SUPPORTED.append("AppIndicator3")
 except (ImportError, ValueError):
     pass
-
-# Import modules if running relatively.
-if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
-    try:
-        from pylib.base import PolychromaticBase as PolychromaticBase
-        from pylib.backends._backend import Backend
-        import pylib.effects as effects
-        import pylib.preferences as pref
-        import pylib.procpid as procpid
-    except (ImportError, Exception) as e:
-        print("Failed to import modules relatively.\n")
-        raise e
-
-# Import modules if installed system-wide.
-else:
-    try:
-        from polychromatic.base import PolychromaticBase as PolychromaticBase
-        from polychromatic.backends._backend import Backend
-        import polychromatic.effects as effects
-        import polychromatic.preferences as pref
-        import polychromatic.procpid as procpid
-    except (ImportError, Exception) as e:
-        print("Polychromatic's modules could not be imported.")
-        print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
-        raise e
 
 
 class Indicator(PolychromaticBase):

@@ -1,4 +1,4 @@
-from pylib.backends._backend import Backend as Backend
+from polychromatic.backends._backend import Backend as Backend
 
 import os
 

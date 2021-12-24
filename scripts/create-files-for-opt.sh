@@ -37,7 +37,7 @@ mkdir "$DEST"
 # Copy required files
 cd "$DEST"
 cp -vr "$SOURCE/data" "$DEST/data"
-cp -vr "$SOURCE/pylib" "$DEST/pylib"
+cp -vr "$SOURCE/polychromatic" "$DEST/polychromatic"
 cp -vr "$SOURCE/LICENSE" "$DEST/"
 cp -vr "$SOURCE/polychromatic-"* "$DEST/"
 rm "$DEST/polychromatic-controller-dev"

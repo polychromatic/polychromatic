@@ -24,8 +24,8 @@ $pylint --errors-only \
     polychromatic-controller \
     polychromatic-helper \
     polychromatic-tray-applet \
-    pylib/*/*.py \
-    pylib/*.py
+    polychromatic/*/*.py \
+    polychromatic/*.py
 
 if [ $? != 0 ]; then
     exit 1

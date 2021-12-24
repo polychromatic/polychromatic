@@ -8,7 +8,7 @@
 
 cd "$(dirname "$0")/../"
 
-# For Python to find our "pylib" module.
+# Make use the local Python modules are being used
 export PYTHONPATH="$(realpath .)"
 
 # Isolate save data to avoid clutter.

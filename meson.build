@@ -1,5 +1,5 @@
 project('polychromatic',
-        version : '0.6.0',
+        version : '0.8.0',
         meson_version : '>=0.40.0')
 
 # TODO: Remove code in 'else' once meson version is above 0.46.0
@@ -41,7 +41,7 @@ install_subdir('data',
                install_dir : join_paths(get_option('datadir'), 'polychromatic'),
                strip_directory : true)
 
-install_subdir('pylib',
+install_subdir('polychromatic',
                install_dir : join_paths(py_install_dir, 'polychromatic'),
                strip_directory : true)
 

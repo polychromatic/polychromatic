@@ -57,7 +57,7 @@ class Paths():
         """
         try:
             if os.environ["POLYCHROMATIC_DEV_CFG"] == "true":
-                # __file__ = pylib/base.py
+                # __file__ = polychromatic/base.py
                 self.cache = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "savedatadev", "cache"))
                 self.config = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "savedatadev", "config"))
         except KeyError:
