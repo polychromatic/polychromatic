@@ -199,7 +199,7 @@ if args.help:
     rows = [
         [
             dbg.action + "  -d, --device" + dbg.warning + " {id}",
-            dbg.normal + _("Select device(s) by form factor. If omitted, select all devices")
+            dbg.normal + _("Select the device by form factor. If omitted, use all devices")
         ],
         [
             "",
