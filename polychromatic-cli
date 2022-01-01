@@ -525,6 +525,21 @@ if args.list_options:
             col_param += " ({0}-{1})".format(details["dpi_min"], details["dpi_max"])
         _add_row()
 
+        if details["battery_level"]:
+            col_zone = dbg.grey + "-"
+            col_option = dbg.success + "battery_charging"
+            col_param = dbg.success
+            col_colours = dbg.grey + "-"
+            col_param += "{0}".format(details["battery_charging"])
+            _add_row()
+
+            col_zone = dbg.grey + "-"
+            col_option = dbg.success + "battery_level"
+            col_param = dbg.success
+            col_colours = dbg.grey + "-"
+            col_param += "{0}%".format(details["battery_level"])
+            _add_row()
+
         print_columns(rows, True)
 
 # After using a --list-* parameter, exit here as devices won't be manipulated.
