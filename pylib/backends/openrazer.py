@@ -828,6 +828,8 @@ class Backend(_backend.Backend):
             "matrix": matrix,
             "matrix_rows": matrix_rows,
             "matrix_cols": matrix_cols,
+            "battery_charging": battery_charging,
+            "battery_level": battery_level,
             "zone_labels": zone_labels,
             "zone_icons": zone_icons,
             "zone_options": zone_options
