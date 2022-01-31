@@ -8,8 +8,8 @@
 
 REPO_ROOT="$(realpath "$1")"
 
-for codename in "focal" "hirsute" "impish" "jammy"
-#                20.04   21.04     21.10    22.04
+for codename in "focal" "impish" "jammy"
+#                20.04   21.10    22.04
 do
     echo -e "\n$codename"
     echo -e "===================="
