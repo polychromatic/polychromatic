@@ -528,7 +528,7 @@ def parse_parameters():
         dbg.verbose_level = 1
 
     if args.locale:
-        app.reinit_locales(args.locale)
+        base.reinit_locales(args.locale)
 
     return args
 

@@ -9,17 +9,14 @@ import gettext
 
 class Locales(object):
     """
-    Supports localisation through the application by utilising gettext to know
-    which locale is in use, and get the "_" object for processing strings.
+    Supports localisation throughout the application by utilising gettext.
+    The "_" object is used for processing strings.
     """
     def __init__(self, force_locale=""):
+        self.force_locale = force_locale
         self.locale = force_locale
-        self.locale_path = None
         self.translation = None
         self._ = None
-
-        if not self.locale:
-            self.locale = "en_GB"
 
     def init(self):
         """
@@ -29,17 +26,21 @@ class Locales(object):
             gettext.translation() bound to an i18n variable.
         """
         is_relative = os.path.exists(os.path.join(os.path.dirname(__file__), "..", "data", "img"))
+        relative_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "locale/"))
 
-        if is_relative:
-            # Use relative path (development or standalone build)
-            self.locale_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "locale/"))
+        # For development or a standalone "opt" build
+        if is_relative and self.force_locale:
+            self.translation = gettext.translation("polychromatic", localedir=relative_path, fallback=True, languages=[self.locale])
+        elif is_relative:
+            self.translation = gettext.translation("polychromatic", localedir=relative_path, fallback=True)
+
+        # For packaged/system-wide installs
+        elif not is_relative and self.force_locale:
+            self.translation = gettext.translation("polychromatic", fallback=True, languages=[self.locale])
         else:
-            # Use system path
-            self.locale_path = "/usr/share/locale/"
+            self.translation = gettext.translation("polychromatic", fallback=True)
 
-        self.translation = gettext.translation("polychromatic", localedir=self.locale_path, fallback=True, languages=[self.locale])
         self._ = self.translation.gettext
-
         return self._
 
     def get_current_locale(self):
@@ -49,5 +50,5 @@ class Locales(object):
         if self.translation and "language" in self.translation.info():
             return self.translation.info()["language"]
 
-        # Fallback in use
+        # Fallback to default
         return "en_GB"
