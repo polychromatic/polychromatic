@@ -1,5 +1,5 @@
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2017-2021 Luke Horwell <code@horwell.me>
+# Copyright (C) 2017-2022 Luke Horwell <code@horwell.me>
 """
 Contains the UI localization for Polychromatic. Powered by GNU's gettext.
 """

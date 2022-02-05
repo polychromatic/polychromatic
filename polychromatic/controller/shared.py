@@ -1,5 +1,5 @@
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2020-2021 Luke Horwell <code@horwell.me>
+# Copyright (C) 2020-2022 Luke Horwell <code@horwell.me>
 """
 This module contains widgets shared across the Controller GUI.
 """

@@ -1,5 +1,5 @@
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2021 Luke Horwell <code@horwell.me>
+# Copyright (C) 2021-2022 Luke Horwell <code@horwell.me>
 """
 Variables and functions for essential operation of the application.
 All interfaces and most classes will inherit these.

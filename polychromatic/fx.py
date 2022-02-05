@@ -1,5 +1,5 @@
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2020-2021 Luke Horwell <code@horwell.me>
+# Copyright (C) 2020-2022 Luke Horwell <code@horwell.me>
 """
 This module is a higher level interface for custom effects for devices that
 support it, regardless of vendor.

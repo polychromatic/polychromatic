@@ -1,5 +1,5 @@
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2016-2021 Luke Horwell <code@horwell.me>
+# Copyright (C) 2016-2022 Luke Horwell <code@horwell.me>
 """
 Module for determining where files are located.
 """
