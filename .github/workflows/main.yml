@@ -119,7 +119,7 @@ jobs:
         sudo -E ./tests/openrazer/run_daemon.sh "$GITHUB_WORKSPACE/openrazer"
 
   edge:
-    name: Deploy to Launchpad
+    name: 'Package / Debian'
     needs: [build, test]
     runs-on: ubuntu-latest
     steps:
@@ -146,18 +146,14 @@ jobs:
         lintian --no-tag-display-limit
         debuild -b
 
-    - name: Prepare GPG Signing Key
+    - name: Upload to Launchpad
       if: ${{ github.event_name == 'push' && github.repository == 'polychromatic/polychromatic' && github.ref == 'refs/heads/master' }}
       run: |
         mkdir -p ~/.gnupg/
         chmod 700 ~/.gnupg
         printf "$BOT_GPG_KEY_BASE64" | base64 --decode > ~/.gnupg/private.key
         gpg --import ~/.gnupg/private.key
-      env:
-        BOT_GPG_KEY_BASE64: ${{ secrets.BOT_GPG_KEY_BASE64 }}
-
-    - name: Upload to Launchpad PPA
-      if: ${{ github.event_name == 'push' && github.repository == 'polychromatic/polychromatic' && github.ref == 'refs/heads/master' }}
-      run: |
         git fetch --unshallow --tags
         ./scripts/packaging/prepare-edge-ppa.sh ./
+      env:
+        BOT_GPG_KEY_BASE64: ${{ secrets.BOT_GPG_KEY_BASE64 }}
