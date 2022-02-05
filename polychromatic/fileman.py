@@ -84,8 +84,9 @@ class FlatFileManagement(PolychromaticBase):
         """
         Returns a localized key if available.
         """
-        localized_key_full = key + "_" + self.i18n.locale
-        localized_key_partial = key + "_" + self.i18n.locale[:2]
+        locale_name = self.i18n.get_current_locale()
+        localized_key_full = key + "_" + locale_name
+        localized_key_partial = key + "_" + locale_name[:2]
 
         if localized_key_full in data.keys():
             return data[localized_key_full]
