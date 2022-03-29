@@ -13,8 +13,10 @@ from .. import fileman
 
 from ..qt.flowlayout import FlowLayout as QFlowLayout
 
+import hashlib
 import os
 import glob
+import requests
 import shutil
 
 from PyQt5 import uic, QtSvg
@@ -232,6 +234,34 @@ def set_pixmap_for_label(qlabel, icon_path, icon_size=24):
     pixmap = pixmap_src.scaled(icon_size, icon_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
     qlabel.setPixmap(pixmap)
     qlabel.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+
+def get_real_device_image(uri):
+    """
+    Returns the path to the image that physically represents a device. If the
+    URI is HTTP(S), this will be downloaded and cached locally.
+    """
+    if os.path.exists(uri):
+        return uri
+
+    cache_key = hashlib.md5(uri.encode("UTF-8")).hexdigest()
+    cache_path = os.path.join(PolychromaticBase.paths.devices, cache_key)
+
+    if os.path.exists(cache_path):
+        return cache_path
+
+    if uri.startswith("http://") or uri.startswith("https://"):
+        PolychromaticBase.dbg.stdout("Downloading image: " + uri, PolychromaticBase.dbg.action, 1)
+        r = requests.get(uri)
+        if r.status_code == 200:
+            PolychromaticBase.dbg.stdout("Retrieved image: " + uri, PolychromaticBase.dbg.action, 1)
+            with open(cache_path, "wb") as f:
+                f.write(r.content)
+            return cache_path
+        else:
+            PolychromaticBase.dbg.stdout("Unable to retrieve image: " + uri, PolychromaticBase.dbg.action, 1)
+            PolychromaticBase.dbg.stdout("Got status code " + str(r.status_code), PolychromaticBase.dbg.action, 1)
+    return ""
 
 
 # TODO: Refactor later. New class name

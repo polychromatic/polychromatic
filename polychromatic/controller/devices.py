@@ -156,8 +156,9 @@ class DevicesTab(shared.TabData):
         shared.clear_layout(layout)
 
         # Show a summary of the device state
-        real_image = device.real_image
-        if not device.real_image:
+        if device.real_image:
+            real_image = shared.get_real_device_image(device.real_image)
+        else:
             real_image = common.get_icon("devices", "noimage")
 
         indicators = []
@@ -929,12 +930,6 @@ class DevicesTab(shared.TabData):
                 hw.addChild(mkitem("VID:PID", None))
             hw.addChild(mkitem(_("Form Factor"), device.form_factor["label"], device.form_factor["icon"]))
             hw.addChild(mkitem(_("Serial"), device.serial))
-            if device.real_image:
-                hw.addChild(mkitem(_("Image"), device.real_image, device.real_image))
-            else:
-                real_image = mkitem(_("Image"), _("(Unspecified)"))
-                real_image.setDisabled(True)
-                hw.addChild(real_image)
             if device.firmware_version:
                 hw.addChild(mkitem(_("Firmware Version"), device.firmware_version))
             if device.keyboard_layout:

@@ -66,8 +66,7 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         pass
 
     def setUp(self):
-        # Never allow device images to be downloaded
-        self.allow_image_download = False
+        pass
 
     def tearDown(self):
         pass

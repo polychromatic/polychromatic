@@ -26,6 +26,7 @@ class Paths():
         self.webview_cache = os.path.join(self.cache, "editor")
 
         # Save Data
+        self.devices = os.path.join(self.config, "devices")
         self.effects = os.path.join(self.config, "effects")
         self.presets = os.path.join(self.config, "presets")
         self.custom_icons = os.path.join(self.config, "custom_icons")
@@ -46,7 +47,7 @@ class Paths():
         """
         Ensure all the directories exist for the application.
         """
-        for folder in [self.config, self.presets, self.custom_icons, self.states, self.effects,
+        for folder in [self.config, self.presets, self.custom_icons, self.states, self.devices, self.effects,
                        self.cache, self.assets_cache,  self.effects_cache, self.webview_cache]:
             if not os.path.exists(folder):
                 os.makedirs(folder)

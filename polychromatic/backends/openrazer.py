@@ -47,8 +47,6 @@ class OpenRazerBackend(Backend):
         self.persistence_fallback_path = os.path.join(self.get_backend_storage_path(), "persistence")
 
         # Client Settings
-        # FIXME: Move image download to Controller only!
-        self.allow_image_download = False
         self.ripple_refresh_rate = 0.05
         self.load_client_overrides()
 
@@ -508,55 +506,15 @@ class OpenRazerBackend(Backend):
     def _get_device_image(self, rdevice):
         """
         OpenRazer doesn't store device images, they are referenced by a URL.
-
-        This function will download a copy of the image for caching purposes,
-        unless disabled by the user.
         """
-        if not self.allow_image_download:
-            return ""
-
         try:
             # OpenRazer >= 2.9.0 (openrazer/openrazer#1127)
-            image_url = rdevice.device_image
+            return rdevice.device_image
         except AttributeError:
             # Backwards compatiblity with OpenRazer <= 2.8.0
-            image_url = rdevice.razer_urls["top_img"]
+            return rdevice.razer_urls["top_img"]
         except KeyError:
             return ""
-
-        image_dir = os.path.join(self.get_backend_storage_path(), "images")
-
-        if not os.path.exists(image_dir):
-            self.debug("Creating folder for device images: " + image_dir)
-            os.makedirs(image_dir)
-
-        image_path = os.path.join(image_dir, rdevice.name + "." + image_url.split(".")[-1])
-
-        # Image already cached?
-        if os.path.exists(image_path) and os.stat(image_path).st_size > 8:
-            return image_path
-
-        # No image?
-        if not image_url:
-            self.debug("{0} does not have an image.".format(rdevice.name))
-            return ""
-
-        self.debug("Downloading device image for {0}...".format(rdevice.name))
-        self.debug("URL: " + image_url)
-
-        try:
-            r = requests.get(image_url)
-            if r.status_code == 200:
-                with open(image_path, "wb") as f:
-                    f.write(r.content)
-                self.debug("Success!")
-                return image_path
-
-            self.debug("Error: Got status code {0} for '{1}'".format(rdevice.name, str(r.status_code)))
-        except Exception as e:
-            self.debug("Error: Got exception while retrieving image for '{0}'...".format(rdevice.name))
-            self.debug(str(e) + '\n')
-
         return ""
 
     def _get_device_vid_pid(self, rdevice):

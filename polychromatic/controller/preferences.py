@@ -40,6 +40,7 @@ class PreferencesWindow(shared.TabData):
         self.options = [
             # [group, item, <Qt object>, Qt object name, Inverted?]
             # -- General
+            ["controller", "download_device_images", QCheckBox, "DownloadDeviceImages", False],
             ["controller", "system_qt_theme", QCheckBox, "UseSystemQtTheme", False],
             ["controller", "show_menu_bar", QCheckBox, "AlwaysHideMenuBar", True],
             ["controller", "landing_tab", QComboBox, "LandingTabCombo", False],
@@ -423,7 +424,6 @@ class OpenRazerPreferences(shared.TabData):
         # Client settings
         self.client = [
             # "Filename", <data type>
-            ["allow_image_download", int],
             ["ripple_refresh_rate", float]
         ]
 

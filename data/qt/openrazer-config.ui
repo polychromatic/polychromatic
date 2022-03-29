@@ -301,32 +301,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="allow_image_download">
-         <property name="text">
-          <string extracomment="Checkbox for configuring OpenRazer">Download device images</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="allow_image_download_note">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string extracomment="Hint text for configuring OpenRazer">OpenRazer stores image URLs pointing to a CDN. These images may be proprietary. This application retrieves images for your devices once and caches them locally.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="indent">
-          <number>25</number>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QWidget" name="ripple_refresh_rate_group" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <property name="spacing">

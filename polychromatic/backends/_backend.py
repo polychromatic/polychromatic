@@ -168,7 +168,8 @@ class Backend(BackendBase):
             # Use Backend.get_form_factor(), passing an ID from common.FORM_FACTORS
             self.form_factor = {}
 
-            # Local file path to device image (or empty string for no image)
+            # Local or remote file path to a 'real' image of the hardware.
+            # (Leave empty string for no image)
             self.real_image = ""
 
             # String containing the device's serial number, must be unique.
