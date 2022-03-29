@@ -62,6 +62,7 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
         import pylib.locales as locales
         import pylib.middleman as middleman_mod
         import pylib.procpid as procpid
+        from pylib.backends._backend import Backend as Backend
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -75,6 +76,7 @@ else:
         import polychromatic.locales as locales
         import polychromatic.middleman as middleman_mod
         import polychromatic.procpid as procpid
+        from polychromatic.backends._backend import Backend as Backend
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
@@ -109,7 +111,7 @@ class Indicator(object):
             pref.TRAY_AYATANA: "AyatanaAppIndicator3",
         }
 
-        # User may pass a parameter to force a different indicator.
+        # User can override the default/preferred tray technology.
         if args.force_appindicator:
             self.mode = pref.TRAY_APPINDICATOR
         elif args.force_ayatana:
@@ -339,26 +341,23 @@ class PolychromaticTrayApplet():
         """
         indicator.setup(self._get_tray_icon())
 
-        dbg.stdout("Loading device data...", dbg.action, 1)
-        devices = middleman.get_device_all()
-        unknown_devices = middleman.get_unsupported_devices()
-
         dbg.stdout("Creating menus...", dbg.action, 1)
         menu = indicator.create_menu()
 
         # List devices and their submenus.
+        devices = middleman.device_cache
         if len(devices) == 0:
             dbg.stdout("No devices found.", dbg.error, 1)
-            indicator.create_menu_item(menu, _("No devices found."), False)
+            indicator.create_menu_item(menu, _("No devices found"), False, icon_path=self._get_icon("general", "unknown"))
 
         # Order devices A-Z for consistency
-        sorted_devices = sorted(devices, key=lambda device: device["name"])
+        sorted_devices = sorted(devices, key=lambda device: device.name)
 
         for device in sorted_devices:
             indicator.add_menu_item(menu, self.build_device_submenu(device))
 
         for device in unknown_devices:
-            indicator.create_menu_item(menu, "{0} {1}".format(_("Unrecognised:"), device["name"]), False, None, None, device["form_factor"]["icon"])
+            indicator.create_menu_item(menu, "{0} {1}".format(_("Unrecognised:"), device.name), False, icon_path=device.form_factor["icon"])
 
         if len(devices) == 0:
             indicator.create_seperator(menu)
@@ -368,60 +367,7 @@ class PolychromaticTrayApplet():
         # When multiple devices are present, show 'apply to all' actions
         if len(devices) > 1:
             bulk_menu, bulk_menu_item = indicator.create_submenu(_("Apply to All"), True, self._get_icon("devices", "all"))
-            bulk = common.get_bulk_apply_options(_, devices)
-
-            effects = bulk["effects"]
-            brightnesses = bulk["brightness"][::-1]
-
-            # -- Brightness
-            if len(brightnesses) > 0:
-                indicator.create_menu_item(bulk_menu, _("Brightness"), False, None, None, self._get_icon("options", "brightness"))
-
-            for brightness in brightnesses:
-                option_id = brightness["id"]
-                option_data = brightness["data"]
-                label = brightness["label"]
-                icon = self._get_icon("options", str(option_data))
-
-                indicator.create_menu_item(bulk_menu, label, True, cb.set_bulk_option, [option_id, option_data, 0], icon)
-
-            # -- Options
-            if len(effects) > 0:
-                # Separate from brightness, if necessary
-                if len(brightnesses) > 0:
-                    indicator.create_seperator(bulk_menu)
-
-                indicator.create_menu_item(bulk_menu, _("Effects"), False, None, None, self._get_icon("options", "ripple"))
-
-            for option in bulk["effects"]:
-                option_id = option["id"]
-                option_data = option["data"]
-                required_colours = option["required_colours"]
-                label = option["label"]
-                icon = self._get_icon("options", str(option_id))
-
-                indicator.create_menu_item(bulk_menu, label, True, cb.set_bulk_option, [option_id, option_data, required_colours], icon)
-
-            # -- Colours
-            if len(effects) > 0:
-                indicator.create_seperator(bulk_menu)
-                colour_menu, colour_menu_item = indicator.create_submenu(_("Primary Colour"), True, self._get_icon("general", "palette"))
-
-                for colour in saved_colours:
-                    label = colour["name"]
-                    data = colour["hex"]
-                    icon = self._get_colour_icon(data)
-                    indicator.create_menu_item(colour_menu, label, True, cb.set_bulk_colour, [data], icon)
-                indicator.add_menu_item(bulk_menu, colour_menu_item)
-
-            indicator.create_seperator(menu)
-            indicator.add_menu_item(menu, bulk_menu_item)
-
-            # TODO: Placeholder, Presets not yet implemented
-            #print("stub:preset menu")
-            #presets_menu, presets_menu_item = indicator.create_submenu(_("Apply Preset"), False, self._get_icon("general", "presets"))
-            #indicator.create_menu_item(presets_menu, "Placeholder", False)
-            #indicator.add_menu_item(menu, presets_menu_item)
+            print("fixme:bulk apply options")
 
         # General Options
         indicator.create_seperator(menu)
@@ -435,7 +381,7 @@ class PolychromaticTrayApplet():
                 pref.save_file(pref.path.preferences, prefs)
                 _update_auto_start_toggle(new_value)
 
-            auto_start_item = indicator.create_menu_item(menu, "Autostart", True, _toggle_auto_start, None, self._get_icon("general", "tray-applet"))
+            auto_start_item = indicator.create_menu_item(menu, _("Autostart"), True, _toggle_auto_start, None, self._get_icon("general", "tray-applet"))
 
             def _update_auto_start_toggle(is_enabled):
                 # FIXME: HACK: Not framework agnostic!
@@ -455,97 +401,82 @@ class PolychromaticTrayApplet():
 
     def build_device_submenu(self, device):
         """
-        Assembles the menu (and submenus) that control an individual device_item.
+        Assembles the menu (and submenus) for the specified Backend.DeviceItem()
         """
-        device_name = device["name"]
-        device_icon = device["form_factor"]["icon"]
-        multiple_zones = len(device["zone_options"]) > 1
+        device_icon = device.form_factor["icon"]
+        multiple_zones = len(device.zones) > 1
         can_set_colours = False
 
-        submenu, submenu_item = indicator.create_submenu(device_name, True, device_icon)
-        dbg.stdout("- " + device_name, dbg.action, 1)
+        submenu, submenu_item = indicator.create_submenu(device.name, True, device_icon)
+        dbg.stdout("- " + device.name, dbg.action, 1)
 
-        for zone in device["zone_options"].keys():
-            zone_name = device["zone_labels"][zone]
-            zone_icon = device["zone_icons"][zone]
-
+        for zone in device.zones:
             # Create label when multiple zones are present
             if multiple_zones:
-                indicator.create_menu_item(submenu, zone_name, False, None, None, zone_icon)
+                indicator.create_menu_item(submenu, zone.label, False, icon_path=zone.icon)
 
             # Add options
-            for option in device["zone_options"][zone]:
-                option_id = option["id"]
-                option_label = option["label"]
-                option_icon = self._get_icon("options", option_id)
-
-                # Show 'Edit Colours' later if supported
-                if len(option["colours"]) > 0:
+            for option in zone.options:
+                # Show colour items later if device supports RGB
+                if option.colours_required > 0:
                     can_set_colours = True
 
-                # Option contains parameters, show submenu
-                if option["type"] in ["effect", "multichoice"]:
+                if isinstance(option, (Backend.EffectOption, Backend.MultipleChoiceOption)):
                     # Option does not accept parameters, just a button
-                    if len(option["parameters"]) == 0:
-                        indicator.create_menu_item(submenu, option_label, True, cb.set_option, [device, zone, option_id, None], option_icon)
+                    if len(option.parameters) == 0:
+                        indicator.create_menu_item(submenu, option.label, True, cb.apply_option, [option, None, 0, device], option.icon)
                     else:
                         # Create a submenu for effects
-                        indicator.add_menu_item(submenu, self.create_parameters_menu(device, zone, option))
+                        indicator.add_menu_item(submenu, self.create_parameters_menu(option, device))
 
-                        for param in option["parameters"]:
-                            if len(param["colours"]) > 0:
+                        for param in option.parameters:
+                            if param.colours_required > 0:
                                 can_set_colours = True
 
-                # Option is a slider, for values between 0 and 100.
-                elif option["type"] == "slider":
-                    indicator.add_menu_item(submenu, self.create_slider_menu(device, zone, option))
+                elif isinstance(option, Backend.SliderOption):
+                    indicator.add_menu_item(submenu, self.create_slider_menu(option))
 
-                # Option is a boolean choice
-                elif option["type"] == "toggle":
-                    indicator.add_menu_item(submenu, self.create_toggle_menu(device, zone, option))
+                elif isinstance(option, Backend.ToggleOption):
+                    indicator.add_menu_item(submenu, self.create_toggle_menu(option))
 
-                # Option is a label, always show
-                elif option["type"] == "label":
-                    self.create_label_control(option, submenu)
-
-                # Option is a dialog, but will be shown in a separate menu
-                elif option["type"] == "dialog":
-                    indicator.add_menu_item(submenu, self.create_dialog_control(option))
+                elif isinstance(option, Backend.DialogOption):
+                    # TODO: Implement an actual dialog, not labels (which were too long, too messy)
+                    print("fixme:Dialog option not implemented")
 
                 # Option is a clickable one-way action with no feedback
-                elif option["type"] == "button":
-                    self.create_button_control(submenu, option, device, zone)
+                elif isinstance(type, Backend.ButtonOption):
+                    indicator.create_menu_item(submenu, option.button_label, True, cb.apply_option, [option, None, 0, device], option.icon)
 
-            # Add DPI
-            if zone == "main" and device["dpi_x"]:
-                dpi_menu, dpi_menu_item = indicator.create_submenu(_("DPI"), True, self._get_icon("general", "dpi"))
-                dpi_stages = device["dpi_stages"]
-                if prefs["custom"]["use_dpi_stages"]:
-                    dpi_stages = []
-                    for i in range(1, 6):
-                        dpi_stages.append(prefs["custom"]["dpi_stage_" + str(i)])
-                for item, dpi in enumerate(dpi_stages):
-                    icon = None
-                    if item == 0:
-                        icon = self._get_icon("general", "dpi-slow")
-                    elif item == 4:
-                        icon = self._get_icon("general", "dpi-fast")
-                    indicator.create_menu_item(dpi_menu, str(dpi), True, cb.set_dpi, [device, dpi], icon)
-                indicator.add_menu_item(submenu, dpi_menu_item)
-
-            # Create seperator if there was a zone label
+            # Seperator multiple zones if applicable
             if multiple_zones:
                 indicator.create_seperator(submenu)
 
-        if device["matrix"]:
-            # FIXME: Consider scripted effects too!
-            effect_items = fileman_effects.get_item_list_by_key_filter("map_device", device_name)
+        # Add DPI
+        if device.dpi:
+            dpi_menu, dpi_menu_item = indicator.create_submenu(_("DPI"), True, self._get_icon("general", "dpi"))
+
+            dpi_stages = device.dpi.stages
+            if prefs["custom"]["use_dpi_stages"]:
+                for i in range(1, 6):
+                    dpi_stages.append(prefs["custom"]["dpi_stage_" + str(i)])
+
+            for item, value in enumerate(dpi_stages):
+                icon = None
+                if item == 0:
+                    icon = self._get_icon("general", "dpi-slow")
+                elif item == len(dpi_stages) - 1:
+                    icon = self._get_icon("general", "dpi-fast")
+                indicator.create_menu_item(dpi_menu, str(value), True, cb.set_dpi, [device.dpi, value], icon)
+            indicator.add_menu_item(submenu, dpi_menu_item)
+
+        if device.matrix:
+            effect_items = fileman_effects.get_item_list_by_key_filter("map_device", device.name)
             effect_items = sorted(effect_items, key=lambda item: item["name"])
             effects_menu, effects_menu_item = indicator.create_submenu(_("Effects"), True, self._get_icon("general", "effects"))
 
             if len(effect_items) > 0:
                 for item in effect_items:
-                     indicator.create_menu_item(effects_menu, item["name"], True, cb.set_effect, [device, item["path"]], item["icon"])
+                     indicator.create_menu_item(effects_menu, item["name"], True, cb.set_custom_effect, [device, item["path"]], item["icon"])
             else:
                 indicator.create_menu_item(effects_menu, _("No custom effects"), False)
 
@@ -558,10 +489,7 @@ class PolychromaticTrayApplet():
         if can_set_colours:
             colour_menu, colour_menu_item = indicator.create_submenu(_("Primary Colour"), True, self._get_icon("general", "palette"))
 
-            if device["monochromatic"]:
-                index = colours_mono
-            else:
-                index = saved_colours
+            index = colours_mono if device.monochromatic else saved_colours
 
             for pos in range(0, len(index)):
                 try:
@@ -571,106 +499,79 @@ class PolychromaticTrayApplet():
                 except Exception:
                     dbg.stdout("Ignoring invalid colour data at index position " + str(pos), dbg.error)
 
-            if not device["monochromatic"]:
+            if not device.monochromatic:
                 indicator.create_seperator(colour_menu)
-                indicator.create_menu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [device, zone], self._get_icon("general", "palette"))
+                indicator.create_menu_item(colour_menu, _("Custom..."), True, cb.set_custom_colour, [device], self._get_icon("general", "palette"))
                 self._create_menu_item_if_controller_present(colour_menu, _("Edit Colours..."), "colours", self._get_icon("general", "edit"))
 
             if multiple_zones:
-                indicator.create_menu_item(submenu, _("All Zones"), False, None, None, device_icon)
+                indicator.create_menu_item(submenu, _("All Zones"), False, icon_path=device_icon)
             indicator.add_menu_item(submenu, colour_menu_item)
 
         return submenu_item
 
-    def create_parameters_menu(self, device, zone, option):
+    def create_parameters_menu(self, option, device):
         """
         Creates the submenu for an option containing parameters from a multiple
         choice or effect list.
         """
-        option_id = option["id"]
-        submenu, submenu_item = indicator.create_submenu(option["label"], True, self._get_icon("options", option_id))
+        submenu, submenu_item = indicator.create_submenu(option.label, True, option.icon)
 
-        for param in option["parameters"]:
-            icon = common.get_icon("params", param["id"])
-
-            indicator.create_menu_item(submenu, param["label"], True, cb.set_option, [device, zone, option_id, param["data"]], icon)
+        for param in option.parameters:
+            indicator.create_menu_item(submenu, param.label, True, cb.apply_option, [option, param.data, param.colours_required, device], param.icon)
 
         return submenu_item
 
-    def create_slider_menu(self, device, zone, option):
+    def create_slider_menu(self, option):
         """
         Creates the submenu for an option that is a variable slider. This will
         create five calculated intervals (e.g. 0-100 -> 0,25,50,75,100)
         """
-        option_id = option["id"]
-        submenu, submenu_item = indicator.create_submenu(option["label"], True, self._get_icon("options", option_id))
+        submenu, submenu_item = indicator.create_submenu(option.label, True, option.icon)
 
-        suffix = option["suffix"]
-        min = int(option["min"])
-        max = int(option["max"])
-        interval = option["step"]
+        min = int(option.min)
+        max = int(option.max)
+        step = int(option.step)
 
         if min == 0 and max == 100:
-            interval = int((max - min) / 4)
+            step = int((max - min) / 4)
         elif min == 1 and max == 100:
-            interval = 10
+            step = 10
 
-        for no in range(max, min - interval, 0 - interval):
-            # Some IDs have submenu icons
-            icon = None
-            if option_id == "brightness":
-                icon = self._get_icon("options", str(no))
+        for no in range(max, min - step, 0 - step):
+            # Brightness uses custom icons
+            icon = option.icon
+            if option.uid == "brightness":
+                icon = self._get_icon("params", str(no))
 
-            indicator.create_menu_item(submenu, str(no) + suffix, True, cb.set_option, [device, zone, option_id, int(no)], icon)
+            suffix = option.suffix if no == 1 else option.suffix_plural
+            indicator.create_menu_item(submenu, str(no) + suffix, True, cb.apply_option, [option, int(no), 0, None], icon)
 
         return submenu_item
 
-    def create_toggle_menu(self, device, zone, option):
+    def create_toggle_menu(self, option):
         """
         Creates the submenu for an option that is either on/off.
         """
-        option_id = option["id"]
-        submenu, submenu_item = indicator.create_submenu(option["label"], True, self._get_icon("options", option_id))
+        submenu, submenu_item = indicator.create_submenu(option.label, True, option.icon)
 
         # Some IDs have submenu icons
-        icon_on = None
-        icon_off = None
-        if option_id == "game_mode":
-            icon_on = self._get_icon("options", "game_mode")
-            icon_off = self._get_icon("options", "game_mode_off")
-        elif option_id == "brightness":
-            icon_on = self._get_icon("options", "100")
-            icon_off = self._get_icon("options", "0")
-
-        indicator.create_menu_item(submenu, _("On"), True, cb.set_option, [device, zone, option_id, True], icon_on)
-        indicator.create_menu_item(submenu, _("Off"), True, cb.set_option, [device, zone, option_id, False], icon_off)
+        label_enable = option.label_enable if option.label_enable else _("On")
+        label_disable = option.label_disable if option.label_disable else _("Off")
+        indicator.create_menu_item(submenu, label_enable, True, cb.apply_option, [option, True, 0, None], option.icon_enable)
+        indicator.create_menu_item(submenu, label_disable, True, cb.apply_option, [option, False, 0, None], option.icon_disable)
 
         return submenu_item
-
-    def create_label_control(self, option, submenu):
-        """
-        Creates a label for permanent display. A new label will be created for
-        each line in the message.
-        """
-        indicator.create_seperator(submenu)
-        for index, line in enumerate([option["label"]] + option["message"].split("\n")):
-            indicator.create_menu_item(submenu, line, False, None, None, self._get_icon("general", "info") if index == 0 else None)
-        indicator.create_seperator(submenu)
 
     def create_dialog_control(self, option):
         """
         Creates a submenu containing the message that would appear in a dialog.
         """
-        submenu, submenu_item = indicator.create_submenu(option["button_text"], True, self._get_icon("general", "info"))
+        # TODO: When class refactor is completed, use actual dialogs
+        submenu, submenu_item = indicator.create_submenu(option.button_label, True, option.icon)
         for line in option["message"].split("\n"):
             indicator.create_menu_item(submenu, line, False)
         return submenu_item
-
-    def create_button_control(self, submenu, option, device, zone):
-        """
-        Creates a menu item to execute a specific function without needing feedback.
-        """
-        indicator.create_menu_item(submenu, option["button_text"], True, cb.set_option, [device, zone, option["id"], None])
 
     def _get_colour_icon(self, colour_hex):
         """
@@ -718,40 +619,28 @@ class Callback():
         exit(0)
 
     @staticmethod
-    def set_option(item, attr):
+    def apply_option(item, attr):
         """
         Option clicked to set an effect for a device.
 
         Params:
-            attr        [device, zone, option_id, option_data]
+            attr        [<Backend.Option object>, <Backend.Option.Parameter or None>]
         """
-        device, zone, option_id, option_data = attr
+        option, param_data, param_colours, device = attr
 
-        backend = device["backend"]
-        uid = device["uid"]
-        name = device["name"]
-        serial = device["serial"]
-        device = middleman.get_device(backend, uid)
+        # If this is an effect, stop any software effects currently running.
+        if isinstance(option, Backend.EffectOption):
+            middleman.stop_software_effect(device.serial)
 
-        # Re-use previously selected colours
-        colour_hex = []
-        for option in device["zone_options"][zone]:
-            if option["id"] == option_id:
-                colour_hex = option["colours"]
+        # If the user set a primary colour in this session, use that.
+        global primary_colour
+        if primary_colour:
+            if option.colours_required > 0 or param_colours > 0:
+                option.colours[0] = primary_colour
 
-            try:
-                if option["parameters"]:
-                    for param in option["parameters"]:
-                        if param["data"] == option_data:
-                            colour_hex = param["colours"]
-            except KeyError:
-                # No parameters for sliders or toggles
-                pass
-
-        dbg.stdout("Setting option '{0}' (data: {1}) for {2} in zone '{3}'".format(option_id, option_data, name, zone), dbg.action, 1)
-        dbg.stdout("Re-using colours: {0}".format(", ".join(colour_hex)), dbg.debug, 1)
-        r = middleman.set_device_state(backend, uid, serial, zone, option_id, option_data, colour_hex)
-        _verbose_check_status(r)
+        dbg.stdout("Setting option '{0}' (data: {1})'".format(str(option), str(param_data)), dbg.action, 1)
+        # TODO: Catch errors
+        option.apply(param_data)
 
     @staticmethod
     def set_colour_primary(item, attr):
@@ -763,35 +652,27 @@ class Callback():
         """
         device, hex_value = attr
 
-        backend = device["backend"]
-        uid = device["uid"]
-        name = device["name"]
-        device = middleman.get_device(backend, uid)
+        # Remember this colour if the user chooses another colour-enabled effect later
+        global primary_colour
+        primary_colour = hex_value
 
-        for zone in device["zone_options"].keys():
-            dbg.stdout("Setting '{2}' colour to '{0}' for {1}".format(hex_value, name, zone), dbg.action, 1)
-            r = middleman.set_device_colour(device, zone, hex_value)
-            _verbose_check_status(r)
+        dbg.stdout("Applying colour '{0}' to all zones in '{1}'".format(hex_value, device.name), dbg.action, 1)
+        # TODO: Catch errors
+        middleman.set_colour_for_active_effect_device(device, hex_value)
 
     @staticmethod
     def set_dpi(item, attr):
         """
-        Option clicked to set the DPI of a device.
+        Option clicked to set the DPI (both X/Y) of a device.
 
         Params:
-            attr    [device, dpi_x]
+            attr    [dpi, value]
         """
-        device, new_dpi = attr
+        dpi, value = attr
 
-        backend = device["backend"]
-        uid = device["uid"]
-        name = device["name"]
-        serial = device["serial"]
-
-        dbg.stdout("Setting DPI for {0} to {1}".format(name, new_dpi), dbg.action, 1)
-
-        r = middleman.set_device_state(backend, uid, serial, "main", "dpi", [new_dpi, new_dpi], [])
-        _verbose_check_status(r)
+        dbg.stdout("Setting DPI to {0}".format(value), dbg.action, 1)
+        # TODO: Catch errors
+        dpi.set(int(value), int(value))
 
     @staticmethod
     def set_bulk_option(item, attr):
@@ -802,7 +683,7 @@ class Callback():
             attr    [option_id, option_data, colours_needed]
         """
         option_id, option_data, colours_needed = attr
-        middleman.set_bulk_option(option_id, option_data, colours_needed)
+        print("fixme:set_bulk_option")
 
     @staticmethod
     def set_bulk_colour(item, attr):
@@ -814,7 +695,7 @@ class Callback():
             attr    [hex_value]
         """
         new_colour_hex = attr[0]
-        middleman.set_bulk_colour(new_colour_hex)
+        print("fixme:set_bulk_colour")
 
     @staticmethod
     def set_custom_colour(item, attr):
@@ -841,43 +722,28 @@ class Callback():
             hex_value = common.rgb_to_hex([red, green, blue])
 
             # Apply colour to device
-            dbg.stdout("Set custom colour for {0} to '{1}'".format(device["name"], hex_value), dbg.debug, 1)
-            r = middleman.set_device_colour(device, zone, hex_value)
-            _verbose_check_status(r)
+            dbg.stdout("Set custom colour for {0} to '{1}'".format(device.name, hex_value), dbg.debug, 1)
+            # TODO: Catch errors
+            middleman.set_colour_for_active_effect_device(device, hex_value)
 
         color_selection_dlg.destroy()
 
     @staticmethod
-    def set_effect(item, attr):
+    def set_custom_effect(item, attr):
         """
         Option clicked to activate an effect for the specified device.
 
         Params:
-            attr    [device, path]
+            attr    [device, <path to file>]
         """
-        device = attr[0]
-        path = attr[1]
+        device, path = attr
 
-        device_name = device["name"]
+        device_name = device.name
         dbg.stdout("Playing effect '{0}' on '{1}'".format(path, device_name), dbg.debug, 1)
         procmgr = procpid.ProcessManager("helper")
         procmgr.start_component(["--run-fx", path, "--device-name", device_name])
 
 
-def _verbose_check_status(result):
-    """
-    When using the verbose parameter (-v), output details if a request made
-    to the backend was successful.
-    """
-    if type(result) == str:
-        dbg.stdout("An exception occurred processing this request:", dbg.error)
-        dbg.stdout(result, dbg.error)
-    elif result == True:
-        dbg.stdout("Request OK", dbg.success, 1)
-    elif result == None:
-        dbg.stdout("Device Missing", dbg.warning, 1)
-    elif result == False:
-        dbg.stdout("Request unsuccessful - may be unsupported by the device.", dbg.normal, 1)
 
 
 def parse_parameters():
@@ -968,13 +834,15 @@ if __name__ == "__main__":
     # Initialise devices
     middleman = middleman_mod.Middleman(dbg, common, _)
     middleman.init()
-    device_list = middleman.get_device_list()
+    device_list = middleman.get_devices()
+    unknown_devices = middleman.get_unsupported_devices()
 
     # Load data into memory
     prefs = pref.load_file(common.paths.preferences)
     saved_colours = pref.get_colour_list(_)
     colours_mono = common.get_green_shades(_)
     fileman_effects = effects.EffectFileManagement(i18n, _, dbg)
+    primary_colour = None
 
     # Initialise the indicator
     cb = Callback()

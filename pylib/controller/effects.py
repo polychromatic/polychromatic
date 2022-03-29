@@ -102,7 +102,7 @@ class EffectsTab(shared.CommonFileTab):
         The current codebase doesn't provide a mechanism to list all compatible
         hardware yet, since effects need to store their rows/cols values.
         """
-        if len(self.middleman.get_device_list()) == 0:
+        if len(self.middleman.get_devices()) == 0:
             self.widgets.open_dialog(self.widgets.dialog_error,
                                      self._("New Effect"),
                                      self._("No devices found. New effects require a compatible device to be present."),
@@ -517,27 +517,27 @@ class EffectMetadataEditor(shared.TabData):
         is_new_file = len(self.data["name"]) == 0
         found_device_name = False
 
-        for device in self.appdata.middleman.get_device_all():
-            if not device or not device["matrix"]:
+        for device in self.appdata.middleman.get_devices():
+            if not device or not device.matrix:
                 continue
 
-            self.map_device_combo.addItem(QIcon(device["form_factor"]["icon"]), device["name"])
+            self.map_device_combo.addItem(QIcon(device.form_factor["icon"]), device.name)
             index = self.map_device_combo.count() - 1
 
             # Store device data for later
             self.device_info[index] = {}
-            self.device_info[index]["icon"] = device["form_factor"]["id"]
-            self.device_info[index]["cols"] = device["matrix_cols"]
-            self.device_info[index]["rows"] = device["matrix_rows"]
+            self.device_info[index]["icon"] = device.form_factor["id"]
+            self.device_info[index]["cols"] = device.matrix.cols
+            self.device_info[index]["rows"] = device.matrix.rows
 
-            if self.data["map_device"] == device["name"]:
+            if self.data["map_device"] == device.name:
                 found_device_name = True
                 self.map_device_combo.setCurrentIndex(index)
 
             # Disable option for existing effects and does not match another device
             if not is_new_file:
-                if not self.data["map_cols"] == device["matrix_cols"] or \
-                    not self.data["map_rows"] == device["matrix_rows"]:
+                if not self.data["map_cols"] == device.matrix.cols or \
+                    not self.data["map_rows"] == device.matrix.rows:
                         self.map_device_combo.model().item(index).setEnabled(False)
 
         # New effect? Select the first device.

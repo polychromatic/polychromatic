@@ -4,7 +4,12 @@
 # Copyright (C) 2020-2021 Luke Horwell <code@horwell.me>
 #
 """
-Contains the parent "Backend" class that is inherited by all backends.
+Contains the parent "Backend" class that is inherited by all backend modules.
+
+A "backend" implements a data layer of processing between Polychromatic's interfaces
+and the vendor's driver, daemon or other implementation. This application acts like
+an orchestrator for presenting and relaying instructions, but is not expected to
+actually send binary or payloads to the hardware itself.
 
 Refer to the online documentation for more details:
 https://docs.polychromatic.app/
@@ -17,302 +22,524 @@ import grp
 
 class Backend(object):
     """
-    This parent class is inherited by all backends in their individual modules
-    adjacent to this file.
+    A backend implementing the communication required between this software
+    and a driver/daemon.
     """
     def __init__(self, dbg, common, _):
         """
-        Identifiable data, variables and session storage for the backend.
+        Backend identification, variables and storage path for the backend.
         """
-        # See self.debug() for usage.
-        self._dbg = dbg
-
-        # Pass a string to _ to get the translated, localized string.
-        self._ = _
-
-        # The self.common module may contain useful functions for processing.
-        self.common = common
-
-        # See BackendHelpers() for usage.
-        self.helpers = BackendHelpers()
-
-        # Backend ID
+        # Set the Backend ID here
+        # (Also to be added in ../middleman.py)
         self.backend_id = "unknown"
 
-        # Logo should be stored in data/img/logo
+        # Name of backend
+        self.name = "OpenRazer"
+
+        # Filename of the logo stored in data/img/logo/ (SVG preferred)
         self.logo = "example.svg"
 
-        # Should be the version of the backend itself.
+        # Set this string to the backend version
         self.version = "0.1.0"
 
-        # URLs and license
+        # URLs and license for the backend
         self.project_url = ""
         self.bug_url = ""
         self.releases_url = ""
         self.license = "GPLv3"
 
-        # An optional storage area should the backend need to store additional data
-        # --> Add () at the end to trigger the real module.
-        self.config_store = self._get_config_store_path
+        # Use this for translating UI messages
+        self._ = _
+
+        # This module may contain useful functions. See BackendHelpers() for usage.
+        self.helpers = BackendHelpers()
+
+        # Private variables - don't worry about these. Do not use directly.
+        self._common = common
+        self._dbg = dbg
+
+        def __repr__(self):
+            return self.backend_id
 
     #####################################################################
-    # Internal only
-    #####################################################################
-    def _get_config_store_path(self):
-        """
-        Returns a path for the backend to optionally store data.
-
-        This function is called when setting self.config_store, it shouldn't be
-        reimplemented.
-        """
-        config_store = os.path.join(self.common.paths.config, "backends", self.backend_id)
-
-        if not os.path.exists(config_store):
-            os.makedirs(config_store)
-
-        return config_store
-
-    #####################################################################
-    # Useful functions the backend may wish to use
+    # Functions that may be useful for the implemented module
     #####################################################################
     def debug(self, message=""):
         """
         Use this function to output messages to the user when they have verbose enabled.
-        This may be useful when users are diagnosing issues with the backend.
+        This may be useful when users are diagnosing issues.
         """
         self._dbg.stdout("[{0}] {1}".format(self.backend_id, str(message)), self._dbg.debug, 1)
 
-    #####################################################################
-    # These are stubs and should be implemented by the backend's module.
-    #####################################################################
-    def get_device_list(self):
+    def get_config_store_path(self):
         """
-        Returns a list of supported devices that are controllable by this backend.
+        Returns a path for the backend to use for storing data, such as device
+        images or client/connection options.
+        """
+        config_path = os.path.join(self._common.paths.config, "backends", self.backend_id)
+        if not os.path.exists(config_path):
+            os.makedirs(config_path)
+        return config_path
 
-        Expected data:
-        [
-            {
-                "backend":      (str)   self.backend_id
-                "uid":          (int)   ID for this class to recognise this device.
-                "name":         (str)   Device name
-                "serial":       (str)   Device serial
-                "form_factor":  (dict)  self.common.get_form_factor()
-                "real_image":   (str)   Path to device image. Can be empty.
-                "zones":        (list)  List of zones
-            }
-        ]
+    def get_form_factor(self, form_factor="unrecognised"):
         """
-        return []
+        Return a form factor dictionary for Polychromatic.
+
+        See common.get_form_factor() for the dictionary output.
+        See common.FORM_FACTORS for a list of valid IDs to pass to this function.
+        """
+        return self._common.get_form_factor(self._, form_factor)
+
+    def get_icon(self, folder="", name=""):
+        """
+        Return an icon path from: data/img/<folder>/<name>.svg
+        The file extension is omitted.
+        """
+        return self._common.get_icon(folder, name)
+
+    def get_exception_as_string(self, e):
+        """
+        Returns a traceback in string format. Use this to relay error messages to the user.
+
+        try:
+            <something that might fail>
+        except Exception as e:
+            return self.get_exception_as_string(e)
+        """
+        return self._common.get_exception_as_string(e)
+
+    #####################################################################
+    # These are stubs and must be implemented by the backend's module.
+    #####################################################################
+    def init(self):
+        """
+        Perform the logic for initalizing the backend here, such as connecting
+        to the daemon using the necessary library.
+
+        Returns a boolean to indicate success or failure.
+        """
+        raise NotImplementedError
+        return False
+
+    class UnknownDeviceItem(object):
+        """
+        An object describing a device that may potentially be compatible, but
+        in its current state, cannot be used.
+
+        For example, a installation problem or permission error prevents
+        this device from being controlled.
+        """
+        def __init__(self):
+            # Human readable name of the device (if known)
+            self.name = "Unknown"
+
+            # Specify the backend ID here
+            self.backend_id = "openrazer"
+
+            # Use Backend.get_form_factor(), passing an ID from common.FORM_FACTORS
+            # that identifies this device. Pass "unrecognised" to function if unknown.
+            self.form_factor = {}
 
     def get_unsupported_devices(self):
         """
-        Returns a list of devices that are potentially controllable by the backend,
-        but due to reasons, the backend cannot control them right now.
-
-        For example, it could be due to a installation problem, permissions error or the
-        specific model is unsupported right now.
-
-        Expected data:
-        [
-            {
-                "backend":      (str)   self.backend_id
-                "name":         (str)   Device name or identifiable text (e.g. VID/PID)
-                "form_factor":  (dict)  self.common.get_form_factor()
-            }
-        ]
+        Returns a list of UnknownDeviceItem(), or empty list.
         """
         return []
 
-    def get_device(self, uid):
+    #####################################################################
+    class DeviceItem(object):
         """
-        Returns a dictionary describing the requested device. This may include current
-        settings, the type of lighting it supports, serial number and firmware version.
+        An object describing the complete state of the device and its available
+        functions. This may include current settings, device options,
+        serial number and firmware version.
 
-        If the backend is unable to process this (for example, the device was unplugged)
-        then nothing is returned. Should there be an error (e.g. backend bug) then
-        self.common.get_exception_as_string(e) should be returned to inform the user.
-
-        A successful request will return data according to the specification below.
-
-        Params:
-            uid         (int)   Device ID for that backend.
-
-        Accepted return data types:
-            (dict)              Success: Dictionary of metadata.
-            None                Failed: Requested device no longer available.
-            (str)               Failed: Backend error. Details of exception.
-
-        Expected data:
-        {
-            # Required
-
-            "backend":          (str)   self.backend_id
-            "uid":              (int)   ID for this class to recognise this device.
-            "name":             (str)   Name of device
-            "form_factor":      (dict)  self.common.get_form_factor()
-            "real_image"        (str)   Path to device image. Can be empty.
-            "serial":           (str)   Serial of device
-            "monochromatic":    (bool)  Does this device only have one colour?
-
-            # If these are not available, specify None:
-
-            "vid":              (str)   VID of device
-            "pid":              (str)   PID of device
-            "firmware_version": (str)   Firmware revision
-            "keyboard_layout":  (str)   Keyboard layout in format "en_GB"
-            "summary": [        (list)  List overview current status. Examples:
-                {
-                    "icon": "/path/to/icon.svg"     (str) Absolute path to icon
-                    "label": "1800 DPI"             (str) Label to display
-                }
-            ],
-            "dpi_x":            (int)   Device's DPI X value
-            "dpi_y":            (int)   Device's DPI Y value
-            "dpi_stages":       (list)  List of default DPI stages
-            "dpi_min":          (int)   Minimum DPI value supported by device
-            "dpi_max":          (int)   Maximum DPI value supported by device
-            "matrix":           (bool)  Supports individual LED mapping
-            "matrix_rows":      (int)   Total rows in LED matrix
-            "matrix_cols":      (int)   Total columns in LED matrix
-            "zone_labels": {    (dict)  Human readable label for each zone
-                "main":         (str)   E.g. "Base"
-            }
-            "zone_icons": {     (dict)  Graphic to visually represent each zone
-                "main":         (str)   E.g. Name of icon as seen in {data}/img/zones/
-            }
-            "zone_options": {   (dict)  Tells Polychromatic how to present the options.
-                "main": [       (dict)  Keys for each zone.
-                    {
-                        Required
-                        ==========================
-                        "id":                   (str)   ID to identify later. Used for icon.
-                        "label":                (str)   Human readable name for this option.
-                        "type":                 (str)   One of the following:
-                                                        "effect"
-                                                        "slider"
-                                                        "toggle"
-                                                        "multichoice"
-                                                        "label"
-                                                        "dialog"
-                                                        "button"
-                        "parameters": [         (list)  Parameters for "effect" and "multichoice".
-                            {
-                                "id":           (str)   ID to identify later. Used for icon if available.
-                                "label":        (str)   Human readable name for this parameter.
-                                "data":         (any)   Any data type according to the backend's needs.
-                                "active":       (bool)  This parameter is currently in use.
-                                "colours":      (list)  List of hex values last used for this option/parameter combo.
-                            }
-                        ],
-                        "colours":              (list)  List of hex values last used for this option (no parameters only)
-
-                        Only for "effect" and "toggle"
-                        ==========================
-                        "active":               (bool)  Effect/option in use?
-
-                        Only for "slider"
-                        ==========================
-                        "value":                (int)   Current value
-                        "min":                  (int)   Start of range, e.g. 0
-                        "max":                  (int)   End of range, e.g. 100
-                        "step":                 (int)   Range intervals, e.g. 5
-                        "suffix":               (str)   String to appear at the end in GUIs
-
-                        Only for "label" (controller/tray only)
-                        ==========================
-                        "message":              (str)   Text to display to the user. Use '\n' for new lines.
-                                                        Should use _ function for translation.
-
-                        Only for "dialog" (controller/tray only)
-                        ==========================
-                        "button_text":          (str)   Label for the button
-                        "message":              (str)   Text to display in the dialog box. Use '\n' for new lines.
-                                                        Should use _ function for translation.
-
-                        Only for "button"
-                        ==========================
-                        "button_text":          (str)   Label for the button
-                    }
-                ],
-            }
-
-            The zone key and any "id" keys are used for strings. These will be passed
-            within Polychromatic before being passed back via set_device_state()
-            for reference later.
-        }
+        This object also contains the code for executing options and parameters,
+        as well as defining how Polychromatic should present them.
         """
-        return None
+        def __init__(self):
+            # Human readable name of the device (including vendor name)
+            self.name = "Unnamed Device"
+
+            # Backend ID
+            self.backend_id = ""
+
+            # Use Backend.get_form_factor(), passing an ID from common.FORM_FACTORS
+            self.form_factor = {}
+
+            # Local file path to device image (or empty string for no image)
+            self.real_image = ""
+
+            # String containing the device's serial number, must be unique.
+            self.serial = "X"
+
+            # Does this device only have one colour?
+            # Set to True for hardware that have individually addressable LEDs,
+            # but physically only displays one colour from the RGB range.
+            self.monochromatic = False
+
+            # Device's vendor and product ID
+            self.vid = "????"
+            self.pid = "????"
+
+            # If applicable, a string describing the firmware version, e.g. "v1.0"
+            self.firmware_version = ""
+
+            # If applicable, a string describing the keyboard locale, e.g. "en_GB"
+            # This will be used for determining graphics in the effect editor.
+            self.keyboard_layout = ""
+
+            # Stores a DPI() object, unless device does not support DPI X/Y.
+            self.dpi = None
+
+            # Stores a Matrix() object, if device supports per-LED lighting.
+            self.matrix = None
+
+            # List of Zone() objects.
+            self.zones = []
+
+        def __str__(self):
+            return self.name
+
+        def __repr__(self):
+            return "{0}:{1}".format(self.serial, self.name.replace(" ", ""))
+
+        def refresh(self):
+            """
+            This function is called before showing the current status for a device, such as:
+            - Controller: After selecting/refreshing a device in the Device tab
+            - Tray: Once when the applet starts
+            - CLI: Listing the current device status
+
+            It is expected the device's options and features have their correct values at this
+            point, and acts as a cache until the device is refreshed again. It co-exists alongside
+            each option's .refresh() function, which is used when the application needs
+            to refresh a specific option or feature.
+
+            Each backend may implement this differently depending whether the
+            hardware knows what it's up to or if it uses a software persistence implementation.
+            """
+            return
+
+        def get_summary(self):
+            """
+            Returns a list describing the current hardware state of the device,
+            such as current brightness, effect or settings.
+
+            The list consists of a dictionary like so:
+            {
+                "icon": "/path/to/icon.svg"     (str) Absolute path to icon
+                "label": "1800 DPI"             (str) Label to display
+            }
+
+            Icons can be retrieved using Backend.get_icon()
+            """
+            # TODO: Add ID to fix positions effect/brightness/dpi/battery then the rest
+            # TODO: Fixed makes it easier for editing state in memory - one read/write!
+            return []
+
+        class DPI(object):
+            """
+            An object storing the current DPI values and get/set functions.
+            """
+            def __init__(self):
+                self.x = 0
+                self.y = 0
+                self.min = 0
+                self.max = 0
+                self.stages = []
+
+            def refresh(self):
+                """
+                Reload the DPI variables stored in this object.
+                """
+                raise NotImplementedError
+
+            def set(self, x, y):
+                """
+                Sets the new DPI value to the specified X/Y value.
+                """
+                raise NotImplementedError
+
+        class Matrix(object):
+            """
+            An object holding data and objects for individual LED software-driven lighting.
+
+            Devices with firmware or NAND/flash memory that isn't designed for software
+            programming should not implement this feature, as it may damage the hardware.
+            """
+            def __init__(self):
+                self.rows = 0
+                self.cols = 0
+
+            def init(self):
+                """
+                Prepare the device for custom frames. If unnecessary, this can be ignored.
+                """
+                return
+
+            def set(self, x=0, y=0, red=255, green=255, blue=255):
+                """
+                Set a colour for the specified co-ordinate.
+                """
+                raise NotImplementedError
+
+            def draw(self):
+                """
+                Send the data to the hardware to be displayed.
+                """
+                raise NotImplementedError
+
+            def clear(self):
+                """
+                Reset all LEDs to an off state.
+                """
+                raise NotImplementedError
+
+        class Zone(object):
+            """
+            An object that describes a specific lighting area of the hardware.
+            If the device has no concept of this or monolithic, call this zone "main".
+            """
+            def __init__(self):
+                # Internal ID
+                self.zone_id = ""
+
+                # Human readable text describing this zone, e.g. "Left Side"
+                self.label = "Unknown Zone"
+
+                # Full path using self.get_icon() - usually from {data}/img/zones/
+                self.icon = ""
+
+                # List of Option() objects - see below.
+                self.options = []
+
+                def __str__(self):
+                    return self.zone_id
+
+                def __repr__(self):
+                    return self.zone_id
+
+    class Option(object):
+        """
+        Options are settings that the user can change. This is the base class,
+        use one of the child classes below. These tell Polychromatic how to
+        present them, the parameters (if any) and the function to execute.
+        """
+        def __init__(self):
+            # Internal to identify this option later.
+            self.uid = ""
+
+            # Human readable text describing this option, e.g. "Brightness"
+            self.label = "Unknown Option"
+
+            # Full path using self.get_icon() - usually from {data}/img/options/
+            self.icon = ""
+
+            # ------ The following depend on the option ------
+            # Is this option currently selected?
+            self.active = False
+
+            # List of Parameter() objects
+            self.parameters = []
+
+            # Does selecting this option need a colour?
+            self.colours_required = 0
+
+            # Which colours are assigned for this option?
+            #   - Initially, this should be populated with previously set colours.
+            #   - Values in the list change when the user changes colours via the interface.
+            #   - Must be same length as colours_required.
+            # Format: ["#RRGGBB"]
+            self.colours = []
+
+        def __str__(self):
+            return self.uid
+
+        def __repr__(self):
+            return self.uid
+
+        def refresh(self):
+            """
+            Refresh the active variable for the option and that of any parameters.
+            If the option doesn't have an active state, ignore this function.
+            """
+            return
+
+        def apply(self, data=None):
+            """
+            Execute the action on the device. The "data" argument varies by option type.
+            """
+            raise NotImplementedError
+
+        class Parameter(object):
+            """
+            An object describing a parameter that can be selected. For example, a
+            "Wave" option may have a "Fast" and "Slow" mode.
+
+            This Parameter() object is passed to an option's apply() function.
+            """
+            def __init__(self):
+                # Can be any data type, this will be passed as an argument to Option.apply()
+                self.data = None
+
+                # Human readable text describing this option, e.g. "Fast"
+                self.label = "Unknown Parameter"
+
+                # Full path using get_icon() - usually from {data}/img/params/
+                self.icon = ""
+
+                # Is this parameter currently selected?
+                self.active = False
+
+                # Select this parameter as a fallback?
+                # (Only one should be default. If there's no default, use the first one)
+                self.default = False
+
+                # Does selecting this parameter require a colour?
+                # (Make sure the option's colour_list is populated)
+                self.colours_required = 0
+
+            def __str__(self):
+                return str(self.data)
+
+            def __int__(self):
+                return int(self.data)
+
+            def __repr__(self):
+                return str(self.data)
+
+    class EffectOption(Option):
+        """
+        For presenting hardware effects. These are grouped together
+        under one section/menu. There are no additional variables to set.
+
+        Parameters: Optional
+        Colours: Optional
+        """
+        def __init__(self):
+            super().__init__()
+
+    class ToggleOption(Option):
+        """
+        For options that are either on or off.
+
+        Parameters: Ignored
+        Colours: Ignored
+        """
+        def __init__(self):
+            super().__init__()
+
+            # Optionally change the labels depending on interface (menu/checkbox)
+            self.label_enable = "" # Enable
+            self.label_disable = "" # Disable
+            self.label_toggle = "" # Enabled
+
+            # Optionally the tray can show alternate icons representing on/off states
+            self.icon_enable = ""
+            self.icon_disable = ""
+
+        def apply(self, enabled=True):
+            """
+            Execute the action on the device. This argument will be a boolean.
+            """
+            raise NotImplementedError
+
+    class SliderOption(Option):
+        """
+        For an option that is a variable between two integers.
+
+        Parameters: Ignored
+        Colours: Ignored
+        """
+        def __init__(self):
+            super().__init__()
+
+            # Current value, the range, how much to step and the suffix strings
+            self.value = 0
+            self.min = 1
+            self.max = 100
+            self.step = 1
+            self.suffix = ""
+            self.suffix_plural = ""
+
+        def apply(self, value=0):
+            """
+            Execute the action on the device. This argument will be an integer.
+            """
+            raise NotImplementedError
+
+    class MultipleChoiceOption(Option):
+        """
+        For an option that should be presented as a drop down or list.
+        There are no variables to set. These are populated from parameters.
+
+        Parameters: Required
+        Colours: Ignored
+        """
+        def __init__(self):
+            super().__init__()
+
+    class DialogOption(Option):
+        """
+        No input necessary, but displays a message to the user when the
+        button (or menu item) is clicked.
+
+        Parameters: Ignored
+        Colours: Ignored
+        """
+        def __init__(self):
+            super().__init__()
+
+            self.button_label = ""
+            self.message = ""
+
+    class ButtonOption(Option):
+        """
+        No input necessary, run the apply() function straight away.
+
+        Parameters: Ignored
+        Colours: Ignored
+        """
+        def __init__(self):
+            super().__init__()
+
+            self.button_label = ""
+
+    def get_devices(self):
+        """
+        Return:
+            - (list)  A list of DeviceItem() objects.
+            - (str)   Traceback/error message. Cannot continue.
+        """
+        return NotImplementedError
+
+    def get_device_by_name(self, name):
+        """
+        For the application to quickly retrieve a device object based on the
+        name of the device.
+
+        Return:
+            - DeviceItem()      Found the specified device.
+            - (str)             Traceback/error message. Cannot use device.
+            - None              Device not found.
+        """
 
     def get_device_by_serial(self, serial):
         """
-        Return a get_device() object of the device by its serial number.
+        For the application to quickly retrieve a device object based on the
+        serial number.
 
-        If the device does not exist, return None.
+        Return:
+            - DeviceItem()      Found the specified device.
+            - (str)             Traceback/error message. Cannot use device.
+            - None              Device not found.
         """
-        raise NotImplementedError
-
-    def set_device_state(self, uid, zone, option_id, option_data, colours=[]):
-        """
-        Send a request to the hardware. The data specified by get_device()
-        "zone_options" will end up back here.
-
-        Params:
-            uid         (int)   Device ID for that backend.
-            zone        (str)   Zone ID, e.g. "logo"
-            option_id   (str)   ID of the specified control, e.g. "wave"
-            option_data (any)   Value depending on type, e.g.
-                                (bool)  for toggle
-                                (int)   for slider
-                                (str)   for "data" (effect/multichoice)
-            colours     (list)  List of hex values in format "#RRGGBB"
-
-        Accepted return data types:
-            True                Success: Executed request.
-            False               Failed: Invalid or malformed request.
-            None                Failed: Device no longer available.
-            (str)               Failed: Backend error. Details of exception.
-        """
-        return False
-
-    def get_device_object(self, uid):
-        """
-        Returns an object class with data and objects for per-key lighting integration.
-        This will be used when playing back custom effects - which could be static
-        or very dynamic at high frame rates.
-
-        Devices with firmware or NAND/flash memory that isn't designed for software
-        programming should not implement this stub, as it may damage the hardware.
-
-        Params:
-            uid         (int)   Device ID for that backend.
-
-        Accepted return data types:
-            (class object)      Success: See below.
-            None                Failed: Device no longer available.
-            (str)               Failed: Error details (exception)
-
-        Expected class variables:
-            backend             (str)   self.backend_id
-            name                (str)   Human-readable device name
-            rows                (int)   Number of rows. 1-based index.
-            cols                (int)   Number of columns. 1-based index.
-            serial              (str)   Device's serial. Must be unique.
-            form_factor         (str)   self.common.get_form_factor()
-
-        Expected functions:
-            set(x,y,red,green,blue)     Set a colour in the matrix.
-            draw()                      Render matrix to device.
-            clear()                     Clear all LEDs from matrix.
-            brightness(int)             Set the entire device's brightness by percentage.
-        }
-        """
-        return self.backend_id + " does not support get_device_object()!"
 
     def troubleshoot(self, fn_progress_set_max, fn_progress_advance):
         """
         Perform troubleshooting steps to identify issues with the installation of
-        the backend. This could check if the device is physically in the system, or the
-        binary is accessible (/usr/bin/xyz), for instance.
+        the backend. These checks could include verifying the device is being
+        detected, or a binary is accessible (/usr/bin/xyz), for instance.
 
         If the backend is simple in nature, implementing a troubleshooter might not be necessary.
 
@@ -320,12 +547,12 @@ class Backend(object):
         To optionally provide feedback using the progress bar, you can call fn_progress_set_max(int)
         with the maximium value. Then, call fn_progress_advance() to add 1 to the progress bar.
 
-        This should be implemented in pylib/troubleshoot/<backend>.py.
+        Troubleshooting code should be implemented in pylib/troubleshoot/<backend>.py.
 
-        Accepted return data types:
-            (list)              Completed. Dictionary of results in format below.
-            (e)                 Exception details: Failed. User cannot continue with this troubleshooter.
-            None                Troubleshooter not avaliable (e.g. wrong OS platform)
+        Return:
+            - (list)  A list of dictionary results in format below.
+            - (str)   Traceback/error message. Cannot continue.
+            - None    Troubleshooter not avaliable on this operating system
 
         Expected data:
         [
@@ -341,15 +568,15 @@ class Backend(object):
 
     def restart(self):
         """
-        User requests to restart the backend - which could be a daemon, background
-        task or some other process that initialises the devices.
+        User requests to restart the backend - which could be a daemon, or
+        other command to reinitialise the devices.
 
         For some backends, this may not even be necessary.
 
-        Accepted return data types:
-            True                Successfully executed restart.
-            False               Failed to restart.
-            None                Not applicable.
+        Return:
+            - True      Successfully executed restart.
+            - False     Failed to restart.
+            - None      Not applicable.
         """
         return None
 

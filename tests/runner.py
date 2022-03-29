@@ -9,6 +9,7 @@ import unittest
 import internals
 import effects
 import fx
+import middleman
 
 loader = unittest.TestLoader()
 suite  = unittest.TestSuite()
@@ -16,6 +17,7 @@ suite  = unittest.TestSuite()
 suite.addTests(loader.loadTestsFromModule(internals))
 suite.addTests(loader.loadTestsFromModule(effects))
 suite.addTests(loader.loadTestsFromModule(fx))
+suite.addTests(loader.loadTestsFromModule(middleman))
 
 # Initialize runner
 runner = unittest.TextTestRunner()

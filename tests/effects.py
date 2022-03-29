@@ -205,6 +205,8 @@ class TestEffects(unittest.TestCase):
         self.assertTrue(results["math"], "Failed to get module status for effect script!")
 
     def test_script_is_device_compatible_1(self):
+        self.skipTest("fixme:Test needs refactoring")
+
         handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
         # This effect was written specifically for this hardware
         device = {
@@ -216,6 +218,8 @@ class TestEffects(unittest.TestCase):
         self.assertTrue(handler.is_device_compatible(device), "Miscategorised a device as incompatible for effect script!")
 
     def test_script_is_device_compatible_2(self):
+        self.skipTest("fixme:Test needs refactoring")
+
         handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
         # This effect works on any keyboards
         device = {
@@ -227,6 +231,8 @@ class TestEffects(unittest.TestCase):
         self.assertTrue(handler.is_device_compatible(device), "Miscategorised a device as incompatible for effect script!")
 
     def test_script_is_device_compatible_3(self):
+        self.skipTest("fixme:Test needs refactoring")
+
         handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
         # This effect is not designed for mice
         device = {

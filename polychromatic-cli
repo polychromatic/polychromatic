@@ -37,6 +37,7 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), "pylib")):
         import pylib.locales as locales
         import pylib.procpid as procpid
         import pylib.middleman as middleman_module
+        from pylib.backends._backend import Backend as Backend
     except (ImportError, Exception) as e:
         print("Failed to import modules relatively.\n")
         raise e
@@ -51,6 +52,7 @@ else:
         import polychromatic.locales as locales
         import polychromatic.procpid as procpid
         import polychromatic.middleman as middleman_module
+        from polychromatic.backends._backend import Backend as Backend
     except (ImportError, Exception) as e:
         print("Polychromatic's modules could not be imported.")
         print("Check all dependencies are installed, the Python environment variables are correct, or try re-installing the application.\n")
@@ -67,10 +69,11 @@ pref.init(_)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 verbose = False
 
+########################################
+# Formatting
+########################################
+CHECKMARK = "✔"
 
-########################################
-# Pretty columns
-########################################
 def print_columns(data, print_header=False):
     """
     Prints a basic 'pretty' table ensuring each column has enough room.
@@ -206,11 +209,11 @@ if args.help:
             dbg.action + "[{0}]".format(", ".join(common.FORM_FACTORS))
         ],
         [
-            dbg.action + "  -n, --name" + dbg.warning + " {name}",
+            dbg.action + "  -n, --name" + dbg.warning + " Razer BlackWidow",
             dbg.normal + _("Select a device by name")
         ],
         [
-            dbg.action + "  -s, --serial" + dbg.warning + " {serial}",
+            dbg.action + "  -s, --serial" + dbg.warning + " XX1234567890123",
             dbg.normal + _("Select a device by serial number")
         ],
         ["", ""],
@@ -220,36 +223,36 @@ if args.help:
         ],
         [
             dbg.action + "  -k, --list-options",
-            dbg.normal + _("List supported parameters for selected device(s)")
+            dbg.normal + _("List all possible combinations for selected device(s)")
         ],
         ["", ""],
         [
-            dbg.action + "  -z, --zone" + dbg.warning + " {name}",
-            dbg.normal + _("Make change to specified zone. If omitted, use all available zones")
+            dbg.action + "  -z, --zone" + dbg.warning + " main",
+            dbg.normal + _("Make change to specified zone(s). Comma separated. If omitted, use all available zones")
         ],
         [
-            dbg.action + "  -o, --option" + dbg.warning + " {name}",
+            dbg.action + "  -o, --option" + dbg.warning + " brightness",
             dbg.normal + _("Set option on the device")
         ],
         [
-            dbg.action + "  -p, --parameter" + dbg.warning + " {name}",
+            dbg.action + "  -p, --parameter" + dbg.warning + " 50",
             dbg.normal + _("Set parameter for the option (if applicable)")
         ],
         [
-            dbg.action + "  -c, --colours" + dbg.warning + " {hex1,hex2}",
+            dbg.action + "  -c, --colours" + dbg.warning + " \"#RRGGBB,#RRGGBB\"",
             dbg.normal + _("Set colours in hex format (#RRGGBB). Comma separated")
         ],
         [
-            dbg.action + "  -e, --effect" + dbg.warning + " {name/path}",
+            dbg.action + "  -e, --effect" + dbg.warning + " <name/path>",
             dbg.normal + _("Set custom (software) effect by name or path")
         ],
         [
             "",
-            dbg.warning + _("For hardware effects, use --option (-o)")
+            dbg.warning + _("To set hardware effects, use --option (-o) instead")
         ],
         [
-            dbg.action + "  --dpi" + dbg.warning + " {X}[,Y]",
-            dbg.normal + _("Set dots per inch, affecting cursor speed. Example: 1800 or 1800,800")
+            dbg.action + "  --dpi" + dbg.warning + " <X>[,Y]",
+            dbg.normal + _("Set dots per inch.")
         ],
         ["", ""],
         [
@@ -265,7 +268,7 @@ if args.help:
             dbg.normal + _("Do not print with pretty columns")
         ],
         [
-            dbg.action + "  --locale" + dbg.warning + " {code}",
+            dbg.action + "  --locale" + dbg.warning + " \"" + i18n.get_current_locale() + "\"",
             dbg.normal + _("Force a specific language, e.g. de_DE")
         ],
         [
@@ -284,16 +287,23 @@ if args.help:
 ########################################
 # Select devices
 ########################################
+if verbose:
+    dbg.stdout("Loading backends...", dbg.action)
 middleman = middleman_module.Middleman(dbg, common, _)
 middleman.init()
 
 if verbose:
     dbg.stdout("Loaded {0} backend(s):".format(len(middleman.backends)), dbg.success)
     for backend in middleman.backends:
-        dbg.stdout(" - {0}".format(middleman_module.BACKEND_ID_NAMES[backend.backend_id]), dbg.success)
+        dbg.stdout(" - {0}".format(middleman_module.BACKEND_NAMES[backend.backend_id]), dbg.success)
 
     if len(middleman.not_installed) > 0:
-        dbg.stdout("Not imported: " + ", ".join(middleman.not_installed), dbg.debug)
+        dbg.stdout("Not installed: " + ", ".join(middleman.not_installed), dbg.debug)
+
+    if len(middleman.bad_init) > 0:
+        dbg.stdout("Unsuccessful:", dbg.warning)
+        for backend in middleman.bad_init:
+            dbg.stdout(" - {0}".format(backend.backend_id), dbg.warning)
 
     if len(middleman.import_errors) > 0:
         dbg.stdout("Errors:", dbg.warning)
@@ -304,31 +314,41 @@ if len(middleman.backends) == 0:
     dbg.stdout(_("No backends available."), dbg.error)
     exit(1)
 
-if args.device:
-    device_list = middleman.get_filtered_device_list(args.device)
-else:
-    device_list = middleman.get_device_list()
-
-device_list = sorted(device_list, key=lambda device: device["name"])
+device_list = []
+unsupported_list = []
 
 if args.name:
-    for device in device_list:
-        if device["name"] == str(args.name):
-            device_list = [device]
-            break
+    device = middleman.get_device_by_name(str(args.name))
+    if device:
+        device_list = [device]
+    else:
+        dbg.stdout("{0} {1}".format(_("Could not find a device with this name:"), args.name), dbg.error)
+        exit(1)
 
-if args.serial:
-    for device in device_list:
-        if device["serial"] == str(args.serial):
-            device_list = [device]
-            break
+elif args.serial:
+    device= middleman.get_device_by_serial(str(args.serial))
+    if device:
+        device_list = [device]
+    else:
+        dbg.stdout("{0} {1}".format(_("Could not find a device with this serial:"), args.serial), dbg.error)
+        exit(1)
 
-unsupported_list = middleman.get_unsupported_devices()
+elif args.device:
+    device_list = middleman.get_devices_by_form_factor(args.device)
+    if not device_list:
+        dbg.stdout("{0} {1}".format(_("No devices found that match this form factor:"), args.device), dbg.error)
+        dbg.stdout("{0} {1}".format(_("Avaliable form factors:"), ", ".join(common.FORM_FACTORS)), dbg.error)
+        exit(1)
+
+else:
+    device_list = middleman.get_devices()
+    unsupported_list = middleman.get_unsupported_devices()
+
+device_list = sorted(device_list, key=lambda device: device.name)
 
 if len(device_list) == 0:
     dbg.stdout(_("No devices connected."), dbg.error)
     exit(1)
-
 
 ########################################
 # List devices, zones or current status.
@@ -344,15 +364,15 @@ if args.list_devices:
 
     for device in device_list:
         table.append([
-            "{0}{1}".format(dbg.normal, device["name"]),
-            "{0}{1}".format(dbg.action, device["form_factor"]["id"]),
-            "{0}{1}".format(dbg.warning, device["serial"]),
-            "{0}{1}".format(dbg.magenta, ", ".join(device["zones"]))
+            "{0}{1}".format(dbg.normal, device.name),
+            "{0}{1}".format(dbg.action, device.form_factor["id"]),
+            "{0}{1}".format(dbg.warning, device.serial),
+            "{0}{1}".format(dbg.magenta, ", ".join(map(lambda zone: zone.zone_id, device.zones)))
         ])
 
     for device in unsupported_list:
         table.append([
-            "{0}{1} {2}".format(dbg.error, _("Unrecognised:"), device["name"]),
+            "{0}{1} {2}".format(dbg.error, _("Unrecognised:"), device.name),
             "",
             "",
             ""
@@ -363,167 +383,79 @@ if args.list_devices:
 if args.list_options:
     for device in device_list:
         print("")
-        details = middleman.get_device(device["backend"], int(device["uid"]))
         rows = []
 
-        if details == None:
-            continue
-
-        elif type(details) == str:
-            dbg.stdout(_("Could not retrieve device information:") + " {0}\n{1}".format(device["name"], details), dbg.error)
-            rows.append([_("Backend"), middleman_module.BACKEND_ID_NAMES[device["backend"]]])
-            continue
-
-        dbg.stdout("[{0}]".format(details["name"]), dbg.action)
+        dbg.stdout(device.name, dbg.action)
+        dbg.stdout("".join("–" for c in list(device.name)), dbg.action)
 
         # Print device information
         def _add_row(label, value, colour):
             rows.append([colour + label, colour + value])
 
-        if verbose:
-            if details["vid"] and details["pid"]:
-                _add_row("VID:PID", "{0}:{1}".format(details["vid"], details["pid"]), dbg.grey)
+        if device.vid and device.pid:
+            _add_row("VID:PID", "{0}:{1}".format(device.vid, device.pid), dbg.normal)
 
-            if details["serial"]:
-                _add_row(_("Serial"), details["serial"], dbg.grey)
+        if device.serial:
+            _add_row(_("Serial"), device.serial, dbg.normal)
 
-            if details["firmware_version"]:
-                _add_row(_("Firmware Version"), details["firmware_version"], dbg.grey)
+        if device.firmware_version:
+            _add_row(_("Firmware Version"), device.firmware_version, dbg.normal)
 
-            if details["keyboard_layout"]:
-                _add_row(_("Keyboard Layout"), details["keyboard_layout"], dbg.grey)
+        if device.keyboard_layout:
+            _add_row(_("Keyboard Layout"), device.keyboard_layout, dbg.normal)
 
-            if details["matrix"]:
-                dimensions = "{0} {2}, {1} {3}".format(details["matrix_rows"], details["matrix_cols"], _("rows"), _("columns"))
-            else:
-                _add_row(_("Custom Effects"), _("Not supported"), dbg.error)
+        if device.matrix:
+            row_suffix = _("row") if str(device.matrix.rows)[-1] == 1 else _("rows")
+            col_suffix = _("column") if str(device.matrix.cols)[-1] == 1 else _("columns")
+            dimensions = "{0} {1}, {2} {3}".format(device.matrix.rows, row_suffix, device.matrix.cols, col_suffix)
+        else:
+            _add_row(_("Custom Effects"), _("Unsupported"), dbg.error)
 
-            if details["matrix"] and not details["monochromatic"]:
-                _add_row(_("Custom Effects"), "{0} ({1})".format(_("Yes"), dimensions), dbg.success)
+        if device.matrix and not device.monochromatic:
+            _add_row(_("Custom Effects"), "{0} ({1})".format(_("Yes"), dimensions), dbg.success)
 
-            if details["matrix"] and details["monochromatic"]:
-                _add_row(_("Custom Effects"), "{0} ({1})".format(_("Yes (Limited RGB)"), dimensions), dbg.success)
+        if device.matrix and device.monochromatic:
+            _add_row(_("Custom Effects"), "{0} ({1})".format(_("Yes, Limited RGB"), dimensions), dbg.success)
 
-            # Space between details and next table
-            _add_row("", "", dbg.normal)
-            print_columns(rows)
+        # Space between details and next table
+        _add_row("", "", dbg.normal)
+        print_columns(rows)
+        # Print DPI range
+        if device.dpi:
+            dpi = device.dpi
+            dbg.stdout(_("Supports DPI (--dpi) between 1 and 2").replace("1", str(dpi.min)).replace("2", str(dpi.max)) + "\n", dbg.success)
 
         # Print options and their parameter/colour inputs
         rows = [[
             _("Zone") + " (-z)",
             _("Option") + " (-o)",
-            _("Parameter") + " (-p)",
-            _("Colours") + " (-c)"
+            _("Parameters") + " (-p)",
+            _("Colours") + " (-c)",
         ]]
 
-        def _add_row():
-            rows.append([col_zone, col_option, col_param, col_colours])
+        def _add_combination(zone, option, params):
+            colours = str(option.colours_required) if option.colours_required > 0 else ""
+            rows.append([zone.zone_id, option.uid, params, colours])
 
-        def _list_colours(colour_count, control):
-            if colour_count == 0:
-                return dbg.grey + "-"
-            cur_colours = []
-            listed = 1
-            while listed <= colour_count:
-                cur_colours.append(control["colour_" + str(listed)].upper())
-                listed += 1
-            return "{0} ({1})".format(colour_count, ", ".join(cur_colours))
+        device.refresh()
+        for zone in device.zones:
+            for option in zone.options:
+                column_params = ""
+                column_colours = ""
 
-        for zone in details["zone_options"]:
-            for control in details["zone_options"][zone]:
-                col_zone = dbg.normal + zone
-                col_option = dbg.normal + control["id"]
-                col_colours = dbg.grey + "-"
-                col_param = dbg.grey + "-"
+                if option.parameters:
+                    params = ", ".join(str(param.data) for param in option.parameters)
+                    _add_combination(zone, option, params)
+                    continue
 
-                option_type = control["type"]
-                try:
-                    params = control["parameters"]
-                except KeyError:
-                    params = []
+                if isinstance(option, Backend.ToggleOption):
+                    _add_combination(zone, option, "off/0, on/1")
 
-                try:
-                    colour_hex = control["colours"]
-                except KeyError:
-                    colour_hex = []
+                elif isinstance(option, Backend.SliderOption):
+                    _add_combination(zone, option, "{0} - {1} {2}".format(str(option.min), str(option.max), option.suffix_plural))
 
-                if colour_hex:
-                    col_colours = ", ".join(colour_hex)
-
-                if option_type == "slider":
-                    col_param = str(control["value"])
-                    if control["value"] > 0:
-                        col_zone = dbg.success + zone
-                        col_option = dbg.success + control["id"]
-                        col_param = dbg.success + col_param
-                    else:
-                        col_zone = dbg.error + zone
-                        col_option = dbg.error + control["id"]
-                        col_param = dbg.error + col_param
-                    _add_row()
-
-                elif option_type == "toggle":
-                    if control["active"]:
-                        col_zone = dbg.success + zone
-                        col_option = dbg.success + control["id"]
-                        col_param = dbg.success + _("On") + " (1)"
-                    else:
-                        col_zone = dbg.error + zone
-                        col_option = dbg.error + control["id"]
-                        col_param = dbg.error + _("Off") + " (0)"
-                    _add_row()
-
-                elif option_type in ["multichoice", "effect"] and len(params) == 0:
-                    if control["active"]:
-                        col_zone = dbg.success + zone
-                        col_option = dbg.success + control["id"]
-                        col_param = dbg.success + "-"
-                        col_colours = dbg.success + col_colours
-                    else:
-                        col_colours = dbg.normal + col_colours
-                    _add_row()
-
-                elif option_type in ["multichoice", "effect"] and len(params) > 0:
-                    for param in control["parameters"]:
-                        col_zone = dbg.normal + zone
-                        col_option = dbg.normal + control["id"]
-                        col_colours = dbg.grey + "-"
-                        col_param = param["id"]
-
-                        try:
-                            if param["active"] and control["active"]:
-                                col_zone = dbg.success + zone
-                                col_option = dbg.success + control["id"]
-                                col_param = dbg.success + col_param
-                                col_colours = dbg.success + col_colours
-                        except KeyError:
-                            pass
-
-                        try:
-                            col_colours = ", ".join(param["colours"])
-                        except KeyError:
-                            pass
-
-                        col_param += "{0} ({1})".format(dbg.grey, str(param["data"]))
-
-                        _add_row()
-
-                elif option_type == "button":
-                    col_param = ""
-                    col_zone = dbg.success + zone
-                    col_option = dbg.success + control["id"]
-                    col_param = dbg.success + col_param
-                    _add_row()
-
-        # DPI data
-        if details["dpi_x"] or details["dpi_y"]:
-            col_zone = dbg.grey + "-"
-            col_option = dbg.success + "dpi"
-            col_param = dbg.success
-            col_colours = dbg.grey + "-"
-            col_param += "{0},{1}".format(details["dpi_x"], details["dpi_y"])
-            col_param += " ({0}-{1})".format(details["dpi_min"], details["dpi_max"])
-        _add_row()
+                else:
+                    _add_combination(zone, option, "")
 
         print_columns(rows, True)
 
@@ -536,57 +468,43 @@ if args.list_devices or args.list_options:
 # Set DPI
 ########################################
 if args.dpi:
-    for device_item in device_list:
-        if device_item["form_factor"]["id"] != "mouse":
+    for device in device_list:
+        if device.form_factor["id"] != "mouse":
             continue
 
-        device = middleman.get_device(device_item["backend"], device_item["uid"])
+        if not device.dpi:
+            dbg.stdout("{0}: {1}".format(device.name, _("DPI is not supported. Or, it may need to be set using -o/--option.")), dbg.error)
 
-        device_name = device["name"]
         dpi_values = args.dpi.split(",")
-        both_x_y = len(dpi_values) >= 2
-        dpi_min = device["dpi_min"]
-        dpi_max = device["dpi_max"]
 
-        if both_x_y:
-            dpi_values = [int(dpi_values[0]), int(dpi_values[1])]
-        else:
-            dpi_values = [int(dpi_values[0]), int(dpi_values[0])]
-
-        for i in range(0, 1):
-            dpi = dpi_values[i]
-            axis = "X" if 1 else "Y"
-
-            if dpi > dpi_max:
-                dbg.stdout(_("DPI X too high for [device]: [1] (Maximum is [2])").replace("[1]", str(dpi)).replace("[2]", str(dpi_max)).replace("[device]", device_name).replace("X", axis))
+        for number in dpi_values:
+            if int(number) > device.dpi.max:
+                dbg.stdout("{0}: {1} {2} ({3}: {4})".format(device.name, _("DPI too high:"), number, _("Maximum"), str(device.dpi.max)), dbg.error)
                 exit(1)
 
-            if dpi < dpi_min:
-                dbg.stdout(_("DPI X too low for [device]: [1] (Minimum is [2])").replace("[1]", str(dpi)).replace("[2]", str(dpi_min)).replace("[device]", device_name).replace("X", axis))
+            if int(number) < device.dpi.min:
+                dbg.stdout("{0}: {1} {2} ({3}: {4})".format(device.name, _("DPI too low:"), number, _("Minimum"), str(device.dpi.min)), dbg.error)
                 exit(1)
 
         if verbose:
-            dbg.stdout("Setting DPI for {0}: {1}".format(device_name, dpi_values))
+            dbg.stdout("{0}: {1}".format(device.name, "Setting DPI to 100".replace("100", ",".join(dpi_values))), dbg.success)
 
-        if not device["dpi_x"]:
-            # Devices like DeathAdder 3.5G uses a fixed DPI X value, which expects one integer only.
-            dpi_values = int(dpi_values[0])
+        if len(dpi_values) == 1:
+            x = y = dpi_values[0]
+        else:
+            x = dpi_values[0]
+            y = dpi_values[1]
 
-        result = middleman.set_device_state(device["backend"], device["uid"], device["serial"], None, "dpi", dpi_values, [])
-
-        if result == False:
-            dbg.stdout(_("Error: [device] - Invalid request!").replace("[device]", device_name), dbg.error)
-        elif result == True and verbose:
-            dbg.stdout("Successfully executed request.", dbg.success)
-        elif type(result) == str:
-            dbg.stdout(_("Error: [device] - Backend threw exception:").replace("[device]", device_name), dbg.error)
-            dbg.stdout(result, dbg.error)
+        try:
+            device.dpi.set(x, y)
+        except Exception as e:
+            dbg.stdout(_("{0}: {1}\n{2}".format(device.name, _("Failed to set DPI due to an error:"), common.get_exception_as_string(e))), dbg.error)
 
     exit(0)
 
 
 ########################################
-# Set custom (software) effect
+# Set custom software effect
 ########################################
 if args.effect:
     effectman = effects.EffectFileManagement(i18n, _, dbg)
@@ -622,15 +540,15 @@ if args.effect:
 
 
 ########################################
-# Set device state
+# Set an option
 ########################################
 apply_zone = args.zone
 apply_option = args.option
 apply_param = args.parameter
-if args.colours:
-    apply_colours = []
+apply_colours = []
 
-    # Validate colour input (hash at the beginning, 6 length)
+# Validate colour input (hash at the beginning, 6 length)
+if args.colours:
     valid = True
     for colour in args.colours.split(","):
         if colour[0] != "#":
@@ -646,117 +564,157 @@ if args.colours:
 
     if not valid:
         exit(1)
-else:
-    apply_colours = []
 
-for device_item in device_list:
-    device = middleman.get_device(device_item["backend"], device_item["uid"])
-    if not device:
-        continue
-    elif type(device) == str:
-        dbg.stdout(_("There was a problem reading the device:") + " " + device_item["name"], dbg.error)
-        dbg.stdout(device + "\n", dbg.error)
-        continue
+if not apply_option:
+    dbg.stdout(_("Please specify --option (-o). Use --list-options (-k) to view available combinations."), dbg.error)
+    exit(1)
 
-    zones = device["zone_options"].keys()
 
-    # Check an option was specified
-    if not apply_option:
-        dbg.stdout(_("Please specify an option (-o). Use --list-options (-k) to view available options."), dbg.error)
-        exit(1)
+def print_device_error(device, zone, reason, item):
+    zone_label = ""
+    if len(device.zones) > 1:
+        zone_label = " ({0})".format(zone.zone_id)
+    dbg.stdout("{0}{1}: {2} '{3}'".format(device.name, zone_label, reason, str(item)), dbg.error)
 
-    # If a zone was specified, does it match this device?
+
+def _get_zone_object(device, zone_id):
+    for zone in device.zones:
+        if zone.zone_id == zone_id:
+            return zone
+    return None
+
+
+def _get_option_object(zone, option_id):
+    for option in zone.options:
+        if str(option.uid) == option_id:
+            return option
+    return None
+
+
+def _get_parameter_object(option, param_id):
+    for param in option.parameters:
+        if str(param.data) == param_id:
+            return param
+    return None
+
+
+def _apply_option(device, option, parameter, colours):
+    middleman.stop_software_effect(device.serial)
+    try:
+        option.colours = colours
+        option.apply(parameter)
+    except Exception as e:
+        print_device_error(device, zone, _("Failed to set option"), option.uid)
+        dbg.stdout(common.get_exception_as_string(e), dbg.error)
+        return False
+
+    if verbose:
+        dbg.stdout("{0}: OK".format(device.name), dbg.success)
+    return True
+
+
+def _apply_device_options(device, zone_id):
+    """
+    Returns a boolean indicating success or failure. This will be used later for
+    the exit code.
+    """
+    zone = _get_zone_object(device, zone_id)
+
+    if not zone:
+        print_device_error(device, zone, _("No such zone"), zone_id)
+        return False
+
+    option = _get_option_object(zone, apply_option)
+
+    if not option:
+        print_device_error(device, zone, _("No such option"), apply_option)
+        return False
+
+    # Validate option has enough colours
+    if option.colours_required:
+        if not apply_colours:
+            print_device_error(device, zone, _("Missing --colours (-c) for option"), apply_option)
+            return False
+
+        if len(apply_colours) > option.colours_required:
+            dbg.stdout(_("Too many colours specified. Ignoring excess."), dbg.warning)
+
+        elif option.colours_required < len(apply_colours):
+            print_device_error(device, zone, _("Insufficient --colours (-c) for option"), apply_option)
+            dbg.stdout(_("Required colours:") + " " + str(option.colours_required), dbg.warning)
+            return False
+
+    # Validate parameters for effects and multiple choice are present
+    param = _get_parameter_object(option, apply_param)
+
+    if option.parameters:
+        param_ids = list(map(lambda param: str(param.data), option.parameters))
+
+        if not apply_param:
+            print_device_error(device, zone, _("Missing --parameter (-p) for option"), apply_option)
+            dbg.stdout(_("Available parameters:") + " " + ", ".join(param_ids), dbg.warning)
+            return False
+
+        if not apply_param in param_ids:
+            print_device_error(device, zone, _("Unsupported parameter"), apply_param)
+            dbg.stdout(_("Available parameters:") + " " + ", ".join(param_ids), dbg.warning)
+            return False
+
+        if param.colours_required:
+            if not apply_colours:
+                print_device_error(device, zone, _("Missing --colours (-c) for parameter"), apply_param)
+                return False
+
+            if len(apply_colours) > param.colours_required:
+                dbg.stdout(_("Too many colours specified. Ignoring excess."), dbg.warning)
+
+            elif param.colours_required < len(apply_colours):
+                print_device_error(device, zone, _("Insufficient --colours (-c) for parameter"), apply_param)
+                dbg.stdout(_("Required colours:") + " " + str(param.colours_required), dbg.warning)
+                return False
+
+        return _apply_option(device, option, param.data, apply_colours)
+
+    # Validate parameters for other types of options
+    if isinstance(option, Backend.ToggleOption):
+        if not apply_param:
+            print_device_error(device, zone, _("Missing --parameter (-p) for option"), apply_option)
+            dbg.stdout(_("Available parameters:") + " 0, off, 1, on", dbg.warning)
+            return False
+
+        if apply_param in ["on", "1"]:
+            return _apply_option(device, option, True, apply_colours)
+        elif apply_param in ["off", "0"]:
+            return _apply_option(device, option, False, apply_colours)
+
+        print_device_error(device, zone, _("Invalid parameter"), apply_param)
+        dbg.stdout(_("Available parameters:") + " 0, off, 1, on", dbg.warning)
+        return False
+
+    elif isinstance(option, Backend.SliderOption):
+        if not apply_param:
+            print_device_error(device, zone, _("Missing --parameter (-p) for option"), apply_option)
+            dbg.stdout(_("Available parameters:") + " {0} - {1}".format(str(option.min), str(option.max)), dbg.warning)
+            return False
+
+        return _apply_option(device, option, int(apply_param), apply_colours)
+
+    # Option does not take parameters
+    return _apply_option(device, option, None, apply_colours)
+
+
+results = []
+for device in device_list:
+    # User specifies the zone(s)
     if apply_zone:
-        if apply_zone in zones:
-            zones = [apply_zone]
-        else:
-            dbg.stdout(_("Skipping: [device] - No such zone '[z]'").replace("[z]", apply_zone).replace("[device]", device["name"]), dbg.warning)
-            continue
+        results.append(_apply_device_options(device, apply_zone))
 
-    # Validate the request has the required parameters and colours
-    valid = False
-    user_colours_count = len(apply_colours)
-    device_name = device["name"]
+    # Or, loop through them all
+    else:
+        for zone in device.zones:
+            results.append(_apply_device_options(device, zone.zone_id))
 
-    for zone in zones:
-        for option in device["zone_options"][zone]:
-            if option["id"] == apply_option:
-
-                # Does this option require parameters?
-                try:
-                    params = option["parameters"]
-                except KeyError:
-                    # Not an effect or multichoice type.
-                    params = []
-                if len(params) > 0 and not apply_param:
-                    dbg.stdout(_("Skipping: [device] - Missing a required parameter.").replace("[device]", device_name), dbg.warning)
-                    continue
-
-                elif len(params) > 0:
-                    valid_param = False
-
-                    # Is a valid parameter listed here?
-                    for param in params:
-                        # -p may accept 'raw' data as well as the string 'ID'
-                        #   E.g. OpenRazer uses 1 or 2 for 'wave', but ID isn't interchangable between devices.
-                        #   left/right = mouse, or anticlock/clock = mousemat
-                        if str(param["data"]) == str(apply_param):
-                            valid_param = True
-                            if type(param["data"]) == int:
-                                apply_param = int(param["data"])
-                            else:
-                                apply_param = param["data"]
-                            break
-
-                        elif param["id"] == apply_param:
-                            valid_param = True
-                            apply_param = param["data"]
-                            break
-
-                    if not valid_param:
-                        dbg.stdout(_("Skipping: [device] - This parameter is not supported.").replace("[device]", device_name), dbg.warning)
-                        continue
-
-                    # Do we have all the colours required?
-                    try:
-                        required_colour_count = len(param["colours"])
-
-                        if required_colour_count > user_colours_count:
-                            dbg.stdout(_("Skipping: [device] - Requires 1 colour(s) but only 2 specified.").replace("[device]", device_name).replace("1", str(required_colour_count)).replace("2", str(user_colours_count)), dbg.warning)
-                            continue
-                    except KeyError:
-                        if verbose:
-                            dbg.stdout("Colours not used for this parameter", dbg.debug)
-
-                    valid = True
-
-                elif len(params) == 0:
-                    try:
-                        required_colour_count = len(option["colours"])
-
-                        if len(option["colours"]) > len(apply_colours):
-                            dbg.stdout(_("Skipping: [device] - Requires 1 colour(s) but only 2 specified.").replace("[device]", device_name).replace("1", str(required_colour_count)).replace("2", str(len(apply_colours))), dbg.warning)
-                            continue
-                    except KeyError:
-                        if verbose:
-                            dbg.stdout("Colours not used for this option", dbg.debug)
-
-                    valid = True
-
-    if not valid:
-        dbg.stdout(_("Skipping: [device] - Setting this option was unsuccessful or is not supported.").replace("[device]", device_name), dbg.warning)
-        continue
-
-    for zone in zones:
-        result = middleman.set_device_state(device["backend"], device["uid"], device["serial"], zone, apply_option, apply_param, apply_colours)
-
-        if result == False:
-            # This shouldn't really happen, since the input was validated.
-            dbg.stdout(_("Error: [device] - Invalid request!").replace("[device]", device_name), dbg.error)
-        elif result == True and verbose:
-            dbg.stdout("Successfully executed request.", dbg.success)
-        elif type(result) == str:
-            dbg.stdout(_("Error: [device] - Backend threw exception:").replace("[device]", device_name), dbg.error)
-            dbg.stdout(result, dbg.error)
+if False in results:
+    exit(1)
 
 exit(0)

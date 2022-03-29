@@ -150,7 +150,7 @@ class ProcessViewer():
     def _refresh_list(self):
         procmgr = procpid.ProcessManager()
         components = procmgr._get_component_pid_list()
-        device_list = self.appdata.middleman.get_device_list()
+        device_list = self.appdata.middleman.get_devices()
 
         tree = self.dialog.findChild(QTreeWidget, "TasksTree")
         tree.clear()
