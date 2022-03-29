@@ -199,6 +199,7 @@ class OpenRazerBackend(Backend):
 
         device = OpenRazerDeviceItem()
         device._rdevice = rdevice
+        device.backend_id = "openrazer"
         device.name = str(rdevice.name)
         device.form_factor = self._get_form_factor(rdevice)
         device.real_image = self._get_device_image(rdevice)

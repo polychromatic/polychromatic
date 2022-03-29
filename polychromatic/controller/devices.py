@@ -919,7 +919,7 @@ class DevicesTab(shared.TabData):
                     item.setIcon(1 if value != "" else 0, QIcon(icon))
                 return item
 
-            backend = self.middleman.get_backend(device.backend_id)
+            backend = self.middleman.get_backend(device)
 
             hw = mkitem(_("Hardware"))
             hw.addChild(mkitem(_("Name"), device.name))

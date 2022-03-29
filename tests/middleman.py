@@ -40,12 +40,6 @@ class TestMiddleman(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_conditions_ok(self):
-        self.assertIsNone(self.middleman.get_backend("openrazer"))
-
-    def test_get_backend(self):
-        self.assertIsNotNone(self.middleman.get_backend("dummy"))
-
     def test_backend_running(self):
         self.assertTrue(self.middleman.is_backend_running("dummy"))
 

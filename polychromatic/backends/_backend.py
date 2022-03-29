@@ -163,7 +163,7 @@ class Backend(BackendBase):
             self.name = "Unnamed Device"
 
             # Backend ID
-            self.backend_id = ""
+            self.backend_id = "unknown"
 
             # Use Backend.get_form_factor(), passing an ID from common.FORM_FACTORS
             self.form_factor = {}

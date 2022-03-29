@@ -90,14 +90,13 @@ class Middleman(object):
         for backend_id in BACKEND_NAMES.keys():
             _load_backend_module(backend_id)
 
-    def get_backend(self, backend_id):
+    def get_backend(self, device):
         """
-        Returns a specific backend. If not loaded, returns None.
+        Returns the backend object for the specified device.
         """
         for module in self.backends:
-            if module.backend_id == backend_id:
+            if device.backend_id == module.backend_id:
                 return module
-        return None
 
     def is_backend_running(self, backend_id):
         """

@@ -431,10 +431,10 @@ class OpenRazerPreferences(shared.TabData):
         """
         Returns the current version of OpenRazer in decimal format: <major.minor>, e.g. 3.1
         """
-        openrazer = self.middleman.get_backend("openrazer")
-        if openrazer:
-            version = openrazer.version.split(".")[:2]
-            return float("{0}.{1}".format(version[0], version[1]))
+        for backend in self.middleman.backends:
+            if backend.backend_id == "openrazer":
+                version = backend.version.split(".")[:2]
+                return float("{0}.{1}".format(version[0], version[1]))
         return 0
 
     def open_log(self):
