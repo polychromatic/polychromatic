@@ -300,7 +300,8 @@ class OpenRazerBackend(Backend):
         # Determine DPI stages, or generate them if not known
         default_stages = {
             16000: [800, 1800, 4500, 9000, 16000],
-            8200: [800, 1800, 4800, 6400, 8200]
+            8500: [800, 1600, 3200, 6400, 8500],
+            8200: [800, 1800, 3200, 6400, 8200],
         }
 
         try:
