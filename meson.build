@@ -2,27 +2,20 @@ project('polychromatic',
         version : '0.8.0',
         meson_version : '>=0.47.0')
 
-# TODO: Remove code in 'else' once meson version is above 0.46.0
-if meson.version().version_compare('>=0.46.0')
-    python = import('python').find_installation()
-    py_install_dir = python.get_install_dir()
-else
-    python3 = import('python3')
-    py_install_dir = python3.sysconfig_path('platlib')
-endif
+i18n = import('i18n')
+python = import('python').find_installation()
+py_install_dir = python.get_install_dir()
 
-# FIXME: Debian/Ubuntu Python path should be 'dist-packages'
+# Debian/Ubuntu's Python path should be 'dist-packages'
 if build_machine.system() == 'linux'
-    if run_command('[', '-d', '/usr/lib/python3/dist-packages', ']').returncode() == 0
+    if run_command('[', '-d', '/usr/lib/python3/dist-packages', ']', check: true).returncode() == 0
         py_install_dir = 'lib/python3/dist-packages'
     endif
 endif
 
-i18n = import('i18n')
-
 # Compile Qt styles
-# - This needs to run externally because there is a concatination situation
-#   since SASS cannot process Qt's gradient syntax.
+# - Needs to run externally because SASS cannot process Qt's gradient syntax.
+#   so regular CSS needs to be concatenated.
 sass = find_program('sassc')
 run_command('scripts/build-styles.sh', check: true)
 
