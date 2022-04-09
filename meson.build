@@ -1,6 +1,6 @@
 project('polychromatic',
         version : '0.8.0',
-        meson_version : '>=0.40.0')
+        meson_version : '>=0.47.0')
 
 # TODO: Remove code in 'else' once meson version is above 0.46.0
 if meson.version().version_compare('>=0.46.0')
@@ -24,7 +24,7 @@ i18n = import('i18n')
 # - This needs to run externally because there is a concatination situation
 #   since SASS cannot process Qt's gradient syntax.
 sass = find_program('sassc')
-run_command('scripts/build-styles.sh')
+run_command('scripts/build-styles.sh', check: true)
 
 install_data('polychromatic-controller',
              'polychromatic-tray-applet',
