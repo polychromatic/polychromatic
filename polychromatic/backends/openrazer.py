@@ -304,14 +304,18 @@ class OpenRazerBackend(Backend):
             8200: [800, 1800, 3200, 6400, 8200],
         }
 
+        def _autogen_stage(value):
+            """Guess a 'valid' DPI based on maximum as calculations may cause invalid range."""
+            return round(value / 100) * 100
+
         try:
             dpi.stages = default_stages[dpi.max]
         except KeyError:
             dpi.stages = [
-                int(dpi.max / 10),
-                int(dpi.max / 8),
-                int(dpi.max / 4),
-                int(dpi.max / 2),
+                _autogen_stage(dpi.max / 10),
+                _autogen_stage(dpi.max / 8),
+                _autogen_stage(dpi.max / 4),
+                _autogen_stage(dpi.max / 2),
                 int(dpi.max)
             ]
 
