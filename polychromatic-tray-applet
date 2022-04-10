@@ -37,6 +37,7 @@ from gi.repository import Gtk, Gdk
 
 from polychromatic.base import PolychromaticBase as PolychromaticBase
 from polychromatic.backends._backend import Backend
+import polychromatic.bulkapply as bulkapply
 import polychromatic.effects as effects
 import polychromatic.preferences as pref
 import polychromatic.procpid as procpid
@@ -342,7 +343,7 @@ class PolychromaticTrayApplet(PolychromaticBase):
             bulk_menu, bulk_menu_item = indicator.create_submenu(self._("Apply to All"), True, self._get_icon("devices", "all"))
             indicator.create_seperator(menu)
             indicator.add_menu_item(menu, bulk_menu_item)
-            print("fixme:bulk apply options")
+            self.create_bulk_menu(bulk_menu)
 
         # General Options
         indicator.create_seperator(menu)
@@ -547,6 +548,24 @@ class PolychromaticTrayApplet(PolychromaticBase):
         for line in option["message"].split("\n"):
             indicator.create_menu_item(submenu, line, False)
         return submenu_item
+
+    def create_bulk_menu(self, bulk_menu):
+        """
+        Creates a submenu containing options to "apply to all" connected devices.
+        """
+        bulk_options = bulkapply.BulkApplyOptions(self.middleman)
+
+        def _create_bulk_submenu(options, label, icon):
+            if not options:
+                return
+            submenu, item = indicator.create_submenu(label, True, icon)
+            for option in options:
+                indicator.create_menu_item(submenu, option.label, True, option.apply, None, option.icon)
+            indicator.add_menu_item(bulk_menu, item)
+
+        _create_bulk_submenu(bulk_options.brightness, self._("Brightness"), self._get_icon("options", "brightness"))
+        _create_bulk_submenu(bulk_options.effects, self._("Effects"), self._get_icon("general", "effects"))
+        _create_bulk_submenu(bulk_options.colours, self._("Primary Colour"), self._get_icon("general", "palette"))
 
     def _get_colour_icon(self, colour_hex):
         """

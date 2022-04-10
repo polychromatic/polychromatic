@@ -217,13 +217,12 @@ def generate_colour_bitmap(dbg, colour_hex, size=22):
 
     The file is cached to speed up future retrievals of the colour.
     """
+    # FIXME: Refactoring required: Remove 'dbg'
     cache_name = hashlib.md5(str(colour_hex + str(size)).encode("utf-8")).hexdigest()
     cache_path = os.path.join(paths.assets_cache, cache_name + ".svg")
     cache_dir = os.path.dirname(cache_path)
 
     if not os.path.exists(cache_path):
-        dbg.stdout("Generating colour SVG: " + colour_hex, dbg.action, 1)
-
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
 

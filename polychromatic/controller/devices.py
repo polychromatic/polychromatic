@@ -4,6 +4,7 @@
 This module controls the 'Devices' tab of the Controller GUI.
 """
 
+from .. import bulkapply
 from .. import common
 from .. import effects
 from .. import locales
@@ -11,6 +12,7 @@ from .. import preferences as pref
 from .. import middleman
 from . import shared
 from ..backends._backend import Backend as Backend
+from ..qt.flowlayout import FlowLayout as QFlowLayout
 
 import os
 import subprocess
@@ -153,6 +155,7 @@ class DevicesTab(shared.TabData):
 
         self.set_cursor_busy()
         layout = self.Contents.layout()
+        layout.setContentsMargins(0, 0, 0, 0)
         shared.clear_layout(layout)
 
         # Show a summary of the device state
@@ -655,6 +658,7 @@ class DevicesTab(shared.TabData):
         self.SidebarTree.parent().hide()
 
         layout = self.Contents.layout()
+        layout.setContentsMargins(0, 0, 0, 0)
         shared.clear_layout(layout)
 
         graphic = {
@@ -747,6 +751,7 @@ class DevicesTab(shared.TabData):
         Show guidance on a device that could be controlled, but isn't possible right now.
         """
         layout = self.Contents.layout()
+        layout.setContentsMargins(0, 0, 0, 0)
         shared.clear_layout(layout)
 
         backend_name = middleman.BACKEND_NAMES[unknown_device.backend_id]
@@ -790,6 +795,7 @@ class DevicesTab(shared.TabData):
         due to a temporary glitch or unsupported feature.
         """
         layout = self.Contents.layout()
+        layout.setContentsMargins(0, 0, 0, 0)
         shared.clear_layout(layout)
 
         def _view_details():
@@ -809,66 +815,68 @@ class DevicesTab(shared.TabData):
 
     def open_apply_to_all(self):
         """
-        Populate a list of common options to expressly set that work for all connected devices.
+        Show options that change the device state for all connected devices.
         """
         self.set_cursor_busy()
         layout = self.Contents.layout()
+        layout.setContentsMargins(15, 15, 15, 15)
         shared.clear_layout(layout)
 
-        print("stub:open_apply_to_all()")
-        return
+        btngrp = QButtonGroup()
+        bulk_options = bulkapply.BulkApplyOptions(self.middleman)
+        mix_match_msg = self._("Not available for all connected devices")
 
-
-        # For creating controls
-        self.btn_grps["all"] = QButtonGroup()
-
-        def _create_button(label, icon_path, option_id, option_data, option_colours=0, colour=None):
-            # Same button as effects
+        def _create_button(option):
+            """Creates a button similar to an effect button"""
             button = QToolButton()
-            button.setText(label)
-            button.setIconSize(QSize(30, 30))
-            button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-            button.setIcon(QIcon(icon_path))
-            button.setMinimumHeight(40)
-            button.setMinimumWidth(130)
-            button.option_id = option_id
-            button.option_data = option_data
-            button.required_colours = option_colours
-            button.colour = colour
-            self.btn_grps["all"].addButton(button)
+            button.setText(option.label)
+            button.setIconSize(QSize(40, 40))
+            button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            button.setIcon(QIcon(option.icon))
+            button.setMinimumHeight(70)
+            button.setMinimumWidth(105)
+            button.option = option
+            btngrp.addButton(button)
+            if option.label.find("*") > 0:
+                button.setToolTip(mix_match_msg)
             return button
 
-        def add_to_page(label, widgets):
+        def _create_group_widget(label, widgets):
+            """Nests widgets into a group"""
             group = self.widgets.create_group_widget(label)
-            group.layout().setAlignment(Qt.AlignTop)
-            group.layout().setContentsMargins(QMargins(30, 5, 30, 5))
-            row = 0
-            col = 0
-            for position, widget in enumerate(widgets):
-                group.layout().addWidget(widget, row, col)
-                col += 1
-                if col >= 5:
-                    col = 0
-                    row += 1
+            container = QWidget()
+            container.setLayout(QFlowLayout())
+            container.setContentsMargins(QMargins(30, 6, 15, 0))
+            for widget in widgets:
+                container.layout().addWidget(widget)
             layout.addWidget(group)
+            group.layout().addWidget(container)
 
-        def _apply_button_clicked(button):
-            print("stub:_apply_button_clicked")
-            self.set_cursor_busy()
-            #if button.option_id:
-                # Setting effect/brightness
-                #self.middleman.set_bulk_option(button.option_id, button.option_data, button.required_colours)
-            #else:
-                # Setting colour
-                #self.middleman.set_bulk_colour(button.colour)
-            self.set_cursor_normal()
+        def _add_to_page(label, options):
+            """Adds this set of bulk options onto the page"""
+            if options:
+                buttons = []
+                for option in options:
+                    buttons.append(_create_button(option))
+                _create_group_widget(label, buttons)
 
-        self.btn_grps["all"].buttonClicked.connect(_apply_button_clicked)
+        _add_to_page(self._("Brightness"), bulk_options.brightness)
+        _add_to_page(self._("Effects"), bulk_options.effects)
 
+        if bulk_options.mix_match:
+            mixmatch_label = QLabel("* " + mix_match_msg)
+            mixmatch_label.setContentsMargins(QMargins(40, 0, 15, 0))
+            mixmatch_label.setDisabled(True)
+            layout.addWidget(mixmatch_label)
 
+        _add_to_page(self._("Colours"), bulk_options.colours)
 
+        def _bulk_grp_clicked(button):
+            # TODO: Error checking with _event_check_response
+            button.option.apply()
 
-
+        btngrp.buttonClicked.connect(_bulk_grp_clicked)
+        self.btn_grps["bulk"] = btngrp
 
         layout.addStretch()
         self.set_cursor_normal()
