@@ -146,6 +146,95 @@ class DevicesTab(shared.TabData):
         elif item.section == "device":
             self.open_device(item.device_item)
 
+    def _get_device_summary_widget(self, device):
+        """
+        Generate the heading at the top of the page that shows the name, image
+        and current state of the selected device.
+        """
+        badges = []
+        # TODO: Need new state class
+        #current_sw_effect = device["state"]["effect"]
+        #current_preset = device["state"]["preset"]
+
+        # Go through each zone and find out if things are the same
+        effects_used = []
+        effect_name = ""
+        effect_icon = ""
+        brightnesses = []
+
+        for zone in device.zones:
+            for option in zone.options:
+                if isinstance(option, Backend.SliderOption) and option.uid == "brightness":
+                    brightnesses.append(option.value)
+                if isinstance(option, Backend.EffectOption) and option.active:
+                    effects_used.append(option.uid)
+                    effect_name = option.label
+                    effect_icon = option.icon
+
+        # TODO: Show running software effect
+        if effects_used and all(i == effects_used[0] for i in effects_used):
+            badges.append({
+                "label": effect_name,
+                "icon": effect_icon,
+            })
+        elif effects_used:
+            badges.append({
+                "label": self._("(Varies)"),
+                "icon": common.get_icon("general", "effects"),
+            })
+
+        if brightnesses and all(i == brightnesses[0] for i in brightnesses):
+            value = brightnesses[0]
+            if value >= 40:
+                icon = common.get_icon("params", "100")
+            elif value >= 1:
+                icon = common.get_icon("params", "50")
+            else:
+                icon = common.get_icon("params", "0")
+
+            badges.append({
+                "label": str(value) + "%",
+                "icon": icon,
+            })
+        elif brightnesses:
+            badges.append({
+                "label": self._("(Varies)"),
+                "icon": common.get_icon("options", "brightness"),
+            })
+
+        if device.dpi:
+            if device.dpi.x == device.dpi.y:
+                label = f"{device.dpi.x} DPI"
+            else:
+                label = f"{device.dpi.x}, {device.dpi.y} DPI"
+
+            badges.append({
+                "label": label,
+                "icon": common.get_icon("general", "dpi"),
+            })
+
+        # TODO: Add device.battery
+        # TODO: Add additional preset state
+
+        if device.real_image:
+            real_image = shared.get_real_device_image(device.real_image)
+        else:
+            real_image = common.get_icon("devices", "noimage")
+
+        # TODO: Move buttons to toolbar
+        buttons = [
+            {
+                "id": "device-info",
+                "icon": None,
+                "label": self._("Device Info"),
+                "disabled": False,
+                "action": self.show_device_info
+            }
+        ]
+
+        return self.widgets.create_summary_widget(real_image, device.name, badges, buttons)
+
+
     def open_device(self, device):
         """
         Show details and controls for changing the current hardware state
@@ -158,34 +247,9 @@ class DevicesTab(shared.TabData):
         layout.setContentsMargins(0, 0, 0, 0)
         shared.clear_layout(layout)
 
-        # Show a summary of the device state
-        if device.real_image:
-            real_image = shared.get_real_device_image(device.real_image)
-        else:
-            real_image = common.get_icon("devices", "noimage")
-
-        indicators = []
-
-        # The summary indicators only show current effect/preset when set
-        # TODO: Split to _get_summary() function?
-        print("fixme:device state")
-
-
-
-        buttons = [
-            {
-                "id": "device-info",
-                "icon": None,
-                "label": self._("Device Info"),
-                "disabled": False,
-                "action": self.show_device_info
-            }
-        ]
-
-        summary = self.widgets.create_summary_widget(real_image, device.name, indicators, buttons)
-        layout.addWidget(summary)
-
         device.refresh()
+        layout.addWidget(self._get_device_summary_widget(device))
+
         for zone in device.zones:
             widgets = []
             first_zone = True if device.zones[0] == zone else False
@@ -975,13 +1039,6 @@ class DevicesTab(shared.TabData):
                 dpi.addChild(mkitem(_("Minimum"), device.dpi.min))
                 dpi.addChild(mkitem(_("Maximum"), device.dpi.max))
                 tree.addTopLevelItem(dpi)
-
-            # Summary
-            # TODO: Summary needs reimplementing
-            #summary = mkitem(_("Summary"))
-            #for state in device.summary:
-                #summary.addChild(mkitem(state["label"], "", state["icon"]))
-            #tree.addTopLevelItem(summary)
 
             def _get_colour_item(option, colours_required):
                 item = mkitem(_("Colours"), str(colours_required))

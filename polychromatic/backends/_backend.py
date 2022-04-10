@@ -223,23 +223,6 @@ class Backend(BackendBase):
             """
             return
 
-        def get_summary(self):
-            """
-            Returns a list describing the current hardware state of the device,
-            such as current brightness, effect or settings.
-
-            The list consists of a dictionary like so:
-            {
-                "icon": "/path/to/icon.svg"     (str) Absolute path to icon
-                "label": "1800 DPI"             (str) Label to display
-            }
-
-            Icons can be retrieved using Backend.get_icon()
-            """
-            # TODO: Add ID to fix positions effect/brightness/dpi/battery then the rest
-            # TODO: Fixed makes it easier for editing state in memory - one read/write!
-            return []
-
         class DPI(object):
             """
             An object storing the current DPI values and get/set functions.
