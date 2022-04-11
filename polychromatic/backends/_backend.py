@@ -191,6 +191,9 @@ class Backend(BackendBase):
             # This will be used for determining graphics in the effect editor.
             self.keyboard_layout = ""
 
+            # Stores a Battery() object, if the device has a battery.
+            self.battery = None
+
             # Stores a DPI() object, unless device does not support DPI X/Y.
             self.dpi = None
 
@@ -222,6 +225,21 @@ class Backend(BackendBase):
             hardware knows what it's up to or if it uses a software persistence implementation.
             """
             return
+
+        class Battery(object):
+            """
+            An object storing battery information with a function for refreshing.
+            """
+            def __init__(self):
+                self.is_charging = False
+                self.percentage = -1
+                self.is_removable = False
+
+            def refresh(self):
+                """
+                Update the battery status.
+                """
+                raise NotImplementedError
 
         class DPI(object):
             """

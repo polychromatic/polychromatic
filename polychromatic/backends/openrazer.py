@@ -219,6 +219,9 @@ class OpenRazerBackend(Backend):
         if rdevice.has("dpi") and not rdevice.has("available_dpi"):
             device.dpi = self._get_dpi_object(rdevice)
 
+        if rdevice.has("battery"):
+            device.battery = self._get_battery_object(rdevice)
+
         if rdevice.has("lighting_led_matrix"):
             device.matrix = self._get_matrix_object(rdevice, device)
 
@@ -274,6 +277,30 @@ class OpenRazerBackend(Backend):
             return OpenRazerPersistence(rzone)
 
         return OpenRazerPersistenceFallback(zone.zone_id, serial, self.persistence_fallback_path)
+
+    def _get_battery_object(self, rdevice):
+        """
+        Returns a Backend.DeviceItem.Battery object.
+        """
+        class Battery(Backend.DeviceItem.Battery):
+            def __init__(self, rdevice):
+                super().__init__()
+                self._rdevice = rdevice
+                self.is_charging = False
+                self.percentage = -1
+
+            def refresh(self):
+                self.is_charging = self._rdevice.is_charging
+                self.percentage = int(self._rdevice.battery_level)
+
+        battery = Battery(rdevice)
+        battery.refresh()
+
+        # Some batteries require AA batteries
+        if rdevice.name.find("Atheris") > 0:
+            battery.is_removable = True
+
+        return battery
 
     def _get_dpi_object(self, rdevice):
         """

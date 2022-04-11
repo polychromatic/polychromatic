@@ -1024,6 +1024,17 @@ class DevicesTab(shared.TabData):
                     cfx.addChild(mkitem(_("Colour Range"), _("16 million colours"), common.get_icon("tray", "ring")))
             tree.addTopLevelItem(cfx)
 
+            # Battery
+            if device.battery:
+                battery = mkitem(_("Battery"))
+                # TODO: Determine battery icon from a new icon class (reusual)
+                if device.battery.is_charging:
+                    battery.addChild(mkitem(_("Status"), _("Charging (0%)").replace("0", str(device.battery.percentage))))
+                else:
+                    battery.addChild(mkitem(_("Status"), _("Discharging (0%)").replace("0", str(device.battery.percentage))))
+                battery.addChild(mkitem(_("Type"), _("Removable") if device.battery.is_removable else _("Rechargable")))
+                tree.addTopLevelItem(battery)
+
             # DPI
             if device.dpi:
                 dpi = mkitem(_("DPI"))
