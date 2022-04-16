@@ -345,6 +345,7 @@ class MenuBarOpenRazer(MenuBar):
     Options for the OpenRazer backend under the Tools menu. When the backend is
     not present, there may be a limited set of options.
     """
+    # TODO: Refactor later. Move to separate window.
     def __init__(self, appdata, widgets):
         self.human_name = "OpenRazer"
         self.appdata = appdata

@@ -273,7 +273,7 @@ base.middleman.init()
 if verbose:
     dbg.stdout("Loaded {0} backend(s):".format(len(base.middleman.backends)), dbg.success)
     for backend in base.middleman.backends:
-        dbg.stdout(" - {0}".format(middleman_module.BACKEND_NAMES[backend.backend_id]), dbg.success)
+        dbg.stdout(" - {0}".format(backend.name), dbg.success)
 
     if len(base.middleman.not_installed) > 0:
         dbg.stdout("Not installed: " + ", ".join(base.middleman.not_installed), dbg.debug)

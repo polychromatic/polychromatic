@@ -16,6 +16,7 @@ from .backends._backend import Backend
 from .backends import openrazer as openrazer_backend
 from .troubleshoot import openrazer as openrazer_troubleshoot
 
+# TODO: Drop BACKEND_NAMES, use class methods
 BACKEND_NAMES = {
 #   "backend ID": "human readable string"
     "openrazer": "OpenRazer"
@@ -124,10 +125,17 @@ class Middleman(object):
         if self.device_cache:
             return
 
-        for module in self.backends:
-            device_list = module.get_devices()
-            if type(device_list) == list:
-                self.device_cache = self.device_cache + device_list
+        for backend in self.backends:
+            device_list = backend.get_devices()
+
+            if not type(device_list) == list:
+                continue
+
+            # Assign 'backend' variable into device object
+            for device in device_list:
+                device.backend = backend
+
+            self.device_cache = self.device_cache + device_list
 
     def reload_device_cache(self):
         """
@@ -182,7 +190,13 @@ class Middleman(object):
         """
         unknown_devices = []
         for backend in self.backends:
-            unknown_devices = unknown_devices + backend.get_unsupported_devices()
+            device_list = backend.get_unsupported_devices()
+
+            # Assign 'backend' variable into device object
+            for device in device_list:
+                device.backend = backend
+
+            unknown_devices = unknown_devices + device_list
         return unknown_devices
 
     def troubleshoot(self, backend, i18n, fn_progress_set_max, fn_progress_advance):

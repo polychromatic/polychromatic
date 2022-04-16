@@ -135,8 +135,8 @@ class Backend(BackendBase):
             # Human readable name of the device (if known)
             self.name = "Unknown"
 
-            # Specify the backend ID here
-            self.backend_id = "openrazer"
+            # This is assigned automatically.
+            self.backend = Backend
 
             # Use Backend.get_form_factor(), passing an ID from common.FORM_FACTORS
             # that identifies this device. Pass "unrecognised" to function if unknown.
@@ -162,8 +162,8 @@ class Backend(BackendBase):
             # Human readable name of the device (including vendor name)
             self.name = "Unnamed Device"
 
-            # Backend ID
-            self.backend_id = "unknown"
+            # This is assigned automatically.
+            self.backend = Backend
 
             # Use Backend.get_form_factor(), passing an ID from common.FORM_FACTORS
             self.form_factor = {}
