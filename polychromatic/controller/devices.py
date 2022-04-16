@@ -1048,7 +1048,7 @@ class DevicesTab(shared.TabData):
             # DPI
             if device.dpi:
                 dpi = mkitem(_("DPI"))
-                dpi.addChild(mkitem("Current DPI", f"({device.dpi.x}, {device.dpi.y})"))
+                dpi.addChild(mkitem(_("Current DPI"), f"({device.dpi.x}, {device.dpi.y})"))
                 dpi.addChild(mkitem(_("Default Stages"), ", ".join(map(str, device.dpi.stages))))
                 if self.appdata.preferences["custom"]["use_dpi_stages"]:
                     custom_stages = []
