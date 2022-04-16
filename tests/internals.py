@@ -141,3 +141,25 @@ class TestInternals(unittest.TestCase):
         state = procpid.DeviceSoftwareState("POLY000001")
         state.clear_preset()
         self.assertEqual(state.get_preset(), None, "Could not clear preset state")
+
+    def test_exception_fault_ours(self):
+        error = """Traceback (most recent call last):
+            File ’/usr/lib/python3.10/site-packages/polychromatic/controller/devices.py’, line 545, in _clicked_effect_button
+                option.apply()
+            File ’/usr/lib/python3.10/site-packages/polychromatic/backends/openrazer.py’, line 777, in apply
+                self._rzone.spectrum(1)
+            TypeError: RazerFX.spectrum() takes 1 positional argument but 2 were given"""
+        self.assertTrue(common.is_exception_fault_by_app(error))
+
+    def test_exception_fault_theirs(self):
+        error = """Traceback (most recent call last):
+            File ’/usr/lib/python3.10/site-packages/polychromatic/backends/openrazer.py’, line 757, in apply
+                self._rzone.none()
+            File ’/usr/lib/python3.10/site-packages/openrazer/client/fx.py’, line 119, in none
+                self._lighting_dbus.setNone()
+            File ’/usr/lib/python3.10/site-packages/dbus/proxies.py’, line 141, in __call__
+                return self._connection.call_blocking(self._named_service,
+            File ’/usr/lib/python3.10/site-packages/dbus/connection.py’, line 652, in call_blocking
+                reply_message = self.send_message_with_reply_and_block(
+            dbus.exceptions.DBusException: org.freedesktop.DBus.Error.ServiceUnknown: The name :1.203 was not provided by any .service files"""
+        self.assertFalse(common.is_exception_fault_by_app(error))

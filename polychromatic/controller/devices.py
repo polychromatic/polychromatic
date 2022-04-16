@@ -234,7 +234,6 @@ class DevicesTab(shared.TabData):
 
         return self.widgets.create_summary_widget(real_image, device.name, badges, buttons)
 
-
     def open_device(self, device):
         """
         Show details and controls for changing the current hardware state
@@ -247,7 +246,14 @@ class DevicesTab(shared.TabData):
         layout.setContentsMargins(0, 0, 0, 0)
         shared.clear_layout(layout)
 
-        device.refresh()
+        try:
+            device.refresh()
+        except Exception as e:
+            # State may have changed, reload the device tab.
+            # TODO: Show "device changes detected" in status bar. Needs global function.
+            self.middleman.invalidate_cache()
+            return self.set_tab()
+
         layout.addWidget(self._get_device_summary_widget(device))
 
         for zone in device.zones:
@@ -384,8 +390,11 @@ class DevicesTab(shared.TabData):
         # Send request once dropped
         def _slider_dropped():
             self.dbg.stdout(f"{self.current_device.name}: Applying option {option.uid} with value: {str(slider.value())}", self.dbg.action, 1)
-            # TODO: Error checking with _event_check_response
-            option.apply(slider.value())
+            try:
+                option.apply(slider.value())
+            except Exception as e:
+                self._catch_command_error(self.current_device, e)
+
         slider.sliderReleased.connect(_slider_dropped)
         slider.valueChanged.connect(_slider_dropped)
 
@@ -403,8 +412,10 @@ class DevicesTab(shared.TabData):
         def _state_changed():
             onoff = "on" if checkbox.isChecked() else "off"
             self.dbg.stdout(f"{self.current_device.name}: Turning {onoff} option {option.uid}", self.dbg.action, 1)
-            # TODO: Error checking with _event_check_response
-            option.apply(checkbox.isChecked())
+            try:
+                option.apply(checkbox.isChecked())
+            except Exception as e:
+                self._catch_command_error(self.current_device, e)
 
         checkbox.stateChanged.connect(_state_changed)
         return [checkbox]
@@ -430,8 +441,10 @@ class DevicesTab(shared.TabData):
         def _current_index_changed(index):
             param = params[index]
             self.dbg.stdout(f"{self.current_device.name}: Setting option {option.uid} to {param.data}", self.dbg.action, 1)
-            # TODO: Error checking with _event_check_response
-            option.apply(param.data)
+            try:
+                option.apply(param.data)
+            except Exception as e:
+                self._catch_command_error(self.current_device, e)
 
         combo.currentIndexChanged.connect(_current_index_changed)
         return [combo]
@@ -453,8 +466,10 @@ class DevicesTab(shared.TabData):
         """
         def _button_clicked():
             self.dbg.stdout(f"{self.current_device.name}: Clicking option {option.uid}", self.dbg.action, 1)
-            # TODO: Error checking with _event_check_response
-            option.apply()
+            try:
+                option.apply()
+            except Exception as e:
+                self._catch_command_error(self.current_device, e)
 
         button = QPushButton(option.button_label)
         button.clicked.connect(_button_clicked)
@@ -491,13 +506,15 @@ class DevicesTab(shared.TabData):
             param = self.middleman.get_default_parameter(option)
             self.middleman.stop_software_effect(self.current_device.serial)
 
-            # TODO: Error checking with _event_check_response
-            if param:
-                self.dbg.stdout(f"{self.current_device.name}: Setting effect {option.uid} (with parameter {str(param.data)}')", self.dbg.action, 1)
-                option.apply(param.data)
-            else:
-                self.dbg.stdout(f"{self.current_device.name}: Setting effect {option.uid} (no parameters)", self.dbg.action, 1)
-                option.apply()
+            try:
+                if param:
+                    self.dbg.stdout(f"{self.current_device.name}: Setting effect {option.uid} (with parameter {str(param.data)}')", self.dbg.action, 1)
+                    option.apply(param.data)
+                else:
+                    self.dbg.stdout(f"{self.current_device.name}: Setting effect {option.uid} (no parameters)", self.dbg.action, 1)
+                    option.apply()
+            except Exception as e:
+                self._catch_command_error(self.current_device, e)
 
             self.reload_device()
 
@@ -519,11 +536,11 @@ class DevicesTab(shared.TabData):
             for radio in self.btn_grps["radio_param_" + zone.zone_id]:
                 if not radio.isChecked():
                     continue
-
                 self.dbg.stdout(f"{device.name}: Setting parameter for '{option.uid}' to '{radio.param.data}'", self.dbg.action, 1)
-
-                # TODO: Error checking with _event_check_response
-                option.apply(radio.param.data)
+                try:
+                    option.apply(radio.param.data)
+                except Exception as e:
+                    self._catch_command_error(self.current_device, e)
                 self.reload_device()
 
         def _make_button(param):
@@ -566,47 +583,38 @@ class DevicesTab(shared.TabData):
 
         def _set_new_colour(new_hex, data):
             self.dbg.stdout(f"{self.current_device.name}: Setting {label.lower()} to {new_hex} for active option in zone {zone.zone_id}", self.dbg.action, 1)
-            # TODO: Error checking with _event_check_response
-            self.middleman.set_colour_for_active_effect_zone(zone, new_hex, pos)
+            try:
+                self.middleman.set_colour_for_active_effect_zone(zone, new_hex, pos)
+            except Exception as e:
+                self._catch_command_error(self.current_device, e)
 
         _set_data = {"zone": zone, "colour_no": pos}
 
         colour_widget = self.widgets.create_colour_control(colours[pos], _set_new_colour, _set_data, self._("Change []").replace("[]", label), device.monochromatic)
         return self.widgets.create_row_widget(label, [colour_widget])
 
-    def _event_check_response(self, response):
+    def _catch_command_error(self, device=Backend.DeviceItem, err=""):
         """
-        Checks the result of the request to the backend. Upon failure, inform the user.
+        Shows a error message when a command sent to a device was unsuccessful.
         """
-        print("fixme:stub:_event_check_response")
-        return True
+        backend_name = device.backend.name
+        exception = common.get_exception_as_string(err)
+        my_fault = common.is_exception_fault_by_app(err)
 
-        dbg = self.dbg
-        _ = self._
-        backend_name = self.middleman.get_backend(self.current_device.backend_id).name
+        self.dbg.stdout(exception, self.dbg.error)
 
-        if response == True:
-            dbg.stdout("Request successful", dbg.success, 1)
-        elif response == False:
-            dbg.stdout("Invalid request!", dbg.error, 1)
+        if my_fault:
             self.widgets.open_dialog(self.widgets.dialog_error,
-                                     _("Backend Error"),
-                                     _("[] deemed this request to be invalid or unsupported. This could be caused by an implementation issue with Polychromatic's backend module for [].").replace("[]", backend_name),
-                                     _("If this message appears again, try restarting the backend/application, otherwise please report this as a bug."))
-        elif response == None:
-            dbg.stdout("Device no longer available", dbg.error, 1)
-            self.widgets.open_dialog(self.widgets.dialog_warning,
-                                     _("Device Unavailable"),
-                                     _("The request could not be completed due to devices being removed/inserted."),
-                                     _("Please refresh and try again."))
-            self.reload_device()
-        elif type(response) == str:
-            dbg.stdout("Backend threw an exception", dbg.error, 1)
-            print(response)
+                                     self._("Request Failed"),
+                                     self._("There's a fault with Polychromatic's integration with [OpenRazer] for this device or option.").replace("[OpenRazer]", backend_name),
+                                     self._("To help fix this, please check Polychromatic's issue tracker and create a new issue if a similar one does not exist.").replace("[OpenRazer]", backend_name),
+                                     details=exception)
+        else:
             self.widgets.open_dialog(self.widgets.dialog_error,
-                                     _("Backend Error"),
-                                     _("[] encountered an error processing this request. Try restarting the backend/application. If this message keeps appearing, please report this as a bug on []'s issue tracker.").replace("[]", backend_name),
-                                     details=response)
+                                     self._("Communication Error"),
+                                     self._("An error occurred outside of Polychromatic's control when this command was sent to [OpenRazer].").replace("[OpenRazer]", backend_name),
+                                     self._("Try restarting [OpenRazer] and Polychromatic and give it another go. If this error appears again, it might need fixing in [OpenRazer].").replace("[OpenRazer]", backend_name),
+                                     details=exception)
 
     def _open_loading(self):
         """
@@ -936,8 +944,10 @@ class DevicesTab(shared.TabData):
         _add_to_page(self._("Colours"), bulk_options.colours)
 
         def _bulk_grp_clicked(button):
-            # TODO: Error checking with _event_check_response
-            button.option.apply()
+            try:
+                button.option.apply()
+            except Exception as e:
+                self._catch_command_error(self.current_device, e)
 
         btngrp.buttonClicked.connect(_bulk_grp_clicked)
         self.btn_grps["bulk"] = btngrp
@@ -1281,9 +1291,11 @@ class SpecialControls(shared.TabData):
 
         # Send request once dropped
         def _slider_dropped():
-            self.dbg.stdout(f"${device.name}: Setting DPI to {0}, {1}".format(slider_x.value(), slider_y.value()), self.dbg.action, 1)
-            # TODO: Error checking with _event_check_response
-            device.dpi.set(slider_x.value(), slider_y.value())
+            self.dbg.stdout(f"{device.name}: Setting DPI to {0}, {1}".format(slider_x.value(), slider_y.value()), self.dbg.action, 1)
+            try:
+                device.dpi.set(slider_x.value(), slider_y.value())
+            except Exception as e:
+                DevicesTab._catch_command_error(self, device=device, err=e)
 
         # TODO: In future, only update after 'mouse drop' or scroll release.
         # Currently it's difficult under stock QSlider. Dragging with mouse only isn't great.
@@ -1407,4 +1419,3 @@ class SpecialControls(shared.TabData):
         layout.addStretch()
 
         return self.widgets.create_row_widget(self._("Acceleration"), [widget])
-

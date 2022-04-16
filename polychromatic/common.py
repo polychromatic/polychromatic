@@ -85,6 +85,29 @@ def get_exception_as_string(e):
     return traceback.format_exc().replace("'", '’').replace('"', '’')
 
 
+def is_exception_fault_by_app(e):
+    """
+    Parses the exception and return a boolean to indicate the crash was
+    caused by this application. Usually when interfacing with a backend's library.
+    This can help inform the user which project to consult.
+    """
+    if isinstance(e, BaseException):
+        lines = traceback.format_exc().splitlines()
+    else:
+        lines = e.split("\n")
+    files = []
+    for line in lines:
+        if line.strip().startswith("File"):
+            files.append(line)
+
+    # Last file path mentions our name, most likely our code.
+    if files[-1].find("polychromatic") >= 0:
+        return True
+
+    # Last file is another library that caused the error.
+    return False
+
+
 def get_form_factor(_, form_factor_id):
     """
     Reads a string provided by a backend and returns data that is used to refer

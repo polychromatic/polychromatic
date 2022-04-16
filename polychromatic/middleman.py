@@ -137,6 +137,13 @@ class Middleman(object):
 
             self.device_cache = self.device_cache + device_list
 
+    def invalidate_cache(self):
+        """
+        A fault was detected with the device list. For example, a backend's daemon died,
+        or devices were inserted/removed.
+        """
+        self.device_cache = []
+
     def reload_device_cache(self):
         """
         Clear the device object cache and reload.
