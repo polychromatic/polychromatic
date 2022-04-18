@@ -224,6 +224,20 @@ class Indicator(PolychromaticBase):
             sep.show()
             self.add_menu_item(menu, sep)
 
+    def open_dialog(self, title, message):
+        """
+        Connect an event to an item to show a error dialog box.
+        """
+        dialog = Gtk.MessageDialog()
+        dialog.add_button("_OK", Gtk.ResponseType.OK)
+        dialog.message_type = Gtk.MessageType.ERROR
+        dialog.set_title(title)
+        dialog.set_markup(message)
+        dialog.default_width = 350
+        dialog.show()
+        dialog.run()
+        dialog.destroy()
+
     def finalize(self):
         """
         Connects the event for when the menu is opened/clicked.
@@ -442,7 +456,7 @@ class PolychromaticTrayApplet(PolychromaticBase):
                     icon = self._get_icon("general", "dpi-slow")
                 elif item == len(dpi_stages) - 1:
                     icon = self._get_icon("general", "dpi-fast")
-                indicator.create_menu_item(dpi_menu, str(value), True, cb.set_dpi, [device.dpi, value], icon)
+                indicator.create_menu_item(dpi_menu, str(value), True, cb.set_dpi, [device, value], icon)
             indicator.add_menu_item(submenu, dpi_menu_item)
 
         if device.matrix:
@@ -582,6 +596,26 @@ class Callback():
     Contains functions that run when a menu item is clicked.
     """
     @staticmethod
+    def _catch_command_error(device=Backend.DeviceItem, err=""):
+        """
+        Shows a error message when a command sent to a device was unsuccessful.
+        """
+        backend_name = device.backend.name
+        exception = common.get_exception_as_string(err)
+        my_fault = common.is_exception_fault_by_app(err)
+
+        dbg.stdout(exception, dbg.error)
+
+        if my_fault:
+            indicator.open_dialog(_("Request Failed"),
+                                  _("There's a fault with Polychromatic's integration with [OpenRazer] for this device or option.").replace("[OpenRazer]", backend_name) + "\n\n" + \
+                                  _("Try restarting the tray applet. To see error details, run 'polychromatic-tray-applet' in the terminal and repeat this action."))
+        else:
+            indicator.open_dialog(_("Communication Error"),
+                                  _("While sending this command to [OpenRazer], an error occurred outside of Polychromatic's control.").replace("[OpenRazer]", backend_name) + "\n\n" + \
+                                  _("Try restarting [OpenRazer] and Polychromatic and give it another go. If this error appears again, it's likely this needs fixing in [OpenRazer]."))
+
+    @staticmethod
     def launch_controller(item, tab=None):
         """
         Option clicked to open the Controller application.
@@ -633,8 +667,10 @@ class Callback():
                 option.colours[0] = primary_colour
 
         dbg.stdout("Setting option '{0}' (data: {1})'".format(str(option), str(param_data)), dbg.action, 1)
-        # TODO: Catch errors
-        option.apply(param_data)
+        try:
+            option.apply(param_data)
+        except Exception as e:
+            Callback._catch_command_error(device, e)
 
     @staticmethod
     def set_colour_primary(item, attr):
@@ -650,10 +686,11 @@ class Callback():
         global primary_colour
         primary_colour = hex_value
 
-        # FIXME: Broken?
         dbg.stdout("Applying colour '{0}' to all zones in '{1}'".format(hex_value, device.name), dbg.action, 1)
-        # TODO: Catch errors
-        app.middleman.set_colour_for_active_effect_device(device, hex_value)
+        try:
+            app.middleman.set_colour_for_active_effect_device(device, hex_value)
+        except Exception as e:
+            Callback._catch_command_error(device, e)
 
     @staticmethod
     def set_dpi(item, attr):
@@ -661,36 +698,15 @@ class Callback():
         Option clicked to set the DPI (both X/Y) of a device.
 
         Params:
-            attr    [dpi, value]
+            attr    [device, value]
         """
-        dpi, value = attr
+        device, value = attr
 
         dbg.stdout("Setting DPI to {0}".format(value), dbg.action, 1)
-        # TODO: Catch errors
-        dpi.set(int(value), int(value))
-
-    @staticmethod
-    def set_bulk_option(item, attr):
-        """
-        Option clicked to set an effect for all devices (where supported)
-
-        Params:
-            attr    [option_id, option_data, colours_needed]
-        """
-        option_id, option_data, colours_needed = attr
-        print("fixme:set_bulk_option")
-
-    @staticmethod
-    def set_bulk_colour(item, attr):
-        """
-        Option clicked to set the primary colour for the current effect across
-        all connected devices.
-
-        Params:
-            attr    [hex_value]
-        """
-        new_colour_hex = attr[0]
-        print("fixme:set_bulk_colour")
+        try:
+            device.dpi.set(int(value), int(value))
+        except Exception as e:
+            Callback._catch_command_error(device, e)
 
     @staticmethod
     def set_custom_colour(item, attr):
@@ -704,6 +720,7 @@ class Callback():
         device = attr[0]
         zone = attr[1]
 
+        # TODO: Refactor later. Move to Indicator()
         dbg.stdout("Opened GTK colour picker.", dbg.debug, 1)
         color_selection_dlg = Gtk.ColorSelectionDialog(_("Set Primary Colour"))
         color_selection_result = color_selection_dlg.run()
@@ -718,8 +735,10 @@ class Callback():
 
             # Apply colour to device
             dbg.stdout("Set custom colour for {0} to '{1}'".format(device.name, hex_value), dbg.debug, 1)
-            # TODO: Catch errors
-            app.middleman.set_colour_for_active_effect_device(device, hex_value)
+            try:
+                app.middleman.set_colour_for_active_effect_device(device, hex_value)
+            except Exception as e:
+                Callback._catch_command_error(device, e)
 
         color_selection_dlg.destroy()
 
