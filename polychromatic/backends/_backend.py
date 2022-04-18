@@ -191,6 +191,9 @@ class Backend(BackendBase):
             # This will be used for determining graphics in the effect editor.
             self.keyboard_layout = ""
 
+            # Is this device marketed as having programmable keys via software?
+            self.has_programmable_keys = False
+
             # Stores a Battery() object, if the device has a battery.
             self.battery = None
 
@@ -499,32 +502,6 @@ class Backend(BackendBase):
         """
         def __init__(self):
             super().__init__()
-
-    class DialogOption(Option):
-        """
-        No input necessary, but displays a message to the user when the
-        button (or menu item) is clicked.
-
-        Parameters: Ignored
-        Colours: Ignored
-        """
-        def __init__(self):
-            super().__init__()
-
-            self.button_label = ""
-            self.message = ""
-
-    class ButtonOption(Option):
-        """
-        No input necessary, run the apply() function straight away.
-
-        Parameters: Ignored
-        Colours: Ignored
-        """
-        def __init__(self):
-            super().__init__()
-
-            self.button_label = ""
 
     def get_devices(self):
         """

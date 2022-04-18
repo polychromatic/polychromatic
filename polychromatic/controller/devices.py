@@ -321,6 +321,14 @@ class DevicesTab(shared.TabData):
                 if device.form_factor == "mouse":
                     widgets.append(self.special_controls.create_mouse_accel_control())
 
+                # -- Information about programmable keys
+                if device.has_programmable_keys:
+                    widgets.append(self.special_controls.create_programmable_keys_control())
+
+                # -- Information about OpenRazer daemon's built-in macro feature
+                if device.backend.backend_id == "openrazer" and device.form_factor.get("id") == "keyboard":
+                    widgets.append(self.special_controls.create_openrazer_macro_control())
+
             # Before adding to the main layout, use group boxes if there's multiple zones
             if len(device.zones) > 1:
                 group = self.widgets.create_group_widget(zone.label)
@@ -352,13 +360,6 @@ class DevicesTab(shared.TabData):
 
         elif isinstance(option, Backend.MultipleChoiceOption):
             return self.widgets.create_row_widget(option.label, self._create_control_select(option))
-
-        # FIXME: DialogOption deprecated. Use button instead.
-        elif isinstance(option, Backend.DialogOption):
-            return self.widgets.create_row_widget(option.label, self._create_control_dialog(option))
-
-        elif isinstance(option, Backend.ButtonOption):
-            return self.widgets.create_row_widget(option.label, self._create_control_button(option))
 
     def _create_control_slider(self, option):
         """
@@ -1087,8 +1088,6 @@ class DevicesTab(shared.TabData):
                         option_type = _("Slider")
                     elif isinstance(option, Backend.MultipleChoiceOption):
                         option_type = _("Dropdown")
-                    elif isinstance(option, Backend.ButtonOption):
-                        option_type = _("Button")
 
                     option_item.addChild(mkitem(_("Option ID"), option.uid))
                     option_item.addChild(mkitem(_("Type"), option_type))
@@ -1419,3 +1418,43 @@ class SpecialControls(shared.TabData):
         layout.addStretch()
 
         return self.widgets.create_row_widget(self._("Acceleration"), [widget])
+
+    def create_programmable_keys_control(self):
+        """
+        Returns a widget that informs the user that this software does not
+        have a key remapping solution right now.
+        """
+        def _open_remapping_dialog():
+            self.widgets.open_dialog(self.widgets.dialog_generic,
+                self._("About Key Mapping"),
+                self._("Currently, OpenRazer and Polychromatic do not support a convenient key rebinding feature. " + \
+                "Polychromatic intends to integrate a key mapping solution in a future version.\n\n" + \
+                "In the meantime, there are third party projects which provide key remapping agnostic to any input device.\n\nFor more information, visit:\n" + \
+                "https://polychromatic.app/permalink/keymapping/"))
+
+        button = QPushButton()
+        button.setText(self._("About Key Mapping"))
+        button.clicked.connect(_open_remapping_dialog)
+
+        return self.widgets.create_row_widget(self._("Key Mapping"), [button])
+
+    def create_openrazer_macro_control(self):
+        """
+        For OpenRazer keyboards, returns a widget that informs the user how to
+        use the macro recording feature provided by openrazer-daemon.
+        """
+        def _open_macro_dialog():
+            self.widgets.open_dialog(self.widgets.dialog_generic,
+                self._("About Macro Recording"),
+                self._("The OpenRazer daemon provides a simple on-the-fly macro recording feature. To use:\n\n" + \
+                "1. Press FN+[M] to enter macro mode.\n" + \
+                "2. Press the macro key to assign to. Only M1-M5 are supported.\n" + \
+                "3. Press the keys in sequence to record.\n" + \
+                "4. Press FN+[M] to exit macro mode.\n\n" + \
+                "Macros are retained in memory until the daemon is stopped. The replay speed will be instantaneous.\n\n" + \
+                "This is not a Polychromatic feature and could disappear in future. This application intends to integrate a key rebinding feature in a future version."))
+
+        button = QPushButton()
+        button.setText(self._("Usage Instructions"))
+        button.clicked.connect(_open_macro_dialog)
+        return self.widgets.create_row_widget(self._("Macros"), [button])

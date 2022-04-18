@@ -260,10 +260,7 @@ class OpenRazerBackend(Backend):
             main_zone.options += self._get_battery_options(rdevice)
 
         if rdevice.has("macro_mode_led_effect") and rdevice.type == "keyboard":
-            main_zone.options.append(self._get_macro_option(rdevice))
-
-        if rdevice.type in ["keyboard", "keypad"]:
-            main_zone.options.append(self._get_key_remapping_option(rdevice))
+            device.has_programmable_keys = True
 
         return device
 
@@ -1378,39 +1375,6 @@ class OpenRazerBackend(Backend):
             options.append(low_power)
 
         return options
-
-    def _get_macro_option(self, rdevice):
-        """
-        Returns a Backend.Option derivative object to explain macro support.
-        """
-        option = Backend.DialogOption()
-        option.uid = "info_macros"
-        option.label = self._("Macros")
-        option.icon = self.get_icon("general", "info")
-        option.button_label = self._("About Macro Recording")
-        option.message = self._("The OpenRazer daemon provides a simple on-the-fly macro recording feature. To use:\n\n" + \
-            "1. Press FN+[M] to enter macro mode.\n" + \
-            "2. Press the macro key to assign to. Only M1-M5 are supported.\n" + \
-            "3. Press the keys in sequence to record.\n" + \
-            "4. Press FN+[M] to exit macro mode.\n\n" + \
-            "Macros are retained in memory until the daemon is stopped. The replay speed will be instantaneous.\n\n" + \
-            "This is not a Polychromatic feature and could disappear in future. This application intends to integrate a key rebinding feature in a future version.")
-        return option
-
-    def _get_key_remapping_option(self, rdevice):
-        """
-        Returns a Backend.Option derivative object to explain key remapping support.
-        """
-        option = Backend.DialogOption()
-        option.uid = "info_mapping"
-        option.label = self._("Key Mapping")
-        option.icon = self.get_icon("general", "info")
-        option.button_label = self._("About Key Mapping")
-        option.message = self._("Currently, OpenRazer and Polychromatic do not support a convenient key rebinding feature. " + \
-            "Polychromatic intends to integrate a key mapping solution in a future version.\n\n" + \
-            "In the meantime, there are third party projects which provide key remapping agnostic to any input device.\n\nFor more information, visit:\n" + \
-            "https://polychromatic.app/permalink/keymapping/")
-        return option
 
     def restart(self):
         """

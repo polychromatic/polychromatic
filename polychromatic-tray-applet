@@ -429,14 +429,6 @@ class PolychromaticTrayApplet(PolychromaticBase):
                 elif isinstance(option, Backend.ToggleOption):
                     indicator.add_menu_item(submenu, self.create_toggle_menu(option))
 
-                elif isinstance(option, Backend.DialogOption):
-                    # TODO: Implement an actual dialog, not labels (which were too long, too messy)
-                    print("fixme:Dialog option not implemented")
-
-                # Option is a clickable one-way action with no feedback
-                elif isinstance(type, Backend.ButtonOption):
-                    indicator.create_menu_item(submenu, option.button_label, True, cb.apply_option, [option, None, 0, device], option.icon)
-
             # Seperator multiple zones if applicable
             if multiple_zones:
                 indicator.create_seperator(submenu)

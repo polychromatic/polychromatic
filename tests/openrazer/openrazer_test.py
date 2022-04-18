@@ -445,8 +445,6 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
                         option.apply(random.choices(range(option.min, option.max, option.step))[0])
                     elif isinstance(option, Backend.MultipleChoiceOption):
                         option.apply(random.choices(option.parameters)[0].data)
-                    elif isinstance(option, Backend.ButtonOption):
-                        option.apply()
                     option.refresh()
 
     def test_persistence_colour_bytes(self):
