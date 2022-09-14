@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-21 14:50+0100\n"
-"PO-Revision-Date: 2022-09-14 14:12+0200\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"PO-Revision-Date: 2022-09-14 17:17+0200\n"
+"Last-Translator: Paweł \"PeBe\" Banaś <p.banas.pl@gmail.com>\n"
+"Language-Team: Paweł \"PeBe\" Banaś\n"
 "Language: pl_PL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -194,27 +194,27 @@ msgstr "Efekt"
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:22
 msgid "Raise the layer in the stack"
-msgstr ""
+msgstr "Przenieś warstwę wyżej"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:24
 msgid "Lower the layer in the stack"
-msgstr ""
+msgstr "Przenieś warstwę niżej"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:26
 msgid "Create a new layer in the stack"
-msgstr ""
+msgstr "Utwórz nową warstwę"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:28
 msgid "Delete the selected layer"
-msgstr ""
+msgstr "Usuń wybraną warstwę"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:30
 msgid "Duplicate the selected layer"
-msgstr ""
+msgstr "Powiel wybraną warstwę"
 
 #: editor.ui.h:31
 msgid "Properties"
@@ -1154,7 +1154,7 @@ msgstr "Tempo odświerzania"
 
 #: preferences.ui.h:2
 msgid "Controller"
-msgstr "Kontroler"
+msgstr "Aplikacja"
 
 #. Preferences Checkbox
 #: preferences.ui.h:4
@@ -1251,16 +1251,15 @@ msgstr "Uruchom aplet tacki systemowej podczas logowania"
 #. Preferences Label
 #: preferences.ui.h:39
 msgid "Renderer"
-msgstr ""
+msgstr "Aplikacja tacki"
 
 #: preferences.ui.h:40
 msgid "Default (AppIndicator3)"
 msgstr "Domyślne (AppIndycator3)"
 
 #: preferences.ui.h:41
-#, fuzzy
 msgid "GTK Status Icon (Legacy)"
-msgstr "GTK Status Icon (Legacy)"
+msgstr "Ikona statusu GTK (Legacy)"
 
 #. Preferences Label
 #: preferences.ui.h:44
@@ -1357,7 +1356,6 @@ msgstr "Zadania w tle"
 
 #. Informative text in the Process Viewer window
 #: procviewer.ui.h:3
-#, fuzzy
 msgid ""
 "To provide background features (like software effects and triggers), "
 "additional processes may be spawned."
@@ -1581,9 +1579,8 @@ msgstr ""
 "https://polychromatic.app/permalink/keymapping/"
 
 #: pylib/backends/openrazer.py:696 pylib/backends/openrazer.py:705
-#, fuzzy
 msgid "(Multiple)"
-msgstr "(wielokrotny)"
+msgstr "(wiele)"
 
 #: pylib/backends/openrazer.py:710
 msgid "On"
@@ -1630,7 +1627,7 @@ msgstr "Gdy wpełni naładowane"
 
 #: pylib/backends/openrazer.py:1175
 msgid "Hex Ring"
-msgstr ""
+msgstr "Hex Ring"
 
 #: pylib/backends/openrazer.py:1179
 msgid "Laptop Lid"
@@ -1662,7 +1659,7 @@ msgstr "Klawiatura"
 
 #: pylib/common.py:190
 msgid "Keypad"
-msgstr ""
+msgstr "Keypad"
 
 #: pylib/common.py:191
 msgid "Mousemat"
@@ -1777,7 +1774,6 @@ msgid "Device Unavailable"
 msgstr "Urządzenie niedostępne"
 
 #: pylib/controller/devices.py:609
-#, fuzzy
 msgid ""
 "The request could not be completed due to devices being removed/inserted."
 msgstr ""
@@ -2016,7 +2012,7 @@ msgstr "Edytuj stany DPI"
 
 #: pylib/controller/devices.py:1429
 msgid "Mouse Acceleration"
-msgstr ""
+msgstr "Przyspieszenie wskaźnika"
 
 #: pylib/controller/devices.py:1430
 msgid ""
@@ -2038,7 +2034,7 @@ msgstr "Otwórz ustawienia Myszy"
 
 #: pylib/controller/devices.py:1446
 msgid "Acceleration"
-msgstr ""
+msgstr "Przyspieszenie"
 
 #: pylib/controller/editor.py:578
 msgid "Columns: []"
@@ -2114,17 +2110,14 @@ msgid "Gradient"
 msgstr "Gradient"
 
 #: pylib/controller/editor.py:856
-#, fuzzy
 msgid "Pulsing"
 msgstr "Pulsowanie"
 
 #: pylib/controller/editor.py:859
-#, fuzzy
 msgid "Cycling"
 msgstr "Okrężny"
 
 #: pylib/controller/editor.py:860
-#, fuzzy
 msgid "Run Scripted Effect"
 msgstr "Uruchom skrypt efektu"
 
@@ -2202,11 +2195,11 @@ msgstr ""
 
 #: pylib/controller/editor.py:1668
 msgid "This LED is empty - nothing to erase here!"
-msgstr ""
+msgstr "To podświetlenie jest puste - niema nic do skasowania!"
 
 #: pylib/controller/editor.py:1689
 msgid "This LED is empty - no colour to pick here!"
-msgstr ""
+msgstr "To podświetlenie jest puste - brak koloru do pobrania!"
 
 #: pylib/controller/editor.py:1837
 msgid "Controller Error"
