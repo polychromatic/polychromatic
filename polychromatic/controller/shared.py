@@ -408,6 +408,7 @@ class PolychromaticWidgets(PolychromaticBase):
             QDialogButtonBox.Ignore: ["general", "cancel"],
             QDialogButtonBox.Save: ["general", "save"],
             QDialogButtonBox.Discard: ["general", "delete"],
+            QDialogButtonBox.RestoreDefaults: ["general", "reset"],
         }
 
         for std_btn in icons.keys():

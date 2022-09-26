@@ -106,7 +106,7 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
 
     def test_device_dpi_has_stages(self):
         device = self.get_device("Razer Mamba Elite")
-        self.assertEqual(len(device.dpi.stages), 5, "Failed to list five DPI stages")
+        self.assertEqual(len(device.dpi.default_stages), 5, "Failed to list five DPI stages")
 
     def test_device_dpi_set_get(self):
         device = self.get_device("Razer DeathAdder V2")

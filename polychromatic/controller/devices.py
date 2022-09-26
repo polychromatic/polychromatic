@@ -20,7 +20,7 @@ import time
 
 from PyQt5.QtCore import Qt, QSize, QMargins, QThread
 from PyQt5.QtGui import QIcon, QPixmap, QFont
-from PyQt5.QtWidgets import QWidget, QScrollArea, QGroupBox, QGridLayout, \
+from PyQt5.QtWidgets import QWidget, QDialogButtonBox, QGroupBox, QGridLayout, \
                             QPushButton, QToolButton, QMessageBox, QListWidget, \
                             QTreeWidget, QTreeWidgetItem, QLabel, QComboBox, \
                             QSpacerItem, QSizePolicy, QSlider, QCheckBox, \
@@ -1050,14 +1050,18 @@ class DevicesTab(shared.TabData):
             if device.dpi:
                 dpi = mkitem(_("DPI"))
                 dpi.addChild(mkitem(_("Current DPI"), f"({device.dpi.x}, {device.dpi.y})"))
-                dpi.addChild(mkitem(_("Default Stages"), ", ".join(map(str, device.dpi.stages))))
-                if self.appdata.preferences["custom"]["use_dpi_stages"]:
-                    custom_stages = []
-                    for i in range(1, 6):
-                        custom_stages.append(self.appdata.preferences["custom"]["dpi_stage_" + str(i)])
-                    dpi.addChild(mkitem(_("User DPI Stages"), ", ".join(map(str, custom_stages))))
+                default_stages = []
+                for stage in device.dpi.default_stages:
+                    dpi_x, dpi_y = stage
+                    default_stages.append(dpi_x if dpi_x == dpi_y else f"({dpi_x},{dpi_y})")
+                dpi.addChild(mkitem(_("Default Stages"), ", ".join(map(str, default_stages))))
+
+                if device.dpi.user_stages:
+                    stages = [value[0] if value[0] == value[1] else f"({value[0]},{value[1]})" for value in device.dpi.user_stages]
+                    dpi.addChild(mkitem(_("Custom Stages"), ", ".join(stages)))
                 else:
-                    dpi.addChild(mkitem(_("User DPI Stages"), self._("(Not set)"), disabled=True))
+                    dpi.addChild(mkitem(_("Custom Stages"), self._("(Not set)"), disabled=True))
+                dpi.addChild(mkitem(_("Supports Sync?"), device.dpi.can_sync, disabled=not device.dpi.can_sync))
                 dpi.addChild(mkitem(_("Minimum"), device.dpi.min))
                 dpi.addChild(mkitem(_("Maximum"), device.dpi.max))
                 tree.addTopLevelItem(dpi)
@@ -1307,33 +1311,41 @@ class SpecialControls(shared.TabData):
         stage_widget = QWidget()
         stage_widget.setLayout(QHBoxLayout())
         stage_widget.layout().setContentsMargins(0, 0, 0, 0)
-        stages = device.dpi.stages
+        stages = device.dpi.default_stages
 
-        if self.appdata.preferences["custom"]["use_dpi_stages"]:
-            stages = []
-            for i in range(1, 6):
-                stages.append(self.appdata.preferences["custom"]["dpi_stage_" + str(i)])
-            stages.sort()
+        # Use custom stages if the user saved them for this device
+        # TODO: Should reuse this code
+        dpi_file = os.path.join(self.paths.dpi, device.name + ".list")
+        if os.path.exists(dpi_file):
+            values = []
+            with open(dpi_file, "r") as f:
+                for line in f.readlines():
+                    try:
+                        dpi_x, dpi_y = line.split(",")
+                        values.append([int(dpi_x), int(dpi_y)])
+                    except ValueError:
+                        # TODO: Output to stderr
+                        pass
+            if values:
+                stages = values
 
         def _set_dpi_by_button(button):
-            slider_lock.setChecked(True)
-            slider_x.setValue(button.dpi_value)
+            dpi_x, dpi_y = button.dpi_value
+            slider_lock.setChecked(dpi_x == dpi_y)
+            slider_x.setValue(dpi_x)
+            slider_y.setValue(dpi_y)
 
         def _edit_dpi_stages():
-            self.appdata.ui_preferences.open_window(2)
+            self.dpi_editor = DPIStageEditor(self.appdata, device)
 
         for index, value in enumerate(stages):
+            dpi_x, dpi_y = value
             button = QPushButton()
             button.setCheckable(True)
-            if device.dpi.x == device.dpi.y == value:
+            if device.dpi.x == dpi_x and device.dpi.y == dpi_y:
                 button.setChecked(True)
-            button.setText(str(value))
+            button.setText(str(dpi_x) if dpi_x == dpi_y else f"{dpi_x},{dpi_y}")
             button.dpi_value = value
-
-            if index == 0:
-                button.setIcon(self.widgets.get_icon_qt("general", "dpi-slow"))
-            elif index == 4:
-                button.setIcon(self.widgets.get_icon_qt("general", "dpi-fast"))
 
             stage_widget.layout().addWidget(button)
             self.stage_buttons_group.addButton(button)
@@ -1458,3 +1470,184 @@ class SpecialControls(shared.TabData):
         button.setText(self._("Usage Instructions"))
         button.clicked.connect(_open_macro_dialog)
         return self.widgets.create_row_widget(self._("Macros"), [button])
+
+
+class DPIStageEditor(shared.TabData):
+    """
+    A dialog to edit the DPI stages and save them for quick access or to sync to the hardware buttons.
+    """
+    def __init__(self, appdata, device=Backend.DeviceItem):
+        super().__init__(appdata)
+        self.dialog = shared.get_ui_widget(self.appdata, "custom-dpi", q_toplevel=QDialog)
+        self.device = device
+
+        # TODO: Refactor later into new class/object
+        self.dpi_file = os.path.join(appdata.paths.dpi, device.name + ".list")
+        custom_enabled = os.path.exists(self.dpi_file)
+
+        # Labels
+        self.device_name = self.dialog.findChild(QLabel, "DeviceName")
+        self.device_range = self.dialog.findChild(QLabel, "DeviceDPIRange")
+        self.device_icon = self.dialog.findChild(QLabel, "DeviceIcon")
+        self.sync_possible = self.dialog.findChild(QLabel, "SyncPossible")
+        self.sync_impossible = self.dialog.findChild(QLabel, "SyncImpossible")
+
+        # Input
+        self.stages_enabled = self.dialog.findChild(QCheckBox, "StagesEnabled")
+        self.stages_table = self.dialog.findChild(QTableWidget, "StagesTable")
+
+        # Buttons
+        self.btn_sync = self.dialog.findChild(QPushButton, "SyncNow")
+        self.btn_stage_add = self.dialog.findChild(QPushButton, "StageAdd")
+        self.btn_stage_del = self.dialog.findChild(QPushButton, "StageDel")
+        self.dialog_buttons = self.dialog.findChild(QDialogButtonBox, "buttonBox")
+        self.btn_save = self.dialog_buttons.button(QDialogButtonBox.Save)
+
+        # Set icons for controls
+        if not self.appdata.system_qt_theme:
+            self.btn_sync.setIcon(self.widgets.get_icon_qt("general", "refresh"))
+            self.btn_stage_add.setIcon(self.widgets.get_icon_qt("general", "new"))
+            self.btn_stage_del.setIcon(self.widgets.get_icon_qt("general", "minus"))
+
+        # Set up UI
+        self.device_name.setText(device.name)
+        self.device_range.setText(self.appdata._("Up to 123 DPI").replace("123", str(device.dpi.max)))
+        shared.set_pixmap_for_label(self.device_icon, shared.get_real_device_image(device.real_image), 48)
+        self.toggle_custom_setting(custom_enabled)
+        self.sync_possible.setVisible(device.dpi.can_sync == True)
+        self.sync_impossible.setVisible(device.dpi.can_sync == False)
+        self.btn_sync.setEnabled(device.dpi.can_sync == True)
+
+        # Set up events
+        self.stages_enabled.clicked.connect(self.toggle_custom_setting)
+        self.btn_sync.clicked.connect(self.sync_now)
+        self.btn_save.clicked.connect(self.save_changes)
+        self.btn_stage_add.clicked.connect(self.stage_add)
+        self.btn_stage_del.clicked.connect(self.stage_del)
+
+        if os.path.exists(self.dpi_file):
+            self.load_from_file()
+
+        self.dialog.open()
+
+    def toggle_custom_setting(self, enabled):
+        """
+        Update the UI when enabling/disabling custom DPI stages. When disabling, default values will be restored.
+        """
+        self.stages_enabled.setChecked(enabled)
+        for widget in [self.stages_table, self.btn_stage_add, self.btn_stage_del]:
+            widget.setEnabled(enabled)
+
+        if not enabled:
+            self._update_dpi_table(self.device.dpi.default_stages)
+
+    def _update_dpi_table(self, values=[]):
+        """
+        Replace the data in the table with the specified values.
+        """
+        while self.stages_table.columnCount() > 0:
+            self.stages_table.removeColumn(0)
+
+        for item in values:
+            value_x = item[0]
+            value_y = item[1]
+            last_column = self.stages_table.columnCount()
+            self.stages_table.insertColumn(last_column)
+
+            cell = self.stages_table.item(0, last_column)
+            if not cell:
+                cell = QTableWidgetItem()
+                self.stages_table.setItem(0, last_column, cell)
+            if value_x == value_y:
+                cell.setText(str(value_x))
+            else:
+                cell.setText(f"{value_x},{value_y}")
+
+    def load_from_file(self):
+        """
+        Load saved DPI data from disk.
+        """
+        # TODO: Should reuse this code
+        values = []
+        with open(self.dpi_file, "r") as f:
+            for line in f.readlines():
+                try:
+                    dpi_x, dpi_y = line.split(",")
+                    values.append([int(dpi_x), int(dpi_y)])
+                except ValueError:
+                    # TODO: Output to stderr
+                    pass
+        self._update_dpi_table(values)
+
+    def stage_add(self):
+        """
+        Add another stage to the end of the list.
+        """
+        self.stages_table.insertColumn(self.stages_table.columnCount())
+        self.stages_table.setCurrentCell(0, self.stages_table.columnCount() - 1)
+
+    def stage_del(self):
+        """
+        Remove the last stage from the end of the list.
+        """
+        column = self.stages_table.currentColumn()
+        if column == -1:
+            self.stages_table.removeColumn(self.stages_table.columnCount() - 1)
+        else:
+            self.stages_table.removeColumn(self.stages_table.currentColumn())
+
+        self.stages_table.setCurrentCell(0, self.stages_table.currentColumn())
+
+    def parse_dpi(self):
+        """
+        Return a list of valid DPI values from user input. Unless there is a validation error, which will raise ValueError.
+
+        The list will be in the list format expected by DeviceItem.DPI.sync():
+        [ [1800,1800], [6500, 4800], [...] ]
+        """
+        values = []
+        for col in range(0, self.stages_table.columnCount()):
+            cell = self.stages_table.item(0, col)
+            if not cell:
+                continue
+            data = cell.text()
+            if len(data) == 0:
+                continue
+            data = data.split(",")
+            if len(data) == 1:
+                try:
+                    values.append([int(data[0]), int(data[0])])
+                except ValueError:
+                    # TODO: Show validation message - invalid, too high, too low?
+                    continue
+            else:
+                try:
+                    values.append([int(data[0]), int(data[1])])
+                except ValueError:
+                    # TODO: Show validation message - invalid, too high, too low?
+                    continue
+
+        return sorted(values, key=lambda item: int(item[0]))
+
+    def sync_now(self):
+        """
+        Sync the current DPI values displayed to the hardware.
+        """
+        self.device.dpi.sync(self.parse_dpi())
+
+    def save_changes(self):
+        """
+        Save the custom values, save to disk then close the dialog.
+        """
+        values = self.parse_dpi()
+
+        if self.stages_enabled.isChecked():
+            with open(self.dpi_file, "w") as f:
+                for value in self.parse_dpi():
+                    dpi_x, dpi_y = value
+                    f.write(f"{dpi_x},{dpi_y}\n")
+
+        if not self.stages_enabled.isChecked() and os.path.exists(self.dpi_file) or not values:
+            os.remove(self.dpi_file)
+
+        self.appdata.tab_devices.open_device(self.device)

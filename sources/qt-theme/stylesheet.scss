@@ -95,6 +95,10 @@ QScrollBar::handle:horizontal {
     margin: 3px;
 }
 
+QScrollBar::handle:disabled {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 QScrollBar::add-line {
     height: 0px;
     width: 0px;
@@ -121,6 +125,12 @@ QToolButton {
     margin: 0;
     padding: 4px 16px;
     selection-background-color: transparent;
+}
+
+QPushButton::flat,
+QToolButton::flat {
+    border: none;
+    background-color: transparent;
 }
 
 QPushButton:focus,
@@ -430,6 +440,11 @@ QHeaderView::section {
     background: $bg-primary;
     color: white;
     padding: 2px 4px;
+}
+
+QHeaderView::section:disabled {
+    background: $bg-disabled;
+    color: $text-disabled;
 }
 
 
@@ -977,6 +992,15 @@ QTableView {
         background: $bg-primary;
         border: 1px solid transparent;
     }
+
+    &:disabled {
+        background: $bg-disabled;
+        color: $text-disabled;
+        selection-background-color: $bg-disabled;
+        selection-color: $text-disabled;
+    }
+
+    /* TODO: Disabled QHeaderView states */
 }
 
 

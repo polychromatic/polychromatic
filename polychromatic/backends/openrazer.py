@@ -249,7 +249,6 @@ class OpenRazerBackend(Backend):
             device.dpi = None
             main_zone.options.append(self._get_dpi_fixed_object(rdevice))
 
-
         if rdevice.has("poll_rate"):
             main_zone.options.append(self._get_poll_rate_option(rdevice))
 
@@ -300,9 +299,11 @@ class OpenRazerBackend(Backend):
 
     def _get_dpi_object(self, rdevice):
         """
-        Returns a Backend.DeviceItem.DPI object.
-        This is for standard use of the .dpi function (X/Y axis support). If the
-        device has "available_dpi", use _get_fixed_dpi_object() instead.
+        Returns a Backend.DeviceItem.DPI object with X/Y axis support.
+        If the device uses "available_dpi", use _get_fixed_dpi_object() instead.
+
+        Supports hardware that can save DPI intervals onto the hardware, if
+        the "dpi_stages" capability is present.
         """
         class DPI(Backend.DeviceItem.DPI):
             def __init__(self, rdevice):
@@ -318,7 +319,20 @@ class OpenRazerBackend(Backend):
             def set(self, x, y):
                 self._rdevice.dpi = (int(x), int(y))
 
-        dpi = DPI(rdevice)
+        class SyncDPI(DPI):
+            def __init__(self, rdevice):
+                super().__init__(rdevice)
+                self.can_sync = True
+
+            def sync(self, stages):
+                """OpenRazer's "dpi_stages" setter expects: [active_stage, [stages: (x,y), (x,y)]"""
+                stages = [(stage[0], stage[1]) for stage in stages]
+                self._rdevice.dpi_stages = (1, stages)
+
+        if rdevice.has("dpi_stages"):
+            dpi = SyncDPI(rdevice)
+        else:
+            dpi = DPI(rdevice)
 
         # Determine DPI stages, or generate them if not known
         default_stages = {
@@ -332,15 +346,20 @@ class OpenRazerBackend(Backend):
             return round(value / 100) * 100
 
         try:
-            dpi.stages = default_stages[dpi.max]
+            stages = default_stages[dpi.max]
         except KeyError:
-            dpi.stages = [
+            stages = [
                 _autogen_stage(dpi.max / 10),
                 _autogen_stage(dpi.max / 8),
                 _autogen_stage(dpi.max / 4),
                 _autogen_stage(dpi.max / 2),
                 int(dpi.max)
             ]
+
+        # Polychromatic internally stores as a sublist of [X,Y] values
+        dpi.default_stages = []
+        for value in stages:
+            dpi.default_stages.append([value, value])
 
         return dpi
 
@@ -383,14 +402,6 @@ class OpenRazerBackend(Backend):
         fixed_dpi.icon = self.get_icon("general", "dpi")
 
         return fixed_dpi
-
-    def _get_dpi_sync_option(self, rdevice):
-        """
-        Returns a Backend.Option derivative object used for syncing DPI stages
-        to the hardware. This is a firmware feature. Most devices don't support this
-        and require a software implementation to listen to the buttons.
-        """
-        return Backend.Option()
 
     def _get_matrix_object(self, rdevice, device):
         """

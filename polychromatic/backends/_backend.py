@@ -253,7 +253,11 @@ class Backend(BackendBase):
                 self.y = 0
                 self.min = 0
                 self.max = 0
-                self.stages = []
+                self.default_stages = []
+                self.can_sync = False
+
+                # Populated by Polychromatic later, if the user saved any custom DPI stages
+                self.user_stages = []
 
             def refresh(self):
                 """
@@ -264,6 +268,15 @@ class Backend(BackendBase):
             def set(self, x, y):
                 """
                 Sets the new DPI value to the specified X/Y value.
+                """
+                raise NotImplementedError
+
+            def sync(self, stages):
+                """
+                Synchronises DPI stages to the hardware buttons when 'can_sync' is true.
+
+                "stages" is a list consisting of a sublist of X,Y values, e.g.
+                [ [1800, 1800], [6500, 4800], [...] ]
                 """
                 raise NotImplementedError
 

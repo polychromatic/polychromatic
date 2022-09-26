@@ -52,14 +52,6 @@ class PreferencesWindow(shared.TabData):
             ["tray", "mode", QComboBox, "TrayModeCombo", False],
             ["tray", "autostart_delay", QSpinBox, "TrayDelaySpinner", 0],
 
-            # -- Customise
-            ["custom", "use_dpi_stages", QCheckBox, "DPIStagesAuto", True],
-            ["custom", "dpi_stage_1", QSpinBox, "DPIStage1", 0],
-            ["custom", "dpi_stage_2", QSpinBox, "DPIStage2", 0],
-            ["custom", "dpi_stage_3", QSpinBox, "DPIStage3", 0],
-            ["custom", "dpi_stage_4", QSpinBox, "DPIStage4", 0],
-            ["custom", "dpi_stage_5", QSpinBox, "DPIStage5", 0],
-
             # -- Editor
             ["editor", "live_preview", QCheckBox, "LivePreview", False],
             ["editor", "hide_key_labels", QCheckBox, "HideKeyLabels", False],
@@ -94,7 +86,6 @@ class PreferencesWindow(shared.TabData):
         if not self.appdata.system_qt_theme:
             self.dialog.findChild(QPushButton, "SavedColoursButton").setIcon(self.widgets.get_icon_qt("general", "edit"))
             self.dialog.findChild(QPushButton, "SavedColoursReset").setIcon(self.widgets.get_icon_qt("general", "reset"))
-            self.dialog.findChild(QToolButton, "DPIStagesReset").setIcon(self.widgets.get_icon_qt("general", "reset"))
 
         # Options
         for option in self.options:
@@ -102,7 +93,6 @@ class PreferencesWindow(shared.TabData):
 
         self.dialog.findChild(QPushButton, "SavedColoursButton").clicked.connect(self.modify_colours)
         self.dialog.findChild(QPushButton, "SavedColoursReset").clicked.connect(self.reset_colours)
-        self.dialog.findChild(QToolButton, "DPIStagesReset").clicked.connect(self._reset_dpi_stages_from_hardware)
 
         # Create Icon Picker
         def _set_new_tray_icon(new_icon):
@@ -150,10 +140,6 @@ class PreferencesWindow(shared.TabData):
             self.restart_applet = True
 
         self.dialog.findChild(QComboBox, "TrayModeCombo").currentIndexChanged.connect(_cb_set_applet_flag)
-        self.dialog.findChild(QCheckBox, "DPIStagesAuto").stateChanged.connect(_cb_set_applet_flag)
-        self.dialog.findChild(QCheckBox, "DPIStagesAuto").stateChanged.connect(self._refresh_dpi_stages_state)
-        for i in range(1, 6):
-            self.dialog.findChild(QSpinBox, "DPIStage" + str(i)).valueChanged.connect(_cb_set_applet_flag)
 
         # FIXME: Hide incomplete features
         self.dialog.findChild(QComboBox, "LandingTabCombo").removeItem(3)
@@ -184,7 +170,6 @@ class PreferencesWindow(shared.TabData):
         # Show time!
         self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(open_tab if open_tab else 0)
         self.refresh_backend_status()
-        self._refresh_dpi_stages_state()
         self.dialog.open()
 
     def refresh_backend_status(self):
@@ -318,54 +303,6 @@ class PreferencesWindow(shared.TabData):
             self.dbg.stdout("Tray applet settings changed. Will restart component.", self.dbg.success, 1)
             process = procpid.ProcessManager("tray-applet")
             process.reload()
-
-    def _refresh_dpi_stages_state(self):
-        """
-        Modifying DPI stages is only useful if a mouse is present and the user
-        wishes to use their own values.
-        """
-        label = self.dialog.findChild(QLabel, "DPIStagesLabel")
-        checkbox = self.dialog.findChild(QCheckBox, "DPIStagesAuto")
-        spinbox_widget = self.dialog.findChild(QWidget, "DPIStagesWidget")
-        spinbox_is_zero = self.dialog.findChild(QSpinBox, "DPIStage1").value() == 0
-
-        # Is there a mouse? Disable section if none is present.
-        mice_present = len(self.middleman.get_devices_by_form_factor("mouse")) > 0
-
-        for control in [label, checkbox, spinbox_widget]:
-            control.setDisabled(not mice_present)
-
-        if not mice_present:
-            return
-
-        # Disable controls when using default DPI stages
-        spinbox_widget.setDisabled(checkbox.isChecked())
-
-        # Automatically populate default DPI stages if blank
-        if len(self.middleman.get_devices()) > 0 and checkbox.isChecked() and spinbox_is_zero:
-            self._reset_dpi_stages_from_hardware()
-
-    def _reset_dpi_stages_from_hardware(self):
-        """
-        Reset user defined DPI stages to a DPI-capable mouse.
-        """
-        devices = self.middleman.get_devices_by_form_factor("mouse")
-        mice = len(devices) > 0
-        if not mice:
-            return
-
-        device = devices[0]
-        if not device.dpi or not device.dpi.stages:
-            return
-
-        self.dbg.stdout("Setting user-defined DPI stages to '{0}'".format(device.name), self.dbg.action, 1)
-        default_dpi_stages = device.dpi.stages
-        try:
-            for i in range(1, 6):
-                self.dialog.findChild(QSpinBox, "DPIStage" + str(i)).setValue(default_dpi_stages[i - 1])
-        except (IndexError, AttributeError):
-            # 5 stages not guaranteed
-            pass
 
     def modify_colours(self):
         """

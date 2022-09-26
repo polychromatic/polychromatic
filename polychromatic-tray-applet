@@ -436,19 +436,34 @@ class PolychromaticTrayApplet(PolychromaticBase):
         # Add DPI
         if device.dpi:
             dpi_menu, dpi_menu_item = indicator.create_submenu(self._("DPI"), True, self._get_icon("general", "dpi"))
+            stages = device.dpi.default_stages
+            total = len(stages)
 
-            dpi_stages = device.dpi.stages
-            if self.preferences["custom"]["use_dpi_stages"]:
-                for i in range(1, 6):
-                    dpi_stages.append(self.preferences["custom"]["dpi_stage_" + str(i)])
+            # Use custom stages if the user saved them for this device
+            # TODO: Should reuse this code
+            dpi_file = os.path.join(self.paths.dpi, device.name + ".list")
+            if os.path.exists(dpi_file):
+                values = []
+                with open(dpi_file, "r") as f:
+                    for line in f.readlines():
+                        try:
+                            dpi_x, dpi_y = line.split(",")
+                            values.append([int(dpi_x), int(dpi_y)])
+                        except ValueError:
+                            # TODO: Output to stderr
+                            pass
+                if values:
+                    stages = values
 
-            for item, value in enumerate(dpi_stages):
+            for index, value in enumerate(stages):
+                dpi_x, dpi_y = value
+                label = str(dpi_x) if dpi_x == dpi_y else f"{dpi_x},{dpi_y}"
                 icon = None
-                if item == 0:
+                if index == 0:
                     icon = self._get_icon("general", "dpi-slow")
-                elif item == len(dpi_stages) - 1:
+                elif index == total - 1:
                     icon = self._get_icon("general", "dpi-fast")
-                indicator.create_menu_item(dpi_menu, str(value), True, cb.set_dpi, [device, value], icon)
+                indicator.create_menu_item(dpi_menu, label, True, cb.set_dpi, [device, value], icon)
             indicator.add_menu_item(submenu, dpi_menu_item)
 
         if device.matrix:
@@ -457,8 +472,8 @@ class PolychromaticTrayApplet(PolychromaticBase):
             effects_menu, effects_menu_item = indicator.create_submenu(self._("Effects"), True, self._get_icon("general", "effects"))
 
             if len(effect_items) > 0:
-                for item in effect_items:
-                     indicator.create_menu_item(effects_menu, item["name"], True, cb.set_custom_effect, [device, item["path"]], item["icon"])
+                for index in effect_items:
+                     indicator.create_menu_item(effects_menu, index["name"], True, cb.set_custom_effect, [device, index["path"]], index["icon"])
             else:
                 indicator.create_menu_item(effects_menu, self._("No custom effects"), False)
 
@@ -693,10 +708,11 @@ class Callback():
             attr    [device, value]
         """
         device, value = attr
+        dpi_x, dpi_y = value
 
         dbg.stdout("Setting DPI to {0}".format(value), dbg.action, 1)
         try:
-            device.dpi.set(int(value), int(value))
+            device.dpi.set(dpi_x, dpi_y)
         except Exception as e:
             Callback._catch_command_error(device, e)
 
