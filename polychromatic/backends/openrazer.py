@@ -137,6 +137,8 @@ class OpenRazerBackend(Backend):
             device = Backend.UnknownDeviceItem()
             device.name = "{0}:{1}".format("1532", pid)
             device.form_factor = self.get_form_factor()
+            device.vid = "1532"
+            device.pid = pid
             unreg_pids.append(device)
 
         return unreg_pids

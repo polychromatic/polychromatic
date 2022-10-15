@@ -138,6 +138,10 @@ class Backend(BackendBase):
             # This is assigned automatically.
             self.backend = Backend
 
+            # VID:PID of the device
+            self.vid = ""
+            self.pid = ""
+
             # Use Backend.get_form_factor(), passing an ID from common.FORM_FACTORS
             # that identifies this device. Pass "unrecognised" to function if unknown.
             self.form_factor = {}
