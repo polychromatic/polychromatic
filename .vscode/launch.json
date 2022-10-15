@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Controller",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/polychromatic-controller",
+            "args": ["-v"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Tray Applet",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/polychromatic-tray-applet",
+            "args": ["-v"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "CLI",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/polychromatic-cli",
+            "args": ["-v"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}

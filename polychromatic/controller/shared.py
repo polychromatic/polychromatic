@@ -105,6 +105,11 @@ def get_ui_widget(appdata, name, q_toplevel=QWidget):
         print("Missing UI file: " + ui_file)
         return None
 
+    # HACK: Allows VS Code IDE to autocomplete, since PyQt5-stubs haven't stubbed uic yet
+    # https://github.com/python-qt-tools/PyQt5-stubs/issues/150
+    if 1 == 2:
+        return QWidget()
+
     widget = uic.loadUi(ui_file, q_toplevel())
 
     # Apply the styles for dialogs/windows
