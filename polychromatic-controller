@@ -143,7 +143,6 @@ class ApplicationData(PolychromaticBase):
                 self.middleman.init()
 
                 # Enable OpenRazer functions if available
-                # See also: polychromatic.controller.preferences.refresh_backend_status()
                 if not "openrazer" in self.middleman.not_installed:
                     _enable_action("actionOpenRazerConfigure")
                     _enable_action("actionOpenRazerOpenLog")
@@ -159,8 +158,6 @@ class ApplicationData(PolychromaticBase):
                 t_end = time.time()
                 self.dbg.stdout("Backends loaded in {0}s.".format(str(round(t_end - t_start, 3))), self.dbg.action, 1)
                 self.ready = True
-
-                app.ui_preferences.refresh_backend_status()
 
                 # No longer need to inform user if initialisation took too long
                 self.bg_thread_timeout.terminate()
