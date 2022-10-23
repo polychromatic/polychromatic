@@ -129,7 +129,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string extracomment="Hint text for configuring OpenRazer">This feature is incompatible. Use &quot;Apply to All&quot; from the Devices tab.</string>
+          <string extracomment="Hint text for configuring OpenRazer">Polychromatic has an equivalent feature. Use &quot;Apply to All&quot; from the Devices tab.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -149,7 +149,7 @@
        <item>
         <widget class="QCheckBox" name="battery_notifier">
          <property name="text">
-          <string extracomment="Checkbox for configuring OpenRazer">Periodically notify battery status (for supported devices)</string>
+          <string extracomment="Checkbox for configuring OpenRazer">Show battery notifications</string>
          </property>
         </widget>
        </item>

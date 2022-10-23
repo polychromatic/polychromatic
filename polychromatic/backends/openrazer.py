@@ -1383,7 +1383,7 @@ class OpenRazerBackend(Backend):
             else:
                 low_power = LowBatteryThresholdOptionSetOnly(rdevice, persistence)
 
-            low_power.label = self._("Low Power Mode")
+            low_power.label = self._("Enter low power at")
             low_power.icon = self.get_icon("options", "low_battery")
             options.append(low_power)
 

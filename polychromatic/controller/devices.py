@@ -314,7 +314,7 @@ class DevicesTab(shared.TabData):
                 if device.dpi:
                     widgets.append(self.special_controls.create_dpi_control(device))
 
-                # TODO: Button to set compatible software effects here
+                # TODO: Button to set compatible software effects - or as "Custom" effect?
 
                 # -- Mouse Acceleration
                 # TODO: Move to middleman for all interfaces?
@@ -1373,6 +1373,7 @@ class SpecialControls(shared.TabData):
         Due to the diverse range of desktop environments, getting mouse
         acceleration values isn't supported right now.
         """
+        # TODO: Move to middleman to use for all mice
         def _get_current_desktop_env():
             try:
                 desktop_env = os.environ["XDG_CURRENT_DESKTOP"]
@@ -1458,18 +1459,21 @@ class SpecialControls(shared.TabData):
         def _open_macro_dialog():
             self.widgets.open_dialog(self.widgets.dialog_generic,
                 self._("About Macro Recording"),
-                self._("The OpenRazer daemon provides a simple on-the-fly macro recording feature. To use:\n\n" + \
+                self._("OpenRazer provides a simple on-the-fly macro recording feature.\n\n" + \
                 "1. Press FN+[M] to enter macro mode.\n" + \
                 "2. Press the macro key to assign to. Only M1-M5 are supported.\n" + \
                 "3. Press the keys in sequence to record.\n" + \
                 "4. Press FN+[M] to exit macro mode.\n\n" + \
-                "Macros are retained in memory until the daemon is stopped. The replay speed will be instantaneous.\n\n" + \
-                "This is not a Polychromatic feature and could disappear in future. This application intends to integrate a key rebinding feature in a future version."))
+                "Macros remain in memory until the openrazer-daemon process is stopped. The replay speed will be instantaneous, which can be problematic with some software/games."))
 
         button = QPushButton()
         button.setText(self._("Usage Instructions"))
         button.clicked.connect(_open_macro_dialog)
-        return self.widgets.create_row_widget(self._("Macros"), [button])
+
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+
+        return self.widgets.create_row_widget(self._("Macros"), [button, spacer])
 
 
 class DPIStageEditor(shared.TabData):
