@@ -255,6 +255,9 @@ def get_real_device_image(uri):
     if os.path.exists(cache_path):
         return cache_path
 
+    if not PolychromaticBase.preferences.get("controller", {}).get("download_device_images", True):
+        return ""
+
     if uri.startswith("http://") or uri.startswith("https://"):
         PolychromaticBase.dbg.stdout("Downloading image: " + uri, PolychromaticBase.dbg.action, 1)
         r = requests.get(uri)
