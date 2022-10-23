@@ -17,6 +17,7 @@ from ..qt.flowlayout import FlowLayout as QFlowLayout
 import os
 import subprocess
 import time
+import shutil
 
 from PyQt5.QtCore import Qt, QSize, QMargins, QThread
 from PyQt5.QtGui import QIcon, QPixmap, QFont
@@ -49,6 +50,9 @@ class DevicesTab(shared.TabData):
         self.Contents = self.main_window.findChild(QWidget, "DeviceContents")
         self.SidebarTree = self.main_window.findChild(QTreeWidget, "DeviceSidebarTree")
         self.SidebarTree.itemClicked.connect(self._sidebar_changed)
+
+        # Useful complimentary software
+        self.input_remapper = shutil.which("input-remapper-gtk")
 
         # Avoid garbage collection cleaning up invisible controls
         self.btn_grps = {}
@@ -321,13 +325,13 @@ class DevicesTab(shared.TabData):
                 if device.form_factor == "mouse":
                     widgets.append(self.special_controls.create_mouse_accel_control())
 
-                # -- Information about programmable keys
-                if device.has_programmable_keys:
-                    widgets.append(self.special_controls.create_programmable_keys_control())
-
                 # -- Information about OpenRazer daemon's built-in macro feature
                 if device.backend.backend_id == "openrazer" and device.form_factor.get("id") == "keyboard":
                     widgets.append(self.special_controls.create_openrazer_macro_control())
+
+                # -- Information about programmable keys
+                if device.has_programmable_keys and self.input_remapper:
+                    widgets.append(self.special_controls.create_programmable_keys_control(self.input_remapper))
 
             # Before adding to the main layout, use group boxes if there's multiple zones
             if len(device.zones) > 1:
@@ -1432,24 +1436,22 @@ class SpecialControls(shared.TabData):
 
         return self.widgets.create_row_widget(self._("Acceleration"), [widget])
 
-    def create_programmable_keys_control(self):
+    def create_programmable_keys_control(self, path):
         """
         Returns a widget that informs the user that this software does not
         have a key remapping solution right now.
         """
-        def _open_remapping_dialog():
-            self.widgets.open_dialog(self.widgets.dialog_generic,
-                self._("About Key Mapping"),
-                self._("Currently, OpenRazer and Polychromatic do not support a convenient key rebinding feature. " + \
-                "Polychromatic intends to integrate a key mapping solution in a future version.\n\n" + \
-                "In the meantime, there are third party projects which provide key remapping agnostic to any input device.\n\nFor more information, visit:\n" + \
-                "https://polychromatic.app/permalink/keymapping/"))
+        def _open_input_remapper():
+            subprocess.Popen([path])
 
         button = QPushButton()
-        button.setText(self._("About Key Mapping"))
-        button.clicked.connect(_open_remapping_dialog)
+        button.setText(self._("Open Input Remapper"))
+        button.clicked.connect(_open_input_remapper)
 
-        return self.widgets.create_row_widget(self._("Key Mapping"), [button])
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+
+        return self.widgets.create_row_widget("", [button, spacer])
 
     def create_openrazer_macro_control(self):
         """
