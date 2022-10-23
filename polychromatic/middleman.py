@@ -95,6 +95,13 @@ class Middleman(object):
         """
         Returns the backend object for the specified device.
         """
+        # FIXME: Legacy code used this function for "backend_id"
+        if type(device) == str:
+            backend_id = device
+            for backend in self.backends:
+                if backend_id == backend.backend_id:
+                    return backend
+
         for module in self.backends:
             if device.backend_id == module.backend_id:
                 return module
