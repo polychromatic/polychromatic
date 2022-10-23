@@ -12,12 +12,8 @@ Project URL: https://github.com/openrazer/openrazer
 
 import glob
 import os
-import requests
-
-from openrazer import client as rclient
 
 from ._backend import Backend as Backend
-from .. import fx
 from .. import common
 
 
@@ -31,11 +27,13 @@ class OpenRazerBackend(Backend):
                            openrazer.client.fx.SingleLed object (e.g. logo)
     """
     def __init__(self, *args):
+        import openrazer.client
+
         super().__init__(*args)
         self.backend_id = "openrazer"
         self.name = "OpenRazer"
         self.logo = "openrazer.svg"
-        self.version = rclient.__version__
+        self.version = openrazer.client.__version__
         self.project_url = "https://openrazer.github.io"
         self.bug_url = "https://github.com/openrazer/openrazer/issues"
         self.releases_url = "https://github.com/openrazer/openrazer/releases"
@@ -59,7 +57,8 @@ class OpenRazerBackend(Backend):
         If the daemon "service" is not running, this will usually start it.
         """
         self.debug("Connecting to daemon...")
-        self.devman = rclient.DeviceManager()
+        import openrazer.client
+        self.devman = openrazer.client.DeviceManager()
         self.devman.sync_effects = False
 
     def init(self):
