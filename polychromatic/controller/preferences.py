@@ -295,7 +295,7 @@ class OpenRazerPreferences(shared.TabData):
 
         if not self.conf_path:
             try:
-                self.conf_path = "/home/{0}/.config/openrazer/razer.conf".format(os.environ["USER"])
+                self.conf_path = "{0}/.config/openrazer/razer.conf".format(os.environ["HOME"])
             except KeyError:
                 self.conf_path = "/home/$USER/.config/openrazer/razer.conf"
 
