@@ -2,13 +2,14 @@ project('polychromatic',
         version : '0.8.0',
         meson_version : '>=0.47.0')
 
+fs = import('fs')
 i18n = import('i18n')
 python = import('python').find_installation()
 py_install_dir = python.get_install_dir()
 
 # Debian/Ubuntu's Python path should be 'dist-packages'
 if build_machine.system() == 'linux'
-    if run_command('[', '-d', '/usr/lib/python3/dist-packages', ']', check: true).returncode() == 0
+    if fs.is_dir('/usr/lib/python3/dist-packages')
         py_install_dir = 'lib/python3/dist-packages'
     endif
 endif
