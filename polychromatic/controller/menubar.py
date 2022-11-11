@@ -387,7 +387,7 @@ class MenuBarOpenRazer(MenuBar):
             try:
                 cmd = "xdg-open file://{0}/.local/share/openrazer/logs/razer.log".format(os.environ["HOME"])
             except KeyError:
-                cmd = "xdg-open file:///home/$USER/.local/share/openrazer/logs/razer.log".format(os.environ["USER"])
+                cmd = "xdg-open file:///home/$USER/.local/share/openrazer/logs/razer.log"
 
         print("Running: " + cmd)
         os.system(cmd)
