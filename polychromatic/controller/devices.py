@@ -454,32 +454,6 @@ class DevicesTab(shared.TabData):
         combo.currentIndexChanged.connect(_current_index_changed)
         return [combo]
 
-    def _create_control_dialog(self, option):
-        print("fixme:_create_control_dialog")
-        return []
-        #def _open_dialog():
-            #dialog_title = middleman.BACKEND_NAMES[device["backend"]]
-            #self.widgets.open_dialog(self.widgets.dialog_generic, dialog_title, option["message"])
-
-        #button = QPushButton(option["button_text"])
-        #button.clicked.connect(_open_dialog)
-        #return [self.create_widget_wrapper_for_control([button])]
-
-    def _create_control_button(self, option):
-        """
-        Returns a list of controls for the user to perform one click actions.
-        """
-        def _button_clicked():
-            self.dbg.stdout(f"{self.current_device.name}: Clicking option {option.uid}", self.dbg.action, 1)
-            try:
-                option.apply()
-            except Exception as e:
-                self._catch_command_error(self.current_device, e)
-
-        button = QPushButton(option.button_label)
-        button.clicked.connect(_button_clicked)
-        return [self.create_widget_wrapper_for_control([button])]
-
     def _create_effect_controls(self, zone, options):
         """
         Return a row widget containing the specified options. These are grouped
