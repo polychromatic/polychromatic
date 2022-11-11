@@ -12,19 +12,8 @@ https://docs.polychromatic.app/
 from . import procpid
 from . import common
 from .backends._backend import Backend
-
-from .backends import openrazer as openrazer_backend
 from .troubleshoot import openrazer as openrazer_troubleshoot
 
-# TODO: Drop BACKEND_NAMES, use class methods
-BACKEND_NAMES = {
-#   "backend ID": "human readable string"
-    "openrazer": "OpenRazer"
-}
-
-BACKEND_MODULES = {
-    "openrazer": openrazer_backend.OpenRazerBackend
-}
 
 TROUBLESHOOT_MODULES = {
     "openrazer": openrazer_troubleshoot.troubleshoot
@@ -69,27 +58,24 @@ class Middleman(object):
         is ready. Note that this thread may potentially be blocked if the backend
         hangs while it initialises.
         """
-        def _load_backend_module(backend_id):
-            try:
-                module = BACKEND_MODULES[backend_id]
-                backend = module(self._base)
-                if backend.init():
-                    self.backends.append(backend)
-                else:
-                    self.bad_init.append(backend)
-            except (ImportError, ModuleNotFoundError):
-                self.not_installed.append(backend_id)
-            except Exception as e:
-                self.import_errors[backend_id] = common.get_exception_as_string(e)
+        # Just OpenRazer for now.
+        try:
+            import polychromatic.backends.openrazer as openrazer_backend
+            backend = openrazer_backend.OpenRazerBackend(self._base)
+            if backend.init():
+                self.backends.append(backend)
+            else:
+                self.bad_init.append(backend)
+        except (ImportError, ModuleNotFoundError):
+            self.not_installed.append("openrazer")
+        except Exception as e:
+            self.import_errors["openrazer"] = common.get_exception_as_string(e)
 
-            try:
-                self.troubleshooters[backend_id] = TROUBLESHOOT_MODULES[backend_id]
-            except NameError:
-                # Backend does not have a troubleshooter.
-                pass
-
-        for backend_id in BACKEND_NAMES.keys():
-            _load_backend_module(backend_id)
+        try:
+            self.troubleshooters["openrazer"] = TROUBLESHOOT_MODULES["openrazer"]
+        except NameError:
+            # Backend does not have a troubleshooter.
+            pass
 
     def get_backend(self, device):
         """

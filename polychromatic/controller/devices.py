@@ -814,7 +814,7 @@ class DevicesTab(shared.TabData):
         _ = self._
 
         for backend_id in self.middleman.import_errors.keys():
-            backend_name = middleman.BACKEND_NAMES[backend_id]
+            backend_name = "openrazer"
             exception = self.middleman.import_errors[backend_id].strip()
             dbg.stdout("\n{0}\n------------------------------\n{1}\n".format(backend_name, exception), dbg.error)
             self.widgets.open_dialog(self.widgets.dialog_generic,
@@ -831,7 +831,7 @@ class DevicesTab(shared.TabData):
         layout.setContentsMargins(0, 0, 0, 0)
         shared.clear_layout(layout)
 
-        backend_name = middleman.BACKEND_NAMES[unknown_device.backend_id]
+        backend_name = "openrazer"
 
         def _restart_backend():
             backend_to_restart_fn = {
