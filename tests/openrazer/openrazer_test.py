@@ -362,7 +362,7 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         poll_rate.apply(500)
 
     def test_poll_rate_set_hyper(self):
-        device = self.get_device("Razer Basilisk X HyperSpeed")
+        device = self.get_device("Razer Viper 8KHz")
         poll_rate = self.get_option(device, "poll_rate", "main")
         poll_rate.apply(8000)
 
