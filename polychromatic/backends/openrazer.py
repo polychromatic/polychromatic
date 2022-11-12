@@ -925,32 +925,32 @@ class OpenRazerBackend(Backend):
             options.append(option)
 
         if self._has_zone_capability(rdevice, zone, "blinking"):
-            # Buggy and pretty much unused!
-            # - API only exposes for 'logo' and 'scroll' zones.
-            # - Only the Chroma Mug Holder supports this (as of 3.2.0)
-            class BlinkingOption(Backend.EffectOption):
-                def __init__(self, rzone, persistence):
-                    super().__init__()
-                    self._rzone = rzone
-                    self._persistence = persistence
-                    self.uid = "blinking"
-                    self.colours_required = 1
-                    self.colours = self._persistence.state["colours"]
+            # Chroma Mug Holder is the only one to have it in the "main" zone, but there's no Python API call.
+            # API only exposes for 'logo' and 'scroll'. Some mice use it.
+            if zone in ["logo", "scroll"]:
+                class BlinkingOption(Backend.EffectOption):
+                    def __init__(self, rzone, persistence):
+                        super().__init__()
+                        self._rzone = rzone
+                        self._persistence = persistence
+                        self.uid = "blinking"
+                        self.colours_required = 1
+                        self.colours = self._persistence.state["colours"]
 
-                def refresh(self):
-                    self.active = True if self._persistence.state["colours"] == "blinking" else False
-                    self.colours = self._persistence.state["colours"]
+                    def refresh(self):
+                        self.active = True if self._persistence.state["colours"] == "blinking" else False
+                        self.colours = self._persistence.state["colours"]
 
-                def apply(self, param=None):
-                    rgb = common.hex_to_rgb(self.colours[0])
-                    self._rzone.blinking(rgb[0], rgb[1], rgb[2])
-                    self._persistence.save("effect", "blinking")
-                    self._persistence.save("colour_1", self.colours[0])
+                    def apply(self, param=None):
+                        rgb = common.hex_to_rgb(self.colours[0])
+                        self._rzone.blinking(rgb[0], rgb[1], rgb[2])
+                        self._persistence.save("effect", "blinking")
+                        self._persistence.save("colour_1", self.colours[0])
 
-            option = BlinkingOption(rzone, zone._persistence)
-            option.label = self._("Blinking")
-            option.icon = self.get_icon("options", "blinking")
-            options.append(option)
+                option = BlinkingOption(rzone, zone._persistence)
+                option.label = self._("Blinking")
+                option.icon = self.get_icon("options", "blinking")
+                options.append(option)
 
         if self._has_zone_capability(rdevice, zone, "static"):
             class StaticOption(Backend.EffectOption):
