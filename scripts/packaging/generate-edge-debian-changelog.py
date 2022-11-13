@@ -3,7 +3,8 @@
 # This script is used by the CI system to produce changelogs for automated
 # Debian/Ubuntu builds.
 #
-# Parameters: <codename>
+# Parameters: <release> <codename>
+# E.g.        "20.04" "focal"
 #
 
 import datetime
@@ -11,7 +12,8 @@ import os
 import subprocess
 import sys
 
-CODENAME = sys.argv[1]
+UBUNTU_RELEASE = sys.argv[1]
+UBUNTU_CODENAME = sys.argv[2]
 CHANGELOG = os.path.join(os.path.dirname(__file__), "../../debian/changelog")
 PKG_VERSION = "0.0.0"
 
@@ -26,7 +28,7 @@ ver_raw = run_command("git describe --tags")[1:]
 ver_parts = ver_raw.split("-")
 if len(ver_parts) == 3:
     # Example: 0.6.0-41-g59319b6
-    PKG_VERSION = "{0}-{1}~{2}".format(ver_parts[0], ver_parts[1], ver_parts[2])
+    PKG_VERSION = "{0}-{1}~{2}~{3}".format(ver_parts[0], ver_parts[1], ver_parts[2], UBUNTU_RELEASE)
     START_TAG = "v" + ver_parts[0]
 else:
     # Example: 1.0.0
@@ -40,7 +42,7 @@ SIGN_DATE = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S")
 
 def get_changelog():
     lines = []
-    lines.append("polychromatic ({0}~{1}) {1}; urgency=low\n\n".format(PKG_VERSION, CODENAME))
+    lines.append("polychromatic ({0}) {1}; urgency=low\n\n".format(PKG_VERSION, UBUNTU_CODENAME))
     lines.append("  This package was automatically generated.\n\n")
     if len(LOG.split("\n")) > 1:
         lines.append("  Commit changes (newest first):\n\n")

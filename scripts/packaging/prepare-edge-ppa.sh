@@ -8,16 +8,22 @@
 
 REPO_ROOT="$(realpath "$1")"
 
-for codename in "focal" "impish" "jammy"
-#                20.04   21.10    22.04
-do
+function process_release() {
+    release="$1"
+    codename="$2"
+
     echo -e "\n$codename"
     echo -e "===================="
     TEMP_DIR="$(mktemp -d)"
     git clone "$REPO_ROOT" "$TEMP_DIR/src"
     cd "$TEMP_DIR/src"
-    ./scripts/packaging/generate-edge-debian-changelog.py $codename
+    ./scripts/packaging/generate-edge-debian-changelog.py "$release" "$codename"
     debuild -S
     debsign -k 49D6E0C94C9832E63FDBD50BEAF6D6A2C65D1D85 ../*.changes
     dput ppa:polychromatic/edge ../*.changes
-done
+}
+
+process_release "20.04" "focal"     # LTS
+process_release "22.04" "jammy"     # LTS
+process_release "22.10" "kinetic"
+process_release "23.04" "lunar"
