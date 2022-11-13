@@ -34,13 +34,14 @@ sleep 2
 # Use OpenRazer Python library to discover new devices
 echo "Discovering new devices..."
 python3 <<EOF
+from polychromatic.base import PolychromaticBase
 from polychromatic.backends.openrazer import OpenRazerBackend
-from polychromatic import common
 import json
 
 def _(d): return d
 
-openrazer = OpenRazerBackend(common.Debugging(), common, _)
+base = PolychromaticBase()
+openrazer = OpenRazerBackend(base)
 openrazer.init()
 devices = openrazer.get_devices()
 version = openrazer.version
