@@ -1,0 +1,2958 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-21 14:50+0100\n"
+"PO-Revision-Date: 2022-09-14 17:17+0200\n"
+"Last-Translator: Paweł \"PeBe\" Banaś <p.banas.pl@gmail.com>\n"
+"Language-Team: Paweł \"PeBe\" Banaś\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Source-Language: en_GB\n"
+"X-Generator: Poedit 2.4.2\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 "
+"|| n%100>14) ? 1 : 2);\n"
+
+#: about.ui.h:1
+msgid "About the Application"
+msgstr "O aplikacji"
+
+#: about.ui.h:2 device-info.ui.h:7 inspect-matrix.ui.h:3 procviewer.ui.h:12
+#: troubleshooter.ui.h:9
+msgid "Close"
+msgstr "Zamknij"
+
+#. Column header to view the application's version information
+#: about.ui.h:4
+msgid "Version"
+msgstr "Wersja"
+
+#: about.ui.h:5
+msgid "Component"
+msgstr "Komponent"
+
+#. Column header to view the application's license information
+#: about.ui.h:7
+msgid "License"
+msgstr "Licencja"
+
+#. Column header to view links for an application or backend
+#: about.ui.h:9
+msgid "Links"
+msgstr "Linki"
+
+#: colour-picker.ui.h:1
+msgid "Select a Colour"
+msgstr "Wybierz kolor"
+
+#. The currently selected colour in the Colour Picker dialog box
+#: colour-picker.ui.h:3
+msgid "Current"
+msgstr "Aktualny kolor"
+
+#. Colour Picker: Tooltip informing the user what the \"Change...\" button will do
+#: colour-picker.ui.h:5
+msgid "Opens the system's colour picker"
+msgstr "Otwórz selektor kolorów"
+
+#: colour-picker.ui.h:6 pylib/controller/devices.py:1369
+#: pylib/controller/editor.py:1470 pylib/controller/effects.py:272
+msgid "Edit"
+msgstr "Edytuj"
+
+#. Colour Picker: Tooltip informing the user what the Save colour button does
+#: colour-picker.ui.h:8
+msgid "Save this colour to the saved colour list"
+msgstr "Zapisz ten kolor na liście kolorów"
+
+#: colour-picker.ui.h:9
+msgid "Add"
+msgstr "Dodaj"
+
+#: colour-picker.ui.h:10 editor.ui.h:83 preferences.ui.h:49
+#: pylib/controller/editor.py:1628 pylib/controller/preferences.py:370
+msgid "Saved Colours"
+msgstr "Lista kolorów"
+
+#: colour-picker.ui.h:11
+msgid "Add the current colour to your saved colours list by giving it a name"
+msgstr "Dodaj aktualny kolor do listy kolorów i nadaj mu nazwę"
+
+#. Colour Picker: Tooltip informing the user what the Save icon does
+#: colour-picker.ui.h:13
+msgid "Save the current colour to the saved list"
+msgstr "Zapisz aktualny kolor na liście kolorów"
+
+#. Colour Picker: Tooltip informing the user what the Cancel icon does
+#: colour-picker.ui.h:15
+msgid "Cancel saving this colour"
+msgstr "Anuluj zapis koloru"
+
+#. Colour Picker: Tooltip informing the user what the Rename icon does
+#: colour-picker.ui.h:17
+msgid "Rename selected colour"
+msgstr "Zmień nazwę wybranego koloru"
+
+#. Colour Picker: Tooltip informing the user what the Delete icon does
+#: colour-picker.ui.h:19
+msgid "Forget selected colour"
+msgstr "Usuń wybrany kolor"
+
+#: device-info.ui.h:1 pylib/controller/devices.py:1144
+msgid "Device Information"
+msgstr "Informacje o urządzeniu"
+
+#. First column header for Device Info
+#: device-info.ui.h:3
+msgid "Data"
+msgstr "Nazwa elementu"
+
+#. Second column header for Device Info
+#: device-info.ui.h:5
+msgid "Value"
+msgstr "Wartość"
+
+#: device-info.ui.h:6 pylib/controller/devices.py:1220
+msgid "Inspect Matrix"
+msgstr "Przegląd matrycy"
+
+#: dpi-control.ui.h:1
+msgid "DPI Control"
+msgstr "Kontrola DPI"
+
+#: dpi-control.ui.h:2
+msgid "Lock X/Y axis"
+msgstr "Zablokuj osie X/Y"
+
+#: dpi-control.ui.h:3
+msgid "Lock"
+msgstr "Zablokuj"
+
+#: editor.ui.h:1 pylib/controller/editor.py:847
+msgid "Effect Editor"
+msgstr "Edytor efektów"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:3 main.ui.h:12
+msgid "&File"
+msgstr "&Plik"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:5 main.ui.h:21
+msgid "&Edit"
+msgstr "&Edycja"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:7
+msgid "Shift LEDs"
+msgstr "Przemieść LEDy"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:9 main.ui.h:14
+msgid "&View"
+msgstr "&Widok"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:11 main.ui.h:16
+msgid "&Help"
+msgstr "&Pomoc"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:13
+msgid "&Tool"
+msgstr "&Narzędzia"
+
+#: editor.ui.h:14
+msgid "Playback"
+msgstr "Odtwórz"
+
+#: editor.ui.h:15 pylib/controller/devices.py:979
+msgid "Colours"
+msgstr "Kolory"
+
+#: editor.ui.h:16
+msgid "Layers"
+msgstr "Warstwy"
+
+#. Column title in effect editor
+#: editor.ui.h:18
+msgid "Layer"
+msgstr "Warstwa"
+
+#. Column title in effect editor
+#: editor.ui.h:20 pylib/controller/devices.py:501
+msgid "Effect"
+msgstr "Efekt"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:22
+msgid "Raise the layer in the stack"
+msgstr "Przenieś warstwę wyżej"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:24
+msgid "Lower the layer in the stack"
+msgstr "Przenieś warstwę niżej"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:26
+msgid "Create a new layer in the stack"
+msgstr "Utwórz nową warstwę"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:28
+msgid "Delete the selected layer"
+msgstr "Usuń wybraną warstwę"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:30
+msgid "Duplicate the selected layer"
+msgstr "Powiel wybraną warstwę"
+
+#: editor.ui.h:31
+msgid "Properties"
+msgstr "Właśćiwości"
+
+#: editor.ui.h:32
+msgid "Main Toolbar"
+msgstr "Pasek narzędzi"
+
+#: editor.ui.h:33
+msgid "Frames"
+msgstr "Klatki efektu"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:35
+msgid "Create a blank frame after the current position"
+msgstr "Utwórz czystą klatkę po bieżącej ramce"
+
+#: editor.ui.h:36
+msgid "New"
+msgstr "Nowa klatka"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:38
+msgid "Permanently delete this frame"
+msgstr "Usuń klatkę efektu"
+
+#: editor.ui.h:39 main.ui.h:41 pylib/controller/effects.py:286
+msgid "Delete"
+msgstr "Skasuj"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:41
+msgid "Create a copy of the current frame after this position"
+msgstr "Kopiuj bieżącą klatkę po aktualnej ramce"
+
+#: editor.ui.h:42 pylib/controller/effects.py:279
+msgid "Clone"
+msgstr "Klonuj"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:44
+msgid "Place this frame a step before the current position"
+msgstr "Przesuwa bieżącą klatkę efektu o jedną ramkę w lewo"
+
+#: editor.ui.h:45
+msgid "Move Left"
+msgstr "Przesuń w lewo"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:47
+msgid "Place this frame a step after the current position"
+msgstr "Przesuwa bieżącą klatkę efektu o jedną ramkę w prawo"
+
+#: editor.ui.h:48
+msgid "Move Right"
+msgstr "Przesuń w prawo"
+
+#: editor.ui.h:49
+msgid "Jump to the start of the sequence"
+msgstr "Skocz do początku sekwencji"
+
+#: editor.ui.h:50
+msgid "Jump to Start"
+msgstr "Skocz do początku"
+
+#: editor.ui.h:51
+msgid "Step backward one frame"
+msgstr "Krok wstecz"
+
+#: editor.ui.h:52
+msgid "Previous Frame"
+msgstr "Poprzednia klatka"
+
+#: editor.ui.h:53
+msgid "Preview the effect from the beginning"
+msgstr "Odtwórz efekt od początku"
+
+#: editor.ui.h:54 pylib/controller/effects.py:265
+msgid "Play"
+msgstr "Odtwórz"
+
+#: editor.ui.h:55
+msgid "Stop playback"
+msgstr "Zatrzymaj"
+
+#: editor.ui.h:56
+msgid "Pause"
+msgstr "Wstrzymaj"
+
+#: editor.ui.h:57
+msgid "Step forward one frame"
+msgstr "Krok w przód"
+
+#: editor.ui.h:58
+msgid "Next Frame"
+msgstr "Następna klatka"
+
+#: editor.ui.h:59
+msgid "Jump to the last frame of the sequence"
+msgstr "Skocz do ostatniej klatki efektu"
+
+#: editor.ui.h:60
+msgid "Jump to End"
+msgstr "Skocz na koniec"
+
+#: editor.ui.h:61
+msgid "Toggle whether this effect should loop"
+msgstr "Przełącz zapętlenie efektu"
+
+#: editor.ui.h:62
+msgid "Loop"
+msgstr "Zapętl"
+
+#: editor.ui.h:63
+msgid ""
+"Frames per second to play the sequence.\n"
+"\n"
+"Note that frame rates that are too high may not\n"
+"play properly due to bottlenecks with the driver, \n"
+"lighting firmware or software. This may potentially\n"
+"shorten the LED's lifespan."
+msgstr ""
+"Prędkość odtwarzania efektu (w klatkach na sekundę)\n"
+"\n"
+"Należy pamiętać, że zbyt wysoka prędkość odtwarzania\n"
+"może nie być prawidłowo odwzorowana z powodu wąskich\n"
+"gardeł w sterowniku, firmware oświetlenia lub oprogramowania.\n"
+"Może to potencjalnie skrócić żywotność diod LED."
+
+#: editor.ui.h:69
+msgid "Frames per second to play the sequence"
+msgstr "Prędkość odtwarzania efektu (w klatkach na sekundę)"
+
+#: editor.ui.h:70
+msgid " fps"
+msgstr " fps"
+
+#: editor.ui.h:71
+msgid "Current Colour"
+msgstr "Aktualny kolor"
+
+#. Tooltip when hovering over the \"custom\" button
+#: editor.ui.h:73
+msgid "Open System Colour Picker"
+msgstr "Otwórz systemowy selektor kolorów"
+
+#. Status bar hint when hovering over the \"custom\" button
+#: editor.ui.h:75
+msgid "Choose a custom colour using the system's colour picker"
+msgstr "Wybierz niestandardowy kolor za pomocą systemowego selektora kolorów"
+
+#: editor.ui.h:76
+msgid "Increase the Hue"
+msgstr "Zwiększ wartość barwy"
+
+#: editor.ui.h:77
+msgid "Hue"
+msgstr "Barwa"
+
+#: editor.ui.h:78
+msgid "Saturation"
+msgstr "Nasycenie"
+
+#: editor.ui.h:79
+msgid "Decrease"
+msgstr "Zmniejsz"
+
+#: editor.ui.h:80
+msgid ""
+"Protip: You can scroll over these buttons to quickly change the "
+"corresponding HSL attribute!"
+msgstr "Użyj rolki aby szybko zmienić przypisany atrybut HSL!"
+
+#: editor.ui.h:81
+msgid "Increase"
+msgstr "Zwiększ"
+
+#: editor.ui.h:82
+msgid "Lightness"
+msgstr "Jasność"
+
+#. Menu bar item
+#: editor.ui.h:85
+msgid "Save and Close"
+msgstr "Zapisz i zamknij"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:87
+msgid "Save the effect to disk, and close the editor"
+msgstr "Zapisz efekt i wyjdź z edycji"
+
+#. Menu bar item or dialog button
+#: editor.ui.h:89
+msgid "Save"
+msgstr "Zapisz"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:91
+msgid "Save any unsaved data to disk, just in case!"
+msgstr "Zapisz i po prostu wyjdź!"
+
+#. Menu bar item - User wishes to discard their changes
+#: editor.ui.h:93 pylib/controller/editor.py:918
+msgid "Revert"
+msgstr "Przywróć"
+
+#: editor.ui.h:94
+msgid "Undo any changes and reload from disk"
+msgstr "Cofnij zmiany"
+
+#. Menu bar item
+#: editor.ui.h:96
+msgid "Close and Discard Changes"
+msgstr "Zamknij bez zapisywania"
+
+#: editor.ui.h:97
+msgid "Close the editor and discard any unsaved changes"
+msgstr "Zamknij edytor i odrzuć wszelkie zmiany"
+
+#. Menu bar item
+#: editor.ui.h:99
+msgid "Draw"
+msgstr "Rysuj"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:101
+msgid "Draw the selected colour to LEDs by clicking or dragging over them"
+msgstr ""
+"Narysuj wybrany kolor na diodach LED, klikając lub przeciągając nad nimi"
+
+#. Menu bar item
+#: editor.ui.h:103
+msgid "Picker"
+msgstr "Pobierz"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:105
+msgid "Take an existing colour from an LED to draw with"
+msgstr "Pobierz istniejący kolor z diody LED do rysowania"
+
+#. Menu bar item
+#: editor.ui.h:107
+msgid "Eraser"
+msgstr "Gumka"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:109
+msgid "Erase the colour from an LED by clicking or dragging over them"
+msgstr ""
+"Usuwanie koloru z diody LED poprzez kliknięcie lub przeciągnięcie nad nią"
+
+#. Menu bar toggle
+#: editor.ui.h:111
+msgid "Device Graphic"
+msgstr "Obraz urządzenia"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:113
+msgid ""
+"Present the LEDs as a graphical represention of the actual hardware (where "
+"available)"
+msgstr ""
+"Prezentuj odpowiadający układ graficzny urządzenia (jeśli jest dostępny)"
+
+#. Menu bar toggle
+#: editor.ui.h:115
+msgid "Grid"
+msgstr "Siatka"
+
+#: editor.ui.h:116
+msgid "Present the LEDs in a grid"
+msgstr "Prezentuj układ siatki LED"
+
+#: editor.ui.h:117
+msgid "Edit Metadata..."
+msgstr "Edytuj Metadane..."
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:119
+msgid "Edit the name, icon and other related data for this effect"
+msgstr "Edytuj nazwę efektu, jego ikonę oraz inne związane z efektem dane"
+
+#: editor.ui.h:120
+msgid "Duplicate Layer"
+msgstr "Powiel warstwę"
+
+#: editor.ui.h:121
+msgid "Delete Layer"
+msgstr "Usuń warstwę"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:123
+msgid "Permanently delete the selected layer"
+msgstr "Usuń wybraną warstwę"
+
+#. Keyboard Shortcut
+#: editor.ui.h:125
+msgid "Del"
+msgstr "Del"
+
+#: editor.ui.h:126
+msgid "Raise Layer"
+msgstr "Podnieś warstwę"
+
+#. Keyboard Shortcut
+#: editor.ui.h:128
+msgid "Alt+Up"
+msgstr "Alt+strzałka w górę"
+
+#: editor.ui.h:129
+msgid "Lower Layer"
+msgstr "Obniż warstwę"
+
+#. Keyboard Shortcut
+#: editor.ui.h:131
+msgid "Alt+Down"
+msgstr "Alt+strzałka w dół"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:133
+msgid "Shift Left"
+msgstr "Przesuń w lewo"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:135
+msgid "Push all LEDs on this layer/frame by one column to the left"
+msgstr ""
+"Przesuń wszystkie diody LED na tej warstwie/ramce o jedną kolumnę w prawo"
+
+#. Keyboard Shortcut
+#: editor.ui.h:137
+msgid "Ctrl+Shift+Left"
+msgstr "Ctrl+Shift+strzałka w lewo"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:139
+msgid "Shift Right"
+msgstr "Przesuń w prawo"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:141
+msgid "Push all LEDs on this layer/frame by one column to the right"
+msgstr ""
+"Przesuń wszystkie diody LED na tej warstwie/ramce o jedną kolumnę w lewo"
+
+#. Keyboard Shortcut
+#: editor.ui.h:143
+msgid "Ctrl+Shift+Right"
+msgstr "Ctrl+Shift+strzałka w prawo"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:145
+msgid "Shift Up"
+msgstr "Przesuń w górę"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:147
+msgid "Push all LEDs on this layer/frame by one row upwards"
+msgstr "Przesuń wszystkie diody LED na tej warstwie/ramce o jeden rząd w górę"
+
+#. Keyboard Shortcut
+#: editor.ui.h:149
+msgid "Ctrl+Shift+Up"
+msgstr "Ctrl+Shift+strzałka w górę"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:151
+msgid "Shift Down"
+msgstr "Przesuń w dół"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:153
+msgid "Push all LEDs on this layer/frame by one row downwards"
+msgstr "Przesuń wszystkie diody LED na tej warstwie/ramce o jeden rząd w dół"
+
+#. Keyboard Shortcut
+#: editor.ui.h:155
+msgid "Ctrl+Shift+Down"
+msgstr "Ctrl+Shift+strzałka w dół"
+
+#: editor.ui.h:156
+msgid "New Layer..."
+msgstr "Nowa warstwa..."
+
+#: editor.ui.h:157
+msgid "Zoom In"
+msgstr "Powiększ"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:159
+msgid "Enlarge the graphic or grid in the viewport"
+msgstr "Powiększ grafikę lub siatkę w widoku"
+
+#: editor.ui.h:160
+msgid "Zoom Out"
+msgstr "Pomniejsz"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:162
+msgid "Shrink the graphic or grid in the viewport"
+msgstr "Zmniejsz grafikę lub siatkę w widoku"
+
+#: editor.ui.h:163
+msgid "Reset Zoom"
+msgstr "Przywróć powiększenie"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:165
+msgid "Reset the size of the graphic or grid in the viewport"
+msgstr "Zresetuj rozmiar grafiki lub siatki w widoku"
+
+#: editor.ui.h:166
+msgid "Move Frame Left"
+msgstr "Przenieś ramkę wstecz"
+
+#. Keyboard Shortcut
+#: editor.ui.h:168
+msgid "Alt+Left"
+msgstr "Alt+strzałka w lewo"
+
+#: editor.ui.h:169
+msgid "Move Frame Right"
+msgstr "Przenieś ramkę do przodu"
+
+#. Keyboard Shortcut
+#: editor.ui.h:171
+msgid "Alt+Right"
+msgstr "Alt+strzałka w prawo"
+
+#: editor.ui.h:172 main.ui.h:23 pylib/controller/devices.py:765
+#: pylib/controller/devices.py:856 pylib/controller/menubar.py:216
+msgid "Online Help"
+msgstr "Pomoc Online"
+
+#: editor.ui.h:173 main.ui.h:27 pylib/controller/menubar.py:234
+#: pylib/controller/menubar.py:467
+msgid "Website"
+msgstr "Strona domowa"
+
+#: editor.ui.h:174 main.ui.h:30 pylib/controller/menubar.py:238
+msgid "What's New?"
+msgstr "Co nowego?"
+
+#: editor.ui.h:175 main.ui.h:24
+msgid "Report a Bug"
+msgstr "Zgłoś błąd"
+
+#: editor.ui.h:176 main.ui.h:26 pylib/controller/menubar.py:246
+#: pylib/controller/menubar.py:340
+msgid "Donate"
+msgstr "Przekaż darowiznę"
+
+#: editor.ui.h:177 main.ui.h:28 preferences.ui.h:64
+msgid "About"
+msgstr "O programie"
+
+#: editor.ui.h:178
+msgid "Edit Triggers..."
+msgstr "Edytuj wyzwalacze..."
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:180
+msgid ""
+"Configure automation for this effect, such as time of day, or when a process "
+"is running"
+msgstr ""
+"Skonfiguruj automatyzację dla tego efektu, np. porę dnia lub gdy proces jest "
+"uruchomiony"
+
+#: editor.ui.h:181
+msgid "New Frame"
+msgstr "Nowa ramka"
+
+#: editor.ui.h:182 pylib/controller/editor.py:1528
+msgid "Delete Frame"
+msgstr "Usuń ramkę"
+
+#: editor.ui.h:183
+msgid "Clone Frame"
+msgstr "Powiel ramkę"
+
+#: editor.ui.h:184
+msgid "Start playback"
+msgstr "Odtwórz"
+
+#. Button to stop all background tasks
+#: editor.ui.h:185 procviewer.ui.h:11
+msgid "Stop"
+msgstr "Zastrzymaj"
+
+#: editor.ui.h:186
+msgid "Pause playback"
+msgstr "Wstrzymaj"
+
+#. Keyboard Shortcut
+#: editor.ui.h:188 pylib/backends/openrazer.py:320
+#: pylib/backends/openrazer.py:1161
+msgid "Left"
+msgstr "Lewo"
+
+#. Keyboard Shortcut
+#: editor.ui.h:190 pylib/backends/openrazer.py:318
+#: pylib/backends/openrazer.py:1162
+msgid "Right"
+msgstr "Prawo"
+
+#. Keyboard Shortcut
+#: editor.ui.h:192
+msgid "Home"
+msgstr "Początek"
+
+#. Keyboard Shortcut
+#: editor.ui.h:194
+msgid "End"
+msgstr "Koniec"
+
+#: editor.ui.h:195
+msgid "Show Key Labels"
+msgstr "Pokaż etykiety klawiszy"
+
+#: editor.ui.h:196
+msgid "Show or hide the labels and symbols on keys"
+msgstr "Pokaż lub ukryj etykiety i symbole klawiszy"
+
+#: editor.ui.h:197
+msgid "Open Colour Picker"
+msgstr "Otwórz systemową paletę kolorów"
+
+#: editor.ui.h:198
+msgid "Increase Hue"
+msgstr "Zwiększ barwę"
+
+#: editor.ui.h:199
+msgid ""
+"Changes the HSL attribute for the current colour. Useful for blending "
+"colours!"
+msgstr ""
+"Zmień atrybut HSL dla aktualnego koloru. Przydatne przy przejściach kolorów!"
+
+#: editor.ui.h:200
+msgid "Decrease Hue"
+msgstr "Zmniejsz kolor"
+
+#: editor.ui.h:201
+msgid "Increase Saturation"
+msgstr "Zwiększ nasyczenie"
+
+#: editor.ui.h:202
+msgid "Decrease Saturation"
+msgstr "Zmniejsz nasycenie"
+
+#: editor.ui.h:203
+msgid "Increase Lightness"
+msgstr "Zwiększ jasność"
+
+#: editor.ui.h:204
+msgid "Decrease Lightness"
+msgstr "Zmniejsz jasność"
+
+#: editor.ui.h:205
+msgid "Edit Saved Colours"
+msgstr "Edytuj kolory"
+
+#: editor.ui.h:206 pylib/controller/editor.py:1471
+msgid "Modify or reorder your saved colours"
+msgstr "Zmień lub poukładaj listę kolorów"
+
+#: effect-metadata-editor.ui.h:1 pylib/controller/effects.py:353
+msgid "Edit Metadata"
+msgstr "Edycja Metadanych"
+
+#: effect-metadata-editor.ui.h:2
+msgid "Effect Details"
+msgstr "Szczegóły efektu"
+
+#: effect-metadata-editor.ui.h:3 pylib/controller/devices.py:1032
+msgid "Name"
+msgstr "Nazwa"
+
+#. Placeholder example text for an effect name
+#: effect-metadata-editor.ui.h:5
+msgid "Untitled Effect"
+msgstr "Nienazwany efekt"
+
+#: effect-metadata-editor.ui.h:6
+msgid "Author"
+msgstr "Autor"
+
+#: effect-metadata-editor.ui.h:7
+msgid "Author URL"
+msgstr "Strona autora"
+
+#: effect-metadata-editor.ui.h:8 preferences.ui.h:42
+msgid "Icon"
+msgstr "Ikona"
+
+#: effect-metadata-editor.ui.h:9 pylib/controller/devices.py:1077
+#: pylib/controller/effects.py:331
+msgid "Summary"
+msgstr "Podsumowanie"
+
+#: effect-metadata-editor.ui.h:10 pylib/controller/devices.py:1031
+msgid "Hardware"
+msgstr "Sprzęt"
+
+#: effect-metadata-editor.ui.h:11 procviewer.ui.h:6
+msgid "Device"
+msgstr "Urządzenie"
+
+#: effect-metadata-editor.ui.h:12
+msgid "Mapping"
+msgstr "Mapowanie"
+
+#: effect-metadata-editor.ui.h:13
+msgid "Use a graphic resembling this device:"
+msgstr "Użyj grafikę przestawiającą to urządzenie:"
+
+#: effect-metadata-editor.ui.h:14
+msgid "Use a grid"
+msgstr "Użyj siatki LED"
+
+#: effect-metadata-editor.ui.h:15
+msgid "Preview"
+msgstr "Podgląd"
+
+#. Appears at the top of the icon picker when the user selects a GIF as their tray icon
+#: icon-picker.ui.h:2
+msgid "Heads up! Animated GIFs are not supported by all desktop environments."
+msgstr ""
+"Głowa do góry! Animowane GIFy nie są dostępne we wszystkich środowiskach "
+"graficznych."
+
+#: icon-picker.ui.h:3 preferences.ui.h:34 pylib/controller/procviewer.py:167
+msgid "Tray Applet"
+msgstr "Aplet tacki systemowej"
+
+#. Icon Picker: Tab name for built-in graphics
+#: icon-picker.ui.h:5
+msgid "Emblems"
+msgstr "Emblematy"
+
+#. Icon Picker: Tab name for software installed on the user's system
+#: icon-picker.ui.h:7
+msgid "Applications"
+msgstr "Aplikacje"
+
+#. Icon Picker: Tab name for the user to store their own icons
+#: icon-picker.ui.h:9
+msgid "Custom"
+msgstr "Własne"
+
+#. Tooltip hovering over the icon picker's browse button
+#: icon-picker.ui.h:11
+msgid "Browse for an icon to import"
+msgstr "Wybierz ikonę do zaimportowania"
+
+#. Tooltip hovering over the icon picker's delete button
+#: icon-picker.ui.h:13
+msgid "Delete this custom icon from your list"
+msgstr "Usuń ikonę z listy"
+
+#. Help text when inspecting a device's matrix
+#: inspect-matrix.ui.h:2
+msgid ""
+"Use the arrow keys, click or drag on the table below to light up that LED on "
+"the physical device."
+msgstr ""
+"Użyj klawiszy strzałek, kliknij lub przeciągnij na tabeli poniżej, aby "
+"podświetlić LEDy na fizycznym urządzeniu."
+
+#. Generic loading text
+#: loading.ui.h:2 pylib/controller/procviewer.py:109
+msgid "Please wait..."
+msgstr "Proszę czekać..."
+
+#: main.ui.h:1
+msgid "Polychromatic"
+msgstr "Polychromatic"
+
+#: main.ui.h:2 preferences.ui.h:19 pylib/controller/devices.py:63
+msgid "Devices"
+msgstr "Urządzenia"
+
+#: main.ui.h:3 preferences.ui.h:20 pylib/controller/devices.py:968
+#: pylib/controller/effects.py:36
+msgid "Effects"
+msgstr "Efekty"
+
+#: main.ui.h:4 preferences.ui.h:21 pylib/controller/presets.py:28
+msgid "Presets"
+msgstr "Presety"
+
+#: main.ui.h:5 preferences.ui.h:22
+msgid "Triggers"
+msgstr "Wyzwalacze"
+
+#. Heading containing buttons for the specific feature
+#: main.ui.h:7
+msgid "Tasks"
+msgstr "Zadania"
+
+#. Button to a section for activating settings to all devices
+#: main.ui.h:9
+msgid "Apply to All"
+msgstr "Zastosuj do wszystkich"
+
+#: main.ui.h:10
+msgid "Close Application"
+msgstr "Zamknij aplikację"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: main.ui.h:18
+msgid "&Tools"
+msgstr "&Narzędzia"
+
+#: main.ui.h:19
+msgid "OpenRazer"
+msgstr "OpenRazer"
+
+#: main.ui.h:22
+msgid "New Effect..."
+msgstr "Nowy efekt..."
+
+#: main.ui.h:25 pylib/controller/menubar.py:161
+msgid "Hide Menu Bar"
+msgstr "Ukryj Menu"
+
+#: main.ui.h:29
+msgid "Quit"
+msgstr "Wyjdź"
+
+#: main.ui.h:31
+msgid "Restart Daemon"
+msgstr "Uruchom ponownie usług"
+
+#: main.ui.h:32
+msgid "Open Log..."
+msgstr "Otwórz dziennik zdarzeń..."
+
+#: main.ui.h:33
+msgid "Configure..."
+msgstr "Konfiguracja..."
+
+#: main.ui.h:34
+msgid "About OpenRazer"
+msgstr "O OpenRazer"
+
+#: main.ui.h:35
+msgid "New Preset..."
+msgstr "Nowy Preset..."
+
+#: main.ui.h:36
+msgid "New Preset from Current Devices..."
+msgstr "Nowy Preset dla aktualnego urządzenia..."
+
+#: main.ui.h:37
+msgid "Restart Tray Applet"
+msgstr "Restartuj aplet tacki systemowej"
+
+#: main.ui.h:38
+msgid "View Background Tasks"
+msgstr "Podgląd zadań w tle"
+
+#: main.ui.h:39
+msgid "Keep the Menu Bar"
+msgstr "Zostaw Menu"
+
+#: main.ui.h:40
+msgid "Duplicate"
+msgstr "Powiel"
+
+#: main.ui.h:42 preferences.ui.h:1
+msgid "Preferences"
+msgstr "Właściwości"
+
+#: main.ui.h:43 preferences.ui.h:66 pylib/controller/devices.py:757
+#: pylib/controller/devices.py:771 pylib/controller/devices.py:850
+msgid "Troubleshoot"
+msgstr "Rozwiązywanie problemów"
+
+#: main.ui.h:44 procviewer.ui.h:7
+msgid "Refresh"
+msgstr "Odśwież"
+
+#: main.ui.h:45
+msgid "Import Effect..."
+msgstr "Importuj efekt..."
+
+#: main.ui.h:46 pylib/controller/menubar.py:189
+msgid "Force Refresh"
+msgstr "Wymuś odświerzenie"
+
+#: new-effect.ui.h:1 pylib/controller/effects.py:44
+#: pylib/controller/effects.py:79 pylib/controller/effects.py:107
+#: pylib/controller/effects.py:550 pylib/controller/effects.py:566
+msgid "New Effect"
+msgstr "Nowy efekt"
+
+#. Shown when creating a new effect
+#: new-effect.ui.h:3
+msgid "Please choose the type of effect to create."
+msgstr "Wybierz rodzaj efektu."
+
+#: new-effect.ui.h:4
+msgid "Create simple effects using a layer-based system"
+msgstr "Utwórz prosty efekt używając warstw"
+
+#. Button when creating a new effect
+#: new-effect.ui.h:6 pylib/controller/effects.py:302
+msgid "Layered"
+msgstr "Warstwowy"
+
+#: new-effect.ui.h:7
+msgid "Create an animated (or static) using frames and pixels"
+msgstr "Utwórz animowany (lub statyczny) efekt, wykorzystując ramki i piksele"
+
+#. Button when creating a new effect
+#: new-effect.ui.h:9 pylib/controller/effects.py:304
+msgid "Sequence"
+msgstr "Sekwencja"
+
+#: new-effect.ui.h:10
+msgid "Write the effect using the Python programming language"
+msgstr "Utwórz efekt wykorzystując skrypt Python"
+
+#. Button when creating a new effect
+#: new-effect.ui.h:12 pylib/controller/effects.py:303
+msgid "Script"
+msgstr "Skrypt"
+
+#. Shown when creating a new effect
+#: new-effect.ui.h:14
+msgid "Hover for more details"
+msgstr "Najedź, aby zobaczyć szczegóły"
+
+#: openrazer-config.ui.h:1
+msgid "OpenRazer Configuration"
+msgstr "Konfiguracja OpenRazer"
+
+#. Tab button for configuring OpenRazer
+#: openrazer-config.ui.h:3
+msgid "Daemon"
+msgstr "Usługa"
+
+#: openrazer-config.ui.h:4
+msgid ""
+"These settings only apply to the OpenRazer daemon. They are not supported by "
+"this application."
+msgstr ""
+"Te ustawienia dotyczą tylko usługi OpenRazer. Nie są one obsługiwane przez "
+"tę aplikację."
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:6
+msgid "Enable verbose logging"
+msgstr "Włącz pełny dziennik zdarzeń"
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:8
+msgid "Sync effects across devices"
+msgstr "Synchronizuj efekty pomiędzy urządzeniami"
+
+#. Hint text for configuring OpenRazer
+#: openrazer-config.ui.h:10
+msgid ""
+"This feature is incompatible. Use \"Apply to All\" from the Devices tab."
+msgstr ""
+"Ta funkcja jest niekompatybilna. Użyj opcji \"Zastosuj do wszystkich\" w "
+"zakładce Urządzenia."
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:12
+msgid "Turn off devices when screen saver / lock screen is activated"
+msgstr "Wyłącz urządzenia przy wygaszaczu lub blokadzie ekranu"
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:14
+msgid "Periodically notify battery status (for supported devices)"
+msgstr "Okresowe powiadamianie o stanie baterii (dla obsługiwanych urządzeń)"
+
+#. Label for configuring OpenRazer
+#: openrazer-config.ui.h:16
+msgid "Notification Frequency"
+msgstr "Częstotliwość powiadomień"
+
+#. Suffix for a spinner control
+#: openrazer-config.ui.h:18
+msgid "seconds"
+msgstr "sekund"
+
+#: openrazer-config.ui.h:19
+msgid "Apply persistence settings on daemon start"
+msgstr "Zastosuj ustawienia trwałe przy starcie usługi"
+
+#: openrazer-config.ui.h:20
+msgid ""
+"If you have a Polychromatic trigger configured to run at start-up, it is "
+"recommended to turn this option off."
+msgstr ""
+"Jeśli wyzwalacz Polychromatic jest skonfigurowany do uruchamiania przy "
+"starcie, zaleca się wyłączenie tej opcji."
+
+#. Tab button for configuring OpenRazer
+#: openrazer-config.ui.h:22
+msgid "Client"
+msgstr "Klient"
+
+#: openrazer-config.ui.h:23
+msgid ""
+"These settings will be used by Polychromatic when interfacing with the "
+"OpenRazer daemon."
+msgstr ""
+"Te ustawienia będą używane przez Polychromatic podczas współpracy z usługą "
+"OpenRazer."
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:25
+msgid "Download device images"
+msgstr "Pobierz obraz urządzenia"
+
+#. Hint text for configuring OpenRazer
+#: openrazer-config.ui.h:27
+msgid ""
+"OpenRazer stores image URLs pointing to a CDN. These images may be "
+"proprietary. This application retrieves images for your devices once and "
+"caches them locally."
+msgstr ""
+"OpenRazer przechowuje adresy URL obrazów wskazujące na CDN. Obrazy te mogą "
+"być zastrzeżone. Ta aplikacja pobiera obrazy dla Twoich urządzeń raz i "
+"buforuje je lokalnie."
+
+#. Label for configuring OpenRazer
+#: openrazer-config.ui.h:29
+msgid "Ripple Refresh Rate"
+msgstr "Tempo odświerzania"
+
+#: preferences.ui.h:2
+msgid "Controller"
+msgstr "Aplikacja"
+
+#. Preferences Checkbox
+#: preferences.ui.h:4
+msgid "Use system theme"
+msgstr "Użyj wyglądu sytemowgo"
+
+#. Text appears underneath a checkbox in the preferences dialog
+#: preferences.ui.h:6
+msgid ""
+"GTK-based distros may not support this option out of the box. Additional "
+"steps may need required initially to use your native theme in Qt apps."
+msgstr ""
+"Nie wszystkie dystrybucje obsługują tę opcję domyślnie. Mogą być wymagane "
+"dodatkowe kroki, zanim motyw zostanie wyświetlony w aplikacjach Qt na "
+"pulpicie GTK."
+
+#. Preferences Checkbox
+#: preferences.ui.h:8
+msgid "Hide menu bar"
+msgstr "Ukry Menu"
+
+#. Text appears underneath a checkbox in the preferences dialog
+#: preferences.ui.h:10
+msgid "Press Alt to temporarily show the menu bar while it is hidden."
+msgstr "Naciśnij klawisz Alt by tymczasowo pokazać Menu, gdy jest ono ukryte."
+
+#: preferences.ui.h:11
+msgid "Toolbar"
+msgstr "Pasek narzędzi"
+
+#: preferences.ui.h:12
+msgid "Follow System Style"
+msgstr "Domyślne ustawienie systemu"
+
+#: preferences.ui.h:13
+msgid "Icons Only"
+msgstr "Tylko ikony"
+
+#: preferences.ui.h:14
+msgid "Text Only"
+msgstr "Tylko tekst"
+
+#: preferences.ui.h:15
+msgid "Text Alongside Icons"
+msgstr "Tekst obok ikon"
+
+#: preferences.ui.h:16
+msgid "Text Under Icons"
+msgstr "Tekst pod ikonami"
+
+#. Preferences Label
+#: preferences.ui.h:18
+msgid "Landing Tab"
+msgstr "Domyślna zakładka przy uruchomieniu"
+
+#. Preferences Label
+#: preferences.ui.h:24
+msgid "Window Behaviour"
+msgstr "Zachowanie okna"
+
+#. Preferences dropdown option
+#: preferences.ui.h:26
+msgid "Always open in the center"
+msgstr "Zawsze otwieraj na środku ekranu"
+
+#. Preferences dropdown option
+#: preferences.ui.h:28
+msgid "Remember last position and size"
+msgstr "Zapamiętaj pozycję i rozmiar"
+
+#. Preferences dropdown option
+#: preferences.ui.h:30
+msgid "Let the window manager decide"
+msgstr "Niech Menadżer Okien zdecyduje"
+
+#: preferences.ui.h:31
+msgid "Maximized at start"
+msgstr "Maksymalizuj na starcie"
+
+#. Preferences Label
+#: preferences.ui.h:33
+msgid "Appearance"
+msgstr "Wygląd"
+
+#. Preferences Label
+#: preferences.ui.h:36
+msgid "Behaviour"
+msgstr "Zachowanie"
+
+#: preferences.ui.h:37
+msgid "Start the tray applet when I log on"
+msgstr "Uruchom aplet tacki systemowej podczas logowania"
+
+#. Preferences Label
+#: preferences.ui.h:39
+msgid "Renderer"
+msgstr "Aplikacja tacki"
+
+#: preferences.ui.h:40
+msgid "Default (AppIndicator3)"
+msgstr "Domyślne (AppIndycator3)"
+
+#: preferences.ui.h:41
+msgid "GTK Status Icon (Legacy)"
+msgstr "Ikona statusu GTK (Legacy)"
+
+#. Preferences Label
+#: preferences.ui.h:44
+msgid "Autostart Delay"
+msgstr "Opóźnienie autouruchamiania"
+
+#. Suffix for a spinner control
+#: preferences.ui.h:46
+msgid " second(s)"
+msgstr " sekund"
+
+#: preferences.ui.h:47
+msgid ""
+"On some desktop environments, due to race conditions, it may be necessary to "
+"wait so the applet's icon or device list is loaded properly."
+msgstr ""
+"W niektórych środowiskach graficznych, ze względu na występowanie warunków "
+"współbieżności, może być konieczne odczekanie, aby ikona apletu lub lista "
+"urządzeń została poprawnie załadowana."
+
+#: preferences.ui.h:48
+msgid "Customise"
+msgstr "Dostosuj"
+
+#: preferences.ui.h:50 pylib/controller/shared.py:614
+#: pylib/controller/shared.py:671
+msgid "Change..."
+msgstr "Zmień..."
+
+#. Button
+#: preferences.ui.h:52 pylib/controller/preferences.py:382
+msgid "Reset to Default Colours"
+msgstr "Zresetuj do domyślnych kolorów"
+
+#: preferences.ui.h:53
+msgid "DPI Stages"
+msgstr "Stany DPI"
+
+#: preferences.ui.h:54
+msgid "Automatically determine from hardware"
+msgstr "Automatycznie rozpoznaj z urządzenia"
+
+#: preferences.ui.h:55
+msgid "Reset to defaults"
+msgstr "Zresetuj do domyślnych"
+
+#: preferences.ui.h:56
+msgid "Reset"
+msgstr "Zresetuj"
+
+#: preferences.ui.h:57
+msgid "Editor"
+msgstr "Edytor"
+
+#: preferences.ui.h:58
+msgid "Use system cursors"
+msgstr "Użyj systemowych wskaźników"
+
+#: preferences.ui.h:59
+msgid "Hide key labels"
+msgstr "Ukryj etykiety klawiszy"
+
+#: preferences.ui.h:60
+msgid "Show shades for my saved colours"
+msgstr "Pokaż odcienie dla listy kolorów"
+
+#: preferences.ui.h:61
+msgid "Preview effect on the physical hardware"
+msgstr "Podgląd efektu na urządzeniu fizycznym"
+
+#: preferences.ui.h:62
+msgid "Suppress delete confirmation dialog box"
+msgstr "Wyłączenie okna dialogowego potwierdzenia usunięcia"
+
+#: preferences.ui.h:63
+msgid "Backends"
+msgstr "Usługi"
+
+#: preferences.ui.h:65
+msgid "Configure"
+msgstr "Konfiguruj"
+
+#: preferences.ui.h:67 pylib/controller/devices.py:844
+msgid "Restart"
+msgstr "Restartuj"
+
+#: preferences.ui.h:68
+msgid "View Log"
+msgstr "Pokaż dziennik zdarzeń"
+
+#: procviewer.ui.h:1
+msgid "Background Tasks"
+msgstr "Zadania w tle"
+
+#. Informative text in the Process Viewer window
+#: procviewer.ui.h:3
+msgid ""
+"To provide background features (like software effects and triggers), "
+"additional processes may be spawned."
+msgstr ""
+"Aby zapewnić funkcjonalności (takie jak efekty programowe i wyzwalacze), "
+"mogą być tworzone dodatkowe procesy."
+
+#. Column header for Process Viewer window
+#: procviewer.ui.h:5
+msgid "Task"
+msgstr "Zadania"
+
+#. Button to restart all background tasks
+#: procviewer.ui.h:9 pylib/controller/procviewer.py:138
+msgid "Restart All"
+msgstr "Zresetuj wszystko"
+
+#: pylib/backends/openrazer.py:263 pylib/backends/openrazer.py:276
+#: pylib/controller/devices.py:955
+msgid "Brightness"
+msgstr "Jasność"
+
+#: pylib/backends/openrazer.py:286
+msgid "None"
+msgstr "Brak"
+
+#: pylib/backends/openrazer.py:287 pylib/common.py:553
+#: pylib/controller/editor.py:858
+msgid "Spectrum"
+msgstr "Spektrum"
+
+#: pylib/backends/openrazer.py:288 pylib/common.py:554
+#: pylib/controller/editor.py:857
+msgid "Wave"
+msgstr "Fala"
+
+#: pylib/backends/openrazer.py:289 pylib/common.py:556
+msgid "Reactive"
+msgstr "Reakcja"
+
+#: pylib/backends/openrazer.py:290 pylib/common.py:555 tests/10_internals.py:45
+msgid "Breath"
+msgstr "Oddychanie"
+
+#: pylib/backends/openrazer.py:291
+msgid "Ripple"
+msgstr "Kręgi"
+
+#: pylib/backends/openrazer.py:292
+msgid "Starlight"
+msgstr "Gwiazdy"
+
+#: pylib/backends/openrazer.py:293
+msgid "Pulsate"
+msgstr "Pulsowanie"
+
+#: pylib/backends/openrazer.py:294
+msgid "Blink"
+msgstr "Mruganie"
+
+#: pylib/backends/openrazer.py:295 pylib/common.py:557
+#: pylib/controller/editor.py:854
+msgid "Static"
+msgstr "Stały"
+
+#: pylib/backends/openrazer.py:312 pylib/backends/openrazer.py:1172
+#: pylib/controller/preferences.py:188 pylib/controller/troubleshooter.py:129
+msgid "Unknown"
+msgstr "Nieznany"
+
+#: pylib/backends/openrazer.py:324
+msgid "Up"
+msgstr "Góra"
+
+#: pylib/backends/openrazer.py:326
+msgid "Down"
+msgstr "Dół"
+
+#: pylib/backends/openrazer.py:330
+msgid "Clockwise"
+msgstr "Zgodnie z ruchem wskazówek zegara"
+
+#: pylib/backends/openrazer.py:332
+msgid "Anti-clockwise"
+msgstr "Przeciwnie do ruchu wskazówek zegara"
+
+#: pylib/backends/openrazer.py:355 pylib/backends/openrazer.py:425
+#: pylib/backends/openrazer.py:461
+msgid "Random"
+msgstr "Losowy"
+
+#: pylib/backends/openrazer.py:364 pylib/backends/openrazer.py:426
+#: pylib/backends/openrazer.py:462
+msgid "Single"
+msgstr "Pojedynczy"
+
+#: pylib/backends/openrazer.py:374 pylib/backends/openrazer.py:467
+msgid "Fast"
+msgstr "Szybko"
+
+#: pylib/backends/openrazer.py:381 pylib/backends/openrazer.py:468
+msgid "Medium"
+msgstr "Średnio"
+
+#: pylib/backends/openrazer.py:388 pylib/backends/openrazer.py:469
+msgid "Slow"
+msgstr "Wolno"
+
+#: pylib/backends/openrazer.py:395
+msgid "Very Slow"
+msgstr "Bardzo wolno"
+
+#: pylib/backends/openrazer.py:427 pylib/backends/openrazer.py:463
+msgid "Dual"
+msgstr "Podwójnie"
+
+#: pylib/backends/openrazer.py:428
+msgid "Triple"
+msgstr "Potrójnie"
+
+#: pylib/backends/openrazer.py:504
+msgid "Game Mode"
+msgstr "Tryb gry"
+
+#: pylib/backends/openrazer.py:528 pylib/controller/devices.py:1060
+#: pylib/controller/devices.py:1379
+msgid "DPI"
+msgstr "DPI"
+
+#: pylib/backends/openrazer.py:540
+msgid "DPI Buttons"
+msgstr "Przyciski DPI"
+
+#: pylib/backends/openrazer.py:542
+msgid "Sync DPI to Hardware"
+msgstr "Synchronizuj DPI ze sprzętem"
+
+#: pylib/backends/openrazer.py:577
+msgid "Poll Rate"
+msgstr "Tempo odświerzania"
+
+#: pylib/backends/openrazer.py:595
+msgid "Sleep mode after"
+msgstr "Tryb uśpienia po"
+
+#: pylib/backends/openrazer.py:602
+msgid "minute(s)"
+msgstr "minut(ach)"
+
+#: pylib/backends/openrazer.py:615
+msgid "Low Power Mode"
+msgstr "Tryb niskiego zużycia energii"
+
+#: pylib/backends/openrazer.py:633
+msgid "Macros"
+msgstr "Makra"
+
+#: pylib/backends/openrazer.py:635
+msgid "About Macro Recording"
+msgstr "O nagrywaniu Makr"
+
+#: pylib/backends/openrazer.py:636
+msgid ""
+"The OpenRazer daemon provides a simple on-the-fly macro recording feature. "
+"To use:\n"
+"\n"
+"1. Press FN+[M] to enter macro mode.\n"
+"2. Press the macro key to assign to. Only M1-M5 are supported.\n"
+"3. Press the keys in sequence to record.\n"
+"4. Press FN+[M] to exit macro mode.\n"
+"\n"
+"Macros are retained in memory until the daemon is stopped. The replay speed "
+"will be instantaneous.\n"
+"\n"
+"This is not a Polychromatic feature and could disappear in future. This "
+"application intends to integrate a key rebinding feature in a future version."
+msgstr ""
+"Usługa OpenRazer udostępnia prostą funkcję nagrywania makr w locie. Aby "
+"użyć:\n"
+"\n"
+"1. Naciśnij klawisze FN+[M], aby przejść do trybu makro.\n"
+"2. Naciśnij klawisz makro, do którego chcesz przypisać makro. Obsługiwane są "
+"tylko klawisze M1-M5.\n"
+"3. Naciśnij kolejno przyciski, aby nagrać.\n"
+"4. Naciśnij FN+[M], aby wyjść z trybu makro.\n"
+"\n"
+"Makra są zachowywane w pamięci do momentu zatrzymania usługi. Prędkość "
+"odtwarzania będzie natychmiastowa.\n"
+"\n"
+"To nie jest funkcja Polychromatic i może zniknąć w przyszłości. Ta aplikacja "
+"zamierza zintegrować funkcję ponownego wiązania klawiszy w przyszłej wersji."
+
+#: pylib/backends/openrazer.py:651
+msgid "Key Mapping"
+msgstr "Mapowanie klawiszy"
+
+#: pylib/backends/openrazer.py:653
+msgid "About Key Mapping"
+msgstr "O mapowaniu klawiszy"
+
+#: pylib/backends/openrazer.py:654
+msgid ""
+"Currently, OpenRazer and Polychromatic do not support a convenient key "
+"rebinding feature. Polychromatic intends to integrate a key mapping solution "
+"in a future version.\n"
+"\n"
+"In the meantime, there are third party projects which provide key remapping "
+"agnostic to any input device.\n"
+"\n"
+"For more information, visit:\n"
+"https://polychromatic.app/permalink/keymapping/"
+msgstr ""
+"Obecnie OpenRazer i Polychromatic nie obsługują wygodnej funkcji ponownego "
+"wiązania klawiszy. Polychromatic zamierza zintegrować rozwiązanie mapowania "
+"klawiszy w przyszłej wersji.\n"
+"\n"
+"W międzyczasie, istnieją projekty firm trzecich, które zapewniają tą "
+"funkcjonalność, niezależnie od urządzenia wejściowego.\n"
+"\n"
+"Aby uzyskać więcej informacji, odwiedź stronę:\n"
+"https://polychromatic.app/permalink/keymapping/"
+
+#: pylib/backends/openrazer.py:696 pylib/backends/openrazer.py:705
+msgid "(Multiple)"
+msgstr "(wiele)"
+
+#: pylib/backends/openrazer.py:710
+msgid "On"
+msgstr "Włączone"
+
+#: pylib/backends/openrazer.py:715
+msgid "Off"
+msgstr "Wyłączone"
+
+#: pylib/backends/openrazer.py:727
+msgid "Game Mode Enabled"
+msgstr "Włączony Tryb gry"
+
+#: pylib/backends/openrazer.py:999
+msgid ""
+"Please set up the DPI stages in Polychromatic's preferences (under "
+"Customise)."
+msgstr ""
+"Proszę ustawić stopnie DPI w preferencjach Polychromatic (w sekcji Dostosuj)."
+
+#: pylib/backends/openrazer.py:1158
+msgid "Logo"
+msgstr "Logo"
+
+#: pylib/backends/openrazer.py:1159
+msgid "Scroll Wheel"
+msgstr "Rolka przewijania"
+
+#: pylib/backends/openrazer.py:1160
+msgid "Backlight"
+msgstr "Podświetlenie"
+
+#: pylib/backends/openrazer.py:1163
+msgid "While Charging"
+msgstr "Gdy ładowanie"
+
+#: pylib/backends/openrazer.py:1164
+msgid "While Fast Charging"
+msgstr "Gdy szybkie ładowanie"
+
+#: pylib/backends/openrazer.py:1165
+msgid "When Fully Charged"
+msgstr "Gdy wpełni naładowane"
+
+#: pylib/backends/openrazer.py:1175
+msgid "Hex Ring"
+msgstr "Hex Ring"
+
+#: pylib/backends/openrazer.py:1179
+msgid "Laptop Lid"
+msgstr "Pokrywa laptopa"
+
+#: pylib/common.py:184
+msgid "USB Accessory"
+msgstr "Urządzenie USB"
+
+#: pylib/common.py:185
+msgid "Display"
+msgstr "Wyświetlacz"
+
+#: pylib/common.py:186
+msgid "Fan"
+msgstr "Wentylator"
+
+#: pylib/common.py:187
+msgid "Graphics Card"
+msgstr "Karta graficzna"
+
+#: pylib/common.py:188
+msgid "Headset"
+msgstr "Słuchawki"
+
+#: pylib/common.py:189
+msgid "Keyboard"
+msgstr "Klawiatura"
+
+#: pylib/common.py:190
+msgid "Keypad"
+msgstr "Keypad"
+
+#: pylib/common.py:191
+msgid "Mousemat"
+msgstr "Podkładka pod mysz"
+
+#: pylib/common.py:192
+msgid "Mouse"
+msgstr "Mysz"
+
+#: pylib/common.py:193
+msgid "Memory"
+msgstr "Pamięć"
+
+#: pylib/common.py:194
+msgid "Speaker"
+msgstr "Głośniki"
+
+#: pylib/common.py:195
+msgid "Stand"
+msgstr "Stojak"
+
+#: pylib/common.py:196
+msgid "Unrecognised"
+msgstr "Nierozpoznane"
+
+#: pylib/common.py:216 pylib/preferences.py:428
+msgid "Green"
+msgstr "Zielony"
+
+#: pylib/controller/devices.py:162
+msgid ""
+"An error occurred while reading this device. This could be a bug in either "
+"Polychromatic or []."
+msgstr ""
+"Podczas odczytu tego urządzenia wystąpił błąd. Może to być błąd w urządzeniu "
+"Polychromatic lub []."
+
+#: pylib/controller/devices.py:163
+msgid ""
+"Try selecting this device again, or restart the backend and application. If "
+"this keeps happening, take note of the details below and report as a bug on "
+"the relevant project's issue tracker."
+msgstr ""
+"Spróbuj wybrać to urządzenie ponownie lub zrestartować usługę i aplikację. "
+"Jeśli tak się dzieje, zanotuj szczegóły poniżej i zgłoś błąd na odpowiednim "
+"issue trackerze projektu."
+
+#: pylib/controller/devices.py:165 pylib/controller/devices.py:602
+#: pylib/controller/devices.py:616 pylib/controller/editor.py:636
+#: pylib/controller/editor.py:670 pylib/controller/editor.py:1091
+msgid "Backend Error"
+msgstr "Błąd usługi"
+
+#: pylib/controller/devices.py:196
+msgid "Preset:"
+msgstr "Presety:"
+
+#: pylib/controller/devices.py:208
+msgid "Playing:"
+msgstr "Odtwarzany efekt:"
+
+#: pylib/controller/devices.py:220
+msgid "Device Info"
+msgstr "Informacje o urządzeniu"
+
+#: pylib/controller/devices.py:365
+msgid "Enabled"
+msgstr "Włącz"
+
+#: pylib/controller/devices.py:548
+msgid "Effect Mode"
+msgstr "Tryb efektu"
+
+#: pylib/controller/devices.py:558
+msgid "Primary Colour"
+msgstr "Kolor pierwszorzędny"
+
+#: pylib/controller/devices.py:559
+msgid "Secondary Colour"
+msgstr "Kolor drugorzędny"
+
+#: pylib/controller/devices.py:560
+msgid "Tertiary Colour"
+msgstr "Kolor trzeciorządny"
+
+#: pylib/controller/devices.py:565
+msgid "Colour []"
+msgstr "Kolory []"
+
+#: pylib/controller/devices.py:575
+msgid "Change []"
+msgstr "Zmień []"
+
+#: pylib/controller/devices.py:603
+msgid ""
+"[] deemed this request to be invalid or unsupported. This could be caused by "
+"an implementation issue with Polychromatic's backend module for []."
+msgstr ""
+"[] uznał to żądanie za nieważne lub nieobsługiwane. Może to być spowodowane "
+"problemem z implementacją usługi Polychromatic dla []."
+
+#: pylib/controller/devices.py:604
+msgid ""
+"If this message appears again, try restarting the backend/application, "
+"otherwise please report this as a bug."
+msgstr ""
+"Jeśli ta wiadomość pojawi się ponownie, spróbuj ponownie uruchomić usługę/"
+"aplikację, w przeciwnym razie zgłoś to jako błąd."
+
+#: pylib/controller/devices.py:608
+msgid "Device Unavailable"
+msgstr "Urządzenie niedostępne"
+
+#: pylib/controller/devices.py:609
+msgid ""
+"The request could not be completed due to devices being removed/inserted."
+msgstr ""
+"Żądanie nie mogło zostać zrealizowane z powodu usunięcia/włożenia urządzeń."
+
+#: pylib/controller/devices.py:610
+msgid "Please refresh and try again."
+msgstr "Odśwież i spróbuj ponownie."
+
+#: pylib/controller/devices.py:617
+msgid ""
+"[] encountered an error processing this request. Try restarting the backend/"
+"application. If this message keeps appearing, please report this as a bug on "
+"[]'s issue tracker."
+msgstr ""
+"[] napotkał błąd podczas przetwarzania tego żądania. Spróbuj ponownie "
+"uruchomić usługę/aplikację. Jeśli ta wiadomość wciąż się pojawia, zgłoś to "
+"jako błąd w []'s issue tracker."
+
+#: pylib/controller/devices.py:743
+msgid "No devices connected"
+msgstr "Brak podłączonych urządzeń"
+
+#: pylib/controller/devices.py:744
+msgid "No backends loaded"
+msgstr "Brak wczytanych usług"
+
+#: pylib/controller/devices.py:745
+msgid "No backends installed"
+msgstr "Brak zainstalowanych usług"
+
+#: pylib/controller/devices.py:749
+msgid ""
+"Plug in a compatible device to control its lighting effects and features"
+msgstr ""
+"Podłącz kompatybilne urządzenie, aby sterować jego efektami świetlnymi i "
+"funkcjami"
+
+#: pylib/controller/devices.py:750
+msgid "Consult the logs and troubleshooter for hints on fixing this problem"
+msgstr ""
+"Sprawdź logi i narzędzie do rozwiązywania problemów, aby uzyskać wskazówki "
+"dotyczące rozwiązania tego problemu"
+
+#: pylib/controller/devices.py:751
+msgid "Install a compatible backend to configure lighting effects"
+msgstr "Zainstaluj kompatybilną usługę, aby skonfigurować efekty świetlne"
+
+#: pylib/controller/devices.py:780
+msgid "Show Error Details"
+msgstr "Pokaż szczegóły błędu"
+
+#: pylib/controller/devices.py:816
+msgid "Backend Error: []"
+msgstr "Błąd usługi: []"
+
+#: pylib/controller/devices.py:817
+msgid ""
+"An error occurred trying to load []. The error below may provide a clue to "
+"what happened."
+msgstr ""
+"Wystąpił błąd podczas próby załadowania []. Poniższy błąd może stanowić "
+"wskazówkę, co się stało."
+
+#: pylib/controller/devices.py:818
+msgid "The last line of the exception was:"
+msgstr "Ostatnia linia wyjątku:"
+
+#: pylib/controller/devices.py:838
+msgid "Unrecognised Device"
+msgstr "Nierozpoznane urządzenie"
+
+#: pylib/controller/devices.py:839
+msgid "[] hasn't registered this device."
+msgstr "[] nie zarejestrował tego urządzenia."
+
+#: pylib/controller/devices.py:840
+msgid ""
+"This could indicate an error initialising the backend or an installation "
+"problem."
+msgstr ""
+"Może to wskazywać na błąd inicjalizacji usługi lub problem z instalacją."
+
+#: pylib/controller/devices.py:841
+msgid ""
+"Alternately, this may happen if this hardware is not yet supported under "
+"this version of []."
+msgstr ""
+"Alternatywnie może się to zdarzyć, jeśli ten sprzęt nie jest jeszcze "
+"obsługiwany w tej wersji []."
+
+#: pylib/controller/devices.py:873
+msgid "Error Details"
+msgstr "Szczegóły błędu"
+
+#: pylib/controller/devices.py:875
+msgid "There was a problem opening this device"
+msgstr "Jest problem z otwarciem tego urządzenia"
+
+#: pylib/controller/devices.py:878
+msgid "View Details"
+msgstr "Zobacz szczegóły"
+
+#: pylib/controller/devices.py:1020
+msgid "Yes"
+msgstr "Tak"
+
+#: pylib/controller/devices.py:1023
+msgid "No"
+msgstr "Nie"
+
+#: pylib/controller/devices.py:1033
+msgid "Backend"
+msgstr "Usługa"
+
+#: pylib/controller/devices.py:1034
+msgid "Internal Device ID"
+msgstr "ID urządzenia"
+
+#: pylib/controller/devices.py:1039
+msgid "Form Factor"
+msgstr "Rodzaj urządzenia"
+
+#: pylib/controller/devices.py:1040
+msgid "Serial"
+msgstr "Numer seryjny"
+
+#: pylib/controller/devices.py:1041
+msgid "Image"
+msgstr "Zdjęcie"
+
+#: pylib/controller/devices.py:1043
+msgid "Firmware Version"
+msgstr "Wersja oprogramowania"
+
+#: pylib/controller/devices.py:1045
+msgid "Keyboard Layout"
+msgstr "Układ klawiatury"
+
+#: pylib/controller/devices.py:1049
+msgid "Custom Effects"
+msgstr "Własne efekty"
+
+#: pylib/controller/devices.py:1050
+msgid "Supported"
+msgstr "Wspierane"
+
+#: pylib/controller/devices.py:1052 pylib/controller/effects.py:599
+msgid "1 row"
+msgstr "1 wiersz"
+
+#: pylib/controller/devices.py:1052 pylib/controller/effects.py:599
+msgid "2 rows"
+msgstr "2 wiersze"
+
+#: pylib/controller/devices.py:1053 pylib/controller/effects.py:600
+msgid "1 column"
+msgstr "1 kolumna"
+
+#: pylib/controller/devices.py:1053 pylib/controller/effects.py:600
+msgid "2 columns"
+msgstr "2 kolumny"
+
+#: pylib/controller/devices.py:1054
+msgid "Matrix Dimensions"
+msgstr "Wymiary matrycy"
+
+#: pylib/controller/devices.py:1064
+msgid "Default Stages"
+msgstr "Domyślne stany"
+
+#: pylib/controller/devices.py:1069 pylib/controller/devices.py:1071
+msgid "User DPI Stages"
+msgstr "Stany użytkownika"
+
+#: pylib/controller/devices.py:1071
+msgid "(Not used)"
+msgstr "(nie użyty)"
+
+#: pylib/controller/devices.py:1072 pylib/controller/devices.py:1123
+msgid "Minimum"
+msgstr "Minimum"
+
+#: pylib/controller/devices.py:1073 pylib/controller/devices.py:1124
+msgid "Maximum"
+msgstr "Maksimum"
+
+#: pylib/controller/devices.py:1083
+msgid "Zones"
+msgstr "Strefy"
+
+#: pylib/controller/devices.py:1094 pylib/controller/devices.py:1103
+msgid "Internal ID"
+msgstr "Wewnętrzne ID"
+
+#: pylib/controller/devices.py:1095
+msgid "Type"
+msgstr "Typ"
+
+#: pylib/controller/devices.py:1100
+msgid "Parameters"
+msgstr "Parametry"
+
+#: pylib/controller/devices.py:1104
+msgid "Internal Data"
+msgstr "Dane wewnętrzne"
+
+#: pylib/controller/devices.py:1105 pylib/controller/devices.py:1116
+#: pylib/controller/preferences.py:193
+msgid "Active"
+msgstr "Aktywne"
+
+#: pylib/controller/devices.py:1108 pylib/controller/devices.py:1133
+msgid "Colour Input []"
+msgstr "Kolor wejściowy []"
+
+#: pylib/controller/devices.py:1122
+msgid "Current Value"
+msgstr "Aktualna wartość"
+
+#: pylib/controller/devices.py:1125
+msgid "Interval"
+msgstr "Wewnętrzny"
+
+#: pylib/controller/devices.py:1209
+msgid "Coordinate: X,Y"
+msgstr "Położenie: X,Y"
+
+#: pylib/controller/devices.py:1211
+msgid "Coordinate: (Multiple)"
+msgstr "Położenie: (wielokrotny)"
+
+#: pylib/controller/devices.py:1370
+msgid "Edit DPI Stages"
+msgstr "Edytuj stany DPI"
+
+#: pylib/controller/devices.py:1429
+msgid "Mouse Acceleration"
+msgstr "Przyspieszenie wskaźnika"
+
+#: pylib/controller/devices.py:1430
+msgid ""
+"This feature is provided by your operating system. Polychromatic doesn't "
+"recognise this desktop environment to automatically open the settings window "
+"for you.\n"
+"\n"
+"Look for 'mouse', 'input' or 'hardware' in your System Settings."
+msgstr ""
+"Ta funkcja jest zapewniona przez twój system operacyjny. Polychromatic nie "
+"rozpoznaje tego środowiska graficznego, aby automatycznie otworzyć dla "
+"Ciebie okno ustawień.\n"
+"\n"
+"Poszukaj \"mysz\", \"wejście\" lub \"sprzęt\" w ustawieniach systemowych."
+
+#: pylib/controller/devices.py:1439
+msgid "Open Mouse Settings"
+msgstr "Otwórz ustawienia Myszy"
+
+#: pylib/controller/devices.py:1446
+msgid "Acceleration"
+msgstr "Przyspieszenie"
+
+#: pylib/controller/editor.py:578
+msgid "Columns: []"
+msgstr "Kolumny: []"
+
+#: pylib/controller/editor.py:579
+msgid "Rows: []"
+msgstr "Wiersze: []"
+
+#: pylib/controller/editor.py:582
+msgid "(Not Set)"
+msgstr "(nie ustawiony)"
+
+#: pylib/controller/editor.py:637
+msgid ""
+"Live preview isn't possible yet as the backends haven't finished "
+"initialising."
+msgstr ""
+"Podgląd na żywo nie jest jeszcze możliwy, ponieważ usługa nie zakończyła "
+"jeszcze inicjalizacji."
+
+#: pylib/controller/editor.py:638
+msgid ""
+"They might be ready now, try again. Or, choose Ignore to continue without a "
+"live preview on physical hardware."
+msgstr ""
+"Mogą być już gotowe, spróbuj ponownie. Lub wybierz Ignoruj, aby kontynuować "
+"bez podglądu na żywo na fizycznym sprzęcie."
+
+#: pylib/controller/editor.py:649
+msgid "Missing Device"
+msgstr "Nierozpoznane urządzenie"
+
+#: pylib/controller/editor.py:650
+msgid ""
+"This effect is designed for a device named '[]', but it wasn't detected."
+msgstr ""
+"Ten efekt jest przeznaczony dla urządzenia o nazwie '[]', ale nie zostało "
+"ono wykryte."
+
+#: pylib/controller/editor.py:651 pylib/controller/editor.py:662
+#: pylib/controller/editor.py:672 pylib/controller/editor.py:1093
+msgid "Live preview has been disabled for this session."
+msgstr "Podgląd na żywo został wyłączony dla tej sesji."
+
+#: pylib/controller/editor.py:660 pylib/controller/shared.py:1529
+#: pylib/controller/shared.py:1538
+msgid "File Error"
+msgstr "Błąd pliku"
+
+#: pylib/controller/editor.py:661
+msgid ""
+"The device '[]' is assigned to this effect, but does not support individual "
+"addressable LEDs."
+msgstr ""
+"Urządzenie '[]' jest przypisane do tego efektu, ale nie obsługuje "
+"indywidualnie adresowalnych diod LED."
+
+#: pylib/controller/editor.py:671
+msgid "An error occurred while initialising '[]' for live preview."
+msgstr "Wystąpił błąd podczas inicjalizacji '[]' dla podglądu na żywo."
+
+#: pylib/controller/editor.py:807
+msgid "Unsaved Changes"
+msgstr "Niezapisane zmiany"
+
+#: pylib/controller/editor.py:808
+msgid "This effect was modified. Would you like to save these changes?"
+msgstr "Efekt został zmieniony. Czy chcesz zapisać te zmiany?"
+
+#: pylib/controller/editor.py:855
+msgid "Gradient"
+msgstr "Gradient"
+
+#: pylib/controller/editor.py:856
+msgid "Pulsing"
+msgstr "Pulsowanie"
+
+#: pylib/controller/editor.py:859
+msgid "Cycling"
+msgstr "Okrężny"
+
+#: pylib/controller/editor.py:860
+msgid "Run Scripted Effect"
+msgstr "Uruchom skrypt efektu"
+
+#: pylib/controller/editor.py:888 pylib/controller/preferences.py:267
+msgid "Save Error"
+msgstr "Błąd zapisu"
+
+#: pylib/controller/editor.py:889 pylib/controller/preferences.py:268
+msgid "Save failed. Please check the permissions and try again."
+msgstr ""
+"Zapisywanie nie powiodło się. Proszę sprawdzić uprawnienia i spróbować "
+"ponownie."
+
+#: pylib/controller/editor.py:894
+msgid "Saved to: []"
+msgstr "Zapisane jako: []"
+
+#: pylib/controller/editor.py:919
+msgid "Reload the effect from disk? Any unsaved data will be lost!"
+msgstr ""
+"Wczytać ponownie efekt z dysku? Wszystkie niezapisane zmiany zostaną "
+"utracone!"
+
+#: pylib/controller/editor.py:1092
+msgid "An error occurred while sending the frame to the hardware."
+msgstr "Wysąpił błąd podczas przesyłu danych do urządzenia."
+
+#: pylib/controller/editor.py:1190
+msgid "Temporarily changed the graphic. To make permanent, edit the metadata."
+msgstr "Tymczasowa zmiana grafiki. Aby uczynić ją trwałą, edytuj metadane."
+
+#: pylib/controller/editor.py:1197 pylib/controller/editor.py:1209
+msgid "Loading..."
+msgstr "Wczytywanie..."
+
+#: pylib/controller/editor.py:1223
+msgid ""
+"Temporarily changed the graphic. To make permanent, edit the application's "
+"preferences."
+msgstr ""
+"Tymczasowa zmiana grafiki. Aby wprowadzić na stałe, edytuj Preferencje "
+"aplikacji."
+
+#: pylib/controller/editor.py:1347
+msgid "Frame [1] of [10]"
+msgstr "Klatka [1] of [10]"
+
+#: pylib/controller/editor.py:1529
+msgid "Permanently delete this frame? There is no undo."
+msgstr "Na pewno usunąć trwale tą klatkę? Nie ma możliwości cofnięcia."
+
+#: pylib/controller/editor.py:1530
+msgid ""
+"Tip: This confirmation can be suppressed via the Editor tab under "
+"Preferences."
+msgstr ""
+"Wskazówka: To potwierdzenie można wyłączyć poprzez zakładkę Edytor w "
+"Preferencjach."
+
+#: pylib/controller/editor.py:1614
+msgid "Choose Brush Colour"
+msgstr "Wybierz kolor pędzla"
+
+#: pylib/controller/editor.py:1645
+msgid "Out of Bounds"
+msgstr "Poza zakresem"
+
+#: pylib/controller/editor.py:1646
+msgid ""
+"There isn't a position for (X,Y) for this device. The graphic contains "
+"incorrect metadata or is incompatible for use with this device."
+msgstr ""
+"Nie ma wskazanej pozycji (X,Y) dla tego urządzenia. Grafika zawiera "
+"nieprawidłowe metadane lub jest niekompatybilna z tym urządzeniem."
+
+#: pylib/controller/editor.py:1668
+msgid "This LED is empty - nothing to erase here!"
+msgstr "To podświetlenie jest puste - niema nic do skasowania!"
+
+#: pylib/controller/editor.py:1689
+msgid "This LED is empty - no colour to pick here!"
+msgstr "To podświetlenie jest puste - brak koloru do pobrania!"
+
+#: pylib/controller/editor.py:1837
+msgid "Controller Error"
+msgstr "Błąd aplikacji"
+
+#: pylib/controller/editor.py:1838
+msgid ""
+"Failed to load the Qt Web Engine. Unfortunately, editing won't be possible."
+msgstr ""
+"Nie udało się załadować silnika Qt Web Engine. Niestety, edycja nie będzie "
+"możliwa."
+
+#: pylib/controller/editor.py:1839
+msgid ""
+"Make sure the application (and its dependencies) are installed and "
+"configured correctly."
+msgstr ""
+"Upewnij się, że aplikacja (i jej zależności) są zainstalowane i poprawnie "
+"skonfigurowane."
+
+#: pylib/controller/editor.py:1873
+msgid "Missing File"
+msgstr "Brak pliku"
+
+#: pylib/controller/editor.py:1874
+msgid "This effect is mapped to a graphic named '[]', but it's not installed."
+msgstr ""
+"Ten efekt jest zmapowany do grafiki o nazwie '[]', ale nie jest "
+"zainstalowany."
+
+#: pylib/controller/editor.py:1875
+msgid ""
+"The grid will be used instead. A different graphic can be chosen by editing "
+"the metadata."
+msgstr ""
+"Zamiast tego zostanie użyta siatka. Inną grafikę można wybrać poprzez edycję "
+"metadanych."
+
+#: pylib/controller/effects.py:62
+msgid "It's empty here!"
+msgstr "Tu jest pusto!"
+
+#: pylib/controller/effects.py:63
+msgid "Error loading effect"
+msgstr "Błąd wczytywania efektu"
+
+#: pylib/controller/effects.py:67
+msgid "Your own software effects appear here. Try creating one!"
+msgstr ""
+"Twoje efekty znajdują się tutaj.\n"
+"Spróbuj utworzyć efekt!"
+
+#: pylib/controller/effects.py:68
+msgid "There's invalid data in this file. The file might be corrupt."
+msgstr "W tym pliku znajdują się nieprawidłowe dane. Plik może być uszkodzony."
+
+#: pylib/controller/effects.py:108
+msgid ""
+"No devices found. New effects require a compatible device to be present."
+msgstr ""
+"Nie znaleziono urządzeń. Nowe efekty wymagają obecności kompatybilnego "
+"urządzenia."
+
+#: pylib/controller/effects.py:109
+msgid "Make sure the device is connected and the backend is working."
+msgstr "Upewnij się, że urządzenie jest podłączone, a backend działa."
+
+#: pylib/controller/effects.py:229
+msgid "Backend Not Ready"
+msgstr "Usługa nie jest gotowa"
+
+#: pylib/controller/effects.py:230
+msgid ""
+"The application is still waiting for the backends to finish initialising so "
+"you can pick a device to map your new effect."
+msgstr ""
+"Aplikacja nadal czeka, aż usługi zakończą inicjalizację, więc możesz wybrać "
+"urządzenie, na którym zmapujesz swój nowy efekt."
+
+#: pylib/controller/effects.py:231
+msgid "This might be ready in a few moments."
+msgstr "Będzie gotowe za kilka chwil."
+
+#: pylib/controller/effects.py:339 pylib/controller/effects.py:374
+msgid "File In Use"
+msgstr "Plik w użyciu"
+
+#: pylib/controller/effects.py:340
+msgid ""
+"This file is being edited in another window. Please switch to that window to "
+"make changes."
+msgstr ""
+"Ten plik jest edytowany w innym oknie. Proszę przejść do tego okna, aby "
+"wprowadzić zmiany."
+
+#: pylib/controller/effects.py:358
+msgid "Other Actions"
+msgstr "Inne akcje"
+
+#: pylib/controller/effects.py:375
+msgid ""
+"This file is being edited in another window. Please close that editor first."
+msgstr ""
+"Ten plik jest edytowany w innym oknie. Proszę najpierw zamknąć tamten edytor."
+
+#: pylib/controller/effects.py:457
+msgid "Choose Effect Icon"
+msgstr "Wybierz ikonę efektu"
+
+#: pylib/controller/effects.py:567
+msgid ""
+"No compatible devices found. Only individually addressable LED capable "
+"hardware can be used for effects."
+msgstr ""
+"Nie znaleziono kompatybilnych urządzeń. Do efektów można używać tylko "
+"indywidualnie adresowalnych urządzeń obsługujących diody LED."
+
+#: pylib/controller/menubar.py:162
+msgid "The menu bar is now hidden. To temporarily reveal, press Alt."
+msgstr ""
+"Pasek menu jest teraz ukryty. Aby go tymczasowo odsłonić, naciśnij Alt."
+
+#: pylib/controller/menubar.py:190
+msgid "Please close all editor windows before executing this action."
+msgstr "Proszę zamknąć wszystkie okna edytora przed wykonaniem tej czynności."
+
+#: pylib/controller/menubar.py:213
+msgid ""
+"Polychromatic is about to open a web page for this resource. Unfortunately, "
+"it is only available in English at this time."
+msgstr ""
+"Polychromatic właśnie otwiera stronę internetową dla tego zasobu. Niestety, "
+"w tej chwili jest ona dostępna tylko w języku angielskim."
+
+#: pylib/controller/menubar.py:242
+msgid "Report Bug"
+msgstr "Zgłoś błąd"
+
+#: pylib/controller/menubar.py:323
+msgid "About []"
+msgstr "O []"
+
+#: pylib/controller/menubar.py:337
+msgid "Documentation"
+msgstr "Dokumentacja"
+
+#: pylib/controller/menubar.py:338 pylib/controller/menubar.py:468
+msgid "Source Code"
+msgstr "Kod źródłowy"
+
+#: pylib/controller/menubar.py:339 pylib/controller/menubar.py:469
+msgid "Release Notes"
+msgstr "Informacje o wydaniu"
+
+#: pylib/controller/menubar.py:408
+msgid "Restarting the backend/application..."
+msgstr "Restartowanie usług/aplikacji..."
+
+#: pylib/controller/menubar.py:419
+msgid "Restart Backend?"
+msgstr "Czy zrestartować usługi?"
+
+#: pylib/controller/menubar.py:420
+msgid ""
+"Restarting this backend will also restart Polychromatic. Any unsaved data "
+"will be lost. Continue?"
+msgstr ""
+"Restart usług, zrestartuje również Poluchromatic.\n"
+"Wszystkie niezapisane dane zostaną utracone.\n"
+"\n"
+"Kontynuować?"
+
+#: pylib/controller/preferences.py:116
+msgid "Choose Tray Applet Icon"
+msgstr "Wybierz ikonę Apletu tacki systemowej"
+
+#: pylib/controller/preferences.py:198
+msgid "Not Installed"
+msgstr "Nie zainstalowane"
+
+#: pylib/controller/preferences.py:202
+msgid "Error loading the module"
+msgstr "Błąd wczytywania modułu"
+
+#: pylib/controller/preferences.py:292
+msgid "Restart Required"
+msgstr "Wymagany restart"
+
+#: pylib/controller/preferences.py:293
+msgid ""
+"To apply these changes, the application must be restarted. Any unsaved "
+"changes will be lost."
+msgstr ""
+"Aby zastosować te zmiany, należy ponownie uruchomić aplikację. Wszelkie "
+"niezapisane zmiany zostaną utracone."
+
+#: pylib/controller/preferences.py:383
+msgid "All colours in the list will be reset. Continue?"
+msgstr "Wszystkie kolory na liście zostaną zresetowane. Kontynuować?"
+
+#: pylib/controller/procviewer.py:104
+msgid "Restarting..."
+msgstr "Restartowanie..."
+
+#: pylib/controller/procviewer.py:164
+msgid "Playing software effect"
+msgstr "Odtwarzenie efektu"
+
+#: pylib/controller/procviewer.py:170
+msgid "No longer running"
+msgstr "Nie działa"
+
+#: pylib/controller/shared.py:1049
+msgid "Image Files"
+msgstr "Plik zdjęcia"
+
+#: pylib/controller/shared.py:1050
+msgid "PNG Image"
+msgstr "Zdjęcie PNG"
+
+#: pylib/controller/shared.py:1051
+msgid "JPEG Image"
+msgstr "Zdjęcie JPEG"
+
+#: pylib/controller/shared.py:1052
+msgid "GIF Image"
+msgstr "Zdjęcie GIF"
+
+#: pylib/controller/shared.py:1053
+msgid "SVG Image"
+msgstr "Zdjęcie SVG"
+
+#: pylib/controller/shared.py:1054
+msgid "All Files"
+msgstr "Wszystkie pliki"
+
+#: pylib/controller/shared.py:1159
+msgid "When Steam is installed, icons from your games will appear here."
+msgstr "Gdy Steam jest zainstalowany, pojawią się tu ikony twoich gier."
+
+#: pylib/controller/shared.py:1161
+msgid "Drag and drop icons here, or add them by pressing the Import button."
+msgstr ""
+"Przeciągnij i upuść tutaj ikony lub dodaj je naciskając przycisk Importuj."
+
+#: pylib/controller/shared.py:1163
+msgid "No icons found!"
+msgstr "Nie znaleziono ikon!"
+
+#: pylib/controller/shared.py:1290
+msgid "Import Custom Icon"
+msgstr "Importuj własne ikony"
+
+#: pylib/controller/shared.py:1518
+msgid "The file contains invalid data."
+msgstr "Plik zawiera błędne dane."
+
+#: pylib/controller/shared.py:1519
+msgid "The file no longer exists. Please refresh the page."
+msgstr "Plik nie istnieje. Odśwież stronę."
+
+#: pylib/controller/shared.py:1520
+msgid "This file was saved in a newer version of this program."
+msgstr "Plik został zapisany w najnowszej wersji tego programu."
+
+#: pylib/controller/shared.py:1526
+msgid "Unspecified error: []"
+msgstr "Nieokreślony błąd: []"
+
+#: pylib/controller/shared.py:1530
+msgid "This file cannot be opened:"
+msgstr "Ten plik nie może być otwarty:"
+
+#: pylib/controller/shared.py:1539
+msgid ""
+"The operation could not be completed due to an error processing this file."
+msgstr ""
+"Operacja nie mogła zostać zakończona z powodu błędu podczas przetwarzania "
+"tego pliku."
+
+#: pylib/controller/shared.py:1540
+msgid "Please make sure the file permissions are recursively correct:"
+msgstr "Upewnij się, że uprawnienia do plików są rekursywnie poprawne:"
+
+#: pylib/controller/shared.py:1594
+msgid ""
+"Permanently delete this effect?\n"
+"'[]'\n"
+"\n"
+"Presets and triggers that use this effect will be unlinked."
+msgstr ""
+"Całkowicie usunąć ten efekt?\n"
+"'[]'\n"
+"\n"
+"Ustawienia i wyzwalacze korzystające z tego efektu będą rozdzielone."
+
+#: pylib/controller/shared.py:1595
+msgid ""
+"Permanently delete this preset?\n"
+"'[]'\n"
+"\n"
+"Triggers that use this preset will no longer function."
+msgstr ""
+"Całkowicie usunąć to ustawienie?\n"
+"'[]'\n"
+"\n"
+"Wyzwalacze korzystające z tego ustawienia nie będą funkcjonować."
+
+#: pylib/controller/shared.py:1599
+msgid ""
+"Permanently delete this effect? \n"
+"'[]'"
+msgstr ""
+"Całkowicie usunąć ten efekt?\n"
+"'[]'"
+
+#: pylib/controller/shared.py:1600
+msgid ""
+"Permanently delete this preset? \n"
+"'[]'"
+msgstr ""
+"Całkowicie usunąć to ustawienie?\n"
+"'[]'"
+
+#: pylib/controller/shared.py:1604
+msgid "Confirm Deletion"
+msgstr "Potwiedź usunięcie"
+
+#: pylib/controller/shared.py:1627 pylib/fileman.py:329
+msgid "[] (Copy)"
+msgstr "[] (Kopiuj)"
+
+#: pylib/controller/troubleshooter.py:85
+msgid "Waiting for backends to be ready..."
+msgstr "Oczekiwanie na gotowość usług..."
+
+#: pylib/controller/troubleshooter.py:88 pylib/controller/troubleshooter.py:93
+msgid "Running troubleshooter..."
+msgstr "Uruchamianie narzędzia rozwiązywania problemów..."
+
+#: pylib/controller/troubleshooter.py:94
+msgid "Troubleshooting..."
+msgstr "Rozwiązywanie problemów..."
+
+#: pylib/controller/troubleshooter.py:108
+#: pylib/controller/troubleshooter.py:113
+msgid "Troubleshooting Failed"
+msgstr "Błąd narzędzia Rozwiązywania problemów"
+
+#: pylib/controller/troubleshooter.py:109
+msgid ""
+"The troubleshooter for this backend is not available for this operating "
+"system."
+msgstr ""
+"Narzędzie do rozwiązywania problemów dla tej usługi nie jest dostępne dla "
+"tego systemu operacyjnego."
+
+#: pylib/controller/troubleshooter.py:114
+msgid ""
+"An exception was thrown while running the troubleshooter. This is probably a "
+"bug."
+msgstr ""
+"Podczas uruchamiania narzędzia do rozwiązywania problemów został wywołany "
+"wyjątek. Jest to prawdopodobnie błąd oprogramowania (Bug)."
+
+#: pylib/controller/troubleshooter.py:123
+msgid "Passed"
+msgstr "W porządku"
+
+#: pylib/controller/troubleshooter.py:126
+msgid "Failed"
+msgstr "Zawiodło"
+
+#: pylib/controller/troubleshooter.py:160
+msgid "Troubleshooter for []"
+msgstr "Rozwiązanie problemu dla []"
+
+#: pylib/controller/troubleshooter.py:162
+msgid "Everything appears to be in working order!"
+msgstr "Wydaje się, że wszystko jest sprawne!"
+
+#: pylib/effects.py:170
+msgid "Layer 1"
+msgstr "Warstwa 1"
+
+#: pylib/preferences.py:426
+msgid "White"
+msgstr "Biały"
+
+#: pylib/preferences.py:427
+msgid "Red"
+msgstr "Czerwony"
+
+#: pylib/preferences.py:429
+msgid "Blue"
+msgstr "Niebieski"
+
+#: pylib/preferences.py:430
+msgid "Aqua"
+msgstr "Morski"
+
+#: pylib/preferences.py:431
+msgid "Orange"
+msgstr "Porańczowy"
+
+#: pylib/preferences.py:432
+msgid "Pink"
+msgstr "Różowy"
+
+#: pylib/preferences.py:433
+msgid "Purple"
+msgstr "Purpurowy"
+
+#: pylib/preferences.py:434
+msgid "Yellow"
+msgstr "Źółty"
+
+#: pylib/preferences.py:435
+msgid "Light Grey"
+msgstr "Jasny szary"
+
+#: pylib/preferences.py:436
+msgid "Dark Grey"
+msgstr "Ciemny szary"
+
+#: pylib/preferences.py:437
+msgid "Black"
+msgstr "Czarny"
+
+#: pylib/troubleshoot/openrazer.py:50
+msgid "Daemon is installed"
+msgstr "Usługa jest zainstalowana"
+
+#: pylib/troubleshoot/openrazer.py:52 pylib/troubleshoot/openrazer.py:349
+msgid "Install the 'openrazer-meta' package for your distribution."
+msgstr "Zainstaluj pakiet 'openrazer-meta'  dla swojej dystrybucji."
+
+#: pylib/troubleshoot/openrazer.py:72
+msgid "Daemon is running"
+msgstr "Usługa jest uruchomiona"
+
+#: pylib/troubleshoot/openrazer.py:74
+msgid ""
+"Start the daemon from the terminal. Run this command and look for errors:"
+msgstr ""
+"Uruchom usługę z poziomu terminala. Wprowadź poniższą komendę i obserwuj "
+"błędy:"
+
+#: pylib/troubleshoot/openrazer.py:83
+msgid "Python library is installed"
+msgstr "Biblioteka Python jest zainstalowana"
+
+#: pylib/troubleshoot/openrazer.py:85
+msgid "Install the 'python3-openrazer' package for your distribution."
+msgstr "Zainstaluj pakiet 'ptyhon3-openrazer' dla swojej dystrybucji."
+
+#: pylib/troubleshoot/openrazer.py:86
+msgid "Check the PYTHONPATH environment variable is correct."
+msgstr "Sprawdź, czy zmienna środowiskowa PYTHONPATH jest prawidłowa."
+
+#: pylib/troubleshoot/openrazer.py:110
+msgid "DKMS sources are installed"
+msgstr "Źródła modułów jądra są zainstalowane dla DKMS"
+
+#: pylib/troubleshoot/openrazer.py:112
+msgid "Install the 'openrazer-driver-dkms' package for your distribution."
+msgstr "Zainstaluj pakiet 'openrazer-driver-dkms' dla swojej dystrybucji."
+
+#: pylib/troubleshoot/openrazer.py:118
+msgid "DKMS module has been built for this kernel version"
+msgstr "Moduł jądra został zbudowany dla tego jądra"
+
+#: pylib/troubleshoot/openrazer.py:120
+msgid ""
+"Ensure you have the correct Linux kernel headers package installed for your "
+"distribution."
+msgstr ""
+"Upewnij się, że masz zainstalowany prawidłowy pakiet nagłówków jądra Linux "
+"dla swojej dystrybucji."
+
+#: pylib/troubleshoot/openrazer.py:121
+msgid ""
+"Your distro's package system might not have rebuilt the DKMS module (this "
+"can happen with kernel or OpenRazer updates). Try running:"
+msgstr ""
+"System pakietów Twojej dystrybucji mógł nie przebudować modułu dla tego "
+"jądra. Spróbuj uruchomić:"
+
+#: pylib/troubleshoot/openrazer.py:133
+msgid "DKMS module can be probed"
+msgstr "Moduł jądra może być badany"
+
+#: pylib/troubleshoot/openrazer.py:135 pylib/troubleshoot/openrazer.py:148
+msgid "For full error details, run:"
+msgstr "Aby zobaczyć szczegóły błędu uruchom:"
+
+#: pylib/troubleshoot/openrazer.py:146
+msgid "DKMS module is currently loaded"
+msgstr "Moduł jądra jest załadowany"
+
+#: pylib/troubleshoot/openrazer.py:150 pylib/troubleshoot/openrazer.py:193
+msgid "If you've just installed, it is recommended to restart the computer."
+msgstr ""
+"Jeśli dopiero co zainstalowałeś program, zalecane jest ponowne uruchomienie "
+"komputera."
+
+#: pylib/troubleshoot/openrazer.py:160
+msgid ""
+"Secure Boot prevents the driver from loading, as OpenRazer's kernel modules "
+"built by DKMS are usually unsigned."
+msgstr ""
+"Secure Boot uniemożliwia załadowanie sterownika, ponieważ moduły jądra "
+"OpenRazera zbudowane przez DKMS są zazwyczaj niepodpisane."
+
+#: pylib/troubleshoot/openrazer.py:168 pylib/troubleshoot/openrazer.py:178
+msgid "Check Secure Boot (EFI) status"
+msgstr "Sprawdzenie stanu Secure Boot (EFI)"
+
+#: pylib/troubleshoot/openrazer.py:170
+msgid ""
+"Secure boot is enabled. Turn it off in the system's EFI settings or sign the "
+"modules yourself."
+msgstr ""
+"Secure boot jest włączony. Wyłącz to w ustawieniach EFI systemu lub podpisz "
+"moduły samodzielnie."
+
+#: pylib/troubleshoot/openrazer.py:180
+msgid ""
+"Unable to automatically check. If it's enabled, turn it off in the system's "
+"EFI settings or sign the modules yourself."
+msgstr ""
+"Nie można automatycznie sprawdzić. Jeśli jest włączona, wyłącz ją w "
+"ustawieniach EFI systemu lub podpisz moduły samodzielnie."
+
+#: pylib/troubleshoot/openrazer.py:189
+msgid "User account has been added to the 'plugdev' group"
+msgstr "Konto użytkownika zostało dodane do grupy 'plugdev'"
+
+#: pylib/troubleshoot/openrazer.py:191
+msgid "Run this command, log out, then log back in to the computer:"
+msgstr ""
+"Uruchom to polecenie, wyloguj się, a następnie zaloguj się ponownie na "
+"komputerze:"
+
+#: pylib/troubleshoot/openrazer.py:211 pylib/troubleshoot/openrazer.py:221
+msgid "Device can be accessed using plugdev permissions"
+msgstr "Dostęp do urządzenia można uzyskać za pomocą uprawnień plugdev"
+
+#: pylib/troubleshoot/openrazer.py:213
+msgid ""
+"Restarting the daemon or replugging the hardware usually fixes the problem."
+msgstr ""
+"Ponowne podłączenie sprzętu, a następnie ponowne uruchomienie serwisu "
+"zazwyczaj rozwiązuje problem."
+
+#: pylib/troubleshoot/openrazer.py:214
+msgid "If not, the udev rules for your distribution need investigating."
+msgstr "Jeśli nie, należy zbadać zasady udev dla twojej dystrybucji."
+
+#: pylib/troubleshoot/openrazer.py:215
+msgid "Restart the daemon to clear this message."
+msgstr "Zresetuj serwis, aby usunąć ten komunikat."
+
+#: pylib/troubleshoot/openrazer.py:223
+msgid "The log does not exist. Start the daemon and try again."
+msgstr "Dziennik nie istnieje. Uruchom serwis i spróbuj ponownie."
+
+#: pylib/troubleshoot/openrazer.py:233
+msgid "Razer hardware is present for kernel"
+msgstr "Sprzęt Razer jest obecny dla jądra"
+
+#: pylib/troubleshoot/openrazer.py:235
+msgid "The Linux kernel does not see hardware with a VID of 1532."
+msgstr "Jądro Linuksa nie widzi sprzętu z VID równym 1532."
+
+#: pylib/troubleshoot/openrazer.py:236
+msgid "Check the device and USB port is working. Try a different port."
+msgstr ""
+"Sprawdź, czy urządzenie i port USB są sprawne. Spróbuj użyć innego portu."
+
+#: pylib/troubleshoot/openrazer.py:256 pylib/troubleshoot/openrazer.py:285
+msgid "Check device compatibility"
+msgstr "Sprawdź kompatybilność urządzenia"
+
+#: pylib/troubleshoot/openrazer.py:258 pylib/troubleshoot/openrazer.py:339
+msgid "Unable to retrieve this data from OpenRazer's website."
+msgstr "Nie udało się pobrać tych danych ze strony OpenRazer."
+
+#: pylib/troubleshoot/openrazer.py:259 pylib/troubleshoot/openrazer.py:340
+msgid ""
+"Check the OpenRazer website to confirm your device is listed as supported."
+msgstr ""
+"Sprawdź na stronie OpenRazer, czy Twoje urządzenie jest wymienione jako "
+"obsługiwane."
+
+#: pylib/troubleshoot/openrazer.py:260 pylib/troubleshoot/openrazer.py:341
+msgid ""
+"If you're checking OpenRazer's GitHub repository, check the 'stable' branch."
+msgstr ""
+"Jeśli sprawdzasz repozytorium OpenRazer na GitHubie, sprawdź gałąź 'stable'."
+
+#: pylib/troubleshoot/openrazer.py:287
+msgid ""
+"The following PIDs are not supported in the latest stable release of "
+"OpenRazer:"
+msgstr ""
+"Następujące PIDy nie są obsługiwane w najnowszym stabilnym wydaniu OpenRazer:"
+
+#: pylib/troubleshoot/openrazer.py:289
+msgid ""
+"Check OpenRazer's issues and pull requests to see the status for your "
+"device. Create an issue if necessary."
+msgstr ""
+"Sprawdź zgłoszenia problemów i próśb OpenRazer, aby zobaczyć status dla "
+"Twojego urządzenia. W razie potrzeby utwórz problem."
+
+#: pylib/troubleshoot/openrazer.py:326 pylib/troubleshoot/openrazer.py:337
+#: pylib/troubleshoot/openrazer.py:347
+msgid "OpenRazer is the latest version"
+msgstr "Posiadasz najnowszą wersję programu OpenRazer"
+
+#: pylib/troubleshoot/openrazer.py:328
+msgid "There is a new version of OpenRazer available."
+msgstr "Dostępna jest nowa wersja programu OpenRazer."
+
+#: pylib/troubleshoot/openrazer.py:329
+msgid ""
+"New versions add support for more devices and address device-specific issues."
+msgstr ""
+"W nowych wersjach dodano obsługę większej liczby urządzeń i rozwiązano "
+"problemy charakterystyczne dla poszczególnych urządzeń."
+
+#: pylib/troubleshoot/openrazer.py:330
+msgid "Your version: 0.0.0"
+msgstr "Twoja wersja: 0.0.0"
+
+#: pylib/troubleshoot/openrazer.py:331
+msgid "Latest version: 0.0.0"
+msgstr "Najnowsza wersja: 0.0.0"
+
+#: troubleshooter.ui.h:1
+msgid "Troubleshooter"
+msgstr "Rozwiązywanie problemów"
+
+#. Shown when the troubleshooter successfully
+#: troubleshooter.ui.h:3
+msgid "Troubleshooting complete!"
+msgstr "Zakończono rozwiązywanie problemów!"
+
+#. Column header for the troubleshooting results
+#: troubleshooter.ui.h:5
+msgid "Result"
+msgstr "Wynik"
+
+#. Column header for the troubleshooting results
+#: troubleshooter.ui.h:7
+msgid "Check"
+msgstr "Sprawdź"
+
+#: troubleshooter.ui.h:8
+msgid "Copy to Clipboard"
+msgstr "Skopiuj do schowka"
+
+#~ msgid "Automatic"
+#~ msgstr "Automatyczny"
+
+#, fuzzy
+#~ msgid "Ayatana Indicators"
+#~ msgstr "Ayatana Indicators"
+
+#~ msgid "Your desktop enviroment might not support this feature."
+#~ msgstr "Twój pulpit może nie obsługiwać tej funkcji."
+
+#~ msgid ""
+#~ "Install 'python-openrazer' or 'python3-openrazer' for your distribution."
+#~ msgstr ""
+#~ "Zainstaluj 'python-openrazer' or 'python3-openrazer' dla swojej "
+#~ "dystrybucji."
+
+#~ msgid ""
+#~ "Make sure the modules are installed for the correct Python version. Try "
+#~ "re-installing."
+#~ msgstr ""
+#~ "Upewnij się, że moduły są zainstalowane dla właściwej wersji Pythona. "
+#~ "Spróbuj przeinstalować."
+
+#~ msgid ""
+#~ "Your Python installation looks custom. Check your PATH and PYTHONPATH."
+#~ msgstr ""
+#~ "Twoja instalacja Pythona wygląda na niestandardową. Sprawdź zmienne "
+#~ "środowiskowe PATH i PYTHONPATH."
+
+#~ msgid "Currently running Python 3.10.0 from /usr/bin/python3"
+#~ msgstr "Obecnie działa Python 3.10.0 z /usr/bin/python3"
+
+#~ msgid "Tried path:"
+#~ msgstr "Wypróbowana ścieżka:"
+
+#~ msgid "Unable to check because the Python library is not installed."
+#~ msgstr ""
+#~ "Nie można sprawdzić, ponieważ biblioteka Pythona nie jest zainstalowana."
+
+#~ msgid "OpenRazer is a kernel module, typically built using DKMS."
+#~ msgstr "OpenRazer jest modułem jądra, zwykle budowanym przy użyciu DKMS."
+
+#~ msgid ""
+#~ "Some distributions (like Gentoo) may use an alternate system to DKMS."
+#~ msgstr ""
+#~ "Niektóre dystrybucje (np. Gentoo) mogą używać systemu alternatywnego do "
+#~ "DKMS."
+
+#~ msgid "OpenRazer uses these modules:"
+#~ msgstr "OpenRazer używa tych modułów:"
+
+#~ msgid ""
+#~ "For full error details, run this and substitute 'razerkbd' as necessary:"
+#~ msgstr ""
+#~ "Aby uzyskać pełne informacje o błędzie, uruchom to i zastąp 'razerkbd' w "
+#~ "razie potrzeby:"
+
+#~ msgid "No output from this command indicates success."
+#~ msgstr "Żadne wyjście z tego polecenia nie wskazuje powodzenia."
+
+#~ msgid "Could not check as '[]' is not installed."
+#~ msgstr "Nie można sprawdzić, ponieważ '[]' nie jest zainstalowany."
+
+#~ msgid ""
+#~ "This is required so that your user account (and daemon) has permission to "
+#~ "access the driver files in /sys/bus/hid/drivers"
+#~ msgstr ""
+#~ "Jest to wymagane, aby twoje konto użytkownika (i demon) miał dostęp do "
+#~ "plików sterowników w /sys/bus/hid/drivers"
+
+#~ msgid ""
+#~ "Unable to check as the drivers sysfs path for this Linux kernel is non-"
+#~ "standard."
+#~ msgstr ""
+#~ "Nie można sprawdzić, ponieważ ścieżka sysfs sterowników dla tego jądra "
+#~ "Linuksa jest niestandardowa."
+
+#~ msgid "Unable to check because OpenRazer's modules are not loaded."
+#~ msgstr "Nie można sprawdzić, ponieważ moduły OpenRazer'a nie są załadowane."
+
+#~ msgid ""
+#~ "Permissions for OpenRazer's device files (/sys/bus/hid/drivers) are not "
+#~ "set correctly. They should be owned as root:plugdev (owner/group)"
+#~ msgstr ""
+#~ "Uprawnienia dla plików urządzeń OpenRazera (/sys/bus/hid/drivers) nie są "
+#~ "ustawione poprawnie. Powinny być one własnością root:plugdev (owner/group)"
+
+#~ msgid ""
+#~ "Alternately, improperly configured udev rules (such as a missing PID) may "
+#~ "cause this to happen."
+#~ msgstr ""
+#~ "Alternatywnie, nieprawidłowo skonfigurowane reguły udev (takie jak "
+#~ "brakujący PID) mogą to powodować."
