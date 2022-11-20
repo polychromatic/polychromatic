@@ -14,7 +14,7 @@ from .. import preferences as pref
 from . import shared
 
 import os
-#import configparser        # Imported on demand, OpenRazer only
+import configparser
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
@@ -280,24 +280,11 @@ class OpenRazerPreferences(shared.TabData):
     def __init__(self, appdata):
         super().__init__(appdata)
 
-        # OpenRazer uses configparser. If not available, open text editor instead.
-        try:
-            import configparser
-            self.config_possible = True
-        except (ImportError, ModuleNotFoundError):
-            self.config_possible = False
-
         self.conf_path = None
         try:
             self.conf_path = "{0}/.config/openrazer/razer.conf".format(os.environ["XDG_CONFIG_HOME"])
         except KeyError:
-            pass
-
-        if not self.conf_path:
-            try:
-                self.conf_path = "{0}/.config/openrazer/razer.conf".format(os.environ["HOME"])
-            except KeyError:
-                self.conf_path = "/home/$USER/.config/openrazer/razer.conf"
+            self.conf_path = "{0}/.config/openrazer/razer.conf".format(os.environ.get("HOME", "~"))
 
         # Client settings
         self.client = [
@@ -327,25 +314,21 @@ class OpenRazerPreferences(shared.TabData):
 
         If configparser is not present for some reason, open the text editor.
         """
-        if not self.config_possible:
+        version = self._get_openrazer_version()
+
+        if version < 3.2:
             os.system("xdg-open file://{0}".format(self.conf_path))
             return
 
-        # Determine settings suitable for this version
-        version = self._get_openrazer_version()
         self.keys = [
             # "Object Name",                "Group",    "Item",                         <data type>
             ["verbose_logging",             "General",  "verbose_logging",              bool],
             ["devices_off_on_screensaver",  "Startup",  "devices_off_on_screensaver",   bool],
             ["restore_persistence",         "Startup",  "restore_persistence",          bool],
+            ["battery_notifier",            "Startup",  "battery_notifier",             bool],
+            ["battery_notifier_freq",       "Startup",  "battery_notifier_freq",        int], # seconds
+            ["battery_notifier_percent",    "Startup",  "battery_notifier_percent",     int],
         ]
-
-        if version >= 3.2:
-            self.keys.append(["battery_notifier", "Startup", "battery_notifier", bool])
-            self.keys.append(["battery_notifier_freq", "Startup", "battery_notifier_freq", int])
-        else:
-            self.keys.append(["battery_notifier", "Startup", "mouse_battery_notifier", bool])
-            self.keys.append(["battery_notifier_freq", "Startup", "mouse_battery_notifier_freq", int])
 
         self.dialog = shared.get_ui_widget(self.appdata, "openrazer-config", QDialog)
         self.dialog.findChild(QDialogButtonBox, "DialogButtons").accepted.connect(self._save_and_restart)
@@ -364,6 +347,9 @@ class OpenRazerPreferences(shared.TabData):
             elif data_type == int:
                 spinner = self.dialog.findChild(QSpinBox, object_name)
                 spinner.setValue(self._read_config(group, key_name, int))
+
+                if key_name == "battery_notifier_freq":
+                    spinner.setValue(int(int(self._read_config(group, key_name, int) or 0) / 60))
 
         # Client
         for meta in self.client:
@@ -390,10 +376,19 @@ class OpenRazerPreferences(shared.TabData):
                 spinner = self.dialog.findChild(QDoubleSpinBox, filename)
                 spinner.setValue(float(data))
 
-        # TODO: Not implemented yet
-        self.dialog.findChild(QLabel, "restore_persistence_note").setHidden(True)
+        self.dialog.findChild(QCheckBox, "battery_notifier").clicked.connect(self._update_ui_state)
+        self._update_ui_state()
 
         self.dialog.open()
+
+    def _update_ui_state(self):
+        """
+        Enable/disable controls as appropriate to the currently selected choices.
+        """
+        battery_notifications_enabled = self.dialog.findChild(QCheckBox, "battery_notifier").isChecked()
+        for object_name in ["battery_notifier_percent", "battery_notifier_freq"]:
+            self.dialog.findChild(QSpinBox, object_name).setEnabled(battery_notifications_enabled)
+            self.dialog.findChild(QLabel, f"{object_name}_label").setEnabled(battery_notifications_enabled)
 
     def _save_and_restart(self):
         """
@@ -410,6 +405,9 @@ class OpenRazerPreferences(shared.TabData):
                 value = self.dialog.findChild(QCheckBox, object_name).isChecked()
             elif data_type == int:
                 value = self.dialog.findChild(QSpinBox, object_name).value()
+
+                if key_name == "battery_notifier_freq":
+                    value = int(value * 60)
             else:
                 continue
 
@@ -439,7 +437,6 @@ class OpenRazerPreferences(shared.TabData):
         Reads OpenRazer's razer.conf file, similar format to an INI.
         If value is not found, the default is False or 0.
         """
-        import configparser
         config = configparser.ConfigParser()
         config.read(self.conf_path)
 

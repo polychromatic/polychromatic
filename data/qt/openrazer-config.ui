@@ -26,7 +26,7 @@
    <iconset>
     <normaloff>../img/logo/openrazer.svg</normaloff>../img/logo/openrazer.svg</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="openrazer_config_layout">
    <property name="spacing">
     <number>8</number>
    </property>
@@ -39,10 +39,10 @@
       <attribute name="title">
        <string extracomment="Tab button for configuring OpenRazer">Daemon</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="daemon_tab_layout">
        <item>
         <widget class="QWidget" name="ForOpenRazer" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout">
+         <layout class="QHBoxLayout" name="ForOpenRazer_layout">
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -108,41 +108,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="sync_effects_enabled">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string extracomment="Checkbox for configuring OpenRazer">Sync effects across devices</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="sync_effects_enabled_note">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string extracomment="Hint text for configuring OpenRazer">Polychromatic has an equivalent feature. Use &quot;Apply to All&quot; from the Devices tab.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="indent">
-          <number>25</number>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="devices_off_on_screensaver">
          <property name="text">
-          <string extracomment="Checkbox for configuring OpenRazer">Turn off devices when screen saver / lock screen is activated</string>
+          <string extracomment="Checkbox for configuring OpenRazer">Turn off brightness when screen saver or lock screen is activated</string>
          </property>
         </widget>
        </item>
@@ -154,8 +122,46 @@
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="mouse_battery_notifier_freq_group" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <widget class="QWidget" name="battery_notifier_percent_group" native="true">
+         <layout class="QHBoxLayout" name="battery_notifier_percent_layout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>25</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="battery_notifier_percent_label">
+            <property name="text">
+             <string>Only notify when device % reaches</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="battery_notifier_percent">
+            <property name="suffix">
+             <string notr="true">%</string>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="battery_notifier_freq_group" native="true">
+         <layout class="QHBoxLayout" name="battery_notifier_freq_layout">
           <property name="spacing">
            <number>0</number>
           </property>
@@ -174,17 +180,17 @@
           <item>
            <widget class="QLabel" name="battery_notifier_freq_label">
             <property name="text">
-             <string extracomment="Label for configuring OpenRazer">Notification Frequency</string>
+             <string extracomment="Label for configuring OpenRazer">Reminder frequency</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QSpinBox" name="battery_notifier_freq">
             <property name="suffix">
-             <string extracomment="Suffix for a spinner control"> seconds</string>
+             <string extracomment="Suffix for a spinner control"> minute(s)</string>
             </property>
             <property name="maximum">
-             <number>86400</number>
+             <number>1440</number>
             </property>
            </widget>
           </item>
@@ -194,7 +200,7 @@
        <item>
         <widget class="QCheckBox" name="restore_persistence">
          <property name="text">
-          <string>Apply persistence settings on daemon start</string>
+          <string>Restore last used settings on daemon start</string>
          </property>
         </widget>
        </item>
@@ -210,7 +216,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>If you have a Polychromatic trigger configured to run at start-up, it is recommended to turn this option off.</string>
+          <string>Disabling this may cause the current hardware effect to be misrepresented. This is dependent on the device's firmware.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -239,10 +245,10 @@
       <attribute name="title">
        <string extracomment="Tab button for configuring OpenRazer">Client</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="client_tab_layout">
        <item>
         <widget class="QWidget" name="ForPolychromatic" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <layout class="QHBoxLayout" name="ForPolychromatic_layout">
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -302,7 +308,7 @@
        </item>
        <item>
         <widget class="QWidget" name="ripple_refresh_rate_group" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <layout class="QHBoxLayout" name="ripple_refresh_rate_layout">
           <property name="spacing">
            <number>0</number>
           </property>
