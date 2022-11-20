@@ -413,8 +413,8 @@ class MenuBarOpenRazer(MenuBar):
             procmgr.restart_self(self.exec_path, self.exec_args)
 
         self.widgets.open_dialog(self.widgets.dialog_generic,
-                                 self._("Restart Backend?"),
-                                 self._("Restarting this backend will also restart Polychromatic. Any unsaved data will be lost. Continue?"),
+                                 self._("Reload application?"),
+                                 self._("To apply these changes, a daemon process needs to restart. This will also restart Polychromatic. Any unsaved data will be lost."),
                                  buttons=[QMessageBox.Ok, QMessageBox.Cancel],
                                  default_button=QMessageBox.Ok,
                                  actions={QMessageBox.Ok: _reload_openrazer})
