@@ -461,6 +461,10 @@ def get_versions(base_version):
                 # Git may throw error "no names found" if repository was shallow cloned or has no tags
                 version = "{0}-git-{1}".format(base_version, git_commit[:7])
 
+        except subprocess.CalledProcessError:
+            # "git" failed to run, this could happen due to "untrusted" repositories
+            version = base_version + "~????????-git"
+
         except FileNotFoundError:
             # "git" is not installed despite being a git repository
             version = base_version + "-git"
