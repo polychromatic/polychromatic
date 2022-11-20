@@ -63,20 +63,19 @@ class OpenRazerBackend(Backend):
         """
         Summons the OpenRazer DeviceManager() daemon.
         """
+        # Persistence API was introduced in OpenRazer 3.0.0
+        if int(self.version.split(".")[0]) <= 3:
+            self.persistence_supported = False
+
+        if not os.path.exists(self.persistence_fallback_path):
+            os.makedirs(self.persistence_fallback_path)
+
         try:
             self._reload_device_manager()
             return True
         except Exception as e:
             self.debug("Failed: Got an exception initialising device manager!")
             return self.get_exception_as_string(e)
-
-        # Persistence API was introduced in OpenRazer 3.0.0
-        if int(self.version.split(".")[0]) <= 3:
-            self.persistence_supported = False
-
-        if self.persistence_supported:
-            if not os.path.exists(self.persistence_fallback_path):
-                os.makedirs(self.persistence_fallback_path)
 
     def load_client_overrides(self):
         """
