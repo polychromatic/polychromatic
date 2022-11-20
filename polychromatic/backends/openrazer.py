@@ -259,6 +259,9 @@ class OpenRazerBackend(Backend):
         if rdevice.has("macro_mode_led_effect") and rdevice.type == "keyboard":
             device.has_programmable_keys = True
 
+        if rdevice.has("scroll_mode") or rdevice.has("scroll_acceleration") or rdevice.has("scroll_smart_reel"):
+            main_zone.options += self._get_scroll_options(rdevice)
+
         return device
 
     def _get_persistence(self, rzone, zone, serial):
@@ -1382,6 +1385,84 @@ class OpenRazerBackend(Backend):
             low_power.label = self._("Enter low power at")
             low_power.icon = self.get_icon("options", "low_battery")
             options.append(low_power)
+
+        return options
+
+    def _get_scroll_options(self, rdevice):
+        """
+        Additional mouse features supported by Razer Basilisk V3 since OpenRazer 3.3.0.
+        """
+        options = []
+
+        if rdevice.has("scroll_mode"):
+            tactile = Backend.Option.Parameter()
+            tactile.data = 0
+            tactile.label = self._("Tactile")
+            tactile.default = True
+
+            free_spin = Backend.Option.Parameter()
+            free_spin.data = 1
+            free_spin.label = self._("Free Spin")
+
+            class ScrollMode(Backend.MultipleChoiceOption):
+                def __init__(self, rdevice):
+                    super().__init__()
+                    self._rdevice = rdevice
+
+                def refresh(self):
+                    tactile.active = rdevice.scroll_mode == 0
+                    free_spin.active = rdevice.scroll_mode == 1
+
+                def apply(self, value):
+                    self._rdevice.scroll_mode = int(value)
+
+            scroll_mode = ScrollMode(rdevice)
+            scroll_mode.uid = "scroll_mode"
+            scroll_mode.label = self._("Scroll Mode")
+            scroll_mode.icon = self.get_icon("devices", "mouse")
+            scroll_mode.parameters = [tactile, free_spin]
+            scroll_mode.refresh()
+            options.append(scroll_mode)
+
+        if rdevice.has("scroll_acceleration"):
+            class ScrollAcceleration(Backend.ToggleOption):
+                def __init__(self, rdevice):
+                    super().__init__()
+                    self._rdevice = rdevice
+
+                def refresh(self):
+                    self.active = self._rdevice.scroll_acceleration == True
+
+                def apply(self, state):
+                    self._rdevice.scroll_acceleration = state
+
+            scroll_accel = ScrollAcceleration(rdevice)
+            scroll_accel.uid = "scroll_accel"
+            scroll_accel.label = self._("Scroll Acceleration")
+            scroll_accel.icon = self.get_icon("devices", "mouse")
+            scroll_accel.label_toggle = self._("Enable scroll acceleration")
+            scroll_accel.refresh()
+            options.append(scroll_accel)
+
+        if rdevice.has("scroll_smart_reel"):
+            class SmartReel(Backend.ToggleOption):
+                def __init__(self, rdevice):
+                    super().__init__()
+                    self._rdevice = rdevice
+
+                def refresh(self):
+                    self.active = self._rdevice.scroll_smart_reel == True
+
+                def apply(self, state):
+                    self._rdevice.scroll_smart_reel = state
+
+            smart_reel = SmartReel(rdevice)
+            smart_reel.uid = "scroll_smart_reel"
+            smart_reel.label = self._("Smart Reel")
+            smart_reel.icon = self.get_icon("devices", "mouse")
+            smart_reel.label_toggle = self._("Enable smart reel")
+            smart_reel.refresh()
+            options.append(smart_reel)
 
         return options
 
