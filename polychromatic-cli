@@ -395,6 +395,19 @@ if args.list_options:
         if device.matrix and device.monochromatic:
             _add_row(_("Custom Effects"), "{0} ({1})".format(_("Yes, Limited RGB"), dimensions), dbg.success)
 
+        if device.battery:
+            battery_label = f"{str(device.battery.percentage)}%"
+            if device.battery.percentage <= 15:
+                battery_colour = dbg.error
+            elif device.battery.percentage >= 50:
+                battery_colour = dbg.success
+            else:
+                battery_colour = dbg.warning
+            if device.battery.is_charging:
+                battery_colour = dbg.success
+                battery_label += " (charging)"
+            _add_row(_("Battery"), battery_label, battery_colour)
+
         # Space between details and next table
         _add_row("", "", dbg.normal)
         print_columns(rows)
