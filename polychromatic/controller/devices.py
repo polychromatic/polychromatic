@@ -217,7 +217,28 @@ class DevicesTab(shared.TabData):
                 "icon": common.get_icon("general", "dpi"),
             })
 
-        # TODO: Add device.battery
+        if device.battery:
+            label = f"{str(device.battery.percentage)}%"
+            if device.battery.percentage >= 90:
+                icon = "battery-100"
+            elif device.battery.percentage >= 70:
+                icon = "battery-75"
+            elif device.battery.percentage >= 40:
+                icon = "battery-50"
+            elif device.battery.percentage >= 15:
+                icon = "battery-25"
+            else:
+                icon = "battery-0"
+
+            if device.battery.is_charging:
+                icon = "battery-charging"
+                label += " (charging)"
+
+            badges.append({
+                "label": label,
+                "icon": common.get_icon("general", icon),
+            })
+
         # TODO: Add additional preset state
 
         if device.real_image:
