@@ -344,6 +344,8 @@ def _check_device_support_list(_):
         remote_pids = []
         for device in remote_device_list:
             remote_pids.append(device["pid"])
+            for alias in device.get("alias_ids", []):
+                remote_pids.append(alias[5:])
     except KeyError as e:
         print("Remote device list contains invalid data: " + remote_get_url)
         return _remote_failed()
