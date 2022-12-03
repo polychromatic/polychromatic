@@ -788,7 +788,6 @@ def parse_parameters():
         print("Polychromatic", app_version)
         if git_commit:
             print("Commit:", git_commit)
-        print("Save Data:", pref.VERSION)
         print("Python:", py_version)
         print("GTK:", "{0}.{1}.{2}".format(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION))
         exit(0)

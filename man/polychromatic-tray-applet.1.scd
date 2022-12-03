@@ -25,7 +25,6 @@ through an AppIndicator or GTK Status Icon.
 	Prints version information:
 		- Software version
 		- Commit hash (when run from the repository directory)
-		- Internal save data revision
 		- Python version
 		- GTK version
 

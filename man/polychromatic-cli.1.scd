@@ -103,7 +103,6 @@ status information from connected hardware.
 		Prints version information:
 			- Software version
 			- Commit hash (when run from the repository directory)
-			- Internal save data revision
 			- Python version
 
 	*--no-pretty-column*

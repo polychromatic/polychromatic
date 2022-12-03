@@ -25,7 +25,6 @@ PyQt5. All features of the software are accessible here.
 	Prints version information:
 		- Software version
 		- Commit hash (when run from the repository directory)
-		- Internal save data revision
 		- Python version
 		- Qt version
 
