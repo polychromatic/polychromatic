@@ -407,6 +407,24 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         low_bat_thres.refresh()
         self.assertEqual(low_bat_thres.value, 50, "Could not set or get low_battery_threshold (device = get/set)")
 
+    def test_scroll_mode_set_get(self):
+        device = self.get_device("Razer Basilisk V3")
+        scroll_mode = self.get_option(device, "scroll_mode", "main")
+        scroll_mode.apply(1)
+        scroll_mode.refresh()
+
+    def test_scroll_accel_set_get(self):
+        device = self.get_device("Razer Basilisk V3")
+        scroll_accel = self.get_option(device, "scroll_accel", "main")
+        scroll_accel.apply(1)
+        scroll_accel.refresh()
+
+    def test_smart_reel_set_get(self):
+        device = self.get_device("Razer Basilisk V3")
+        smart_reel = self.get_option(device, "scroll_smart_reel", "main")
+        smart_reel.apply(True)
+        smart_reel.refresh()
+
     def test_all_options_no_duplicates(self):
         for device in self.openrazer.get_devices():
             all_options = []
