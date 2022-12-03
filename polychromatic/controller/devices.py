@@ -1635,6 +1635,7 @@ class DPIStageEditor(shared.TabData):
         Sync the current DPI values displayed to the hardware.
         """
         self.device.dpi.sync(self.parse_dpi())
+        self.sync_possible.setText(self._("DPI stages were successfully synchronised to the hardware."))
 
     def save_changes(self):
         """
