@@ -440,7 +440,7 @@ if args.list_options:
                     continue
 
                 if isinstance(option, Backend.ToggleOption):
-                    _add_combination(zone, option, "off/0, on/1")
+                    _add_combination(zone, option, "0, 1")
 
                 elif isinstance(option, Backend.SliderOption):
                     _add_combination(zone, option, "{0} - {1} {2}".format(str(option.min), str(option.max), option.suffix_plural))
