@@ -72,7 +72,6 @@ class EffectFileManagement(fileman.FlatFileManagement):
             self._validate_key(data, "name", str),
             self._validate_key(data, "type", int),
             self._validate_key(data, "author", str),
-            self._validate_key(data, "author_url", str),
             self._validate_key(data, "icon", str),
             self._validate_key(data, "summary", str),
             self._validate_key(data, "map_device", str),
@@ -146,7 +145,6 @@ class EffectFileManagement(fileman.FlatFileManagement):
         data["name"] = effect_name
         data["type"] = effect_type
         data["author"] = ""
-        data["author_url"] = ""
         data["icon"] = "img/general/effects.svg"
         data["summary"] = ""
         data["map_device"] = ""

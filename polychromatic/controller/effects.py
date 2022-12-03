@@ -429,7 +429,6 @@ class EffectMetadataEditor(shared.TabData):
         # -- Left: Details
         self.name = self.dialog.findChild(QLineEdit, "EffectName")
         self.author = self.dialog.findChild(QLineEdit, "Author")
-        self.author_url = self.dialog.findChild(QLineEdit, "AuthorURL")
         self.icon = self.dialog.findChild(QLabel, "EffectIconPlaceholder")
         self.summary = self.dialog.findChild(QTextEdit, "Summary")
 
@@ -464,7 +463,6 @@ class EffectMetadataEditor(shared.TabData):
         # Populate metadata fields
         self.name.setText(self.data["name"])
         self.author.setText(self.data["author"])
-        self.author_url.setText(self.data["author_url"])
         self.summary.setText(self.data["summary"])
 
         # Mapping Configuration (non-scripted effects only)
@@ -691,7 +689,6 @@ class EffectMetadataEditor(shared.TabData):
         # Metadata fields
         newdata["name"] = self.name.text()
         newdata["author"] = self.author.text()
-        newdata["author_url"] = self.author_url.text()
         newdata["summary"] = self.summary.toPlainText()
 
         # Device mapping information
