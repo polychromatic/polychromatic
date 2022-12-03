@@ -64,7 +64,7 @@ class OpenRazerBackend(Backend):
         Summons the OpenRazer DeviceManager() daemon.
         """
         # Persistence API was introduced in OpenRazer 3.0.0
-        if int(self.version.split(".")[0]) <= 3:
+        if int(self.version.split(".")[0]) < 3:
             self.persistence_supported = False
 
         if not os.path.exists(self.persistence_fallback_path):
