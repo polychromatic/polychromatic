@@ -4,6 +4,7 @@
 This module controls the 'Devices' tab of the Controller GUI.
 """
 
+from polychromatic.procpid import DeviceSoftwareState
 from .. import bulkapply
 from .. import common
 from .. import effects
@@ -175,8 +176,14 @@ class DevicesTab(shared.TabData):
                     effect_name = option.label
                     effect_icon = option.icon
 
-        # TODO: Show running software effect
-        if effects_used and all(i == effects_used[0] for i in effects_used):
+        state = DeviceSoftwareState(device.serial)
+        sw_effect = state.get_effect()
+        if sw_effect:
+            badges.append({
+                "label": sw_effect.get("name"),
+                "icon": sw_effect.get("icon"),
+            })
+        elif effects_used and all(i == effects_used[0] for i in effects_used):
             badges.append({
                 "label": effect_name,
                 "icon": effect_icon,
@@ -312,8 +319,9 @@ class DevicesTab(shared.TabData):
 
                 return options
 
-            # FIXME: Reinstate "state_effect" check
-            effect_options = _get_effect_options(zone, False)
+            state = DeviceSoftwareState(device.serial)
+            sw_effect = state.get_effect()
+            effect_options = _get_effect_options(zone, True if sw_effect else False)
             active_effect = self.middleman.get_active_effect(zone)
             effect_row = self._create_effect_controls(zone, effect_options)
             if effect_row:
