@@ -456,13 +456,6 @@ class EffectMetadataEditor(shared.TabData):
         self.icon.deleteLater()
         self.icon = picker
 
-        # Set placeholder based on logged in username
-        try:
-            self.author.setPlaceholderText(os.getlogin().capitalize())
-        except OSError:
-            # Some OSes do not support this. Never mind.
-            pass
-
         # Scripted effects do not configure mapping
         if self.effect_type == effects.TYPE_SCRIPTED:
             self.dialog.findChild(QGroupBox, "MappingGroup").setHidden(True)
