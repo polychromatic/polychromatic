@@ -1115,6 +1115,7 @@ class OpenRazerBackend(Backend):
                         self._persistence.save("effect", "starlightDual")
                     else:
                         raise KeyError("Unknown starlight parameter:" + str(data))
+                    self._persistence.save("speed", starlight_speed)
 
             option = StarlightOption(rzone, zone._persistence)
             option.label = self._("Starlight")
