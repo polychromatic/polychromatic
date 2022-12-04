@@ -4,6 +4,7 @@
 Module for determining where files are located.
 """
 import os
+import sys
 
 
 class Paths():
@@ -82,7 +83,7 @@ class Paths():
                 return directory
 
         print("Cannot locate data directory! Please reinstall the application.")
-        exit(1)
+        sys.exit(1)
 
     @staticmethod
     def get_config_path():

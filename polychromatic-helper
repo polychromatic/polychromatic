@@ -71,7 +71,7 @@ class PolychromaticHelper(PolychromaticBase):
 
         else:
             self.dbg.stdout("This executable is intended to be invoked by another Polychromatic process.", self.dbg.warning)
-            exit(1)
+            sys.exit(1)
 
     def _parse_parameters(self):
         """
@@ -99,7 +99,7 @@ class PolychromaticHelper(PolychromaticBase):
             if git_commit:
                 print("Commit:", git_commit)
             print("Python:", py_version)
-            exit(0)
+            sys.exit(0)
 
         if args.verbose:
             self.dbg.verbose_level = 1
@@ -201,17 +201,17 @@ class PolychromaticHelper(PolychromaticBase):
             device = self.middleman.get_device_by_serial(serial)
             if not device:
                 self.dbg.stdout(f"{serial}: Device not found. Cannot play effect!", self.dbg.error)
-                exit(1)
+                sys.exit(1)
         else:
             device = self.middleman.get_device_by_name(name)
             if not device:
                 self.dbg.stdout(f"{name}: Device not found. Cannot play effect!", self.dbg.error)
-                exit(1)
+                sys.exit(1)
             serial = device.serial
 
         if not device.matrix:
             self.dbg.stdout(f"{device.name}: Custom effects unsupported!", self.dbg.error)
-            exit(1)
+            sys.exit(1)
 
         # Prepare objects (PID, state and effect data)
         process = procpid.ProcessManager(serial)
@@ -238,7 +238,7 @@ class PolychromaticHelper(PolychromaticBase):
             playback.play_sequence()
         else:
             self.dbg.stdout("Unknown effect type!", self.dbg.error)
-            exit(1)
+            sys.exit(1)
 
 
 class EffectPlayback(PolychromaticBase):
@@ -289,7 +289,7 @@ class EffectPlayback(PolychromaticBase):
                 if looped:
                     current = -1
                 else:
-                    exit(0)
+                    sys.exit(0)
 
     def play_scripted(self, json_path):
         fileman = effects.EffectFileManagement()
@@ -299,18 +299,18 @@ class EffectPlayback(PolychromaticBase):
         self.dbg.stdout("Checking script integrity...", self.dbg.action, 1)
         if not handler.get_integrity_check() or handler.get_modules() == None:
             self.dbg.stdout("Refusing to run effect as integrity checks failed.", self.dbg.error)
-            exit(1)
+            sys.exit(1)
         self.dbg.stdout("Script integrity OK!", self.dbg.success, 1)
 
         # Check OS, device, modules and parameters
         self.dbg.stdout("Checking environment...", self.dbg.action, 1)
         if not handler.can_run_on_platform():
             self.dbg.stdout("Script is not designed to run on this operating system.", self.dbg.error)
-            exit(1)
+            sys.exit(1)
 
         if not handler.is_device_compatible(self.device):
             self.dbg.stdout("Script is not compatible this device!", self.dbg.error)
-            exit(1)
+            sys.exit(1)
 
         if not handler.can_find_modules():
             self.dbg.stdout("\n\nThis effect depends on Python libraries which were not found.\nPlease install the packages for them and try again.\n", self.dbg.error)
@@ -321,7 +321,7 @@ class EffectPlayback(PolychromaticBase):
                 if not loaded:
                     self.dbg.stdout("- " + module, self.dbg.error)
             print("\n")
-            exit(1)
+            sys.exit(1)
 
         params = handler.get_parameters()
 
@@ -341,10 +341,10 @@ class EffectPlayback(PolychromaticBase):
         except Exception as e:
             self.dbg.stdout("\nYikes! This effect has crashed!\n", self.dbg.error)
             print(common.get_exception_as_string(e))
-            exit(1)
+            sys.exit(1)
 
         self.dbg.stdout("\nThe script reached the end.\n", self.dbg.success, 1)
-        exit(0)
+        sys.exit(0)
 
     def play_layered(self):
         pass

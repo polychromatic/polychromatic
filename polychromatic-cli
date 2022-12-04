@@ -159,7 +159,7 @@ args = parser.parse_args()
 if not len(sys.argv) > 1:
     dbg.stdout(_("No arguments passed."), dbg.error)
     dbg.stdout(_("Type polychromatic-cli --help to see possible combinations."))
-    exit(0)
+    sys.exit(0)
 
 if args.version:
     app_version, git_commit, py_version = common.get_versions(VERSION)
@@ -167,7 +167,7 @@ if args.version:
     if git_commit:
         print("Commit:", git_commit)
     print("Python:", py_version)
-    exit(0)
+    sys.exit(0)
 
 if args.locale:
     base.reinit_locales(args.locale)
@@ -259,7 +259,7 @@ if args.help:
     dbg.stdout(_("Available Options"))
     dbg.stdout("---------------------------")
     print_columns(rows)
-    exit(0)
+    sys.exit(0)
 
 
 ########################################
@@ -289,7 +289,7 @@ if verbose:
 
 if len(base.middleman.backends) == 0:
     dbg.stdout(_("No backends available."), dbg.error)
-    exit(1)
+    sys.exit(1)
 
 device_list = []
 unsupported_list = []
@@ -300,7 +300,7 @@ if args.name:
         device_list = [device]
     else:
         dbg.stdout("{0} {1}".format(_("Could not find a device with this name:"), args.name), dbg.error)
-        exit(1)
+        sys.exit(1)
 
 elif args.serial:
     device= base.middleman.get_device_by_serial(str(args.serial))
@@ -308,14 +308,14 @@ elif args.serial:
         device_list = [device]
     else:
         dbg.stdout("{0} {1}".format(_("Could not find a device with this serial:"), args.serial), dbg.error)
-        exit(1)
+        sys.exit(1)
 
 elif args.device:
     device_list = base.middleman.get_devices_by_form_factor(args.device)
     if not device_list:
         dbg.stdout("{0} {1}".format(_("No devices found that match this form factor:"), args.device), dbg.error)
         dbg.stdout("{0} {1}".format(_("Avaliable form factors:"), ", ".join(common.FORM_FACTORS)), dbg.error)
-        exit(1)
+        sys.exit(1)
 
 else:
     device_list = base.middleman.get_devices()
@@ -325,7 +325,7 @@ device_list = sorted(device_list, key=lambda device: device.name)
 
 if len(device_list) == 0:
     dbg.stdout(_("No devices connected."), dbg.error)
-    exit(1)
+    sys.exit(1)
 
 ########################################
 # List devices, zones or current status.
@@ -451,7 +451,7 @@ if args.list_options:
 
 # After using a --list-* parameter, exit here as devices won't be manipulated.
 if args.list_devices or args.list_options:
-    exit()
+    sys.exit()
 
 
 ########################################
@@ -470,11 +470,11 @@ if args.dpi:
         for number in dpi_values:
             if int(number) > device.dpi.max:
                 dbg.stdout("{0}: {1} {2} ({3}: {4})".format(device.name, _("DPI too high:"), number, _("Maximum"), str(device.dpi.max)), dbg.error)
-                exit(1)
+                sys.exit(1)
 
             if int(number) < device.dpi.min:
                 dbg.stdout("{0}: {1} {2} ({3}: {4})".format(device.name, _("DPI too low:"), number, _("Minimum"), str(device.dpi.min)), dbg.error)
-                exit(1)
+                sys.exit(1)
 
         if verbose:
             dbg.stdout("{0}: {1}".format(device.name, "Setting DPI to 100".replace("100", ",".join(dpi_values))), dbg.success)
@@ -490,7 +490,7 @@ if args.dpi:
         except Exception as e:
             dbg.stdout(_("{0}: {1}\n{2}".format(device.name, _("Failed to set DPI due to an error:"), common.get_exception_as_string(e))), dbg.error)
 
-    exit(0)
+    sys.exit(0)
 
 
 ########################################
@@ -515,18 +515,18 @@ if args.effect:
 
     if not requested_path:
         dbg.stdout(_("Unable to locate the effect '[]'").replace("[]", args.effect), dbg.error)
-        exit(1)
+        sys.exit(1)
 
     data = effectman.get_item(requested_path)
     if type(data) == int:
         # Error details already printed by the get_item() function
-        exit(1)
+        sys.exit(1)
 
     procmgr = procpid.ProcessManager("helper")
     procmgr.start_component(["--run-fx", requested_path, "--device-name", data["map_device"]])
     if verbose:
         dbg.stdout("Successfully executed request.", dbg.success)
-    exit(0)
+    sys.exit(0)
 
 
 ########################################
@@ -553,11 +553,11 @@ if args.colours:
         apply_colours.append(colour)
 
     if not valid:
-        exit(1)
+        sys.exit(1)
 
 if not apply_option:
     dbg.stdout(_("Please specify --option (-o). Use --list-options (-k) to view available combinations."), dbg.error)
-    exit(1)
+    sys.exit(1)
 
 
 def print_device_error(device, zone, reason, item):
@@ -705,6 +705,6 @@ for device in device_list:
             results.append(_apply_device_options(device, zone.zone_id))
 
 if False in results:
-    exit(1)
+    sys.exit(1)
 
-exit(0)
+sys.exit(0)

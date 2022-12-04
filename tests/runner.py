@@ -29,6 +29,6 @@ if len(sys.argv) > 1:
 result = runner.run(suite)
 
 if result.wasSuccessful():
-    exit(0)
+    sys.exit(0)
 
-exit(1)
+sys.exit(1)

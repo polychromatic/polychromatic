@@ -7,6 +7,7 @@
 import glob
 import os
 import json
+import sys
 
 files = glob.glob("data/**/*.json", recursive=True)
 passed = True
@@ -28,6 +29,6 @@ for path in files:
                 passed = False
 
 if passed:
-    exit(0)
+    sys.exit(0)
 else:
-    exit(1)
+    sys.exit(1)
