@@ -834,20 +834,18 @@ class DevicesTab(shared.TabData):
         layout.setContentsMargins(0, 0, 0, 0)
         shared.clear_layout(layout)
 
-        backend_name = "openrazer"
+        backend_name = "OpenRazer"
 
         def _restart_backend():
-            backend_to_restart_fn = {
-                "openrazer": self.appdata.menubar.openrazer.restart_daemon
-            }
-            backend_to_restart_fn[unknown_device.backend_id]()
+            # OpenRazer is the only backend
+            return self.appdata.menubar.openrazer.restart_daemon()
 
         self.widgets.populate_empty_state(layout,
             common.get_icon("empty", "nodevice"),
             self._("Unrecognised Device"),
-            self._("[] hasn't registered this device.").replace("[]", backend_name) + "\n\n" + \
-                self._("This could indicate an error initialising the backend or an installation problem.") + "\n" + \
-                self._("Alternately, this may happen if this hardware is not yet supported under this version of [].").replace("[]", backend_name),
+            self._("[] hasn't loaded this device.").replace("[]", backend_name) + "\n\n" + \
+                self._("Try refreshing again in a few seconds, or run the troubleshooter to identify the problem.") + "\n" + \
+                self._("If this device is not yet supported under this version of [], this is expected.").replace("[]", backend_name),
             [
                 {
                     "label": "{0} {1}".format(self._("Restart"), backend_name),
