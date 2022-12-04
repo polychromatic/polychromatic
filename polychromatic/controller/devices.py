@@ -19,6 +19,7 @@ import os
 import subprocess
 import time
 import shutil
+import webbrowser
 
 from PyQt5.QtCore import Qt, QSize, QMargins, QThread
 from PyQt5.QtGui import QIcon, QPixmap, QFont
@@ -773,7 +774,7 @@ class DevicesTab(shared.TabData):
                     "label": self._("Online Help"),
                     "icon_folder": "general",
                     "icon_name": "external",
-                    "action": self._open_online_help
+                    "action": self._open_openrazer_help
                 },
                 {
                     "label": self._("Troubleshoot"),
@@ -826,6 +827,10 @@ class DevicesTab(shared.TabData):
                                     info_text=_("The last line of the exception was:") + "\n" + exception.split("\n")[-1],
                                     details=exception)
 
+    def _open_openrazer_help(self):
+        self.appdata.menubar._prompt_on_locale_change(self._("Online Help"))
+        webbrowser.open("https://docs.polychromatic.app/openrazer/#my-device-is-showing-up-as-unrecognised")
+
     def open_unknown_device(self, unknown_device):
         """
         Show guidance on a device that could be controlled, but isn't possible right now.
@@ -863,7 +868,7 @@ class DevicesTab(shared.TabData):
                     "label": self._("Online Help"),
                     "icon_folder": "general",
                     "icon_name": "external",
-                    "action": self._open_online_help
+                    "action": self._open_openrazer_help
                 },
             ])
 
