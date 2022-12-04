@@ -1,7 +1,7 @@
 ![Polychromatic](.github/logo.svg)
 
 An open source RGB lighting management front-end application to customise
-[OpenRazer] peripherals on GNU/Linux. Soon to be vendor agnostic!
+[OpenRazer] peripherals on GNU/Linux.
 
 [![Build Status](https://github.com/polychromatic/polychromatic/actions/workflows/main.yml/badge.svg?branch=master&event=push)](https://github.com/polychromatic/polychromatic/actions?query=branch%3Amaster+event%3Apush)
 [![Current Release](https://img.shields.io/github/release/polychromatic/polychromatic.svg)](https://github.com/polychromatic/polychromatic/releases)
@@ -13,15 +13,15 @@ An open source RGB lighting management front-end application to customise
 
 ## About
 
-Polychromatic is a vendor agnostic front-end for managing lighting, RGB effects
-and some special functionality for keyboards, mice, keypads and just about any
-other gaming peripheral on your GNU/Linux system.
+Polychromatic is a front-end for managing lighting, RGB effects and some special
+functionality for Razer keyboards, mice, keypads. This project has a long-term
+ambition to support peripherals from other brands too.
 
+<!--
 The software aims to make it easy to create and co-ordinate lighting effects
 that work across all compatible hardware, even if you switch to another brand
 also supported by Polychromatic.
 
-<!--
 Presets and triggers enables you to switch your lighting on-the-fly
 to match the application or game that's currently playing.
 -->
@@ -33,19 +33,9 @@ to match the application or game that's currently playing.
 
 ## Device Support
 
-Polychromatic on its own is just a frontend, it needs at least one backend
-installed to provide the actual communication with the hardware.
-
-**Currently, [OpenRazer](https://openrazer.github.io) is the only supported
-backend at the moment.** (Being vendor agnostic is a fairly new objective!)
-
-In future, this project would like to add support for:
-
-* [OpenRGB](https://github.com/polychromatic/polychromatic/issues/340) - supports many brands, including GPU, MB and RAM modules.
-* [phue](https://github.com/polychromatic/polychromatic/issues/296) - for Philips Hue support
-
-> **Note:** Between v0.7.0 and the next version, there will be some major
-> refactoring in the backend classes.
+Polychromatic on its own is just a frontend, it currently needs [OpenRazer]
+installed to provide the actual communication with the hardware. Both projects only
+run on Linux distributions.
 
 [View Device List](https://polychromatic.app/devices/)
 
@@ -69,7 +59,7 @@ Make sure you have installed the [dependencies](https://docs.polychromatic.app/d
 
 Providing all the [dependencies](https://docs.polychromatic.app/dependencies/)
 (including build ones) are installed, you can run the application directly from
-the Git repository folder without installing. Obtained the source code by either
+the Git repository folder without installing. Obtain the source code by either
 running `git clone` or [downloading a copy as a zip folder](https://github.com/polychromatic/polychromatic/archive/refs/heads/master.zip).
 
 Your configuration and cache is isolated into a `savedatadev` directory when
@@ -89,18 +79,19 @@ a couple of pieces that do:
 
     ./scripts/build-styles.sh
     ./scripts/build-locales.sh
+    ./scripts/build-man-pages.sh
 
-These are performed by `polychromatic-controller-dev` and only need to be
+Styles are locales are built by `polychromatic-controller-dev` and only need to be
 performed once, unless there's been code changes.
 
 
 ## Building
 
-If you have custom installation requirements, Polychromatic can be put together
-using [Meson] and [Ninja].
+If you have custom installation requirements or packaging for another distro,
+Polychromatic can be put together using [Meson] and [Ninja].
 
 * You’ll need an implementation of SASS to compile Polychromatic’s Controller Qt styling.
-  `sassc` is widely available, but there’s other implementations that could be used.
+  `sassc` is widely available, but other SASS implementations could be used.
 
 * `intltool` is required for compiling translations.
 
