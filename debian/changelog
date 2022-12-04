@@ -1,3 +1,20 @@
+polychromatic (0.8.0) jammy; urgency=low
+
+  * General: Add scroll options for Razer Basilisk V3.
+  * General: Rework application architecture.
+  * General: Rework integration with OpenRazer.
+  * General: Improve "Apply to All" by detecting capable options.
+  * General: Improve error handling.
+  * Controller: Add device map for Razer Cynosa V2 (Nordic).
+  * Controller: Add device map for Base Station V2 Chroma.
+  * Controller: Add support for DPI sync and per-device DPI stages.
+  * Tray: Show error dialogs when actions fail.
+  * CLI: Show battery info.
+  * Fix missing locales.
+  * Update translations for French; add Polish.
+
+ -- Luke Horwell <code@horwell.me>  Sun, 04 Dec 2022 16:42:04 +0000
+
 polychromatic (0.7.3) focal; urgency=low
 
   * Controller: Add device map for Razer Blade 2021 Advanced
@@ -351,4 +368,3 @@ polychromatic (0.1.0) xenial; urgency=low
   * Initial Release
 
  -- Luke Horwell <code@horwell.me>  Tue, 17 May 2016 14:57:00 +0100
-
