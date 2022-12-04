@@ -620,7 +620,7 @@ class Callback():
         else:
             indicator.open_dialog(_("Communication Error"),
                                   _("While sending this command to [OpenRazer], an error occurred outside of Polychromatic's control.").replace("[OpenRazer]", backend_name) + "\n\n" + \
-                                  _("Try restarting [OpenRazer] and Polychromatic and give it another go. If this error appears again, it's likely this needs fixing in [OpenRazer]."))
+                                  _("Try restarting [OpenRazer] and Polychromatic and give it another go. If this error appears again, it's likely this needs fixing in [OpenRazer].").replace("[OpenRazer]", backend_name))
 
     @staticmethod
     def launch_controller(item, tab=None):
