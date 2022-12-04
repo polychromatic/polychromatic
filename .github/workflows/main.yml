@@ -118,7 +118,7 @@ jobs:
         eval $(sudo dbus-launch --sh-syntax)
         sudo -E ./tests/openrazer/run_daemon.sh "$GITHUB_WORKSPACE/openrazer"
 
-  edge:
+  push_to_preview_ppa:
     name: 'Package / Debian'
     needs: [build, test]
     runs-on: ubuntu-latest
@@ -154,6 +154,6 @@ jobs:
         printf "$BOT_GPG_KEY_BASE64" | base64 --decode > ~/.gnupg/private.key
         gpg --import ~/.gnupg/private.key
         git fetch --unshallow --tags
-        ./scripts/packaging/prepare-edge-ppa.sh ./
+        ./scripts/packaging/prepare-preview-ppa.sh ./
       env:
         BOT_GPG_KEY_BASE64: ${{ secrets.BOT_GPG_KEY_BASE64 }}

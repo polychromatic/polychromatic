@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# This script prepares the Edge PPA containing the latest builds for Ubuntu.
+# This script prepares the Preview PPA containing the latest builds for Ubuntu.
 #
 # Expected to be run by CI system.
 # Parameters: <path to src code>
@@ -17,10 +17,10 @@ function process_release() {
     TEMP_DIR="$(mktemp -d)"
     git clone "$REPO_ROOT" "$TEMP_DIR/src"
     cd "$TEMP_DIR/src"
-    ./scripts/packaging/generate-edge-debian-changelog.py "$release" "$codename"
+    ./scripts/packaging/generate-debian-changelog.py "$release" "$codename"
     debuild -S
     debsign -k 49D6E0C94C9832E63FDBD50BEAF6D6A2C65D1D85 ../*.changes
-    dput ppa:polychromatic/edge ../*.changes
+    dput ppa:polychromatic/preview ../*.changes
 }
 
 process_release "20.04" "focal"     # LTS
