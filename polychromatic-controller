@@ -319,6 +319,13 @@ class MainWindow(QMainWindow):
                                     details=traceback)
             self.unsetCursor()
 
+        def _refresh_tab():
+            index = tabs.currentIndex()
+            # For device tab, force a reload
+            if index == 0:
+                app.middleman.invalidate_cache()
+            return _change_tab()
+
         def _change_tab_proxy(button, index):
             tabs.setCurrentIndex(index)
 
@@ -329,7 +336,7 @@ class MainWindow(QMainWindow):
         tabs.currentChanged.connect(_change_tab)
 
         # Press F5 to refresh tab
-        self.findChild(QAction, "actionRefreshTab").triggered.connect(_change_tab)
+        self.findChild(QAction, "actionRefreshTab").triggered.connect(_refresh_tab)
 
         # Connect custom tab buttons/view menu for tab switching
         tab_buttons[0].clicked.connect(lambda a: _change_tab_proxy(a, 0))
