@@ -642,7 +642,7 @@ class Callback():
         """
         Option clicked to quit the application.
         """
-        sys.exit(0)
+        Gtk.main_quit()
 
     @staticmethod
     def retry_applet(item):
@@ -829,7 +829,7 @@ if __name__ == "__main__":
     def _stop_applet(num=None, frame=None):
         dbg.stdout("Received INT or USR1 signal. Exiting...", dbg.action, 1)
         process.release_component_pid()
-        sys.exit(0)
+        Gtk.main_quit()
 
     signal.signal(signal.SIGINT, _stop_applet)
     signal.signal(signal.SIGUSR1, _restart_applet)
