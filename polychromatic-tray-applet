@@ -424,10 +424,10 @@ class PolychromaticTrayApplet(PolychromaticBase):
                                 can_set_colours = True
 
                 elif isinstance(option, Backend.SliderOption):
-                    indicator.add_menu_item(submenu, self.create_slider_menu(option))
+                    indicator.add_menu_item(submenu, self.create_slider_menu(option, device))
 
                 elif isinstance(option, Backend.ToggleOption):
-                    indicator.add_menu_item(submenu, self.create_toggle_menu(option))
+                    indicator.add_menu_item(submenu, self.create_toggle_menu(option, device))
 
             # Seperator multiple zones if applicable
             if multiple_zones:
@@ -519,7 +519,7 @@ class PolychromaticTrayApplet(PolychromaticBase):
 
         return submenu_item
 
-    def create_slider_menu(self, option):
+    def create_slider_menu(self, option, device):
         """
         Creates the submenu for an option that is a variable slider. This will
         create five calculated intervals (e.g. 0-100 -> 0,25,50,75,100)
@@ -542,11 +542,11 @@ class PolychromaticTrayApplet(PolychromaticBase):
                 icon = self._get_icon("params", str(no))
 
             suffix = option.suffix if no == 1 else option.suffix_plural
-            indicator.create_menu_item(submenu, str(no) + suffix, True, cb.apply_option, [option, int(no), 0, None], icon)
+            indicator.create_menu_item(submenu, str(no) + suffix, True, cb.apply_option, [option, int(no), 0, device], icon)
 
         return submenu_item
 
-    def create_toggle_menu(self, option):
+    def create_toggle_menu(self, option, device):
         """
         Creates the submenu for an option that is either on/off.
         """
@@ -555,8 +555,8 @@ class PolychromaticTrayApplet(PolychromaticBase):
         # Some IDs have submenu icons
         label_enable = option.label_enable if option.label_enable else self._("On")
         label_disable = option.label_disable if option.label_disable else self._("Off")
-        indicator.create_menu_item(submenu, label_enable, True, cb.apply_option, [option, True, 0, None], option.icon_enable)
-        indicator.create_menu_item(submenu, label_disable, True, cb.apply_option, [option, False, 0, None], option.icon_disable)
+        indicator.create_menu_item(submenu, label_enable, True, cb.apply_option, [option, True, 0, device], option.icon_enable)
+        indicator.create_menu_item(submenu, label_disable, True, cb.apply_option, [option, False, 0, device], option.icon_disable)
 
         return submenu_item
 
