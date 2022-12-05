@@ -141,7 +141,7 @@ jobs:
       run: |
         git clean -df
         git checkout .
-        sed -i "s/jammy/UNRELEASED/g" debian/changelog
+        sed -i "s/focal/UNRELEASED/g" debian/changelog
         dpkg-buildpackage -S -us -uc -d
         lintian --no-tag-display-limit
         debuild -b
