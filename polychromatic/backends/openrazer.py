@@ -253,6 +253,9 @@ class OpenRazerBackend(Backend):
         if rdevice.has("game_mode_led"):
             main_zone.options.append(self._get_game_mode_option(rdevice))
 
+        if rdevice.has("keyswitch_optimization"):
+            main_zone.options.append(self._get_keyswitch_option(rdevice))
+
         if rdevice.has("battery"):
             main_zone.options += self._get_battery_options(rdevice)
 
@@ -1466,6 +1469,39 @@ class OpenRazerBackend(Backend):
             options.append(smart_reel)
 
         return options
+
+    def _get_keyswitch_option(self, rdevice):
+        """
+        Additional mouse features supported by Razer Huntsman V2 since OpenRazer 3.4.0.
+        """
+        typing = Backend.Option.Parameter()
+        typing.data = False
+        typing.label = self._("Typing (Increased debounce delay)")
+        typing.default = True
+
+        gaming = Backend.Option.Parameter()
+        gaming.data = True
+        gaming.label = self._("Gaming (Faster triggering)")
+
+        class KeyswitchOptimisation(Backend.MultipleChoiceOption):
+            def __init__(self, rdevice):
+                super().__init__()
+                self._rdevice = rdevice
+
+            def refresh(self):
+                typing.active = rdevice.keyswitch_optimization == False
+                gaming.active = rdevice.keyswitch_optimization == True
+
+            def apply(self, value):
+                self._rdevice.keyswitch_optimization = value == True
+
+        option = KeyswitchOptimisation(rdevice)
+        option.uid = "keyswitch_optimisation"
+        option.label = self._("Optimise for")
+        option.icon = self.get_icon("devices", "keyboard")
+        option.parameters = [typing, gaming]
+        option.refresh()
+        return option
 
     def restart(self):
         """
