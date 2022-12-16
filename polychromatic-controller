@@ -77,8 +77,8 @@ class ApplicationData(PolychromaticBase):
         self.menubar = None
         self.tab_devices = None
         self.tab_effects = None
-        self.tab_presets = None
-        self.tab_triggers = None
+        # self.tab_presets = None
+        # self.tab_triggers = None
         self.ui_preferences = None
 
         # Settings
@@ -96,8 +96,8 @@ class ApplicationData(PolychromaticBase):
         # Menu bar & tabs
         self.tab_devices = controller.devices.DevicesTab(self)
         self.tab_effects = controller.effects.EffectsTab(self)
-        self.tab_presets = controller.presets.PresetsTab(self)
-        self.tab_triggers = controller.triggers.TriggersTab(self)
+        # self.tab_presets = controller.presets.PresetsTab(self)
+        # self.tab_triggers = controller.triggers.TriggersTab(self)
         self.menubar = controller.menubar.MenuBar(self)
 
         # Subwindows
@@ -291,8 +291,8 @@ class MainWindow(QMainWindow):
         tab_objects = [
             app.tab_devices,
             app.tab_effects,
-            app.tab_presets,
-            app.tab_triggers
+            # app.tab_presets,
+            # app.tab_triggers
         ]
 
         def _change_tab():
@@ -379,21 +379,23 @@ class MainWindow(QMainWindow):
                 param_to_index = {
                     "devices": 0,
                     "effects": 1,
-                    "presets": 2,
-                    "triggers": 3,
+                    # "presets": 2,
+                    # "triggers": 3,
                 }
                 landing_tab = param_to_index[args.open]
             except KeyError:
                 # Not applicable
                 pass
 
-        if landing_tab >= 0 and landing_tab <= len(tab_objects):
+        if landing_tab in [0, 1]:
             # Signal triggered upon switching tab in the widget.
             _change_tab_proxy(None, landing_tab)
 
             # Signal may not trigger if the starting page is already 0.
             if landing_tab == 0:
                 _change_tab()
+        else:
+            _change_tab()
 
         # Bind actions to menu bar
         self.findChild(QAction, "actionQuitApp").triggered.connect(self.quit_app)
