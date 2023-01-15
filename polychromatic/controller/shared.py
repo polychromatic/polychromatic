@@ -260,15 +260,18 @@ def get_real_device_image(uri):
 
     if uri.startswith("http://") or uri.startswith("https://"):
         PolychromaticBase.dbg.stdout("Downloading image: " + uri, PolychromaticBase.dbg.action, 1)
-        r = requests.get(uri)
+        try:
+            r = requests.get(uri)
+        except requests.exceptions.ConnectionError as e:
+            PolychromaticBase.dbg.stdout(f"Connection error while downloading: {uri}\n{str(e)}", PolychromaticBase.dbg.warning)
+            return ""
         if r.status_code == 200:
             PolychromaticBase.dbg.stdout("Retrieved image: " + uri, PolychromaticBase.dbg.action, 1)
             with open(cache_path, "wb") as f:
                 f.write(r.content)
             return cache_path
         else:
-            PolychromaticBase.dbg.stdout("Unable to retrieve image: " + uri, PolychromaticBase.dbg.action, 1)
-            PolychromaticBase.dbg.stdout("Got status code " + str(r.status_code), PolychromaticBase.dbg.action, 1)
+            PolychromaticBase.dbg.stdout(f"Connection error while downloading: {uri}\nHTTP Status {str(r.status_code)}", PolychromaticBase.dbg.warning, 1)
     return ""
 
 
