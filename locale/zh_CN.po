@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-04 23:10+0100\n"
-"PO-Revision-Date: 2023-02-05 07:08+0100\n"
+"PO-Revision-Date: 2023-02-05 13:14+0100\n"
 "Last-Translator: UM-Li <um-li@tuta.io>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -47,9 +47,8 @@ msgid "Links"
 msgstr "链接"
 
 #: colour-picker.ui.h:1
-#, fuzzy
 msgid "Select a Colour"
-msgstr "设置原色"
+msgstr "选择颜色"
 
 #. The currently selected colour in the Colour Picker dialog box
 #: colour-picker.ui.h:3
@@ -58,7 +57,6 @@ msgstr "当前颜色"
 
 #. Colour Picker: Tooltip informing the user what the \"Change...\" button will do
 #: colour-picker.ui.h:5
-#, fuzzy
 msgid "Opens the system's colour picker"
 msgstr "打开系统拾色器"
 
@@ -159,7 +157,6 @@ msgid "This device does not support synchronisation to hardware DPI buttons."
 msgstr "该设备不支持同步至硬件 DPI 切换按钮。"
 
 #: device-info.ui.h:1 polychromatic/controller/devices.py:1139
-#, fuzzy
 msgid "Device Information"
 msgstr "设备信息"
 
@@ -173,9 +170,8 @@ msgid "Inspect Matrix"
 msgstr "查看矩阵"
 
 #: dpi-control.ui.h:1
-#, fuzzy
 msgid "DPI Control"
-msgstr "打开控制器"
+msgstr "DPI 控制"
 
 #: dpi-control.ui.h:2
 msgid "Lock X/Y axis"
@@ -186,9 +182,8 @@ msgid "Lock"
 msgstr "锁定"
 
 #: editor.ui.h:1 polychromatic/controller/editor.py:842
-#, fuzzy
 msgid "Effect Editor"
-msgstr "效果"
+msgstr "效果编辑器"
 
 #. The & character is for keyboard navigation (when holding the ALT key)
 #: editor.ui.h:3 main.ui.h:12
@@ -221,13 +216,11 @@ msgid "&Tool"
 msgstr "&工具"
 
 #: editor.ui.h:14
-#, fuzzy
 msgid "Playback"
 msgstr "回放"
 
 #: editor.ui.h:15 polychromatic/controller/devices.py:955
 #: polychromatic/controller/devices.py:1080
-#, fuzzy
 msgid "Colours"
 msgstr "颜色"
 
@@ -316,7 +309,6 @@ msgid "Place this frame a step before the current position"
 msgstr "将该帧移动到当前位置之前"
 
 #: editor.ui.h:45
-#, fuzzy
 msgid "Move Left"
 msgstr "左移"
 
@@ -326,7 +318,6 @@ msgid "Place this frame a step after the current position"
 msgstr "将该帧移动到当前位置之后"
 
 #: editor.ui.h:48
-#, fuzzy
 msgid "Move Right"
 msgstr "右移"
 
@@ -355,7 +346,6 @@ msgid "Play"
 msgstr "播放"
 
 #: editor.ui.h:55
-#, fuzzy
 msgid "Stop playback"
 msgstr "停止"
 
@@ -410,15 +400,13 @@ msgid " fps"
 msgstr " fps"
 
 #: editor.ui.h:71
-#, fuzzy
 msgid "Current Colour"
-msgstr "修改颜色"
+msgstr "当前颜色"
 
 #. Tooltip when hovering over the \"custom\" button
 #: editor.ui.h:73
-#, fuzzy
 msgid "Open System Colour Picker"
-msgstr "打开拾色器"
+msgstr "打开系统拾色器"
 
 #. Status bar hint when hovering over the \"custom\" button
 #: editor.ui.h:75
@@ -438,7 +426,6 @@ msgid "Saturation"
 msgstr "饱和度"
 
 #: editor.ui.h:79
-#, fuzzy
 msgid "Decrease"
 msgstr "减少"
 
@@ -446,15 +433,13 @@ msgstr "减少"
 msgid ""
 "Protip: You can scroll over these buttons to quickly change the "
 "corresponding HSL attribute!"
-msgstr "小提示：在这些按钮上使用鼠标滚轮可以快速修改相应颜色属性！"
+msgstr "提示：在这些按钮上使用鼠标滚轮可以快速修改对应颜色属性！"
 
 #: editor.ui.h:81
-#, fuzzy
 msgid "Increase"
 msgstr "增加"
 
 #: editor.ui.h:82
-#, fuzzy
 msgid "Lightness"
 msgstr "亮度"
 
@@ -548,9 +533,8 @@ msgid "Present the LEDs in a grid"
 msgstr "按网格呈现 LED"
 
 #: editor.ui.h:117
-#, fuzzy
 msgid "Edit Metadata..."
-msgstr "编辑效果..."
+msgstr "编辑元数据..."
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:119
@@ -590,9 +574,8 @@ msgstr "下移效果层"
 
 #. Keyboard Shortcut
 #: editor.ui.h:131
-#, fuzzy
 msgid "Alt+Down"
-msgstr "下"
+msgstr "Alt+下"
 
 #. Menu bar item: To move LEDs in a specific direction
 #: editor.ui.h:133
@@ -611,9 +594,8 @@ msgstr "Ctrl+Shift+左"
 
 #. Menu bar item: To move LEDs in a specific direction
 #: editor.ui.h:139
-#, fuzzy
 msgid "Shift Right"
-msgstr "右"
+msgstr "右移"
 
 #. Appears in the status bar when hovered
 #: editor.ui.h:141
@@ -692,9 +674,8 @@ msgstr "左移帧"
 
 #. Keyboard Shortcut
 #: editor.ui.h:168
-#, fuzzy
 msgid "Alt+Left"
-msgstr "左"
+msgstr "Alt+左"
 
 #: editor.ui.h:169
 msgid "Move Frame Right"
@@ -702,9 +683,8 @@ msgstr "右移帧"
 
 #. Keyboard Shortcut
 #: editor.ui.h:171
-#, fuzzy
 msgid "Alt+Right"
-msgstr "右"
+msgstr "Alt+右"
 
 #: editor.ui.h:172 main.ui.h:23 polychromatic/controller/devices.py:774
 #: polychromatic/controller/devices.py:831
@@ -736,9 +716,8 @@ msgid "About"
 msgstr "关于"
 
 #: editor.ui.h:178
-#, fuzzy
 msgid "Edit Triggers..."
-msgstr "编辑颜色..."
+msgstr "编辑扳机键..."
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:180
@@ -787,13 +766,12 @@ msgstr "右"
 #. Keyboard Shortcut
 #: editor.ui.h:192
 msgid "Home"
-msgstr "主页"
+msgstr "Home"
 
 #. Keyboard Shortcut
 #: editor.ui.h:194
-#, fuzzy
 msgid "End"
-msgstr "启用"
+msgstr "End"
 
 #: editor.ui.h:195
 msgid "Show Key Labels"
@@ -830,19 +808,16 @@ msgid "Decrease Saturation"
 msgstr "降低饱和度"
 
 #: editor.ui.h:203
-#, fuzzy
 msgid "Increase Lightness"
-msgstr "亮度"
+msgstr "提高亮度"
 
 #: editor.ui.h:204
-#, fuzzy
 msgid "Decrease Lightness"
-msgstr "亮度"
+msgstr "降低亮度"
 
 #: editor.ui.h:205
-#, fuzzy
 msgid "Edit Saved Colours"
-msgstr "保存的颜色"
+msgstr "编辑保存的颜色"
 
 #: editor.ui.h:206 polychromatic/controller/editor.py:1465
 msgid "Modify or reorder your saved colours"
@@ -853,9 +828,8 @@ msgid "Edit Metadata"
 msgstr "编辑元数据"
 
 #: effect-metadata-editor.ui.h:2
-#, fuzzy
 msgid "Effect Details"
-msgstr "效果"
+msgstr "效果细节"
 
 #: effect-metadata-editor.ui.h:3 polychromatic/controller/devices.py:1018
 msgid "Name"
@@ -874,19 +848,16 @@ msgid "Summary"
 msgstr "简介"
 
 #: effect-metadata-editor.ui.h:7 polychromatic/controller/devices.py:1017
-#, fuzzy
 msgid "Hardware"
-msgstr "映射硬件"
+msgstr "硬件"
 
 #: effect-metadata-editor.ui.h:8 procviewer.ui.h:6
-#, fuzzy
 msgid "Device"
 msgstr "设备"
 
 #: effect-metadata-editor.ui.h:9
-#, fuzzy
 msgid "Mapping"
-msgstr "按键对应"
+msgstr "按键绑定"
 
 #: effect-metadata-editor.ui.h:10
 msgid "Use a graphic resembling this device:"
@@ -908,11 +879,10 @@ msgstr "请注意，并非所有桌面环境都支持 GIF 动图。"
 #: icon-picker.ui.h:3 polychromatic/controller/procviewer.py:163
 #: preferences.ui.h:37
 msgid "Tray Applet"
-msgstr "托盘小程序"
+msgstr "托盘程序"
 
 #. Icon Picker: Tab name for built-in graphics
 #: icon-picker.ui.h:5
-#, fuzzy
 msgid "Emblems"
 msgstr "徵标"
 
@@ -949,9 +919,8 @@ msgid "Please wait..."
 msgstr "请稍候..."
 
 #: main.ui.h:1
-#, fuzzy
 msgid "Polychromatic"
-msgstr "Polychromatic 控制器"
+msgstr "Polychromatic"
 
 #: main.ui.h:2 polychromatic/controller/devices.py:67 preferences.ui.h:13
 msgid "Devices"
@@ -967,7 +936,6 @@ msgid "Presets"
 msgstr "预设"
 
 #: main.ui.h:5 preferences.ui.h:27
-#, fuzzy
 msgid "Triggers"
 msgstr "扳机键"
 
@@ -1031,9 +999,8 @@ msgid "New Preset from Current Devices..."
 msgstr "从当前设备新建预设..."
 
 #: main.ui.h:37
-#, fuzzy
 msgid "Restart Tray Applet"
-msgstr "托盘小程序"
+msgstr "重启托盘程序"
 
 #: main.ui.h:38
 msgid "View Background Tasks"
@@ -1062,9 +1029,8 @@ msgid "Refresh"
 msgstr "刷新"
 
 #: main.ui.h:45
-#, fuzzy
 msgid "Import Effect..."
-msgstr "导入..."
+msgstr "导入效果..."
 
 #: main.ui.h:46 polychromatic/controller/menubar.py:187
 msgid "Force Refresh"
@@ -1132,9 +1098,8 @@ msgstr "下列设置只对 OpenRazer 守护程序生效，不受本应用支持�
 
 #. Checkbox for configuring OpenRazer
 #: openrazer-config.ui.h:6
-#, fuzzy
 msgid "Enable verbose logging"
-msgstr "非常冗长（用于调试）"
+msgstr "启用冗长日志模式"
 
 #. Checkbox for configuring OpenRazer
 #: openrazer-config.ui.h:8
@@ -1211,28 +1176,24 @@ msgid "Hex Ring"
 msgstr "六角环"
 
 #: polychromatic/backends/openrazer.py:497
-#, fuzzy
 msgid "Laptop Lid"
-msgstr "笔记本后盖"
+msgstr "笔记本盖子"
 
 #: polychromatic/backends/openrazer.py:507
 msgid "Backlight"
 msgstr "背光"
 
 #: polychromatic/backends/openrazer.py:509
-#, fuzzy
 msgid "Charging"
-msgstr "充电时"
+msgstr "正在充电"
 
 #: polychromatic/backends/openrazer.py:511
-#, fuzzy
 msgid "Fast Charging"
-msgstr "快速充电时"
+msgstr "正在快速充电"
 
 #: polychromatic/backends/openrazer.py:513
-#, fuzzy
 msgid "Fully Charging"
-msgstr "充满时"
+msgstr "已充满"
 
 #: polychromatic/backends/openrazer.py:685
 #: polychromatic/backends/openrazer.py:704
@@ -1260,7 +1221,7 @@ msgstr "无效果"
 #: polychromatic/backends/openrazer.py:774
 #: polychromatic/controller/editor.py:853
 msgid "Spectrum"
-msgstr "光谱效果"
+msgstr "光谱循环"
 
 #: polychromatic/backends/openrazer.py:798
 #: polychromatic/controller/editor.py:852
@@ -1301,27 +1262,26 @@ msgstr "单色"
 
 #: polychromatic/backends/openrazer.py:905
 msgid "Reactive"
-msgstr "反馈效果"
+msgstr "响应效果"
 
 #: polychromatic/backends/openrazer.py:910
 msgid "Fast (0.5s)"
 msgstr "较快（0.5 秒）"
 
 #: polychromatic/backends/openrazer.py:915
-#, fuzzy
 msgid "Medium (1s)"
-msgstr "中"
+msgstr "中速（1 秒）"
 
 #: polychromatic/backends/openrazer.py:920
 msgid "Slow (1.5s)"
 msgstr "较慢（1.5 秒）"
 
 #: polychromatic/backends/openrazer.py:924
-#, fuzzy
 msgid "Very Slow (2s)"
-msgstr "很慢"
+msgstr "很慢（2 秒）"
 
 #: polychromatic/backends/openrazer.py:956
+#, fuzzy
 msgid "Blinking"
 msgstr "闪烁效果"
 
@@ -1329,7 +1289,7 @@ msgstr "闪烁效果"
 #: polychromatic/backends/openrazer.py:1226
 #: polychromatic/controller/editor.py:849
 msgid "Static"
-msgstr "静态颜色"
+msgstr "静态效果"
 
 #: polychromatic/backends/openrazer.py:1035 tests/internals.py:39
 msgid "Breath"
@@ -1361,6 +1321,7 @@ msgid "Slow"
 msgstr "慢"
 
 #: polychromatic/backends/openrazer.py:1222
+#, fuzzy
 msgid "Pulsate"
 msgstr "脉冲效果"
 
@@ -1399,15 +1360,15 @@ msgstr "在该电量时启动节电模式"
 #: polychromatic/backends/openrazer.py:1404
 #, fuzzy
 msgid "Tactile"
-msgstr "反馈效果"
+msgstr "逐节滚动"
 
 #: polychromatic/backends/openrazer.py:1409
 msgid "Free Spin"
-msgstr ""
+msgstr "自由滚动"
 
 #: polychromatic/backends/openrazer.py:1425
 msgid "Scroll Mode"
-msgstr "滚动模式"
+msgstr "滚轮模式"
 
 #: polychromatic/backends/openrazer.py:1445
 msgid "Scroll Acceleration"
@@ -1419,23 +1380,24 @@ msgstr "启用滚轮加速"
 
 #: polychromatic/backends/openrazer.py:1465
 msgid "Smart Reel"
-msgstr ""
+msgstr "智能滚动"
 
 #: polychromatic/backends/openrazer.py:1467
 msgid "Enable smart reel"
-msgstr ""
+msgstr "启用智能滚动"
 
 #: polychromatic/backends/openrazer.py:1479
 msgid "Typing (Increased debounce delay)"
-msgstr ""
+msgstr "打字模式（增加回弹延迟）"
 
 #: polychromatic/backends/openrazer.py:1484
 msgid "Gaming (Faster triggering)"
-msgstr ""
+msgstr "游戏模式（快速触发）"
 
 #: polychromatic/backends/openrazer.py:1500
+#, fuzzy
 msgid "Optimise for"
-msgstr ""
+msgstr "优化模式"
 
 #: polychromatic/common.py:129
 msgid "USB Accessory"
@@ -1490,9 +1452,8 @@ msgid "Stand"
 msgstr "基座"
 
 #: polychromatic/common.py:142
-#, fuzzy
 msgid "Unrecognised"
-msgstr "无法识别"
+msgstr "未识别"
 
 #: polychromatic/common.py:162 polychromatic/preferences.py:449
 msgid "Green"
@@ -1513,38 +1474,33 @@ msgstr "模式"
 
 #: polychromatic/controller/devices.py:583
 msgid "Primary Colour"
-msgstr "主颜色"
+msgstr "主要颜色"
 
 #: polychromatic/controller/devices.py:584
-#, fuzzy
 msgid "Secondary Colour"
-msgstr "设置原色"
+msgstr "次要颜色"
 
 #: polychromatic/controller/devices.py:585
-#, fuzzy
 msgid "Tertiary Colour"
-msgstr "设置原色"
+msgstr "第三颜色"
 
 #: polychromatic/controller/devices.py:591
-#, fuzzy
 msgid "Colour 4"
-msgstr "颜色"
+msgstr "第四颜色"
 
 #: polychromatic/controller/devices.py:602
-#, fuzzy
 msgid "Change []"
-msgstr "修改颜色"
+msgstr "修改 []"
 
 #: polychromatic/controller/devices.py:617
 msgid "Request Failed"
 msgstr "请求失败"
 
 #: polychromatic/controller/devices.py:618
-#, fuzzy
 msgid ""
 "There's a fault with Polychromatic's integration with [OpenRazer] for this "
 "device or option."
-msgstr "Polychromatic 未能就该设备或选项与 [OpenRazer] 同步。"
+msgstr "Polychromatic 在该设备或选项上无法与 [OpenRazer] 同步。"
 
 #: polychromatic/controller/devices.py:619
 msgid ""
@@ -1573,9 +1529,8 @@ msgstr ""
 "在 [OpenRazer] 中修复。"
 
 #: polychromatic/controller/devices.py:752
-#, fuzzy
 msgid "No devices connected"
-msgstr "无设备"
+msgstr "没有已连接设备"
 
 #: polychromatic/controller/devices.py:753
 msgid "No backends loaded"
@@ -1617,9 +1572,8 @@ msgid "The last line of the exception was:"
 msgstr "发生异常的最后一行："
 
 #: polychromatic/controller/devices.py:850
-#, fuzzy
 msgid "Unrecognised Device"
-msgstr "无法识别"
+msgstr "未识别的设备"
 
 #: polychromatic/controller/devices.py:851
 msgid "[] hasn't loaded this device."
@@ -1638,9 +1592,8 @@ msgid ""
 msgstr "如果现有版本的 [] 不支持该设备则为正常现象。"
 
 #: polychromatic/controller/devices.py:856
-#, fuzzy
 msgid "Restart"
-msgstr "正在重新启动..."
+msgstr "重新启动"
 
 #: polychromatic/controller/devices.py:886
 msgid "Error Details"
@@ -1693,12 +1646,12 @@ msgstr "自定义效果"
 #: polychromatic/controller/devices.py:1035
 #, fuzzy
 msgid "Supported"
-msgstr "是否支持？"
+msgstr "支持"
 
 #: polychromatic/controller/devices.py:1038
 #: polychromatic/controller/effects.py:582
 msgid "1 row"
-msgstr "1 排"
+msgstr "1 行"
 
 #: polychromatic/controller/devices.py:1038
 #: polychromatic/controller/effects.py:582
@@ -1713,7 +1666,7 @@ msgstr "1 列"
 #: polychromatic/controller/devices.py:1039
 #: polychromatic/controller/effects.py:583
 msgid "2 columns"
-msgstr "2 排"
+msgstr "2 列"
 
 #: polychromatic/controller/devices.py:1040
 msgid "Matrix Dimensions"
@@ -1755,12 +1708,10 @@ msgid "Type"
 msgstr "类型"
 
 #: polychromatic/controller/devices.py:1056
-#, fuzzy
 msgid "Removable"
 msgstr "可插拔"
 
 #: polychromatic/controller/devices.py:1056
-#, fuzzy
 msgid "Rechargable"
 msgstr "可充电"
 
@@ -1796,8 +1747,9 @@ msgid "Maximum"
 msgstr "最大值"
 
 #: polychromatic/controller/devices.py:1083
+#, fuzzy
 msgid "Input 0"
-msgstr ""
+msgstr "输入 0"
 
 #: polychromatic/controller/devices.py:1087
 msgid "Zones"
@@ -1805,15 +1757,15 @@ msgstr "区域"
 
 #: polychromatic/controller/devices.py:1100
 msgid "Toggle"
-msgstr "切换"
+msgstr "切换按钮"
 
 #: polychromatic/controller/devices.py:1102
 msgid "Slider"
-msgstr ""
+msgstr "滑块"
 
 #: polychromatic/controller/devices.py:1104
 msgid "Dropdown"
-msgstr ""
+msgstr "下拉菜单"
 
 #: polychromatic/controller/devices.py:1106
 msgid "Option ID"
@@ -1821,9 +1773,8 @@ msgstr "选项 ID"
 
 #: polychromatic/controller/devices.py:1108
 #: polychromatic/controller/devices.py:1115
-#, fuzzy
 msgid "Active"
-msgstr "反馈效果"
+msgstr "激活"
 
 #: polychromatic/controller/devices.py:1111
 msgid "Parameters"
@@ -1987,7 +1938,7 @@ msgstr "该效果已被修改。您想保存更改吗？"
 
 #: polychromatic/controller/editor.py:850
 msgid "Gradient"
-msgstr ""
+msgstr "渐变"
 
 #: polychromatic/controller/editor.py:851
 msgid "Pulsing"
@@ -1995,7 +1946,7 @@ msgstr "呼吸"
 
 #: polychromatic/controller/editor.py:854
 msgid "Cycling"
-msgstr ""
+msgstr "循环"
 
 #: polychromatic/controller/editor.py:855
 msgid "Run Scripted Effect"
@@ -2050,7 +2001,7 @@ msgstr "要永久删除该帧吗？该操作不能撤销。"
 msgid ""
 "Tip: This confirmation can be suppressed via the Editor tab under "
 "Preferences."
-msgstr "注：该确认提示可以在应用设置的“编辑器”选项卡关闭。"
+msgstr "注：该提示可以在应用设置的“编辑器”标签页关闭。"
 
 #: polychromatic/controller/editor.py:1605
 msgid "Choose Brush Colour"
@@ -2213,7 +2164,6 @@ msgid "Restarting the backend/application..."
 msgstr "正在重启后端 / 应用..."
 
 #: polychromatic/controller/menubar.py:416
-#, fuzzy
 msgid "Reload application?"
 msgstr "重新加载应用吗？"
 
@@ -2303,7 +2253,6 @@ msgid "Drag and drop icons here, or add them by pressing the Import button."
 msgstr "将图标拖动到这里，或者按导入按钮添加。"
 
 #: polychromatic/controller/shared.py:1304
-#, fuzzy
 msgid "No icons found!"
 msgstr "没有发现图标！"
 
@@ -2455,9 +2404,8 @@ msgid "Blue"
 msgstr "蓝色"
 
 #: polychromatic/preferences.py:451
-#, fuzzy
 msgid "Aqua"
-msgstr "水绿"
+msgstr "青色"
 
 #: polychromatic/preferences.py:452
 msgid "Orange"
@@ -2667,13 +2615,12 @@ msgid "Unable to check because OpenRazer's modules are not loaded."
 msgstr "OpenRazer 内核模块没有加载，无法检测。"
 
 #: polychromatic/troubleshoot/openrazer.py:292
-#, fuzzy
 msgid ""
 "Permissions for OpenRazer's device files (/sys/bus/hid/drivers) are not set "
 "correctly. They should be owned as root:plugdev (owner/group)"
 msgstr ""
-"OpenRazer 的设备文件（/sys/bus/hid/drivers）权限不正确，这些文件的所有者应为 "
-"root:plugdev （所有者 / 用户组）"
+"OpenRazer 的设备文件（/sys/bus/hid/drivers）权限不正确，这些文件应由 root:"
+"plugdev（所有者 / 用户组）所有。"
 
 #: polychromatic/troubleshoot/openrazer.py:293
 msgid ""
@@ -2759,7 +2706,6 @@ msgid "Latest version: 0.0.0"
 msgstr "最新版本：0.0.0"
 
 #: preferences.ui.h:2
-#, fuzzy
 msgid "Controller"
 msgstr "打开控制器"
 
@@ -2868,7 +2814,6 @@ msgid "GTK Status Icon (Legacy)"
 msgstr "初始化 GTK 状态图标（备用）"
 
 #: preferences.ui.h:44
-#, fuzzy
 msgid "Ayatana Indicators"
 msgstr "Ayatana 计数器"
 
@@ -2892,7 +2837,7 @@ msgstr ""
 
 #: preferences.ui.h:51
 msgid "Start the tray applet when I log on"
-msgstr "登录时启动托盘小程序"
+msgstr "登录时启动托盘程序"
 
 #. Text appears underneath a checkbox in the preferences dialog
 #: preferences.ui.h:53
@@ -2908,9 +2853,8 @@ msgid "DPI Stages"
 msgstr "DPI 阶段"
 
 #: preferences.ui.h:60
-#, fuzzy
 msgid "Now stored per-device: Click \"Edit\" for the DPI in the Devices tab."
-msgstr "已按设备保存，请在设备标签页按“编辑”修改 DPI。"
+msgstr "已按设备保存，请在“设备”标签页按“编辑”进入 DPI 设置。"
 
 #: preferences.ui.h:61
 msgid "Editor"
@@ -2929,9 +2873,8 @@ msgid "Hide key labels"
 msgstr "隐藏按键标志"
 
 #: preferences.ui.h:65
-#, fuzzy
 msgid "Show shades for my saved colours"
-msgstr "为保存的颜色显示明暗变化"
+msgstr "为保存的颜色显示明暗过渡"
 
 #: preferences.ui.h:66
 msgid "Preview effect on the physical hardware"
@@ -2979,161 +2922,3 @@ msgstr "检测"
 #: troubleshooter.ui.h:8
 msgid "Copy to Clipboard"
 msgstr "复制到剪贴板"
-
-#~ msgid "Mug"
-#~ msgstr "杯架"
-
-#~ msgid "External Graphics Enclosure"
-#~ msgstr "机箱"
-
-#~ msgid "Mug Holder"
-#~ msgstr "雷蛇杯架"
-
-#~ msgid "Main"
-#~ msgstr "主要"
-
-#~ msgid "Profile"
-#~ msgstr "信息"
-
-#~ msgid "Try one..."
-#~ msgstr "尝试一个..."
-
-#~ msgid "US"
-#~ msgstr "美国"
-
-#~ msgid "Brazilian Portuguese"
-#~ msgstr "葡萄牙语"
-
-#~ msgid "British"
-#~ msgstr "英语"
-
-#~ msgid "Profiles"
-#~ msgstr "信息"
-
-#~ msgid "Schedule"
-#~ msgstr "计划"
-
-#~ msgid "Learn more"
-#~ msgstr "查看更多"
-
-#~ msgid "Wave Direction"
-#~ msgstr "波浪方向"
-
-#~ msgid "Anticlockwise"
-#~ msgstr "逆时针"
-
-#~ msgid "Reactive Speed"
-#~ msgstr "反应速度"
-
-#~ msgid "Breath Type"
-#~ msgstr "呼吸方式"
-
-#~ msgid "Ripple Type"
-#~ msgstr "涟漪方式"
-
-#~ msgid "Retry"
-#~ msgstr "重试"
-
-#~ msgid "Macro Support"
-#~ msgstr "宏支持"
-
-#~ msgid "Daemon Capability"
-#~ msgstr "守护程序功能"
-
-#~ msgid "Description"
-#~ msgstr "描述"
-
-#~ msgid "Connected Devices"
-#~ msgstr "已连接设备"
-
-#~ msgid ""
-#~ "Some devices could not be applied as they do not support this effect."
-#~ msgstr "由于某些设备不支持此效果，因此无法应用."
-
-#~ msgid "General"
-#~ msgstr "常规"
-
-#~ msgid "Select an effect to begin."
-#~ msgstr "选择一种效果以开始."
-
-#~ msgid "Choose an image or .desktop file from your computer."
-#~ msgstr "选择图像或.desktop文件."
-
-#~ msgid "Incompatible Save Data"
-#~ msgstr "不兼容的保存数据"
-
-#~ msgid ""
-#~ "Polychromatic's configuration (including effects and profiles) has "
-#~ "previously been saved in a newer version of this software."
-#~ msgstr ""
-#~ "Polychromatic的配置（包括效果和配置文件）先前已保存在该软件的较新版本中."
-
-#~ msgid ""
-#~ "Running older versions of the software could corrupt your save data or "
-#~ "cause instability."
-#~ msgstr "运行较旧版本的软件可能会破坏您的保存数据或导致不稳定."
-
-#~ msgid "Application Version:"
-#~ msgstr "软件版本："
-
-#~ msgid ""
-#~ "Consider updating Polychromatic, or reset the application by deleting "
-#~ "[path]"
-#~ msgstr "考虑更新Polychromatic，或通过删除 [path] 以重置应用程序"
-
-#~ msgid "Optional arguments"
-#~ msgstr "可选参数"
-
-#~ msgid "Show this help message and exit"
-#~ msgstr "显示帮助消息并退出"
-
-#~ msgid "Print progran version and exit"
-#~ msgstr "显示程序版本并退出"
-
-#~ msgid "Be verbose to stdout"
-#~ msgstr "详细到标准输出"
-
-#~ msgid "Force a specific locale, e.g. de_DE"
-#~ msgstr "强制本地设定，例如 de_DE"
-
-#~ msgid "Verbose Enabled"
-#~ msgstr "启用详细信息"
-
-#~ msgid "Debug Verbose Enabled"
-#~ msgstr "启用详细调试"
-
-#~ msgid "Initialised AppIndicator."
-#~ msgstr "初始化AppIndicator."
-
-#~ msgid "Unknown command: openrazer-daemon"
-#~ msgstr "未知命令：openrazer-daemon"
-
-#~ msgid "Exception:"
-#~ msgstr "例外："
-
-#~ msgid "Try again"
-#~ msgstr "重试"
-
-#~ msgid "(Not supported by all devices)"
-#~ msgstr "（并非所有设备都支持）"
-
-#~ msgid "Very Fast"
-#~ msgstr "非常快"
-
-#~ msgid "Single Colour"
-#~ msgstr "单色"
-
-#~ msgid "125 Hz (8ms)"
-#~ msgstr "125 Hz (8ms)"
-
-#~ msgid "500 Hz (2ms)"
-#~ msgstr "500 Hz (2ms)"
-
-#~ msgid "1000 Hz (1ms)"
-#~ msgstr "1000 Hz (1ms)"
-
-#~ msgid "Force GTK Status Icon instead of AppIndicator"
-#~ msgstr "强制使用GTK状态图标代替AppIndicator"
-
-#~ msgid "Verbose enabled"
-#~ msgstr "详细启用"
