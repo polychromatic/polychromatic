@@ -282,7 +282,7 @@ class OpenRazerPreferences(shared.TabData):
 
         self.conf_path = None
         try:
-            self.conf_path = "{0}/.config/openrazer/razer.conf".format(os.environ["XDG_CONFIG_HOME"])
+            self.conf_path = "{0}/openrazer/razer.conf".format(os.environ["XDG_CONFIG_HOME"])
         except KeyError:
             self.conf_path = "{0}/.config/openrazer/razer.conf".format(os.environ.get("HOME", "~"))
 
