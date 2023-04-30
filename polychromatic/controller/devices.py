@@ -4,6 +4,7 @@
 This module controls the 'Devices' tab of the Controller GUI.
 """
 
+import json
 from polychromatic.procpid import DeviceSoftwareState
 from .. import bulkapply
 from .. import common
@@ -102,7 +103,17 @@ class DevicesTab(shared.TabData):
 
         devices_branch.sortChildren(0, Qt.AscendingOrder)
 
+        # For unknown devices, check support status using local index
+        device_index = json.loads(open(f"{self.paths.data_dir}/devices/openrazer.json", "r").read())
+        supported_pids = device_index.keys()
+
         for device in unknown_device_list:
+            vidpid = f"{device.vid}:{device.pid}"
+
+            if vidpid in supported_pids:
+                device.name = device_index[vidpid].get("name", device.name)
+                device.supported = True
+
             item = QTreeWidgetItem()
             item.setText(0, device.name)
             item.setIcon(0, QIcon(device.form_factor["icon"]))
@@ -774,7 +785,7 @@ class DevicesTab(shared.TabData):
                     "label": self._("Online Help"),
                     "icon_folder": "general",
                     "icon_name": "external",
-                    "action": self._open_openrazer_help
+                    "action": self._open_openrazer_help_unrecognised
                 },
                 {
                     "label": self._("Troubleshoot"),
@@ -827,11 +838,15 @@ class DevicesTab(shared.TabData):
                                     info_text=_("The last line of the exception was:") + "\n" + exception.split("\n")[-1],
                                     details=exception)
 
-    def _open_openrazer_help(self):
+    def _open_openrazer_help_unrecognised(self):
         self.appdata.menubar._prompt_on_locale_change(self._("Online Help"))
         webbrowser.open("https://docs.polychromatic.app/openrazer/#my-device-is-showing-up-as-unrecognised")
 
-    def open_unknown_device(self, unknown_device):
+    def _open_openrazer_help_unsupported(self):
+        self.appdata.menubar._prompt_on_locale_change(self._("Online Help"))
+        webbrowser.open("https://docs.polychromatic.app/openrazer/#my-device-isnt-listed-as-supported-what-do-i-do")
+
+    def open_unknown_device(self, device):
         """
         Show guidance on a device that could be controlled, but isn't possible right now.
         """
@@ -845,13 +860,11 @@ class DevicesTab(shared.TabData):
             # OpenRazer is the only backend
             return self.appdata.menubar.openrazer.restart_daemon()
 
-        self.widgets.populate_empty_state(layout,
-            common.get_icon("empty", "nodevice"),
-            self._("Unrecognised Device"),
-            self._("[] hasn't loaded this device.").replace("[]", backend_name) + "\n\n" + \
-                self._("Try refreshing again in a few seconds, or run the troubleshooter to identify the problem.") + "\n" + \
-                self._("If this device is not yet supported under this version of [], this is expected.").replace("[]", backend_name),
-            [
+        if device.supported:
+            image = common.get_icon("empty", "openrazer")
+            title = device.name
+            desc = self._("This supported device wasn't detected by the OpenRazer daemon (v1.0.0)").replace("1.0.0", self.middleman.get_backend("openrazer").version)
+            buttons = [
                 {
                     "label": "{0} {1}".format(self._("Restart"), backend_name),
                     "icon_folder": "general",
@@ -868,9 +881,29 @@ class DevicesTab(shared.TabData):
                     "label": self._("Online Help"),
                     "icon_folder": "general",
                     "icon_name": "external",
-                    "action": self._open_openrazer_help
+                    "action": self._open_openrazer_help_unrecognised
                 },
-            ])
+            ]
+        else:
+            image = common.get_icon("empty", "nodevice")
+            title = self._("Unsupported Device") + f": {device.vid}:{device.pid}"
+            desc = self._("This device needs support adding to OpenRazer before it can be used in Polychromatic.")
+            buttons = [
+                {
+                    "label": self._("Troubleshoot"),
+                    "icon_folder": "general",
+                    "icon_name": "preferences",
+                    "action": self._start_troubleshooter
+                },
+                {
+                    "label": self._("Online Help"),
+                    "icon_folder": "general",
+                    "icon_name": "external",
+                    "action": self._open_openrazer_help_unsupported
+                }
+            ]
+
+        self.widgets.populate_empty_state(layout, image, title, desc, buttons)
 
     def open_bad_device(self, msg1, msg2, exception):
         """
