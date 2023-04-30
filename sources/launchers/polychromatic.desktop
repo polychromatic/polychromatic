@@ -3,9 +3,11 @@ Type=Application
 Version=1.0
 Name=Polychromatic
 GenericName=Device Manager for RGB Lighting
+GenericName[de]=Geräte-Verwaltung für RGB-Beleuchtung
 GenericName[fr]=Gestionnaire d'éclairage RGB des périphériques
 GenericName[nl]=Beheerder voor apparaten met rgb-verlighting
 Comment=Configure connected lighting peripherals
+Comment[de]=Konfiguriere verbundene Beleuchtungsperipherie
 Comment[fr]=Configuration lumineuse des périphériques
 Comment[nl]=Stel verbonden randapparaten met verlichting in
 Icon=polychromatic
@@ -19,6 +21,7 @@ StartupWMClass=polychromatic-controller
 
 [Desktop Action devices]
 Name=Configure Devices
+Name[de]=Konfiguriere Geräte
 Name[fr]=Configurer les périphériques
 Name[nl]=Apparaten instellen
 Icon=/usr/share/polychromatic/img/general/controller.svg
@@ -26,6 +29,7 @@ Exec=polychromatic-controller --open devices
 
 [Desktop Action effects]
 Name=Edit Effects
+Name[de]=Bearbeite Effekte
 Name[fr]=Modifier les effets
 Name[nl]=Effecten bewerken
 Icon=/usr/share/polychromatic/img/general/effects.svg
@@ -47,6 +51,7 @@ Exec=polychromatic-controller --open effects
 
 [Desktop Action tray-applet]
 Name=Tray Applet
+Name[de]=Tray-Anwendung
 Name[fr]=Applet de la zone de notification
 Name[nl]=Systeemvakpictogram
 Icon=/usr/share/polychromatic/img/general/tray-applet.svg
