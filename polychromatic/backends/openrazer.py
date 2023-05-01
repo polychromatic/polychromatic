@@ -113,9 +113,10 @@ class OpenRazerBackend(Backend):
         unreg_pids = []
 
         # Get VIDs and PIDs from daemon to exclude later.
-        for rdevice in self.devman.devices:
-            vidpid = self._get_device_vid_pid(rdevice)
-            reg_pids.append(vidpid.get("pid"))
+        if self.devman:
+            for rdevice in self.devman.devices:
+                vidpid = self._get_device_vid_pid(rdevice)
+                reg_pids.append(vidpid.get("pid"))
 
         # Determine Razer PIDs that are not listed in the daemon
         for pid in all_usb_pids:
@@ -144,7 +145,10 @@ class OpenRazerBackend(Backend):
         See Backend.get_devices() and Backend.DeviceItem()
         """
         devices = []
-        self._reload_device_manager()
+        try:
+            self._reload_device_manager()
+        except Exception as e:
+            return []
         for rdevice in self.devman.devices:
             devices.append(self._get_device(rdevice))
         return devices
