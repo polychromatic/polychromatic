@@ -146,6 +146,9 @@ class Backend(BackendBase):
             # that identifies this device. Pass "unrecognised" to function if unknown.
             self.form_factor = {}
 
+            # Indicates whether a device is simply unusable due to an error or unsupported
+            self.supported = False
+
     def get_unsupported_devices(self):
         """
         Returns a list of UnknownDeviceItem(), or empty list.

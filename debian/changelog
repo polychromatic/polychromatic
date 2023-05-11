@@ -1,3 +1,24 @@
+polychromatic (0.8.1-2) focal; urgency=low
+
+  * Add missing data directory.
+
+ -- Luke Horwell <code@horwell.me>  Tue, 02 May 2023 10:03:14 +0100
+
+polychromatic (0.8.1) focal; urgency=low
+
+  * Controller: Add device map for Huntsman Tournament Edition.
+  * Controller: Add device map for Ornata V2 (US)
+  * Controller: Improve messaging for unrecognised devices.
+  * Controller: Fix error caused by unreliable internet connection.
+  * Controller: Fix placeholder text colour in metadata dialog.
+  * Controller: Fix XDG_CONFIG_HOME path for OpenRazer.
+  * Controller: Fix missing translations for spinbox tooltips.
+  * Controller: Fix tab error when OpenRazer daemon becomes faulty.
+  * OpenRazer: Add keyswitch optimisation option.
+  * Update translations for Simplified Chinese and German.
+
+ -- Luke Horwell <code@horwell.me>  Mon, 01 May 2023 17:59:48 +0100
+
 polychromatic (0.8.0) focal; urgency=low
 
   * General: Add scroll options for Razer Basilisk V3.

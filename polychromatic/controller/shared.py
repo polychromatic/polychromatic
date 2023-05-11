@@ -177,6 +177,8 @@ def _translate_widget(appdata, widget):
     if type(widget) in [QSpinBox, QDoubleSpinBox]:
         _translate(widget.setPrefix, widget.prefix())
         _translate(widget.setSuffix, widget.suffix())
+        _translate(widget.setToolTip, widget.toolTip())
+        _translate(widget.setStatusTip, widget.statusTip())
         return
 
     if type(widget) == QTabWidget:
