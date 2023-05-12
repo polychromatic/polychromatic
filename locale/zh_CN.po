@@ -1,22 +1,22 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR ORGANIZATION
-# Aloento <Aloento@Q-Audio.org>, 2020.
 #
+# Aloento <Aloento@Q-Audio.org>, 2020.
+# UM-Li <um-li@tuta.io>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-04 23:10+0100\n"
-"PO-Revision-Date: 2023-02-05 13:14+0100\n"
+"PO-Revision-Date: 2023-05-11 23:11+0200\n"
 "Last-Translator: UM-Li <um-li@tuta.io>\n"
-"Language-Team: \n"
+"Language-Team: Chinese <kde-i18n-doc@kde.org>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Lokalize 23.04.1\n"
 
 #: about.ui.h:1
 msgid "About the Application"
@@ -73,7 +73,7 @@ msgstr "保存该颜色"
 
 #: colour-picker.ui.h:9 custom-dpi.ui.h:11
 msgid "Add"
-msgstr "保存"
+msgstr "添加"
 
 #: colour-picker.ui.h:10 editor.ui.h:83 polychromatic/controller/editor.py:1619
 #: polychromatic/controller/preferences.py:256 preferences.ui.h:55
@@ -183,7 +183,7 @@ msgstr "锁定"
 
 #: editor.ui.h:1 polychromatic/controller/editor.py:842
 msgid "Effect Editor"
-msgstr "效果编辑器"
+msgstr "灯效编辑器"
 
 #. The & character is for keyboard navigation (when holding the ALT key)
 #: editor.ui.h:3 main.ui.h:12
@@ -226,43 +226,43 @@ msgstr "颜色"
 
 #: editor.ui.h:16
 msgid "Layers"
-msgstr "效果层"
+msgstr "图层"
 
 #. Column title in effect editor
 #: editor.ui.h:18
 msgid "Layer"
-msgstr "效果层"
+msgstr "图层"
 
 #. Column title in effect editor
 #: editor.ui.h:20 polychromatic/controller/devices.py:535
 #: polychromatic/controller/devices.py:1098
 msgid "Effect"
-msgstr "效果"
+msgstr "灯效"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:22
 msgid "Raise the layer in the stack"
-msgstr "将该效果层上移一层"
+msgstr "将该图层上移一层"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:24
 msgid "Lower the layer in the stack"
-msgstr "将该效果层下移一层"
+msgstr "将该图层下移一层"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:26
 msgid "Create a new layer in the stack"
-msgstr "新建一个效果层"
+msgstr "新建一个图层"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:28
 msgid "Delete the selected layer"
-msgstr "删除选中的效果层"
+msgstr "删除选中的图层"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:30
 msgid "Duplicate the selected layer"
-msgstr "复制选中的效果层"
+msgstr "复制选中的图层"
 
 #: editor.ui.h:31
 msgid "Properties"
@@ -297,7 +297,7 @@ msgstr "删除"
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:41
 msgid "Create a copy of the current frame after this position"
-msgstr "在当前位置之后创建当前帧的副本"
+msgstr "在当前位置之后创建该帧的副本"
 
 #: editor.ui.h:42 polychromatic/controller/effects.py:276
 msgid "Clone"
@@ -306,7 +306,7 @@ msgstr "复制"
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:44
 msgid "Place this frame a step before the current position"
-msgstr "将该帧移动到当前位置之前"
+msgstr "交换该帧和前一帧的位置"
 
 #: editor.ui.h:45
 msgid "Move Left"
@@ -315,7 +315,7 @@ msgstr "左移"
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:47
 msgid "Place this frame a step after the current position"
-msgstr "将该帧移动到当前位置之后"
+msgstr "交换该帧和后一帧的位置"
 
 #: editor.ui.h:48
 msgid "Move Right"
@@ -323,7 +323,7 @@ msgstr "右移"
 
 #: editor.ui.h:49
 msgid "Jump to the start of the sequence"
-msgstr "跳转至序列开头"
+msgstr "跳转至开头"
 
 #: editor.ui.h:50
 msgid "Jump to Start"
@@ -339,7 +339,7 @@ msgstr "上一帧"
 
 #: editor.ui.h:53
 msgid "Preview the effect from the beginning"
-msgstr "从头开始预览效果"
+msgstr "从头开始预览灯效"
 
 #: editor.ui.h:54 polychromatic/controller/effects.py:262
 msgid "Play"
@@ -363,7 +363,7 @@ msgstr "下一帧"
 
 #: editor.ui.h:59
 msgid "Jump to the last frame of the sequence"
-msgstr "跳转至序列末尾"
+msgstr "跳转至末尾"
 
 #: editor.ui.h:60
 msgid "Jump to End"
@@ -371,7 +371,7 @@ msgstr "跳转至末尾"
 
 #: editor.ui.h:61
 msgid "Toggle whether this effect should loop"
-msgstr "切换循环效果"
+msgstr "启用或关闭循环播放"
 
 #: editor.ui.h:62
 msgid "Loop"
@@ -386,10 +386,10 @@ msgid ""
 "lighting firmware or software. This may potentially\n"
 "shorten the LED's lifespan."
 msgstr ""
-"该序列每秒播放的帧数。\n"
+"每秒播放的帧数。\n"
 "\n"
-"请留意驱动、灯效固件和软件的性能瓶颈，帧率设定过高\n"
-"可能导致效果播放异常。这种情况有可能缩短 LED 寿命。"
+"请留意驱动、灯效固件和软件的性能瓶颈。帧率设定过高\n"
+"可能导致灯效播放异常，这种情况有可能缩短 LED 寿命。"
 
 #: editor.ui.h:69
 msgid "Frames per second to play the sequence"
@@ -451,7 +451,7 @@ msgstr "保存并关闭"
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:87
 msgid "Save the effect to disk, and close the editor"
-msgstr "将效果保存至磁盘并关闭编辑器"
+msgstr "保存灯效并关闭编辑器"
 
 #. Menu bar item or dialog button
 #: editor.ui.h:89
@@ -521,7 +521,7 @@ msgstr "设备图案"
 msgid ""
 "Present the LEDs as a graphical represention of the actual hardware (where "
 "available)"
-msgstr "如果可用，在硬件的示意图上呈现 LED"
+msgstr "如果可用，在硬件示意图上呈现 LED"
 
 #. Menu bar toggle
 #: editor.ui.h:115
@@ -530,7 +530,7 @@ msgstr "网格"
 
 #: editor.ui.h:116
 msgid "Present the LEDs in a grid"
-msgstr "按网格呈现 LED"
+msgstr "在网格上呈现 LED"
 
 #: editor.ui.h:117
 msgid "Edit Metadata..."
@@ -539,20 +539,20 @@ msgstr "编辑元数据..."
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:119
 msgid "Edit the name, icon and other related data for this effect"
-msgstr "编辑该效果的名称、图标和其它相关信息"
+msgstr "编辑灯效的名称、图标等信息"
 
 #: editor.ui.h:120
 msgid "Duplicate Layer"
-msgstr "复制效果层"
+msgstr "复制图层"
 
 #: editor.ui.h:121
 msgid "Delete Layer"
-msgstr "删除效果层"
+msgstr "删除图层"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:123
 msgid "Permanently delete the selected layer"
-msgstr "永久删除选中的效果层"
+msgstr "永久删除选中的图层"
 
 #. Keyboard Shortcut
 #: editor.ui.h:125
@@ -561,7 +561,7 @@ msgstr "Del"
 
 #: editor.ui.h:126
 msgid "Raise Layer"
-msgstr "上移效果层"
+msgstr "上移图层"
 
 #. Keyboard Shortcut
 #: editor.ui.h:128
@@ -570,7 +570,7 @@ msgstr "Alt+Up"
 
 #: editor.ui.h:129
 msgid "Lower Layer"
-msgstr "下移效果层"
+msgstr "下移图层"
 
 #. Keyboard Shortcut
 #: editor.ui.h:131
@@ -585,7 +585,7 @@ msgstr "左移"
 #. Appears in the status bar when hovered
 #: editor.ui.h:135
 msgid "Push all LEDs on this layer/frame by one column to the left"
-msgstr "将该效果层 / 该帧的所有 LED 左移一列"
+msgstr "将该帧当前图层的所有 LED 左移一列"
 
 #. Keyboard Shortcut
 #: editor.ui.h:137
@@ -600,7 +600,7 @@ msgstr "右移"
 #. Appears in the status bar when hovered
 #: editor.ui.h:141
 msgid "Push all LEDs on this layer/frame by one column to the right"
-msgstr "将该效果层 / 该帧的所有 LED 右移一列"
+msgstr "将该帧当前图层的所有 LED 右移一列"
 
 #. Keyboard Shortcut
 #: editor.ui.h:143
@@ -615,7 +615,7 @@ msgstr "上移"
 #. Appears in the status bar when hovered
 #: editor.ui.h:147
 msgid "Push all LEDs on this layer/frame by one row upwards"
-msgstr "将该效果层 / 该帧的所有 LED 上移一排"
+msgstr "将该帧当前图层的所有 LED 上移一排"
 
 #. Keyboard Shortcut
 #: editor.ui.h:149
@@ -630,7 +630,7 @@ msgstr "下移"
 #. Appears in the status bar when hovered
 #: editor.ui.h:153
 msgid "Push all LEDs on this layer/frame by one row downwards"
-msgstr "将该效果层 / 该帧的所有 LED 下移一排"
+msgstr "将该帧当前图层的所有 LED 下移一排"
 
 #. Keyboard Shortcut
 #: editor.ui.h:155
@@ -639,7 +639,7 @@ msgstr "Ctrl+Shift+下"
 
 #: editor.ui.h:156
 msgid "New Layer..."
-msgstr "新建效果层..."
+msgstr "新建图层..."
 
 #: editor.ui.h:157
 msgid "Zoom In"
@@ -724,7 +724,7 @@ msgstr "编辑扳机键..."
 msgid ""
 "Configure automation for this effect, such as time of day, or when a process "
 "is running"
-msgstr "为该效果配置自动化，比如在一天的特定时间或特定进程运行时播放"
+msgstr "为该灯效配置自动化，比如在一天的特定时间或特定进程运行时播放"
 
 #: editor.ui.h:181
 msgid "New Frame"
@@ -755,13 +755,13 @@ msgstr "暂停回放"
 #: editor.ui.h:188 polychromatic/backends/openrazer.py:503
 #: polychromatic/backends/openrazer.py:824
 msgid "Left"
-msgstr "左"
+msgstr "向左"
 
 #. Keyboard Shortcut
 #: editor.ui.h:190 polychromatic/backends/openrazer.py:505
 #: polychromatic/backends/openrazer.py:822
 msgid "Right"
-msgstr "右"
+msgstr "向右"
 
 #. Keyboard Shortcut
 #: editor.ui.h:192
@@ -783,7 +783,7 @@ msgstr "显示或隐藏按键上的标志和字符"
 
 #: editor.ui.h:197
 msgid "Open Colour Picker"
-msgstr "打开拾色器"
+msgstr "拾色器"
 
 #: editor.ui.h:198
 msgid "Increase Hue"
@@ -829,7 +829,7 @@ msgstr "编辑元数据"
 
 #: effect-metadata-editor.ui.h:2
 msgid "Effect Details"
-msgstr "效果细节"
+msgstr "基本信息"
 
 #: effect-metadata-editor.ui.h:3 polychromatic/controller/devices.py:1018
 msgid "Name"
@@ -904,7 +904,7 @@ msgstr "浏览并导入图标"
 #. Tooltip hovering over the icon picker's delete button
 #: icon-picker.ui.h:13
 msgid "Delete this custom icon from your list"
-msgstr "从列表中移除该自定义图标"
+msgstr "移除该图标"
 
 #. Help text when inspecting a device's matrix
 #: inspect-matrix.ui.h:2
@@ -929,7 +929,7 @@ msgstr "设备"
 #: main.ui.h:3 polychromatic/controller/devices.py:947
 #: polychromatic/controller/effects.py:33 preferences.ui.h:25
 msgid "Effects"
-msgstr "效果"
+msgstr "灯效"
 
 #: main.ui.h:4 polychromatic/controller/presets.py:25 preferences.ui.h:26
 msgid "Presets"
@@ -947,7 +947,7 @@ msgstr "任务"
 #. Button to a section for activating settings to all devices
 #: main.ui.h:9
 msgid "Apply to All"
-msgstr "全部应用"
+msgstr "统一应用"
 
 #: main.ui.h:10
 msgid "Close Application"
@@ -964,7 +964,7 @@ msgstr "OpenRazer"
 
 #: main.ui.h:22
 msgid "New Effect..."
-msgstr "新建效果..."
+msgstr "新建灯效..."
 
 #: main.ui.h:25 polychromatic/controller/menubar.py:159
 msgid "Hide Menu Bar"
@@ -1030,7 +1030,7 @@ msgstr "刷新"
 
 #: main.ui.h:45
 msgid "Import Effect..."
-msgstr "导入效果..."
+msgstr "导入灯效..."
 
 #: main.ui.h:46 polychromatic/controller/menubar.py:187
 msgid "Force Refresh"
@@ -1042,16 +1042,16 @@ msgstr "强制刷新"
 #: polychromatic/controller/effects.py:533
 #: polychromatic/controller/effects.py:549
 msgid "New Effect"
-msgstr "新建效果"
+msgstr "新建灯效"
 
 #. Shown when creating a new effect
 #: new-effect.ui.h:3
 msgid "Please choose the type of effect to create."
-msgstr "请选择要创建的效果类型。"
+msgstr "请选择要创建的灯效类型。"
 
 #: new-effect.ui.h:4
 msgid "Create simple effects using a layer-based system"
-msgstr "基于层叠结构创建简单效果"
+msgstr "基于层叠结构创建简单灯效"
 
 #. Button when creating a new effect
 #: new-effect.ui.h:6 polychromatic/controller/effects.py:299
@@ -1060,7 +1060,7 @@ msgstr "层叠"
 
 #: new-effect.ui.h:7
 msgid "Create an animated (or static) using frames and pixels"
-msgstr "基于帧和像素创建动态（或静止）效果"
+msgstr "基于帧和像素创建动态（或静止）灯效"
 
 #. Button when creating a new effect
 #: new-effect.ui.h:9 polychromatic/controller/effects.py:301
@@ -1069,7 +1069,7 @@ msgstr "序列"
 
 #: new-effect.ui.h:10
 msgid "Write the effect using the Python programming language"
-msgstr "用 Python 语言创建效果"
+msgstr "用 Python 语言创建灯效"
 
 #. Button when creating a new effect
 #: new-effect.ui.h:12 polychromatic/controller/effects.py:300
@@ -1169,7 +1169,7 @@ msgstr "滚轮"
 
 #: polychromatic/backends/openrazer.py:489
 msgid "Logo"
-msgstr "Logo"
+msgstr "徽标"
 
 #: polychromatic/backends/openrazer.py:493
 msgid "Hex Ring"
@@ -1543,7 +1543,7 @@ msgstr "后端未安装"
 #: polychromatic/controller/devices.py:758
 msgid ""
 "Plug in a compatible device to control its lighting effects and features"
-msgstr "插入一台支持的设备以控制灯效和其它功能"
+msgstr "插入一台支持的设备以控制灯效等功能"
 
 #: polychromatic/controller/devices.py:759
 msgid "Consult the logs and troubleshooter for hints on fixing this problem"
@@ -1625,7 +1625,7 @@ msgstr "后端"
 
 #: polychromatic/controller/devices.py:1024
 msgid "Form Factor"
-msgstr "规格"
+msgstr "类别"
 
 #: polychromatic/controller/devices.py:1025
 msgid "Serial"
@@ -1908,7 +1908,7 @@ msgstr "找不到设备"
 #: polychromatic/controller/editor.py:657
 msgid ""
 "This effect is designed for a device named '[]', but it wasn't detected."
-msgstr "该效果适用于 []，但没有检测到该设备。"
+msgstr "该灯效适用于 []，但没有检测到该设备。"
 
 #: polychromatic/controller/editor.py:658
 #: polychromatic/controller/editor.py:670
@@ -1926,7 +1926,7 @@ msgstr "文件错误"
 msgid ""
 "The device '[]' is assigned to this effect, but does not support individual "
 "addressable LEDs."
-msgstr "[] 被分配到该效果，但该设备不支持对单独 LED 进行设置。"
+msgstr "[] 被分配到该灯效，但该设备不支持对单独 LED 进行设置。"
 
 #: polychromatic/controller/editor.py:803
 msgid "Unsaved Changes"
@@ -1934,7 +1934,7 @@ msgstr "更改未保存"
 
 #: polychromatic/controller/editor.py:804
 msgid "This effect was modified. Would you like to save these changes?"
-msgstr "该效果已被修改。您想保存更改吗？"
+msgstr "该灯效已被修改，您想保存更改吗？"
 
 #: polychromatic/controller/editor.py:850
 msgid "Gradient"
@@ -1950,7 +1950,7 @@ msgstr "循环"
 
 #: polychromatic/controller/editor.py:855
 msgid "Run Scripted Effect"
-msgstr "运行效果脚本"
+msgstr "运行灯效脚本"
 
 #: polychromatic/controller/editor.py:883
 #: polychromatic/controller/preferences.py:211
@@ -1968,7 +1968,7 @@ msgstr "已保存至：[]"
 
 #: polychromatic/controller/editor.py:910
 msgid "Reload the effect from disk? Any unsaved data will be lost!"
-msgstr "要从磁盘重新加载效果吗？所有未保存的数据将会丢失！"
+msgstr "要从磁盘重新加载灯效吗？所有未保存的数据将会丢失！"
 
 #: polychromatic/controller/editor.py:1086
 msgid "An error occurred while sending the frame to the hardware."
@@ -2046,25 +2046,25 @@ msgstr "找不到文件"
 
 #: polychromatic/controller/editor.py:1869
 msgid "This effect is mapped to a graphic named '[]', but it's not installed."
-msgstr "该效果被映射到尚未安装的示意图“[]”。"
+msgstr "该灯效被映射到尚未安装的示意图“[]”。"
 
 #: polychromatic/controller/editor.py:1870
 msgid ""
 "The grid will be used instead. A different graphic can be chosen by editing "
 "the metadata."
-msgstr "效果会在网格上显示，您也可以编辑元数据以选择其它示意图。"
+msgstr "灯效会在网格上呈现，您也可以编辑元数据以选择其它示意图。"
 
 #: polychromatic/controller/effects.py:59
 msgid "It's empty here!"
-msgstr "空空如也！"
+msgstr "空空如也"
 
 #: polychromatic/controller/effects.py:60
 msgid "Error loading effect"
-msgstr "效果加载错误"
+msgstr "灯效加载错误"
 
 #: polychromatic/controller/effects.py:64
 msgid "Your own software effects appear here. Try creating one!"
-msgstr "您自己的软件灯效会在这里列出。试试创建一个！"
+msgstr "您自设的软件灯效会在这里列出，试着创建一个！"
 
 #: polychromatic/controller/effects.py:65
 msgid "There's invalid data in this file. The file might be corrupt."
@@ -2106,7 +2106,7 @@ msgstr "该文件已在另一窗口打开，请切换到相应窗口进行更改
 
 #: polychromatic/controller/effects.py:355
 msgid "Other Actions"
-msgstr "其它动作"
+msgstr "操作"
 
 #: polychromatic/controller/effects.py:372
 msgid ""
@@ -2205,7 +2205,7 @@ msgstr "正在重新启动..."
 #. Button to restart all background tasks
 #: polychromatic/controller/procviewer.py:134 procviewer.ui.h:9
 msgid "Restart All"
-msgstr "全部重新启动"
+msgstr "全部重启"
 
 #: polychromatic/controller/procviewer.py:160
 msgid "Playing software effect"
@@ -2296,10 +2296,10 @@ msgid ""
 "\n"
 "Presets and triggers that use this effect will be unlinked."
 msgstr ""
-"要永久删除该效果吗？\n"
+"要永久删除该灯效吗？\n"
 "“[]”\n"
 "\n"
-"使用该效果的预设和扳机键会与其解绑。"
+"使用该灯效的预设和扳机键会与其解绑。"
 
 #: polychromatic/controller/shared.py:1723
 msgid ""
@@ -2318,7 +2318,7 @@ msgid ""
 "Permanently delete this effect? \n"
 "'[]'"
 msgstr ""
-"要永久删除该效果吗？\n"
+"要永久删除该灯效吗？\n"
 "“[]”"
 
 #: polychromatic/controller/shared.py:1728
@@ -2389,7 +2389,7 @@ msgstr "似乎一切正常！"
 
 #: polychromatic/effects.py:161
 msgid "Layer 1"
-msgstr "效果层 1"
+msgstr "图层 1"
 
 #: polychromatic/preferences.py:447
 msgid "White"
@@ -2562,8 +2562,7 @@ msgstr "如果您刚完全安装，建议重启电脑。"
 msgid ""
 "Secure Boot prevents the driver from loading, as OpenRazer's kernel modules "
 "built by DKMS are usually unsigned."
-msgstr ""
-"Secure Boot 会阻止驱动加载，因为 DKMS 构建的 OpenRazer 内核模块一般没有签名。"
+msgstr "Secure Boot 会阻止驱动加载，因为 DKMS 构建的 OpenRazer 内核模块一般没有签名。"
 
 #: polychromatic/troubleshoot/openrazer.py:224
 #: polychromatic/troubleshoot/openrazer.py:234
@@ -2580,8 +2579,7 @@ msgstr "Secure boot 已启用。请在 EFI 设置中将其关闭，或者自己�
 msgid ""
 "Unable to automatically check. If it's enabled, turn it off in the system's "
 "EFI settings or sign the modules yourself."
-msgstr ""
-"自动检测失败。如果已启用，请在 EFI 设置中将其关闭，或者自己为内核模块签名。"
+msgstr "自动检测失败。如果已启用，请在 EFI 设置中将其关闭，或者自己为内核模块签名。"
 
 #: polychromatic/troubleshoot/openrazer.py:245
 msgid "User account has been added to the 'plugdev' group"
@@ -2595,8 +2593,7 @@ msgstr "请运行该命令，然后注销并重新登录："
 msgid ""
 "This is required so that your user account (and daemon) has permission to "
 "access the driver files in /sys/bus/hid/drivers"
-msgstr ""
-"这样您的用户（和守护程序）才能获得 /sys/bus/hid/drivers 下驱动文件的访问权限"
+msgstr "这样您的用户（和守护程序）才能获得 /sys/bus/hid/drivers 下驱动文件的访问权限"
 
 #: polychromatic/troubleshoot/openrazer.py:259
 #: polychromatic/troubleshoot/openrazer.py:269
@@ -2769,7 +2766,7 @@ msgstr "文本在图标旁"
 
 #: preferences.ui.h:22
 msgid "Text Under Icons"
-msgstr "文本在图标下"
+msgstr "文本在图标下方"
 
 #. Preferences Label
 #: preferences.ui.h:24
@@ -2893,7 +2890,7 @@ msgstr "后台任务"
 msgid ""
 "To provide background features (like software effects and triggers), "
 "additional processes may be spawned."
-msgstr "提供后台功能（如软件灯效和扳机键）可能生成额外进程。"
+msgstr "后台功能（如软件灯效和扳机键）可能生成额外进程。"
 
 #. Column header for Process Viewer window
 #: procviewer.ui.h:5
