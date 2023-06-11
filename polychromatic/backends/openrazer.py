@@ -936,7 +936,7 @@ class OpenRazerBackend(Backend):
         if self._has_zone_capability(rdevice, zone, "blinking"):
             # Chroma Mug Holder is the only one to have it in the "main" zone, but there's no Python API call.
             # API only exposes for 'logo' and 'scroll'. Some mice use it.
-            if zone in ["logo", "scroll"]:
+            if zone.zone_id in ["logo", "scroll"]:
                 class BlinkingOption(Backend.EffectOption):
                     def __init__(self, rzone, persistence):
                         super().__init__()
