@@ -947,7 +947,7 @@ class OpenRazerBackend(Backend):
                         self.colours = self._persistence.state["colours"]
 
                     def refresh(self):
-                        self.active = True if self._persistence.state["colours"] == "blinking" else False
+                        self.active = True if self._persistence.state["effect"] == "blinking" else False
                         self.colours = self._persistence.state["colours"]
 
                     def apply(self, param=None):
