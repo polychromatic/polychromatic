@@ -759,6 +759,26 @@ class OpenRazerBackend(Backend):
             option.icon = self.get_icon("options", "none")
             options.append(option)
 
+        if self._has_zone_capability(rdevice, zone, "on"):
+            class OnOption(Backend.EffectOption):
+                def __init__(self, rzone, persistence):
+                    super().__init__()
+                    self._rzone = rzone
+                    self._persistence = persistence
+                    self.uid = "on"
+
+                def refresh(self):
+                    self.active = True if self._persistence.state["effect"] == "on" else False
+
+                def apply(self, param=None):
+                    self._rzone.on()
+                    self._persistence.save("effect", "on")
+
+            option = OnOption(rzone, zone._persistence)
+            option.label = self._("On")
+            option.icon = self.get_icon("options", "on")
+            options.append(option)
+
         if self._has_zone_capability(rdevice, zone, "spectrum"):
             class SpectrumOption(Backend.EffectOption):
                 def __init__(self, rzone, persistence):
