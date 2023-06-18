@@ -755,8 +755,8 @@ class OpenRazerBackend(Backend):
                     self._persistence.save("effect", "none")
 
             option = NoneOption(rzone, zone._persistence)
-            option.label = self._("None")
-            option.icon = self.get_icon("options", "none")
+            option.label = self._("Off")
+            option.icon = self.get_icon("params", "0")
             options.append(option)
 
         if self._has_zone_capability(rdevice, zone, "on"):
@@ -776,7 +776,7 @@ class OpenRazerBackend(Backend):
 
             option = OnOption(rzone, zone._persistence)
             option.label = self._("On")
-            option.icon = self.get_icon("options", "on")
+            option.icon = self.get_icon("params", "100")
             options.append(option)
 
         if self._has_zone_capability(rdevice, zone, "spectrum"):
