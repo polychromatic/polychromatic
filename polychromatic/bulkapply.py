@@ -85,6 +85,7 @@ class BulkApplyOptions(object):
         """
         brightness = []
         effects = []
+        has_colours = False
 
         for device in self.devices:
             for zone in device.zones:
