@@ -185,7 +185,7 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
     def test_capability_main(self):
         rdevice = self.get_rdevice("Razer Mamba Tournament Edition")
         zone = OpenRazerBackend.DeviceItem.Zone()
-        zone.zone_id = "main"
+        zone.zone_id = "backlight"
         self.assertTrue(self.openrazer._has_zone_capability(rdevice, zone, "brightness"), "Capability incorrectly reported")
 
     def test_capability_logo(self):
@@ -238,16 +238,16 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
 
     def test_option_colours_persist(self):
         device = self.get_device("Razer Mamba Tournament Edition")
-        static = self.get_option(device, "static", "main")
+        static = self.get_option(device, "static", "backlight")
         static.colours[0] = "#123456"
         static.apply()
         static.colours[0] = "#000000"
         device.refresh()
         self.assertTrue(static.colours[0] == "#123456", "Persistence did not read/write as expected.")
 
-    def test_option_brightness_main(self):
+    def test_option_brightness_backlight(self):
         device = self.get_device("Razer Mamba Tournament Edition")
-        brightness = self.get_option(device, "brightness", "main")
+        brightness = self.get_option(device, "brightness", "backlight")
         brightness.apply(24)
         brightness.refresh()
         self.assertTrue(brightness.value == 24, "Could not set 'variable' brightness correctly")
@@ -307,7 +307,7 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
 
     def test_option_effect_wave_label_mouse(self):
         device = self.get_device("Razer Mamba (Wireless)")
-        effect = self.get_option(device, "wave", "main")
+        effect = self.get_option(device, "wave", "backlight")
         self.assertTrue(effect.parameters[1].label == "Up", "Unexpected wave label for mouse")
 
     def test_option_effect_wave_label_mousemat(self):
@@ -467,12 +467,12 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
 
     def test_persistence_colour_bytes(self):
         rdevice = self.get_rdevice("Razer Mamba Tournament Edition")
-        persistence = OpenRazerPersistence(rdevice.fx)
-        persistence._convert_colour_bytes(rdevice.fx)
+        persistence = OpenRazerPersistence(rdevice.fx.misc.backlight)
+        persistence._convert_colour_bytes(rdevice.fx.misc.backlight)
 
     def test_persistence_refresh(self):
         rdevice = self.get_rdevice("Razer Mamba Tournament Edition")
-        persistence = OpenRazerPersistence(rdevice.fx)
+        persistence = OpenRazerPersistence(rdevice.fx.misc.backlight)
         persistence.refresh()
 
     def test_persistence_fallback_read(self):
