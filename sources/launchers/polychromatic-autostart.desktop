@@ -2,8 +2,10 @@
 Type=Application
 Version=1.0
 Name=Polychromatic Autostart
+Name[de]=Polychromatic-Autostart
 Name[zh_CN]=Polychromatic 自启动程序
 Comment=Automatically start Polychromatic components at login
+Comment[de]=Starte "Polychromatic"-Komponenten automatisch beim Anmelden
 Comment[zh_CN]=登录时自动启动 Polychromatic 组件
 Icon=polychromatic
 Exec=polychromatic-helper --autostart
