@@ -730,6 +730,7 @@ class OpenRazerBackend(Backend):
 
         # There isn't a single 'lighting_breath' in the capabilities list
         has_breath_random = self._has_zone_capability(rdevice, zone, "breath_random")
+        has_breath_mono = self._has_zone_capability(rdevice, zone, "breath_mono")
         has_breath_single = self._has_zone_capability(rdevice, zone, "breath_single")
         has_breath_dual = self._has_zone_capability(rdevice, zone, "breath_dual")
         has_breath_triple = self._has_zone_capability(rdevice, zone, "breath_triple")
@@ -1006,7 +1007,7 @@ class OpenRazerBackend(Backend):
             option.icon = self.get_icon("options", "static")
             options.append(option)
 
-        if has_breath_random or has_breath_single or has_breath_dual or has_breath_triple:
+        if has_breath_random or has_breath_mono or has_breath_single or has_breath_dual or has_breath_triple:
             class BreathOption(Backend.EffectOption):
                 def __init__(self, rzone, persistence):
                     super().__init__()
@@ -1034,6 +1035,9 @@ class OpenRazerBackend(Backend):
                     if breath_type == "random":
                         self._rzone.breath_random()
                         self._persistence.save("effect", "breathRandom")
+                    elif breath_type == "mono":
+                        self._rzone.breath_mono()
+                        self._persistence.save("effect", "breathMono")
                     elif breath_type == "single":
                         self._rzone.breath_single(rgb[0][0], rgb[0][1], rgb[0][2])
                         self._persistence.save("effect", "breathSingle")
@@ -1065,6 +1069,13 @@ class OpenRazerBackend(Backend):
                 random.label = self._("Random")
                 random.icon = self.get_icon("params", "random")
                 option.parameters.append(random)
+
+            if has_breath_mono:
+                mono = Backend.Option.Parameter()
+                mono.data = "mono"
+                mono.label = self._("Mono")
+                mono.icon = self.get_icon("params", "mono")
+                option.parameters.append(mono)
 
             if has_breath_single:
                 single = Backend.Option.Parameter()
