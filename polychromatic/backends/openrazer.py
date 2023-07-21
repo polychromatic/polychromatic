@@ -127,8 +127,8 @@ class OpenRazerBackend(Backend):
             if pid == "0521":
                 continue
 
-            # Ignore Razer Seiren X. No RGB support (openrazer/openrazer#1058)
-            elif pid == "0511":
+            # Ignore devices with no RGB support
+            elif pid in ["0511", "9051"]: # Razer Seiren, Razer Phone 2
                 continue
 
             device = Backend.UnknownDeviceItem()
