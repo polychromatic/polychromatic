@@ -25,5 +25,4 @@ function process_release() {
 
 process_release "20.04" "focal"     # LTS
 process_release "22.04" "jammy"     # LTS
-process_release "22.10" "kinetic"
 process_release "23.04" "lunar"
