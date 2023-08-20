@@ -934,20 +934,24 @@ class OpenRazerBackend(Backend):
             fast.data = 1
             fast.label = self._("Fast (0.5s)")
             fast.icon = self.get_icon("params", "fast")
+            fast.colours_required = 1
 
             medium = Backend.Option.Parameter()
             medium.data = 2
             medium.label = self._("Medium (1s)")
             medium.default = True
+            medium.colours_required = 1
 
             slow = Backend.Option.Parameter()
             slow.data = 3
             slow.label = self._("Slow (1.5s)")
+            slow.colours_required = 1
 
             vslow = Backend.Option.Parameter()
             vslow.data = 4
             vslow.label = self._("Very Slow (2s)")
             vslow.icon = self.get_icon("params", "slow")
+            vslow.colours_required = 1
 
             for param in [fast, medium, slow, vslow]:
                 option.parameters.append(param)
