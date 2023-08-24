@@ -573,6 +573,9 @@ class DevicesTab(shared.TabData):
             if param.active:
                 radio.setChecked(True)
 
+            if len(option.parameters) == 1 and param.active:
+                radio.setDisabled(True)
+
             if param.icon:
                 radio.setIcon(QIcon(param.icon))
                 radio.setIconSize(QSize(22, 22))
