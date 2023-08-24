@@ -1662,18 +1662,15 @@ class DPIStageEditor(shared.TabData):
             if len(data) == 0:
                 continue
             data = data.split(",")
-            if len(data) == 1:
-                try:
+            try:
+                if len(data) == 1:
                     values.append([int(data[0]), int(data[0])])
-                except ValueError:
-                    # TODO: Show validation message - invalid, too high, too low?
-                    continue
-            else:
-                try:
+                elif len(data) == 2:
                     values.append([int(data[0]), int(data[1])])
-                except ValueError:
-                    # TODO: Show validation message - invalid, too high, too low?
-                    continue
+            except ValueError:
+                # TODO: Show dialog pop up -or- mark invalid cells before sync clicked?
+                # ... setting 'sync_possible' label would be overwritten later after successful sync.
+                pass
 
         return sorted(values, key=lambda item: int(item[0]))
 
@@ -1681,7 +1678,14 @@ class DPIStageEditor(shared.TabData):
         """
         Sync the current DPI values displayed to the hardware.
         """
-        self.device.dpi.sync(self.parse_dpi())
+        dpi_stages = self.parse_dpi()
+
+        if not dpi_stages:
+            # Restore to defaults
+            self.toggle_custom_setting(False)
+            dpi_stages = self.parse_dpi()
+
+        self.device.dpi.sync(dpi_stages)
         self.sync_possible.setText(self._("DPI stages were successfully synchronised to the hardware."))
 
     def save_changes(self):
