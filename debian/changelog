@@ -1,3 +1,17 @@
+polychromatic (0.8.2) focal; urgency=low
+
+  * Controller: Add device map for Razer BlackWidow V3 (US).
+  * Controller: Fix crash when multiple non-RGB devices present.
+  * Controller: Fix crash with entering invalid values in DPI custom stages dialog.
+  * OpenRazer: Add "On" effect.
+  * OpenRazer: Add "Breath Random" effect for mono devices.
+  * OpenRazer: Fix missing "Blinking" effect
+  * Exclude Razer Phone 2 as an unknown device.
+  * Fix missing colour input for Reactive effect.
+  * Update translations for Simplified Chinese; German and Polish.
+
+ -- Luke Horwell <code@horwell.me>  Sun, 08 Oct 2023 13:17:20 +0100
+
 polychromatic (0.8.1-2) focal; urgency=low
 
   * Add missing data directory.
