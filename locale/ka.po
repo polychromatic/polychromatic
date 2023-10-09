@@ -1,0 +1,3027 @@
+# Georgian translation for polychromatic.
+# Copyright (C) 2023 polychromatic's authors
+# This file is distributed under the same license as the polychromatic package.
+# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: polychromatic\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-09 19:00+0200\n"
+"PO-Revision-Date: 2023-10-09 23:51+0200\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"Language-Team: Georgian <(nothing)>\n"
+"Language: ka\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Source-Language: en_GB\n"
+"X-Generator: Poedit 3.4\n"
+
+#: about.ui.h:1
+msgid "About the Application"
+msgstr "აპლიკაციის შესახებ"
+
+#: about.ui.h:2 device-info.ui.h:7 inspect-matrix.ui.h:3 procviewer.ui.h:12
+#: troubleshooter.ui.h:9
+msgid "Close"
+msgstr "ეფექტის დისკზე შენახვა და რედაქტორის დახურვა"
+
+#. Column header to view the application's version information
+#: about.ui.h:4
+msgid "Version"
+msgstr "თქვენი ვერსია: 0.0.0"
+
+#: about.ui.h:5
+msgid "Component"
+msgstr "კომპონენტი"
+
+#. Column header to view the application's license information
+#: about.ui.h:7
+msgid "License"
+msgstr "ლიცენზია"
+
+#. Column header to view links for an application or backend
+#: about.ui.h:9
+msgid "Links"
+msgstr "ბმულები"
+
+#: colour-picker.ui.h:1
+msgid "Select a Colour"
+msgstr "აირჩიეთ ფერი"
+
+#. The currently selected colour in the Colour Picker dialog box
+#: colour-picker.ui.h:3
+msgid "Current"
+msgstr "მიმდინარე"
+
+#. Colour Picker: Tooltip informing the user what the \"Change...\" button will do
+#: colour-picker.ui.h:5
+msgid "Opens the system's colour picker"
+msgstr "გახსნის სისტემურ ფერების ამრჩევს"
+
+#: colour-picker.ui.h:6 polychromatic/controller/devices.py:1402
+#: polychromatic/controller/editor.py:1464
+#: polychromatic/controller/effects.py:269
+msgid "Edit"
+msgstr "ჩაასწორეთ ამ ეფექტის სახელი, ხატულა და სხვა მონაცემები"
+
+#. Colour Picker: Tooltip informing the user what the Save colour button does
+#: colour-picker.ui.h:8
+msgid "Save this colour to the saved colour list"
+msgstr "ამ ფერის შენახვა შენახული ფერების სიაში"
+
+#: colour-picker.ui.h:9 custom-dpi.ui.h:11
+msgid "Add"
+msgstr "დამატება"
+
+#: colour-picker.ui.h:10 editor.ui.h:83 polychromatic/controller/editor.py:1619
+#: polychromatic/controller/preferences.py:256 preferences.ui.h:55
+msgid "Saved Colours"
+msgstr "შენახული ფერები"
+
+#: colour-picker.ui.h:11
+msgid "Add the current colour to your saved colours list by giving it a name"
+msgstr ""
+"მიმდინარე ფერის შენახვა შენახული ფერების სიაში მისთვის სახელის მინიჭებით"
+
+#. Colour Picker: Tooltip informing the user what the Save icon does
+#: colour-picker.ui.h:13
+msgid "Save the current colour to the saved list"
+msgstr "მიმდინარე ფერის შენახვა შენახული ფერების სიაში"
+
+#. Colour Picker: Tooltip informing the user what the Cancel icon does
+#: colour-picker.ui.h:15
+msgid "Cancel saving this colour"
+msgstr "ამ ფერის შენახვის გაუქმება"
+
+#. Colour Picker: Tooltip informing the user what the Rename icon does
+#: colour-picker.ui.h:17
+msgid "Rename selected colour"
+msgstr "მონიშნული ფერის სახელის გადარქმევა"
+
+#. Colour Picker: Tooltip informing the user what the Delete icon does
+#: colour-picker.ui.h:19
+msgid "Forget selected colour"
+msgstr "მონიშნული ფერის დავიწყება"
+
+#: custom-dpi.ui.h:1 polychromatic/controller/devices.py:1403
+msgid "Edit DPI Stages"
+msgstr "DPI-ის დონეების ჩასწორება"
+
+#: custom-dpi.ui.h:2
+msgid "0 - 8200 dpi"
+msgstr "0 - 8200 dpi"
+
+#: custom-dpi.ui.h:3
+msgid "Enable custom stages"
+msgstr "მომხმარებლის დონეების ჩსწორება"
+
+#. Tooltip when hovering over DPI stage input
+#: custom-dpi.ui.h:5
+msgid "Enter a DPI number or comma separated X,Y numbers"
+msgstr "შეიყვანეთ DPI ნომერი ან მძიმით გამოყოფილი X,Y რიცხვები"
+
+#. Second column header for Device Info
+#: custom-dpi.ui.h:6 device-info.ui.h:5
+msgid "Value"
+msgstr "მნიშვნელობა"
+
+#: custom-dpi.ui.h:7
+msgid "1"
+msgstr "კადრი [1] / [10]"
+
+#: custom-dpi.ui.h:8
+msgid "Remove last DPI stage"
+msgstr "ბოლო DPI-ის დონის წაშლა"
+
+#: custom-dpi.ui.h:9
+msgid "Remove"
+msgstr "წაშლა"
+
+#: custom-dpi.ui.h:10
+msgid "Add DPI stage"
+msgstr "DPI-ის დონის დამატება"
+
+#: custom-dpi.ui.h:12
+msgid "Sync"
+msgstr "სინქრონიზაცია"
+
+#: custom-dpi.ui.h:13
+msgid ""
+"Apply these DPI stages to the hardware, so they can be changed using "
+"hardware buttons."
+msgstr ""
+"ამ DPI-ის დონეების აპარატურაზე გადატარება, რათა მათი შეცვლა ფიზიკური "
+"ღილაკებით შეგეძლოთ."
+
+#: custom-dpi.ui.h:14
+msgid "This device does not support synchronisation to hardware DPI buttons."
+msgstr ""
+"ამ მოწყობილობას აპარატურულ DPI-ის ღილაკებთან სინქრონიზაციის მხარდაჭერა არ "
+"გააჩნია."
+
+#: device-info.ui.h:1 polychromatic/controller/devices.py:1175
+msgid "Device Information"
+msgstr "დისკის ინფორმაცია"
+
+#. First column header for Device Info
+#: device-info.ui.h:3
+msgid "Data"
+msgstr "მონაცემები"
+
+#: device-info.ui.h:6 polychromatic/controller/devices.py:1245
+msgid "Inspect Matrix"
+msgstr "მატრიცის შემოწმება"
+
+#: dpi-control.ui.h:1
+msgid "DPI Control"
+msgstr "DPI კონტროლი"
+
+#: dpi-control.ui.h:2
+msgid "Lock X/Y axis"
+msgstr "X / Y ღერძების დაბლოკვა"
+
+#: dpi-control.ui.h:3
+msgid "Lock"
+msgstr "ჩაკეტვა"
+
+#: editor.ui.h:1 polychromatic/controller/editor.py:842
+msgid "Effect Editor"
+msgstr "ეფექტის რედაქტორი"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:3 main.ui.h:12
+msgid "&File"
+msgstr "&ფაილი"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:5 main.ui.h:21
+msgid "&Edit"
+msgstr "&ჩასწორება"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:7
+msgid "Shift LEDs"
+msgstr "LED-ების წანაცვლება"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:9 main.ui.h:14
+msgid "&View"
+msgstr "&ხედი"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:11 main.ui.h:16
+msgid "&Help"
+msgstr "&დახმარება"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: editor.ui.h:13
+msgid "&Tool"
+msgstr "&ხელსაწყოები"
+
+#: editor.ui.h:14
+msgid "Playback"
+msgstr "დაკვრა"
+
+#: editor.ui.h:15 polychromatic/controller/devices.py:991
+#: polychromatic/controller/devices.py:1116
+msgid "Colours"
+msgstr "ფერები"
+
+#: editor.ui.h:16
+msgid "Layers"
+msgstr "ფენები"
+
+#. Column title in effect editor
+#: editor.ui.h:18
+msgid "Layer"
+msgstr "ფენა"
+
+#. Column title in effect editor
+#: editor.ui.h:20 polychromatic/controller/devices.py:546
+#: polychromatic/controller/devices.py:1134
+msgid "Effect"
+msgstr "ეფექტი"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:22
+msgid "Raise the layer in the stack"
+msgstr "ფენის აწევა ნაკრებში"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:24
+msgid "Lower the layer in the stack"
+msgstr "ფენის დაწევა ნაკრებში"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:26
+msgid "Create a new layer in the stack"
+msgstr "ნაკრებში ახალი ფენის შექმნა"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:28
+msgid "Delete the selected layer"
+msgstr "მონიშნული ფენის წაშლა"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:30
+msgid "Duplicate the selected layer"
+msgstr "მონიშნული ფენის დუბლირება"
+
+#: editor.ui.h:31
+msgid "Properties"
+msgstr "თვისებები"
+
+#: editor.ui.h:32
+msgid "Main Toolbar"
+msgstr "ხელსაწყოთა მთავარი ზოლი"
+
+#: editor.ui.h:33
+msgid "Frames"
+msgstr "ფრეიმები"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:35
+msgid "Create a blank frame after the current position"
+msgstr "ცარიელი კადრის შექმნა მიმდინარე მდებარეობის შემდეგ"
+
+#: editor.ui.h:36
+msgid "New"
+msgstr "ახალი"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:38
+msgid "Permanently delete this frame"
+msgstr "ამ კადრის სამუდამოდ წაშლა"
+
+#: editor.ui.h:39 main.ui.h:41 polychromatic/controller/effects.py:283
+msgid "Delete"
+msgstr "წაშლა"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:41
+msgid "Create a copy of the current frame after this position"
+msgstr "მიმდინარე კადრის ასლის შექმნა მიმდინარე მდებარეობის შემდეგ"
+
+#: editor.ui.h:42 polychromatic/controller/effects.py:276
+msgid "Clone"
+msgstr "კლონირება"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:44
+msgid "Place this frame a step before the current position"
+msgstr "ამ კადრის მოთავსება მიმდინარე მდებარეობიდან ერთი ნაბიჯით უკან"
+
+#: editor.ui.h:45
+msgid "Move Left"
+msgstr "მარცხნივ გაწევა"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:47
+msgid "Place this frame a step after the current position"
+msgstr "ამ კადრის მოთავსება მიმდინარე მდებარეობიდან ერთი ნაბიჯის შემდეგ"
+
+#: editor.ui.h:48
+msgid "Move Right"
+msgstr "მარჯვნივ გაწევა"
+
+#: editor.ui.h:49
+msgid "Jump to the start of the sequence"
+msgstr "მიმდევრობის დასაწყისზე გადახტომა"
+
+#: editor.ui.h:50
+msgid "Jump to Start"
+msgstr "დასაწყისში გადახტომა"
+
+#: editor.ui.h:51
+msgid "Step backward one frame"
+msgstr "ერთი კადრით უკან გადასვლა"
+
+#: editor.ui.h:52
+msgid "Previous Frame"
+msgstr "წინა კადრი"
+
+#: editor.ui.h:53
+msgid "Preview the effect from the beginning"
+msgstr "ეფექტის გადახედვა თავიდან"
+
+#: editor.ui.h:54 polychromatic/controller/effects.py:262
+msgid "Play"
+msgstr "დაკვრა"
+
+#: editor.ui.h:55
+msgid "Stop playback"
+msgstr "დაკვრის გაჩერება"
+
+#: editor.ui.h:56
+msgid "Pause"
+msgstr "შეჩერება"
+
+#: editor.ui.h:57
+msgid "Step forward one frame"
+msgstr "ერთი კადრით წინ"
+
+#: editor.ui.h:58
+msgid "Next Frame"
+msgstr "შედმეგი კადრი"
+
+#: editor.ui.h:59
+msgid "Jump to the last frame of the sequence"
+msgstr "გადახტომა მიმდევრობის ბოლო კადრზე"
+
+#: editor.ui.h:60
+msgid "Jump to End"
+msgstr "ბოლოში გადახტომა"
+
+#: editor.ui.h:61
+msgid "Toggle whether this effect should loop"
+msgstr "გადართვა, იქნება ეფექტი განმეორებადი, თუ არა"
+
+#: editor.ui.h:62
+msgid "Loop"
+msgstr "მარყუჟი"
+
+#: editor.ui.h:63
+msgid ""
+"Frames per second to play the sequence.\n"
+"\n"
+"Note that frame rates that are too high may not\n"
+"play properly due to bottlenecks with the driver, \n"
+"lighting firmware or software. This may potentially\n"
+"shorten the LED's lifespan."
+msgstr ""
+"კადრი/წამში მიმდევრობის დაკვრისას.\n"
+"\n"
+"დაიმახსოვრეთ, რომ კადრების სიჩქარე, რომლებიც ძალიან დიდია,\n"
+"შეიძლება ნორმალურად არ გამოჩნდეს, დრაივერის შეცდომების\n"
+"განათების მიკროკოდის ან პროგრამების გამო. ამან, შეიძლება,\n"
+"LED-ების სიცოცხლის დრო მნიშვნელოვნად შეამციროს."
+
+#: editor.ui.h:69
+msgid "Frames per second to play the sequence"
+msgstr "კადრი/წამში მიმდევრობის დაკვრისას"
+
+#: editor.ui.h:70
+msgid " fps"
+msgstr " კადრი/წმ"
+
+#: editor.ui.h:71
+msgid "Current Colour"
+msgstr "მიმდინარე ფერი"
+
+#. Tooltip when hovering over the \"custom\" button
+#: editor.ui.h:73
+msgid "Open System Colour Picker"
+msgstr "სისტემურ ფერების ამრჩევის გახსნა"
+
+#. Status bar hint when hovering over the \"custom\" button
+#: editor.ui.h:75
+msgid "Choose a custom colour using the system's colour picker"
+msgstr "აირჩიეთ თქვენი ფერი სისტემის ფერის ამრჩევით"
+
+#: editor.ui.h:76
+msgid "Increase the Hue"
+msgstr "ტონის გაზრდა"
+
+#: editor.ui.h:77
+msgid "Hue"
+msgstr "ჰუე"
+
+#: editor.ui.h:78
+msgid "Saturation"
+msgstr "გაჯერებულობა"
+
+#: editor.ui.h:79
+msgid "Decrease"
+msgstr "შემცირება"
+
+#: editor.ui.h:80
+msgid ""
+"Protip: You can scroll over these buttons to quickly change the "
+"corresponding HSL attribute!"
+msgstr ""
+"მინიშნება: ამ ღილაკების შესაბამისი HSL ატრიბუტის სწრაფად შესაცვლელად, "
+"შეგიძლიათ, ზედ გადაახვიოთ!"
+
+#: editor.ui.h:81
+msgid "Increase"
+msgstr "გაზრდა"
+
+#: editor.ui.h:82
+msgid "Lightness"
+msgstr "სიკაშკაშე"
+
+#. Menu bar item
+#: editor.ui.h:85
+msgid "Save and Close"
+msgstr "შენახვა და დახურვა"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:87
+msgid "Save the effect to disk, and close the editor"
+msgstr "ეფექტის დისკზე შენახვა და რედაქტორის დახურვა"
+
+#. Menu bar item or dialog button
+#: editor.ui.h:89
+msgid "Save"
+msgstr "შენახვა"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:91
+msgid "Save any unsaved data to disk, just in case!"
+msgstr "შეინახეთ შეუნახავი მონაცემები დისკზე, ყოველი შემთხვევისთვის!"
+
+#. Menu bar item - User wishes to discard their changes
+#: editor.ui.h:93 polychromatic/controller/editor.py:909
+msgid "Revert"
+msgstr "დაბრუნება"
+
+#: editor.ui.h:94
+msgid "Undo any changes and reload from disk"
+msgstr "ყველა ცვლილების გაუქმება და დისკიდან თავიდან ჩატვრთვა"
+
+#. Menu bar item
+#: editor.ui.h:96
+msgid "Close and Discard Changes"
+msgstr "დახურვა ცვლილებების მოცილება"
+
+#: editor.ui.h:97
+msgid "Close the editor and discard any unsaved changes"
+msgstr "რედაქტორის დახურვა და ყველა შეუნახავი ცვლილების მოცილება"
+
+#. Menu bar item
+#: editor.ui.h:99
+msgid "Draw"
+msgstr "ხატვა"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:101
+msgid "Draw the selected colour to LEDs by clicking or dragging over them"
+msgstr ""
+"დახატეთ მონიშნული ფერები LED-ებზე მათზე დაწკაპუნებით ან მათზე გადათრევით"
+
+#. Menu bar item
+#: editor.ui.h:103
+msgid "Picker"
+msgstr "არჩევი"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:105
+msgid "Take an existing colour from an LED to draw with"
+msgstr "აიღეთ არსებული ფერი LED-დან, მისით დასახატად"
+
+#. Menu bar item
+#: editor.ui.h:107
+msgid "Eraser"
+msgstr "საშლელი"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:109
+msgid "Erase the colour from an LED by clicking or dragging over them"
+msgstr "წაშალეთ ფერი LED-დან მასზე დაწკაპუნების ან მასზე გადათრევის საშუალებით"
+
+#. Menu bar toggle
+#: editor.ui.h:111
+msgid "Device Graphic"
+msgstr "მოწყობილობის გრაფიკა"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:113
+msgid ""
+"Present the LEDs as a graphical represention of the actual hardware (where "
+"available)"
+msgstr ""
+"LED-ების, როგორც ნამდვილი აპარატურის გრაფიკული რეპრეზენტაციის წარმოდგენა "
+"(როცა ხელმისაწვდომია)"
+
+#. Menu bar toggle
+#: editor.ui.h:115
+msgid "Grid"
+msgstr "ბადე"
+
+#: editor.ui.h:116
+msgid "Present the LEDs in a grid"
+msgstr "LED-ების ბადეში წარმოდგენა"
+
+#: editor.ui.h:117
+msgid "Edit Metadata..."
+msgstr "მეტამონაცემების ჩასწორება..."
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:119
+msgid "Edit the name, icon and other related data for this effect"
+msgstr "ჩაასწორეთ ამ ეფექტის სახელი, ხატულა და სხვა მონაცემები"
+
+#: editor.ui.h:120
+msgid "Duplicate Layer"
+msgstr "ფენის დუბლირება"
+
+#: editor.ui.h:121
+msgid "Delete Layer"
+msgstr "ფენის წაშლა"
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:123
+msgid "Permanently delete the selected layer"
+msgstr "მონიშნული ფენის სამუდამო წაშლა"
+
+#. Keyboard Shortcut
+#: editor.ui.h:125
+msgid "Del"
+msgstr "Del"
+
+#: editor.ui.h:126
+msgid "Raise Layer"
+msgstr "ფენის აწევა"
+
+#. Keyboard Shortcut
+#: editor.ui.h:128
+msgid "Alt+Up"
+msgstr "Alt+მაღლა"
+
+#: editor.ui.h:129
+msgid "Lower Layer"
+msgstr "ფენის დაწევა"
+
+#. Keyboard Shortcut
+#: editor.ui.h:131
+msgid "Alt+Down"
+msgstr "Alt+Down"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:133
+msgid "Shift Left"
+msgstr "მარცხნივ წანაცვლება"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:135
+msgid "Push all LEDs on this layer/frame by one column to the left"
+msgstr "ამ ფენაში/კადრში არსებული LED-ების გადაწევა ერთი სვეტით მარცხნივ"
+
+#. Keyboard Shortcut
+#: editor.ui.h:137
+msgid "Ctrl+Shift+Left"
+msgstr "Ctrl+Shift+მარცხნივ"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:139
+msgid "Shift Right"
+msgstr "მარჯვნივ წანაცვლება"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:141
+msgid "Push all LEDs on this layer/frame by one column to the right"
+msgstr "ამ ფენაში/კადრში არსებული LED-ების გადაწევა ერთი სვეტით მარჯვნივ"
+
+#. Keyboard Shortcut
+#: editor.ui.h:143
+msgid "Ctrl+Shift+Right"
+msgstr "Ctrl+Shift+მარჯვნივ"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:145
+msgid "Shift Up"
+msgstr "ანაცვლება"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:147
+msgid "Push all LEDs on this layer/frame by one row upwards"
+msgstr "ამ ფენაში/კადრში არსებული LED-ების აწევა ერთი მწკრივით მაღლა"
+
+#. Keyboard Shortcut
+#: editor.ui.h:149
+msgid "Ctrl+Shift+Up"
+msgstr "Ctrl+Shift+Up"
+
+#. Menu bar item: To move LEDs in a specific direction
+#: editor.ui.h:151
+msgid "Shift Down"
+msgstr "Shift Down"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:153
+msgid "Push all LEDs on this layer/frame by one row downwards"
+msgstr "ამ ფენაში/კადრში არსებული LED-ების დაწევა ერთი მწკრივით დაბლა"
+
+#. Keyboard Shortcut
+#: editor.ui.h:155
+msgid "Ctrl+Shift+Down"
+msgstr "Ctrl+Shift+Down"
+
+#: editor.ui.h:156
+msgid "New Layer..."
+msgstr "ახალი ფენა..."
+
+#: editor.ui.h:157
+msgid "Zoom In"
+msgstr "გადიდება"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:159
+msgid "Enlarge the graphic or grid in the viewport"
+msgstr "გრაფიკის ან ბადის გადიდება ხედვის წერტილში"
+
+#: editor.ui.h:160
+msgid "Zoom Out"
+msgstr "დაპატარავება"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:162
+msgid "Shrink the graphic or grid in the viewport"
+msgstr "გრაფიკის ან ბადის დაპატარავება ხედვის წერტილში"
+
+#: editor.ui.h:163
+msgid "Reset Zoom"
+msgstr "გადიდების საწყისი პარამეტრები"
+
+#. Appears in the status bar when hovered
+#: editor.ui.h:165
+msgid "Reset the size of the graphic or grid in the viewport"
+msgstr "გრაფიკის ან ბადის ზომის შეცვლა ხედვის წერტილში"
+
+#: editor.ui.h:166
+msgid "Move Frame Left"
+msgstr "კადრის გადატანა მარცხნივ"
+
+#. Keyboard Shortcut
+#: editor.ui.h:168
+msgid "Alt+Left"
+msgstr "Alt+მარცხნივ"
+
+#: editor.ui.h:169
+msgid "Move Frame Right"
+msgstr "კადრის გადატანა მარჯვნივ"
+
+#. Keyboard Shortcut
+#: editor.ui.h:171
+msgid "Alt+Right"
+msgstr "Alt+მარჯვნივ"
+
+#: editor.ui.h:172 main.ui.h:23 polychromatic/controller/devices.py:788
+#: polychromatic/controller/devices.py:845
+#: polychromatic/controller/devices.py:849
+#: polychromatic/controller/devices.py:884
+#: polychromatic/controller/devices.py:902
+#: polychromatic/controller/menubar.py:214
+msgid "Online Help"
+msgstr "ონლაინ დახმარება"
+
+#: editor.ui.h:173 main.ui.h:27 polychromatic/controller/menubar.py:232
+#: polychromatic/controller/menubar.py:458
+msgid "Website"
+msgstr "ვებგვერდი"
+
+#: editor.ui.h:174 main.ui.h:30 polychromatic/controller/menubar.py:236
+msgid "What's New?"
+msgstr "რა არის ახალი?"
+
+#: editor.ui.h:175 main.ui.h:24
+msgid "Report a Bug"
+msgstr "შეცდომის პატაკი"
+
+#: editor.ui.h:176 main.ui.h:26 polychromatic/controller/menubar.py:244
+#: polychromatic/controller/menubar.py:336
+msgid "Donate"
+msgstr "შემოწირულობა"
+
+#: editor.ui.h:177 main.ui.h:28
+msgid "About"
+msgstr "პროგრამის შესახებ"
+
+#: editor.ui.h:178
+msgid "Edit Triggers..."
+msgstr "ტრიგერების ჩასწორება..."
+
+#. Appears as a tooltip or in the status bar when hovered
+#: editor.ui.h:180
+msgid ""
+"Configure automation for this effect, such as time of day, or when a process "
+"is running"
+msgstr ""
+"მიუთითეთ ამ ეფექტის ავტომატიზაცია. როგორიცაა დღის დრო, ან როცა პროცესი "
+"გაშვებულია"
+
+#: editor.ui.h:181
+msgid "New Frame"
+msgstr "ახალი კადრი"
+
+#: editor.ui.h:182 polychromatic/controller/editor.py:1522
+msgid "Delete Frame"
+msgstr "კადრის წაშლა"
+
+#: editor.ui.h:183
+msgid "Clone Frame"
+msgstr "კადრის დუბლირება"
+
+#: editor.ui.h:184
+msgid "Start playback"
+msgstr "დაკვრის დაწყება"
+
+#. Button to stop all background tasks
+#: editor.ui.h:185 procviewer.ui.h:11
+msgid "Stop"
+msgstr "გაჩერება"
+
+#: editor.ui.h:186
+msgid "Pause playback"
+msgstr "დაკვრის შეჩერება"
+
+#. Keyboard Shortcut
+#: editor.ui.h:188 polychromatic/backends/openrazer.py:507
+#: polychromatic/backends/openrazer.py:849
+msgid "Left"
+msgstr "მარცხნივ"
+
+#. Keyboard Shortcut
+#: editor.ui.h:190 polychromatic/backends/openrazer.py:509
+#: polychromatic/backends/openrazer.py:847
+msgid "Right"
+msgstr "მარჯვნივ"
+
+#. Keyboard Shortcut
+#: editor.ui.h:192
+msgid "Home"
+msgstr "სახლი"
+
+#. Keyboard Shortcut
+#: editor.ui.h:194
+msgid "End"
+msgstr "ბოლო"
+
+#: editor.ui.h:195
+msgid "Show Key Labels"
+msgstr "ღილაკის ჭდეების ჩვენება"
+
+#: editor.ui.h:196
+msgid "Show or hide the labels and symbols on keys"
+msgstr "ღილაკებზე ჭდეების და სიმბოლოების ჩვენება ან დამალვა"
+
+#: editor.ui.h:197
+msgid "Open Colour Picker"
+msgstr "ფერის ამრჩევის გახსნა"
+
+#: editor.ui.h:198
+msgid "Increase Hue"
+msgstr "ტონის აწევა"
+
+#: editor.ui.h:199
+msgid ""
+"Changes the HSL attribute for the current colour. Useful for blending "
+"colours!"
+msgstr "ცვლის მიმდინარე ფერის HSL ატრიბუტს. გამოსადეგია ფერების მისაბმელად!"
+
+#: editor.ui.h:200
+msgid "Decrease Hue"
+msgstr "ტონის შემცირება"
+
+#: editor.ui.h:201
+msgid "Increase Saturation"
+msgstr "გაჯერებულობის გაზრდა"
+
+#: editor.ui.h:202
+msgid "Decrease Saturation"
+msgstr "გაჯერებულობის შემცირება"
+
+#: editor.ui.h:203
+msgid "Increase Lightness"
+msgstr "განათებულობის გაზრდა"
+
+#: editor.ui.h:204
+msgid "Decrease Lightness"
+msgstr "განათებულობის შემცირება"
+
+#: editor.ui.h:205
+msgid "Edit Saved Colours"
+msgstr "შენახული ფერების ჩასწორება"
+
+#: editor.ui.h:206 polychromatic/controller/editor.py:1465
+msgid "Modify or reorder your saved colours"
+msgstr "თქვენი შენახული ფერების შეცვლა და გადალაგება"
+
+#: effect-metadata-editor.ui.h:1 polychromatic/controller/effects.py:350
+msgid "Edit Metadata"
+msgstr "მეტამონაცემების ჩასწორება"
+
+#: effect-metadata-editor.ui.h:2
+msgid "Effect Details"
+msgstr "ეფექტის დეტალები"
+
+#: effect-metadata-editor.ui.h:3 polychromatic/controller/devices.py:1054
+msgid "Name"
+msgstr "სახელი"
+
+#: effect-metadata-editor.ui.h:4
+msgid "Author"
+msgstr "ავტორი"
+
+#: effect-metadata-editor.ui.h:5 preferences.ui.h:45
+msgid "Icon"
+msgstr "ხატულა"
+
+#: effect-metadata-editor.ui.h:6 polychromatic/controller/effects.py:328
+msgid "Summary"
+msgstr "შეჯამება"
+
+#: effect-metadata-editor.ui.h:7 polychromatic/controller/devices.py:1053
+msgid "Hardware"
+msgstr "აპარატურა"
+
+#: effect-metadata-editor.ui.h:8 procviewer.ui.h:6
+msgid "Device"
+msgstr "მოწყობილობა"
+
+#: effect-metadata-editor.ui.h:9
+msgid "Mapping"
+msgstr "მიბმა"
+
+#: effect-metadata-editor.ui.h:10
+msgid "Use a graphic resembling this device:"
+msgstr "გრაფიკის გამოყენება, რომელიც წააგავს ამ მოწყობილობას:"
+
+#: effect-metadata-editor.ui.h:11
+msgid "Use a grid"
+msgstr "ბადის გამოყენება"
+
+#: effect-metadata-editor.ui.h:12
+msgid "Preview"
+msgstr "მინიატურა"
+
+#. Appears at the top of the icon picker when the user selects a GIF as their tray icon
+#: icon-picker.ui.h:2
+msgid "Heads up! Animated GIFs are not supported by all desktop environments."
+msgstr "ანიმირებული GIF-ები ყველა სამუშაო გარემოს მიერ მხარდაჭერილი არაა."
+
+#: icon-picker.ui.h:3 polychromatic/controller/procviewer.py:163
+#: preferences.ui.h:37
+msgid "Tray Applet"
+msgstr "ხატულა სისტემის საათთან"
+
+#. Icon Picker: Tab name for built-in graphics
+#: icon-picker.ui.h:5
+msgid "Emblems"
+msgstr "ემბლემა"
+
+#. Icon Picker: Tab name for software installed on the user's system
+#: icon-picker.ui.h:7
+msgid "Applications"
+msgstr "აპლიკაციები"
+
+#. Icon Picker: Tab name for the user to store their own icons
+#: icon-picker.ui.h:9
+msgid "Custom"
+msgstr "ხელით მითითება"
+
+#. Tooltip hovering over the icon picker's browse button
+#: icon-picker.ui.h:11
+msgid "Browse for an icon to import"
+msgstr "შემოსატანი ხატულის მოძებნა"
+
+#. Tooltip hovering over the icon picker's delete button
+#: icon-picker.ui.h:13
+msgid "Delete this custom icon from your list"
+msgstr "თქვენი სიიდან ამ მომხმარებლის ხატულის წაშლა"
+
+#. Help text when inspecting a device's matrix
+#: inspect-matrix.ui.h:2
+msgid ""
+"Use the arrow keys, click or drag on the table below to light up that LED on "
+"the physical device."
+msgstr ""
+"გამოიყენეთ ისრის ღილაკები, დააწკაპუნეთ ან გადაათრიეთ ქვემო ცხრილზე, რათა ის "
+"LED-ი ფიზიკურ მოწყობილობაზე გაანათოთ."
+
+#. Generic loading text
+#: loading.ui.h:2 polychromatic/controller/procviewer.py:105
+msgid "Please wait..."
+msgstr "გთხოვთ, მოითმინოთ..."
+
+#: main.ui.h:1
+msgid "Polychromatic"
+msgstr "Polychromatic"
+
+#: main.ui.h:2 polychromatic/controller/devices.py:68 preferences.ui.h:13
+msgid "Devices"
+msgstr "მოწყობილობა"
+
+#: main.ui.h:3 polychromatic/controller/devices.py:983
+#: polychromatic/controller/effects.py:33 preferences.ui.h:25
+msgid "Effects"
+msgstr "ეფექტები"
+
+#: main.ui.h:4 polychromatic/controller/presets.py:25 preferences.ui.h:26
+msgid "Presets"
+msgstr "პრესეტები"
+
+#: main.ui.h:5 preferences.ui.h:27
+msgid "Triggers"
+msgstr "ტრიგერები"
+
+#. Heading containing buttons for the specific feature
+#: main.ui.h:7
+msgid "Tasks"
+msgstr "Tasks"
+
+#. Button to a section for activating settings to all devices
+#: main.ui.h:9
+msgid "Apply to All"
+msgstr "ყველაზე გადატარება"
+
+#: main.ui.h:10
+msgid "Close Application"
+msgstr "აპლიკაციის დახურვა"
+
+#. The & character is for keyboard navigation (when holding the ALT key)
+#: main.ui.h:18
+msgid "&Tools"
+msgstr "&ხელსაწყოები"
+
+#: main.ui.h:19
+msgid "OpenRazer"
+msgstr "OpenRazer"
+
+#: main.ui.h:22
+msgid "New Effect..."
+msgstr "ახალი ეფექტი..."
+
+#: main.ui.h:25 polychromatic/controller/menubar.py:159
+msgid "Hide Menu Bar"
+msgstr "მენიუს ზოლის დამალვა"
+
+#: main.ui.h:29
+msgid "Quit"
+msgstr "გასვლა"
+
+#: main.ui.h:31
+msgid "Restart Daemon"
+msgstr "დემონის გადატვირთვა"
+
+#: main.ui.h:32
+msgid "Open Log..."
+msgstr "ჟურნალის ნახვა..."
+
+#: main.ui.h:33
+msgid "Configure..."
+msgstr "კონფიგურაცია..."
+
+#: main.ui.h:34
+msgid "About OpenRazer"
+msgstr "OpenRazer-ის შესახებ"
+
+#: main.ui.h:35
+msgid "New Preset..."
+msgstr "ახალი თამაში..."
+
+#: main.ui.h:36
+msgid "New Preset from Current Devices..."
+msgstr "ახალი პრესეტი მიმდინარე მოწყობილობებიდან..."
+
+#: main.ui.h:37
+msgid "Restart Tray Applet"
+msgstr "საათთან ხატულის გადატვირთვა"
+
+#: main.ui.h:38
+msgid "View Background Tasks"
+msgstr "ფონური ამოცანების ნახვა"
+
+#: main.ui.h:39
+msgid "Keep the Menu Bar"
+msgstr "მენიუს ზოლის დატოვება"
+
+#: main.ui.h:40
+msgid "Duplicate"
+msgstr "დუბლიკაცია"
+
+#: main.ui.h:42 preferences.ui.h:1
+msgid "Preferences"
+msgstr "მორგება"
+
+#: main.ui.h:43 polychromatic/controller/devices.py:780
+#: polychromatic/controller/devices.py:794
+#: polychromatic/controller/devices.py:878
+#: polychromatic/controller/devices.py:896
+msgid "Troubleshoot"
+msgstr "პრობლემების პოვნა"
+
+#: main.ui.h:44 procviewer.ui.h:7
+msgid "Refresh"
+msgstr "განახლება"
+
+#: main.ui.h:45
+msgid "Import Effect..."
+msgstr "ეფექტის შემოტანა..."
+
+#: main.ui.h:46 polychromatic/controller/menubar.py:187
+msgid "Force Refresh"
+msgstr "ძალით განახლება"
+
+#: new-effect.ui.h:1 polychromatic/controller/effects.py:41
+#: polychromatic/controller/effects.py:76
+#: polychromatic/controller/effects.py:104
+#: polychromatic/controller/effects.py:533
+#: polychromatic/controller/effects.py:549
+msgid "New Effect"
+msgstr "ახალი ეფექტი"
+
+#. Shown when creating a new effect
+#: new-effect.ui.h:3
+msgid "Please choose the type of effect to create."
+msgstr "აირჩიეთ შესაქმნელი ეფექტის ტიპი."
+
+#: new-effect.ui.h:4
+msgid "Create simple effects using a layer-based system"
+msgstr "შექმენით მარტივი ეფექტები ფენების სისტემით"
+
+#. Button when creating a new effect
+#: new-effect.ui.h:6 polychromatic/controller/effects.py:299
+msgid "Layered"
+msgstr "ფენებიანი"
+
+#: new-effect.ui.h:7
+msgid "Create an animated (or static) using frames and pixels"
+msgstr "შექმენით ანიმაცია (ან სტატიკა) კადრებითა და პიქსელებით"
+
+#. Button when creating a new effect
+#: new-effect.ui.h:9 polychromatic/controller/effects.py:301
+msgid "Sequence"
+msgstr "მიმდევრობა"
+
+#: new-effect.ui.h:10
+msgid "Write the effect using the Python programming language"
+msgstr "დაწერეთ ეფექტი პროგრამირების ენაში Python"
+
+#. Button when creating a new effect
+#: new-effect.ui.h:12 polychromatic/controller/effects.py:300
+msgid "Script"
+msgstr "სკრიპტი"
+
+#. Shown when creating a new effect
+#: new-effect.ui.h:14
+msgid "Hover for more details"
+msgstr "მეტი დეტალისთვის გადაატარეთ თაგუნა"
+
+#: openrazer-config.ui.h:1
+msgid "OpenRazer Configuration"
+msgstr "OpenRazer-ის მორგება"
+
+#. Tab button for configuring OpenRazer
+#: openrazer-config.ui.h:3
+msgid "Daemon"
+msgstr "Daemon"
+
+#: openrazer-config.ui.h:4
+msgid ""
+"These settings only apply to the OpenRazer daemon. They are not supported by "
+"this application."
+msgstr ""
+"ეს პარამეტრები მხოლოდ OpenRazer-ის დემონს ეხება. ისინი ამ აპლიკაციის მიერ "
+"მხარდაჭერილი არაა."
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:6
+msgid "Enable verbose logging"
+msgstr "ჟურნალში დამატებითი ჩანაწერების ჩართვა"
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:8
+msgid "Turn off brightness when screen saver or lock screen is activated"
+msgstr ""
+"სიკაშკაშის გამორთვა, როცა აქტიურია ეკრანის დამცველი, ან ეკრანი დაბლოკილია"
+
+#. Checkbox for configuring OpenRazer
+#: openrazer-config.ui.h:10
+msgid "Show battery notifications"
+msgstr "ელემენტის გაფრთხილებების ჩვენება"
+
+#: openrazer-config.ui.h:12
+#, no-c-format
+msgid "Only notify when device % reaches"
+msgstr "გაფრთხილება, მხოლოდ, მაშინ, როცა ელემენტის % მიაღწევს"
+
+#. Label for configuring OpenRazer
+#: openrazer-config.ui.h:14
+msgid "Reminder frequency"
+msgstr "შემხსენებლის სიხშირე"
+
+#. Suffix for a spinner control
+#: openrazer-config.ui.h:16
+msgid "minute(s)"
+msgstr "წუთი"
+
+#: openrazer-config.ui.h:17
+msgid "Restore last used settings on daemon start"
+msgstr "დემონის გაშვებისას ბოლოს გამოყენებული პარამეტრების აღდგენა"
+
+#: openrazer-config.ui.h:18
+msgid ""
+"Disabling this may cause the current hardware effect to be misrepresented. "
+"This is dependent on the device's firmware."
+msgstr ""
+"ამის გათიშვამ, შეიძლება, მიმდინარე აპარატურული ეფექტების არასწორი მუშაობა "
+"გამოწვიოს. ეს მოწყობილობის მიკროკოდზეა დამოკიდებული."
+
+#. Tab button for configuring OpenRazer
+#: openrazer-config.ui.h:20
+msgid "Client"
+msgstr "კლიენტი"
+
+#: openrazer-config.ui.h:21
+msgid ""
+"These settings will be used by Polychromatic when interfacing with the "
+"OpenRazer daemon."
+msgstr ""
+"ეს პარამეტრები Polychromatic-ის მიერ OpenRazer-ის დემონთან ურთიერთობისას "
+"გამოიყენება."
+
+#. Label for configuring OpenRazer
+#: openrazer-config.ui.h:23
+msgid "Ripple Refresh Rate"
+msgstr "განახლების სიხშირე"
+
+#. Suffix for a spinner control
+#: openrazer-config.ui.h:25
+msgid "seconds"
+msgstr "წამი"
+
+#: polychromatic/backends/openrazer.py:409
+#: polychromatic/controller/devices.py:1097
+#: polychromatic/controller/devices.py:1411
+msgid "DPI"
+msgstr "DPI"
+
+#: polychromatic/backends/openrazer.py:487
+msgid "Scroll Wheel"
+msgstr "თაგუნას ბორბალი"
+
+#: polychromatic/backends/openrazer.py:493
+msgid "Logo"
+msgstr "ლოგო"
+
+#: polychromatic/backends/openrazer.py:497
+msgid "Hex Ring"
+msgstr "Hex Ring"
+
+#: polychromatic/backends/openrazer.py:501
+msgid "Laptop Lid"
+msgstr "ლეპტოპის თავსახური"
+
+#: polychromatic/backends/openrazer.py:511
+msgid "Backlight"
+msgstr "გამოკვეთა"
+
+#: polychromatic/backends/openrazer.py:513
+msgid "Charging"
+msgstr "იტენება"
+
+#: polychromatic/backends/openrazer.py:515
+msgid "Fast Charging"
+msgstr "სწრაფი დატენვა"
+
+#: polychromatic/backends/openrazer.py:517
+msgid "Fully Charging"
+msgstr "სრული დატენვა"
+
+#: polychromatic/backends/openrazer.py:689
+#: polychromatic/backends/openrazer.py:708
+#: polychromatic/controller/devices.py:982
+msgid "Brightness"
+msgstr "სიკაშკაშე"
+
+#: polychromatic/backends/openrazer.py:712
+#: polychromatic/backends/openrazer.py:779
+msgid "On"
+msgstr "ჩართ"
+
+#: polychromatic/backends/openrazer.py:713
+#: polychromatic/backends/openrazer.py:759
+msgid "Off"
+msgstr "გამორთულია"
+
+#. Preferences Label
+#: polychromatic/backends/openrazer.py:714 preferences.ui.h:39
+msgid "Enabled"
+msgstr "ჩაირთო"
+
+#: polychromatic/backends/openrazer.py:799
+#: polychromatic/controller/editor.py:853
+msgid "Spectrum"
+msgstr "სპექტრი"
+
+#: polychromatic/backends/openrazer.py:823
+#: polychromatic/controller/editor.py:852
+msgid "Wave"
+msgstr "ტალღა"
+
+#: polychromatic/backends/openrazer.py:835
+msgid "Up"
+msgstr "მაღლა"
+
+#: polychromatic/backends/openrazer.py:837
+msgid "Down"
+msgstr "ქვემოთ"
+
+#: polychromatic/backends/openrazer.py:841
+msgid "Clockwise"
+msgstr "საათის ისრის მიმართულებით"
+
+#: polychromatic/backends/openrazer.py:843
+msgid "Anti-clockwise"
+msgstr "საათის ისრის მოძრაობის საწინააღმდეგო მიმართულებით"
+
+#: polychromatic/backends/openrazer.py:885
+msgid "Ripple"
+msgstr "ჭავლი"
+
+#: polychromatic/backends/openrazer.py:891
+#: polychromatic/backends/openrazer.py:1073
+#: polychromatic/backends/openrazer.py:1177
+msgid "Random"
+msgstr "შემთხვევითი"
+
+#: polychromatic/backends/openrazer.py:898
+#: polychromatic/backends/openrazer.py:1087
+#: polychromatic/backends/openrazer.py:1186
+msgid "Single"
+msgstr "ერთი"
+
+#: polychromatic/backends/openrazer.py:930
+msgid "Reactive"
+msgstr "რეაქტიული"
+
+#: polychromatic/backends/openrazer.py:935
+msgid "Fast (0.5s)"
+msgstr "ჩქარი (0.5წმ)"
+
+#: polychromatic/backends/openrazer.py:941
+msgid "Medium (1s)"
+msgstr "საშუალო (1წმ)"
+
+#: polychromatic/backends/openrazer.py:947
+msgid "Slow (1.5s)"
+msgstr "ნელი (1.5წმ)"
+
+#: polychromatic/backends/openrazer.py:952
+msgid "Very Slow (2s)"
+msgstr "ძალიან ნელი (2წმ)"
+
+#: polychromatic/backends/openrazer.py:985
+msgid "Blinking"
+msgstr "ციმციმი"
+
+#: polychromatic/backends/openrazer.py:1010
+#: polychromatic/backends/openrazer.py:1265
+#: polychromatic/controller/editor.py:849
+msgid "Static"
+msgstr "სტატიკური"
+
+#: polychromatic/backends/openrazer.py:1067 tests/internals.py:39
+msgid "Breath"
+msgstr "სუნთქვა"
+
+#: polychromatic/backends/openrazer.py:1080
+msgid "Mono"
+msgstr "მონო"
+
+#: polychromatic/backends/openrazer.py:1096
+#: polychromatic/backends/openrazer.py:1197
+msgid "Dual"
+msgstr "ორმაგი"
+
+#: polychromatic/backends/openrazer.py:1104
+msgid "Triple"
+msgstr "სამმაგი"
+
+#: polychromatic/backends/openrazer.py:1163
+msgid "Starlight"
+msgstr "ვარსკვლავთნათება"
+
+#: polychromatic/backends/openrazer.py:1167
+msgid "Fast"
+msgstr "სწრაფი"
+
+#: polychromatic/backends/openrazer.py:1168
+msgid "Medium"
+msgstr "საშუალო"
+
+#: polychromatic/backends/openrazer.py:1169
+msgid "Slow"
+msgstr "ნელი"
+
+#: polychromatic/backends/openrazer.py:1261
+msgid "Pulsate"
+msgstr "პულსაცია"
+
+#: polychromatic/backends/openrazer.py:1299
+msgid "X Hz (Y msec latency)"
+msgstr "X ჰც (Y მწმ დაყოვნება)"
+
+#: polychromatic/backends/openrazer.py:1328
+msgid "Poll Rate"
+msgstr "გამოთხოვის სიხშირე"
+
+#: polychromatic/backends/openrazer.py:1349
+msgid "Game Mode"
+msgstr "თამაშის რეჟიმი"
+
+#: polychromatic/backends/openrazer.py:1350
+msgid "Disable Alt+Tab, Alt+F4 and Win keys"
+msgstr "Alt+Tab, Alt+F4 და Win ღილაკების გათიშვა"
+
+#: polychromatic/backends/openrazer.py:1393
+msgid "Sleep mode after"
+msgstr "ძილი დროის შემდეგ"
+
+#: polychromatic/backends/openrazer.py:1395
+msgid "minute"
+msgstr "წუთი"
+
+#: polychromatic/backends/openrazer.py:1396
+msgid "minutes"
+msgstr "წუთი"
+
+#: polychromatic/backends/openrazer.py:1428
+msgid "Enter low power at"
+msgstr "დამჯდარი ელემენტის რეჟიმი"
+
+#: polychromatic/backends/openrazer.py:1443
+msgid "Tactile"
+msgstr "სენსორული"
+
+#: polychromatic/backends/openrazer.py:1448
+msgid "Free Spin"
+msgstr "Free Spin"
+
+#: polychromatic/backends/openrazer.py:1464
+msgid "Scroll Mode"
+msgstr "ჩოჩიის რეჟიმი"
+
+#: polychromatic/backends/openrazer.py:1484
+msgid "Scroll Acceleration"
+msgstr "გადახვევის აჩქარება"
+
+#: polychromatic/backends/openrazer.py:1486
+msgid "Enable scroll acceleration"
+msgstr "გადახვევის აჩქარების ჩართვა"
+
+#: polychromatic/backends/openrazer.py:1504
+msgid "Smart Reel"
+msgstr "Smart Reel"
+
+#: polychromatic/backends/openrazer.py:1506
+msgid "Enable smart reel"
+msgstr "Smart reel-ის ჩართვა"
+
+#: polychromatic/backends/openrazer.py:1518
+msgid "Typing (Increased debounce delay)"
+msgstr "კრეფა (გაზრდილი ღილაკის ამოწევის დაყოვნება)"
+
+#: polychromatic/backends/openrazer.py:1523
+msgid "Gaming (Faster triggering)"
+msgstr "გამაში (უფრო სწრაფი ტრიგერი)"
+
+#: polychromatic/backends/openrazer.py:1539
+msgid "Optimise for"
+msgstr "ოპტიმიზაცა"
+
+#: polychromatic/common.py:129
+msgid "USB Accessory"
+msgstr "USB აქსესუარი"
+
+#: polychromatic/common.py:130
+msgid "Display"
+msgstr "ეკრანი"
+
+#: polychromatic/common.py:131
+msgid "Fan"
+msgstr "ვენტილატორი"
+
+#: polychromatic/common.py:132
+msgid "Graphics Card"
+msgstr "ვიდეობარათი"
+
+#: polychromatic/common.py:133
+msgid "Headset"
+msgstr "ყურსაცვამები & მიკროფონი"
+
+#: polychromatic/common.py:134
+msgid "Keyboard"
+msgstr "კლავიატურა"
+
+#: polychromatic/common.py:135
+msgid "Keypad"
+msgstr "ციფრული კლავიატურა"
+
+#: polychromatic/common.py:136
+msgid "Laptop"
+msgstr "ლეპტოპი"
+
+#: polychromatic/common.py:137
+msgid "Mousemat"
+msgstr "თაგუნას ხალიჩა"
+
+#: polychromatic/common.py:138
+msgid "Mouse"
+msgstr "თაგუნა"
+
+#: polychromatic/common.py:139
+msgid "Memory"
+msgstr "მეხსიერება"
+
+#: polychromatic/common.py:140
+msgid "Speaker"
+msgstr "დინამიკი"
+
+#: polychromatic/common.py:141
+msgid "Stand"
+msgstr "დასადგამი"
+
+#: polychromatic/common.py:142
+msgid "Unrecognised"
+msgstr "უცნობი"
+
+#: polychromatic/common.py:162 polychromatic/preferences.py:449
+msgid "Green"
+msgstr "მწვანე"
+
+#: polychromatic/controller/devices.py:205
+#: polychromatic/controller/devices.py:224
+msgid "(Varies)"
+msgstr "(ცვალებადი)"
+
+#: polychromatic/controller/devices.py:273
+msgid "Device Info"
+msgstr "მოწყობლობის ინფორმაცია"
+
+#: polychromatic/controller/devices.py:589
+msgid "Effect Mode"
+msgstr "ეფექტის რეჟიმი"
+
+#: polychromatic/controller/devices.py:597
+msgid "Primary Colour"
+msgstr "პირველადი ფერი"
+
+#: polychromatic/controller/devices.py:598
+msgid "Secondary Colour"
+msgstr "მეორეული ფერი"
+
+#: polychromatic/controller/devices.py:599
+msgid "Tertiary Colour"
+msgstr "მესამეული ფერი"
+
+#: polychromatic/controller/devices.py:605
+msgid "Colour 4"
+msgstr "ფერი 4"
+
+#: polychromatic/controller/devices.py:616
+msgid "Change []"
+msgstr "[]-ის შეცვლა"
+
+#: polychromatic/controller/devices.py:631
+msgid "Request Failed"
+msgstr "მოთხოვნის შეცდომა"
+
+#: polychromatic/controller/devices.py:632
+msgid ""
+"There's a fault with Polychromatic's integration with [OpenRazer] for this "
+"device or option."
+msgstr ""
+"შეცდომა Polychromatic-ის [OpenRazer]-თან ინტეგრაცის შეცდომა ამ მოწყობილობისა "
+"თუ პარამეტრისთვის."
+
+#: polychromatic/controller/devices.py:633
+msgid ""
+"To help fix this, please check Polychromatic's issue tracker and create a "
+"new issue if a similar one does not exist."
+msgstr ""
+"ამის გასასწორებლად შეამოწმეთ Polychromatic-ის შეცდომების ტრეკერი და შექმენით "
+"ახალი ბილეთი, თუ რამე მსგავსი უკვე არ არსებობს."
+
+#: polychromatic/controller/devices.py:637
+msgid "Communication Error"
+msgstr "კომუნიკაციის შეცდომა"
+
+#: polychromatic/controller/devices.py:638
+msgid ""
+"An error occurred outside of Polychromatic's control when this command was "
+"sent to [OpenRazer]."
+msgstr ""
+"შეცდომა Polychromatic-ის კონტროლს გარეთ, როცა ეს ბრძანება [OpenRazer]-ს "
+"გაეგზავნა."
+
+#: polychromatic/controller/devices.py:639
+msgid ""
+"Try restarting [OpenRazer] and Polychromatic and give it another go. If this "
+"error appears again, it might need fixing in [OpenRazer]."
+msgstr ""
+"სცადეთ, გადატვირთოთ [OpenRazer] და Polychromatic თავიდან სცდის. თუ ეს "
+"შეცდომა კიდევ გამოჩნდება, ის [OpenRazer]-ში უნდა გაასწოროთ."
+
+#: polychromatic/controller/devices.py:766
+msgid "No devices connected"
+msgstr "მოწყობილობები მიერთებული არაა"
+
+#: polychromatic/controller/devices.py:767
+msgid "No backends loaded"
+msgstr "ჩატვირთული უკანაბოლოების გარეშე"
+
+#: polychromatic/controller/devices.py:768
+msgid "No backends installed"
+msgstr "უკანაბოლოები დაყენებული არაა"
+
+#: polychromatic/controller/devices.py:772
+msgid ""
+"Plug in a compatible device to control its lighting effects and features"
+msgstr ""
+"შეაერთეთ თავსებადი მოწყობილობა მისი ნათები ეფექტებისა და თვისებების სამართვად"
+
+#: polychromatic/controller/devices.py:773
+msgid "Consult the logs and troubleshooter for hints on fixing this problem"
+msgstr "პრობლემის გასწორებისთვის საჭირო ინფორმაციისთვის ჟურნალში ჩაიხედეთ"
+
+#: polychromatic/controller/devices.py:774
+msgid "Install a compatible backend to configure lighting effects"
+msgstr "დააყენეთ თავსებადი უკანაბოლო, განათების ეფექტები მოსარგებად"
+
+#: polychromatic/controller/devices.py:803
+msgid "Show Error Details"
+msgstr "შეცდომის დეტალების ჩვენება"
+
+#: polychromatic/controller/devices.py:839
+msgid "Backend Error: []"
+msgstr "უკანაბოლოს შეცდომა: []"
+
+#: polychromatic/controller/devices.py:840
+msgid ""
+"An error occurred trying to load []. The error below may provide a clue to "
+"what happened."
+msgstr ""
+"შეცდომა []-ის ჩატვირთვისას. ქვემოთ მოყვანილი შეცდომის ტექსტი, შეიძლება, ამ "
+"პრობლემის გადაჭრაში დაგეხმაროთ."
+
+#: polychromatic/controller/devices.py:841
+msgid "The last line of the exception was:"
+msgstr "გამონაკლისის ბოლო ხაზი იყო:"
+
+#: polychromatic/controller/devices.py:869
+msgid "This supported device wasn't detected by the OpenRazer daemon (v1.0.0)"
+msgstr ""
+"ეს მხარდაჭერილი მოწყობილობა არ იქნა აღმოჩენილი OpenRazer დემონის (v1.0.0) "
+"მიერ"
+
+#: polychromatic/controller/devices.py:872
+msgid "Restart"
+msgstr "გადატვირთვა"
+
+#: polychromatic/controller/devices.py:892
+msgid "Unsupported Device"
+msgstr "მხარდაუჭერელი მოწყობილობა"
+
+#: polychromatic/controller/devices.py:893
+msgid ""
+"This device needs support adding to OpenRazer before it can be used in "
+"Polychromatic."
+msgstr ""
+"ამ მოწყობილობას Polychromatic-თან გამოყენებსთვის ჯერ OpenRazer-ში ჩამატების "
+"მხარდაჭერა უნდა ჰქონდეს."
+
+#: polychromatic/controller/devices.py:922
+msgid "Error Details"
+msgstr "შეცდომის დეტალები"
+
+#: polychromatic/controller/devices.py:924
+msgid "There was a problem opening this device"
+msgstr "პრობლემა ამ მოწყობილობის გახსნისას"
+
+#: polychromatic/controller/devices.py:927
+msgid "View Details"
+msgstr "დეტალური ხედი"
+
+#: polychromatic/controller/devices.py:946
+msgid "Not available for all connected devices"
+msgstr "ყველა მიერთებული მოწყობილობისთვის ხელმისაწვდომი არაა"
+
+#: polychromatic/controller/devices.py:1041
+msgid "Yes"
+msgstr "დიახ"
+
+#: polychromatic/controller/devices.py:1044
+msgid "No"
+msgstr "არა"
+
+#: polychromatic/controller/devices.py:1055
+msgid "Backend"
+msgstr "უკანაბოლო"
+
+#: polychromatic/controller/devices.py:1060
+msgid "Form Factor"
+msgstr "ზომა"
+
+#: polychromatic/controller/devices.py:1061
+msgid "Serial"
+msgstr "სერიული"
+
+#: polychromatic/controller/devices.py:1063
+msgid "Firmware Version"
+msgstr "მიკროკოდის ვერსია"
+
+#: polychromatic/controller/devices.py:1065
+msgid "Keyboard Layout"
+msgstr "კლავიატურის განლაგება"
+
+#: polychromatic/controller/devices.py:1069
+msgid "Custom Effects"
+msgstr "მომხმარებლის ეფექტები"
+
+#: polychromatic/controller/devices.py:1071
+msgid "Supported"
+msgstr "მხარდაჭერილი"
+
+#: polychromatic/controller/devices.py:1074
+#: polychromatic/controller/effects.py:582
+msgid "1 row"
+msgstr "1 მწკრივი"
+
+#: polychromatic/controller/devices.py:1074
+#: polychromatic/controller/effects.py:582
+msgid "2 rows"
+msgstr "2 მწკრივი"
+
+#: polychromatic/controller/devices.py:1075
+#: polychromatic/controller/effects.py:583
+msgid "1 column"
+msgstr "1 სვეტი"
+
+#: polychromatic/controller/devices.py:1075
+#: polychromatic/controller/effects.py:583
+msgid "2 columns"
+msgstr "2 სვეტი"
+
+#: polychromatic/controller/devices.py:1076
+msgid "Matrix Dimensions"
+msgstr "მატრიცის ზომები"
+
+#: polychromatic/controller/devices.py:1079
+#: polychromatic/controller/devices.py:1081
+msgid "Colour Range"
+msgstr "ფერების შუალედი"
+
+#: polychromatic/controller/devices.py:1079
+msgid "256 colours"
+msgstr "256 ფერი"
+
+#: polychromatic/controller/devices.py:1081
+msgid "16 million colours"
+msgstr "16 მილიონი ფერი"
+
+#: polychromatic/controller/devices.py:1086
+msgid "Battery"
+msgstr "კვების ელემენტი"
+
+#: polychromatic/controller/devices.py:1089
+#: polychromatic/controller/devices.py:1091
+msgid "Status"
+msgstr "სტატუსი"
+
+#: polychromatic/controller/devices.py:1089
+msgid "Charging (0%)"
+msgstr "იტენება (0%)"
+
+#: polychromatic/controller/devices.py:1091
+msgid "Discharging (0%)"
+msgstr "იცლება (0%)"
+
+#: polychromatic/controller/devices.py:1092
+#: polychromatic/controller/devices.py:1143
+msgid "Type"
+msgstr "ტიპი"
+
+#: polychromatic/controller/devices.py:1092
+msgid "Removable"
+msgstr "მოხსნადი"
+
+#: polychromatic/controller/devices.py:1092
+msgid "Rechargable"
+msgstr "დატენვადი"
+
+#: polychromatic/controller/devices.py:1098
+msgid "Current DPI"
+msgstr "მიმდინარე DPI"
+
+#: polychromatic/controller/devices.py:1103
+msgid "Default Stages"
+msgstr "ნაგულისხმევი დონეები"
+
+#: polychromatic/controller/devices.py:1107
+#: polychromatic/controller/devices.py:1109
+msgid "Custom Stages"
+msgstr "მომხმარებლის დონეები"
+
+#: polychromatic/controller/devices.py:1109
+msgid "(Not set)"
+msgstr "(დაყენებული არაა)"
+
+#: polychromatic/controller/devices.py:1110
+msgid "Supports Sync?"
+msgstr "აქვს სინქრონიზაცია?"
+
+#: polychromatic/controller/devices.py:1111
+#: polychromatic/controller/devices.py:1159
+msgid "Minimum"
+msgstr "მინიმუმი"
+
+#: polychromatic/controller/devices.py:1112
+#: polychromatic/controller/devices.py:1160
+msgid "Maximum"
+msgstr "მაქსიმუმი"
+
+#: polychromatic/controller/devices.py:1119
+msgid "Input 0"
+msgstr "შეყვანა 0"
+
+#: polychromatic/controller/devices.py:1123
+msgid "Zones"
+msgstr "ზონები"
+
+#: polychromatic/controller/devices.py:1136
+msgid "Toggle"
+msgstr "გადართვა"
+
+#: polychromatic/controller/devices.py:1138
+msgid "Slider"
+msgstr "ცოცია"
+
+#: polychromatic/controller/devices.py:1140
+msgid "Dropdown"
+msgstr "ჩამოსაშლელი"
+
+#: polychromatic/controller/devices.py:1142
+msgid "Option ID"
+msgstr "პარამეტრის ID"
+
+#: polychromatic/controller/devices.py:1144
+#: polychromatic/controller/devices.py:1151
+msgid "Active"
+msgstr "აქტიური"
+
+#: polychromatic/controller/devices.py:1147
+msgid "Parameters"
+msgstr "პარამეტრები"
+
+#: polychromatic/controller/devices.py:1150
+msgid "Parameter ID"
+msgstr "პარამეტრის ID"
+
+#: polychromatic/controller/devices.py:1158
+msgid "Current Value"
+msgstr "მიმდინარე მნიშვნელობა"
+
+#: polychromatic/controller/devices.py:1161
+msgid "Interval"
+msgstr "ინტერვალი"
+
+#: polychromatic/controller/devices.py:1233
+msgid "Coordinate: X,Y"
+msgstr "კოორდინატი: X,Y"
+
+#: polychromatic/controller/devices.py:1235
+msgid "Coordinate: (Multiple)"
+msgstr "კოორდინატი: (ერთზე მეტი)"
+
+#: polychromatic/controller/devices.py:1462
+msgid "Mouse Acceleration"
+msgstr "თაგუნას აჩქარება"
+
+#: polychromatic/controller/devices.py:1463
+msgid ""
+"This feature is provided by your operating system. Polychromatic doesn't "
+"recognise this desktop environment to automatically open the settings window "
+"for you.\n"
+"\n"
+"Look for 'mouse', 'input' or 'hardware' in your System Settings."
+msgstr ""
+"ეს თვისება წარმოდგენილია თქვენი ოპერაციული სისტემის მიერ. Polychromatic ვერ "
+"იცნობს ამ სამუშაო გარემოს, რომ პარამეტრების ფანჯარა გაგიხსნათ.\n"
+"\n"
+"მოძებნეთ 'თაგუნა', 'შეყვანა', ან 'აპარატურა', თქვენი სისტემის პარამეტრებში."
+
+#: polychromatic/controller/devices.py:1472
+msgid "Open Mouse Settings"
+msgstr "თაგუნას მორგების გახსნა"
+
+#: polychromatic/controller/devices.py:1479
+msgid "Acceleration"
+msgstr "აპარატურული აჩქარება"
+
+#: polychromatic/controller/devices.py:1490
+msgid "Open Input Remapper"
+msgstr "შეყვანის ამსახველის გახსნა"
+
+#: polychromatic/controller/devices.py:1505
+msgid "About Macro Recording"
+msgstr "მაკროს ჩაწერის შესახებ"
+
+#: polychromatic/controller/devices.py:1506
+msgid ""
+"OpenRazer provides a simple on-the-fly macro recording feature.\n"
+"\n"
+"1. Press FN+[M] to enter macro mode.\n"
+"2. Press the macro key to assign to. Only M1-M5 are supported.\n"
+"3. Press the keys in sequence to record.\n"
+"4. Press FN+[M] to exit macro mode.\n"
+"\n"
+"Macros remain in memory until the openrazer-daemon process is stopped. The "
+"replay speed will be instantaneous, which can be problematic with some "
+"software/games."
+msgstr ""
+"OpenRazer-ს მაკროს მარტივი, მუშაობისას ჩაწერის ფუნქცია აქვს.\n"
+"\n"
+"1. დაჭირეთ FN+[M]-ს,რათა მაკროს რეჟიმში გადახვიდეთ.\n"
+"2. დააწექით მაკროს ღილაკს, რომელიც გნებავთ, მიანიჭოთ. მხარდაჭერილია, მხოლოდ, "
+"M1-M5.\n"
+"3.დააწექით ღილაკებს მიმდევრობით, რომ ჩაიწეროთ.\n"
+"4.დააწექით FN+[M]-ს, რათა გახვიდეთ მაკროს რეჟიმიდან.\n"
+"\n"
+"მაკროები, მეხსიერებაში ინახება, სანამ openrazer-daemon არ გაჩერდება. "
+"გამეორების სიჩქარე მყისიერია, რაც ზოგიერთი თამაშისთვის/პროგრამისთვის "
+"შეიძლება პრობლემური აღმოჩნდეს."
+
+#: polychromatic/controller/devices.py:1514
+msgid "Usage Instructions"
+msgstr "გამოყენების ინსტრუქციები"
+
+#: polychromatic/controller/devices.py:1520
+msgid "Macros"
+msgstr "მაკროები"
+
+#: polychromatic/controller/devices.py:1562
+msgid "Up to 123 DPI"
+msgstr "123 DPI-მდე"
+
+#: polychromatic/controller/devices.py:1689
+msgid "DPI stages were successfully synchronised to the hardware."
+msgstr "DPI-ის დონეების აპარატურასთან სინქრონიზაცია წარმატებულია."
+
+#: polychromatic/controller/editor.py:582
+msgid "Columns: []"
+msgstr "სვეტები: []"
+
+#: polychromatic/controller/editor.py:583
+msgid "Rows: []"
+msgstr "მწკრივები: []"
+
+#: polychromatic/controller/editor.py:586
+msgid "(Not Set)"
+msgstr "(დაყენებული არაა)"
+
+#: polychromatic/controller/editor.py:640
+#: polychromatic/controller/editor.py:1085
+msgid "Backend Error"
+msgstr "უკანაბოლოს შეცდომა"
+
+#: polychromatic/controller/editor.py:641
+msgid ""
+"Live preview isn't possible yet as the backends haven't finished "
+"initialising."
+msgstr ""
+"ცოცხალი მინიატურა ჯერ შეუძლებელია, რადგან უკანაბოლოების სინქრონიზაცია არ "
+"დასრულებულა."
+
+#: polychromatic/controller/editor.py:642
+msgid ""
+"They might be ready now, try again. Or, choose Ignore to continue without a "
+"live preview on physical hardware."
+msgstr ""
+"ისინი ახლა, შეძლება უვე მზადაა. სცადეთ თავიდან, ან არჩიეთ გამოტოვება, რათა "
+"ფიზიკურ აპარატურაზე ცოცხალი მინიატურის გარეშე გააგრძელოთ."
+
+#: polychromatic/controller/editor.py:656
+msgid "Missing Device"
+msgstr "ნაკლული მოწყობილობა"
+
+#: polychromatic/controller/editor.py:657
+msgid ""
+"This effect is designed for a device named '[]', but it wasn't detected."
+msgstr "ეფექტი განკუთვნილია მოწყობილობისთვის სახელით '[]', რომელიც ვერ ვიპოვე."
+
+#: polychromatic/controller/editor.py:658
+#: polychromatic/controller/editor.py:670
+#: polychromatic/controller/editor.py:1087
+msgid "Live preview has been disabled for this session."
+msgstr "ამ სესიისთვის ცოცხალი გადახედვა გათიშულია."
+
+#: polychromatic/controller/editor.py:668
+#: polychromatic/controller/shared.py:1658
+#: polychromatic/controller/shared.py:1667
+msgid "File Error"
+msgstr "ფაილის შეცდომა"
+
+#: polychromatic/controller/editor.py:669
+msgid ""
+"The device '[]' is assigned to this effect, but does not support individual "
+"addressable LEDs."
+msgstr ""
+"მოწყობილობა '[]' მინიჭებულია ამ ეფექტზე, მაგრამ მას ინდივიდუალურად "
+"მიმართვადი LED-ების მხარდაჭერა არ გააჩნია."
+
+#: polychromatic/controller/editor.py:803
+msgid "Unsaved Changes"
+msgstr "შეუნახავი ცვლილებები"
+
+#: polychromatic/controller/editor.py:804
+msgid "This effect was modified. Would you like to save these changes?"
+msgstr "ეფექტი შეიცვალა. გნებავთ, შეინახოთ ეს ცვლილებები?"
+
+#: polychromatic/controller/editor.py:850
+msgid "Gradient"
+msgstr "გრადაცია"
+
+#: polychromatic/controller/editor.py:851
+msgid "Pulsing"
+msgstr "პულსირებადი"
+
+#: polychromatic/controller/editor.py:854
+msgid "Cycling"
+msgstr "ციკლი"
+
+#: polychromatic/controller/editor.py:855
+msgid "Run Scripted Effect"
+msgstr "ეფექტის სკრიპტის გაშვება"
+
+#: polychromatic/controller/editor.py:883
+#: polychromatic/controller/preferences.py:211
+msgid "Save Error"
+msgstr "შენახვის შეცდომა"
+
+#: polychromatic/controller/editor.py:884
+#: polychromatic/controller/preferences.py:212
+msgid "Save failed. Please check the permissions and try again."
+msgstr "შენახვა ჩავარდა. გადაამოწმეთ წვდომები და თავიდან სცადეთ."
+
+#: polychromatic/controller/editor.py:889
+msgid "Saved to: []"
+msgstr "შენახულია: []"
+
+#: polychromatic/controller/editor.py:910
+msgid "Reload the effect from disk? Any unsaved data will be lost!"
+msgstr "ჩავტვირთო ეფექტი თავიდან დისკიდან? შეუნახავი ცვლილებები დაიკარგება!"
+
+#: polychromatic/controller/editor.py:1086
+msgid "An error occurred while sending the frame to the hardware."
+msgstr "შეცდომა ამ კადრის აპარატურაზე გაგზავნისას."
+
+#: polychromatic/controller/editor.py:1184
+msgid "Temporarily changed the graphic. To make permanent, edit the metadata."
+msgstr ""
+"გრაფიკა დროებით შეიცვალა. მისი მუდმივად გახდომისთვის, მეტამონაცემები "
+"შეცვალეთ."
+
+#: polychromatic/controller/editor.py:1191
+#: polychromatic/controller/editor.py:1203
+msgid "Loading..."
+msgstr "იტვირთება..."
+
+#: polychromatic/controller/editor.py:1217
+msgid ""
+"Temporarily changed the graphic. To make permanent, edit the application's "
+"preferences."
+msgstr ""
+"გრაფიკა დროებით შეიცვალა. მისი მუდმივად გახდომისთვის, აპლიკაციის პარამეტრები "
+"შეცვალეთ."
+
+#: polychromatic/controller/editor.py:1341
+msgid "Frame [1] of [10]"
+msgstr "კადრი [1] / [10]"
+
+#: polychromatic/controller/editor.py:1523
+msgid "Permanently delete this frame? There is no undo."
+msgstr "წავშალო სამუდამოდ ეს კადრი? ქმედება შეუქცევადია."
+
+#: polychromatic/controller/editor.py:1524
+msgid ""
+"Tip: This confirmation can be suppressed via the Editor tab under "
+"Preferences."
+msgstr ""
+"მინიშნება: ამ დადასტურების ჩაჩუმება მორგების ფანჯარაში, რედაქტორის ჩანართში "
+"შეგიძლიათ."
+
+#: polychromatic/controller/editor.py:1605
+msgid "Choose Brush Colour"
+msgstr "აირჩიეთ ფუნჯის ფერი"
+
+#: polychromatic/controller/editor.py:1636
+msgid "Out of Bounds"
+msgstr "საზღებს გარეთ"
+
+#: polychromatic/controller/editor.py:1637
+msgid ""
+"There isn't a position for (X,Y) for this device. The graphic contains "
+"incorrect metadata or is incompatible for use with this device."
+msgstr ""
+"ამ მოწყობილობისთვის, მდებარეობა (X,Y) ვერ ვიპოვე. გრაფიკა არასწორ "
+"მეტამონაცემებს შეიცავს, ან ამ მოწყობილობასთან თავსებადი არაა."
+
+#: polychromatic/controller/editor.py:1659
+msgid "This LED is empty - nothing to erase here!"
+msgstr "ეს LED ცარიელია - აქ წასაშლელი არაფერია!"
+
+#: polychromatic/controller/editor.py:1680
+msgid "This LED is empty - no colour to pick here!"
+msgstr "ეს LED ცარიელია - აქ ფერს ვერ აირჩევთ!"
+
+#: polychromatic/controller/editor.py:1828
+msgid "Controller Error"
+msgstr "კონტროლერის შეცდომა"
+
+#: polychromatic/controller/editor.py:1829
+msgid ""
+"Failed to load the Qt Web Engine. Unfortunately, editing won't be possible."
+msgstr ""
+"QtWebEngine-ის ჩატვირთვა ჩავარდა. სამწუხაროდ, ჩასწორება ხელმისაწვდომი არ "
+"იქნება."
+
+#: polychromatic/controller/editor.py:1830
+msgid ""
+"Make sure the application (and its dependencies) are installed and "
+"configured correctly."
+msgstr ""
+"დარწმუნდით, რომ აპლიკაცია (და მისი დამოკიდებულებები) დაყენებულია და სწორადაა "
+"მორგებული."
+
+#: polychromatic/controller/editor.py:1868
+msgid "Missing File"
+msgstr "ნაკლული ფაილი"
+
+#: polychromatic/controller/editor.py:1869
+msgid "This effect is mapped to a graphic named '[]', but it's not installed."
+msgstr "ეფექტი ასახულია გრაფიკაზე, სახელით '[]', რომელიც დაყენებული არაა."
+
+#: polychromatic/controller/editor.py:1870
+msgid ""
+"The grid will be used instead. A different graphic can be chosen by editing "
+"the metadata."
+msgstr ""
+"ამის მაგიერ ბადეს გამოვიყენებ. მეტამონაცემების ჩასასწორებლად სხვა გრაფიკა "
+"შეგიძლიათ აირჩიოთ."
+
+#: polychromatic/controller/effects.py:59
+msgid "It's empty here!"
+msgstr "აქ არაფერია!"
+
+#: polychromatic/controller/effects.py:60
+msgid "Error loading effect"
+msgstr "ეფექტის ჩატვირთვის შეცდომა"
+
+#: polychromatic/controller/effects.py:64
+msgid "Your own software effects appear here. Try creating one!"
+msgstr "თქვენი საკუთარი პროგრამული ეფექტები აქ გამოჩნდება. სცადეთ, შექმნათ!"
+
+#: polychromatic/controller/effects.py:65
+msgid "There's invalid data in this file. The file might be corrupt."
+msgstr "ფაილი არასწორ მონაცემებს შეიცავს. ის, შეიძლება, დაზიანებულია."
+
+#: polychromatic/controller/effects.py:105
+msgid ""
+"No devices found. New effects require a compatible device to be present."
+msgstr ""
+"მოწყობილობები აღმოჩენილი არაა. ახალი ეფექტებისთვის მოწყობილობის არსებობა "
+"აუცილებელია."
+
+#: polychromatic/controller/effects.py:106
+msgid "Make sure the device is connected and the backend is working."
+msgstr "დარწმუნდით, რომ მოწყობილობა მიერთებულია, უკანაბოლო კი მუშაობს."
+
+#: polychromatic/controller/effects.py:223
+msgid "Backend Not Ready"
+msgstr "უკანაბოლო მზად არაა"
+
+#: polychromatic/controller/effects.py:224
+msgid ""
+"The application is still waiting for the backends to finish initialising so "
+"you can pick a device to map your new effect."
+msgstr ""
+"აპლიკაცია ჯერ კიდევ ელოდება უკანაბოლოების ინიციალიზაცის დასრულებად, რათა "
+"შეგეძლოთ, აირჩიოთ მოწყობილობა, რომელზეც ახალი ეფექტის ასახვა გნებავთ."
+
+#: polychromatic/controller/effects.py:225
+msgid "This might be ready in a few moments."
+msgstr "ცოტა ხანში მზად იქნება."
+
+#: polychromatic/controller/effects.py:336
+#: polychromatic/controller/effects.py:371
+msgid "File In Use"
+msgstr "ფაილი გამოიყენება"
+
+#: polychromatic/controller/effects.py:337
+msgid ""
+"This file is being edited in another window. Please switch to that window to "
+"make changes."
+msgstr ""
+"მიმდინარეობს ფაილის ჩასწორება სხვა ფანჯარაში. ცვლილებებისთვის, გადაერთეთ იმ "
+"ფანჯარაზე."
+
+#: polychromatic/controller/effects.py:355
+msgid "Other Actions"
+msgstr "სხვა ქმედებები"
+
+#: polychromatic/controller/effects.py:372
+msgid ""
+"This file is being edited in another window. Please close that editor first."
+msgstr ""
+"მიმდინარეობს ფაილის ჩასწორება სხვა ფანჯარაში. ჯერ დახურეთ ის რედაქტორი."
+
+#: polychromatic/controller/effects.py:453
+msgid "Choose Effect Icon"
+msgstr "აირჩიეთ ეფექტის ხატულა"
+
+#: polychromatic/controller/effects.py:550
+msgid ""
+"No compatible devices found. Only individually addressable LED capable "
+"hardware can be used for effects."
+msgstr ""
+"თავსებადი მოწყობილობები აღმოჩენილი არაა. ეფექტებისთვის მხოლოდ სათითაოდ "
+"მიმართვადი LED-ების მხარდაჭერის მქონე აპარატურა შეგიძლიათ, გამოიყენოთ."
+
+#: polychromatic/controller/menubar.py:160
+msgid "The menu bar is now hidden. To temporarily reveal, press Alt."
+msgstr ""
+"მენიუს ზოლი ახლა დამალულია. მისი დროებით გამოსაჩენად დააწექით ღილაკს 'Alt'."
+
+#: polychromatic/controller/menubar.py:188
+msgid "Please close all editor windows before executing this action."
+msgstr "დახურეთ ყველა რედაქტორის ფანჯარა ამ ქმედების შესრულებამდე."
+
+#: polychromatic/controller/menubar.py:211
+msgid ""
+"Polychromatic is about to open a web page for this resource. Unfortunately, "
+"it is only available in English at this time."
+msgstr ""
+"Polychromatic აპირებს, ამ რესურსისთვის ვებგვერდის გახსნას. სამწუხაროდ, "
+"ამჟამად, ის მხოლოდ ინგლისურადაა ხელმისაწვდომი."
+
+#: polychromatic/controller/menubar.py:240
+msgid "Report Bug"
+msgstr "შეცდომის ანგარიში"
+
+#: polychromatic/controller/menubar.py:320
+msgid "About []"
+msgstr "[]-ის შესახებ"
+
+#: polychromatic/controller/menubar.py:333
+msgid "Documentation"
+msgstr "დოკუმენტაცია"
+
+#: polychromatic/controller/menubar.py:334
+#: polychromatic/controller/menubar.py:459
+msgid "Source Code"
+msgstr "საწყისი კოდი"
+
+#: polychromatic/controller/menubar.py:335
+#: polychromatic/controller/menubar.py:460
+msgid "Release Notes"
+msgstr "გამოშვების შენიშვნები"
+
+#: polychromatic/controller/menubar.py:405
+msgid "Restarting the backend/application..."
+msgstr "უკანაბოლოს/აპლიკაციის გადატვირთვა..."
+
+#: polychromatic/controller/menubar.py:416
+msgid "Reload application?"
+msgstr "ჩავტვირთო თავიდან აპლიკაცია?"
+
+#: polychromatic/controller/menubar.py:417
+msgid ""
+"To apply these changes, a daemon process needs to restart. This will also "
+"restart Polychromatic. Any unsaved data will be lost."
+msgstr ""
+"ამ ცვლილებების გადასატარებლად დემონის პროცესი უნდა გადატვირთოთ. ეს "
+"Polychromatic-საც გადატვირთავს. შეუნახავი ცვლილებები დაიკარგება."
+
+#: polychromatic/controller/preferences.py:103
+msgid "Choose Tray Applet Icon"
+msgstr "აირჩიეთ ხატულა სისტემის საათთან"
+
+#: polychromatic/controller/preferences.py:236
+msgid "Restart Required"
+msgstr "საჭიროა სისტემის გადატვირთვა"
+
+#: polychromatic/controller/preferences.py:237
+msgid ""
+"To apply these changes, the application must be restarted. Any unsaved "
+"changes will be lost."
+msgstr ""
+"ცვლილებების გადასატარებლად, აუცილებელია აპლიკაციის გადატვირთვა. შეუნახავი "
+"ცვლილებები დაიკარგება."
+
+#. Button
+#: polychromatic/controller/preferences.py:268 preferences.ui.h:58
+msgid "Reset to Default Colours"
+msgstr "ნაგულისხმევ ფერებზე დაბრუნება"
+
+#: polychromatic/controller/preferences.py:269
+msgid "All colours in the list will be reset. Continue?"
+msgstr "სიაში ყველა ფერი ნაგულისხმევზე დაბრუნდება. გავაგრძელო?"
+
+#: polychromatic/controller/procviewer.py:100
+msgid "Restarting..."
+msgstr "იტვირთება..."
+
+#. Button to restart all background tasks
+#: polychromatic/controller/procviewer.py:134 procviewer.ui.h:9
+msgid "Restart All"
+msgstr "ყველას გადატვირთვა"
+
+#: polychromatic/controller/procviewer.py:160
+msgid "Playing software effect"
+msgstr "ვუკრავ პროგრამულ ეფექტს"
+
+#: polychromatic/controller/procviewer.py:166
+msgid "No longer running"
+msgstr "გაშვებული აღარაა"
+
+#: polychromatic/controller/shared.py:688
+#: polychromatic/controller/shared.py:746 preferences.ui.h:56
+msgid "Change..."
+msgstr "შეცვლა..."
+
+#: polychromatic/controller/shared.py:1130
+msgid "Image Files"
+msgstr "ასლის ფაილები"
+
+#: polychromatic/controller/shared.py:1131
+msgid "PNG Image"
+msgstr "PNG გამოსახულება"
+
+#: polychromatic/controller/shared.py:1132
+msgid "JPEG Image"
+msgstr "JPEG გამოსახულება"
+
+#: polychromatic/controller/shared.py:1133
+msgid "GIF Image"
+msgstr "GIF გამოსახულება"
+
+#: polychromatic/controller/shared.py:1134
+msgid "SVG Image"
+msgstr "SVG გამოსახულება"
+
+#: polychromatic/controller/shared.py:1135
+msgid "All Files"
+msgstr "ყველა ფაილი"
+
+#: polychromatic/controller/shared.py:1299
+msgid "When Steam is installed, icons from your games will appear here."
+msgstr "როცა Steam-ი დაყენებულია, თქვენი თამაშის მალსახმობები აქ გამოჩნდება."
+
+#: polychromatic/controller/shared.py:1300
+msgid "Drag and drop icons here, or add them by pressing the Import button."
+msgstr ""
+"გადმოათრიეთ და დაყარეთ აქ მალსახმობები, ან, დაამატეთ ისინი შემოტანის ღილაკთ."
+
+#: polychromatic/controller/shared.py:1306
+msgid "No icons found!"
+msgstr "ხატულები ვერ ვიპოვე!"
+
+#: polychromatic/controller/shared.py:1416
+msgid "Import Custom Icon"
+msgstr "თქვენი ხატულის შემოტანა"
+
+#: polychromatic/controller/shared.py:1647
+msgid "The file contains invalid data."
+msgstr "ფაილი არასწორ მონაცემებს შეიცავს."
+
+#: polychromatic/controller/shared.py:1648
+msgid "The file no longer exists. Please refresh the page."
+msgstr "ფაილი აღარ არსებობს. განაახლეთ გვერდი."
+
+#: polychromatic/controller/shared.py:1649
+msgid "This file was saved in a newer version of this program."
+msgstr "ეს ფაილი ამ პროგრამის უფრო ახალი ვერსიით შეიქმნა."
+
+#: polychromatic/controller/shared.py:1655
+msgid "Unspecified error: []"
+msgstr "მიუთითებელი შეცდომა: []"
+
+#: polychromatic/controller/shared.py:1659
+msgid "This file cannot be opened:"
+msgstr "ამ ფაილის გახსნა შეუძლებელია:"
+
+#: polychromatic/controller/shared.py:1668
+msgid ""
+"The operation could not be completed due to an error processing this file."
+msgstr "ოპერაციის დასრულება შეუძლებელია ამ ფაილის დამუშავები შეცდოის გამო."
+
+#: polychromatic/controller/shared.py:1669
+msgid "Please make sure the file permissions are recursively correct:"
+msgstr "დარწმუნება, რომ ფაილის წვდომები რეკურსიულად სწორია:"
+
+#: polychromatic/controller/shared.py:1724
+msgid ""
+"Permanently delete this effect?\n"
+"'[]'\n"
+"\n"
+"Presets and triggers that use this effect will be unlinked."
+msgstr ""
+"წავშალო სამუდამოდ ესე ეფექტი?\n"
+"'[]'\n"
+"\n"
+"პრესეტები და ტრიგერები, რომლებიც ამ ეფექტს იყენებენ, მიბმული აღარ იქნება."
+
+#: polychromatic/controller/shared.py:1725
+msgid ""
+"Permanently delete this preset?\n"
+"'[]'\n"
+"\n"
+"Triggers that use this preset will no longer function."
+msgstr ""
+"წავშალო სამუდამოდ ეს პრესეტი?\n"
+"'[]'\n"
+"\n"
+"ტრიგერები, რომლებიც ამ პრესეტს იყენებს, აღარ იმუშავებს."
+
+#: polychromatic/controller/shared.py:1729
+msgid ""
+"Permanently delete this effect? \n"
+"'[]'"
+msgstr ""
+"სამუდამოდ წავშალო ეს ეფექტი?\n"
+"'[]'"
+
+#: polychromatic/controller/shared.py:1730
+msgid ""
+"Permanently delete this preset? \n"
+"'[]'"
+msgstr ""
+"სამუდამოდ წავშალო ეს პრესეტი?\n"
+"'[]'"
+
+#: polychromatic/controller/shared.py:1734
+msgid "Confirm Deletion"
+msgstr "წაშლის დადასტურება"
+
+#: polychromatic/controller/shared.py:1756 polychromatic/fileman.py:320
+msgid "[] (Copy)"
+msgstr "[] (ასლი)"
+
+#: polychromatic/controller/troubleshooter.py:82
+msgid "Waiting for backends to be ready..."
+msgstr "უკანაბოლოს მზაობის მოლოდინი..."
+
+#: polychromatic/controller/troubleshooter.py:85
+#: polychromatic/controller/troubleshooter.py:90
+msgid "Running troubleshooter..."
+msgstr "პრობლემების გადამწყვეტი გაშვებულია..."
+
+#: polychromatic/controller/troubleshooter.py:91
+msgid "Troubleshooting..."
+msgstr "პრობლემების გადაჭრა..."
+
+#: polychromatic/controller/troubleshooter.py:105
+#: polychromatic/controller/troubleshooter.py:110
+msgid "Troubleshooting Failed"
+msgstr "პრობლემების გადაჭრა ჩავარდა"
+
+#: polychromatic/controller/troubleshooter.py:106
+msgid ""
+"The troubleshooter for this backend is not available for this operating "
+"system."
+msgstr ""
+"ამ უკანაბოლოს პრობლემების გადამჭრელი ამ ოპერაციული სისტემისთვის "
+"ხელმისაწვდომი არაა."
+
+#: polychromatic/controller/troubleshooter.py:111
+msgid ""
+"An exception was thrown while running the troubleshooter. This is probably a "
+"bug."
+msgstr ""
+"შეცდომა პრობლემების გადამჭრელის გაშვებიას. ეს, ალბათ, პროგრამის შეცდომაა."
+
+#: polychromatic/controller/troubleshooter.py:119
+msgid "Passed"
+msgstr "გაიარა"
+
+#: polychromatic/controller/troubleshooter.py:122
+msgid "Failed"
+msgstr "ჩავარდა"
+
+#: polychromatic/controller/troubleshooter.py:125
+msgid "Unknown"
+msgstr "უცნობი"
+
+#: polychromatic/controller/troubleshooter.py:156
+msgid "Troubleshooter for []"
+msgstr "პრობლემების გადაჭრა სამიზნისთვის []"
+
+#: polychromatic/controller/troubleshooter.py:158
+msgid "Everything appears to be in working order!"
+msgstr "როგორც ჩანს, ახლა ყველაფერი მუშაობს!"
+
+#: polychromatic/effects.py:161
+msgid "Layer 1"
+msgstr "ფენა 1"
+
+#: polychromatic/preferences.py:447
+msgid "White"
+msgstr "თეთრი"
+
+#: polychromatic/preferences.py:448
+msgid "Red"
+msgstr "წითელი"
+
+#: polychromatic/preferences.py:450
+msgid "Blue"
+msgstr "ლურჯი"
+
+#: polychromatic/preferences.py:451
+msgid "Aqua"
+msgstr "წყლის ფერი"
+
+#: polychromatic/preferences.py:452
+msgid "Orange"
+msgstr "ნარინჯისფერი"
+
+#: polychromatic/preferences.py:453
+msgid "Pink"
+msgstr "ვარდისფერი"
+
+#: polychromatic/preferences.py:454
+msgid "Purple"
+msgstr "იისფერი"
+
+#: polychromatic/preferences.py:455
+msgid "Yellow"
+msgstr "ყვითელი"
+
+#: polychromatic/preferences.py:456
+msgid "Light Grey"
+msgstr "ღია ნაცრისფერი"
+
+#: polychromatic/preferences.py:457
+msgid "Dark Grey"
+msgstr "მუქი ნაცრისფერი"
+
+#: polychromatic/preferences.py:458
+msgid "Black"
+msgstr "შავი"
+
+#: polychromatic/troubleshoot/openrazer.py:50
+msgid "Daemon is installed"
+msgstr "დემონი დაყენებულია"
+
+#: polychromatic/troubleshoot/openrazer.py:52
+msgid "Install the 'openrazer-meta' package for your distribution."
+msgstr "დააყენეთ თქვენი დისტრიბუტივის 'opentrazer-neta' პაკეტი."
+
+#: polychromatic/troubleshoot/openrazer.py:72
+msgid "Daemon is running"
+msgstr "დემონი გაშვებულია"
+
+#: polychromatic/troubleshoot/openrazer.py:74
+msgid ""
+"Start the daemon from the terminal. Run this command and look for errors:"
+msgstr ""
+"გაუშვით დემონი ტერმინალიდან. გაუშვით ეს ბრძანება და შეცდომები მოძებნეთ:"
+
+#: polychromatic/troubleshoot/openrazer.py:83
+msgid ""
+"Install 'python-openrazer' or 'python3-openrazer' for your distribution."
+msgstr ""
+"დააყენეთ თქვენი დისტრიბუტივის 'python-openrazer' ან 'python3-openrazer'."
+
+#: polychromatic/troubleshoot/openrazer.py:86
+msgid ""
+"Make sure the modules are installed for the correct Python version. Try re-"
+"installing."
+msgstr ""
+"დარწმუნდით, რომ დაყენებული მოდულები სწორი Python-ის ვერსიისთვისაა. სცადეთ, "
+"თავიდან დააყენოთ."
+
+#: polychromatic/troubleshoot/openrazer.py:88
+msgid "Your Python installation looks custom. Check your PATH and PYTHONPATH."
+msgstr ""
+"როგორც ჩანს, Python-ის საქაღალდე ხელითაა მითითებული. შეამოწმეთ თქვენი PATH "
+"და PYTHOPATH."
+
+#: polychromatic/troubleshoot/openrazer.py:90
+msgid "Currently running Python 3.10.0 from /usr/bin/python3"
+msgstr "ამჯამად გაშვებულია Python 3.10.0 ფაილიდან /usr/bin/python3"
+
+#: polychromatic/troubleshoot/openrazer.py:93
+msgid "Tried path:"
+msgstr "ვცადე ბილიკი:"
+
+#: polychromatic/troubleshoot/openrazer.py:96
+msgid "Python library is installed"
+msgstr "Python-ის ბიბლიოთეკა დაყენებული არაა"
+
+#: polychromatic/troubleshoot/openrazer.py:105
+#: polychromatic/troubleshoot/openrazer.py:114
+#: polychromatic/troubleshoot/openrazer.py:127
+msgid "Kernel module sources are installed for DKMS"
+msgstr "ბირთვის მოდულები დაყენებულია KDMS-სთვის"
+
+#: polychromatic/troubleshoot/openrazer.py:107
+#: polychromatic/troubleshoot/openrazer.py:422
+msgid "Unable to check because the Python library is not installed."
+msgstr "შემოწმება შეუძლებელია, რადგან Python-ის ბიბლიოთეკა დაყენებული არაა."
+
+#: polychromatic/troubleshoot/openrazer.py:116
+#: polychromatic/troubleshoot/openrazer.py:129
+msgid "OpenRazer is a kernel module, typically built using DKMS."
+msgstr "OpenRazer ბირთვის მოდულია, რომელსაც, ჩვეულებრივ DKMS აგებს."
+
+#: polychromatic/troubleshoot/openrazer.py:117
+#: polychromatic/troubleshoot/openrazer.py:130
+msgid "Install the 'openrazer-driver-dkms' package for your distribution."
+msgstr "დააყენეთ თქვენი დისტრიბუტივის 'opentrazer-driver-dkms' პაკეტი."
+
+#: polychromatic/troubleshoot/openrazer.py:118
+msgid "Some distributions (like Gentoo) may use an alternate system to DKMS."
+msgstr ""
+"ზოგიერთ დისტრიბუტივს (მაგ: Gentoo) DKMS-ის მსგავსი, საკუთარი სისტემა გააჩნია."
+
+#: polychromatic/troubleshoot/openrazer.py:148
+msgid "Kernel module has been built for this kernel"
+msgstr "ბირთვის მოდული აიგო ამ ბირთვისთვის"
+
+#: polychromatic/troubleshoot/openrazer.py:150
+msgid ""
+"Ensure you have the correct Linux kernel headers package installed for your "
+"distribution."
+msgstr ""
+"დარწმუნდით, რომ სწორი Linux-ის ბირთვის თავსართების პაკეტი, თქვენი "
+"დისტრიბუტივისთვის, დაყენებულია."
+
+#: polychromatic/troubleshoot/openrazer.py:151
+msgid ""
+"Your distro's package system might not have rebuilt the module for this "
+"kernel. Try running:"
+msgstr ""
+"თქვენი დისტრიბუტივის პაკეტების სისტემამ, შეიძლება, მოდული ამ ბირთვისთვის "
+"თავიდან არ ააგო. სცადეთ, გაუშვათ:"
+
+#: polychromatic/troubleshoot/openrazer.py:167
+#: polychromatic/troubleshoot/openrazer.py:178
+msgid "Kernel module can be probed"
+msgstr "ბირთვის მოდულის ცდა შესაძლებელია"
+
+#: polychromatic/troubleshoot/openrazer.py:169
+#: polychromatic/troubleshoot/openrazer.py:181
+#: polychromatic/troubleshoot/openrazer.py:195
+#: polychromatic/troubleshoot/openrazer.py:204
+msgid "OpenRazer uses these modules:"
+msgstr "OpenRazer იყენებს ამ მოდულებს:"
+
+#: polychromatic/troubleshoot/openrazer.py:170
+#: polychromatic/troubleshoot/openrazer.py:205
+msgid ""
+"For full error details, run this and substitute 'razerkbd' as necessary:"
+msgstr ""
+"შეცდომის სრული დეტალებისთვის გაუშვით ეს და ჩაანაცვლეთ 'razerkbd', როცა "
+"საჭიროა:"
+
+#: polychromatic/troubleshoot/openrazer.py:172
+#: polychromatic/troubleshoot/openrazer.py:207
+msgid "No output from this command indicates success."
+msgstr "ის, რომ ბრძანებამ არაფერი გამოიტანა, წარმატების ნიშანია."
+
+#: polychromatic/troubleshoot/openrazer.py:180
+#: polychromatic/troubleshoot/openrazer.py:196
+msgid "Could not check as '[]' is not installed."
+msgstr "ვერ შევამოწმე, რადგან '[]' დაყენებული არაა."
+
+#: polychromatic/troubleshoot/openrazer.py:193
+#: polychromatic/troubleshoot/openrazer.py:202
+msgid "Kernel module is loaded"
+msgstr "ბირთვის მოდული ჩატვირთულია"
+
+#: polychromatic/troubleshoot/openrazer.py:208
+#: polychromatic/troubleshoot/openrazer.py:249
+msgid "If you've just installed, it is recommended to restart the computer."
+msgstr "თუ ის ახლახანს დააყენეთ, რეკომენდებულია, გადატვირთოთ კომპიუტერი."
+
+#: polychromatic/troubleshoot/openrazer.py:216
+msgid ""
+"Secure Boot prevents the driver from loading, as OpenRazer's kernel modules "
+"built by DKMS are usually unsigned."
+msgstr ""
+"დაცული ჩატვირთვა დრაივერს ჩატვირთვაში ხელ უშლის, რადგან OpenRazer-ის ბირთვის "
+"მოდულები, რომლებსაც DKMS აგებს, ჩვეულებრივ, ხელმოუწერელია."
+
+#: polychromatic/troubleshoot/openrazer.py:224
+#: polychromatic/troubleshoot/openrazer.py:234
+msgid "Check Secure Boot (EFI) status"
+msgstr "უსაფრთხო ჩატვირთვის (SUEFI) სტატუსის შემოწმება"
+
+#: polychromatic/troubleshoot/openrazer.py:226
+msgid ""
+"Secure boot is enabled. Turn it off in the system's EFI settings or sign the "
+"modules yourself."
+msgstr ""
+"დაცული ჩატვირთვა ჩართულია. გამორთეთ ის სისტემის EFI პარამეტრებში ან მოდულს "
+"ხელმოწერა თვითონ დაუსვით."
+
+#: polychromatic/troubleshoot/openrazer.py:236
+msgid ""
+"Unable to automatically check. If it's enabled, turn it off in the system's "
+"EFI settings or sign the modules yourself."
+msgstr ""
+"ავტომატური შემოწმება შეუძლებელია. თუ ის ჩართულია, გამორთეთ ის სისტემის EFI-"
+"ის პარამეტრებში, ან მოდულებს, ხელი, თვითონ მოაწერეთ."
+
+#: polychromatic/troubleshoot/openrazer.py:245
+msgid "User account has been added to the 'plugdev' group"
+msgstr "მომხმარებლის ანგარიში დაემატა ჯგუფში 'plugdev'"
+
+#: polychromatic/troubleshoot/openrazer.py:247
+msgid "Run this command, log out, then log back in to the computer:"
+msgstr "გაუშვით ეს ბრძანება, გადით და თავიდან შედით კომპიუტერში:"
+
+#: polychromatic/troubleshoot/openrazer.py:250
+msgid ""
+"This is required so that your user account (and daemon) has permission to "
+"access the driver files in /sys/bus/hid/drivers"
+msgstr ""
+"აუცილებელია, რომ თქვენს მომხმარებლის ანგარიშს (და დემონს) ჰქონდეს წვდომა "
+"დრაივერის ფაილებთან საქაღალდეში /sys/bus/hid/drivers"
+
+#: polychromatic/troubleshoot/openrazer.py:259
+#: polychromatic/troubleshoot/openrazer.py:269
+#: polychromatic/troubleshoot/openrazer.py:290
+msgid "Device can be accessed using plugdev permissions"
+msgstr "მოწყობილობასთან წვდომა 'plugdev'-ის წვდომების გამოყენებით შეგიძლიათ"
+
+#: polychromatic/troubleshoot/openrazer.py:261
+msgid ""
+"Unable to check as the drivers sysfs path for this Linux kernel is non-"
+"standard."
+msgstr ""
+"შემოწმება შეუძლებელია, რადგან დრაივერის sysfs ბილიკი ამ Linux-ის ბირთვისთვის "
+"სტანდარტული არაა."
+
+#: polychromatic/troubleshoot/openrazer.py:271
+msgid "Unable to check because OpenRazer's modules are not loaded."
+msgstr "შემოწმება შეუძლებელია, რადგან OpenRazer-ის მოდულები ჩატვირთული არაა."
+
+#: polychromatic/troubleshoot/openrazer.py:292
+msgid ""
+"Permissions for OpenRazer's device files (/sys/bus/hid/drivers) are not set "
+"correctly. They should be owned as root:plugdev (owner/group)"
+msgstr ""
+"წვდომები OpenRazer-ის მოწყობილობის ფაილებთან (/sys/bus/hid/drivers) "
+"არასწორია. მათი მფლობელი უნდა იყოს (მომხმ/ჯგუფი) root:plugdev"
+
+#: polychromatic/troubleshoot/openrazer.py:293
+msgid ""
+"Replugging the hardware and then restarting the daemon usually fixes the "
+"problem."
+msgstr ""
+"მოწყობლობის თავიდან შეერთება და შემდეგ დემონის გადატვირთვა, ჩვეულებრივ, ჭრის "
+"პრობლემას."
+
+#: polychromatic/troubleshoot/openrazer.py:294
+msgid ""
+"Alternately, improperly configured udev rules (such as a missing PID) may "
+"cause this to happen."
+msgstr ""
+"ან არასწორად მორგებულ udev-ის წესებს, (როგორიცაა გამოტოვებული PID) შეუძლიათ, "
+"იგივე გამოიწვიონ."
+
+#: polychromatic/troubleshoot/openrazer.py:304
+msgid "Razer hardware is present for kernel"
+msgstr "Razer-ის აპარატურა ხელმისაწვდომია ბირთვისთვის"
+
+#: polychromatic/troubleshoot/openrazer.py:306
+msgid "The Linux kernel does not see hardware with a VID of 1532."
+msgstr "Linux-ის ბირთვი ვერ ხედავს აპარატურას VID-ით 1532."
+
+#: polychromatic/troubleshoot/openrazer.py:307
+msgid "Check the device and USB port is working. Try a different port."
+msgstr ""
+"შეამოწმეთ, მუშაობს თუ არა მოწყობილობა და USB პორტი. სხვა პორტიც სცადეთ."
+
+#: polychromatic/troubleshoot/openrazer.py:327
+#: polychromatic/troubleshoot/openrazer.py:358
+msgid "Check device compatibility"
+msgstr "მოწყობილობის თავსებადობის შემოწმება"
+
+#: polychromatic/troubleshoot/openrazer.py:329
+#: polychromatic/troubleshoot/openrazer.py:412
+msgid "Unable to retrieve this data from OpenRazer's website."
+msgstr "ამ მონაცემების OpenRazer-ის ვებგვერდიდან მიღება შეუძლებელია."
+
+#: polychromatic/troubleshoot/openrazer.py:330
+#: polychromatic/troubleshoot/openrazer.py:413
+msgid ""
+"Check the OpenRazer website to confirm your device is listed as supported."
+msgstr ""
+"იმისთვის, რომ დაადასტუროთ, რომ თქვენი მოწყობილობა მხარდაჭერილია, OpenRazer-"
+"ის ვებგვერდი შეამოწმეთ."
+
+#: polychromatic/troubleshoot/openrazer.py:331
+#: polychromatic/troubleshoot/openrazer.py:414
+msgid ""
+"If you're checking OpenRazer's GitHub repository, check the 'stable' branch."
+msgstr ""
+"თუ იწერთ OpenRazer-ის GitHub-ის რეპოზიტორიას, დააყენეთ ბრენჩი 'stable'."
+
+#: polychromatic/troubleshoot/openrazer.py:360
+msgid ""
+"The following PIDs are not supported in the latest stable release of "
+"OpenRazer:"
+msgstr ""
+"OpenRazer-ის უკანასკნელ სტაბილურ რელიზში მხარდაჭერილი არაა შემდეგი PID:"
+
+#: polychromatic/troubleshoot/openrazer.py:362
+msgid ""
+"Check OpenRazer's issues and pull requests to see the status for your "
+"device. Create an issue if necessary."
+msgstr ""
+"გადახედეთ OpenRazer-ს პრობლემებს და პაჩებს, რომ თქვენი მოწყობილობის სტატუსი "
+"იპოვოთ. გახსენით ბილეთი, თუ მიგაჩნიათ, რომ ეს აუცილებელია."
+
+#: polychromatic/troubleshoot/openrazer.py:399
+#: polychromatic/troubleshoot/openrazer.py:410
+#: polychromatic/troubleshoot/openrazer.py:420
+msgid "OpenRazer is the latest version"
+msgstr "OpenRazer-ის ვერსია უახლესია"
+
+#: polychromatic/troubleshoot/openrazer.py:401
+msgid "There is a new version of OpenRazer available."
+msgstr "ხელმისაწვდომია OpenRazer-ის ახალი ვერსია."
+
+#: polychromatic/troubleshoot/openrazer.py:402
+msgid ""
+"New versions add support for more devices and address device-specific issues."
+msgstr ""
+"ახალ ვერსიებს დაემატათ მეტი მოწყობილობისა და მოწყობილობის საკუთარი "
+"პრობლემებს მიხედვა."
+
+#: polychromatic/troubleshoot/openrazer.py:403
+msgid "Your version: 0.0.0"
+msgstr "თქვენი ვერსია: 0.0.0"
+
+#: polychromatic/troubleshoot/openrazer.py:404
+msgid "Latest version: 0.0.0"
+msgstr "უახლესი ვერსია: 0.0.0"
+
+#: preferences.ui.h:2
+msgid "Controller"
+msgstr "კონტროლერი"
+
+#. Preferences Label
+#: preferences.ui.h:4
+msgid "Appearance"
+msgstr "გარეგნობა"
+
+#. Preferences Checkbox
+#: preferences.ui.h:6
+msgid "Use system theme"
+msgstr "სისტემის თემის გამოყენება"
+
+#. Text appears underneath a checkbox in the preferences dialog
+#: preferences.ui.h:8
+msgid ""
+"Not all distros support this option out of the box. Additional steps may be "
+"required before your theme displays in Qt apps on a GTK desktop."
+msgstr ""
+"ყველა დისტროს ამის მხარდაჭერა ცვლილების გარეშე, არ აქვს. შეიძლება, დამატებით "
+"ნაბიჯები დაგჭირდეთ, რომ, თქვენი, Qt-ის თემა GTK-ის სამუშაო მაგდაზე გამოჩნდეს."
+
+#. Preferences Checkbox
+#: preferences.ui.h:10
+msgid "Hide menu bar"
+msgstr "მენიუს ზოლის დამალვა"
+
+#. Text appears underneath a checkbox in the preferences dialog
+#: preferences.ui.h:12
+msgid "Press Alt to temporarily show the menu bar while it is hidden."
+msgstr "მენუს ზოლის დროებით საჩვენებლად, როცა ის დამალულია, Alt-ს დააწექით."
+
+#: preferences.ui.h:14
+msgid "Download device images"
+msgstr "მოწყობილობის დისკის ასლების გადმოწერა"
+
+#. Text appears underneath a checkbox in the preferences dialog
+#: preferences.ui.h:16
+msgid "These images may be under a different copyright or license."
+msgstr "ამ გამოსახულებებს შეიძლება სხვა საავტორო უფლებები ან ლიცენზია ჰქონდეთ."
+
+#: preferences.ui.h:17
+msgid "Toolbar"
+msgstr "ხელსაწყოთა ზოლი"
+
+#: preferences.ui.h:18
+msgid "Follow System Style"
+msgstr "სისტემის სტილის მიყოლა"
+
+#: preferences.ui.h:19
+msgid "Icons Only"
+msgstr "მხოლოდ ხატულები"
+
+#: preferences.ui.h:20
+msgid "Text Only"
+msgstr "მხოლოდ ტექსტი"
+
+#: preferences.ui.h:21
+msgid "Text Alongside Icons"
+msgstr "წარწერები გვერდიდან"
+
+#: preferences.ui.h:22
+msgid "Text Under Icons"
+msgstr "წარწერები ქვემოთ"
+
+#. Preferences Label
+#: preferences.ui.h:24
+msgid "Landing Tab"
+msgstr "ჩანართი გაშვებისას"
+
+#. Preferences Label
+#: preferences.ui.h:29
+msgid "Window Behaviour"
+msgstr "ფანჯრს ქცევა"
+
+#. Preferences dropdown option
+#: preferences.ui.h:31
+msgid "Always open in the center"
+msgstr "ყოველთვის ცენტრში გახსნა"
+
+#. Preferences dropdown option
+#: preferences.ui.h:33
+msgid "Remember last position and size"
+msgstr "ბოლო მდებარეობისა და ზომის შენახვა"
+
+#. Preferences dropdown option
+#: preferences.ui.h:35
+msgid "Let the window manager decide"
+msgstr "გადაწყვეტს ფანჯრების მმართველი"
+
+#: preferences.ui.h:36
+msgid "Maximized at start"
+msgstr "მთელ ეკრანზე გაშლა გაშვებისას"
+
+#. Preferences Label
+#: preferences.ui.h:41
+msgid "Renderer"
+msgstr "რენდერერი"
+
+#: preferences.ui.h:42
+msgid "Automatic"
+msgstr "ავტომატური"
+
+#: preferences.ui.h:43
+msgid "GTK Status Icon (Legacy)"
+msgstr "GTK სტატუსის ხატულა (მოძველებული)"
+
+#: preferences.ui.h:44
+msgid "Ayatana Indicators"
+msgstr "Ayatana მაჩვენებლები"
+
+#. Preferences Label
+#: preferences.ui.h:47
+msgid "Autostart Delay"
+msgstr "ავტომატური გაშვების დაყოვნება"
+
+#. Suffix for a spinner control
+#: preferences.ui.h:49
+msgid " second(s)"
+msgstr " წამი"
+
+#: preferences.ui.h:50
+msgid ""
+"On some desktop environments, due to race conditions, it may be necessary to "
+"wait so the applet's icon or device list is loaded properly."
+msgstr ""
+"ზოგიერთ სამუშაო გარემოში, იშვიათი შემთხვევების გამო, შეიძლება, აუცილებელი "
+"იყოს, აპლეტის ხატულის დალოდება , ან მოწყობილობების სიის სწორად ჩატვირთვა."
+
+#: preferences.ui.h:51
+msgid "Start the tray applet when I log on"
+msgstr "გაშვებისას საათთან ჩაკეცილი გაშვება"
+
+#. Text appears underneath a checkbox in the preferences dialog
+#: preferences.ui.h:53
+msgid "Your desktop enviroment might not support this feature."
+msgstr "თქვენის სამუშაო მაგიდას, მგონი, ამ ფუნქციის მხარდაჭერა არ გააჩნია."
+
+#: preferences.ui.h:54
+msgid "Customise"
+msgstr "მორგება"
+
+#: preferences.ui.h:59
+msgid "DPI Stages"
+msgstr "DPI დონეები"
+
+#: preferences.ui.h:60
+msgid "Now stored per-device: Click \"Edit\" for the DPI in the Devices tab."
+msgstr ""
+"ახლა დამახსოვრებულია თითოეული მოწყობილობისთვის: დააწკაპუნეთ \"ჩაწერას\" DPI-"
+"სთვის მოწყობილობების ჩანართში."
+
+#: preferences.ui.h:61
+msgid "Editor"
+msgstr "რედაქტორი"
+
+#: preferences.ui.h:62
+msgid "Use system cursors"
+msgstr "სისტემური კურსორების გამოყენება"
+
+#: preferences.ui.h:63
+msgid "Behaviour"
+msgstr "ქცევა"
+
+#: preferences.ui.h:64
+msgid "Hide key labels"
+msgstr "ღილაკის ჭდეების დამალვა"
+
+#: preferences.ui.h:65
+msgid "Show shades for my saved colours"
+msgstr "ჩრდილების ჩვენება ჩემი შენახული ფერებიდან"
+
+#: preferences.ui.h:66
+msgid "Preview effect on the physical hardware"
+msgstr "ეფექტის გადახედვა ფიზიკურ აპარატურაზე"
+
+#: preferences.ui.h:67
+msgid "Suppress delete confirmation dialog box"
+msgstr "წაშლის დადასტურების დიალოგის ჩაჩუმება"
+
+#: procviewer.ui.h:1
+msgid "Background Tasks"
+msgstr "ფონური ამოცანები"
+
+#. Informative text in the Process Viewer window
+#: procviewer.ui.h:3
+msgid ""
+"To provide background features (like software effects and triggers), "
+"additional processes may be spawned."
+msgstr ""
+"ფონის ფუნქციების წარმოსადგენად (მაგ: პროგრამული ეფექტები და ტრიგერები), "
+"შეიძლება, დამატებითი პროცესები გაეშვას."
+
+#. Column header for Process Viewer window
+#: procviewer.ui.h:5
+msgid "Task"
+msgstr "დავალება"
+
+#: troubleshooter.ui.h:1
+msgid "Troubleshooter"
+msgstr "პრობლებმჭრელი"
+
+#. Shown when the troubleshooter successfully
+#: troubleshooter.ui.h:3
+msgid "Troubleshooting complete!"
+msgstr "პრობლებმჭრელი დასრულდა!"
+
+#. Column header for the troubleshooting results
+#: troubleshooter.ui.h:5
+msgid "Result"
+msgstr "შედეგი"
+
+#. Column header for the troubleshooting results
+#: troubleshooter.ui.h:7
+msgid "Check"
+msgstr "შემოწმება"
+
+#: troubleshooter.ui.h:8
+msgid "Copy to Clipboard"
+msgstr "გაცვლის ბუფერში კოპირება"
