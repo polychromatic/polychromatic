@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: polychromatic\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-09 19:00+0200\n"
-"PO-Revision-Date: 2023-10-09 23:51+0200\n"
+"PO-Revision-Date: 2023-10-10 20:32+0200\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <(nothing)>\n"
 "Language: ka\n"
@@ -26,12 +26,12 @@ msgstr "აპლიკაციის შესახებ"
 #: about.ui.h:2 device-info.ui.h:7 inspect-matrix.ui.h:3 procviewer.ui.h:12
 #: troubleshooter.ui.h:9
 msgid "Close"
-msgstr "ეფექტის დისკზე შენახვა და რედაქტორის დახურვა"
+msgstr "დახურვა"
 
 #. Column header to view the application's version information
 #: about.ui.h:4
 msgid "Version"
-msgstr "თქვენი ვერსია: 0.0.0"
+msgstr "ვერსია"
 
 #: about.ui.h:5
 msgid "Component"
@@ -65,7 +65,7 @@ msgstr "გახსნის სისტემურ ფერების ა
 #: polychromatic/controller/editor.py:1464
 #: polychromatic/controller/effects.py:269
 msgid "Edit"
-msgstr "ჩაასწორეთ ამ ეფექტის სახელი, ხატულა და სხვა მონაცემები"
+msgstr "ჩასწორება"
 
 #. Colour Picker: Tooltip informing the user what the Save colour button does
 #: colour-picker.ui.h:8
@@ -130,7 +130,7 @@ msgstr "მნიშვნელობა"
 
 #: custom-dpi.ui.h:7
 msgid "1"
-msgstr "კადრი [1] / [10]"
+msgstr "1"
 
 #: custom-dpi.ui.h:8
 msgid "Remove last DPI stage"
@@ -280,7 +280,7 @@ msgstr "ხელსაწყოთა მთავარი ზოლი"
 
 #: editor.ui.h:33
 msgid "Frames"
-msgstr "ფრეიმები"
+msgstr "კადრები"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:35
@@ -427,7 +427,7 @@ msgstr "ტონის გაზრდა"
 
 #: editor.ui.h:77
 msgid "Hue"
-msgstr "ჰუე"
+msgstr "ტონი"
 
 #: editor.ui.h:78
 msgid "Saturation"
@@ -505,7 +505,7 @@ msgstr ""
 #. Menu bar item
 #: editor.ui.h:103
 msgid "Picker"
-msgstr "არჩევი"
+msgstr "ამრჩევი"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:105
@@ -783,7 +783,7 @@ msgstr "მარჯვნივ"
 #. Keyboard Shortcut
 #: editor.ui.h:192
 msgid "Home"
-msgstr "სახლი"
+msgstr "დასაწყისში"
 
 #. Keyboard Shortcut
 #: editor.ui.h:194
@@ -874,7 +874,7 @@ msgstr "მოწყობილობა"
 
 #: effect-metadata-editor.ui.h:9
 msgid "Mapping"
-msgstr "მიბმა"
+msgstr "ასახვა"
 
 #: effect-metadata-editor.ui.h:10
 msgid "Use a graphic resembling this device:"
@@ -901,7 +901,7 @@ msgstr "ხატულა სისტემის საათთან"
 #. Icon Picker: Tab name for built-in graphics
 #: icon-picker.ui.h:5
 msgid "Emblems"
-msgstr "ემბლემა"
+msgstr "ემბლემები"
 
 #. Icon Picker: Tab name for software installed on the user's system
 #: icon-picker.ui.h:7
@@ -1011,7 +1011,7 @@ msgstr "OpenRazer-ის შესახებ"
 
 #: main.ui.h:35
 msgid "New Preset..."
-msgstr "ახალი თამაში..."
+msgstr "ახალი პრესეტი..."
 
 #: main.ui.h:36
 msgid "New Preset from Current Devices..."
@@ -1716,7 +1716,7 @@ msgstr "16 მილიონი ფერი"
 
 #: polychromatic/controller/devices.py:1086
 msgid "Battery"
-msgstr "კვების ელემენტი"
+msgstr "ელემენტი"
 
 #: polychromatic/controller/devices.py:1089
 #: polychromatic/controller/devices.py:1091
@@ -2264,7 +2264,7 @@ msgstr "სიაში ყველა ფერი ნაგულისხმ
 
 #: polychromatic/controller/procviewer.py:100
 msgid "Restarting..."
-msgstr "იტვირთება..."
+msgstr "გადატვირთვა..."
 
 #. Button to restart all background tasks
 #: polychromatic/controller/procviewer.py:134 procviewer.ui.h:9
