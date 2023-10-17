@@ -852,6 +852,43 @@ class OpenRazerBackend(Backend):
             option.parameters = [direction_2, direction_1]
             options.append(option)
 
+        if self._has_zone_capability(rdevice, zone, "wheel"):
+            class WheelOption(Backend.EffectOption):
+                def __init__(self, rzone, persistence):
+                    super().__init__()
+                    self._rzone = rzone
+                    self._persistence = persistence
+                    self.uid = "wheel"
+
+                def refresh(self):
+                    self.active = True if self._persistence.state["effect"] == "wheel" else False
+                    for param in self.parameters:
+                        param.active = True if self._persistence.state["wave_dir"] == param.data else False
+
+                def apply(self, direction):
+                    # direction: 1 or 2
+                    self._rzone.wheel(int(direction))
+                    self._persistence.save("effect", "wheel")
+                    self._persistence.save("wave_dir", str(direction))
+
+            option = WheelOption(rzone, zone._persistence)
+            option.label = self._("Wheel")
+            option.icon = self.get_icon("options", "wheel")
+
+            direction_1 = Backend.Option.Parameter()
+            direction_1.data = 1
+            direction_1.label = self._("Right")
+            direction_1.icon = self.get_icon("params", "right")
+
+            direction_2 = Backend.Option.Parameter()
+            direction_2.data = 2
+            direction_2.default = True
+            direction_2.label = self._("Left")
+            direction_2.icon = self.get_icon("params", "left")
+
+            option.parameters = [direction_2, direction_1]
+            options.append(option)
+
         if has_ripple or has_ripple_random:
             class RippleOption(Backend.EffectOption):
                 def __init__(self, rzone, persistence):

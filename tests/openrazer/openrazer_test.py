@@ -315,6 +315,11 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         effect = self.get_option(device, "wave", "main")
         self.assertTrue(effect.parameters[1].label == "Clockwise", "Unexpected wave label for mousemat")
 
+    def test_option_effect_wheel(self):
+        device = self.get_device("Razer BlackWidow V4")
+        effect = self.get_option(device, "wheel", "main")
+        effect.apply(effect.parameters[0].data)
+
     def test_option_effect_ripple(self):
         device = self.get_device("Razer BlackWidow Chroma")
         effect = self.get_option(device, "ripple", "main")
