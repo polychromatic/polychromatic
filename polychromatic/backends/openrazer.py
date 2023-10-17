@@ -878,13 +878,13 @@ class OpenRazerBackend(Backend):
 
             direction_1 = Backend.Option.Parameter()
             direction_1.data = 1
-            direction_1.label = self._("Right")
+            direction_1.label = self._("Clockwise")
             direction_1.icon = self.get_icon("params", "right")
 
             direction_2 = Backend.Option.Parameter()
             direction_2.data = 2
             direction_2.default = True
-            direction_2.label = self._("Left")
+            direction_2.label = self._("Anti-clockwise")
             direction_2.icon = self.get_icon("params", "left")
 
             option.parameters = [direction_2, direction_1]
