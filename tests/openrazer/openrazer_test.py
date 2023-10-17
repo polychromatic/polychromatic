@@ -198,13 +198,13 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         rdevice = self.get_rdevice("Razer Taipan")
         zone = OpenRazerBackend.DeviceItem.Zone()
         zone.zone_id = "scroll"
-        self.assertTrue(self.openrazer._has_zone_capability(rdevice, zone, "active"), "Capability incorrectly reported")
+        self.assertTrue(self.openrazer._has_zone_capability(rdevice, zone, "on"), "Capability incorrectly reported")
 
     def test_capability_backlight(self):
         rdevice = self.get_rdevice("Razer Naga 2012")
         zone = OpenRazerBackend.DeviceItem.Zone()
         zone.zone_id = "backlight"
-        self.assertTrue(self.openrazer._has_zone_capability(rdevice, zone, "active"), "Capability incorrectly reported")
+        self.assertTrue(self.openrazer._has_zone_capability(rdevice, zone, "on"), "Capability incorrectly reported")
 
     def test_capability_left(self):
         rdevice = self.get_rdevice("Razer Mamba Elite")
@@ -266,19 +266,19 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         brightness.refresh()
         self.assertTrue(brightness.value == 72, "Could not set 'variable' brightness correctly")
 
-    def test_option_active_logo(self):
+    def test_option_on_logo(self):
         device = self.get_device("Razer Taipan")
-        brightness = self.get_option(device, "brightness", "logo")
-        brightness.apply(False)
-        brightness.refresh()
-        self.assertTrue(brightness.active == False, "Could not set 'toggle' brightness correctly")
+        option = self.get_option(device, "on", "logo")
+        option.apply(False)
+        option.refresh()
+        self.assertTrue(option.active == False, "Could not set 'on' logo effect correctly")
 
-    def test_option_active_scroll(self):
+    def test_option_on_scroll(self):
         device = self.get_device("Razer DeathAdder 3.5G")
-        brightness = self.get_option(device, "brightness", "scroll")
-        brightness.apply(True)
-        brightness.refresh()
-        self.assertTrue(brightness.active == True, "Could not set 'toggle' brightness correctly")
+        option = self.get_option(device, "on", "scroll")
+        option.apply(True)
+        option.refresh()
+        self.assertTrue(option.active == True, "Could not set 'on' scroll effect correctly")
 
     def test_option_effect_change(self):
         device = self.get_device("Razer BlackWidow Chroma")
@@ -316,7 +316,7 @@ class OpenRazerMiddlemanTest(unittest.TestCase):
         self.assertTrue(effect.parameters[1].label == "Clockwise", "Unexpected wave label for mousemat")
 
     def test_option_effect_wheel(self):
-        device = self.get_device("Razer BlackWidow V4")
+        device = self.get_device("Razer BlackWidow V4 Pro")
         effect = self.get_option(device, "wheel", "main")
         effect.apply(effect.parameters[0].data)
 
