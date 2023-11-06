@@ -82,10 +82,17 @@ def _is_pylib_installed(_):
     py_version = sys.version.split(" ")[0]
     suggestions = [_("Install 'python-openrazer' or 'python3-openrazer' for your distribution.")]
 
-    if sys.executable.startswith("/usr/bin"):
-        suggestions.append(_("Make sure the modules are installed for the correct Python version. Try re-installing."))
-    else:
+    # Is a custom Python installation interfering?
+    if not sys.executable.startswith("/usr/bin"):
         suggestions.append(_("Your Python installation looks custom. Check your PATH and PYTHONPATH."))
+
+    # Was it previously installed for an older version of Python?
+    python_version_major = sys.version.split(".")[0]
+    python_version_minor = int(sys.version.split(".")[1])
+    for minor_version in range(python_version_minor - 1, 0, -1):
+        path = f"/usr/lib/python{python_version_major}.{minor_version}/site-packages/openrazer"
+        if os.path.exists(os.path.join(path, "__init__.py")):
+            suggestions.append(_("Found library for an older Python version at /usr/lib. Try re-installing.").replace("/usr/lib", path))
 
     suggestions.append(_("Currently running Python 3.10.0 from /usr/bin/python3").replace("3.10.0", py_version).replace("/usr/bin/python3", sys.executable))
 
