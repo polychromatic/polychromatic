@@ -200,7 +200,7 @@
        <item>
         <widget class="QCheckBox" name="restore_persistence">
          <property name="text">
-          <string>Restore last used settings on daemon start</string>
+          <string>Restore software settings on device connect</string>
          </property>
         </widget>
        </item>
@@ -216,7 +216,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Disabling this may cause the current hardware effect to be misrepresented. This is dependent on the device's firmware.</string>
+          <string>Enabling this ensures the last used settings are set on the hardware. When disabled, the device is responsible to retain settings across power cycles.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
