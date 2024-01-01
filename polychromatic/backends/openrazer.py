@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 # Polychromatic is licensed under the GPLv3.
-# Copyright (C) 2017-2023 Luke Horwell <code@horwell.me>
+# Copyright (C) 2017-2024 Luke Horwell <code@horwell.me>
 #
 """
 This module abstracts data from the OpenRazer Python library (and daemon)
