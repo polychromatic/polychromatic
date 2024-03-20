@@ -14,9 +14,9 @@ from . import editor
 
 import os
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
                             QListWidget, QTreeWidget, QLabel, QComboBox, \
                             QTreeWidgetItem, QMenu, QDialog, QDialogButtonBox, \
                             QButtonGroup, QLineEdit, QTextEdit, QCheckBox, \
@@ -223,10 +223,10 @@ class EffectsTab(shared.CommonFileTab):
                                      self._("Backend Not Ready"),
                                      self._("The application is still waiting for the backends to finish initialising so you can pick a device to map your new effect."),
                                      info_text=self._("This might be ready in a few moments."),
-                                     buttons=[QMessageBox.Ignore, QMessageBox.Retry],
+                                     buttons=[QMessageBox.StandardButton.Ignore, QMessageBox.StandardButton.Retry],
                                      actions={
-                                         QMessageBox.Ignore: do_ignore,
-                                         QMessageBox.Retry: do_retry
+                                         QMessageBox.StandardButton.Ignore: do_ignore,
+                                         QMessageBox.StandardButton.Retry: do_retry
                                      })
 
             if action == "cancel":
@@ -563,7 +563,7 @@ class EffectMetadataEditor(shared.TabData):
             len(self.name.text()) > 0
         ]
 
-        self.buttons.button(QDialogButtonBox.Ok).setEnabled(all(x is True for x in conditions))
+        self.buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(all(x is True for x in conditions))
 
     def _device_updated(self):
         """

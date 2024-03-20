@@ -20,18 +20,18 @@ import json
 import os
 import time
 
-from PyQt5 import QtCore
-from PyQt5.QtCore import Qt, QRect, QItemSelectionModel, QThread, QSize, QUrl
-from PyQt5.QtGui import QIcon, QPixmap, QFont, QColor
-from PyQt5.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
+from PyQt6 import QtCore
+from PyQt6.QtCore import Qt, QRect, QItemSelectionModel, QThread, QSize, QUrl
+from PyQt6.QtGui import QAction, QIcon, QPixmap, QFont, QColor
+from PyQt6.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
                             QListWidget, QTreeWidget, QLabel, QComboBox, \
                             QTreeWidgetItem, QMenu, QDialog, QDialogButtonBox, \
                             QButtonGroup, QLineEdit, QTextEdit, QCheckBox, \
-                            QGroupBox, QRadioButton, QMainWindow, QAction, \
+                            QGroupBox, QRadioButton, QMainWindow, \
                             QDockWidget, QMenuBar, QToolBar, QStatusBar, \
                             QTableWidget, QWidget, QVBoxLayout, QHBoxLayout, \
-                            QScrollArea, QSpinBox, QDesktopWidget, QColorDialog
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+                            QScrollArea, QSpinBox, QColorDialog
+from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 # Visual mode within the WebView editor
 VISUAL_MODE_ADD = 1
@@ -515,14 +515,7 @@ class VisualEffectEditor(shared.TabData):
         centered = self.preferences["controller"]["window_behaviour"] == pref.WINDOW_BEHAVIOUR_CENTER
         already_small = self.window.height() > 1024 and self.window.width() > 768
         if centered and not already_small:
-
-            # DEPRECATED: QDesktopWidget(), but some distros ship an older Qt version (5.8, 5.12)
-            qt_ver = QtCore.PYQT_VERSION_STR.split(".")
-            if qt_ver[0] == "5" and int(qt_ver[1]) <= 14:
-                screen = QDesktopWidget().availableGeometry()
-            else:
-                # For >= Qt 5.15
-                screen = self.window.screen().availableGeometry()
+            screen = self.window.screen().availableGeometry()
 
             frame = self.window.frameGeometry()
             prefer_height = screen.height() - 175
@@ -640,10 +633,10 @@ class VisualEffectEditor(shared.TabData):
                                         self._("Backend Error"),
                                         self._("Live preview isn't possible yet as the backends haven't finished initialising."),
                                         self._("They might be ready now, try again. Or, choose Ignore to continue without a live preview on physical hardware."),
-                                        buttons=[QMessageBox.Retry, QMessageBox.Ignore],
+                                        buttons=[QMessageBox.StandardButton.Retry, QMessageBox.StandardButton.Ignore],
                                         actions={
-                                            QMessageBox.Retry: do_retry,
-                                            QMessageBox.Ignore: do_ignore
+                                            QMessageBox.StandardButton.Retry: do_retry,
+                                            QMessageBox.StandardButton.Ignore: do_ignore
                                         })
 
             if retry:
@@ -802,11 +795,11 @@ class VisualEffectEditor(shared.TabData):
             self.widgets.open_dialog(self.widgets.dialog_warning,
                                      self._("Unsaved Changes"),
                                      self._("This effect was modified. Would you like to save these changes?"),
-                                     buttons=[QMessageBox.Save, QMessageBox.Discard, QMessageBox.Cancel],
-                                     default_button=QMessageBox.Save,
+                                     buttons=[QMessageBox.StandardButton.Save, QMessageBox.StandardButton.Discard, QMessageBox.StandardButton.Cancel],
+                                     default_button=QMessageBox.StandardButton.Save,
                                      actions={
-                                        QMessageBox.Save: _do_save,
-                                        QMessageBox.Discard: _do_not_save
+                                        QMessageBox.StandardButton.Save: _do_save,
+                                        QMessageBox.StandardButton.Discard: _do_not_save
                                      })
             if event:
                 event.ignore()
@@ -908,9 +901,9 @@ class VisualEffectEditor(shared.TabData):
         self.widgets.open_dialog(self.widgets.dialog_warning,
                                  self._("Revert"),
                                  self._("Reload the effect from disk? Any unsaved data will be lost!"),
-                                 buttons=[QMessageBox.Yes, QMessageBox.No],
-                                 default_button=QMessageBox.Yes,
-                                 actions={QMessageBox.Yes: _do_reload})
+                                 buttons=[QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No],
+                                 default_button=QMessageBox.StandardButton.Yes,
+                                 actions={QMessageBox.StandardButton.Yes: _do_reload})
 
     # ----------------------------
     # Common
@@ -1300,7 +1293,7 @@ class VisualEffectEditor(shared.TabData):
 
         # Select first frame if deselected
         if len(table.selectedIndexes()) == 0:
-            table.setSelection(QRect(0, 0, 1, 1), QItemSelectionModel.Select)
+            table.setSelection(QRect(0, 0, 1, 1), QItemSelectionModel.SelectionFlag.Select)
 
     def open_frame(self, playback_mode=False):
         """
@@ -1522,9 +1515,9 @@ class VisualEffectEditor(shared.TabData):
                                  self._("Delete Frame"),
                                  self._("Permanently delete this frame? There is no undo."),
                                  info_text=self._("Tip: This confirmation can be suppressed via the Editor tab under Preferences."),
-                                 buttons=[QMessageBox.Yes, QMessageBox.No],
-                                 default_button=QMessageBox.Yes,
-                                 actions={QMessageBox.Yes: _do_delete_frame})
+                                 buttons=[QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No],
+                                 default_button=QMessageBox.StandardButton.Yes,
+                                 actions={QMessageBox.StandardButton.Yes: _do_delete_frame})
 
     def clone_frame(self):
         """

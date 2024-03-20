@@ -17,9 +17,9 @@ from . import shared
 from . import procviewer
 from . import troubleshooter
 
-from PyQt5.QtCore import Qt, QThread
-from PyQt5.QtGui import QBrush, QPixmap, QFont, QIcon
-from PyQt5.QtWidgets import QWidget, QMenuBar, QMenu, QAction, QLabel, QDialog, \
+from PyQt6.QtCore import Qt, QThread
+from PyQt6.QtGui import QAction, QBrush, QPixmap, QFont, QIcon
+from PyQt6.QtWidgets import QWidget, QMenuBar, QMenu, QLabel, QDialog, \
                             QPushButton, QTreeWidget, QTreeWidgetItem, \
                             QTextEdit, QButtonGroup, QProgressBar, QMessageBox, \
                             QApplication
@@ -319,8 +319,8 @@ class MenuBar(PolychromaticBase):
         window_title = ' '.join(sub[:1].upper() + sub[1:] for sub in title.split(' '))
         about.setWindowTitle(self._("About []").replace("[]", window_title))
         about.setWindowIcon(QIcon(logo))
-        about.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
-        about.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
+        about.setWindowFlag(Qt.WindowType.WindowMinimizeButtonHint, False)
+        about.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint, False)
         about.exec()
 
     def about_polychromatic(self):
@@ -415,9 +415,9 @@ class MenuBarOpenRazer(MenuBar):
         self.widgets.open_dialog(self.widgets.dialog_generic,
                                  self._("Reload application?"),
                                  self._("To apply these changes, a daemon process needs to restart. This will also restart Polychromatic. Any unsaved data will be lost."),
-                                 buttons=[QMessageBox.Ok, QMessageBox.Cancel],
-                                 default_button=QMessageBox.Ok,
-                                 actions={QMessageBox.Ok: _reload_openrazer})
+                                 buttons=[QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Cancel],
+                                 default_button=QMessageBox.StandardButton.Ok,
+                                 actions={QMessageBox.StandardButton.Ok: _reload_openrazer})
 
     def _get_dbus_version(self):
         """

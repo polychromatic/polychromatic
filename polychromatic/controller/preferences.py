@@ -16,12 +16,12 @@ from . import shared
 import os
 import configparser
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QWidget, QPushButton, QTreeWidget, QLabel, \
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QAction, QIcon, QPixmap
+from PyQt6.QtWidgets import QWidget, QPushButton, QTreeWidget, QLabel, \
                             QComboBox, QCheckBox, QDialog, QSpinBox, \
                             QDoubleSpinBox, QDialogButtonBox, QTabWidget, \
-                            QMessageBox, QAction, QToolButton
+                            QMessageBox, QToolButton
 
 
 class PreferencesWindow(shared.TabData):
@@ -236,9 +236,9 @@ class PreferencesWindow(shared.TabData):
             self.widgets.open_dialog(self.widgets.dialog_generic,
                                      self._("Restart Required"),
                                      self._("To apply these changes, the application must be restarted. Any unsaved changes will be lost."),
-                                     buttons=[QMessageBox.Ok, QMessageBox.Ignore],
-                                     default_button=QMessageBox.Ok,
-                                     actions={QMessageBox.Ok: _cb_restart_now})
+                                     buttons=[QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ignore],
+                                     default_button=QMessageBox.StandardButton.Ok,
+                                     actions={QMessageBox.StandardButton.Ok: _cb_restart_now})
 
         # Reload tray applet
         if self.restart_applet:
@@ -268,9 +268,9 @@ class PreferencesWindow(shared.TabData):
         self.widgets.open_dialog(self.widgets.dialog_generic,
                                  self._("Reset to Default Colours"),
                                  self._("All colours in the list will be reset. Continue?"),
-                                 buttons=[QMessageBox.Ok, QMessageBox.Cancel],
-                                 default_button=QMessageBox.Ok,
-                                 actions={QMessageBox.Ok: _cb_reset_colours})
+                                 buttons=[QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Cancel],
+                                 default_button=QMessageBox.StandardButton.Ok,
+                                 actions={QMessageBox.StandardButton.Ok: _cb_reset_colours})
 
 
 class OpenRazerPreferences(shared.TabData):

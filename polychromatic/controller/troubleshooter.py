@@ -15,9 +15,9 @@ from .. import procpid
 from . import shared
 from . import procviewer
 
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject
-from PyQt5.QtGui import QIcon, QBrush
-from PyQt5.QtWidgets import QWidget, QLabel, QDialog, QPushButton, \
+from PyQt6.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject
+from PyQt6.QtGui import QIcon, QBrush
+from PyQt6.QtWidgets import QWidget, QLabel, QDialog, QPushButton, \
                             QTreeWidget, QTreeWidgetItem, QProgressBar, \
                             QApplication
 
@@ -89,8 +89,8 @@ class TroubleshooterGUI(QObject):
         self.dbg.stdout("Running troubleshooter backend: {0}".format(self.backend), self.dbg.action, 1)
         self.loading_label.setText(self._("Running troubleshooter..."))
         self.loading.setWindowTitle(self._("Troubleshooting..."))
-        self.loading.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
-        self.loading.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
+        self.loading.setWindowFlag(Qt.WindowType.WindowMinimizeButtonHint, False)
+        self.loading.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint, False)
         self.loading.open()
 
         self.thread.start()

@@ -22,14 +22,14 @@ import time
 import shutil
 import webbrowser
 
-from PyQt5.QtCore import Qt, QSize, QMargins, QThread
-from PyQt5.QtGui import QIcon, QPixmap, QFont
-from PyQt5.QtWidgets import QWidget, QDialogButtonBox, QGroupBox, QGridLayout, \
+from PyQt6.QtCore import Qt, QSize, QMargins, QThread
+from PyQt6.QtGui import QAction, QIcon, QPixmap, QFont
+from PyQt6.QtWidgets import QWidget, QDialogButtonBox, QGroupBox, QGridLayout, \
                             QPushButton, QToolButton, QMessageBox, QListWidget, \
                             QTreeWidget, QTreeWidgetItem, QLabel, QComboBox, \
                             QSpacerItem, QSizePolicy, QSlider, QCheckBox, \
                             QButtonGroup, QRadioButton, QDialog, QTableWidget, \
-                            QTableWidgetItem, QAction, QHBoxLayout
+                            QTableWidgetItem, QHBoxLayout
 
 # Error codes
 ERROR_NO_DEVICE = 0
@@ -101,7 +101,7 @@ class DevicesTab(shared.TabData):
             item.device_item = device
             devices_branch.addChild(item)
 
-        devices_branch.sortChildren(0, Qt.AscendingOrder)
+        devices_branch.sortChildren(0, Qt.SortOrder.AscendingOrder)
 
         # For unknown devices, check support status using local index
         device_index = json.loads(open(f"{self.paths.data_dir}/devices/openrazer.json", "r").read())
@@ -410,7 +410,7 @@ class DevicesTab(shared.TabData):
         """
         Returns a list of controls that make up a slider for changing a variable option.
         """
-        slider = QSlider(Qt.Horizontal)
+        slider = QSlider(Qt.Orientation.Horizontal)
         slider.setValue(option.value)
         slider.setMinimum(option.min)
         slider.setMaximum(option.max)
@@ -419,7 +419,7 @@ class DevicesTab(shared.TabData):
         slider.setMaximumWidth(150)
 
         # BUG: Qt: Ticks don't appear with stylesheet
-        slider.setTickPosition(QSlider.TicksBelow)
+        slider.setTickPosition(QSlider.TickPosition.TicksBelow)
         slider.setTickInterval(int(option.max / 10))
 
         label = QLabel()
@@ -508,7 +508,7 @@ class DevicesTab(shared.TabData):
             button.setText(option.label)
             button.setCheckable(True)
             button.setIconSize(QSize(40, 40))
-            button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             if option.icon:
                 button.setIcon(QIcon(option.icon))
             button.setMinimumHeight(70)
@@ -657,7 +657,7 @@ class DevicesTab(shared.TabData):
 
         # Skeleton devices
         device_icon = QIcon()
-        device_icon.addFile(common.get_icon("general", "placeholder"), mode=QIcon.Disabled)
+        device_icon.addFile(common.get_icon("general", "placeholder"), mode=QIcon.Mode.Disabled)
         skel_strings = [
             "█████████████",
             "████████████",
@@ -695,7 +695,7 @@ class DevicesTab(shared.TabData):
 
         dummy_slider = QLabel("________________________")
         dummy_slider.setMaximumWidth(180)
-        dummy_slider.setAlignment(Qt.AlignLeft)
+        dummy_slider.setAlignment(Qt.AlignmentFlag.AlignLeft)
         skels_bg.append(dummy_slider)
 
         dummy_buttons = []
@@ -705,7 +705,7 @@ class DevicesTab(shared.TabData):
             dummy.setMinimumWidth(70)
             dummy.setMaximumHeight(70)
             dummy.setMaximumWidth(70)
-            dummy.setAlignment(Qt.AlignLeft)
+            dummy.setAlignment(Qt.AlignmentFlag.AlignLeft)
             dummy_buttons.append(dummy)
             skels_bg.append(dummy)
 
@@ -950,7 +950,7 @@ class DevicesTab(shared.TabData):
             button = QToolButton()
             button.setText(option.label)
             button.setIconSize(QSize(40, 40))
-            button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             button.setIcon(QIcon(option.icon))
             button.setMinimumHeight(70)
             button.setMinimumWidth(105)
@@ -1496,7 +1496,7 @@ class SpecialControls(shared.TabData):
         button.clicked.connect(_open_input_remapper)
 
         spacer = QWidget()
-        spacer.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        spacer.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
 
         return self.widgets.create_row_widget("", [button, spacer])
 
@@ -1520,7 +1520,7 @@ class SpecialControls(shared.TabData):
         button.clicked.connect(_open_macro_dialog)
 
         spacer = QWidget()
-        spacer.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        spacer.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
 
         return self.widgets.create_row_widget(self._("Macros"), [button, spacer])
 
@@ -1554,7 +1554,7 @@ class DPIStageEditor(shared.TabData):
         self.btn_stage_add = self.dialog.findChild(QPushButton, "StageAdd")
         self.btn_stage_del = self.dialog.findChild(QPushButton, "StageDel")
         self.dialog_buttons = self.dialog.findChild(QDialogButtonBox, "buttonBox")
-        self.btn_save = self.dialog_buttons.button(QDialogButtonBox.Save)
+        self.btn_save = self.dialog_buttons.button(QDialogButtonBox.StandardButton.Save)
 
         # Set icons for controls
         if not self.appdata.system_qt_theme:

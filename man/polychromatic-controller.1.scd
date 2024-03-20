@@ -11,7 +11,7 @@ Polychromatic - RGB lighting management software for GNU/Linux
 # DESCRIPTION
 
 This is the main graphical user interface portion of Polychromatic, based on
-PyQt5. All features of the software are accessible here.
+PyQt6. All features of the software are accessible here.
 
 # OPTIONS
 

@@ -19,21 +19,21 @@ import glob
 import requests
 import shutil
 
-from PyQt5 import uic, QtSvg
-from PyQt5.QtCore import Qt, QSize, QMargins
-from PyQt5.QtGui import QIcon, QPalette, QColor, QFont, QPixmap, QMovie
-from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, \
-                            QWidget, QMessageBox, QGridLayout, \
-                            QLabel, QPushButton, QToolButton, QGroupBox, \
-                            QListWidget, QHBoxLayout, QVBoxLayout, QFormLayout, \
-                            QSizePolicy, QSpacerItem, QDialog, QColorDialog, \
-                            QDialogButtonBox, QTreeWidget, QTreeWidgetItem, \
-                            QLineEdit, QTextEdit, QTabWidget, QScrollArea, \
-                            QButtonGroup, QFileDialog, QMenu, QAction, \
-                            QDockWidget, QCheckBox, QSpinBox, QComboBox, \
-                            QTreeWidget, QDoubleSpinBox, QRadioButton, QToolBar
+from PyQt6 import uic, QtSvg
+from PyQt6.QtCore import Qt, QSize, QMargins
+from PyQt6.QtGui import (QAction, QColor, QFont, QIcon, QImage, QMovie,
+                         QPainter, QPalette, QPixmap)
+from PyQt6.QtSvg import QSvgRenderer
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWidgets import (QButtonGroup, QCheckBox, QColorDialog, QComboBox,
+                             QDialog, QDialogButtonBox, QDockWidget,
+                             QDoubleSpinBox, QFileDialog, QFormLayout,
+                             QGridLayout, QGroupBox, QHBoxLayout, QLabel,
+                             QLineEdit, QMainWindow, QMenu, QMenuBar,
+                             QMessageBox, QPushButton, QRadioButton,
+                             QSizePolicy, QSpinBox, QTabWidget, QTextEdit,
+                             QToolBar, QToolButton, QTreeWidget,
+                             QTreeWidgetItem, QVBoxLayout, QWidget)
 
 
 def load_qt_theme(appdata, window):
@@ -76,22 +76,22 @@ def get_palette(app):
     white = QColor(255, 255, 255)
     primary = QColor(0, 255, 0)
     secondary = QColor(0, 128, 0)
-    palette.setColor(QPalette.Window, QColor(0, 0, 0))
-    palette.setColor(QPalette.WindowText, white)
-    palette.setColor(QPalette.Base, QColor(25, 25, 25))
-    palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-    palette.setColor(QPalette.ToolTipBase, white)
-    palette.setColor(QPalette.ToolTipText, white)
-    palette.setColor(QPalette.Text, white)
-    palette.setColor(QPalette.Button, QColor(50, 50, 50))
-    palette.setColor(QPalette.ButtonText, white)
-    palette.setColor(QPalette.Link, primary)
-    palette.setColor(QPalette.Highlight, secondary)
-    palette.setColor(QPalette.HighlightedText, white)
+    palette.setColor(QPalette.ColorRole.Window, QColor(0, 0, 0))
+    palette.setColor(QPalette.ColorRole.WindowText, white)
+    palette.setColor(QPalette.ColorRole.Base, QColor(25, 25, 25))
+    palette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 53, 53))
+    palette.setColor(QPalette.ColorRole.ToolTipBase, white)
+    palette.setColor(QPalette.ColorRole.ToolTipText, white)
+    palette.setColor(QPalette.ColorRole.Text, white)
+    palette.setColor(QPalette.ColorRole.Button, QColor(50, 50, 50))
+    palette.setColor(QPalette.ColorRole.ButtonText, white)
+    palette.setColor(QPalette.ColorRole.Link, primary)
+    palette.setColor(QPalette.ColorRole.Highlight, secondary)
+    palette.setColor(QPalette.ColorRole.HighlightedText, white)
     return palette
 
 
-def get_ui_widget(appdata, name, q_toplevel=QWidget):
+def get_ui_widget(appdata, name, q_toplevel=QWidget) -> QWidget:
     """
     Returns a QWidget object for the specified .ui file.
 
@@ -104,11 +104,6 @@ def get_ui_widget(appdata, name, q_toplevel=QWidget):
     if not os.path.exists(ui_file):
         print("Missing UI file: " + ui_file)
         return None
-
-    # HACK: Allows VS Code IDE to autocomplete, since PyQt5-stubs haven't stubbed uic yet
-    # https://github.com/python-qt-tools/PyQt5-stubs/issues/150
-    if 1 == 2:
-        return QWidget()
 
     widget = uic.loadUi(ui_file, q_toplevel())
 
@@ -133,7 +128,7 @@ def get_ui_widget(appdata, name, q_toplevel=QWidget):
     return widget
 
 
-def translate_ui(appdata, widget):
+def translate_ui(appdata, widget: QWidget):
     """
     Iterates over all the translatable widgets from the newly loaded .ui file
     and use gettext to apply the localized strings.
@@ -238,9 +233,9 @@ def set_pixmap_for_label(qlabel, icon_path, icon_size=24):
         icon_size   (int)   Dimensions to scale
     """
     pixmap_src = QPixmap(icon_path)
-    pixmap = pixmap_src.scaled(icon_size, icon_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+    pixmap = pixmap_src.scaled(icon_size, icon_size, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
     qlabel.setPixmap(pixmap)
-    qlabel.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+    qlabel.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
 
 def get_real_device_image(uri):
@@ -300,7 +295,7 @@ class TabData(PolychromaticBase):
         self.main_window.unsetCursor()
 
     def set_cursor_busy(self):
-        self.main_window.setCursor(Qt.BusyCursor)
+        self.main_window.setCursor(Qt.CursorShape.BusyCursor)
 
     def set_title(self, title):
         """
@@ -335,9 +330,9 @@ class PolychromaticWidgets(PolychromaticBase):
         self.appdata = appdata
 
         # Dialogues types
-        self.dialog_generic = QMessageBox.Information
-        self.dialog_error = QMessageBox.Critical
-        self.dialog_warning = QMessageBox.Warning
+        self.dialog_generic = QMessageBox.Icon.Information
+        self.dialog_error = QMessageBox.Icon.Critical
+        self.dialog_warning = QMessageBox.Icon.Warning
 
     def get_icon_qt(self, folder, name):
         """
@@ -352,11 +347,11 @@ class PolychromaticWidgets(PolychromaticBase):
             return QIcon()
 
         qicon = QIcon(icons[0])
-        qicon.addFile(icons[1], mode=QIcon.Disabled)
-        qicon.addFile(icons[2], mode=QIcon.Active)
-        qicon.addFile(icons[2], mode=QIcon.Active, state=QIcon.On)
-        qicon.addFile(icons[3], mode=QIcon.Selected)
-        qicon.addFile(icons[3], mode=QIcon.Selected, state=QIcon.On)
+        qicon.addFile(icons[1], mode=QIcon.Mode.Disabled)
+        qicon.addFile(icons[2], mode=QIcon.Mode.Active)
+        qicon.addFile(icons[2], mode=QIcon.Mode.Active, state=QIcon.State.On)
+        qicon.addFile(icons[3], mode=QIcon.Mode.Selected)
+        qicon.addFile(icons[3], mode=QIcon.Mode.Selected, state=QIcon.State.On)
         return qicon
 
     def set_toolbar_style(self, widget):
@@ -371,11 +366,11 @@ class PolychromaticWidgets(PolychromaticBase):
 
         if type(widget) in [QToolButton, QToolBar]:
             poly_to_qt = {
-                pref.TOOLBAR_STYLE_DEFAULT: Qt.ToolButtonFollowStyle,
-                pref.TOOLBAR_STYLE_ICONS_ONLY: Qt.ToolButtonIconOnly,
-                pref.TOOLBAR_STYLE_TEXT_ONLY: Qt.ToolButtonTextOnly,
-                pref.TOOLBAR_STYLE_ALONGSIDE: Qt.ToolButtonTextBesideIcon,
-                pref.TOOLBAR_STYLE_UNDER: Qt.ToolButtonTextUnderIcon
+                pref.TOOLBAR_STYLE_DEFAULT: Qt.ToolButtonStyle.ToolButtonFollowStyle,
+                pref.TOOLBAR_STYLE_ICONS_ONLY: Qt.ToolButtonStyle.ToolButtonIconOnly,
+                pref.TOOLBAR_STYLE_TEXT_ONLY: Qt.ToolButtonStyle.ToolButtonTextOnly,
+                pref.TOOLBAR_STYLE_ALONGSIDE: Qt.ToolButtonStyle.ToolButtonTextBesideIcon,
+                pref.TOOLBAR_STYLE_UNDER: Qt.ToolButtonStyle.ToolButtonTextUnderIcon
             }
             widget.setToolButtonStyle(poly_to_qt[preferred_style])
             return
@@ -388,9 +383,9 @@ class PolychromaticWidgets(PolychromaticBase):
             app_style = self.appdata.main_window.toolButtonStyle()
             try:
                 qt_to_poly = {
-                    Qt.ToolButtonIconOnly: pref.TOOLBAR_STYLE_ICONS_ONLY,
-                    Qt.ToolButtonTextOnly: pref.TOOLBAR_STYLE_TEXT_ONLY,
-                    Qt.ToolButtonTextBesideIcon: pref.TOOLBAR_STYLE_ALONGSIDE,
+                    Qt.ToolButtonStyle.ToolButtonIconOnly: pref.TOOLBAR_STYLE_ICONS_ONLY,
+                    Qt.ToolButtonStyle.ToolButtonTextOnly: pref.TOOLBAR_STYLE_TEXT_ONLY,
+                    Qt.ToolButtonStyle.ToolButtonTextBesideIcon: pref.TOOLBAR_STYLE_ALONGSIDE,
                 }
                 preferred_style = qt_to_poly[app_style]
             except KeyError:
@@ -405,7 +400,7 @@ class PolychromaticWidgets(PolychromaticBase):
             if len(widget.text()) > 0:
                 widget.setIcon(QIcon())
 
-    def set_dialog_buttons_icons(self, qdialogbuttonbox):
+    def set_dialog_buttons_icons(self, qdialogbuttonbox: QDialogButtonBox):
         """
         Applies Polychromatic styling to buttons inside a QDialogButtonBox.
         """
@@ -413,15 +408,15 @@ class PolychromaticWidgets(PolychromaticBase):
             return
 
         icons = {
-            QDialogButtonBox.Ok: ["general", "ok"],
-            QDialogButtonBox.Cancel: ["general", "cancel"],
-            QDialogButtonBox.Yes: ["general", "ok"],
-            QDialogButtonBox.No: ["general", "cancel"],
-            QDialogButtonBox.Retry: ["general", "refresh"],
-            QDialogButtonBox.Ignore: ["general", "cancel"],
-            QDialogButtonBox.Save: ["general", "save"],
-            QDialogButtonBox.Discard: ["general", "delete"],
-            QDialogButtonBox.RestoreDefaults: ["general", "reset"],
+            QDialogButtonBox.StandardButton.Ok: ["general", "ok"],
+            QDialogButtonBox.StandardButton.Cancel: ["general", "cancel"],
+            QDialogButtonBox.StandardButton.Yes: ["general", "ok"],
+            QDialogButtonBox.StandardButton.No: ["general", "cancel"],
+            QDialogButtonBox.StandardButton.Retry: ["general", "refresh"],
+            QDialogButtonBox.StandardButton.Ignore: ["general", "cancel"],
+            QDialogButtonBox.StandardButton.Save: ["general", "save"],
+            QDialogButtonBox.StandardButton.Discard: ["general", "delete"],
+            QDialogButtonBox.StandardButton.RestoreDefaults: ["general", "reset"],
         }
 
         for std_btn in icons.keys():
@@ -487,19 +482,25 @@ class PolychromaticWidgets(PolychromaticBase):
                 # Replace summary icon with SVG renderer for better quality/scaling
                 if icon_path.endswith(".svg"):
                     summary.findChild(QLabel, "SummaryImage").deleteLater()
-                    viewer = QSvgWidget()
-                    viewer.load(icon_path)
-                    viewer.setMinimumHeight(90)
-                    viewer.setMinimumWidth(90)
-                    viewer.setMaximumHeight(90)
-                    viewer.setMaximumWidth(90)
+
+                    renderer = QSvgRenderer(icon_path)
+
+                    image = QImage(QSize(90, 90), QImage.Format.Format_ARGB32)
+                    image.fill(QColor(255, 255, 255, 0))
+
+                    painter = QPainter(image)
+                    renderer.render(painter)
+                    painter.end()
+
+                    label = QLabel()
+                    label.setPixmap(QPixmap.fromImage(image))
+
                     summary.setContentsMargins(8 + 6, 8, 8, 8)
 
                     # Appends to the end - restructure
-                    summary.layout().addWidget(viewer)
+                    summary.layout().addWidget(label)
                     summary.layout().addWidget(container_widget)
                     summary.layout().addWidget(buttons_widget)
-                    viewer.show()
             else:
                 set_pixmap_for_label(image_widget, icon_path, 115)
         else:
@@ -555,7 +556,7 @@ class PolychromaticWidgets(PolychromaticBase):
         group = QGroupBox()
         group.setTitle(title)
         group.setLayout(QGridLayout())
-        group.layout().setAlignment(Qt.AlignTop)
+        group.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
         group.layout().setContentsMargins(QMargins(0, 6, 0, 6))
         return group
 
@@ -579,7 +580,7 @@ class PolychromaticWidgets(PolychromaticBase):
         # Left - Add label
         label = QLabel()
         label.setText(label_text)
-        label.setAlignment(Qt.AlignTop)
+        label.setAlignment(Qt.AlignmentFlag.AlignTop)
         label.setWordWrap(True)
         label.setMinimumWidth(120)
         label.setMaximumWidth(120)
@@ -620,21 +621,21 @@ class PolychromaticWidgets(PolychromaticBase):
         # Center graphic
         image = QLabel()
         pixmap_src = QPixmap(icon_path)
-        pixmap = pixmap_src.scaled(int(750 / 2), int(500 / 2), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap = pixmap_src.scaled(int(750 / 2), int(500 / 2), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         image.setPixmap(pixmap)
-        image.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        image.setAlignment(Qt.AlignCenter)
+        image.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        image.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Text & buttons
         text1 = QLabel()
         text1.setFont(QFont("Play", 14))
-        text1.setAlignment(Qt.AlignCenter)
+        text1.setAlignment(Qt.AlignmentFlag.AlignCenter)
         text1.setText(title)
         text1.setMargin(10)
 
         text2 = QLabel()
         text2.setFont(QFont("Play", 11))
-        text2.setAlignment(Qt.AlignCenter)
+        text2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         text2.setText(subtitle)
         text2.setMargin(10)
         text2.setWordWrap(True)
@@ -751,7 +752,7 @@ class PolychromaticWidgets(PolychromaticBase):
         container.layout().addStretch()
         return container
 
-    def open_dialog(self, dialog_type, title, text, info_text="", details="", buttons=[QMessageBox.Ok], default_button=None, actions={}):
+    def open_dialog(self, dialog_type, title, text, info_text="", details="", buttons=[QMessageBox.StandardButton.Ok], default_button=None, actions={}):
         """
         Opens a modal dialogue box to inform or confirm a decision.
 
@@ -765,13 +766,13 @@ class PolychromaticWidgets(PolychromaticBase):
             info_text       (str)   (Optional) Informative text of next steps.
                                     Appears under text. macOS styles differently.
             details         (str)   (Optional) Monospace output of the problem
-            buttons         (list)  (Optional) QMessageBox.* of buttons to display
-            default_button  (obj)   (Optional) QMessageBox.* of initial default button
-            actions         (dict)  (Optional) Bind a QMessageBox.* to function
+            buttons         (list)  (Optional) QMessageBox.StandardButton.* of buttons to display
+            default_button  (obj)   (Optional) QMessageBox.StandardButton.* of initial default button
+            actions         (dict)  (Optional) Bind a QMessageBox.StandardButton.* to function
         """
         msgbox = QMessageBox()
         msgbox.setWindowTitle(title)
-        msgbox.setWindowFlag(Qt.Popup)
+        msgbox.setWindowFlag(Qt.WindowType.Popup)
         msgbox.setText(text)
         msgbox.setIcon(dialog_type)
 
@@ -912,7 +913,7 @@ class ColourPicker(PolychromaticBase):
         item.setIcon(0, QIcon(common.generate_colour_bitmap(self.appdata.dbg, value, 20)))
         item.colour_name = name
         item.colour_hex = value.upper()
-        item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsDragEnabled)
+        item.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsDragEnabled)
         self.saved_tree.addTopLevelItem(item)
         return item
 
@@ -1283,11 +1284,11 @@ class IconPicker(PolychromaticBase):
         widget = QWidget()
         widget.setObjectName("empty_" + str(tab_index))
         widget.setLayout(QVBoxLayout())
-        widget.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        widget.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
 
         label = QLabel()
         label.setWordWrap(True)
-        label.setAlignment(Qt.AlignHCenter)
+        label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         label.setMargin(4)
 
         images = {
@@ -1306,7 +1307,7 @@ class IconPicker(PolychromaticBase):
             label.setText(self._("No icons found!"))
 
         image = QLabel()
-        image.setAlignment(Qt.AlignHCenter)
+        image.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         if tab_index in images.keys():
             image.setPixmap(QPixmap(images[tab_index]))
 
@@ -1407,8 +1408,8 @@ class IconPicker(PolychromaticBase):
         Opens the file browser to import new files to the custom icons set.
         """
         browser = QFileDialog()
-        browser.setAcceptMode(QFileDialog.AcceptOpen)
-        browser.setFileMode(QFileDialog.ExistingFiles)
+        browser.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
+        browser.setFileMode(QFileDialog.FileMode.ExistingFiles)
 
         # TODO: Use Polychromatic styles, if possible.
         load_qt_theme(self.appdata, browser)
@@ -1602,7 +1603,7 @@ class CommonFileTab(TabData):
         file_list = self.fileman.get_item_list()
         for item in file_list:
             self._add_tree_item(self.FilesBranch, item["name"], item["icon"], "open", item["path"])
-        self.FilesBranch.sortChildren(0, Qt.AscendingOrder)
+        self.FilesBranch.sortChildren(0, Qt.SortOrder.AscendingOrder)
 
         # Show the first item
         if len(file_list) == 0:
@@ -1733,9 +1734,9 @@ class CommonFileTab(TabData):
         self.widgets.open_dialog(self.widgets.dialog_warning,
                                  self._("Confirm Deletion"),
                                  msgs[self.feature],
-                                 buttons=[QMessageBox.Yes, QMessageBox.No],
-                                 default_button=QMessageBox.Yes,
-                                 actions={QMessageBox.Yes: _file_delete_confirmed})
+                                 buttons=[QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No],
+                                 default_button=QMessageBox.StandardButton.Yes,
+                                 actions={QMessageBox.StandardButton.Yes: _file_delete_confirmed})
 
     def clone_file(self):
         """

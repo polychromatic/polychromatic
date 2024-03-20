@@ -14,9 +14,9 @@ import os
 import time
 import subprocess
 
-from PyQt5.QtCore import Qt, QThread
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QWidget, QDialog, QPushButton, QTreeWidget, \
+from PyQt6.QtCore import Qt, QThread
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QWidget, QDialog, QPushButton, QTreeWidget, \
                             QLabel, QTreeWidgetItem
 
 
