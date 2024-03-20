@@ -15,9 +15,9 @@ from .. import procpid
 from . import shared
 from . import procviewer
 
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject
-from PyQt5.QtGui import QIcon, QBrush
-from PyQt5.QtWidgets import QWidget, QLabel, QDialog, QPushButton, \
+from PyQt6.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject
+from PyQt6.QtGui import QIcon, QBrush
+from PyQt6.QtWidgets import QWidget, QLabel, QDialog, QPushButton, \
                             QTreeWidget, QTreeWidgetItem, QProgressBar, \
                             QApplication
 

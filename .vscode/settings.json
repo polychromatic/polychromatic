@@ -1,3 +1,9 @@
 {
-    "python.analysis.typeCheckingMode": "off"
+    "python.analysis.typeCheckingMode": "off",
+    "pylint.args": [
+        "--disable=line-too-long",
+
+        // Not all PyQt* modules are recognised
+        "--disable=no-name-in-module",
+    ]
 }
