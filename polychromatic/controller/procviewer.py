@@ -8,7 +8,7 @@ import time
 
 from PyQt6.QtCore import QThread
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QDialog, QPushButton, QTreeWidget, QTreeWidgetItem)
+from PyQt6.QtWidgets import QDialog, QPushButton, QTreeWidget, QTreeWidgetItem
 
 from .. import common, procpid
 from ..base import PolychromaticBase
@@ -89,19 +89,6 @@ class ProcessViewer(PolychromaticBase):
         class RebootThread(QThread):
             @staticmethod
             def run():
-                self.dbg.stdout("Now reloading background processes...", self.dbg.warning, 1)
-                self.btn_stop.setEnabled(False)
-                self.btn_reload.setEnabled(False)
-                self.btn_reload.setText(self._("Restarting..."))
-                set_cursor_busy()
-
-                self.tree.clear()
-                item = QTreeWidgetItem()
-                item.setText(0, self._("Please wait..."))
-                item.setIcon(0, QIcon(common.get_icon("general", "exit")))
-                item.setDisabled(True)
-                self.tree.addTopLevelItem(item)
-
                 # Gracefully stop using procpid module
                 procmgr = procpid.ProcessManager("helper")
                 components = procmgr._get_component_pid_list()
@@ -134,6 +121,19 @@ class ProcessViewer(PolychromaticBase):
                     tray_delay = self.appdata.preferences["tray"]["autostart_delay"]
                     time.sleep(2 if tray_delay < 2 else tray_delay + 2)
                     self._refresh_list()
+
+        self.dbg.stdout("Now reloading background processes...", self.dbg.warning, 1)
+        self.btn_stop.setEnabled(False)
+        self.btn_reload.setEnabled(False)
+        self.btn_reload.setText(self._("Restarting..."))
+        set_cursor_busy()
+
+        self.tree.clear()
+        item = QTreeWidgetItem()
+        item.setText(0, self._("Please wait..."))
+        item.setIcon(0, QIcon(common.get_icon("general", "exit")))
+        item.setDisabled(True)
+        self.tree.addTopLevelItem(item)
 
         self.thread = RebootThread()
         self.thread.start()
