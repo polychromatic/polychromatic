@@ -6,30 +6,45 @@
     "configurations": [
         {
             "name": "Controller",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/polychromatic-controller",
-            "args": ["-v"],
+            "args": [
+                "-v"
+            ],
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {
+                "POLYCHROMATIC_DEV_CFG": "true",
+            },
         },
         {
             "name": "Tray Applet",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/polychromatic-tray-applet",
-            "args": ["-v"],
+            "args": [
+                "-v"
+            ],
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {
+                "POLYCHROMATIC_DEV_CFG": "true",
+            },
         },
         {
             "name": "CLI",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/polychromatic-cli",
-            "args": ["-v"],
+            "args": [
+                "-v"
+            ],
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {
+                "POLYCHROMATIC_DEV_CFG": "true",
+            },
         }
     ]
 }
