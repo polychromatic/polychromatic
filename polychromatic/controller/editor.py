@@ -8,7 +8,8 @@ import copy
 import os
 import time
 
-from PyQt6.QtCore import QItemSelectionModel, QRect, QSize, QThread, QUrl
+from PyQt6.QtCore import (QItemSelectionModel, QRect, QSize, QThread, QTimer,
+                          QUrl)
 from PyQt6.QtGui import QAction, QColor, QFont, QIcon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWidgets import (QCheckBox, QColorDialog, QDockWidget, QLabel,
@@ -78,7 +79,6 @@ class VisualEffectEditor(shared.TabData):
         # Sequence Effects Only
         self.current_frame = 0
         self.playback_paused = True
-        self.playback_thread = None
 
         # Load window
         self.window = shared.get_ui_widget(appdata, "editor", QMainWindow)
@@ -457,6 +457,9 @@ class VisualEffectEditor(shared.TabData):
             self.btn_lightness_decrease.setIcon(self.widgets.get_icon_qt("effects", "minus"))
 
         # Showtime!
+        self.playback_timer = QTimer()
+        self.playback_timer.timeout.connect(self._play_next_frame)
+
         self._init_window()
         self.init_controls()
 
@@ -665,6 +668,21 @@ class VisualEffectEditor(shared.TabData):
 
         self.dbg.stdout("Previewing effect '{0}' on device '{1}'.".format(self.data["name"], device_name), self.dbg.success, 1)
 
+    def _play_next_frame(self):
+        print("Now playing...")
+        total_frames = self.frame_table.columnCount() - 1
+
+        if self.current_frame == total_frames:
+            if self.btn_playback_loop.isChecked() is True:
+                self.frame_table.selectColumn(0)
+            else:
+                self.btn_playback_stop.click()
+                self.playback_timer.stop()
+
+        self.frame_table.selectColumn(self.frame_table.currentColumn() + 1)
+        self.open_frame(True)
+        self.window.repaint()
+
     def _init_playback_controls(self):
         """
         Connect the signals for playing back sequence effects within the editor.
@@ -673,29 +691,6 @@ class VisualEffectEditor(shared.TabData):
         self.playback_paused = True
         self.playback_stop.setVisible(False)
         self.btn_playback_stop.setVisible(False)
-
-        class PlaybackThread(QThread):
-            """
-            Playing back sequence effects uses the existing editor signals and
-            implementation to automatically go through each frame until the
-            user wishes to stop.
-            """
-            @staticmethod
-            def run():
-                total_frames = self.frame_table.columnCount() - 1
-                while not self.playback_paused and self.alive:
-                    self.frame_table.selectColumn(self.frame_table.currentColumn() + 1)
-                    self.open_frame(True)
-
-                    if self.current_frame == total_frames:
-                        if self.data["loop"] == True:
-                            time.sleep(1 / self.data["fps"])
-                            self.frame_table.selectColumn(0)
-                            self.open_frame(True)
-                        else:
-                            return
-
-                    time.sleep(1 / self.data["fps"])
 
         def _jump_start():
             self.frame_table.selectColumn(0)
@@ -715,16 +710,17 @@ class VisualEffectEditor(shared.TabData):
             self.btn_playback_stop.setVisible(not paused)
             self.playback_play.setVisible(paused)
             self.btn_playback_play.setVisible(paused)
+            self.spinner_playback_fps.setEnabled(paused)
             self._update_disabled_frame_controls()
 
         def _play():
             _jump_start()
-            self.playback_thread.start()
+            self.playback_timer.start(round(1000 / self.data["fps"]))
             self.dbg.stdout("Playback started", self.dbg.action, 1)
             _play_pause_ui(False)
 
         def _stop():
-            self.playback_thread.exit()
+            self.playback_timer.stop()
 
             if not self.alive:
                 return
@@ -766,10 +762,6 @@ class VisualEffectEditor(shared.TabData):
         self.btn_playback_loop.setChecked(self.data["loop"] == True)
         self.spinner_playback_fps.setValue(int(self.data["fps"]))
 
-        # Prepare thread to playback the effect
-        self.playback_thread = PlaybackThread()
-        self.playback_thread.finished.connect(_stop)
-
     def closeEvent(self, event=None):
         """
         Gracefully closes the editor, ensuring any unsaved changes are saved
@@ -798,9 +790,8 @@ class VisualEffectEditor(shared.TabData):
             return
 
         # Stop any threads
-        if self.playback_thread:
-            self.dbg.stdout("Stopping playback thread...", self.dbg.action, 1)
-            self.playback_thread.exit()
+        if self.playback_timer.isActive():
+            self.playback_timer.stop()
 
         # If live preview was active, restore original state
         if self.live_preview and self.device:
