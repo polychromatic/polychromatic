@@ -193,6 +193,7 @@ class PreferencesWindow(shared.TabData):
             data = widget.value()
 
         self.pref_data[group][item] = data
+        self.appdata.preferences[group][item] = data
 
     def _save_changes(self):
         """
