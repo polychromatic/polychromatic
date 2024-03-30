@@ -68,6 +68,12 @@ mkdir $HOME/.config $HOME/.cache
 # Perform the test!
 cd "$POLYCHROMATIC"
 export PYTHONPATH="$(realpath .)"
+
+# When running in CI, use virtual environment
+if [ -d venv ]; then
+    source venv/bin/activate
+fi
+
 ./tests/openrazer/openrazer_test.py
 result=$?
 

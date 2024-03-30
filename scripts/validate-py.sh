@@ -1,23 +1,14 @@
-#!/bin/bash
+#!/bin/bash -e
 #
-# Validates Python files for errors. Uses 'pylint'.
+# Use pylint to validate Python files for errors.
 #
 
-# Try 'pylint3' (Ubuntu 18.04) otherwise 'pylint' (Ubuntu 20.04, Arch, etc)
-pylint=""
-for bin in "pylint3" "pylint"; do
-    if [ ! -z "$(command -v $bin)" ]; then
-        pylint="$bin"
-        continue
-    fi
-done
-
-if [ -z "$pylint" ]; then
-    echo "'pylint' not installed."
-    exit 1
+# When running in CI, use virtual environment
+if [ -d venv ]; then
+    source venv/bin/activate
 fi
 
-$pylint --errors-only \
+pylint --errors-only \
     --disable="relative-beyond-top-level" \
     --disable="no-name-in-module" \
     polychromatic-cli \
@@ -26,7 +17,3 @@ $pylint --errors-only \
     polychromatic-tray-applet \
     polychromatic/*/*.py \
     polychromatic/*.py
-
-if [ $? != 0 ]; then
-    exit 1
-fi

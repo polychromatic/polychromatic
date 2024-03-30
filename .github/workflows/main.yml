@@ -11,6 +11,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Cache Python Dependencies
+      uses: actions/cache@v4
+      with:
+        path: 'requirements.txt'
+        key: python-deps-venv
+
     - name: Install Dependencies
       run: |
         sudo apt-get update
@@ -35,9 +41,14 @@ jobs:
         sudo apt-get install python3-openrazer
 
         # Application Dependencies
-        sudo apt-get install python3-colorama python3-colour python3-requests python3-setproctitle imagemagick
-        sudo apt-get install gir1.2-gtk-3.0 gir1.2-appindicator3-0.1
-        sudo apt-get install python3-pyqt6 python3-pyqt6.qtsvg python3-pyqt6.qtwebengine
+        sudo apt-get install python3-gi gir1.2-gtk-3.0 gir1.2-appindicator3-0.1
+
+        # Use virtual Python environment to use latest dependencies
+        sudo apt install python3-venv
+        python -m venv --system-site-packages venv
+        source venv/bin/activate
+        pip install pip-tools
+        pip-sync
 
     - name: Validate JSON
       run: |
@@ -86,6 +97,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Cache Python Dependencies
+      uses: actions/cache@v4
+      with:
+        path: 'requirements.txt'
+        key: python-deps-venv
+
     - name: Install Dependencies
       run: |
         sudo apt-get update
@@ -94,9 +111,15 @@ jobs:
         sudo apt-get install gettext sassc
 
         # Application Dependencies
-        sudo apt-get install python3-colorama python3-colour python3-requests python3-setproctitle imagemagick
-        sudo apt-get install gir1.2-gtk-3.0 gir1.2-appindicator3-0.1
-        sudo apt-get install python3-pyqt6 python3-pyqt6.qtsvg python3-pyqt6.qtwebengine
+        sudo apt-get install python3-colorama python3-colour python3-requests python3-setproctitle
+        sudo apt-get install python3-gi gir1.2-gtk-3.0 gir1.2-appindicator3-0.1
+
+        # Use virtual Python environment to use latest dependencies
+        sudo apt install python3-venv
+        python -m venv --system-site-packages venv
+        source venv/bin/activate
+        pip install pip-tools
+        pip-sync
 
     - name: Install OpenRazer
       run: |
@@ -109,11 +132,12 @@ jobs:
         ./scripts/build-styles.sh
         ./scripts/build-locales.sh
 
-    - name: Unit Tests
+    - name: Run Unit Tests
       run: |
+        source venv/bin/activate
         ./tests/run.sh --verbose
 
-    - name: Integration Tests with OpenRazer
+    - name: Run Integration Tests with OpenRazer
       run: |
         eval $(sudo dbus-launch --sh-syntax)
         sudo -E ./tests/openrazer/run_daemon.sh "$GITHUB_WORKSPACE/openrazer"

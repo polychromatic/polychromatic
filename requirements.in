@@ -1,0 +1,28 @@
+# ============================
+# Polychromatic Dependencies
+# ============================
+#
+# The build system uses this file to check against the latest library versions.
+#
+# It does not have all dependencies for a complete installation from a pure
+# Python perspective!
+#
+
+# == Used by all programs ==
+colorama
+colour
+requests
+setproctitle
+
+# == For Controller only ==
+PyQt6
+PyQt6-WebEngine
+
+# == For Tray Applet only ==
+# PyGObject (python3-gi)
+
+# == Build and Testing ==
+pylint
+
+# == Not published on pip ==
+# openrazer (use distribution packages instead)
