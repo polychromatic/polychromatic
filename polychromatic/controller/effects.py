@@ -5,10 +5,11 @@ This module controls the 'Effects' tab of the Controller GUI.
 """
 
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (QComboBox, QDialog, QDialogButtonBox, QGroupBox,
                              QLabel, QLineEdit, QMessageBox, QPushButton,
-                             QRadioButton, QTextEdit, QToolButton)
+                             QRadioButton, QSizePolicy, QTextEdit, QToolButton)
 
 from .. import common, effects, procpid
 from . import editor, shared
@@ -316,6 +317,8 @@ class EffectsTab(shared.CommonFileTab):
             summary_label = QLabel()
             summary_label.setText(summary_text)
             summary_label.setWordWrap(True)
+            summary_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+            summary_label.setAlignment(Qt.AlignmentFlag.AlignTop)
             layout.addWidget(self.widgets.create_row_widget(self._("Summary"), [summary_label]))
 
         # Show other actions for this effect
