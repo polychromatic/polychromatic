@@ -67,7 +67,6 @@ class ApplicationData(PolychromaticBase):
         self.secondary_colour_inactive = "#808080"  # $secondary (desaturated)
 
         # Assigned in load() later
-        self.ready = False
         self.menubar = None
         self.tab_devices = None
         self.tab_effects = None
@@ -123,7 +122,6 @@ class ApplicationData(PolychromaticBase):
 
         t_end = time.time()
         self.dbg.stdout("Backends loaded in {0}s.".format(str(round(t_end - t_start, 3))), self.dbg.action, 1)
-        self.ready = True
 
         self.main_window.load()
 

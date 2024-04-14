@@ -194,38 +194,6 @@ class EffectsTab(shared.CommonFileTab):
             self.set_tab()
             self.open_file(path)
 
-        # Backends not ready - cannot show device list
-        if not self.appdata.ready:
-            self.dbg.stdout("Backends not ready! Device list will not be available for new effect.", self.dbg.warning, 1)
-            action = ""
-
-            def do_ignore():
-                # Let the metadata editor handle no devices
-                pass
-
-            def do_retry():
-                nonlocal action
-                action = "retry"
-
-            def do_cancel():
-                nonlocal action
-                action = "cancel"
-
-            self.widgets.open_dialog(self.widgets.dialog_warning,
-                                     self._("Backend Not Ready"),
-                                     self._("The application is still waiting for the backends to finish initialising so you can pick a device to map your new effect."),
-                                     info_text=self._("This might be ready in a few moments."),
-                                     buttons=[QMessageBox.StandardButton.Ignore, QMessageBox.StandardButton.Retry],
-                                     actions={
-                                         QMessageBox.StandardButton.Ignore: do_ignore,
-                                         QMessageBox.StandardButton.Retry: do_retry
-                                     })
-
-            if action == "cancel":
-                return
-            elif action == "retry":
-                return self.new_file_stage_2(old_dialog, effect_type)
-
         metadata_editor = EffectMetadataEditor(self.appdata, data, _save_metadata)
 
     def open_file(self, effect_path):

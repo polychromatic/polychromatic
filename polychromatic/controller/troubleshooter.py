@@ -71,10 +71,6 @@ class TroubleshooterGUI(QObject):
         def run(self):
             _ = self.parent._
 
-            while not self.parent.appdata.ready:
-                self.parent.loading_label.setText(_("Waiting for backends to be ready..."))
-                time.sleep(0.1)
-
             self.parent.loading_label.setText(_("Running troubleshooter..."))
             self.result = self.parent.appdata.middleman.troubleshoot(self.parent.backend, _, self.parent.signal_progress_bar_set_max.emit, self.parent.signal_progress_bar_advance.emit)
 

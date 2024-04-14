@@ -75,11 +75,6 @@ class DevicesTab(shared.TabData):
         devices_branch.section = None
         tasks_branch.child(0).section = "apply-to-all"
 
-        # Backends are still initialising
-        if not self.appdata.ready:
-            self._open_loading()
-            return
-
         # Recache the device list
         self.SidebarTree.parent().show()
         device_list = self.middleman.get_devices()
@@ -640,110 +635,6 @@ class DevicesTab(shared.TabData):
                                      self._("An error occurred outside of Polychromatic's control when this command was sent to [OpenRazer].").replace("[OpenRazer]", backend_name),
                                      self._("Try restarting [OpenRazer] and Polychromatic and give it another go. If this error appears again, it might need fixing in [OpenRazer].").replace("[OpenRazer]", backend_name),
                                      details=exception)
-
-    def _open_loading(self):
-        """
-        Show a skeleton loading screen while backends finish loading.
-
-        A thread will spawn to refresh the devices tab (if open) when the
-        middleman has fully populated.
-        """
-        if self.load_thread:
-            return
-
-        # Sidebar
-        self.SidebarTree.setEnabled(False)
-        tasks_branch = self.SidebarTree.invisibleRootItem().child(0)
-        devices_branch = self.SidebarTree.invisibleRootItem().child(1)
-        tasks_branch.setHidden(True)
-
-        # Skeleton devices
-        device_icon = QIcon()
-        device_icon.addFile(common.get_icon("general", "placeholder"), mode=QIcon.Mode.Disabled)
-        skel_strings = [
-            "█████████████",
-            "████████████",
-            "█████████",
-            "███████████",
-            "███████",
-        ]
-        for i in range(0, 5):
-            skel = QTreeWidgetItem()
-            skel.setText(0, skel_strings[i])
-            skel.setIcon(0, device_icon)
-            skel.setDisabled(True)
-            devices_branch.addChild(skel)
-
-        # Skeleton summary
-        def dummy():
-            pass
-
-        buttons = []
-        indicators = [
-            {
-                "icon": common.get_icon("general", "placeholder"),
-                "label": "██████"
-            },
-            {
-                "icon": common.get_icon("general", "placeholder"),
-                "label": "███"
-            }
-        ]
-        summary = self.widgets.create_summary_widget(common.get_icon("devices", "noimage"), "████████████", indicators, buttons)
-
-        # Skeleton device controls (brightness & effect)
-        skels_text = summary.findChildren(QLabel)
-        skels_bg = []
-
-        dummy_slider = QLabel("________________________")
-        dummy_slider.setMaximumWidth(180)
-        dummy_slider.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        skels_bg.append(dummy_slider)
-
-        dummy_buttons = []
-        for i in range(0, 5):
-            dummy = QLabel()
-            dummy.setMinimumHeight(70)
-            dummy.setMinimumWidth(70)
-            dummy.setMaximumHeight(70)
-            dummy.setMaximumWidth(70)
-            dummy.setAlignment(Qt.AlignmentFlag.AlignLeft)
-            dummy_buttons.append(dummy)
-            skels_bg.append(dummy)
-
-        row1 = self.widgets.create_row_widget("███████", [dummy_slider], wrap=True)
-        row2 = self.widgets.create_row_widget("████", dummy_buttons, wrap=True)
-
-        label1 = row1.findChild(QLabel)
-        label2 = row2.findChild(QLabel)
-
-        skels_text.append(label1)
-        skels_text.append(label2)
-
-        # Apply skeleton styling
-        for skel in skels_bg:
-            skel.setStyleSheet("QLabel { background-color: #202020; color: #202020; margin: 4px 0; }")
-        for skel in skels_text:
-            skel.setStyleSheet("QLabel { color: #202020; }")
-
-        # Append widgets
-        layout = self.Contents.layout()
-        for widget in [summary, row1, row2]:
-            layout.addWidget(widget)
-        layout.addStretch()
-
-        class WaitForBackendThread(QThread):
-            @staticmethod
-            def run():
-                while not self.appdata.ready:
-                    time.sleep(0.05)
-
-                refresh = self.main_window.findChild(QAction, "actionRefreshTab")
-                refresh.trigger()
-
-        self.load_thread = WaitForBackendThread()
-        self.load_thread.start()
-        self.set_cursor_busy()
 
     def _open_no_backend_found(self, message_id):
         """
