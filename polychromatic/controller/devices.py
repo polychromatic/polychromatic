@@ -89,6 +89,7 @@ class DevicesTab(shared.TabData):
         devices_branch.takeChildren()
 
         for device in device_list:
+            assert isinstance(device, Backend.DeviceItem)
             item = QTreeWidgetItem()
             item.setText(0, device.name)
             item.setIcon(0, QIcon(device.form_factor["icon"]))
@@ -103,6 +104,7 @@ class DevicesTab(shared.TabData):
         supported_pids = device_index.keys()
 
         for device in unknown_device_list:
+            assert isinstance(device, Backend.UnknownDeviceItem)
             vidpid = f"{device.vid}:{device.pid}"
 
             if vidpid in supported_pids:
@@ -158,7 +160,7 @@ class DevicesTab(shared.TabData):
         elif item.section == "device":
             self.open_device(item.device_item)
 
-    def _get_device_summary_widget(self, device):
+    def _get_device_summary_widget(self, device: Backend.DeviceItem):
         """
         Generate the heading at the top of the page that shows the name, image
         and current state of the selected device.
@@ -273,7 +275,7 @@ class DevicesTab(shared.TabData):
 
         return self.widgets.create_summary_widget(real_image, device.name, badges, buttons)
 
-    def open_device(self, device):
+    def open_device(self, device: Backend.DeviceItem):
         """
         Show details and controls for changing the current hardware state
         of the specified device.
@@ -401,7 +403,7 @@ class DevicesTab(shared.TabData):
         elif isinstance(option, Backend.MultipleChoiceOption):
             return self.widgets.create_row_widget(option.label, self._create_control_select(option))
 
-    def _create_control_slider(self, option):
+    def _create_control_slider(self, option: Backend.SliderOption):
         """
         Returns a list of controls that make up a slider for changing a variable option.
         """
@@ -441,7 +443,7 @@ class DevicesTab(shared.TabData):
 
         return [slider, label]
 
-    def _create_control_toggle(self, option):
+    def _create_control_toggle(self, option: Backend.ToggleOption):
         """
         Returns a list of controls that make up a toggle for a binary choices.
         """
@@ -461,7 +463,7 @@ class DevicesTab(shared.TabData):
         checkbox.stateChanged.connect(_state_changed)
         return [checkbox]
 
-    def _create_control_select(self, option):
+    def _create_control_select(self, option: Backend.MultipleChoiceOption):
         """
         Returns a list of controls that make up a multiple choice dropdown.
         """
@@ -471,6 +473,7 @@ class DevicesTab(shared.TabData):
         combo.setIconSize(QSize(16, 16))
 
         for index, param in enumerate(params):
+            assert isinstance(param, Backend.Option.Parameter)
             combo.addItem(param.label)
             if param.icon:
                 combo.setItemIcon(combo.count() - 1, QIcon(param.icon))
@@ -490,7 +493,7 @@ class DevicesTab(shared.TabData):
         combo.currentIndexChanged.connect(_current_index_changed)
         return [combo]
 
-    def _create_effect_controls(self, zone, options):
+    def _create_effect_controls(self, zone: Backend.DeviceItem.Zone, options: list):
         """
         Return a row widget containing the specified options. These are grouped
         together and will be presented as larger buttons.
@@ -499,6 +502,7 @@ class DevicesTab(shared.TabData):
         self.btn_grps[zone] = QButtonGroup()
 
         for option in options:
+            assert isinstance(option, Backend.EffectOption)
             button = QToolButton()
             button.setText(option.label)
             button.setCheckable(True)
@@ -509,7 +513,8 @@ class DevicesTab(shared.TabData):
             button.setMinimumHeight(70)
             button.setMinimumWidth(105)
             button.option = option
-            self.btn_grps[zone].addButton(button)
+            btn_grp: QButtonGroup = self.btn_grps[zone]
+            btn_grp.addButton(button)
 
             if option.active:
                 button.setChecked(True)
@@ -517,8 +522,8 @@ class DevicesTab(shared.TabData):
             widgets.append(button)
 
         def _clicked_effect_button(button):
-            option = button.option
-            param = self.middleman.get_default_parameter(option)
+            option: Backend.EffectOption = button.option
+            param: Backend.EffectOption.Parameter = self.middleman.get_default_parameter(option)
             self.middleman.stop_software_effect(self.current_device.serial)
 
             try:
@@ -533,14 +538,15 @@ class DevicesTab(shared.TabData):
 
             self.reload_device()
 
-        self.btn_grps[zone].buttonClicked.connect(_clicked_effect_button)
+        btn_grp: QButtonGroup = self.btn_grps[zone]
+        btn_grp.buttonClicked.connect(_clicked_effect_button)
 
         if not widgets:
             return None
 
         return self.widgets.create_row_widget(self._("Effect"), widgets, wrap=True)
 
-    def _create_effect_parameter_controls(self, device, zone, option):
+    def _create_effect_parameter_controls(self, device: Backend.DeviceItem, zone: Backend.DeviceItem.Zone, option: Backend.EffectOption):
         """
         Returns a list of row widgets that change the active effect's parameters.
         """
@@ -549,6 +555,7 @@ class DevicesTab(shared.TabData):
 
         def _clicked_param_button():
             for radio in self.btn_grps["radio_param_" + zone.zone_id]:
+                assert isinstance(radio, QRadioButton)
                 if not radio.isChecked():
                     continue
                 self.dbg.stdout(f"{device.name}: Setting parameter for '{option.uid}' to '{radio.param.data}'", self.dbg.action, 1)

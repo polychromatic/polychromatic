@@ -18,6 +18,7 @@ https://docs.polychromatic.app/
 import glob
 import grp
 import os
+from typing import List
 
 from ..fx import FX
 
@@ -171,7 +172,7 @@ class Backend(BackendBase):
             self.name = "Unnamed Device"
 
             # This is assigned automatically.
-            self.backend = Backend
+            self.backend: Backend = Backend
 
             # Use Backend.get_form_factor(), passing an ID from common.FORM_FACTORS
             self.form_factor = {}
@@ -203,16 +204,16 @@ class Backend(BackendBase):
             self.has_programmable_keys = False
 
             # Stores a Battery() object, if the device has a battery.
-            self.battery = None
+            self.battery: self.Battery = None
 
             # Stores a DPI() object, unless device does not support DPI X/Y.
-            self.dpi = None
+            self.dpi: self.DPI = None
 
             # Stores a Matrix() object, if device supports per-LED lighting.
-            self.matrix = None
+            self.matrix: self.Matrix = None
 
             # List of Zone() objects.
-            self.zones = []
+            self.zones: List[self.Zone] = []
 
         def __str__(self):
             return self.name

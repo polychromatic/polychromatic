@@ -276,9 +276,9 @@ class TabData(PolychromaticBase):
     def __init__(self, appdata):
         self.appdata = appdata
         self.widgets = PolychromaticWidgets(appdata)
-        self.main_window = appdata.main_window
-        self.menubar = appdata.menubar
-        self.header_title = appdata.main_window.findChild(QLabel, "HeaderText")
+        self.main_window: QMainWindow = appdata.main_window
+        self.menubar: QMenuBar = appdata.menubar
+        self.header_title: QLabel = appdata.main_window.findChild(QLabel, "HeaderText")
 
     def set_tab(self):
         """
