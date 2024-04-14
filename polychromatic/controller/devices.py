@@ -801,30 +801,6 @@ class DevicesTab(shared.TabData):
 
         self.widgets.populate_empty_state(layout, image, title, desc, buttons)
 
-    def open_bad_device(self, msg1, msg2, exception):
-        """
-        Show a page to inform the user the device could not be opened. Possibly
-        due to a temporary glitch or unsupported feature.
-        """
-        layout = self.Contents.layout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        shared.clear_layout(layout)
-
-        def _view_details():
-            _ = self._
-            self.widgets.open_dialog(self.widgets.dialog_generic, _("Error Details"), msg1, msg2, exception)
-
-        self.widgets.populate_empty_state(layout, common.get_icon("empty", "nobackend"), self._("There was a problem opening this device"), "",
-            [
-                {
-                    "label": self._("View Details"),
-                    "icon_folder": "emblems",
-                    "icon_name": "software",
-                    "action": _view_details
-                }
-            ])
-        self.set_cursor_normal()
-
     def open_apply_to_all(self):
         """
         Show options that change the device state for all connected devices.
