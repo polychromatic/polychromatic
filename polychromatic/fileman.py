@@ -10,9 +10,11 @@ import json
 import os
 import shutil
 
-from .base import PolychromaticBase as PolychromaticBase
 from . import common
-from .preferences import VERSION as VERSION
+from .base import PolychromaticBase as PolychromaticBase
+from .preferences import VERSION as _VERSION
+
+VERSION = _VERSION
 
 # Error Codes
 ERROR_NEWER_FORMAT = -100
@@ -173,7 +175,7 @@ class FlatFileManagement(PolychromaticBase):
             try:
                 items.append(self._get_parsed_keys(data, path))
                 self.dbg.stdout("- " + path, self.dbg.action, 1)
-            except KeyError as e:
+            except KeyError:
                 self.dbg.stdout("Skipping invalid {0} file: {1}".format(self.feature, path), self.dbg.warning)
 
         return items

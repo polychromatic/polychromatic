@@ -5,31 +5,26 @@ This module controls the 'Devices' tab of the Controller GUI.
 """
 
 import json
-from polychromatic.procpid import DeviceSoftwareState
-from .. import bulkapply
-from .. import common
-from .. import effects
-from .. import locales
-from .. import preferences as pref
-from .. import middleman
-from . import shared
-from ..backends._backend import Backend as Backend
-from ..qt.flowlayout import FlowLayout as QFlowLayout
-
 import os
+import shutil
 import subprocess
 import time
-import shutil
 import webbrowser
 
-from PyQt6.QtCore import Qt, QSize, QMargins, QThread
-from PyQt6.QtGui import QAction, QIcon, QPixmap, QFont
-from PyQt6.QtWidgets import QWidget, QDialogButtonBox, QGroupBox, QGridLayout, \
-                            QPushButton, QToolButton, QMessageBox, QListWidget, \
-                            QTreeWidget, QTreeWidgetItem, QLabel, QComboBox, \
-                            QSpacerItem, QSizePolicy, QSlider, QCheckBox, \
-                            QButtonGroup, QRadioButton, QDialog, QTableWidget, \
-                            QTableWidgetItem, QHBoxLayout
+from PyQt6.QtCore import QMargins, QSize, Qt, QThread
+from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QDialog,
+                             QDialogButtonBox, QHBoxLayout, QLabel,
+                             QPushButton, QRadioButton, QSizePolicy, QSlider,
+                             QTableWidget, QTableWidgetItem, QToolButton,
+                             QTreeWidget, QTreeWidgetItem, QWidget)
+
+from polychromatic.procpid import DeviceSoftwareState
+
+from .. import bulkapply, common
+from ..backends._backend import Backend as Backend
+from ..qt.flowlayout import FlowLayout as QFlowLayout
+from . import shared
 
 # Error codes
 ERROR_NO_DEVICE = 0
@@ -292,7 +287,7 @@ class DevicesTab(shared.TabData):
 
         try:
             device.refresh()
-        except Exception as e:
+        except Exception:
             # State may have changed, reload the device tab.
             # TODO: Show "device changes detected" in status bar. Needs global function.
             self.middleman.invalidate_cache()
@@ -1194,7 +1189,6 @@ class DevicesTab(shared.TabData):
 
         # Dialog Controls
         self.dialog = shared.get_ui_widget(self.appdata, "inspect-matrix", QDialog)
-        label = self.dialog.findChild(QLabel, "Label")
         table = self.dialog.findChild(QTableWidget, "Matrix")
         btn_close = self.dialog.findChild(QPushButton, "Close")
         cur_pos = self.dialog.findChild(QLabel, "CurrentPosition")

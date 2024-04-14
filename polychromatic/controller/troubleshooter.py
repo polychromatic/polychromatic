@@ -4,22 +4,15 @@
 This module contains the frontend for the troubleshooter.
 """
 
-import os
 import time
-import subprocess
-import webbrowser
+
+from PyQt6.QtCore import QObject, Qt, QThread, pyqtSignal
+from PyQt6.QtGui import QBrush, QIcon
+from PyQt6.QtWidgets import (QApplication, QDialog, QLabel, QProgressBar,
+                             QPushButton, QTreeWidget, QTreeWidgetItem)
 
 from .. import common
-from .. import preferences
-from .. import procpid
 from . import shared
-from . import procviewer
-
-from PyQt6.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject
-from PyQt6.QtGui import QIcon, QBrush
-from PyQt6.QtWidgets import QWidget, QLabel, QDialog, QPushButton, \
-                            QTreeWidget, QTreeWidgetItem, QProgressBar, \
-                            QApplication
 
 
 class TroubleshooterGUI(QObject):

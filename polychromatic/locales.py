@@ -3,8 +3,8 @@
 """
 Contains the UI localization for Polychromatic. Powered by GNU's gettext.
 """
-import os
 import gettext
+import os
 
 
 class Locales(object):

@@ -4,20 +4,15 @@
 This module controls the 'Background Tasks' window accessible from the menu bar.
 """
 
-from ..base import PolychromaticBase
-from .. import common
-from .. import procpid
-from . import shared
-
-import glob
-import os
 import time
-import subprocess
 
-from PyQt6.QtCore import Qt, QThread
-from PyQt6.QtGui import QIcon, QPixmap
-from PyQt6.QtWidgets import QWidget, QDialog, QPushButton, QTreeWidget, \
-                            QLabel, QTreeWidgetItem
+from PyQt6.QtCore import QThread
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (QDialog, QPushButton, QTreeWidget, QTreeWidgetItem)
+
+from .. import common, procpid
+from ..base import PolychromaticBase
+from . import shared
 
 
 class ProcessViewer(PolychromaticBase):

@@ -13,8 +13,9 @@ To achieve effects, colours may be converted between different colour spaces:
     - HSL (Hue, Saturation, Lightness)  -> for black/white intensity
 """
 
-import colour
 import math
+
+import colour
 
 from . import common
 

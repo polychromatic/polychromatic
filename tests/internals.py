@@ -1,6 +1,5 @@
 import polychromatic.base as base
 import polychromatic.common as common
-import polychromatic.controller as controller
 import polychromatic.locales as locales
 import polychromatic.preferences as preferences
 import polychromatic.procpid as procpid
@@ -81,7 +80,7 @@ class TestInternals(unittest.TestCase):
 
     def test_get_form_factor_all(self):
         for form_factor_id in common.FORM_FACTORS:
-            ff = common.get_form_factor(self.base._, form_factor_id)
+            common.get_form_factor(self.base._, form_factor_id)
         self.assertTrue(True, "Got exception processing form factors")
 
     def test_get_green_shades(self):

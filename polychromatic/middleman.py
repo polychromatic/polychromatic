@@ -9,11 +9,9 @@ Refer to the online documentation for more details:
 https://docs.polychromatic.app/
 """
 
-from . import procpid
-from . import common
+from . import common, procpid
 from .backends._backend import Backend
 from .troubleshoot import openrazer as openrazer_troubleshoot
-
 
 TROUBLESHOOT_MODULES = {
     "openrazer": openrazer_troubleshoot.troubleshoot

@@ -22,25 +22,25 @@ Control devices from the desktop environment's indicator applet or system tray.
 Supports AppIndicator, Ayatana Indicators or GTK Status Icon.
 """
 
-import atexit
 import argparse
+import atexit
 import os
-import sys
 import signal
-import setproctitle
-import subprocess
-from shutil import which
+import sys
+
 import gi
+import setproctitle
+
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk
 
-from polychromatic.base import PolychromaticBase as PolychromaticBase
-from polychromatic.backends._backend import Backend
 import polychromatic.bulkapply as bulkapply
 import polychromatic.effects as effects
 import polychromatic.preferences as pref
 import polychromatic.procpid as procpid
+from polychromatic.backends._backend import Backend
+from polychromatic.base import PolychromaticBase as PolychromaticBase
 
 VERSION = "0.8.4"
 SUPPORTED = ["GtkStatusIcon"]
@@ -120,7 +120,7 @@ class Indicator(PolychromaticBase):
         self.dbg.stdout("Initialising " + self.names[self.mode] + "...", self.dbg.action, 1)
 
         if self.mode in [pref.TRAY_APPINDICATOR, pref.TRAY_AYATANA]:
-            self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", icon_path, appindicator.IndicatorCategory.APPLICATION_STATUS)
+            self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", icon_path, appindicator.IndicatorCategory.APPLICATION_STATUS) # pylint: disable=used-before-assignment
             self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
 
         elif self.mode == pref.TRAY_GTK_STATUS:
@@ -725,7 +725,7 @@ class Callback():
             attr    [device]
         """
         device = attr[0]
-        zone = attr[1]
+        attr[1]
 
         # TODO: Refactor later. Move to Indicator()
         dbg.stdout("Opened GTK colour picker.", dbg.debug, 1)

@@ -1,6 +1,6 @@
-import polychromatic.fx as fx
-
 import unittest
+
+import polychromatic.fx as fx
 
 
 class TestFX(unittest.TestCase):

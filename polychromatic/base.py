@@ -4,14 +4,12 @@
 Variables and functions for essential operation of the application.
 All interfaces and most classes will inherit these.
 """
-from .locales import Locales
-from .middleman import Middleman
 
-from .paths import Paths as Paths
 from . import common as common_class
 from . import preferences as preferences_class
-
-import os
+from .locales import Locales
+from .middleman import Middleman
+from .paths import Paths as Paths
 
 
 class PolychromaticBase(object):

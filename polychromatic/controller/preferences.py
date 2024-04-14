@@ -4,24 +4,18 @@
 This module controls the 'Preferences' window of the Controller GUI.
 """
 
-from ..base import PolychromaticBase
-from .. import common
-from .. import effects
-from .. import locales
-from .. import middleman
-from .. import procpid
-from .. import preferences as pref
-from . import shared
-
-import os
 import configparser
+import os
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QIcon, QPixmap
-from PyQt6.QtWidgets import QWidget, QPushButton, QTreeWidget, QLabel, \
-                            QComboBox, QCheckBox, QDialog, QSpinBox, \
-                            QDoubleSpinBox, QDialogButtonBox, QTabWidget, \
-                            QMessageBox, QToolButton
+from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox,
+                             QDoubleSpinBox, QLabel, QMessageBox, QPushButton,
+                             QSpinBox, QTabWidget)
+
+from .. import preferences as pref
+from .. import procpid
+from ..base import PolychromaticBase
+from . import shared
 
 
 class PreferencesWindow(shared.TabData):

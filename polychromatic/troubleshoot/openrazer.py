@@ -15,11 +15,12 @@ a lot of the common driver issues.
 
 import glob
 import grp
-import requests
 import os
-import subprocess
 import shutil
+import subprocess
 import sys
+
+import requests
 
 from .. import common
 from ..backends import _backend
@@ -167,7 +168,7 @@ def _can_driver_be_probed(_):
         results = []
         for module in OPENRAZER_MODULES:
             modprobe = subprocess.Popen(["modprobe", "-n", module], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-            output = modprobe.communicate()[0].decode("utf-8")
+            modprobe.communicate()[0].decode("utf-8")
             results.append(True if modprobe.returncode == 0 else False)
 
         return {
@@ -353,7 +354,7 @@ def _check_device_support_list(_):
             remote_pids.append(device["pid"])
             for alias in device.get("alias_ids", []):
                 remote_pids.append(alias[5:])
-    except KeyError as e:
+    except KeyError:
         print("Remote device list contains invalid data: " + remote_get_url)
         return _remote_failed()
 

@@ -7,8 +7,8 @@ This module is responsible for managing other Polychromatic processes.
 import glob
 import json
 import os
-import signal
 import shutil
+import signal
 import subprocess
 
 from . import common
@@ -73,7 +73,6 @@ class ProcessManager():
             return True
 
         # This PID is old and no longer belongs to Polychromatic
-        pid_file = os.path.join(self.pid_dir, component + ".pid")
         os.remove(self._get_pid_file())
         return False
 

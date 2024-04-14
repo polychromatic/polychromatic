@@ -4,23 +4,14 @@
 This module controls the 'Effects' tab of the Controller GUI.
 """
 
-from .. import common
-from .. import effects
-from .. import locales
-from .. import procpid
-from .. import preferences as pref
-from . import shared
-from . import editor
 
-import os
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (QComboBox, QDialog, QDialogButtonBox, QGroupBox,
+                             QLabel, QLineEdit, QMessageBox, QPushButton,
+                             QRadioButton, QTextEdit, QToolButton)
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon, QPixmap
-from PyQt6.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
-                            QListWidget, QTreeWidget, QLabel, QComboBox, \
-                            QTreeWidgetItem, QMenu, QDialog, QDialogButtonBox, \
-                            QButtonGroup, QLineEdit, QTextEdit, QCheckBox, \
-                            QGroupBox, QRadioButton, QMainWindow
+from .. import common, effects, procpid
+from . import editor, shared
 
 
 class EffectsTab(shared.CommonFileTab):
@@ -380,7 +371,6 @@ class EffectsTab(shared.CommonFileTab):
         Allows the user to create effects from other media, such as videos or images.
         """
         print("stub:effects.import_effect")
-        pass
 
     def play_effect(self, device_name=None):
         """

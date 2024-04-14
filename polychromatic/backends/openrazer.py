@@ -12,7 +12,7 @@ Project URL: https://github.com/openrazer/openrazer
 import glob
 import os
 
-import openrazer.client as rclient # pylint: disable=import-error
+import openrazer.client as rclient  # pylint: disable=import-error
 
 from .. import common
 from ._backend import Backend as Backend
@@ -147,7 +147,7 @@ class OpenRazerBackend(Backend):
         devices = []
         try:
             self._reload_device_manager()
-        except Exception as e:
+        except Exception:
             return []
         for rdevice in self.devman.devices:
             devices.append(self._get_device(rdevice))

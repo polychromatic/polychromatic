@@ -3,10 +3,10 @@
 """
 Handles the bulk "Apply to All" options to apply settings to all devices at once.
 """
-from .backends._backend import Backend
 from . import common
 from . import middleman as mn
 from . import preferences
+from .backends._backend import Backend
 
 
 class BulkOption(object):
@@ -167,4 +167,3 @@ class BulkApplyOptions(object):
             # FIXME: Finish refactoring for function
             icon = common.generate_colour_bitmap(None, colour_hex)
             self.colours.append(_BulkColour(self.devices, self.middleman, label, icon, colour_hex))
-

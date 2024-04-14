@@ -4,27 +4,17 @@
 This module contains widgets shared across the Controller GUI.
 """
 
-from ..base import PolychromaticBase
-from .. import common
-from .. import locales
-from .. import preferences as pref
-from .. import procpid
-from .. import fileman
-
-from ..qt.flowlayout import FlowLayout as QFlowLayout
-
+import glob
 import hashlib
 import os
-import glob
-import requests
 import shutil
 
-from PyQt6 import uic, QtSvg
-from PyQt6.QtCore import Qt, QSize, QMargins
+import requests
+from PyQt6 import uic
+from PyQt6.QtCore import QMargins, QSize, Qt
 from PyQt6.QtGui import (QAction, QColor, QFont, QIcon, QImage, QMovie,
                          QPainter, QPalette, QPixmap)
 from PyQt6.QtSvg import QSvgRenderer
-from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWidgets import (QButtonGroup, QCheckBox, QColorDialog, QComboBox,
                              QDialog, QDialogButtonBox, QDockWidget,
                              QDoubleSpinBox, QFileDialog, QFormLayout,
@@ -34,6 +24,12 @@ from PyQt6.QtWidgets import (QButtonGroup, QCheckBox, QColorDialog, QComboBox,
                              QSizePolicy, QSpinBox, QTabWidget, QTextEdit,
                              QToolBar, QToolButton, QTreeWidget,
                              QTreeWidgetItem, QVBoxLayout, QWidget)
+
+from .. import common, fileman
+from .. import preferences as pref
+from .. import procpid
+from ..base import PolychromaticBase
+from ..qt.flowlayout import FlowLayout as QFlowLayout
 
 
 def load_qt_theme(appdata, window):
@@ -72,7 +68,7 @@ def get_palette(app):
     Returns a QPalette with Polychromatic's colours.
     """
     palette = QPalette()
-    black = QColor(0, 0, 0)
+    QColor(0, 0, 0)
     white = QColor(255, 255, 255)
     primary = QColor(0, 255, 0)
     secondary = QColor(0, 128, 0)
@@ -698,7 +694,7 @@ class PolychromaticWidgets(PolychromaticBase):
 
         # Connect the signal
         def _clicked_change_colour():
-            picker = ColourPicker(self.appdata, _change_colour, callback_data, btn.current_hex, title, monoscale, preview)
+            ColourPicker(self.appdata, _change_colour, callback_data, btn.current_hex, title, monoscale, preview)
         btn.clicked.connect(_clicked_change_colour)
 
         # Put it all together
@@ -741,7 +737,7 @@ class PolychromaticWidgets(PolychromaticBase):
             preview.current_icon = new_icon
 
         def _clicked_change_icon():
-            picker = IconPicker(self.appdata, _changed_icon_callback, preview.current_icon, title, purpose)
+            IconPicker(self.appdata, _changed_icon_callback, preview.current_icon, title, purpose)
 
         btn = QPushButton()
         btn.setText(self.appdata._("Change..."))
@@ -1079,7 +1075,7 @@ class ColourPicker(PolychromaticBase):
             colour_list = pref.get_colour_list(self._)
 
         for index, colour in enumerate(colour_list):
-            item = self._add_to_tree(colour["name"], colour["hex"])
+            self._add_to_tree(colour["name"], colour["hex"])
 
     def _select_current_colour(self):
         """
@@ -1181,7 +1177,6 @@ class IconPicker(PolychromaticBase):
         self.custom_empty = True if len(list_custom) == 0 else False
 
         # Populate icon tabs
-        all_icon_buttons = []
         self._load_icon_set(self.INDEX_EMBLEMS, list_emblems)
         self._load_icon_set(self.INDEX_CUSTOM, list_custom)
         if self.purpose == self.PURPOSE_TRAY_ONLY:

@@ -28,13 +28,9 @@ import os
 import sys
 
 import polychromatic.base as base_class
-import polychromatic.preferences as pref
 import polychromatic.common as common
 import polychromatic.effects as effects
-import polychromatic.fileman as fileman
-import polychromatic.locales as locales
 import polychromatic.procpid as procpid
-import polychromatic.middleman as middleman_module
 from polychromatic.backends._backend import Backend as Backend
 
 

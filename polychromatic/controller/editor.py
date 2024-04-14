@@ -4,34 +4,26 @@
 This module controls the visual editor shared between layered and scripted effects.
 """
 
-from .. import common
-from .. import effects
-from ..fx import FX
-from .. import locales
-from .. import preferences as pref
-from .. import procpid
-from . import shared
-from . import effects as controller_effects
-
-from ..qt.flowlayout import FlowLayout as QFlowLayout
-
 import copy
-import json
 import os
 import time
 
-from PyQt6 import QtCore
-from PyQt6.QtCore import Qt, QRect, QItemSelectionModel, QThread, QSize, QUrl
-from PyQt6.QtGui import QAction, QIcon, QPixmap, QFont, QColor
-from PyQt6.QtWidgets import QWidget, QPushButton, QToolButton, QMessageBox, \
-                            QListWidget, QTreeWidget, QLabel, QComboBox, \
-                            QTreeWidgetItem, QMenu, QDialog, QDialogButtonBox, \
-                            QButtonGroup, QLineEdit, QTextEdit, QCheckBox, \
-                            QGroupBox, QRadioButton, QMainWindow, \
-                            QDockWidget, QMenuBar, QToolBar, QStatusBar, \
-                            QTableWidget, QWidget, QVBoxLayout, QHBoxLayout, \
-                            QScrollArea, QSpinBox, QColorDialog
+from PyQt6.QtCore import QItemSelectionModel, QRect, QSize, QThread, QUrl
+from PyQt6.QtGui import QAction, QColor, QFont, QIcon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWidgets import (QCheckBox, QColorDialog, QDockWidget, QLabel,
+                             QLineEdit, QMainWindow, QMenu, QMenuBar,
+                             QMessageBox, QPushButton, QSpinBox, QStatusBar,
+                             QTableWidget, QToolBar, QToolButton, QTreeWidget,
+                             QWidget)
+
+from .. import common, effects
+from .. import preferences as pref
+from .. import procpid
+from ..fx import FX
+from ..qt.flowlayout import FlowLayout as QFlowLayout
+from . import effects as controller_effects
+from . import shared
 
 # Visual mode within the WebView editor
 VISUAL_MODE_ADD = 1
@@ -1059,7 +1051,6 @@ class VisualEffectEditor(shared.TabData):
         Opens a window to quickly create, modify or delete a trigger that
         uses this effect.
         """
-        pass
 
     def _live_preview_failed(self, e):
         """
@@ -1216,7 +1207,6 @@ class VisualEffectEditor(shared.TabData):
         """
         Clears and populates layers on the dock controls.
         """
-        pass
 
     def open_layer(self):
         """
@@ -1225,52 +1215,44 @@ class VisualEffectEditor(shared.TabData):
         This will redraw the colours in the visual editor and physical device
         (if preview is enabled) based on the currently selected layer.
         """
-        pass
 
     def new_layer(self):
         """
         Create a new layer using default values and loads it.
         """
-        pass
 
     def delete_layer(self):
         """
         Prompts for confirmation before deleting a layer.
         """
-        pass
 
     def duplicate_layer(self):
         """
         Creates a new layer inheriting the data for the currently selected one
         and loads it.
         """
-        pass
 
     def raise_layer(self):
         """
         Moves the layer up by one and refreshes the visual editor.
         """
-        pass
 
     def lower_layer(self):
         """
         Moves the layer down by one and refreshes the visual editor.
         """
-        pass
 
     def assign_key_to_layer(self, x, y):
         """
         User clicks on a key/LED in the visual editor. Add this to the layer
         and update the device preview.
         """
-        pass
 
     def unassign_key_to_layer(self, x, y):
         """
         User clicks on a key/LED in the visual editor. Remove this from the
         layer and update the device preview.
         """
-        pass
 
     # ----------------------------
     # Specific to Sequence Effects

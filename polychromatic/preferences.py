@@ -4,12 +4,12 @@
 This module is responsible for loading/saving persistent data used by Polychromatic's frontends.
 """
 
-import os
 import glob
 import json
+import os
 import shutil
-from . import common
-from . import locales
+
+from . import common, locales
 
 VERSION = 8
 
@@ -345,7 +345,7 @@ def upgrade_old_pref():
 
                 # Prepare new format
                 _fx_i18n = locales.Locales("polychromatic")
-                _fx__ = _fx_i18n.init()
+                _fx_i18n.init()
                 fileman = effects.EffectFileManagement()
                 newdata = fileman.init_data(olddata["name"], effects.TYPE_SEQUENCE)
 
@@ -404,7 +404,7 @@ def get_colour_list(_):
 
     for colour in colour_list:
         try:
-            name = colour["name"]
+            colour["name"]
             value = colour["hex"]
             if not common.validate_hex(value):
                 raise KeyError

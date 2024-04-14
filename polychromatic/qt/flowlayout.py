@@ -40,7 +40,7 @@
 #############################################################################
 
 from PyQt6.QtCore import QPoint, QRect, QSize, Qt
-from PyQt6.QtWidgets import QLayout, QSizePolicy, QWidget
+from PyQt6.QtWidgets import QLayout, QSizePolicy
 
 
 class FlowLayout(QLayout):

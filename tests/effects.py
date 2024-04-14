@@ -1,13 +1,12 @@
-import polychromatic.common as common
-import polychromatic.locales as locales
-import polychromatic.preferences as preferences
-import polychromatic.effects as effects
-import polychromatic.fileman as fileman
-
 import glob
 import json
 import os
 import unittest
+
+import polychromatic.common as common
+import polychromatic.effects as effects
+import polychromatic.locales as locales
+import polychromatic.preferences as preferences
 
 
 class TestEffects(unittest.TestCase):
@@ -131,7 +130,7 @@ class TestEffects(unittest.TestCase):
         for svg_file in glob.glob("data/devicemaps/*.json"):
             with open(svg_file) as f:
                 try:
-                    data = json.load(f)
+                    json.load(f)
                 except Exception as e:
                     print(svg_file, str(e))
                     passed = False
@@ -169,7 +168,7 @@ class TestEffects(unittest.TestCase):
         self.assertEqual(True, True)
 
     def test_script_handler_init(self):
-        handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
+        effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")
 
     def test_script_integrity(self):
         handler = effects.ScriptedEffectHandler(self.fileman, self.res_path + "/script_good.json")

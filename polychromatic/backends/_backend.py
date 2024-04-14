@@ -15,10 +15,11 @@ Refer to the online documentation for more details:
 https://docs.polychromatic.app/
 """
 
-from ..fx import FX
 import glob
-import os
 import grp
+import os
+
+from ..fx import FX
 
 
 class BackendBase(object):

@@ -4,18 +4,15 @@
 Deprecated module for storing functions commonly used across Polychromatic's
 interfaces and some backends.
 """
-import colorama
 import hashlib
 import os
-import sys
 import subprocess
-import grp
-import time
+import sys
 import traceback
 from threading import Thread
 
-from . import base
-from . import locales
+import colorama
+
 
 # TODO: Refactor later!
 paths = None

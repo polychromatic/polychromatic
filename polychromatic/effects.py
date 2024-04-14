@@ -7,11 +7,10 @@ Handles the processing of custom software effects and device mapping.
 import importlib
 import json
 import os
-import shutil
 import platform
+import shutil
 
-from . import common
-from . import fileman
+from . import common, fileman
 
 # Effect Types
 TYPE_LAYERED = 1
@@ -185,7 +184,7 @@ class EffectFileManagement(fileman.FlatFileManagement):
 
         Returns the new data.
         """
-        old_ver = data["save_format"]
+        data["save_format"]
 
         # Version 8: First! Nothing new yet.
 

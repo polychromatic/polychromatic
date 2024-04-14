@@ -20,29 +20,24 @@
 The primary "Controller" GUI for Polychromatic based on PyQt6.
 """
 import argparse
-import json
 import os
 import signal
-import threading
-import setproctitle
-import time
 import sys
+import time
 
-from PyQt6 import uic, QtCore
-from PyQt6.QtCore import Qt, QThread
-from PyQt6.QtGui import QAction, QIcon, QFont, QFontDatabase
-from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, \
-                            QToolButton, QTabWidget, QMenu, QLabel
+import setproctitle
+from PyQt6 import QtCore, uic
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QAction, QFont, QFontDatabase, QIcon
+from PyQt6.QtWidgets import (QApplication, QLabel, QMainWindow, QPushButton,
+                             QTabWidget, QToolButton, QWidget)
 
-from polychromatic.base import PolychromaticBase
 import polychromatic.common as common
 import polychromatic.controller as controller
-import polychromatic.effects as effects
-import polychromatic.middleman as middleman
+import polychromatic.controller.shared as shared
 import polychromatic.preferences as pref
 import polychromatic.procpid as procpid
-import polychromatic.controller.shared as shared
+from polychromatic.base import PolychromaticBase
 
 VERSION = "0.8.4"
 

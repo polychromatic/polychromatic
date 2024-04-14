@@ -5,24 +5,18 @@ This module contains the events when clicking on interactive menu bar components
 """
 
 import os
-import time
 import subprocess
 import webbrowser
 
-from ..base import PolychromaticBase
-from .. import common
-from .. import preferences
-from .. import procpid
-from . import shared
-from . import procviewer
-from . import troubleshooter
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtWidgets import (QButtonGroup, QDialog, QLabel, QMenuBar,
+                             QMessageBox, QPushButton, QTextEdit, QTreeWidget,
+                             QTreeWidgetItem, QWidget)
 
-from PyQt6.QtCore import Qt, QThread
-from PyQt6.QtGui import QAction, QBrush, QPixmap, QFont, QIcon
-from PyQt6.QtWidgets import QWidget, QMenuBar, QMenu, QLabel, QDialog, \
-                            QPushButton, QTreeWidget, QTreeWidgetItem, \
-                            QTextEdit, QButtonGroup, QProgressBar, QMessageBox, \
-                            QApplication
+from .. import common, preferences, procpid
+from ..base import PolychromaticBase
+from . import procviewer, shared, troubleshooter
 
 
 class MenuBar(PolychromaticBase):
@@ -137,15 +131,12 @@ class MenuBar(PolychromaticBase):
 
     def import_effect(self):
         self.appdata.tab_effects.import_effect()
-        pass
 
     def new_preset(self):
         print("stub:menubar.new_preset")
-        pass
 
     def new_preset_now(self):
         print("stub:menubar.new_preset_now")
-        pass
 
     def hide_menu_bar(self):
         """
