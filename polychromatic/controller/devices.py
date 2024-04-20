@@ -1062,7 +1062,7 @@ class DevicesTab(shared.TabData):
         _ = self._
 
         # Dialog Controls
-        self.dialog = shared.get_ui_widget(self.appdata, "inspect-matrix", QDialog)
+        self.dialog: QDialog = shared.get_ui_widget(self.appdata, "inspect-matrix", QDialog)
         table = self.dialog.findChild(QTableWidget, "Matrix")
         btn_close = self.dialog.findChild(QPushButton, "Close")
         cur_pos = self.dialog.findChild(QLabel, "CurrentPosition")
@@ -1073,7 +1073,6 @@ class DevicesTab(shared.TabData):
 
         def _close_test():
             self.middleman.replay_active_effect(device)
-            self.dialog.accept()
 
         # Populate table
         for x in range(0, device.matrix.cols):
@@ -1104,13 +1103,14 @@ class DevicesTab(shared.TabData):
             device.matrix.draw()
 
         # Connect signals and set focus
-        btn_close.clicked.connect(_close_test)
+        btn_close.clicked.connect(self.dialog.accept)
         table.itemSelectionChanged.connect(_set_pos)
         table.setFocus()
         table.setCurrentCell(0, 0)
         self.dialog.adjustSize()
         self.dialog.resize(QSize(self.dialog.width() + 5, self.dialog.height()))
         self.dialog.setWindowTitle(self._("Inspect Matrix") + " - " + device.name)
+        self.dialog.finished.connect(_close_test)
         self.dialog.open()
 
 
