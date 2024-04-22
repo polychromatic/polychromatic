@@ -1346,6 +1346,10 @@ class SpecialControls(shared.TabData):
             except Exception as e:
                 DevicesTab._catch_command_error(self, device=device, err=e)
 
+            # Sync state with stages buttons
+            for button in self.stage_buttons_group.buttons():
+                button.setChecked(slider_x.value() == button.dpi_value[0] and slider_y.value() == button.dpi_value[1])
+
         # TODO: In future, only update after 'mouse drop' or scroll release.
         # Currently it's difficult under stock QSlider. Dragging with mouse only isn't great.
         slider_x.valueChanged.connect(_slider_dropped)
@@ -1380,6 +1384,7 @@ class SpecialControls(shared.TabData):
             slider_lock.setChecked(dpi_x == dpi_y)
             slider_x.setValue(dpi_x)
             slider_y.setValue(dpi_y)
+            button.setChecked(True)
 
         def _edit_dpi_stages():
             self.dpi_editor = DPIStageEditor(self.appdata, device)
