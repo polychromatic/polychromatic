@@ -142,7 +142,7 @@ def translate_ui(appdata, widget: QWidget):
 
     _ = appdata._
 
-    if type(widget) == QDialog:
+    if isinstance(widget, QDialog):
         widget.setWindowTitle(_(widget.windowTitle()))
 
 
@@ -156,23 +156,23 @@ def _translate_widget(appdata, widget):
         if string:
             set_function(_(string))
 
-    if type(widget) == QWidget:
+    if isinstance(widget, QWidget):
         return
 
-    if type(widget) in [QMenu, QGroupBox]:
+    if isinstance(widget, QMenu) or isinstance(widget, QGroupBox):
         return _translate(widget.setTitle, widget.title())
 
-    if type(widget) == QDockWidget:
+    if isinstance(widget, QDockWidget):
         return _translate(widget.setWindowTitle, widget.windowTitle())
 
-    if type(widget) in [QSpinBox, QDoubleSpinBox]:
+    if isinstance(widget, QSpinBox) or isinstance(widget, QDoubleSpinBox):
         _translate(widget.setPrefix, widget.prefix())
         _translate(widget.setSuffix, widget.suffix())
         _translate(widget.setToolTip, widget.toolTip())
         _translate(widget.setStatusTip, widget.statusTip())
         return
 
-    if type(widget) == QTabWidget:
+    if isinstance(widget, QTabWidget):
         for index in range(0, widget.count()):
             if not widget.tabText(index) == "":
                 widget.setTabText(index, _(widget.tabText(index)))
@@ -180,13 +180,13 @@ def _translate_widget(appdata, widget):
                 widget.setTabToolTip(index, _(widget.tabToolTip(index)))
         return
 
-    if type(widget) == QComboBox:
+    if isinstance(widget, QComboBox):
         for index in range(0, widget.count()):
             if not widget.itemText(index) == "":
                 widget.setItemText(index, _(widget.itemText(index)))
         return
 
-    if type(widget) == QTreeWidget:
+    if isinstance(widget, QTreeWidget):
         tree_root = widget.invisibleRootItem()
         for index in range(0, tree_root.childCount()):
             item = tree_root.child(index)
@@ -360,7 +360,7 @@ class PolychromaticWidgets(PolychromaticBase):
         """
         preferred_style = self.preferences["controller"]["toolbar_style"]
 
-        if type(widget) in [QToolButton, QToolBar]:
+        if isinstance(widget, QToolButton) or isinstance(widget, QToolBar):
             poly_to_qt = {
                 pref.TOOLBAR_STYLE_DEFAULT: Qt.ToolButtonStyle.ToolButtonFollowStyle,
                 pref.TOOLBAR_STYLE_ICONS_ONLY: Qt.ToolButtonStyle.ToolButtonIconOnly,
@@ -371,7 +371,7 @@ class PolychromaticWidgets(PolychromaticBase):
             widget.setToolButtonStyle(poly_to_qt[preferred_style])
             return
 
-        if not type(widget) == QPushButton:
+        if not isinstance(widget, QPushButton):
             raise TypeError
 
         if preferred_style == pref.TOOLBAR_STYLE_DEFAULT:
