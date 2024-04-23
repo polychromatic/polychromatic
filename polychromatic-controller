@@ -47,14 +47,13 @@ class ApplicationData(PolychromaticBase):
     Shared data that is globally accessible throughout the application.
     This includes save data variables and objects for each tab.
     """
-    def __init__(self, qapp, hidpi):
+    def __init__(self, qapp):
         self.dbg.stdout("Initialising application...", self.dbg.action, 1)
         self.locales = self.i18n
         self.main_window = None
         self.main_app = qapp
         self.exec_path = __file__
         self.exec_args = sys.argv
-        self.hidpi = hidpi
         self.version = VERSION
         self.versions = VERSIONS
 
@@ -499,17 +498,8 @@ if __name__ == "__main__":
     VERSIONS = get_versions()
     args = parse_parameters()
 
-    # Improve resolution for HiDPI displays
-    HIDPI = False
-    if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
-        QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-        HIDPI = True
-
-    if hasattr(QtCore.Qt, "AA_UseHighDpiPixmaps"):
-        QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
-
     qapp = QApplication(sys.argv)
-    app = ApplicationData(qapp, HIDPI)
+    app = ApplicationData(qapp)
 
     app.load()
     qapp.exec()

@@ -729,8 +729,6 @@ class PolychromaticWidgets(PolychromaticBase):
         preview.current_icon = current_icon
         set_pixmap_for_label(preview, common.get_full_path_for_save_data_icon(preview.current_icon), 24)
 
-        # TODO: Improve icon quality on HiDPI displays
-
         def _changed_icon_callback(new_icon):
             set_pixmap_for_label(preview, common.get_full_path_for_save_data_icon(new_icon), 24)
             callback_fn(new_icon)
