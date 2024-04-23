@@ -434,7 +434,8 @@ def get_versions():
     versions = [
         [_("Application"), app_version],
         ["Python", py_version],
-        ["Qt", QtCore.PYQT_VERSION_STR], # pylint: disable=c-extension-no-member
+        ["Qt", QtCore.QT_VERSION_STR], # pylint: disable=c-extension-no-member
+        ["PyQt6", QtCore.PYQT_VERSION_STR], # pylint: disable=c-extension-no-member
     ]
 
     if git_commit:
