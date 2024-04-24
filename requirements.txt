@@ -16,13 +16,13 @@ colour==0.1.5
     # via -r requirements.in
 dill==0.3.8
     # via pylint
-idna==3.6
+idna==3.7
     # via requests
 isort==5.13.2
     # via pylint
 mccabe==0.7.0
     # via pylint
-platformdirs==4.2.0
+platformdirs==4.2.1
     # via pylint
 pylint==3.1.0
     # via -r requirements.in
@@ -30,7 +30,7 @@ pyqt6==6.6.1
     # via
     #   -r requirements.in
     #   pyqt6-webengine
-pyqt6-qt6==6.6.2
+pyqt6-qt6==6.6.3
     # via pyqt6
 pyqt6-sip==13.6.0
     # via
@@ -38,7 +38,7 @@ pyqt6-sip==13.6.0
     #   pyqt6-webengine
 pyqt6-webengine==6.6.0
     # via -r requirements.in
-pyqt6-webengine-qt6==6.6.2
+pyqt6-webengine-qt6==6.6.3
     # via pyqt6-webengine
 requests==2.31.0
     # via -r requirements.in
