@@ -54,6 +54,7 @@ Depends: polychromatic-common,
          python3-pyqt6,
          python3-pyqt6.qtsvg,
          python3-pyqt6.qtwebengine,
+         pyqt6-dev-tools,
          ${misc:Depends},
 Breaks: polychromatic (<= 0.5.0)
 Description: RGB lighting utility (Qt interface)
