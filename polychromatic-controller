@@ -81,6 +81,9 @@ class ApplicationData(PolychromaticBase):
         # self.tab_triggers = None
         self.ui_preferences = None
 
+        # Set the Wayland appId to the name of the .desktop file (without the .desktop suffix)
+        self.main_app.setDesktopFileName("polychromatic")
+
         # Settings
         self.preferences = pref.load_file(self.paths.preferences)
         self.system_qt_theme = self.preferences["controller"]["system_qt_theme"]
