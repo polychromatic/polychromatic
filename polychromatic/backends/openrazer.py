@@ -1423,7 +1423,7 @@ class OpenRazerBackend(Backend):
                 def refresh(self):
                     self.value = int(self._rdevice.get_idle_time() / 60)
 
-            if rdevice.has("get_idle_time"):
+            if rdevice.has("idle_time") or rdevice.has("get_idle_time"):
                 idle_time = IdleTimeOptionSetGet(rdevice, persistence)
             else:
                 idle_time = IdleTimeOptionSetOnly(rdevice, persistence)
@@ -1458,7 +1458,7 @@ class OpenRazerBackend(Backend):
                 def refresh(self):
                     self.value = int(self._rdevice.get_low_battery_threshold())
 
-            if rdevice.has("get_low_battery_threshold"):
+            if rdevice.has("low_battery_threshold") or rdevice.has("get_low_battery_threshold"):
                 low_power = LowBatteryThresholdOptionSetGet(rdevice, persistence)
             else:
                 low_power = LowBatteryThresholdOptionSetOnly(rdevice, persistence)
