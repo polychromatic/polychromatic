@@ -152,9 +152,15 @@ def _translate_widget(appdata, widget):
     """
     _ = appdata._
 
-    def _translate(set_function, string):
-        if string:
-            set_function(_(string))
+    def _translate(set_function, string: str):
+        if not string:
+            return
+
+        new_string = _(string)
+        if string == new_string:
+            new_string = _(string.strip())
+        if string != new_string:
+            set_function(_(new_string))
 
     if type(widget) == QWidget: # pylint: disable=unidiomatic-typecheck
         return

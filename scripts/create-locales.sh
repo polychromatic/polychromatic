@@ -58,9 +58,8 @@ for ui_file in $(ls *.ui); do
         sed -i 's/\&amp\;/\&/g' $ui_file.pot
         sed -i 's/\&quot;/\\\"/g' $ui_file.pot
 
-        # intltool-extract lost whitespace for spinners suffixes
-        sed -i 's#second(s)# second(s)#g' $ui_file.pot
-        sed -i 's#fps# fps#g' $ui_file.pot
+        # intltool-extract lost whitespace for spinners suffixes, but the code
+        # will accommodate this case.
 
         # File is ready to concatenate later
         mv $ui_file.pot "$temp_dir/"
