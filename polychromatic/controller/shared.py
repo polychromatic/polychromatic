@@ -191,8 +191,8 @@ def _translate_widget(appdata, widget):
         for index in range(0, tree_root.childCount()):
             item = tree_root.child(index)
             for column in range(0, item.columnCount()):
-                if not item.text(index) == "":
-                    item.setText(column, _(item.text(index)))
+                if not item.text(column) == "":
+                    item.setText(column, _(item.text(column)))
 
             for subindex in range(0, item.childCount()):
                 child = item.child(subindex)
