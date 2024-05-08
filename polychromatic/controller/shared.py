@@ -156,7 +156,7 @@ def _translate_widget(appdata, widget):
         if string:
             set_function(_(string))
 
-    if isinstance(widget, QWidget):
+    if type(widget) == QWidget: # pylint: disable=unidiomatic-typecheck
         return
 
     if isinstance(widget, QMenu) or isinstance(widget, QGroupBox):
