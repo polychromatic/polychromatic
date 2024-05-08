@@ -465,11 +465,11 @@ if args.dpi:
 
         for number in dpi_values:
             if int(number) > device.dpi.max:
-                dbg.stdout(f"{device.name}: {_("DPI too high:")} {number} ({_("Maximum")}: {str(device.dpi.max)})", dbg.error)
+                dbg.stdout(f"{device.name}: {_('DPI too high:')} {number} ({_('Maximum')}: {str(device.dpi.max)})", dbg.error)
                 sys.exit(1)
 
             if int(number) < device.dpi.min:
-                dbg.stdout(f"{device.name}: {_("DPI too low:")} {number} ({_("Minimum")}: {str(device.dpi.min)})", dbg.error)
+                dbg.stdout(f"{device.name}: {_('DPI too low:')} {number} ({_('Minimum')}: {str(device.dpi.min)})", dbg.error)
                 sys.exit(1)
 
         if verbose:
@@ -484,7 +484,7 @@ if args.dpi:
         try:
             device.dpi.set(x, y)
         except Exception as e:
-            dbg.stdout(f"{device.name}: {_("Failed to set DPI due to an error:")}\n{common.get_exception_as_string(e)}", dbg.error)
+            dbg.stdout(f"{device.name}: {_('Failed to set DPI due to an error:')}\n{common.get_exception_as_string(e)}", dbg.error)
 
     sys.exit(0)
 
