@@ -69,7 +69,7 @@ done
 # Extract strings from Python (.py) files
 echo -ne "\nGenerating locales from source code...\n"
 cd "$repo_root"
-for py_file in $(find . -name "*.py"); do
+for py_file in $(find . -name "*.py") "polychromatic-controller" "polychromatic-tray-applet" "polychromatic-cli"; do
     echo -n "."
     if [ "$(basename $py_file)" == "__init__.py" ]; then
         continue
