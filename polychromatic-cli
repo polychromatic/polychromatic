@@ -152,6 +152,10 @@ parser.add_argument("-v", "--verbose", action="store_true")
 
 args = parser.parse_args()
 
+if args.locale:
+    base.reinit_locales(args.locale)
+    _ = base._
+
 if not len(sys.argv) > 1:
     dbg.stdout(_("No arguments passed."), dbg.error)
     dbg.stdout(_("Type polychromatic-cli --help to see possible combinations."))
@@ -164,9 +168,6 @@ if args.version:
         print("Commit:", git_commit)
     print("Python:", py_version)
     sys.exit(0)
-
-if args.locale:
-    base.reinit_locales(args.locale)
 
 if args.verbose:
     dbg.verbose_level = 1
