@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-04 10:51+0200\n"
-"PO-Revision-Date: 2024-05-04 11:08+0200\n"
+"POT-Creation-Date: 2024-05-08 23:20+0200\n"
+"PO-Revision-Date: 2024-05-09 15:04+0200\n"
 "Last-Translator: UM-Li <um-li@tuta.io>\n"
 "Language-Team: Chinese <kde-i18n-doc@kde.org>\n"
 "Language: zh_CN\n"
@@ -71,7 +71,7 @@ msgstr "编辑"
 msgid "Save this colour to the saved colour list"
 msgstr "保存该颜色"
 
-#: colour-picker.ui.h:9 custom-dpi.ui.h:11
+#: colour-picker.ui.h:9 custom-dpi.ui.h:10
 msgid "Add"
 msgstr "添加"
 
@@ -128,32 +128,28 @@ msgid "Value"
 msgstr "数值"
 
 #: custom-dpi.ui.h:7
-msgid "1"
-msgstr "1"
-
-#: custom-dpi.ui.h:8
 msgid "Remove last DPI stage"
 msgstr "移除上一个 DPI 阶段"
 
-#: custom-dpi.ui.h:9
+#: custom-dpi.ui.h:8
 msgid "Remove"
 msgstr "移除"
 
-#: custom-dpi.ui.h:10
+#: custom-dpi.ui.h:9
 msgid "Add DPI stage"
 msgstr "添加 DPI 阶段"
 
-#: custom-dpi.ui.h:12
+#: custom-dpi.ui.h:11
 msgid "Sync"
 msgstr "同步"
 
-#: custom-dpi.ui.h:13
+#: custom-dpi.ui.h:12
 msgid ""
 "Apply these DPI stages to the hardware, so they can be changed using "
 "hardware buttons."
 msgstr "将 DPI 阶段同步到硬件以便用硬件按钮切换。"
 
-#: custom-dpi.ui.h:14
+#: custom-dpi.ui.h:13
 msgid "This device does not support synchronisation to hardware DPI buttons."
 msgstr "该设备不支持同步至硬件 DPI 切换按钮。"
 
@@ -220,7 +216,7 @@ msgstr "工具(&T)"
 msgid "Playback"
 msgstr "回放"
 
-#: editor.ui.h:15 polychromatic/controller/devices.py:855
+#: editor.ui.h:15 polychromatic-cli:419 polychromatic/controller/devices.py:855
 #: polychromatic/controller/devices.py:980
 msgid "Colours"
 msgstr "颜色"
@@ -398,8 +394,8 @@ msgid "Frames per second to play the sequence"
 msgstr "序列帧率"
 
 #: editor.ui.h:70
-msgid " fps"
-msgstr " fps"
+msgid "fps"
+msgstr "fps"
 
 #: editor.ui.h:71
 msgid "Current Colour"
@@ -569,7 +565,7 @@ msgstr "上移图层"
 #. Keyboard Shortcut
 #: editor.ui.h:128
 msgid "Alt+Up"
-msgstr "Alt+Up"
+msgstr "Alt+上"
 
 #: editor.ui.h:129
 msgid "Lower Layer"
@@ -837,9 +833,10 @@ msgstr "编辑元数据"
 
 #: effect-metadata-editor.ui.h:2
 msgid "Effect Details"
-msgstr "基本信息"
+msgstr "详细信息"
 
-#: effect-metadata-editor.ui.h:3 polychromatic/controller/devices.py:918
+#: effect-metadata-editor.ui.h:3 polychromatic-cli:332
+#: polychromatic/controller/devices.py:918
 msgid "Name"
 msgstr "名称"
 
@@ -887,7 +884,7 @@ msgstr "请注意，并非所有桌面环境都支持 GIF 动图。"
 #: icon-picker.ui.h:3 polychromatic/controller/procviewer.py:158
 #: preferences.ui.h:37
 msgid "Tray Applet"
-msgstr "托盘程序"
+msgstr "托盘应用"
 
 #. Icon Picker: Tab name for built-in graphics
 #: icon-picker.ui.h:5
@@ -936,7 +933,8 @@ msgid "Devices"
 msgstr "设备"
 
 #: main.ui.h:3 polychromatic/controller/devices.py:847
-#: polychromatic/controller/effects.py:25 preferences.ui.h:25
+#: polychromatic/controller/effects.py:25 polychromatic-tray-applet:472
+#: polychromatic-tray-applet:588 preferences.ui.h:25
 msgid "Effects"
 msgstr "灯效"
 
@@ -953,8 +951,9 @@ msgstr "扳机键"
 msgid "Tasks"
 msgstr "任务"
 
+#. #-#-#-#-#  main.ui.pot (PACKAGE VERSION)  #-#-#-#-#
 #. Button to a section for activating settings to all devices
-#: main.ui.h:9
+#: main.ui.h:9 polychromatic-tray-applet:357
 msgid "Apply to All"
 msgstr "统一应用"
 
@@ -979,7 +978,7 @@ msgstr "新建灯效..."
 msgid "Hide Menu Bar"
 msgstr "隐藏菜单栏"
 
-#: main.ui.h:29
+#: main.ui.h:29 polychromatic-tray-applet:320 polychromatic-tray-applet:389
 msgid "Quit"
 msgstr "退出"
 
@@ -1009,7 +1008,7 @@ msgstr "从当前设备新建预设..."
 
 #: main.ui.h:37
 msgid "Restart Tray Applet"
-msgstr "重启托盘程序"
+msgstr "重启托盘应用"
 
 #: main.ui.h:38
 msgid "View Background Tasks"
@@ -1030,11 +1029,13 @@ msgstr "设置"
 #: main.ui.h:43 polychromatic/controller/devices.py:668
 #: polychromatic/controller/devices.py:682
 #: polychromatic/controller/devices.py:766
-#: polychromatic/controller/devices.py:784
+#: polychromatic/controller/devices.py:784 polychromatic-tray-applet:317
+#: polychromatic-tray-applet:353
 msgid "Troubleshoot"
 msgstr "疑难解答"
 
-#: main.ui.h:44 procviewer.ui.h:7
+#: main.ui.h:44 polychromatic-tray-applet:316 polychromatic-tray-applet:352
+#: procviewer.ui.h:7
 msgid "Refresh"
 msgstr "刷新"
 
@@ -1092,7 +1093,7 @@ msgstr "脚本"
 #. Shown when creating a new effect
 #: new-effect.ui.h:14
 msgid "Hover for more details"
-msgstr "将鼠标移到选项上方获取更多信息"
+msgstr "将鼠标移到选项上方以获取更多信息"
 
 #: openrazer-config.ui.h:1
 msgid "OpenRazer Configuration"
@@ -1137,7 +1138,7 @@ msgstr "通知频率"
 #. Suffix for a spinner control
 #: openrazer-config.ui.h:16
 msgid "minute(s)"
-msgstr "分钟"
+msgstr " 分钟"
 
 #: openrazer-config.ui.h:17
 msgid "Restore software settings on device connect"
@@ -1147,7 +1148,9 @@ msgstr "设备连接时恢复上次设置"
 msgid ""
 "Enabling this ensures the last used settings are set on the hardware. When "
 "disabled, the device is responsible to retain settings across power cycles."
-msgstr "启用该选项会确保 Polychromatic 在设备上应用上次的设置。如果禁用，则设备需要自行在断电期间保存设置。"
+msgstr ""
+"启用该选项会确保 Polychromatic 在设备上应用上次的设置。如果禁用，则设备需要自"
+"行在断电期间保存设置。"
 
 #. Tab button for configuring OpenRazer
 #: openrazer-config.ui.h:20
@@ -1168,11 +1171,11 @@ msgstr "涟漪效果刷新率"
 #. Suffix for a spinner control
 #: openrazer-config.ui.h:25
 msgid "seconds"
-msgstr "秒"
+msgstr " 秒"
 
 #: polychromatic/backends/openrazer.py:410
 #: polychromatic/controller/devices.py:961
-#: polychromatic/controller/devices.py:1279
+#: polychromatic/controller/devices.py:1279 polychromatic-tray-applet:438
 msgid "DPI"
 msgstr "DPI"
 
@@ -1210,19 +1213,19 @@ msgstr "已充满"
 
 #: polychromatic/backends/openrazer.py:690
 #: polychromatic/backends/openrazer.py:709
-#: polychromatic/controller/devices.py:846
+#: polychromatic/controller/devices.py:846 polychromatic-tray-applet:587
 msgid "Brightness"
 msgstr "亮度"
 
 #: polychromatic/backends/openrazer.py:713
-#: polychromatic/backends/openrazer.py:780
+#: polychromatic/backends/openrazer.py:780 polychromatic-tray-applet:556
 msgid "On"
 msgstr "开"
 
 #: polychromatic/backends/openrazer.py:714
-#: polychromatic/backends/openrazer.py:760
+#: polychromatic/backends/openrazer.py:760 polychromatic-tray-applet:557
 msgid "Off"
-msgstr "关"
+msgstr "关闭灯效"
 
 #. #-#-#-#-#  preferences.ui.pot (PACKAGE VERSION)  #-#-#-#-#
 #. Preferences Label
@@ -1417,6 +1420,271 @@ msgstr "游戏模式（快速触发）"
 msgid "Optimise for"
 msgstr "优化模式"
 
+#: polychromatic-cli:125
+msgid "These arguments can be specified"
+msgstr "可以指定下列参数："
+
+#: polychromatic-cli:156
+msgid "No arguments passed."
+msgstr "没有指定参数。"
+
+#: polychromatic-cli:157
+msgid "Type polychromatic-cli --help to see possible combinations."
+msgstr "请尝试执行 polychromatic-cli --help 以获取更多信息。"
+
+#: polychromatic-cli:179
+msgid "Select the device by form factor. If omitted, use all devices"
+msgstr "按类型选择设备，没有给出则使用所有设备"
+
+#: polychromatic-cli:187
+msgid "Select a device by name"
+msgstr "按名称选择设备"
+
+#: polychromatic-cli:191
+msgid "Select a device by serial number"
+msgstr "按序列号选择设备"
+
+#: polychromatic-cli:196
+msgid "List connected device(s) and their zone(s)"
+msgstr "列出连接的设备及其区域"
+
+#: polychromatic-cli:200
+msgid "List all possible combinations for selected device(s)"
+msgstr "列出所选设备的所有选项组合"
+
+#: polychromatic-cli:205
+msgid ""
+"Make change to specified zone(s). Comma separated. If omitted, use all "
+"available zones"
+msgstr "将更改应用到所选区域，用逗号分隔，没有给出则使用所有可用区域"
+
+#: polychromatic-cli:209
+msgid "Set option on the device"
+msgstr "为设备指定选项 "
+
+#: polychromatic-cli:213
+msgid "Set parameter for the option (if applicable)"
+msgstr "为选项指定参数（如果可用）"
+
+#: polychromatic-cli:217
+msgid "Set colours in hex format (#RRGGBB). Comma separated"
+msgstr "以十六进制格式（#RRGGBB）指定颜色，用逗号分隔"
+
+#: polychromatic-cli:221
+msgid "Set custom (software) effect by name or path"
+msgstr "按名称或路径指定自定义软件灯效"
+
+#: polychromatic-cli:225
+msgid "To set hardware effects, use --option (-o) instead"
+msgstr "用 --option / -o 指定硬件灯效"
+
+#: polychromatic-cli:229
+msgid "Set dots per inch."
+msgstr "指定每英寸点数（DPI）。"
+
+#: polychromatic-cli:234 polychromatic-controller:470
+#: polychromatic-tray-applet:777
+msgid "Print program version and exit"
+msgstr "显示版本信息并退出"
+
+#: polychromatic-cli:238 polychromatic-controller:469
+#: polychromatic-tray-applet:775
+msgid "Show this help message and exit"
+msgstr "显示此帮助信息并退出"
+
+#: polychromatic-cli:242
+msgid "Do not print with pretty columns"
+msgstr "不显示列头"
+
+#: polychromatic-cli:246 polychromatic-controller:472
+msgid "Force a specific language, e.g. de_DE"
+msgstr "指定语言，如 de_DE"
+
+#: polychromatic-cli:250
+msgid "Output additional data and debug messages"
+msgstr "显示调试信息"
+
+#: polychromatic-cli:255
+msgid "Available Options"
+msgstr "可用选项"
+
+#: polychromatic-cli:287
+msgid "No backends available."
+msgstr "没有可用后端。"
+
+#: polychromatic-cli:298
+msgid "Could not find a device with this name:"
+msgstr "找不到带有该名称的设备："
+
+#: polychromatic-cli:306
+msgid "Could not find a device with this serial:"
+msgstr "找不到带有该序列号的设备："
+
+#: polychromatic-cli:312
+msgid "No devices found that match this form factor:"
+msgstr "找不到属于该类型的设备："
+
+#: polychromatic-cli:313
+msgid "Avaliable form factors:"
+msgstr "可用类型："
+
+#: polychromatic-cli:323
+msgid "No devices connected."
+msgstr "没有设备连接。"
+
+#: polychromatic-cli:333 polychromatic/controller/devices.py:924
+msgid "Form Factor"
+msgstr "类型"
+
+#: polychromatic-cli:334 polychromatic-cli:372
+#: polychromatic/controller/devices.py:925
+msgid "Serial"
+msgstr "序列号"
+
+#: polychromatic-cli:335 polychromatic/controller/devices.py:987
+msgid "Zones"
+msgstr "区域"
+
+#: polychromatic-cli:348 polychromatic-tray-applet:348
+msgid "Unrecognised:"
+msgstr "未能识别："
+
+#: polychromatic-cli:375 polychromatic/controller/devices.py:927
+msgid "Firmware Version"
+msgstr "固件版本"
+
+#: polychromatic-cli:378 polychromatic/controller/devices.py:929
+msgid "Keyboard Layout"
+msgstr "键盘布局"
+
+#: polychromatic-cli:381
+msgid "row"
+msgstr "行"
+
+#: polychromatic-cli:381
+msgid "rows"
+msgstr "行"
+
+#: polychromatic-cli:382
+msgid "column"
+msgstr "列"
+
+#: polychromatic-cli:382
+msgid "columns"
+msgstr "列"
+
+#: polychromatic-cli:385 polychromatic-cli:388 polychromatic-cli:391
+#: polychromatic/controller/devices.py:933
+msgid "Custom Effects"
+msgstr "自定义灯效"
+
+#: polychromatic-cli:385
+msgid "Unsupported"
+msgstr "不支持"
+
+#: polychromatic-cli:388 polychromatic/controller/devices.py:905
+msgid "Yes"
+msgstr "是"
+
+#: polychromatic-cli:391
+msgid "Yes, Limited RGB"
+msgstr "是，RGB 受限"
+
+#: polychromatic-cli:404 polychromatic/controller/devices.py:950
+msgid "Battery"
+msgstr "电池"
+
+#: polychromatic-cli:412
+msgid "Supports DPI (--dpi) between 1 and 2"
+msgstr "支持介于 1 到 2 之间的 DPI"
+
+#: polychromatic-cli:416
+msgid "Zone"
+msgstr "区域"
+
+#: polychromatic-cli:417
+msgid "Option"
+msgstr "选项"
+
+#: polychromatic-cli:418 polychromatic/controller/devices.py:1011
+msgid "Parameters"
+msgstr "参数"
+
+#: polychromatic-cli:462
+msgid "DPI is not supported. Or, it may need to be set using -o/--option."
+msgstr "DPI 不受支持，或者可能需要用 -o/--option 指定。"
+
+#: polychromatic-cli:513
+msgid "Unable to locate the effect '[]'"
+msgstr "找不到灯效“[]”"
+
+#: polychromatic-cli:545
+msgid "3 byte hexadecimal values are unsupported."
+msgstr "不支持 3 字节十六进制值。"
+
+#: polychromatic-cli:548
+msgid "Colour [] is not a valid hex value."
+msgstr "[] 不是有效的十六进制颜色值。"
+
+#: polychromatic-cli:555
+msgid ""
+"Please specify --option (-o). Use --list-options (-k) to view available "
+"combinations."
+msgstr "请指定选项（--option / -o）；用 --list-options / -k 查看可用选项组合。"
+
+#: polychromatic-cli:593
+msgid "Failed to set option"
+msgstr "选项指定失败"
+
+#: polychromatic-cli:610
+msgid "No such zone"
+msgstr "区域不存在"
+
+#: polychromatic-cli:616
+msgid "No such option"
+msgstr "选项不存在"
+
+#: polychromatic-cli:622
+msgid "Missing --colours (-c) for option"
+msgstr "选项缺少颜色 --colours / -c："
+
+#: polychromatic-cli:626 polychromatic-cli:655
+msgid "Too many colours specified. Ignoring excess."
+msgstr "指定的颜色过多，将忽略多余颜色。"
+
+#: polychromatic-cli:629
+msgid "Insufficient --colours (-c) for option"
+msgstr "选项颜色不足 --colours / -c："
+
+#: polychromatic-cli:630 polychromatic-cli:659
+msgid "Required colours:"
+msgstr "需要的颜色："
+
+#: polychromatic-cli:640 polychromatic-cli:667 polychromatic-cli:682
+msgid "Missing --parameter (-p) for option"
+msgstr "选项缺少参数 --parameter / -p："
+
+#: polychromatic-cli:641 polychromatic-cli:646 polychromatic-cli:668
+#: polychromatic-cli:677 polychromatic-cli:683
+msgid "Available parameters:"
+msgstr "可用参数："
+
+#: polychromatic-cli:645
+msgid "Unsupported parameter"
+msgstr "参数不受支持"
+
+#: polychromatic-cli:651
+msgid "Missing --colours (-c) for parameter"
+msgstr "参数缺少颜色 --colours / -c："
+
+#: polychromatic-cli:658
+msgid "Insufficient --colours (-c) for parameter"
+msgstr "参数颜色不足 --colours / -c："
+
+#: polychromatic-cli:676
+msgid "Invalid parameter"
+msgstr "参数无效"
+
 #: polychromatic/common.py:126
 msgid "USB Accessory"
 msgstr "USB 外设"
@@ -1490,7 +1758,8 @@ msgstr "设备信息"
 msgid "Effect Mode"
 msgstr "模式"
 
-#: polychromatic/controller/devices.py:589
+#: polychromatic/controller/devices.py:589 polychromatic-tray-applet:487
+#: polychromatic-tray-applet:589
 msgid "Primary Colour"
 msgstr "主要颜色"
 
@@ -1510,11 +1779,11 @@ msgstr "第四颜色"
 msgid "Change []"
 msgstr "修改 []"
 
-#: polychromatic/controller/devices.py:623
+#: polychromatic/controller/devices.py:623 polychromatic-tray-applet:617
 msgid "Request Failed"
 msgstr "请求失败"
 
-#: polychromatic/controller/devices.py:624
+#: polychromatic/controller/devices.py:624 polychromatic-tray-applet:618
 msgid ""
 "There's a fault with Polychromatic's integration with [OpenRazer] for this "
 "device or option."
@@ -1528,7 +1797,7 @@ msgstr ""
 "要协助修复该问题，请查看 Polychromatic 的 issue 列表；如果没有对应 issue 则请"
 "创建一个。"
 
-#: polychromatic/controller/devices.py:629
+#: polychromatic/controller/devices.py:629 polychromatic-tray-applet:621
 msgid "Communication Error"
 msgstr "通信错误"
 
@@ -1543,8 +1812,8 @@ msgid ""
 "Try restarting [OpenRazer] and Polychromatic and give it another go. If this "
 "error appears again, it might need fixing in [OpenRazer]."
 msgstr ""
-"请在重启 [OpenRazer] 和 Polychromatic 后重试。该错误如果再次发生，则可能需要"
-"在 [OpenRazer] 中修复。"
+"请在重启 [OpenRazer] 和 Polychromatic 后重试。该错误如果再次发生，则可能"
+"需要在 [OpenRazer] 中修复。"
 
 #: polychromatic/controller/devices.py:654
 msgid "No devices connected"
@@ -1573,7 +1842,7 @@ msgstr "要控制灯效，请安装兼容的后端程序"
 
 #: polychromatic/controller/devices.py:691
 msgid "Show Error Details"
-msgstr "显示细节"
+msgstr "显示错误细节"
 
 #: polychromatic/controller/devices.py:727
 msgid "Backend Error: []"
@@ -1611,10 +1880,6 @@ msgstr "该设备需要先在 OpenRazer 添加支持后才能在 Polychromatic �
 msgid "Not available for all connected devices"
 msgstr "不对所有已连接的设备可用"
 
-#: polychromatic/controller/devices.py:905
-msgid "Yes"
-msgstr "是"
-
 #: polychromatic/controller/devices.py:908
 msgid "No"
 msgstr "否"
@@ -1622,26 +1887,6 @@ msgstr "否"
 #: polychromatic/controller/devices.py:919
 msgid "Backend"
 msgstr "后端"
-
-#: polychromatic/controller/devices.py:924
-msgid "Form Factor"
-msgstr "类别"
-
-#: polychromatic/controller/devices.py:925
-msgid "Serial"
-msgstr "序列号"
-
-#: polychromatic/controller/devices.py:927
-msgid "Firmware Version"
-msgstr "固件版本"
-
-#: polychromatic/controller/devices.py:929
-msgid "Keyboard Layout"
-msgstr "键盘布局"
-
-#: polychromatic/controller/devices.py:933
-msgid "Custom Effects"
-msgstr "自定义效果"
 
 #: polychromatic/controller/devices.py:935
 msgid "Supported"
@@ -1683,10 +1928,6 @@ msgstr "256 色"
 #: polychromatic/controller/devices.py:945
 msgid "16 million colours"
 msgstr "真彩色"
-
-#: polychromatic/controller/devices.py:950
-msgid "Battery"
-msgstr "电池"
 
 #: polychromatic/controller/devices.py:953
 #: polychromatic/controller/devices.py:955
@@ -1749,10 +1990,6 @@ msgstr "最大值"
 msgid "Input 0"
 msgstr "输入 0"
 
-#: polychromatic/controller/devices.py:987
-msgid "Zones"
-msgstr "区域"
-
 #: polychromatic/controller/devices.py:1000
 msgid "Toggle"
 msgstr "切换按钮"
@@ -1773,10 +2010,6 @@ msgstr "选项 ID"
 #: polychromatic/controller/devices.py:1015
 msgid "Active"
 msgstr "激活"
-
-#: polychromatic/controller/devices.py:1011
-msgid "Parameters"
-msgstr "参数"
 
 #: polychromatic/controller/devices.py:1014
 msgid "Parameter ID"
@@ -1873,8 +2106,8 @@ msgid "Live preview has been disabled for this session."
 msgstr "当前会话已禁用即时预览。"
 
 #: polychromatic/controller/editor.py:631
-#: polychromatic/controller/shared.py:1652
-#: polychromatic/controller/shared.py:1661
+#: polychromatic/controller/shared.py:1658
+#: polychromatic/controller/shared.py:1667
 msgid "File Error"
 msgstr "文件错误"
 
@@ -2121,6 +2354,61 @@ msgstr ""
 "应用这些更改需要重启守护程序，期间 Polychromatic 也会重启。所有未保存的数据将"
 "会丢失。"
 
+#: polychromatic-controller:303
+msgid "Polychromatic Error"
+msgstr "Polychromatic 错误"
+
+#: polychromatic-controller:304
+msgid "Unable to load the tab properly due to an error."
+msgstr "发生错误，标签页加载失败。"
+
+#: polychromatic-controller:305
+msgid ""
+"See below for technical details. Consider reporting this as a bug on this "
+"project's issue tracker."
+msgstr "下方是错误细节，您可以考虑提交 issue。"
+
+#: polychromatic-controller:400
+msgid "Save Data Version Mismatch"
+msgstr "保存数据版本不匹配"
+
+#: polychromatic-controller:401
+msgid ""
+"Polychromatic's configuration (including your effects and presets) have been "
+"previously saved in a newer version of this software."
+msgstr "各项配置（包括灯效和预设）此前已由本软件的较新版本保存。"
+
+#: polychromatic-controller:402
+msgid ""
+"While this older software version may run as expected, there is no guarantee "
+"everything will work as a result of this newer save data. This installation "
+"is unsupported."
+msgstr ""
+"该旧版软件仍有可能正常运行，但未必能正确加载来自新版软件的保存数据。"
+"这种情况不受支持。"
+
+#: polychromatic-controller:403
+msgid ""
+"Consider updating the application, ignore this message or delete: ~/.config/"
+"polychromatic"
+msgstr "您可以更新本应用，忽略该信息，或者删除 ~/.config/polychromatic"
+
+#: polychromatic-controller:438
+msgid "Application"
+msgstr "应用"
+
+#: polychromatic-controller:468 polychromatic-tray-applet:774
+msgid "Optional arguments"
+msgstr "可选参数"
+
+#: polychromatic-controller:471 polychromatic-tray-applet:776
+msgid "Be verbose to stdout"
+msgstr "在标准输出打印详细信息"
+
+#: polychromatic-controller:473
+msgid "Open a specific tab or feature"
+msgstr "打开一个标签页或功能"
+
 #: polychromatic/controller/preferences.py:97
 msgid "Choose Tray Applet Icon"
 msgstr "选择托盘图标"
@@ -2163,81 +2451,81 @@ msgstr "正在播放"
 msgid "No longer running"
 msgstr "已停止"
 
-#: polychromatic/controller/shared.py:685
-#: polychromatic/controller/shared.py:741 preferences.ui.h:56
+#: polychromatic/controller/shared.py:691
+#: polychromatic/controller/shared.py:747 preferences.ui.h:56
 msgid "Change..."
 msgstr "更改..."
 
-#: polychromatic/controller/shared.py:1125
+#: polychromatic/controller/shared.py:1131
 msgid "Image Files"
 msgstr "图像文件"
 
-#: polychromatic/controller/shared.py:1126
+#: polychromatic/controller/shared.py:1132
 msgid "PNG Image"
 msgstr "PNG 图像"
 
-#: polychromatic/controller/shared.py:1127
+#: polychromatic/controller/shared.py:1133
 msgid "JPEG Image"
 msgstr "JPEG 图像"
 
-#: polychromatic/controller/shared.py:1128
+#: polychromatic/controller/shared.py:1134
 msgid "GIF Image"
 msgstr "GIF 图像"
 
-#: polychromatic/controller/shared.py:1129
+#: polychromatic/controller/shared.py:1135
 msgid "SVG Image"
 msgstr "SVG 图像"
 
-#: polychromatic/controller/shared.py:1130
+#: polychromatic/controller/shared.py:1136
 msgid "All Files"
 msgstr "所有文件"
 
-#: polychromatic/controller/shared.py:1293
+#: polychromatic/controller/shared.py:1299
 msgid "When Steam is installed, icons from your games will appear here."
 msgstr "安装 Steam 后，您的游戏图标会在这里列出。"
 
-#: polychromatic/controller/shared.py:1294
+#: polychromatic/controller/shared.py:1300
 msgid "Drag and drop icons here, or add them by pressing the Import button."
 msgstr "将图标拖动到这里，或者按导入按钮添加。"
 
-#: polychromatic/controller/shared.py:1300
+#: polychromatic/controller/shared.py:1306
 msgid "No icons found!"
 msgstr "没有发现图标！"
 
-#: polychromatic/controller/shared.py:1410
+#: polychromatic/controller/shared.py:1416
 msgid "Import Custom Icon"
 msgstr "导入自定义图标"
 
-#: polychromatic/controller/shared.py:1641
+#: polychromatic/controller/shared.py:1647
 msgid "The file contains invalid data."
 msgstr "该文件含有无效数据。"
 
-#: polychromatic/controller/shared.py:1642
+#: polychromatic/controller/shared.py:1648
 msgid "The file no longer exists. Please refresh the page."
 msgstr "该文件不存在，请刷新页面。"
 
-#: polychromatic/controller/shared.py:1643
+#: polychromatic/controller/shared.py:1649
 msgid "This file was saved in a newer version of this program."
 msgstr "该文件保存自本程序的较新版本。"
 
-#: polychromatic/controller/shared.py:1649
+#: polychromatic/controller/shared.py:1655
 msgid "Unspecified error: []"
 msgstr "未知错误：[]"
 
-#: polychromatic/controller/shared.py:1653
+#: polychromatic/controller/shared.py:1659
 msgid "This file cannot be opened:"
 msgstr "无法打开该文件："
 
-#: polychromatic/controller/shared.py:1662
+#: polychromatic/controller/shared.py:1668
 msgid ""
 "The operation could not be completed due to an error processing this file."
 msgstr "处理该文件时发生错误，无法完成动作。"
 
-#: polychromatic/controller/shared.py:1663
+#: polychromatic/controller/shared.py:1669
 msgid "Please make sure the file permissions are recursively correct:"
 msgstr "请递归确认文件权限正确："
 
-#: polychromatic/controller/shared.py:1718
+#: polychromatic/controller/shared.py:1724
 msgid ""
 "Permanently delete this effect?\n"
 "'[]'\n"
@@ -2249,7 +2537,7 @@ msgstr ""
 "\n"
 "使用该灯效的预设和扳机键会与其解绑。"
 
-#: polychromatic/controller/shared.py:1719
+#: polychromatic/controller/shared.py:1725
 msgid ""
 "Permanently delete this preset?\n"
 "'[]'\n"
@@ -2261,7 +2549,7 @@ msgstr ""
 "\n"
 "使用该预设的扳机键会失去功能。"
 
-#: polychromatic/controller/shared.py:1723
+#: polychromatic/controller/shared.py:1729
 msgid ""
 "Permanently delete this effect? \n"
 "'[]'"
@@ -2269,7 +2557,7 @@ msgstr ""
 "要永久删除该灯效吗？\n"
 "“[]”"
 
-#: polychromatic/controller/shared.py:1724
+#: polychromatic/controller/shared.py:1730
 msgid ""
 "Permanently delete this preset? \n"
 "'[]'"
@@ -2277,11 +2565,11 @@ msgstr ""
 "要永久删除该预设吗？\n"
 "“[]”"
 
-#: polychromatic/controller/shared.py:1728
+#: polychromatic/controller/shared.py:1734
 msgid "Confirm Deletion"
 msgstr "确认删除"
 
-#: polychromatic/controller/shared.py:1750 polychromatic/fileman.py:322
+#: polychromatic/controller/shared.py:1756 polychromatic/fileman.py:322
 msgid "[] (Copy)"
 msgstr "[]（复制）"
 
@@ -2379,6 +2667,96 @@ msgstr "深灰"
 msgid "Black"
 msgstr "黑色"
 
+#: polychromatic-tray-applet:272
+msgid "No backends available"
+msgstr "没有可用后端"
+
+#: polychromatic-tray-applet:319 polychromatic-tray-applet:364
+msgid "Open Controller"
+msgstr "打开控制器"
+
+#: polychromatic-tray-applet:339
+msgid "No devices found"
+msgstr "未发现设备"
+
+#: polychromatic-tray-applet:374
+msgid "Autostart"
+msgstr "自启动"
+
+#: polychromatic-tray-applet:380
+msgid "Disable automatic start at login"
+msgstr "禁用登录时自启动"
+
+#: polychromatic-tray-applet:383
+msgid "Start automatically at login"
+msgstr "登录时自启动"
+
+#: polychromatic-tray-applet:478
+msgid "No custom effects"
+msgstr "没有自定义灯效"
+
+#: polychromatic-tray-applet:483
+msgid "Edit Effects..."
+msgstr "编辑灯效..."
+
+#: polychromatic-tray-applet:501
+msgid "Custom..."
+msgstr "自定义..."
+
+#: polychromatic-tray-applet:502
+msgid "Edit Colours..."
+msgstr "编辑颜色..."
+
+#: polychromatic-tray-applet:505
+msgid "All Zones"
+msgstr "所有区域"
+
+#: polychromatic-tray-applet:619
+msgid ""
+"Try restarting the tray applet. To see error details, run 'polychromatic-"
+"tray-applet' in the terminal and repeat this action."
+msgstr ""
+"请尝试重启托盘应用。您可以在终端运行 polychromatic-tray-applet 并重复"
+"该操作以获取错误细节。"
+
+#: polychromatic-tray-applet:622
+msgid ""
+"While sending this command to [OpenRazer], an error occurred outside of "
+"Polychromatic's control."
+msgstr "将该命令发送至 [OpenRazer] 时发生了 Polychromatic 无法处理的问题。"
+
+#: polychromatic-tray-applet:623
+msgid ""
+"Try restarting [OpenRazer] and Polychromatic and give it another go. If this "
+"error appears again, it's likely this needs fixing in [OpenRazer]."
+msgstr ""
+"请在重启 [OpenRazer] 和 Polychromatic 后重试。该错误如果再次发生，则应该"
+"需要在 [OpenRazer] 中修复。"
+
+#: polychromatic-tray-applet:732
+msgid "Set Primary Colour"
+msgstr "指定主要颜色"
+
+#: polychromatic-tray-applet:778
+msgid "Force a specific locale, e.g. de_DE"
+msgstr "指定语言，如 de_DE"
+
+#: polychromatic-tray-applet:779
+msgid "Render using AppIndicator3"
+msgstr "使用 AppIndicator3 渲染"
+
+#: polychromatic-tray-applet:780
+msgid "Render using Ayatana Indicators"
+msgstr "使用 Ayatana Indicators 渲染"
+
+#: polychromatic-tray-applet:781
+msgid "Render using GTK Status (legacy)"
+msgstr "使用 GTK Status 渲染（旧模式）"
+
+#: polychromatic-tray-applet:796
+msgid "Verbose enabled"
+msgstr "冗长模式已启用"
+
 #: polychromatic/troubleshoot/openrazer.py:51
 msgid "Daemon is installed"
 msgstr "守护程序已安装"
@@ -2408,7 +2786,7 @@ msgstr "您的 Python 似乎安装在自定义位置，请检查 PATH 和 PYTHON
 #: polychromatic/troubleshoot/openrazer.py:96
 msgid ""
 "Found library for an older Python version at /usr/lib. Try re-installing."
-msgstr "在 /usr/lib 发现适配老版本 Python 的运行库，请尝试重新安装。"
+msgstr "在 /usr/lib 发现适配旧版 Python 的运行库，请尝试重新安装。"
 
 #: polychromatic/troubleshoot/openrazer.py:98
 msgid "Currently running Python 3.10.0 from /usr/bin/python3"
@@ -2455,7 +2833,7 @@ msgstr "已为该内核构建模块"
 msgid ""
 "Ensure you have the correct Linux kernel headers package installed for your "
 "distribution."
-msgstr "请确认你已安装正确的内核头文件包。"
+msgstr "请确认您已安装正确的内核头文件包。"
 
 #: polychromatic/troubleshoot/openrazer.py:159
 msgid ""
@@ -2612,7 +2990,7 @@ msgstr "如果查看 OpenRazer 的 GitHub 仓库，请选择稳定（stable）�
 msgid ""
 "The following PIDs are not supported in the latest stable release of "
 "OpenRazer:"
-msgstr "OpenRazer 的最新稳定版本不支持下列 PID："
+msgstr "OpenRazer 的最新稳定版不支持下列 PID："
 
 #: polychromatic/troubleshoot/openrazer.py:370
 msgid ""
@@ -2630,7 +3008,7 @@ msgstr "OpenRazer 是最新版本"
 
 #: polychromatic/troubleshoot/openrazer.py:409
 msgid "There is a new version of OpenRazer available."
-msgstr "OpenRazer 有新版本可用。"
+msgstr "OpenRazer 有新版可用。"
 
 #: polychromatic/troubleshoot/openrazer.py:410
 msgid ""
@@ -2647,7 +3025,7 @@ msgstr "最新版本：0.0.0"
 
 #: preferences.ui.h:2
 msgid "Controller"
-msgstr "打开控制器"
+msgstr "控制器"
 
 #. Preferences Label
 #: preferences.ui.h:4
@@ -2764,7 +3142,7 @@ msgstr "自启动延迟"
 
 #. Suffix for a spinner control
 #: preferences.ui.h:49
-msgid " second(s)"
+msgid "second(s)"
 msgstr " 秒"
 
 #: preferences.ui.h:50
@@ -2772,12 +3150,12 @@ msgid ""
 "On some desktop environments, due to race conditions, it may be necessary to "
 "wait so the applet's icon or device list is loaded properly."
 msgstr ""
-"在部分桌面环境下，竞争条件可能导致应用必须等待一段时间才能正确加载托盘图标或"
-"设备列表。"
+"在部分桌面环境下，竞争条件可能导致应用必须等待一段时间才能正确加载托盘图标"
+"或设备列表。"
 
 #: preferences.ui.h:51
 msgid "Start the tray applet when I log on"
-msgstr "登录时启动托盘程序"
+msgstr "登录时启动托盘应用"
 
 #. Text appears underneath a checkbox in the preferences dialog
 #: preferences.ui.h:53
@@ -2862,6 +3240,9 @@ msgstr "检测"
 #: troubleshooter.ui.h:8
 msgid "Copy to Clipboard"
 msgstr "复制到剪贴板"
+
+#~ msgid "1"
+#~ msgstr "1"
 
 #~ msgid ""
 #~ "Disabling this may cause the current hardware effect to be "
