@@ -19,13 +19,13 @@
 """
 Control Razer devices from the command line. Useful for commamd line users or bash scripting.
 """
-VERSION = "0.9.0"
 
 import argparse
-import colorama
-import signal
 import os
+import signal
 import sys
+
+import colorama
 
 import polychromatic.base as base_class
 import polychromatic.common as common
@@ -33,6 +33,7 @@ import polychromatic.effects as effects
 import polychromatic.procpid as procpid
 from polychromatic.backends._backend import Backend as Backend
 
+VERSION = "0.9.0"
 
 ########################################
 # Set up variables
