@@ -161,13 +161,15 @@ def _translate_widget(appdata, widget):
     """
     _ = appdata._
 
-    def _translate(set_function, string: str):
+    def _translate(set_function, string: str, add_space=False):
         if not string:
             return
 
         new_string = _(string)
         if string == new_string:
             new_string = _(string.strip())
+        if add_space:
+            new_string = " " + new_string
         if string != new_string:
             set_function(_(new_string))
 
@@ -182,7 +184,7 @@ def _translate_widget(appdata, widget):
 
     if type(widget) in [QSpinBox, QDoubleSpinBox]:
         _translate(widget.setPrefix, widget.prefix())
-        _translate(widget.setSuffix, widget.suffix())
+        _translate(widget.setSuffix, widget.suffix(), add_space=True)
         _translate(widget.setToolTip, widget.toolTip())
         _translate(widget.setStatusTip, widget.statusTip())
         return
