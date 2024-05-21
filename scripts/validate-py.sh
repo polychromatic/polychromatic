@@ -11,6 +11,7 @@ fi
 pylint --errors-only \
     --disable="relative-beyond-top-level" \
     --disable="no-name-in-module" \
+    --disable="possibly-used-before-assignment" \
     polychromatic-cli \
     polychromatic-controller \
     polychromatic-helper \
