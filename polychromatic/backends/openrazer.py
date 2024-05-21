@@ -384,7 +384,7 @@ class OpenRazerBackend(Backend):
         for index, dpi in enumerate(list(rdevice.available_dpi)):
             param = Backend.Option.Parameter()
             param.data = int(dpi)
-            param.label = "{0} Hz".format(dpi)
+            param.label = str(dpi)
             param.active = True if dpi == current_dpi else False
             param.default = True if index == 0 else False
             parameters.append(param)
