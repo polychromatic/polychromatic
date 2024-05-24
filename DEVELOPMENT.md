@@ -65,12 +65,10 @@ performed once, unless there's been code changes.
 If you have custom installation requirements or packaging for another distro,
 Polychromatic can be put together using [Meson] and [Ninja].
 
-To build:
-
 ```
 git clone https://github.com/polychromatic/polychromatic.git
 cd polychromatic
-meson build
+meson setup build
 ninja -C build install
 ```
 
