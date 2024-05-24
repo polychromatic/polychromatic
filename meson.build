@@ -1,6 +1,6 @@
 project('polychromatic',
         version : '0.8.5',
-        meson_version : '>=0.47.0')
+        meson_version : '>=0.53.0')
 
 fs = import('fs')
 i18n = import('i18n')
