@@ -1170,7 +1170,10 @@ class SpecialControls(shared.TabData):
 
         def _refresh_grid_size():
             new_size_x = 53 - int((slider_x.value() / highest_known_dpi) * 50)
-            new_size_y = 53 - int((slider_y.value() / highest_known_dpi) * 50)
+            if slider_y.isHidden():
+                new_size_y = new_size_x
+            else:
+                new_size_y = 53 - int((slider_y.value() / highest_known_dpi) * 50)
 
             if slider_x.value() > highest_known_dpi or slider_y.value() > highest_known_dpi:
                 self.dbg.stdout("Your mouse has set a new high DPI record!\nThe DPI grid UI may not display correctly. Please report this as a bug.", self.dbg.warning)
@@ -1203,7 +1206,7 @@ class SpecialControls(shared.TabData):
 
         # Send request once dropped
         def _slider_dropped():
-            self.dbg.stdout(f"{device.name}: Setting DPI to {0}, {1}".format(slider_x.value(), slider_y.value()), self.dbg.action, 1)
+            self.dbg.stdout(f"{device.name}: Setting DPI to {slider_x.value()}, {slider_y.value()}", self.dbg.action, 1)
             try:
                 device.dpi.set(slider_x.value(), slider_y.value())
             except Exception as e:
@@ -1212,6 +1215,12 @@ class SpecialControls(shared.TabData):
             # Sync state with stages buttons
             for button in self.stage_buttons_group.buttons():
                 button.setChecked(slider_x.value() == button.dpi_value[0] and slider_y.value() == button.dpi_value[1])
+
+        # Some mice have a zero Y axis
+        if device.name in ["Razer Baslisk Essential"]:
+            slider_y.setHidden(True)
+            value_y.setHidden(True)
+            slider_lock.setHidden(True)
 
         # TODO: In future, only update after 'mouse drop' or scroll release.
         # Currently it's difficult under stock QSlider. Dragging with mouse only isn't great.
