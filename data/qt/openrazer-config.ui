@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>440</height>
+    <height>480</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -224,6 +224,50 @@
          <property name="indent">
           <number>25</number>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="restore_persistence_related" native="true">
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="spacing">
+           <number>6</number>
+          </property>
+          <property name="leftMargin">
+           <number>24</number>
+          </property>
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QCheckBox" name="persistence_dual_boot_quirk">
+            <property name="text">
+             <string>My device doesn't restore effects properly</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="persistence_dual_boot_quirk_note">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>If your device doesn't restore the last selected effect in Linux after using the official Razer Synapse driver in Windows, try this option.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="indent">
+             <number>25</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
