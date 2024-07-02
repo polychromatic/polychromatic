@@ -326,6 +326,7 @@ class OpenRazerPreferences(shared.TabData):
             ["verbose_logging",             "General",  "verbose_logging",              bool],
             ["devices_off_on_screensaver",  "Startup",  "devices_off_on_screensaver",   bool],
             ["restore_persistence",         "Startup",  "restore_persistence",          bool],
+            ["persistence_dual_boot_quirk", "Startup",  "persistence_dual_boot_quirk",  bool],
             ["battery_notifier",            "Startup",  "battery_notifier",             bool],
             ["battery_notifier_freq",       "Startup",  "battery_notifier_freq",        int], # seconds
             ["battery_notifier_percent",    "Startup",  "battery_notifier_percent",     int],
@@ -378,7 +379,12 @@ class OpenRazerPreferences(shared.TabData):
                 spinner.setValue(float(data))
 
         self.dialog.findChild(QCheckBox, "battery_notifier").clicked.connect(self._update_ui_state)
+        self.dialog.findChild(QCheckBox, "restore_persistence").clicked.connect(self._update_ui_state)
         self._update_ui_state()
+
+        # Hide options not available for older versions
+        if version < 3.9:
+            self.dialog.findChild(QWidget, "restore_persistence_related").hide()
 
         self.dialog.open()
 
@@ -390,6 +396,9 @@ class OpenRazerPreferences(shared.TabData):
         for object_name in ["battery_notifier_percent", "battery_notifier_freq"]:
             self.dialog.findChild(QSpinBox, object_name).setEnabled(battery_notifications_enabled)
             self.dialog.findChild(QLabel, f"{object_name}_label").setEnabled(battery_notifications_enabled)
+
+        restore_persistence_enabled = self.dialog.findChild(QCheckBox, "restore_persistence").isChecked()
+        self.dialog.findChild(QCheckBox, "persistence_dual_boot_quirk").setEnabled(restore_persistence_enabled)
 
     def _save_and_restart(self):
         """
