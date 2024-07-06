@@ -6,7 +6,7 @@
 #
 astroid==3.2.2
     # via pylint
-certifi==2024.6.2
+certifi==2024.7.4
     # via requests
 charset-normalizer==3.3.2
     # via requests
@@ -24,13 +24,13 @@ mccabe==0.7.0
     # via pylint
 platformdirs==4.2.2
     # via pylint
-pylint==3.2.3
+pylint==3.2.5
     # via -r requirements.in
 pyqt6==6.7.0
     # via
     #   -r requirements.in
     #   pyqt6-webengine
-pyqt6-qt6==6.7.1
+pyqt6-qt6==6.7.2
     # via pyqt6
 pyqt6-sip==13.6.0
     # via
@@ -38,9 +38,9 @@ pyqt6-sip==13.6.0
     #   pyqt6-webengine
 pyqt6-webengine==6.7.0
     # via -r requirements.in
-pyqt6-webengine-qt6==6.7.1
+pyqt6-webengine-qt6==6.7.2
     # via pyqt6-webengine
-pyqt6-webenginesubwheel-qt6==6.7.1
+pyqt6-webenginesubwheel-qt6==6.7.2
     # via pyqt6-webengine-qt6
 requests==2.32.3
     # via -r requirements.in
