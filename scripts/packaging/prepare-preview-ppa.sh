@@ -23,5 +23,4 @@ function process_release() {
     dput ppa:polychromatic/preview ../*.changes
 }
 
-process_release "23.10" "mantic"
 process_release "24.04" "noble"     # LTS
