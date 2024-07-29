@@ -222,11 +222,25 @@ def _is_driver_loaded(_):
 def _is_secure_boot_enabled(_):
     sb_sysfile = glob.glob("/sys/firmware/efi/efivars/SecureBoot*")
     sb_reason = _("Secure Boot prevents the driver from loading, as OpenRazer's kernel modules built by DKMS are usually unsigned.")
+    passed = False
+
+    # If the modules are loaded, secure boot isn't a problem
+    try:
+        # Copy of _is_driver_loaded()
+        lsmod = subprocess.Popen(["lsmod"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+        output = lsmod.communicate()[0].decode("utf-8")
+        if output.find("razer") >= 0:
+            passed = True
+    except FileNotFoundError:
+        pass
 
     if len(sb_sysfile) > 0:
         # The last digit of this sysfs file indicates whether secure boot is enabled
         secureboot = subprocess.Popen(["od", "--address-radix=n", "--format=u1", sb_sysfile[0]], stdout=subprocess.PIPE)
         status = secureboot.communicate()[0].decode("utf-8").split(" ")[-1].strip()
+
+        if int(status) == 0:
+            passed = True
 
         return {
             "test_name": _("Check Secure Boot (EFI) status"),
@@ -234,7 +248,7 @@ def _is_secure_boot_enabled(_):
                 _("Secure boot is enabled. Turn it off in the system's EFI settings or sign the modules yourself."),
                 sb_reason,
             ],
-            "passed": True if int(status) == 0 else False
+            "passed": passed
         }
 
     # Possibly "invalid argument". Can't be sure if it's on or off.
