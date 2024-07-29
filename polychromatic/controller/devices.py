@@ -1217,7 +1217,7 @@ class SpecialControls(shared.TabData):
                 button.setChecked(slider_x.value() == button.dpi_value[0] and slider_y.value() == button.dpi_value[1])
 
         # Some mice have a zero Y axis
-        if device.name in ["Razer Baslisk Essential"]:
+        if device.name in ["Razer Basilisk Essential"]:
             slider_y.setHidden(True)
             value_y.setHidden(True)
             slider_lock.setHidden(True)
