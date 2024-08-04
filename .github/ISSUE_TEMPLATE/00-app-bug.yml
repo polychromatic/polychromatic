@@ -1,0 +1,52 @@
+name: Bug or crash with this application
+description: Report a problem specific to this application
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "Details about the problem"
+      description: Describe the issue you are experiencing. Make sure to mention the steps to reproduce the problem.
+      placeholder: If it helps, drag and drop here to upload a screenshot to visually show the problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: "Terminal Output"
+      description: If applicable (especially for crashes), run the application in a terminal with the '-v' parameter.
+      placeholder: "For example, paste the output from 'polychromatic-controller -v'"
+      render: shell
+
+  - type: input
+    id: app_version
+    attributes:
+      label: Application Version
+      description: Can be found in the Help → About menu.
+      placeholder: 'v0.9.0'
+    validations:
+      required: true
+
+  - type: input
+    id: qt_version
+    attributes:
+      label: Qt Version
+      description: Can be found in the Help → About menu.
+      placeholder: 'v6.7.0'
+    validations:
+      required: true
+
+  - type: input
+    id: distro
+    attributes:
+      label: Operating System
+      placeholder: "Linux Mint 22"
+    validations:
+      required: true
+
+  - type: input
+    id: desktop_environment
+    attributes:
+      label: Desktop Environment
+      placeholder: "KDE"

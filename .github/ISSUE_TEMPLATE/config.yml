@@ -1,4 +1,9 @@
+blank_issues_enabled: true
 contact_links:
-  - name: OpenRazer is not working!
+  - name: Troubleshooting OpenRazer
+    url: https://github.com/openrazer/openrazer/wiki/Troubleshooting
+    about: Take a look here if your device appears as 'unsupported' or 'unrecognized'
+
+  - name: My Razer hardware is misbehaving!
     url: https://github.com/openrazer/openrazer/issues/new/choose
-    about: My device is unsupported or keeps appearing as unrecognized
+    about: Create the issue on OpenRazer's repository for device specific bugs
