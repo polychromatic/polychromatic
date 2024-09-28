@@ -24,3 +24,4 @@ function process_release() {
 }
 
 process_release "24.04" "noble"     # LTS
+process_release "24.10" "oracular"
