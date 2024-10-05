@@ -794,6 +794,17 @@ class DevicesTab(shared.TabData):
                 }
             ]
 
+        if self.appdata.flatpak_mode:
+            # Troubleshooter not possible. Open OpenRazer wiki and remove our help button
+            buttons = [
+                {
+                    "label": self._("Troubleshooting Guide"),
+                    "icon_folder": "general",
+                    "icon_name": "external",
+                    "action": self._start_troubleshooter
+                }
+            ]
+
         self.widgets.populate_empty_state(layout, image, title, desc, buttons)
 
     def open_apply_to_all(self):

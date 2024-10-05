@@ -78,7 +78,7 @@ class Paths():
         if os.path.exists(os.path.join(os.path.dirname(module_path), "../data/img/")):
             return os.path.abspath(os.path.join(os.path.dirname(module_path), "../data/"))
 
-        for directory in ["/usr/local/share/polychromatic", "/usr/share/polychromatic"]:
+        for directory in ["/usr/local/share/polychromatic", "/usr/share/polychromatic", "/app/share/polychromatic"]:
             if os.path.exists(directory):
                 return directory
 

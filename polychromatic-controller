@@ -24,13 +24,14 @@ import os
 import signal
 import sys
 import time
+import webbrowser
 
 import setproctitle
 from PyQt6 import QtCore, uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QFont, QFontDatabase, QIcon
-from PyQt6.QtWidgets import (QApplication, QLabel, QMainWindow, QPushButton,
-                             QTabWidget, QToolButton, QWidget)
+from PyQt6.QtWidgets import (QApplication, QLabel, QMainWindow, QMessageBox,
+                             QPushButton, QTabWidget, QToolButton, QWidget)
 
 import polychromatic.common as common
 import polychromatic.controller as controller
@@ -75,6 +76,9 @@ class ApplicationData(PolychromaticBase):
 
         # Set the Wayland appId to the name of the .desktop file (without the .desktop suffix)
         self.main_app.setDesktopFileName("polychromatic")
+
+        # Running in a universal package format?
+        self.flatpak_mode = os.path.exists("/app/bin/polychromatic-controller")
 
         # Settings
         self.preferences = pref.load_file(self.paths.preferences)
@@ -124,6 +128,14 @@ class ApplicationData(PolychromaticBase):
 
         t_end = time.time()
         self.dbg.stdout("Backends loaded in {0}s.".format(str(round(t_end - t_start, 3))), self.dbg.action, 1)
+
+        # Disable functionality unavailable under Flatpak
+        if self.flatpak_mode:
+            for object_name in ["actionRestartTrayApplet", "actionProcessViewer", "actionOpenRazerConfigure", "actionOpenRazerOpenLog", "actionOpenRazerRestartDaemon", "actionOpenRazerAbout"]:
+                self.main_window.findChild(QAction, object_name).setEnabled(False)
+                self.main_window.findChild(QAction, object_name).setToolTip(_("Not available under Flatpak"))
+
+            self.main_window.findChild(QAction, "actionTroubleshootOpenRazer").setIcon(QIcon())
 
         self.main_window.load()
 

@@ -1198,10 +1198,16 @@ class IconPicker(PolychromaticBase):
         else:
             self.tabs.removeTab(self.INDEX_TRAY)
 
+        if appdata.flatpak_mode:
+            self.tabs.removeTab(1) # Custom
+            self.tabs.removeTab(1) # Steam
+            self.tabs.removeTab(1) # Applications
+        else:
+            self._setup_drag_drop_custom_icon()
+
         # TODO: Scroll to selected item
 
         # Prepare and open dialog
-        self._setup_drag_drop_custom_icon()
         self.gif_warning.setHidden(True)
         self.button_group.buttonClicked.connect(self.select_icon)
         self.custom_icon_add.clicked.connect(self.import_custom_icon)
@@ -1445,6 +1451,9 @@ class IconPicker(PolychromaticBase):
         Parses the desktop launchers for applications both local and system-wide
         so the user can pick them.
         """
+        if self.appdata.flatpak_mode:
+            return []
+
         self.dbg.stdout("Populating application icons...", self.dbg.action, 1)
         local_apps = glob.glob(os.path.expanduser("~") + "/.local/share/applications/*.desktop")
         system_apps = glob.glob("/usr/share/applications/*.desktop")
@@ -1509,6 +1518,9 @@ class IconPicker(PolychromaticBase):
         locate "librarycache" which contains many *_icon.jpg files of the games
         the user has installed/cached.
         """
+        if self.appdata.flatpak_mode:
+            return []
+
         icon_list = []
         steam_dir = os.path.expanduser("~") + "/.steam"
         if not os.path.exists(steam_dir):

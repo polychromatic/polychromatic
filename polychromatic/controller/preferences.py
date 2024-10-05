@@ -142,6 +142,12 @@ class PreferencesWindow(shared.TabData):
         except KeyError:
             pass
 
+        # Tray applet not available under Flatpak
+        if self.appdata.flatpak_mode:
+            self.dialog.findChild(QTabWidget, "PreferencesTabs").setTabEnabled(1, False)
+            self.dialog.findChild(QTabWidget, "PreferencesTabs").setTabToolTip(1, self._("Not available under Flatpak"))
+            self.dialog.findChild(QWidget, "tray").setEnabled(False)
+
         # Show time!
         self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(open_tab if open_tab else 0)
         self.dialog.open()

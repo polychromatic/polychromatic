@@ -328,7 +328,7 @@ class MenuBar(PolychromaticBase):
         ]
 
         versions = self.appdata.versions
-        self._show_aboutbox("polychromatic {0}".format(versions[0][1]), logo, "https://polychromatic.app", versions, license, links)
+        self._show_aboutbox(f"polychromatic {versions[0][1]} {'[Flatpak]' if self.appdata.flatpak_mode else ''}".strip(), logo, "https://polychromatic.app", versions, license, links)
 
 
 class MenuBarOpenRazer(MenuBar):
@@ -347,6 +347,7 @@ class MenuBarOpenRazer(MenuBar):
         self.url_src = "https://github.com/openrazer/openrazer/"
         self.url_bugs = "https://github.com/openrazer/openrazer/issues"
         self.url_latest = "https://github.com/openrazer/openrazer/releases/latest"
+        self.url_troubleshoot = "https://github.com/openrazer/openrazer/wiki/Troubleshooting"
 
     def _refresh(self):
         """
@@ -434,6 +435,9 @@ class MenuBarOpenRazer(MenuBar):
             return "[Unknown]"
 
     def troubleshoot(self):
+        if self.appdata.flatpak_mode:
+            webbrowser.open(self.url_troubleshoot)
+            return
         self.troubleshooter = troubleshooter.TroubleshooterGUI(self.appdata, "openrazer", "OpenRazer")
 
     def about(self):
