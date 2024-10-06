@@ -18,6 +18,7 @@ fi
 
 echo "Setting up fake environment..."
 cd "$OPENRAZER_SRC"
+export PYTHONPATH="$(realpath pylib)"
 
 # Set up all fake devices
 test_dir="/tmp/daemon_test/"
@@ -62,10 +63,9 @@ for device in devices:
         }
 
 with open("$DEVICE_JSON", "w") as f:
-    index = f.write(json.dumps(index, sort_keys=True, indent=4))
+    index = f.write(json.dumps(index, sort_keys=True, indent=4) + "\n")
 
 EOF
 
 # Clean up
 kill $(jobs -p)
-rm -rf "$HOME_TEMP"
