@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Creates a distro-agnostic set of files that allows Polychromatic to run
 # relatively without installation or with additional sources.

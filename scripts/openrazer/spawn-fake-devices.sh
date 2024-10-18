@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Shortcut to test a handful of different kinds of OpenRazer devices
 #

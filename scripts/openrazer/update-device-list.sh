@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Updates the device index of known OpenRazer devices. For development use,
 # to be run after OpenRazer releases a new version.

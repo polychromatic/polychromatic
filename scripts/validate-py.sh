@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env -S bash -e
 #
 # Use pylint to validate Python files for errors.
 #

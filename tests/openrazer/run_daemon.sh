@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # This script starts the OpenRazer daemon with fake drivers and performs the
 # unit test. This allows the test to be completed on a headless CI server.

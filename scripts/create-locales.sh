@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Step 1: Extract strings from the application and sync for new changes.
 #

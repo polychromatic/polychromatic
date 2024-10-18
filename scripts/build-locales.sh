@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Step 2: After locales have been created and translated, generate compiled
 #         locales for the application to use, such as

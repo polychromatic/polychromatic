@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/usr/bin/env bash -x
 
 cd "$(dirname "$0")/../../"
 python -m venv /tmp/venv

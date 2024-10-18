@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/usr/bin/env bash -xe
 #
 # For the developer to run when a new release is made.
 #

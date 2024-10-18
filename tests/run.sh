@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Use this script to run unit tests for Polychromatic, which exclude
 # backend-specific tests and should be tested separately.

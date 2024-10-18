@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # In event of new SVGs, use the 'svgcleaner' tool to optimise the SVGs by
 # stripping non-essential data.

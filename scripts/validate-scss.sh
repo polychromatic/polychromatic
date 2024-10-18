@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Validates SCSS files can be compiled. Uses 'sassc'.
 #

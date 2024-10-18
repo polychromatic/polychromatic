@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # This script prepares the Preview PPA containing the latest builds for Ubuntu.
 #
