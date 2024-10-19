@@ -49,3 +49,18 @@ install_data('sources/launchers/polychromatic-autostart.desktop',
              install_dir : join_paths(get_option('sysconfdir'), 'xdg/autostart'))
 
 subdir('locale')
+
+# AppStream Metainfo
+metainfo_file = 'sources/app.polychromatic.controller.metainfo.xml'
+ascli_exe = find_program('appstreamcli', required: false)
+if ascli_exe.found()
+  test('validate metainfo file',
+        ascli_exe,
+        args: ['validate',
+               '--no-net',
+               '--pedantic',
+               metainfo_file]
+  )
+endif
+install_data(metainfo_file,
+             install_dir : join_paths(get_option('datadir'), 'metainfo'))

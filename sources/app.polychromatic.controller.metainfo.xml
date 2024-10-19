@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>app.polychromatic.controller</id>
+
+  <name>Polychromatic</name>
+  <summary>RGB lighting management software for OpenRazer</summary>
+
+  <developer id="me.horwell.luke">
+      <name>Luke Horwell</name>
+      <url>https://luke.horwell.me</url>
+  </developer>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#161616</color>
+    <color type="primary" scheme_preference="dark">#161616</color>
+  </branding>
+
+  <url type="homepage">https://polychromatic.app</url>
+  <url type="bugtracker">https://github.com/polychromatic/polychromatic</url>
+  <url type="translate">https://docs.polychromatic.app/translations/</url>
+
+  <launchable type="desktop-id">polychromatic.desktop</launchable>
+
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <description>
+  <p>
+      Polychromatic is a front-end for configuring Razer peripherals:
+      keyboards, mice, keypads, headsets, laptops and more!
+  </p>
+  <p>
+      The application utilizes the effects and settings available on the
+      firmware, including DPI, polling rate, brightness and device-specific
+      hardware functions like Game Mode. It can view device information like
+      firmware version, serial number, battery levels and can test individually
+      addressable LEDs.
+  </p>
+  <p>
+      Create your own lighting effects and animations using the effect editor.
+      Great for key mapping a game, application or for ambiance.
+  </p>
+  <p>
+      Requires OpenRazer to be installed on the host distribution.
+      Device support is dependant on the version of OpenRazer installed.
+  </p>
+  </description>
+
+  <screenshots>
+      <screenshot type="default">
+          <image>https://polychromatic.app/assets/metainfo/screenshot_1.webp</image>
+      </screenshot>
+      <screenshot>
+          <image>https://polychromatic.app/assets/metainfo/screenshot_2.webp</image>
+      </screenshot>
+      <screenshot>
+          <image>https://polychromatic.app/assets/metainfo/screenshot_3.webp</image>
+      </screenshot>
+      <screenshot>
+          <image>https://polychromatic.app/assets/metainfo/screenshot_4.webp</image>
+      </screenshot>
+  </screenshots>
+
+  <content_rating type="oars-1.1">
+      <content_attribute id="social-info">mild</content_attribute>
+  </content_rating>
+
+  <keywords>
+    <keyword>Settings</keyword>
+    <keyword>HardwareSettings</keyword>
+  </keywords>
+
+</component>
