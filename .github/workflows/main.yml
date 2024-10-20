@@ -36,6 +36,9 @@ jobs:
         # Locales
         sudo apt-get install gettext intltool
 
+        # XDG Metainfo (AppStream)
+        sudo apt-get install appstream
+
         # Install OpenRazer Python library for validation
         sudo add-apt-repository ppa:openrazer/daily
         sudo apt-get install python3-openrazer
@@ -65,6 +68,10 @@ jobs:
     - name: Validate Manual
       run: |
         ./scripts/validate-scdoc.sh
+
+    - name: Validate AppStream Metainfo
+      run: |
+        ./scripts/validate-metainfo.sh
 
     - name: Test Meson and Ninja
       run: |
