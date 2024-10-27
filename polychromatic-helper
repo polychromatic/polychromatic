@@ -219,6 +219,10 @@ class PolychromaticHelper(PolychromaticBase):
         filemgr = effects.EffectFileManagement()
 
         effect_data = filemgr.get_item(path)
+        if isinstance(effect_data, int):
+            self.dbg.stdout(f"{device.name}: Skipping unreadable effect file. Perhaps file renamed?", self.dbg.warning)
+            state.clear_effect()
+            return
         effect_name = effect_data["parsed"]["name"]
         effect_icon = effect_data["parsed"]["icon"]
         effect_type = effect_data["type"]
