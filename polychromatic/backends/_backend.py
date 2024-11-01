@@ -203,6 +203,9 @@ class Backend(BackendBase):
             # Is this device marketed as having programmable keys via software?
             self.has_programmable_keys = False
 
+            # Is this device marketed as having macro recording? (deprecated)
+            self.has_macro_keys = False
+
             # Stores a Battery() object, if the device has a battery.
             self.battery: self.Battery = None
 

@@ -353,8 +353,8 @@ class DevicesTab(shared.TabData):
 
                 # TODO: Button to set compatible software effects - or as "Custom" effect?
 
-                # -- Information about OpenRazer daemon's built-in macro feature
-                if device.backend.backend_id == "openrazer" and device.form_factor.get("id") == "keyboard":
+                # -- Information about OpenRazer daemon's built-in macro feature (deprecated)
+                if device.has_macro_keys:
                     widgets.append(self.special_controls.create_openrazer_macro_control())
 
                 # -- Information about programmable keys

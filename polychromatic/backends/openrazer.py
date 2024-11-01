@@ -266,6 +266,9 @@ class OpenRazerBackend(Backend):
         if rdevice.has("macro_mode_led_effect") and rdevice.type == "keyboard":
             device.has_programmable_keys = True
 
+        if rdevice.has("macro_logic") and rdevice.type == "keyboard":
+            device.has_macro_keys = True
+
         if rdevice.has("scroll_mode") or rdevice.has("scroll_acceleration") or rdevice.has("scroll_smart_reel"):
             main_zone.options += self._get_scroll_options(rdevice)
 
