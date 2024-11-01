@@ -366,9 +366,9 @@ class DevicesTab(shared.TabData):
                 if device.form_factor == "mouse":
                     widgets.append(self.special_controls.create_mouse_accel_control())
 
-                # -- Information about OpenRazer daemon's built-in macro feature
-                if device.backend.backend_id == "openrazer" and device.form_factor.get("id") == "keyboard":
-                    widgets.append(self.special_controls.create_openrazer_macro_control())
+                # -- Information about OpenRazer daemon's built-in macro feature (deprecated)
+                if device.has_macro_keys:
+                   widgets.append(self.special_controls.create_openrazer_macro_control())
 
                 # -- Information about programmable keys
                 if device.has_programmable_keys and self.input_remapper:
