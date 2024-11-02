@@ -1,3 +1,12 @@
+polychromatic (0.8.7) focal; urgency=low
+
+  * Controller: Add device map for Razer Huntsman V2 Analog (UK)
+  * OpenRazer: Only show on-the-fly macro instructions if available.
+  * Fix crash when effect file is moved or renamed.
+  * Add appstream metainfo.
+
+ -- Luke Horwell <code@horwell.me>  Sat, 02 Nov 2024 16:45:48 +0000
+
 polychromatic (0.8.6) focal; urgency=low
 
   * Controller: Fix broken header graphic when tiling application.
