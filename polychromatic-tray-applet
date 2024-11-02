@@ -42,7 +42,7 @@ import polychromatic.procpid as procpid
 from polychromatic.backends._backend import Backend
 from polychromatic.base import PolychromaticBase as PolychromaticBase
 
-VERSION = "0.9.2"
+VERSION = "0.9.3"
 SUPPORTED = ["GtkStatusIcon"]
 
 try:
