@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>280</width>
-    <height>260</height>
+    <width>300</width>
+    <height>276</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -24,8 +24,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>200</width>
-     <height>200</height>
+     <width>192</width>
+     <height>188</height>
     </rect>
    </property>
    <property name="verticalScrollBarPolicy">
@@ -86,8 +86,8 @@
   <widget class="QToolButton" name="LockXY">
    <property name="geometry">
     <rect>
-     <x>205</x>
-     <y>205</y>
+     <x>200</x>
+     <y>192</y>
      <width>32</width>
      <height>32</height>
     </rect>
@@ -99,8 +99,7 @@
     <string>Lock</string>
    </property>
    <property name="icon">
-    <iconset theme="lock">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="lock"/>
    </property>
    <property name="checkable">
     <bool>true</bool>
@@ -117,8 +116,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>200</width>
-     <height>200</height>
+     <width>192</width>
+     <height>188</height>
     </rect>
    </property>
    <property name="text">
@@ -135,8 +134,8 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>200</y>
-     <width>200</width>
+     <y>188</y>
+     <width>192</width>
      <height>55</height>
     </rect>
    </property>
@@ -182,10 +181,10 @@
   <widget class="QWidget" name="Wrapper_Y" native="true">
    <property name="geometry">
     <rect>
-     <x>200</x>
+     <x>192</x>
      <y>0</y>
      <width>80</width>
-     <height>200</height>
+     <height>188</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">

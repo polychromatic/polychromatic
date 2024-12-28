@@ -1299,25 +1299,38 @@ class SpecialControls(shared.TabData):
 
         # Update grid when moving sliders
         grid.setStyleSheet("QTableView { background-color: #000; gridline-color: #008000; }")
-        grid_size = 64
-        highest_known_dpi = 20000
-        for value in range(0, grid_size):
+        grid_squares = 100
+        grid_min_size = 2
+        grid_max_size = 66
+
+        for value in range(0, grid_squares):
             grid.insertRow(0)
             grid.insertColumn(0)
 
+        def _center_grid_view():
+            horizontal_scroll_bar = grid.horizontalScrollBar()
+            vertical_scroll_bar = grid.verticalScrollBar()
+
+            center_x = (horizontal_scroll_bar.maximum() - horizontal_scroll_bar.minimum()) // 2
+            center_y = (vertical_scroll_bar.maximum() - vertical_scroll_bar.minimum()) // 2
+
+            horizontal_scroll_bar.setValue(center_x)
+            vertical_scroll_bar.setValue(center_y)
+
         def _refresh_grid_size():
-            new_size_x = 53 - int((slider_x.value() / highest_known_dpi) * 50)
-            if slider_y.isHidden():
-                new_size_y = new_size_x
-            else:
-                new_size_y = 53 - int((slider_y.value() / highest_known_dpi) * 50)
+            dpi_x = slider_x.value()
+            dpi_y = slider_y.value()
+            base_size = 50_000
+            grid_width = min(int(base_size / dpi_x), grid_max_size)
+            grid_width = max(grid_min_size, grid_width)
+            grid_height = min(int(base_size / dpi_y), grid_max_size)
+            grid_height = max(grid_min_size, grid_height)
 
-            if slider_x.value() > highest_known_dpi or slider_y.value() > highest_known_dpi:
-                self.dbg.stdout("Your mouse has set a new high DPI record!\nThe DPI grid UI may not display correctly. Please report this as a bug.", self.dbg.warning)
+            for pos in range(0, grid_squares):
+                grid.setRowHeight(pos, grid_width)
+                grid.setColumnWidth(pos, grid_height)
 
-            for pos in range(0, grid_size):
-                grid.setRowHeight(pos, new_size_x)
-                grid.setColumnWidth(pos, new_size_y)
+            _center_grid_view()
 
         # Update controls/label while sliding
         def _update_stage_controls():
