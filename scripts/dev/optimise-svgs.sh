@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # In event of new SVGs, use the 'svgcleaner' tool to optimise the SVGs by
 # stripping non-essential data.
@@ -7,7 +7,7 @@
 # as it will likely strip essential data.
 #
 
-if [ -z "$(which svgcleaner)" ]; then
+if [[ -z "$(type -P svgcleaner)" ]]; then
     echo "'svgcleaner' not installed."
     exit 1
 fi

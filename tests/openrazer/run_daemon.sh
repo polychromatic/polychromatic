@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # This script starts the OpenRazer daemon with fake drivers and performs the
 # unit test. This allows the test to be completed on a headless CI server.
@@ -8,25 +8,25 @@
 #
 
 POLYCHROMATIC="$(dirname $0)/../../"
-POLYCHROMATIC="$(realpath $POLYCHROMATIC)"
+POLYCHROMATIC="$(realpath "${POLYCHROMATIC}")"
 
-if [ ! -z "$1" ]; then
-    OPENRAZER_SRC="$1"
+if [[ -n "${1}" ]]; then
+    OPENRAZER_SRC="${1}"
 fi
 
 # Verify path exists
-if [ ! -d "$OPENRAZER_SRC" ]; then
+if [[ ! -d "${OPENRAZER_SRC}" ]]; then
     echo "Please set the OPENRAZER_SRC environment variable to the OpenRazer source code:"
     echo -e "\n  export OPENRAZER_SRC=/path/to/repo\n"
     exit 1
 fi
 
-if [ ! -f "$OPENRAZER_SRC/scripts/create_fake_device.py" ]; then
+if [[ ! -f "${OPENRAZER_SRC}/scripts/create_fake_device.py" ]]; then
     echo "Cannot start the test! create_fake_device.py no longer exists?"
     exit 1
 fi
 
-if [ -z "$(which openrazer-daemon)" ]; then
+if [[ -z "$(type -P openrazer-daemon)" ]]; then
     echo "openrazer-daemon is not installed."
     exit 1
 fi
@@ -39,22 +39,22 @@ test_dir="/tmp/daemon_test/"
 run_dir="/tmp/daemon_run/"
 log_dir="/tmp/daemon_logs/"
 for directory in "$test_dir" "$run_dir" "$log_dir"; do
-    if [ -d "$directory" ]; then
-        rm -r "$directory"
+    if [[ -d "$directory" ]]; then
+        rm -r "${directory}"
     fi
-    mkdir "$directory"
+    mkdir "${directory}"
 done
 
-$OPENRAZER_SRC/scripts/create_fake_device.py --dest "$test_dir" --non-interactive --all &
+"${OPENRAZER_SRC}/scripts/create_fake_device.py" --dest "${test_dir}" --non-interactive --all &
 sleep 1
 
 # Start daemon with fake devices
-if [ ! -z "$GITHUB_WORKSPACE" ]; then
+if [[ -n "${GITHUB_WORKSPACE}" ]]; then
     # Only CI (GitHub Actions) must run as root due to lack of user groups.
-    $OPENRAZER_SRC/daemon/run_openrazer_daemon.py -F --run-dir "$run_dir" --log-dir "$log_dir" --test-dir "$test_dir" --as-root &
+    "${OPENRAZER_SRC}/daemon/run_openrazer_daemon.py" -F --run-dir "${run_dir}" --log-dir "${log_dir}" --test-dir "${test_dir}" --as-root &
 else
     # Local testing, should be already part of plugdev group.
-    $OPENRAZER_SRC/daemon/run_openrazer_daemon.py -F --run-dir "$run_dir" --log-dir "$log_dir" --test-dir "$test_dir" &
+    "${OPENRAZER_SRC}/daemon/run_openrazer_daemon.py" -F --run-dir "${run_dir}" --log-dir "${log_dir}" --test-dir "${test_dir}" &
 fi
 sleep 2
 
@@ -63,22 +63,22 @@ sleep 2
 HOME_TEMP="$(mktemp -d)"
 echo "Temporary test home directory: $HOME_TEMP"
 export HOME="$HOME_TEMP"
-mkdir $HOME/.config $HOME/.cache
+mkdir "${HOME}/.config" "${HOME}/.cache"
 
 # Perform the test!
-cd "$POLYCHROMATIC"
+cd "${POLYCHROMATIC}"
 export PYTHONPATH="$(realpath .)"
 
 # When running in CI, use virtual environment
-if [ -d venv ]; then
+if [[ -d venv ]]; then
     source venv/bin/activate
 fi
 
 ./tests/openrazer/openrazer_test.py
-result=$?
+result="${?}"
 
 # Clean up
-kill $(jobs -p)
+kill "$(jobs -p)"
 rm -rf "$HOME_TEMP"
 
 exit $result
