@@ -57,6 +57,10 @@ jobs:
       run: |
         ./scripts/validate-py.sh
 
+    - name: Validate QSS
+      run: |
+        ./scripts/validate-qss.py
+
     - name: Validate Manual
       run: |
         ./scripts/validate-scdoc.sh
