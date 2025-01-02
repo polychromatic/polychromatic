@@ -13,15 +13,14 @@ export PYTHONPATH="$(realpath .)"
 
 # Isolate save data to avoid clutter.
 HOME_TEMP="$(mktemp -d)"
-echo "Temporary test home directory: $HOME_TEMP"
-export HOME="$HOME_TEMP"
+echo "Temporary test home directory: ${HOME_TEMP}"
+export HOME="${HOME_TEMP}"
 mkdir $HOME/.config $HOME/.cache
 
 # Fire up the runner!
 python3 ./tests/runner.py $*
-result=$?
-[ $? != 0 ] && exit 1
+[ "${?}" != 0 ] && exit 1
 
 # Clean up temporary home on successful run.
-rm -rf "$HOME_TEMP"
+rm -rf "${HOME_TEMP}"
 exit 0

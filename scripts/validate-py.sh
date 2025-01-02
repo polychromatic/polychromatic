@@ -1,10 +1,10 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 #
 # Use pylint to validate Python files for errors.
 #
 
 # When running in CI, use virtual environment
-if [ -d venv ]; then
+if [[ -d venv ]]; then
     source venv/bin/activate
 fi
 
@@ -18,3 +18,4 @@ pylint --errors-only \
     polychromatic-tray-applet \
     polychromatic/*/*.py \
     polychromatic/*.py
+exit "${?}"

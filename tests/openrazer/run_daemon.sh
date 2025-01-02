@@ -61,8 +61,8 @@ sleep 2
 
 # Isolate save data to avoid clutter.
 HOME_TEMP="$(mktemp -d)"
-echo "Temporary test home directory: $HOME_TEMP"
-export HOME="$HOME_TEMP"
+echo "Temporary test home directory: ${HOME_TEMP}"
+export HOME="${HOME_TEMP}"
 mkdir "${HOME}/.config" "${HOME}/.cache"
 
 # Perform the test!
@@ -79,6 +79,6 @@ result="${?}"
 
 # Clean up
 kill "$(jobs -p)"
-rm -rf "$HOME_TEMP"
+rm -rf "${HOME_TEMP}"
 
 exit $result

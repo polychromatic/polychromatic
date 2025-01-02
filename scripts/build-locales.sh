@@ -36,7 +36,7 @@ echo -n "Compiling locales using 'msgfmt'..."
 for file in *.po
 do
     locale="${file%.*}"
-    locale_path="$output_path/${locale}/LC_MESSAGES/"
+    locale_path="${output_path}/${locale}/LC_MESSAGES/"
     if [[ -d "${locale_path}" ]]; then
         rm -r "${locale_path}"
     fi

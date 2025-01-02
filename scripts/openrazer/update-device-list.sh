@@ -1,35 +1,35 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Updates the device index of known OpenRazer devices. For development use,
 # to be run after OpenRazer releases a new version.
 #
 
 POLYCHROMATIC_ROOT="$(dirname "$0")/../../"
-DEVICE_JSON="$(realpath "$POLYCHROMATIC_ROOT/data/devices/openrazer.json")"
-export PYTHONPATH="$(realpath "$POLYCHROMATIC_ROOT")"
+DEVICE_JSON="$(realpath "${POLYCHROMATIC_ROOT}/data/devices/openrazer.json")"
+export PYTHONPATH="$(realpath "${POLYCHROMATIC_ROOT}")"
 export HOME=/tmp
 
 # Verify path exists
-if [ ! -d "$OPENRAZER_SRC" ]; then
+if [[ ! -d "${OPENRAZER_SRC}" ]]; then
     echo "Please set the OPENRAZER_SRC environment variable to the OpenRazer source code:"
     echo -e "\n  export OPENRAZER_SRC=/path/to/repo\n"
     exit 1
 fi
 
 echo "Setting up fake environment..."
-cd "$OPENRAZER_SRC"
+cd "${OPENRAZER_SRC}"
 export PYTHONPATH="$(realpath pylib)"
 
 # Set up all fake devices
 test_dir="/tmp/daemon_test/"
 run_dir="/tmp/daemon_run/"
 log_dir="/tmp/daemon_logs/"
-$OPENRAZER_SRC/scripts/create_fake_device.py --dest "$test_dir" --non-interactive --all &
+"${OPENRAZER_SRC}/scripts/create_fake_device.py" --dest "${test_dir}" --non-interactive --all &
 sleep 1
 
 # Spawn daemon under fake conditions
 openrazer-daemon -s
-$OPENRAZER_SRC/daemon/run_openrazer_daemon.py -F --run-dir "$run_dir" --log-dir "$log_dir" --test-dir "$test_dir" &
+"${OPENRAZER_SRC}/daemon/run_openrazer_daemon.py" -F --run-dir "${run_dir}" --log-dir "${log_dir}" --test-dir "${test_dir}" &
 sleep 2
 
 # Use OpenRazer Python library to discover new devices
@@ -47,7 +47,7 @@ openrazer.init()
 devices = openrazer.get_devices()
 version = openrazer.version
 
-with open("$DEVICE_JSON") as f:
+with open("${DEVICE_JSON}") as f:
     index = json.load(f)
 
 for device in devices:
@@ -62,7 +62,7 @@ for device in devices:
             "since": version,
         }
 
-with open("$DEVICE_JSON", "w") as f:
+with open("${DEVICE_JSON}", "w") as f:
     index = f.write(json.dumps(index, sort_keys=True, indent=4) + "\n")
 
 EOF
