@@ -15,7 +15,8 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-SOURCE="`realpath $(dirname "$0")/../`"
+SOURCE="$(dirname "$0")/../../"
+SOURCE="$(realpath ${SOURCE})"
 DEST="$1"
 
 # Prerequisites
@@ -34,12 +35,11 @@ fi
 mkdir "$DEST"
 
 # Copy required files
-cd "$DEST"
-cp -vr "$SOURCE/data" "$DEST/data"
-cp -vr "$SOURCE/polychromatic" "$DEST/polychromatic"
-cp -vr "$SOURCE/LICENSE" "$DEST/"
-cp -vr "$SOURCE/polychromatic-"* "$DEST/"
-rm "$DEST/polychromatic-controller-dev"
+cd "${DEST}"
+cp -vr "${SOURCE}/data" "${DEST}/data"
+cp -vr "${SOURCE}/polychromatic" "${DEST}/polychromatic"
+cp -vr "${SOURCE}/LICENSE" "${DEST}/"
+cp -vr "${SOURCE}/polychromatic-"{cli,controller,helper,tray-applet} "${DEST}/"
 
 # Build locales
 "$SOURCE/scripts/build-locales.sh" "$DEST/locale/"
