@@ -455,7 +455,7 @@ class MenuBarOpenRazer(MenuBar):
             [self._("Release Notes"), self.url_latest]
         ]
 
-        with open(os.path.join(self.paths.data_dir, "licenses/GPLv2.txt"), "r") as f:
+        with open(os.path.join(self.paths.data_dir, "licenses/openrazer.txt"), "r") as f:
             license = f.read()
 
         versions = [
