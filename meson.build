@@ -14,12 +14,6 @@ if build_machine.system() == 'linux'
     endif
 endif
 
-# Compile Qt styles
-# - Needs to run externally because SASS cannot process Qt's gradient syntax.
-#   so regular CSS needs to be concatenated.
-sass = find_program('sassc')
-run_command('scripts/build-styles.sh', check: true)
-
 install_data('polychromatic-controller',
              'polychromatic-tray-applet',
              'polychromatic-cli',

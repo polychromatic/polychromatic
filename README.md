@@ -77,21 +77,14 @@ Then run the desired application:
 While most of the project isn't compiled like conventional software, there are
 a couple of pieces that do:
 
-    ./scripts/build-styles.sh
     ./scripts/build-locales.sh
     ./scripts/build-man-pages.sh
-
-Styles are locales are built by `polychromatic-controller-dev` and only need to be
-performed once, unless there's been code changes.
 
 
 ## Building
 
 If you have custom installation requirements or packaging for another distro,
 Polychromatic can be put together using [Meson] and [Ninja].
-
-* You’ll need an implementation of SASS to compile Polychromatic’s Controller Qt styling.
-  `sassc` is widely available, but other SASS implementations could be used.
 
 * `intltool` is required for compiling translations.
 

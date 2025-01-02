@@ -64,13 +64,13 @@ class ApplicationData(PolychromaticBase):
         self.version = VERSION
         self.versions = VERSIONS
 
-        # UI Colours (based on SCSS variables)
-        self.normal_colour = "#DED9CB"      # $button-text-colour
-        self.disabled_colour = "#575757"    # $text-disabled
-        self.active_colour = "#00FF00"      # $primary
-        self.selected_colour = "#00FF00"    # $primary
-        self.secondary_colour_active = "#008000"    # $secondary
-        self.secondary_colour_inactive = "#808080"  # $secondary (desaturated)
+        # UI Colours (based on QSS variables)
+        self.normal_colour = "#DED9CB"      # Button text
+        self.disabled_colour = "#575757"    # Disabled text
+        self.active_colour = "#00FF00"      # Primary
+        self.selected_colour = "#00FF00"    # Primary
+        self.secondary_colour_active = "#008000"    # Secondary
+        self.secondary_colour_inactive = "#808080"  # Secondary (desaturated)
 
         # Assigned in load() later
         self.ready = False

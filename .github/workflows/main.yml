@@ -7,16 +7,12 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout
       uses: actions/checkout@v3
 
     - name: Install Dependencies
       run: |
         sudo apt-get update
-
-        # SCSS
-        sudo apt-get install sassc
 
         # Python Lint
         sudo apt-get install pylint
@@ -42,10 +38,6 @@ jobs:
     - name: Validate JSON
       run: |
         ./scripts/validate-json.py
-
-    - name: Validate SCSS
-      run: |
-        ./scripts/validate-scss.sh
 
     - name: Validate Python
       run: |
@@ -91,7 +83,7 @@ jobs:
         sudo apt-get update
 
         # Build Dependencies
-        sudo apt-get install gettext sassc
+        sudo apt-get install gettext
 
         # Application Dependencies
         sudo apt-get install python3-colorama python3-colour python3-requests python3-setproctitle imagemagick
@@ -104,9 +96,8 @@ jobs:
         sudo add-apt-repository ppa:openrazer/daily
         sudo apt-get install openrazer-daemon python3-openrazer dbus-x11
 
-    - name: Build
+    - name: Build Locales
       run: |
-        ./scripts/build-styles.sh
         ./scripts/build-locales.sh
 
     - name: Unit Tests
@@ -132,7 +123,7 @@ jobs:
         sudo apt-get update
 
         # Build Dependencies
-        sudo apt-get install sassc meson gettext intltool
+        sudo apt-get install meson gettext intltool
 
         # Debian Packaging
         sudo apt-get install debhelper devscripts

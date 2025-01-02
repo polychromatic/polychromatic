@@ -19,8 +19,7 @@ SOURCE="`realpath $(dirname "$0")/../`"
 DEST="$1"
 
 # Prerequisites
-cd "$SOURCE"
-./scripts/build-styles.sh
+cd "${SOURCE}"
 
 # Prepare destination directory
 if [ -d "$DEST" ] && [ "$2" != "--overwrite" ]; then
