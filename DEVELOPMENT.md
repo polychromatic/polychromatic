@@ -27,7 +27,6 @@ provide this in a separate `pyqt6-dev-tools` package.
 | ----------------- | ------------------------------------------------------ |
 | `ninja`           | Build system
 | `meson`           | Build system
-| `sassc`           | Compiling SASS stylesheets for default theme
 | `intltool`        | Compiling translations
 | `git`             | Version control
 
@@ -50,14 +49,10 @@ Then run the desired application:
     ./polychromatic-cli
 
 While most of the project isn't compiled like conventional software, there are
-a couple of pieces that do:
+a couple of pieces that do require assembly:
 
-    ./scripts/build-styles.sh
     ./scripts/build-locales.sh
     ./scripts/build-man-pages.sh
-
-Styles are locales are built by `polychromatic-controller-dev` and only need to be
-performed once, unless there's been code changes.
 
 
 ## Building
