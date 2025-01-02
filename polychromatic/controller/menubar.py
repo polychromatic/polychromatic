@@ -8,10 +8,11 @@ import os
 import subprocess
 import webbrowser
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QAction, QIcon
-from PyQt6.QtWidgets import (QButtonGroup, QDialog, QLabel, QMenuBar,
-                             QMessageBox, QPushButton, QTextEdit, QTreeWidget,
+from PyQt6.QtWidgets import (QButtonGroup, QDialog, QLabel, QListWidget,
+                             QListWidgetItem, QMenuBar, QMessageBox,
+                             QPushButton, QTextEdit, QTreeWidget,
                              QTreeWidgetItem, QWidget)
 
 from .. import common, preferences, procpid
@@ -279,21 +280,26 @@ class MenuBar(PolychromaticBase):
             column.addChild(item)
 
         # Add application links
-        links_widget = about.findChild(QWidget, "TabLinks").layout()
-        button_grp = QButtonGroup()
-        for button in links:
-            label = button[0]
-            href = button[1]
-            btn = QPushButton(QIcon(common.get_icon("general", "external")), label)
-            btn.setToolTip(href)
-            btn.href = href
-            button_grp.addButton(btn)
-            links_widget.addWidget(btn)
+        links_tab_widget = about.findChild(QWidget, "TabLinks").layout()
+        links_list = QListWidget()
+        links_list.setIconSize(QSize(16, 16))
 
-        def clicked_button_grp(button):
-            webbrowser.open(button.href)
+        for link in links:
+            label = link[0]
+            href = link[1]
+            item = QListWidgetItem()
+            item.setText(label)
+            item.setIcon(self.widgets.get_icon_qt("general", "external"))
+            item.setData(Qt.ItemDataRole.UserRole, href)
+            links_list.addItem(item)
+        links_tab_widget.addWidget(links_list)
 
-        button_grp.buttonClicked.connect(clicked_button_grp)
+        def _link_clicked(item: QListWidgetItem):
+            links_list.clearSelection()
+            links_list.clearFocus()
+            webbrowser.open(item.data(Qt.ItemDataRole.UserRole))
+
+        links_list.itemClicked.connect(_link_clicked)
 
         # Show license text
         license = about.findChild(QTextEdit, "LicenseText")
