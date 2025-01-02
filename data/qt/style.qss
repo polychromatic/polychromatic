@@ -440,7 +440,7 @@ QHeaderView::section:disabled {
 }
 
 /**********************************************************
-  TreeView
+  Trees and Lists
 **********************************************************/
 QTreeView {
     background: #000;
@@ -449,25 +449,30 @@ QTreeView {
     selection-background-color: #008000;
 }
 
-QTreeView::item {
+QTreeView::item,
+QListView::item {
     border: 0px solid transparent;
     padding: 4px 3px;
 }
 
-QTreeView::item:hover {
+QTreeView::item:hover,
+QListView::item:hover {
     background: #262626;
 }
 
-QTreeView::item:selected {
+QTreeView::item:selected,
+QListView::item:selected {
     background: #008000;
     color: #fff;
 }
 
-QTreeView::item:selected:active {
+QTreeView::item:selected:active,
+QListView::item:selected:active {
     background: #008000;
 }
 
-QTreeView::item:disabled {
+QTreeView::item:disabled,
+QListView::item:disabled {
     color: #828282;
 }
 
@@ -1047,4 +1052,11 @@ QTableView:disabled {
     border: 1px solid rgba(255, 165, 0, 0.5);
     color: orange;
     padding: 5px;
+}
+
+/* About dialog */
+QTabWidget QTreeView,
+QTabWidget QListView {
+    background: #000;
+    border: 1px solid #2D2D2D;
 }
