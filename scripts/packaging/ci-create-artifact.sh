@@ -15,7 +15,7 @@ if [[ -z "$1" ]]; then
     exit 1
 fi
 
-SOURCE="$(dirname "$0")/../"
+SOURCE="$(dirname "$0")/../../"
 SOURCE="$(realpath ${SOURCE})"
 DEST="$1"
 
@@ -39,8 +39,7 @@ cd "${DEST}"
 cp -vr "${SOURCE}/data" "${DEST}/data"
 cp -vr "${SOURCE}/polychromatic" "${DEST}/polychromatic"
 cp -vr "${SOURCE}/LICENSE" "${DEST}/"
-cp -vr "${SOURCE}/polychromatic-"* "${DEST}/"
-rm "${DEST}/polychromatic-controller-dev"
+cp -vr "${SOURCE}/polychromatic-"{cli,controller,helper,tray-applet} "${DEST}/"
 
 # Build locales
 "${SOURCE}/scripts/build-locales.sh" "${DEST}/locale/"
