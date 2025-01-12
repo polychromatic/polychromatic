@@ -27,8 +27,13 @@ from ..backends import _backend
 try:
     from openrazer import client as rclient
     PYTHON_LIB_PRESENT = True
-except Exception:
+    PYTHON_LIB_WORKING = True
+except ModuleNotFoundError:
     PYTHON_LIB_PRESENT = False
+    PYTHON_LIB_WORKING = False
+except (ImportError, Exception):
+    PYTHON_LIB_PRESENT = True
+    PYTHON_LIB_WORKING = False
 
 OPENRAZER_MODULES = ["razerkbd", "razermouse", "razeraccessory", "razerkraken"]
 
@@ -80,10 +85,27 @@ def _is_daemon_running(_):
 
 def _is_pylib_installed(_):
     py_version = sys.version.split(" ")[0]
+    custom_install = not sys.executable.startswith("/usr/bin")
+
+    if PYTHON_LIB_PRESENT and not PYTHON_LIB_WORKING:
+        suggestions = [_("Python library is installed, but there is an import error.")]
+        if custom_install:
+            suggestions.append(_("Python installation looks custom. Check your dependencies are installed correctly."))
+        else:
+            suggestions.append(_("Check your system is fully up-to-date. Dependencies may be causing problems."))
+            suggestions.append(_("For full details on the error, type into a terminal:"))
+            suggestions.append("$ python -c \"import openrazer.client\"")
+
+        return {
+            "test_name": _("Python library is installed"),
+            "suggestions": suggestions,
+            "passed": False
+        }
+
     suggestions = [_("Install 'python-openrazer' or 'python3-openrazer' for your distribution.")]
 
     # Is a custom Python installation interfering?
-    if not sys.executable.startswith("/usr/bin"):
+    if custom_install:
         suggestions.append(_("Your Python installation looks custom. Check your PATH and PYTHONPATH."))
 
     # Was it previously installed for an older version of Python?
@@ -107,11 +129,11 @@ def _is_pylib_installed(_):
 
 
 def _is_driver_src_installed(_):
-    if not PYTHON_LIB_PRESENT:
+    if not PYTHON_LIB_WORKING:
         return {
             "test_name": _("Kernel module sources are installed for DKMS"),
             "suggestions": [
-                _("Unable to check because the Python library is not installed.")
+                _("Unable to check because the Python library is not available.")
             ],
             "passed": None
         }
@@ -145,7 +167,7 @@ def _is_driver_built(_):
     kernel_version = uname.release
     driver_version = "<version>"
 
-    if PYTHON_LIB_PRESENT:
+    if PYTHON_LIB_WORKING:
         driver_version = rclient.__version__
 
     modules = glob.glob("/lib/modules/{0}/**/razer*.ko*".format(kernel_version), recursive=True)
@@ -387,7 +409,7 @@ def _check_device_support_list(_):
 
 
 def _is_openrazer_up_to_date(_):
-    if PYTHON_LIB_PRESENT:
+    if PYTHON_LIB_WORKING:
         local_version = rclient.__version__
         remote_version = None
         remote_get_url = "https://openrazer.github.io/api/latest_version.txt"
@@ -440,7 +462,7 @@ def _is_openrazer_up_to_date(_):
     return {
         "test_name": _("OpenRazer is the latest version"),
         "suggestions": [
-            _("Unable to check because the Python library is not installed.")
+            _("Unable to check because the Python library is not available.")
         ],
         "passed": None
     }
