@@ -149,7 +149,6 @@ jobs:
     needs: [build, test]
     runs-on: ubuntu-latest
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout
       uses: actions/checkout@v4
 
@@ -162,6 +161,7 @@ jobs:
 
         # Debian Packaging
         sudo apt-get install debhelper devscripts
+        sudo apt-get install build-essential
 
     - name: Test Debian Packaging
       run: |
