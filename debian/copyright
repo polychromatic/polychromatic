@@ -16,6 +16,8 @@ License: GPL-3+
 
 Files: .*
        CHANGELOG
+       DEVELOPMENT.md
+       requirements.*
        data/*
        debian/*
        .github/*
@@ -35,7 +37,7 @@ Files: data/img/*
 Copyright: 2016-2020, FortAwesome
 License: CC-BY-4.0
 
-Files: data/qt/fonts/Play-Regular.svg
+Files: data/qt/fonts/Play*.ttf
 Copyright: 2016, Jonas Hecksher
 License: OFL-1.1
 
@@ -48,6 +50,10 @@ Copyright: 2017, BlauerHunger (de)
            2021, Matt Marcha (fr_FR)
            2021, Heimen Stoffels (nl)
 License: GPL-3+
+
+Files: sources/app.polychromatic.controller.metainfo.xml
+Copyright: 2024, Luke Horwell <code@horwell.me>
+License: FSFAP
 
 License: GPL-3+
     This package is free software; you can redistribute it and/or modify
@@ -507,3 +513,9 @@ License: OFL-1.1
     DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
     FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
     OTHER DEALINGS IN THE FONT SOFTWARE.
+
+License: FSFAP
+    Copying and distribution of this file, with or without modification,
+    are permitted in any medium without royalty provided the copyright
+    notice and this notice are preserved. This file is offered as-is,
+    without any warranty.

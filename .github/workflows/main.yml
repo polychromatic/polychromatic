@@ -169,7 +169,7 @@ jobs:
         git checkout .
         sed -i "s/noble/UNRELEASED/g" debian/changelog
         dpkg-buildpackage -S -us -uc -d
-        lintian --no-tag-display-limit
+        lintian --tag-display-limit 0
         debuild -b
 
     - name: Upload to Launchpad
