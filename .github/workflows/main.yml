@@ -147,7 +147,7 @@ jobs:
   push_to_preview_ppa:
     name: 'Package / Debian'
     needs: [build, test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -161,7 +161,6 @@ jobs:
 
         # Debian Packaging
         sudo apt-get install debhelper devscripts
-        sudo apt-get install build-essential
 
     - name: Test Debian Packaging
       run: |
