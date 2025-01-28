@@ -15,7 +15,7 @@ To achieve effects, colours may be converted between different colour spaces:
 
 import math
 
-import colour
+import color
 
 from . import common
 
