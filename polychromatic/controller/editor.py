@@ -644,17 +644,19 @@ class VisualEffectEditor(shared.TabData):
         self.dbg.stdout("Previewing effect '{0}' on device '{1}'.".format(self.data["name"], device_name), self.dbg.success, 1)
 
     def _play_next_frame(self):
-        print("Now playing...")
-        total_frames = self.frame_table.columnCount() - 1
+        total_frames = self.frame_table.columnCount() - 1 # 0-based index
 
-        if self.current_frame == total_frames:
+        if self.current_frame >= total_frames:
             if self.btn_playback_loop.isChecked() is True:
-                self.frame_table.selectColumn(0)
+                # Loop back to first frame (0-based index)
+                self.current_frame = -1
             else:
+                # Stop playback at the end
                 self.btn_playback_stop.click()
                 self.playback_timer.stop()
+                return
 
-        self.frame_table.selectColumn(self.frame_table.currentColumn() + 1)
+        self.frame_table.selectColumn(self.current_frame + 1)
         self.open_frame(True)
         self.window.repaint()
 
