@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Dependencies
       run: |
@@ -65,7 +65,7 @@ jobs:
         ./scripts/create-files-for-opt.sh /tmp/dist
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: polychromatic-run${{github.run_number}}
         path: /tmp/dist/
@@ -76,7 +76,7 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Dependencies
       run: |
@@ -112,11 +112,10 @@ jobs:
   push_to_preview_ppa:
     name: 'Package / Debian'
     needs: [build, test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Dependencies
       run: |
