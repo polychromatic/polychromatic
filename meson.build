@@ -1,5 +1,5 @@
 project('polychromatic',
-        version : '0.9.3',
+        version : '0.9.4',
         meson_version : '>=0.53.0')
 
 fs = import('fs')

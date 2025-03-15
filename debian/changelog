@@ -1,3 +1,13 @@
+polychromatic (0.9.4) noble; urgency=low
+
+  * Controller: Improve DPI presentation for high DPI devices.
+  * Controller: Fix editor playback loop skipping over the first frame.
+  * Troubleshooter: Detect when Python library fails to load.
+  * Remove unused code.
+  * Drop 'sassc' build dependency.
+
+ -- Luke Horwell <code@horwell.me>  Sat, 15 Mar 2025 14:16:00 +0000
+
 polychromatic (0.9.3) noble; urgency=low
 
   * Controller: Add device map for Razer Huntsman V2 Analog (UK)
