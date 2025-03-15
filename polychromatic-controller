@@ -248,7 +248,7 @@ class MainWindow(QMainWindow):
         if not app.system_qt_theme:
             qapp.setStyle("Fusion")
             QFontDatabase.addApplicationFont(os.path.join(app.paths.data_dir, "qt", "fonts", "Play_regular.ttf"))
-            qapp.setFont(QFont("Play", 10, 0))
+            qapp.setFont(QFont("Play", 10))
             controller.shared.load_qt_theme(app, self)
 
         # Minimal modes

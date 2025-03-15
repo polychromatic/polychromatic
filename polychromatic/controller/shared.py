@@ -44,7 +44,7 @@ def load_qt_theme(appdata, window):
         return
 
     # Load "Play" font
-    font = QFont("Play", 10, 0)
+    font = QFont("Play", 10)
     window.setFont(font)
 
     menu_bar = window.findChild(QMenuBar)

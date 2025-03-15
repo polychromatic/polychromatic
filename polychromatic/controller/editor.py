@@ -236,7 +236,7 @@ class VisualEffectEditor(shared.TabData):
         self.docks = [self.dock_layers, self.dock_properties, self.dock_colours, self.dock_frames]
         if not self.appdata.system_qt_theme:
             for dock in self.docks:
-                font = QFont("Play", 10, 0)
+                font = QFont("Play", 10)
                 dock.setFont(font)
 
         # Connect buttons/actions
