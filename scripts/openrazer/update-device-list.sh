@@ -4,11 +4,6 @@
 # to be run after OpenRazer releases a new version.
 #
 
-POLYCHROMATIC_ROOT="$(dirname "$0")/../../"
-DEVICE_JSON="$(realpath "${POLYCHROMATIC_ROOT}/data/devices/openrazer.json")"
-export PYTHONPATH="$(realpath "${POLYCHROMATIC_ROOT}")"
-export HOME=/tmp
-
 # Verify path exists
 if [[ ! -d "${OPENRAZER_SRC}" ]]; then
     echo "Please set the OPENRAZER_SRC environment variable to the OpenRazer source code:"
@@ -16,9 +11,16 @@ if [[ ! -d "${OPENRAZER_SRC}" ]]; then
     exit 1
 fi
 
+POLYCHROMATIC_ROOT="$(dirname "$0")/../../"
+POLYCHROMATIC_ROOT="$(realpath "${POLYCHROMATIC_ROOT}")"
+DEVICE_JSON="$(realpath "${POLYCHROMATIC_ROOT}/data/devices/openrazer.json")"
+DAEMON_LIB="$(realpath "${OPENRAZER_SRC}/daemon")"
+DAEMON_PYLIB="$(realpath "${OPENRAZER_SRC}/pylib")"
+
 echo "Setting up fake environment..."
 cd "${OPENRAZER_SRC}"
-export PYTHONPATH="$(realpath pylib)"
+export HOME=/tmp
+export PYTHONPATH="${POLYCHROMATIC_ROOT}:${DAEMON_PYLIB}:${DAEMON_LIB}"
 
 # Set up all fake devices
 test_dir="/tmp/daemon_test/"
@@ -33,7 +35,7 @@ openrazer-daemon -s
 sleep 2
 
 # Use OpenRazer Python library to discover new devices
-echo "Discovering new devices..."
+echo -ne "\nDiscovering new devices "
 python3 <<EOF
 from polychromatic.base import PolychromaticBase
 from polychromatic.backends.openrazer import OpenRazerBackend
@@ -44,13 +46,12 @@ def _(d): return d
 base = PolychromaticBase()
 openrazer = OpenRazerBackend(base)
 openrazer.init()
-devices = openrazer.get_devices()
-version = openrazer.version
+print("for OpenRazer", openrazer.version, "...")
 
 with open("${DEVICE_JSON}") as f:
     index = json.load(f)
 
-for device in devices:
+for device in openrazer.get_devices():
     vidpid = f"{device.vid}:{device.pid}"
 
     if vidpid not in index.keys():
@@ -59,13 +60,14 @@ for device in devices:
             "name": device.name,
             "form_factor": device.form_factor["id"],
             "matrix": f"{device.matrix.cols},{device.matrix.rows}" if device.matrix else None,
-            "since": version,
+            "since": openrazer.version,
         }
 
 with open("${DEVICE_JSON}", "w") as f:
     index = f.write(json.dumps(index, sort_keys=True, indent=4) + "\n")
 
 EOF
+echo -e "... done!\n"
 
 # Clean up
 kill $(jobs -p)
