@@ -330,7 +330,8 @@ class MenuBar(PolychromaticBase):
             [self._("Documentation"), "https://docs.polychromatic.app/"],
             [self._("Source Code"), "https://polychromatic.app/permalink/src/"],
             [self._("Release Notes"), "https://polychromatic.app/permalink/latest/"],
-            [self._("Donate"), "https://polychromatic.app/permalink/donate/"]
+            [self._("Translate"), "https://docs.polychromatic.app/translations/"],
+            [self._("Donate"), "https://polychromatic.app/permalink/donate/"],
         ]
 
         versions = self.appdata.versions
