@@ -744,6 +744,9 @@ class OpenRazerBackend(Backend):
         has_starlight_single = self._has_zone_capability(rdevice, zone, "starlight_single")
         has_starlight_dual = self._has_zone_capability(rdevice, zone, "starlight_dual")
 
+        openrazer_version_major = int(self.version.split(".")[0])
+        openrazer_version_minor = int(self.version.split(".")[1])
+
         if self._has_zone_capability(rdevice, zone, "none"):
             class NoneOption(Backend.EffectOption):
                 def __init__(self, rzone, persistence):
@@ -763,6 +766,10 @@ class OpenRazerBackend(Backend):
             option.label = self._("Off")
             option.icon = self.get_icon("params", "0")
             options.append(option)
+
+            # Basilisk V3 firmware becomes buggy when None effect is set. Removed in OpenRazer 3.8.0. (openrazer/openrazer#2156)
+            if rdevice.name == "Razer Basilisk V3" and (openrazer_version_major <= 3 and openrazer_version_minor <= 7):
+                options.pop()
 
         if self._has_zone_capability(rdevice, zone, "on"):
             class OnOption(Backend.EffectOption):
