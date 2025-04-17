@@ -46,6 +46,11 @@ _ = base._
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 verbose = False
 
+# Command line interface deprecated
+dbg.stdout("** " + _("polychromatic-cli is deprecated and will be removed in a future release."), dbg.debug)
+dbg.stdout("** " + _("For more details:") + " https://docs.polychromatic.app/faqs/#why-is-the-cli-deprecated", dbg.debug)
+print("")
+
 ########################################
 # Formatting
 ########################################
