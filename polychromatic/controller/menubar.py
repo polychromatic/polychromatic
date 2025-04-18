@@ -303,7 +303,7 @@ class MenuBar(PolychromaticBase):
 
         # Show license text
         license = about.findChild(QTextEdit, "LicenseText")
-        license.setPlainText(license_text)
+        license.setMarkdown(license_text)
 
         # Set up the about window
         close = about.findChild(QPushButton, "Close")
@@ -323,7 +323,7 @@ class MenuBar(PolychromaticBase):
     def about_polychromatic(self):
         logo = common.get_icon("logo", "polychromatic")
 
-        with open(os.path.join(self.appdata.paths.data_dir, "licenses/app.txt"), "r") as f:
+        with open(os.path.join(self.appdata.paths.data_dir, "licenses/app.md"), "r") as f:
             license = f.read()
 
         links = [

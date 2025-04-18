@@ -4,19 +4,26 @@ Polychromatic is distributed in the hope that it will be useful, but WITHOUT ANY
 
 https://docs.polychromatic.app/license/
 
-=======================
-Third Party Libraries
-=======================
+---
 
-FontAwesome 5.15
------------------------
-Copyright (c) 2017-2020 FortAwesome
+### Third Party Libraries
+
+---
+
+#### FontAwesome 5.15
+
+Copyright (C) 2017-2020 FortAwesome
+
 Licensed under CC-BY-4.0
-https://github.com/FortAwesome/Font-Awesome
 
 Some icons were remixed or modified. Refer to the SVG's copyright comment for attribution.
 
-Play
------------------------
-Copyright (c) 2011 Jonas Hecksher
+https://github.com/FortAwesome/Font-Awesome
+
+---
+
+#### Play
+
+Copyright (C) 2011 Jonas Hecksher
+
 Licensed under the SIL Open Font License, Version 1.1.
