@@ -293,15 +293,15 @@ class OpenRazerPreferences(shared.TabData):
             ["ripple_refresh_rate", float]
         ]
 
-    def _get_openrazer_version(self):
+    def _get_openrazer_version(self) -> tuple[int, int, int]:
         """
-        Returns the current version of OpenRazer in decimal format: <major.minor>, e.g. 3.1
+        Returns the current version of OpenRazer as a tuple: (major, minor, patch)
         """
         for backend in self.middleman.backends:
             if backend.backend_id == "openrazer":
-                version = backend.version.split(".")[:2]
-                return float("{0}.{1}".format(version[0], version[1]))
-        return 0
+                version = backend.version.split(".")
+                return (int(version[0]), int(version[1]), int(version[2]))
+        return (0, 0, 0)
 
     def open_log(self):
         self.menubar.openrazer.open_log()
@@ -315,9 +315,10 @@ class OpenRazerPreferences(shared.TabData):
 
         If configparser is not present for some reason, open the text editor.
         """
-        version = self._get_openrazer_version()
+        ver_major, ver_minor, ver_patch = self._get_openrazer_version()
 
-        if version < 3.2:
+        # Configuration UI designed for OpenRazer 3.2 and above
+        if ver_major < 3 or (ver_major == 3 and ver_minor < 2):
             os.system("xdg-open file://{0}".format(self.conf_path))
             return
 
@@ -382,8 +383,8 @@ class OpenRazerPreferences(shared.TabData):
         self.dialog.findChild(QCheckBox, "restore_persistence").clicked.connect(self._update_ui_state)
         self._update_ui_state()
 
-        # Hide options not available for older versions
-        if version < 3.9:
+        # "persistence_dual_boot_quirk" was added in OpenRazer 3.9.0
+        if ver_major < 3 or (ver_major == 3 and ver_minor < 9):
             self.dialog.findChild(QWidget, "restore_persistence_related").hide()
 
         self.dialog.open()
