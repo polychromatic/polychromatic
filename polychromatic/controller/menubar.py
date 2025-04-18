@@ -69,6 +69,7 @@ class MenuBar(PolychromaticBase):
         self._bind_item("actionWebsite", self.polychromatic_website)
         self._bind_item("actionReleaseNotes", self.polychromatic_release_notes)
         self._bind_item("actionReportBug", self.polychromatic_report_bug)
+        self._bind_item("actionTranslate", self.polychromatic_translate)
         self._bind_item("actionDonate", self.polychromatic_donate)
         self._bind_item("actionAbout", self.about_polychromatic)
 
@@ -231,6 +232,10 @@ class MenuBar(PolychromaticBase):
     def polychromatic_report_bug(self):
         self._prompt_on_locale_change(self._("Report Bug"))
         webbrowser.open("https://polychromatic.app/permalink/bugs/")
+
+    def polychromatic_translate(self):
+        self._prompt_on_locale_change(self._("Translate"))
+        webbrowser.open("https://docs.polychromatic.app/translations/")
 
     def polychromatic_donate(self):
         self._prompt_on_locale_change(self._("Donate"))
