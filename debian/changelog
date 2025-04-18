@@ -1,3 +1,13 @@
+polychromatic (0.9.5) noble; urgency=low
+
+  * Controller: Fix our configuration window not being used in OpenRazer >=3.10.
+  * OpenRazer: Hide known buggy "None" effect for Basilisk V3 in OpenRazer <=3.7.0.
+  * Update French translation.
+  * Controller: Add links for translations and update license formatting.
+  * Add deprecation message for polychromatic-cli.
+
+ -- Luke Horwell <code@horwell.me>  Fri, 18 Apr 2025 17:14:40 +0000
+
 polychromatic (0.9.4) noble; urgency=low
 
   * Controller: Improve DPI presentation for high DPI devices.
