@@ -6,7 +6,7 @@
 #
 astroid==3.3.10
     # via pylint
-certifi==2025.4.26
+certifi==2025.6.15
     # via requests
 charset-normalizer==3.4.2
     # via requests
@@ -46,5 +46,5 @@ setproctitle==1.3.6
     # via -r requirements.in
 tomlkit==0.13.3
     # via pylint
-urllib3==2.4.0
+urllib3==2.5.0
     # via requests
