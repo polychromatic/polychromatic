@@ -23,6 +23,32 @@ from typing import List
 from ..fx import FX
 
 
+def compare_version_strings(ver1, ver2):
+    """
+    Compare two version strings (e.g. "3.10.0", "3.2.0").
+    Returns:
+        -1  ver1 is older than ver2.
+        0   ver1 is the same as ver2.
+        1   ver1 is newer than ver2.
+    """
+    v1_parts = [int(x) for x in ver1.split(".")]
+    v2_parts = [int(x) for x in ver2.split(".")]
+
+    # Pad shorter version with zeros
+    while len(v1_parts) < len(v2_parts):
+        v1_parts.append(0)
+    while len(v2_parts) < len(v1_parts):
+        v2_parts.append(0)
+
+    for v1, v2 in zip(v1_parts, v2_parts):
+        if v1 < v2:
+            return -1
+        if v1 > v2:
+            return 1
+
+    return 0
+
+
 class BackendBase(object):
     """
     All backends inherit from this class. Contains useful functions and any
@@ -150,6 +176,7 @@ class Backend(BackendBase):
 
             # Indicates whether a device is simply unusable due to an error or unsupported
             self.supported = False
+            self.supported_after_upgrade = False
 
     def get_unsupported_devices(self):
         """

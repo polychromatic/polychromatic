@@ -20,6 +20,7 @@ from PyQt6.QtWidgets import (QAbstractItemView, QButtonGroup, QCheckBox,
                              QToolButton, QTreeWidget, QTreeWidgetItem,
                              QWidget)
 
+from polychromatic.backends._backend import compare_version_strings
 from polychromatic.procpid import DeviceSoftwareState
 
 from .. import bulkapply, common
@@ -98,6 +99,7 @@ class DevicesTab(shared.TabData):
         # For unknown devices, check support status using local index
         device_index = json.loads(open(f"{self.paths.data_dir}/devices/openrazer.json", "r").read())
         supported_pids = device_index.keys()
+        openrazer_version = self.middleman.get_backend("openrazer").version
 
         for device in unknown_device_list:
             assert isinstance(device, Backend.UnknownDeviceItem)
@@ -106,6 +108,12 @@ class DevicesTab(shared.TabData):
             if vidpid in supported_pids:
                 device.name = device_index[vidpid].get("name", device.name)
                 device.supported = True
+
+                # Check if OpenRazer needs upgrading
+                device.supported_after_upgrade = False
+                since_version = device_index[vidpid].get("since")
+                if since_version and compare_version_strings(openrazer_version, since_version) == -1:
+                    device.supported_after_upgrade = True
 
             item = QTreeWidgetItem()
             item.setText(0, device.name)
@@ -730,6 +738,10 @@ class DevicesTab(shared.TabData):
                                     info_text=_("The last line of the exception was:") + "\n" + exception.split("\n")[-1],
                                     details=exception)
 
+    def _open_openrazer_download_page(self):
+        self.appdata.menubar._prompt_on_locale_change(self._("Online Help"))
+        webbrowser.open("https://openrazer.github.io/#download")
+
     def _open_openrazer_help_unrecognised(self):
         self.appdata.menubar._prompt_on_locale_change(self._("Online Help"))
         webbrowser.open("https://docs.polychromatic.app/openrazer/#my-device-is-showing-up-as-unrecognised")
@@ -755,31 +767,45 @@ class DevicesTab(shared.TabData):
         if device.supported:
             image = common.get_icon("empty", "openrazer")
             title = device.name
-            desc = self._("This supported device wasn't detected by the OpenRazer daemon (v1.0.0)").replace("1.0.0", self.middleman.get_backend("openrazer").version)
-            buttons = [
-                {
+            if device.supported_after_upgrade:
+                desc = self._("Upgrade OpenRazer to use this device.\n\nThis version of OpenRazer (v1.0.0) does not recognise this device.").replace("1.0.0", self.middleman.get_backend("openrazer").version)
+            else:
+                desc = self._("Finish setting up OpenRazer (v1.0.0) to use this device.").replace("1.0.0", self.middleman.get_backend("openrazer").version)
+
+            buttons = []
+            if not device.supported_after_upgrade:
+                buttons.append({
                     "label": "{0} {1}".format(self._("Restart"), backend_name),
                     "icon_folder": "general",
                     "icon_name": "refresh",
                     "action": _restart_backend
-                },
-                {
-                    "label": self._("Troubleshoot"),
+                })
+
+            buttons.append({
+                "label": self._("Troubleshoot"),
+                "icon_folder": "general",
+                "icon_name": "preferences",
+                "action": self._start_troubleshooter
+            })
+
+            if device.supported_after_upgrade:
+                buttons.append({
+                    "label": self._("Download Instructions"),
                     "icon_folder": "general",
-                    "icon_name": "preferences",
-                    "action": self._start_troubleshooter
-                },
-                {
+                    "icon_name": "external",
+                    "action": self._open_openrazer_download_page
+                })
+            else:
+                buttons.append({
                     "label": self._("Online Help"),
                     "icon_folder": "general",
                     "icon_name": "external",
                     "action": self._open_openrazer_help_unrecognised
-                },
-            ]
+                })
         else:
             image = common.get_icon("empty", "nodevice")
             title = self._("Unsupported Device") + f": {device.vid}:{device.pid}"
-            desc = self._("This device needs support adding to OpenRazer before it can be used in Polychromatic.")
+            desc = self._("This device needs support adding in OpenRazer before it can be used in Polychromatic.")
             buttons = [
                 {
                     "label": self._("Troubleshoot"),
