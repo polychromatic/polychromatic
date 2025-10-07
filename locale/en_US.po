@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-18 17:04+0100\n"
+"POT-Creation-Date: 2025-10-07 20:58+0100\n"
 "PO-Revision-Date: 2021-07-21 12:41+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -62,7 +62,7 @@ msgstr "Current"
 msgid "Opens the system's colour picker"
 msgstr "Opens the system's color picker"
 
-#: colour-picker.ui.h:6 polychromatic/controller/devices.py:1304
+#: colour-picker.ui.h:6 polychromatic/controller/devices.py:1330
 #: polychromatic/controller/editor.py:1407
 #: polychromatic/controller/effects.py:229
 msgid "Edit"
@@ -107,7 +107,7 @@ msgstr "Rename selected color"
 msgid "Forget selected colour"
 msgstr "Forget selected color"
 
-#: custom-dpi.ui.h:1 polychromatic/controller/devices.py:1305
+#: custom-dpi.ui.h:1 polychromatic/controller/devices.py:1331
 msgid "Edit DPI Stages"
 msgstr "Edit DPI Stages"
 
@@ -157,7 +157,7 @@ msgstr ""
 msgid "This device does not support synchronisation to hardware DPI buttons."
 msgstr "This device does not support synchronization to hardware DPI buttons."
 
-#: device-info.ui.h:1 polychromatic/controller/devices.py:1051
+#: device-info.ui.h:1 polychromatic/controller/devices.py:1077
 msgid "Device Information"
 msgstr "Device Information"
 
@@ -166,7 +166,7 @@ msgstr "Device Information"
 msgid "Data"
 msgstr "Data"
 
-#: device-info.ui.h:6 polychromatic/controller/devices.py:1119
+#: device-info.ui.h:6 polychromatic/controller/devices.py:1145
 msgid "Inspect Matrix"
 msgstr "Inspect Matrix"
 
@@ -221,8 +221,8 @@ msgid "Playback"
 msgstr "Playback"
 
 #: editor.ui.h:15 polychromatic-cli:426
-#: polychromatic/controller/devices.py:867
-#: polychromatic/controller/devices.py:992
+#: polychromatic/controller/devices.py:893
+#: polychromatic/controller/devices.py:1018
 msgid "Colours"
 msgstr "Colors"
 
@@ -236,8 +236,8 @@ msgid "Layer"
 msgstr "Layer"
 
 #. #-#-#-#-#  editor.ui.pot (PACKAGE VERSION)  #-#-#-#-#Column title in effect editor
-#: editor.ui.h:20 polychromatic/controller/devices.py:538
-#: polychromatic/controller/devices.py:1010
+#: editor.ui.h:20 polychromatic/controller/devices.py:546
+#: polychromatic/controller/devices.py:1036
 msgid "Effect"
 msgstr "Effect"
 
@@ -694,11 +694,12 @@ msgstr "Move Frame Right"
 msgid "Alt+Right"
 msgstr "Alt+Right"
 
-#: editor.ui.h:172 main.ui.h:23 polychromatic/controller/devices.py:677
-#: polychromatic/controller/devices.py:734
-#: polychromatic/controller/devices.py:738
-#: polychromatic/controller/devices.py:773
-#: polychromatic/controller/devices.py:791
+#: editor.ui.h:172 main.ui.h:23 polychromatic/controller/devices.py:685
+#: polychromatic/controller/devices.py:742
+#: polychromatic/controller/devices.py:746
+#: polychromatic/controller/devices.py:750
+#: polychromatic/controller/devices.py:800
+#: polychromatic/controller/devices.py:817
 #: polychromatic/controller/menubar.py:207
 msgid "Online Help"
 msgstr "Online Help"
@@ -845,7 +846,7 @@ msgid "Effect Details"
 msgstr "Effect Details"
 
 #: effect-metadata-editor.ui.h:3 polychromatic-cli:339
-#: polychromatic/controller/devices.py:930
+#: polychromatic/controller/devices.py:956
 msgid "Name"
 msgstr "Name"
 
@@ -861,7 +862,7 @@ msgstr "Icon"
 msgid "Summary"
 msgstr "Summary"
 
-#: effect-metadata-editor.ui.h:7 polychromatic/controller/devices.py:929
+#: effect-metadata-editor.ui.h:7 polychromatic/controller/devices.py:955
 msgid "Hardware"
 msgstr "Hardware"
 
@@ -938,11 +939,11 @@ msgstr "Please wait..."
 msgid "Polychromatic"
 msgstr "Polychromatic"
 
-#: main.ui.h:2 polychromatic/controller/devices.py:64 preferences.ui.h:13
+#: main.ui.h:2 polychromatic/controller/devices.py:65 preferences.ui.h:13
 msgid "Devices"
 msgstr "Devices"
 
-#: main.ui.h:3 polychromatic/controller/devices.py:859
+#: main.ui.h:3 polychromatic/controller/devices.py:885
 #: polychromatic/controller/effects.py:25 polychromatic-tray-applet:472
 #: polychromatic-tray-applet:588 preferences.ui.h:25
 msgid "Effects"
@@ -1035,10 +1036,10 @@ msgstr "Duplicate"
 msgid "Preferences"
 msgstr "Preferences"
 
-#: main.ui.h:43 polychromatic/controller/devices.py:669
-#: polychromatic/controller/devices.py:683
-#: polychromatic/controller/devices.py:767
-#: polychromatic/controller/devices.py:785 polychromatic-tray-applet:317
+#: main.ui.h:43 polychromatic/controller/devices.py:677
+#: polychromatic/controller/devices.py:691
+#: polychromatic/controller/devices.py:785
+#: polychromatic/controller/devices.py:811 polychromatic-tray-applet:317
 #: polychromatic-tray-applet:353
 msgid "Troubleshoot"
 msgstr "Troubleshoot"
@@ -1201,8 +1202,8 @@ msgid "seconds"
 msgstr "seconds"
 
 #: polychromatic/backends/openrazer.py:413
-#: polychromatic/controller/devices.py:973
-#: polychromatic/controller/devices.py:1313 polychromatic-tray-applet:438
+#: polychromatic/controller/devices.py:999
+#: polychromatic/controller/devices.py:1339 polychromatic-tray-applet:438
 msgid "DPI"
 msgstr "DPI"
 
@@ -1240,7 +1241,7 @@ msgstr "Fully Charging"
 
 #: polychromatic/backends/openrazer.py:693
 #: polychromatic/backends/openrazer.py:712
-#: polychromatic/controller/devices.py:858 polychromatic-tray-applet:587
+#: polychromatic/controller/devices.py:884 polychromatic-tray-applet:587
 msgid "Brightness"
 msgstr "Brightness"
 
@@ -1570,16 +1571,16 @@ msgstr "Avaliable form factors:"
 msgid "No devices connected."
 msgstr "No devices connected."
 
-#: polychromatic-cli:340 polychromatic/controller/devices.py:936
+#: polychromatic-cli:340 polychromatic/controller/devices.py:962
 msgid "Form Factor"
 msgstr "Form Factor"
 
 #: polychromatic-cli:341 polychromatic-cli:379
-#: polychromatic/controller/devices.py:937
+#: polychromatic/controller/devices.py:963
 msgid "Serial"
 msgstr "Serial"
 
-#: polychromatic-cli:342 polychromatic/controller/devices.py:999
+#: polychromatic-cli:342 polychromatic/controller/devices.py:1025
 msgid "Zones"
 msgstr "Zones"
 
@@ -1587,11 +1588,11 @@ msgstr "Zones"
 msgid "Unrecognised:"
 msgstr "Unrecognized:"
 
-#: polychromatic-cli:382 polychromatic/controller/devices.py:939
+#: polychromatic-cli:382 polychromatic/controller/devices.py:965
 msgid "Firmware Version"
 msgstr "Firmware Version"
 
-#: polychromatic-cli:385 polychromatic/controller/devices.py:941
+#: polychromatic-cli:385 polychromatic/controller/devices.py:967
 msgid "Keyboard Layout"
 msgstr "Keyboard Layout"
 
@@ -1612,7 +1613,7 @@ msgid "columns"
 msgstr "columns"
 
 #: polychromatic-cli:392 polychromatic-cli:395 polychromatic-cli:398
-#: polychromatic/controller/devices.py:945
+#: polychromatic/controller/devices.py:971
 msgid "Custom Effects"
 msgstr "Custom Effects"
 
@@ -1620,7 +1621,7 @@ msgstr "Custom Effects"
 msgid "Unsupported"
 msgstr "Unsupported"
 
-#: polychromatic-cli:395 polychromatic/controller/devices.py:917
+#: polychromatic-cli:395 polychromatic/controller/devices.py:943
 msgid "Yes"
 msgstr "Yes"
 
@@ -1628,7 +1629,7 @@ msgstr "Yes"
 msgid "Yes, Limited RGB"
 msgstr "Yes, Limited RGB"
 
-#: polychromatic-cli:411 polychromatic/controller/devices.py:962
+#: polychromatic-cli:411 polychromatic/controller/devices.py:988
 msgid "Battery"
 msgstr "Battery"
 
@@ -1644,7 +1645,7 @@ msgstr "Zone"
 msgid "Option"
 msgstr "Option"
 
-#: polychromatic-cli:425 polychromatic/controller/devices.py:1023
+#: polychromatic-cli:425 polychromatic/controller/devices.py:1049
 msgid "Parameters"
 msgstr "Parameters"
 
@@ -1656,8 +1657,8 @@ msgstr "DPI is not supported. Or, it may need to be set using -o/--option."
 msgid "DPI too high:"
 msgstr "DPI too high:"
 
-#: polychromatic-cli:475 polychromatic/controller/devices.py:988
-#: polychromatic/controller/devices.py:1036
+#: polychromatic-cli:475 polychromatic/controller/devices.py:1014
+#: polychromatic/controller/devices.py:1062
 msgid "Maximum"
 msgstr "Maximum"
 
@@ -1665,8 +1666,8 @@ msgstr "Maximum"
 msgid "DPI too low:"
 msgstr "DPI too low:"
 
-#: polychromatic-cli:479 polychromatic/controller/devices.py:987
-#: polychromatic/controller/devices.py:1035
+#: polychromatic-cli:479 polychromatic/controller/devices.py:1013
+#: polychromatic/controller/devices.py:1061
 msgid "Minimum"
 msgstr "Minimum"
 
@@ -1807,45 +1808,45 @@ msgstr "Unrecognized"
 msgid "Green"
 msgstr "Green"
 
-#: polychromatic/controller/devices.py:198
-#: polychromatic/controller/devices.py:217
+#: polychromatic/controller/devices.py:206
+#: polychromatic/controller/devices.py:225
 msgid "(Varies)"
 msgstr "(Varies)"
 
-#: polychromatic/controller/devices.py:266
+#: polychromatic/controller/devices.py:274
 msgid "Device Info"
 msgstr "Device Info"
 
-#: polychromatic/controller/devices.py:582
+#: polychromatic/controller/devices.py:590
 msgid "Effect Mode"
 msgstr "Effect Mode"
 
-#: polychromatic/controller/devices.py:590 polychromatic-tray-applet:487
+#: polychromatic/controller/devices.py:598 polychromatic-tray-applet:487
 #: polychromatic-tray-applet:589
 msgid "Primary Colour"
 msgstr "Primary Color"
 
-#: polychromatic/controller/devices.py:591
+#: polychromatic/controller/devices.py:599
 msgid "Secondary Colour"
 msgstr "Secondary Color"
 
-#: polychromatic/controller/devices.py:592
+#: polychromatic/controller/devices.py:600
 msgid "Tertiary Colour"
 msgstr "Tertiary Color"
 
-#: polychromatic/controller/devices.py:598
+#: polychromatic/controller/devices.py:606
 msgid "Colour 4"
 msgstr "Color 4"
 
-#: polychromatic/controller/devices.py:609
+#: polychromatic/controller/devices.py:617
 msgid "Change []"
 msgstr "Change []"
 
-#: polychromatic/controller/devices.py:624 polychromatic-tray-applet:617
+#: polychromatic/controller/devices.py:632 polychromatic-tray-applet:617
 msgid "Request Failed"
 msgstr "Request Failed"
 
-#: polychromatic/controller/devices.py:625 polychromatic-tray-applet:618
+#: polychromatic/controller/devices.py:633 polychromatic-tray-applet:618
 msgid ""
 "There's a fault with Polychromatic's integration with [OpenRazer] for this "
 "device or option."
@@ -1853,7 +1854,7 @@ msgstr ""
 "There's a fault with Polychromatic's integration with [OpenRazer] for this "
 "device or option."
 
-#: polychromatic/controller/devices.py:626
+#: polychromatic/controller/devices.py:634
 msgid ""
 "To help fix this, please check Polychromatic's issue tracker and create a "
 "new issue if a similar one does not exist."
@@ -1861,11 +1862,11 @@ msgstr ""
 "To help fix this, please check Polychromatic's issue tracker and create a "
 "new issue if a similar one does not exist."
 
-#: polychromatic/controller/devices.py:630 polychromatic-tray-applet:621
+#: polychromatic/controller/devices.py:638 polychromatic-tray-applet:621
 msgid "Communication Error"
 msgstr "Communication Error"
 
-#: polychromatic/controller/devices.py:631
+#: polychromatic/controller/devices.py:639
 msgid ""
 "An error occurred outside of Polychromatic's control when this command was "
 "sent to [OpenRazer]."
@@ -1873,7 +1874,7 @@ msgstr ""
 "An error occurred outside of Polychromatic's control when this command was "
 "sent to [OpenRazer]."
 
-#: polychromatic/controller/devices.py:632
+#: polychromatic/controller/devices.py:640
 msgid ""
 "Try restarting [OpenRazer] and Polychromatic and give it another go. If this "
 "error appears again, it might need fixing in [OpenRazer]."
@@ -1881,41 +1882,41 @@ msgstr ""
 "Try restarting [OpenRazer] and Polychromatic and give it another go. If this "
 "error appears again, it might need fixing in [OpenRazer]."
 
-#: polychromatic/controller/devices.py:655
+#: polychromatic/controller/devices.py:663
 msgid "No devices connected"
 msgstr "No devices connected"
 
-#: polychromatic/controller/devices.py:656
+#: polychromatic/controller/devices.py:664
 msgid "No backends loaded"
 msgstr "No backends loaded"
 
-#: polychromatic/controller/devices.py:657
+#: polychromatic/controller/devices.py:665
 msgid "No backends installed"
 msgstr "No backends installed"
 
-#: polychromatic/controller/devices.py:661
+#: polychromatic/controller/devices.py:669
 msgid ""
 "Plug in a compatible device to control its lighting effects and features"
 msgstr ""
 "Plug in a compatible device to control its lighting effects and features"
 
-#: polychromatic/controller/devices.py:662
+#: polychromatic/controller/devices.py:670
 msgid "Consult the logs and troubleshooter for hints on fixing this problem"
 msgstr "Consult the logs and troubleshooter for hints on fixing this problem"
 
-#: polychromatic/controller/devices.py:663
+#: polychromatic/controller/devices.py:671
 msgid "Install a compatible backend to configure lighting effects"
 msgstr "Install a compatible backend to configure lighting effects"
 
-#: polychromatic/controller/devices.py:692
+#: polychromatic/controller/devices.py:700
 msgid "Show Error Details"
 msgstr "Show Error Details"
 
-#: polychromatic/controller/devices.py:728
+#: polychromatic/controller/devices.py:736
 msgid "Backend Error: []"
 msgstr "Backend Error: []"
 
-#: polychromatic/controller/devices.py:729
+#: polychromatic/controller/devices.py:737
 msgid ""
 "An error occurred trying to load []. The error below may provide a clue to "
 "what happened."
@@ -1923,188 +1924,202 @@ msgstr ""
 "An error occurred trying to load []. The error below may provide a clue to "
 "what happened."
 
-#: polychromatic/controller/devices.py:730
+#: polychromatic/controller/devices.py:738
 msgid "The last line of the exception was:"
 msgstr "The last line of the exception was:"
 
-#: polychromatic/controller/devices.py:758
-msgid "This supported device wasn't detected by the OpenRazer daemon (v1.0.0)"
-msgstr "This supported device wasn't detected by the OpenRazer daemon (v1.0.0)"
+#: polychromatic/controller/devices.py:771
+msgid ""
+"Upgrade OpenRazer to use this device.\n"
+"\n"
+"This version of OpenRazer (v1.0.0) does not recognise this device."
+msgstr ""
+"Upgrade OpenRazer to use this device.\n"
+"\n"
+"This version of OpenRazer (v1.0.0) does not recognise this device."
 
-#: polychromatic/controller/devices.py:761
+#: polychromatic/controller/devices.py:773
+msgid "Finish setting up OpenRazer (v1.0.0) to use this device."
+msgstr "Finish setting up OpenRazer (v1.0.0) to use this device."
+
+#: polychromatic/controller/devices.py:778
 msgid "Restart"
 msgstr "Restart"
 
-#: polychromatic/controller/devices.py:781
+#: polychromatic/controller/devices.py:793
+msgid "Download Instructions"
+msgstr "Download Instructions"
+
+#: polychromatic/controller/devices.py:807
 msgid "Unsupported Device"
 msgstr "Unsupported Device"
 
-#: polychromatic/controller/devices.py:782
+#: polychromatic/controller/devices.py:808
 msgid ""
-"This device needs support adding to OpenRazer before it can be used in "
+"This device needs support adding in OpenRazer before it can be used in "
 "Polychromatic."
 msgstr ""
-"This device needs support adding to OpenRazer before it can be used in "
+"This device needs support adding in OpenRazer before it can be used in "
 "Polychromatic."
 
-#: polychromatic/controller/devices.py:802
+#: polychromatic/controller/devices.py:828
 msgid "Troubleshooting Guide"
 msgstr "Troubleshooting Guide"
 
-#: polychromatic/controller/devices.py:822
+#: polychromatic/controller/devices.py:848
 msgid "Not available for all connected devices"
 msgstr "Not available for all connected devices"
 
-#: polychromatic/controller/devices.py:920
+#: polychromatic/controller/devices.py:946
 msgid "No"
 msgstr "No"
 
-#: polychromatic/controller/devices.py:931
+#: polychromatic/controller/devices.py:957
 msgid "Backend"
 msgstr "Backend"
 
-#: polychromatic/controller/devices.py:947
+#: polychromatic/controller/devices.py:973
 msgid "Supported"
 msgstr "Supported"
 
-#: polychromatic/controller/devices.py:950
+#: polychromatic/controller/devices.py:976
 #: polychromatic/controller/effects.py:543
 msgid "1 row"
 msgstr "1 row"
 
-#: polychromatic/controller/devices.py:950
+#: polychromatic/controller/devices.py:976
 #: polychromatic/controller/effects.py:543
 msgid "2 rows"
 msgstr "2 rows"
 
-#: polychromatic/controller/devices.py:951
+#: polychromatic/controller/devices.py:977
 #: polychromatic/controller/effects.py:544
 msgid "1 column"
 msgstr "1 column"
 
-#: polychromatic/controller/devices.py:951
+#: polychromatic/controller/devices.py:977
 #: polychromatic/controller/effects.py:544
 msgid "2 columns"
 msgstr "2 columns"
 
-#: polychromatic/controller/devices.py:952
+#: polychromatic/controller/devices.py:978
 msgid "Matrix Dimensions"
 msgstr "Matrix Dimensions"
 
-#: polychromatic/controller/devices.py:955
-#: polychromatic/controller/devices.py:957
+#: polychromatic/controller/devices.py:981
+#: polychromatic/controller/devices.py:983
 msgid "Colour Range"
 msgstr "Colour Range"
 
-#: polychromatic/controller/devices.py:955
+#: polychromatic/controller/devices.py:981
 msgid "256 colours"
 msgstr "256 colours"
 
-#: polychromatic/controller/devices.py:957
+#: polychromatic/controller/devices.py:983
 msgid "16 million colours"
 msgstr "16 million colours"
 
-#: polychromatic/controller/devices.py:965
-#: polychromatic/controller/devices.py:967
+#: polychromatic/controller/devices.py:991
+#: polychromatic/controller/devices.py:993
 msgid "Status"
 msgstr "Status"
 
-#: polychromatic/controller/devices.py:965
+#: polychromatic/controller/devices.py:991
 msgid "Charging (0%)"
 msgstr "Charging (0%)"
 
-#: polychromatic/controller/devices.py:967
+#: polychromatic/controller/devices.py:993
 msgid "Discharging (0%)"
 msgstr "Discharging (0%)"
 
-#: polychromatic/controller/devices.py:968
-#: polychromatic/controller/devices.py:1019
+#: polychromatic/controller/devices.py:994
+#: polychromatic/controller/devices.py:1045
 msgid "Type"
 msgstr "Type"
 
-#: polychromatic/controller/devices.py:968
+#: polychromatic/controller/devices.py:994
 msgid "Removable"
 msgstr "Removable"
 
-#: polychromatic/controller/devices.py:968
+#: polychromatic/controller/devices.py:994
 msgid "Rechargable"
 msgstr "Rechargable"
 
-#: polychromatic/controller/devices.py:974
+#: polychromatic/controller/devices.py:1000
 msgid "Current DPI"
 msgstr "Current DPI"
 
-#: polychromatic/controller/devices.py:979
+#: polychromatic/controller/devices.py:1005
 msgid "Default Stages"
 msgstr "Default Stages"
 
-#: polychromatic/controller/devices.py:983
-#: polychromatic/controller/devices.py:985
+#: polychromatic/controller/devices.py:1009
+#: polychromatic/controller/devices.py:1011
 msgid "Custom Stages"
 msgstr "Custom Stages"
 
-#: polychromatic/controller/devices.py:985
+#: polychromatic/controller/devices.py:1011
 msgid "(Not set)"
 msgstr "(Not set)"
 
-#: polychromatic/controller/devices.py:986
+#: polychromatic/controller/devices.py:1012
 msgid "Supports Sync?"
 msgstr "Supports Sync?"
 
-#: polychromatic/controller/devices.py:995
+#: polychromatic/controller/devices.py:1021
 msgid "Input 0"
 msgstr "Input 0"
 
-#: polychromatic/controller/devices.py:1012
+#: polychromatic/controller/devices.py:1038
 msgid "Toggle"
 msgstr "Toggle"
 
-#: polychromatic/controller/devices.py:1014
+#: polychromatic/controller/devices.py:1040
 msgid "Slider"
 msgstr "Slider"
 
-#: polychromatic/controller/devices.py:1016
+#: polychromatic/controller/devices.py:1042
 msgid "Dropdown"
 msgstr "Dropdown"
 
-#: polychromatic/controller/devices.py:1018
+#: polychromatic/controller/devices.py:1044
 msgid "Option ID"
 msgstr "Option ID"
 
-#: polychromatic/controller/devices.py:1020
-#: polychromatic/controller/devices.py:1027
+#: polychromatic/controller/devices.py:1046
+#: polychromatic/controller/devices.py:1053
 msgid "Active"
 msgstr "Active"
 
-#: polychromatic/controller/devices.py:1026
+#: polychromatic/controller/devices.py:1052
 msgid "Parameter ID"
 msgstr "Parameter ID"
 
-#: polychromatic/controller/devices.py:1034
+#: polychromatic/controller/devices.py:1060
 msgid "Current Value"
 msgstr "Current Value"
 
-#: polychromatic/controller/devices.py:1037
+#: polychromatic/controller/devices.py:1063
 msgid "Interval"
 msgstr "Interval"
 
-#: polychromatic/controller/devices.py:1107
+#: polychromatic/controller/devices.py:1133
 msgid "Coordinate: X,Y"
 msgstr "Coordinate: X,Y"
 
-#: polychromatic/controller/devices.py:1109
+#: polychromatic/controller/devices.py:1135
 msgid "Coordinate: (Multiple)"
 msgstr "Coordinate: (Multiple)"
 
-#: polychromatic/controller/devices.py:1324
+#: polychromatic/controller/devices.py:1350
 msgid "Open Input Remapper"
 msgstr "Open Input Remapper"
 
-#: polychromatic/controller/devices.py:1339
+#: polychromatic/controller/devices.py:1365
 msgid "About Macro Recording"
 msgstr "About Macro Recording"
 
-#: polychromatic/controller/devices.py:1340
+#: polychromatic/controller/devices.py:1366
 msgid ""
 "OpenRazer provides a simple on-the-fly macro recording feature.\n"
 "\n"
@@ -2128,19 +2143,19 @@ msgstr ""
 "replay speed will be instantaneous, which can be problematic with some "
 "software/games."
 
-#: polychromatic/controller/devices.py:1348
+#: polychromatic/controller/devices.py:1374
 msgid "Usage Instructions"
 msgstr "Usage Instructions"
 
-#: polychromatic/controller/devices.py:1354
+#: polychromatic/controller/devices.py:1380
 msgid "Macros"
 msgstr "Macros"
 
-#: polychromatic/controller/devices.py:1396
+#: polychromatic/controller/devices.py:1422
 msgid "Up to 123 DPI"
 msgstr "Up to 123 DPI"
 
-#: polychromatic/controller/devices.py:1523
+#: polychromatic/controller/devices.py:1549
 msgid "DPI stages were successfully synchronised to the hardware."
 msgstr "DPI stages were successfully synchronized to the hardware."
 
@@ -3398,6 +3413,11 @@ msgstr "Check"
 #: troubleshooter.ui.h:8
 msgid "Copy to Clipboard"
 msgstr "Copy to Clipboard"
+
+#~ msgid ""
+#~ "This supported device wasn't detected by the OpenRazer daemon (v1.0.0)"
+#~ msgstr ""
+#~ "This supported device wasn't detected by the OpenRazer daemon (v1.0.0)"
 
 #~ msgid "Untitled Effect"
 #~ msgstr "Untitled Effect"
