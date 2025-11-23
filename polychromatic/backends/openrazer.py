@@ -244,6 +244,8 @@ class OpenRazerBackend(Backend):
 
         workarounds = self._get_workaround_options(rdevice)
         if workarounds:
+            # Remove existing EffectOption(s) from main zone
+            main_zone.options = [option for option in main_zone.options if not isinstance(option, Backend.EffectOption)]
             main_zone.options += workarounds
 
         # Add other "main" options
