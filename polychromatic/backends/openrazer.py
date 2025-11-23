@@ -244,7 +244,7 @@ class OpenRazerBackend(Backend):
 
         workarounds = self._get_workaround_options(rdevice)
         if workarounds:
-            main_zone.options = workarounds
+            main_zone.options += workarounds
 
         # Add other "main" options
         if rdevice.has("available_dpi"):
