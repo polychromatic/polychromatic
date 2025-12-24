@@ -51,6 +51,16 @@ def __get_razer_usb_pids():
     return razer_usb_pids
 
 
+def __get_user_group():
+    """OpenRazer uses "plugdev" by default, but some distros may patch with a different group."""
+    with open("/etc/group", "r", encoding="utf-8") as f:
+        group_lines = f.readlines()
+        for line in group_lines:
+            if line.startswith("openrazer:"):
+                return "openrazer"
+    return "plugdev"
+
+
 def _is_daemon_installed(_):
     return {
         "test_name": _("Daemon is installed"),
@@ -284,23 +294,25 @@ def _is_secure_boot_enabled(_):
     }
 
 
-def _is_user_in_plugdev_group(_):
+def _is_user_in_user_group(_):
+    expected_group_name = __get_user_group()
     return {
-        "test_name": _("User account has been added to the 'plugdev' group"),
+        "test_name": _("User account has been added to the 'plugdev' group").replace("plugdev", expected_group_name),
         "suggestions": [
             _("Run this command, log out, then log back in to the computer:"),
-            "$ sudo gpasswd -a $USER plugdev",
+            f"$ sudo gpasswd -a $USER {expected_group_name}",
             _("If you've just installed, it is recommended to restart the computer."),
             _("This is required so that your user account (and daemon) has permission to access the driver files in /sys/bus/hid/drivers"),
         ],
-        "passed": _backend.BackendHelpers().is_user_in_group("plugdev")
+        "passed": _backend.BackendHelpers().is_user_in_group(expected_group_name)
     }
 
 
-def _is_sysfs_plugdev_permissions_ok(_):
+def _is_sysfs_permissions_ok(_):
+    expected_group_name = __get_user_group()
     if not os.path.exists("/sys/bus/hid/drivers/"):
         return {
-            "test_name": _("Device can be accessed using plugdev permissions"),
+            "test_name": _("Device can be accessed using plugdev permissions").replace("plugdev", expected_group_name),
             "suggestions": [
                 _("Unable to check as the drivers sysfs path for this Linux kernel is non-standard."),
             ],
@@ -310,7 +322,7 @@ def _is_sysfs_plugdev_permissions_ok(_):
     razer_modules = glob.glob("/sys/bus/hid/drivers/razer*")
     if not razer_modules:
         return {
-            "test_name": _("Device can be accessed using plugdev permissions"),
+            "test_name": _("Device can be accessed using plugdev permissions").replace("plugdev", expected_group_name),
             "suggestions": [
                 _("Unable to check because OpenRazer's modules are not loaded."),
             ],
@@ -321,19 +333,19 @@ def _is_sysfs_plugdev_permissions_ok(_):
     sysfs_files = []
     for driver in razer_modules:
         for prefix in ["device_", "matrix_"]:
-            sysfs_files += glob.glob("{0}/*/{1}*".format(driver, prefix))
+            sysfs_files += glob.glob(f"{driver}/*/{prefix}*")
 
     # Check sample of sysfs files have the correct group permission
     results = []
     for sysfile in sysfs_files:
         gid = os.stat(sysfile).st_gid
         group_name = grp.getgrgid(gid)[0]
-        results.append(True if group_name == "plugdev" else False)
+        results.append(group_name == expected_group_name)
 
     return {
-        "test_name": _("Device can be accessed using plugdev permissions"),
+        "test_name": _("Device can be accessed using plugdev permissions").replace("plugdev", expected_group_name),
         "suggestions": [
-            _("Permissions for OpenRazer's device files (/sys/bus/hid/drivers) are not set correctly. They should be owned as root:plugdev (owner/group)"),
+            _("Permissions for OpenRazer's device files (/sys/bus/hid/drivers) are not set correctly. They should be owned as root:plugdev (owner/group)").replace("plugdev", expected_group_name),
             _("Replugging the hardware and then restarting the daemon usually fixes the problem."),
             _("Alternately, improperly configured udev rules (such as a missing PID) may cause this to happen."),
         ],
@@ -498,8 +510,8 @@ def troubleshoot(_, fn_progress_set_max, fn_progress_advance):
         fn_progress_advance()
 
         for test in [_is_razer_device_connected,
-                     _is_user_in_plugdev_group,
-                     _is_sysfs_plugdev_permissions_ok,
+                     _is_user_in_user_group,
+                     _is_sysfs_permissions_ok,
                      _check_device_support_list,
                      _is_openrazer_up_to_date]:
             results.append(test(_))
