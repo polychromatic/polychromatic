@@ -7,7 +7,7 @@ This module contains the frontend for the troubleshooter.
 import time
 
 from PyQt6.QtCore import QObject, Qt, QThread, pyqtSignal
-from PyQt6.QtGui import QBrush, QColor, QIcon
+from PyQt6.QtGui import QBrush, QColor, QFont, QIcon
 from PyQt6.QtWidgets import (QApplication, QDialog, QLabel, QProgressBar,
                              QPushButton, QTreeWidget, QTreeWidgetItem)
 
@@ -128,6 +128,7 @@ class TroubleshooterGUI(QObject):
                         text = line
                         subitem.setBackground(1, QBrush(QColor("black")))
                         subitem.setForeground(1, QBrush(QColor("green")))
+                        subitem.setFont(1, QFont("monospace"))
                         subitem.copyable = True
                     else:
                         text = "• " + line
