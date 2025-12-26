@@ -110,17 +110,18 @@ class Indicator(PolychromaticBase):
             self.dbg.stdout("AppIndicator3 not available, falling back to GTK Status Icon...", self.dbg.warning)
             self.mode = pref.TRAY_GTK_STATUS
 
-    def setup(self, icon_path):
+    def setup(self, icon_name, icon_path):
         """
         Creates the object, depending on backend in use.
 
         Params:
+            icon_name       (str)       Name of the icon
             icon_path       (str)       Absolute path to the icon
         """
         self.dbg.stdout("Initialising " + self.names[self.mode] + "...", self.dbg.action, 1)
 
         if self.mode in [pref.TRAY_APPINDICATOR, pref.TRAY_AYATANA]:
-            self.indicator = appindicator.Indicator.new("polychromatic-tray-applet", icon_path, appindicator.IndicatorCategory.APPLICATION_STATUS) # pylint: disable=used-before-assignment
+            self.indicator = appindicator.Indicator.new_with_path("polychromatic-tray-applet", icon_name, appindicator.IndicatorCategory.APPLICATION_STATUS, icon_path) # pylint: disable=used-before-assignment
             self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
 
         elif self.mode == pref.TRAY_GTK_STATUS:
@@ -308,7 +309,7 @@ class PolychromaticTrayApplet(PolychromaticBase):
         self.dbg.stdout("Assembling error applet...", self.dbg.action, 1)
 
         error_icon = self.common.get_tray_icon(dbg, "img/tray/error.svg")
-        indicator.setup(error_icon)
+        indicator.setup("dialog-error", error_icon) # TODO: Use custom icon (currently using a default icon from the XDG icon naming spec)
 
         menu = indicator.create_menu()
         indicator.create_menu_item(menu, message, False, None, None, icon_path)
@@ -327,7 +328,7 @@ class PolychromaticTrayApplet(PolychromaticBase):
         """
         Populates the menu for the tray applet.
         """
-        indicator.setup(self._get_tray_icon())
+        indicator.setup("folder", self._get_tray_icon()) # TODO: Use custom icon (currently using a default icon from the XDG icon naming spec)
 
         self.dbg.stdout("Creating menus...", self.dbg.action, 1)
         menu = indicator.create_menu()
