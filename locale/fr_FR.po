@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-10 18:59+0100\n"
-"PO-Revision-Date: 2026-01-10 20:47+0100\n"
+"PO-Revision-Date: 2026-01-10 21:11+0100\n"
 "Last-Translator: foXaCe\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -151,14 +151,14 @@ msgid ""
 "Apply these DPI stages to the hardware, so they can be changed using "
 "hardware buttons."
 msgstr ""
-"Appliquer ces niveau du DPI au matériel, comme ça ils pourront être modifiés "
-"par des boutons de l'hardware"
+"Appliquer ces niveaux du DPI au matériel, comme ça ils pourront être "
+"modifiés par des boutons de l'hardware."
 
 #: custom-dpi.ui.h:13
 msgid "This device does not support synchronisation to hardware DPI buttons."
 msgstr ""
 "Ce périphérique ne prend pas en charge la synchronisation avec les boutons "
-"physique du DPI"
+"physique du DPI."
 
 #: device-info.ui.h:1 polychromatic/controller/devices.py:1077
 msgid "Device Information"
@@ -202,7 +202,7 @@ msgstr "&Éditer"
 #. Menu bar item: To move LEDs in a specific direction
 #: editor.ui.h:7
 msgid "Shift LEDs"
-msgstr "déplacer les LEDs"
+msgstr "Déplacer les LEDs"
 
 #. The & character is for keyboard navigation (when holding the ALT key)
 #: editor.ui.h:9 main.ui.h:14
@@ -902,7 +902,7 @@ msgstr "Prévisualisation"
 msgid "Heads up! Animated GIFs are not supported by all desktop environments."
 msgstr ""
 "Attention ! Les GIF animés ne sont pas pris en compte par tous les "
-"environnement de bureau !"
+"environnement de bureau."
 
 #: icon-picker.ui.h:3 polychromatic/controller/procviewer.py:158
 #: preferences.ui.h:37
@@ -1700,7 +1700,7 @@ msgstr "Minimum"
 
 #: polychromatic-cli:494
 msgid "Failed to set DPI due to an error:"
-msgstr "échéc "
+msgstr "impossible de mettre le DPI dû à une erreur :"
 
 #: polychromatic-cli:520
 msgid "Unable to locate the effect '[]'"
@@ -1769,7 +1769,7 @@ msgstr "Il manque --colours (-c) pour le paramètre"
 
 #: polychromatic-cli:665
 msgid "Insufficient --colours (-c) for parameter"
-msgstr "insuffisant de --colours (-c) pour le paramètre"
+msgstr "paramètres pour --colours (-c) insuffisant"
 
 #: polychromatic-cli:683
 msgid "Invalid parameter"
