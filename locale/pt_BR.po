@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-13 21:56-0300\n"
-"PO-Revision-Date: 2026-01-13 22:08-0300\n"
+"PO-Revision-Date: 2026-01-14 08:30-0300\n"
 "Last-Translator: lexcibien\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -69,7 +69,7 @@ msgstr "Editar"
 #. Colour Picker: Tooltip informing the user what the Save colour button does
 #: colour-picker.ui.h:8
 msgid "Save this colour to the saved colour list"
-msgstr "Salve essa cor a lista de cores salvas"
+msgstr "Salve essa cor na lista de cores salvas"
 
 #: colour-picker.ui.h:9 custom-dpi.ui.h:10
 msgid "Add"
@@ -82,17 +82,17 @@ msgstr "Cores salvas"
 
 #: colour-picker.ui.h:11
 msgid "Add the current colour to your saved colours list by giving it a name"
-msgstr "Adicione a cor atual para a sua lista de cores salvas dando um nome"
+msgstr "Adicione a cor atual à sua lista de cores salvas dando um nome"
 
 #. Colour Picker: Tooltip informing the user what the Save icon does
 #: colour-picker.ui.h:13
 msgid "Save the current colour to the saved list"
-msgstr "Salve a cor atual à lista de salvos"
+msgstr "Salve a cor atual na lista de cores salvas"
 
 #. Colour Picker: Tooltip informing the user what the Cancel icon does
 #: colour-picker.ui.h:15
 msgid "Cancel saving this colour"
-msgstr "Cancele de salvar essa cor"
+msgstr "Cancelar salvar essa cor"
 
 #. Colour Picker: Tooltip informing the user what the Rename icon does
 #: colour-picker.ui.h:17
@@ -147,8 +147,8 @@ msgid ""
 "Apply these DPI stages to the hardware, so they can be changed using "
 "hardware buttons."
 msgstr ""
-"Aplicar esse estágio de DPI ao hardware, assim pode ser alterado usando os "
-"botões de hardware."
+"Aplicar estes estágios de DPI ao hardware, para que possam ser alterados "
+"usando os botões de hardware."
 
 #: custom-dpi.ui.h:13
 msgid "This device does not support synchronisation to hardware DPI buttons."
@@ -166,7 +166,7 @@ msgstr "Dados"
 
 #: device-info.ui.h:6 polychromatic/controller/devices.py:1145
 msgid "Inspect Matrix"
-msgstr "Inspecionar matrix"
+msgstr "Inspecionar matriz"
 
 #: dpi-control.ui.h:1
 msgid "DPI Control"
@@ -309,7 +309,7 @@ msgstr "Coloca esse quadro um passo antes da posição atual"
 
 #: editor.ui.h:45
 msgid "Move Left"
-msgstr "Mover para esqueda"
+msgstr "Mover para esquerda"
 
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:47
@@ -342,7 +342,7 @@ msgstr "Pré-visualizar o efeito do início"
 
 #: editor.ui.h:54 polychromatic/controller/effects.py:222
 msgid "Play"
-msgstr "Assistir"
+msgstr "Play"
 
 #: editor.ui.h:55
 msgid "Stop playback"
@@ -435,8 +435,8 @@ msgid ""
 "Protip: You can scroll over these buttons to quickly change the "
 "corresponding HSL attribute!"
 msgstr ""
-"Dica de pró: Você pode deslizar por esses botões para mudar rapidamente os "
-"atributos HSL correspondentes!"
+"Dica de profissional: Você pode deslizar por esses botões para mudar "
+"rapidamente os atributos HSL correspondentes!"
 
 #: editor.ui.h:81
 msgid "Increase"
@@ -680,7 +680,7 @@ msgstr "Move o quadro para esquerda"
 #. Keyboard Shortcut
 #: editor.ui.h:168
 msgid "Alt+Left"
-msgstr "Alt+Esqueda"
+msgstr "Alt+Esquerda"
 
 #: editor.ui.h:169
 msgid "Move Frame Right"
@@ -765,7 +765,7 @@ msgstr "Pausar repetição"
 #: editor.ui.h:188 polychromatic/backends/openrazer.py:513
 #: polychromatic/backends/openrazer.py:862
 msgid "Left"
-msgstr "Esqueda"
+msgstr "Esquerda"
 
 #. Keyboard Shortcut
 #: editor.ui.h:190 polychromatic/backends/openrazer.py:515
@@ -1194,7 +1194,7 @@ msgstr ""
 #. Label for configuring OpenRazer
 #: openrazer-config.ui.h:25
 msgid "Ripple Refresh Rate"
-msgstr "Taxa de atualização de RIpple"
+msgstr "Taxa de atualização da ondulação"
 
 #. Suffix for a spinner control
 #: openrazer-config.ui.h:27
@@ -2608,8 +2608,7 @@ msgstr ""
 #: polychromatic/controller/shared.py:1308
 msgid "Drag and drop icons here, or add them by pressing the Import button."
 msgstr ""
-"Arraste e solte ícones aqui, ou adicione eles pressionando o botão de "
-"Importar."
+"Arraste e solte ícones aqui, ou adicione-os pressionando o botão de Importar."
 
 #: polychromatic/controller/shared.py:1314
 msgid "No icons found!"
@@ -3253,7 +3252,7 @@ msgstr "Baixar imagens de dispositivos"
 #: preferences.ui.h:16
 msgid "These images may be under a different copyright or license."
 msgstr ""
-"Essas imagnes podem estar sob uma licença ou direitos autorais diferente."
+"Essas imagens podem estar sob uma licença ou direitos autorais diferente."
 
 #: preferences.ui.h:17
 msgid "Toolbar"
