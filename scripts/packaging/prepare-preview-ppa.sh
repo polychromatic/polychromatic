@@ -24,5 +24,5 @@ function process_release() {
 }
 
 process_release "24.04" "noble"     # LTS
-process_release "25.04" "plucky"
 process_release "25.10" "questing"
+process_release "26.04" "resolute"  # LTS
