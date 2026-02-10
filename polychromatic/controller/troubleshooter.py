@@ -3,9 +3,6 @@
 """
 This module contains the frontend for the troubleshooter.
 """
-
-import time
-
 from PyQt6.QtCore import QObject, Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QBrush, QColor, QFont, QIcon
 from PyQt6.QtWidgets import (QApplication, QDialog, QLabel, QProgressBar,
@@ -38,6 +35,7 @@ class TroubleshooterGUI(QObject):
         self.result_tree = self.result_window.findChild(QTreeWidget, "Results")
         self.result_tree_root = self.result_tree.invisibleRootItem()
         self.result_copy_btn = self.result_window.findChild(QPushButton, "CopyToClipboard")
+        self.version_label = self.result_window.findChild(QLabel, "VersionInfo")
 
         if not self.appdata.system_qt_theme:
             self.result_window.findChild(QPushButton, "Close").setIcon(self.widgets.get_icon_qt("general", "close"))
@@ -54,6 +52,7 @@ class TroubleshooterGUI(QObject):
         self.thread.result = []
         self.thread.finished.connect(self.finished)
 
+        self.set_version_info()
         self.start()
 
     def progress_bar_advance(self):
@@ -62,6 +61,34 @@ class TroubleshooterGUI(QObject):
     def progress_bar_set_max(self, max_value):
         self.loading_progress_bar.setRange(0, 0)
         self.loading_progress_bar.setMaximum(max_value)
+
+    @staticmethod
+    def _get_os_info():
+        """Get distro name and version from /etc/os-release"""
+        os_info = {}
+        try:
+            with open("/etc/os-release", "r", encoding="utf-8") as f:
+                for line in f:
+                    if "=" in line:
+                        key, value = line.rstrip().split("=", 1)
+                        os_info[key] = value.strip('"')
+
+            # Use PRETTY_NAME for display, or fallback to NAME + VERSION
+            return os_info.get("PRETTY_NAME") or f"{os_info.get('NAME', 'Unknown')} {os_info.get('VERSION', '')}"
+        except FileNotFoundError:
+            return "Unknown Linux Distribution"
+
+    def set_version_info(self):
+        try:
+            from openrazer import client as rclient
+            openrazer_version = rclient.__version__
+        except Exception:
+            openrazer_version = ""
+        version_info = self._get_os_info()
+        version_info += f" | Polychromatic {self.appdata.version}"
+        if openrazer_version:
+            version_info += f" | OpenRazer {openrazer_version}"
+        self.version_label.setText(version_info)
 
     class TroubleshootThread(QThread):
         """
