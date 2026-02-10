@@ -99,7 +99,11 @@ class DevicesTab(shared.TabData):
         # For unknown devices, check support status using local index
         device_index = json.loads(open(f"{self.paths.data_dir}/devices/openrazer.json", "r").read())
         supported_pids = device_index.keys()
-        openrazer_version = self.middleman.get_backend("openrazer").version
+        openrazer = self.middleman.get_backend("openrazer")
+        if openrazer:
+            openrazer_version = self.middleman.get_backend("openrazer").version
+        else:
+            openrazer_version = "0.0.0"
 
         for device in unknown_device_list:
             assert isinstance(device, Backend.UnknownDeviceItem)
