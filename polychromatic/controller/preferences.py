@@ -381,6 +381,7 @@ class OpenRazerPreferences(shared.TabData):
 
         self.dialog.findChild(QCheckBox, "battery_notifier").clicked.connect(self._update_ui_state)
         self.dialog.findChild(QCheckBox, "restore_persistence").clicked.connect(self._update_ui_state)
+        self.dialog.findChild(QCheckBox, "persistence_dual_boot_quirk").clicked.connect(self._update_ui_state)
         self._update_ui_state()
 
         # "persistence_dual_boot_quirk" was added in OpenRazer 3.9.0
@@ -399,7 +400,11 @@ class OpenRazerPreferences(shared.TabData):
             self.dialog.findChild(QLabel, f"{object_name}_label").setEnabled(battery_notifications_enabled)
 
         restore_persistence_enabled = self.dialog.findChild(QCheckBox, "restore_persistence").isChecked()
+        self.dialog.findChild(QLabel, "restore_persistence_note").setEnabled(restore_persistence_enabled)
         self.dialog.findChild(QCheckBox, "persistence_dual_boot_quirk").setEnabled(restore_persistence_enabled)
+
+        restore_persistence_quirk_enabled = self.dialog.findChild(QCheckBox, "persistence_dual_boot_quirk").isChecked()
+        self.dialog.findChild(QLabel, "persistence_dual_boot_quirk_note").setEnabled(restore_persistence_enabled and restore_persistence_quirk_enabled)
 
     def _save_and_restart(self):
         """
