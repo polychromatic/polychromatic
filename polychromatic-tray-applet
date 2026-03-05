@@ -307,7 +307,7 @@ class PolychromaticTrayApplet(PolychromaticBase):
         """
         self.dbg.stdout("Assembling error applet...", self.dbg.action, 1)
 
-        error_icon = self.common.get_tray_icon(dbg, "img/tray/error.svg")
+        error_icon = self.common.get_tray_icon(dbg, "img/tray/polychromatic-error.svg")
         indicator.setup(error_icon)
 
         menu = indicator.create_menu()

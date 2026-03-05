@@ -94,12 +94,12 @@ class TestInternals(unittest.TestCase):
     def test_tray_icon_kde(self):
         os.environ["XDG_CURRENT_DESKTOP"] = "KDE"
         os.environ["GTK_THEME"] = "Breeze"
-        self.assertEqual(common.get_default_tray_icon(), "img/tray/light/breeze.svg", "Could not detect KDE desktop for tray icon")
+        self.assertEqual(common.get_default_tray_icon(), "img/tray/polychromatic-light-breeze.svg", "Could not detect KDE desktop for tray icon")
         del(os.environ["XDG_CURRENT_DESKTOP"])
         del(os.environ["GTK_THEME"])
 
     def test_tray_icon_ubuntu(self):
-        self.assertEqual(common.get_default_tray_icon(), "img/tray/light/polychromatic.svg", "Coul not retrieve default tray icon")
+        self.assertEqual(common.get_default_tray_icon(), "img/tray/polychromatic-light.svg", "Could not retrieve default tray icon")
 
     def test_get_icon(self):
         self.assertIsNotNone(common.get_icon("general", "controller"), "Could not retrieve an icon")

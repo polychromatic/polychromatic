@@ -13,7 +13,6 @@ from threading import Thread
 
 import colorama
 
-
 # TODO: Refactor later!
 paths = None
 
@@ -174,18 +173,18 @@ def get_default_tray_icon():
     theme_env = os.environ.get("GTK_THEME")
 
     # Default icon
-    icon_value = "img/tray/light/polychromatic.svg"
+    icon_value = "img/tray/polychromatic-light.svg"
 
     # TODO: Detect GTK dark theme.
 
     if desktop_env:
         if desktop_env == "KDE":
-            icon_value = "img/tray/light/breeze.svg"
+            icon_value = "img/tray/polychromatic-light-breeze.svg"
 
     elif theme_env:
         # Unity/Ubuntu MATE
         if theme_env.startswith("Ambiant") or theme_env.startswith("Ambiance"):
-            icon_value = "img/tray/light/humanity.svg"
+            icon_value = "img/tray/polychromatic-light-humanity.svg"
 
     return icon_value
 
@@ -207,8 +206,26 @@ def get_tray_icon(dbg, icon_value):
     if os.path.exists(icon_builtin):
         return icon_builtin
 
+    # v0.9.7+ renamed the icons due to naming conflicts. (#582)
+    # Map old paths for backwards compatibility with existing preferences.
+    old_icon_paths = {
+        "img/tray/polychromatic.svg":        "img/tray/polychromatic-green.svg",
+        "img/tray/light/polychromatic.svg":  "img/tray/polychromatic-light.svg",
+        "img/tray/dark/polychromatic.svg":   "img/tray/polychromatic-dark.svg",
+        "img/tray/animated/chroma.gif":      "img/tray/polychromatic-chroma.gif",
+        "img/tray/animated/ring.gif":        "img/tray/polychromatic-ring-animated.gif",
+        "img/tray/light/breeze.svg":         "img/tray/polychromatic-light-breeze.svg",
+        "img/tray/dark/breeze.svg":          "img/tray/polychromatic-dark-breeze.svg",
+        "img/tray/light/humanity.svg":       "img/tray/polychromatic-light-humanity.svg",
+        "img/tray/dark/humanity.svg":        "img/tray/polychromatic-dark-humanity.svg",
+    }
+
+    if icon_value in old_icon_paths:
+        new_icon_value = old_icon_paths[icon_value]
+        return get_tray_icon(dbg, new_icon_value)
+
     dbg.stdout("Tray icon missing: {0}\nUsing fallback icon.".format(icon_value), dbg.warning)
-    return get_icon("tray/light", "polychromatic")
+    return get_icon("tray", "polychromatic-light")
 
 
 def get_icon(folder, name):

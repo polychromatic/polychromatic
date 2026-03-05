@@ -12,6 +12,8 @@ from PyQt6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox,
                              QDoubleSpinBox, QLabel, QMessageBox, QPushButton,
                              QSpinBox, QTabWidget, QWidget)
 
+from polychromatic import common
+
 from .. import preferences as pref
 from .. import procpid
 from ..base import PolychromaticBase
@@ -94,7 +96,7 @@ class PreferencesWindow(shared.TabData):
             self.pref_data["tray"]["icon"] = new_icon
             self.restart_applet = True
 
-        tray_icon_picker = self.widgets.create_icon_picker_control(_set_new_tray_icon, self.pref_data["tray"]["icon"], self._("Choose Tray Applet Icon"), shared.IconPicker.PURPOSE_TRAY_ONLY)
+        tray_icon_picker = self.widgets.create_icon_picker_control(_set_new_tray_icon, common.get_tray_icon(self.dbg, self.pref_data["tray"]["icon"]), self._("Choose Tray Applet Icon"), shared.IconPicker.PURPOSE_TRAY_ONLY)
         tray_icon_widget = self.dialog.findChild(QLabel, "TrayIconPickerPlaceholder")
         tray_icon_widget.parentWidget().layout().replaceWidget(tray_icon_widget, tray_icon_picker)
 
