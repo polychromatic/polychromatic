@@ -266,13 +266,13 @@ def _is_secure_boot_enabled(_):
     except FileNotFoundError:
         pass
 
-    if len(sb_sysfile) > 0:
-        # The last digit of this sysfs file indicates whether secure boot is enabled
-        secureboot = subprocess.Popen(["od", "--address-radix=n", "--format=u1", sb_sysfile[0]], stdout=subprocess.PIPE)
-        status = secureboot.communicate()[0].decode("utf-8").split(" ")[-1].strip()
-
-        if int(status) == 0:
-            passed = True
+    # Check efivars (via sysfs) whether it is enabled
+    if sb_sysfile:
+        with open(sb_sysfile[0], "rb") as f:
+            data = f.read()
+            # 0-index: First 4 bytes are attributes. The 5th byte indicates enabled (1) or not (0)
+            if data[4] == 0:
+                passed = True
 
         return {
             "test_name": _("Check Secure Boot (EFI) status"),
