@@ -297,10 +297,10 @@ class DevicesTab(shared.TabData):
 
         try:
             device.refresh()
-        except Exception:
+        except Exception as e:
             # State may have changed, reload the device tab.
-            # TODO: Show "device changes detected" in status bar. Needs global function.
             self.middleman.invalidate_cache()
+            self._catch_command_error(device, e)
             return self.set_tab()
 
         layout.addWidget(self._get_device_summary_widget(device))
