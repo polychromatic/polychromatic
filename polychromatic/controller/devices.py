@@ -301,7 +301,23 @@ class DevicesTab(shared.TabData):
             # State may have changed, reload the device tab.
             self.middleman.invalidate_cache()
             self._catch_command_error(device, e)
-            return self.set_tab()
+
+            shared.clear_layout(layout)
+            self.widgets.populate_empty_state(layout, common.get_icon("empty", "nobackend"), self._("Unable to open device"), self._("The last line of the exception was:") + "\n" + str(e), buttons=[
+                {
+                    "label": self._("Retry"),
+                    "icon_folder": "general",
+                    "icon_name": "refresh",
+                    "action": lambda: self.open_device(device)
+                },
+                {
+                    "label": self._("Troubleshoot"),
+                    "icon_folder": "general",
+                    "icon_name": "preferences",
+                    "action": self._start_troubleshooter
+                }
+            ])
+            return
 
         layout.addWidget(self._get_device_summary_widget(device))
 
