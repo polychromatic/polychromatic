@@ -12,11 +12,11 @@ from PyQt6.QtCore import (QItemSelectionModel, QRect, QSize, QThread, QTimer,
                           QUrl)
 from PyQt6.QtGui import QAction, QColor, QFont, QIcon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWidgets import (QCheckBox, QColorDialog, QDockWidget, QLabel,
-                             QLineEdit, QMainWindow, QMenu, QMenuBar,
+from PyQt6.QtWidgets import (QCheckBox, QColorDialog, QComboBox, QDockWidget,
+                             QLabel, QLineEdit, QMainWindow, QMenu, QMenuBar,
                              QMessageBox, QPushButton, QSpinBox, QStatusBar,
                              QTableWidget, QToolBar, QToolButton, QTreeWidget,
-                             QWidget)
+                             QTreeWidgetItem, QWidget)
 
 from .. import common, effects
 from .. import preferences as pref
@@ -258,6 +258,7 @@ class VisualEffectEditor(shared.TabData):
         self.btn_layer_duplicate.clicked.connect(self.duplicate_layer)
         self.btn_layer_move_up.clicked.connect(self.raise_layer)
         self.btn_layer_move_down.clicked.connect(self.lower_layer)
+        self.layer_tree.itemSelectionChanged.connect(self.open_layer)
 
         # -- Edit (Sequence)
         self.action_new_frame.triggered.connect(self.new_frame)
@@ -889,8 +890,14 @@ class VisualEffectEditor(shared.TabData):
 
         # Load data into memory
         if self.layered_effect:
-            print("fixme:_shift_all_positions TYPE_LAYERED")
-            raise NotImplementedError
+            frame = {}
+            new_frame = {}
+            layer = self._get_current_layer()
+            for pos in layer["positions"]:
+                x, y = self._normalise_layer_position(pos)
+                if x is None or y is None:
+                    continue
+                frame.setdefault(str(x), {})[str(y)] = True
 
         elif self.sequence_effect:
             frame = self.data["frames"][self.current_frame]
@@ -959,8 +966,8 @@ class VisualEffectEditor(shared.TabData):
 
         # Save new data and refresh UI
         if self.layered_effect:
-            print("fixme:_shift_all_positions TYPE_LAYERED")
-            raise NotImplementedError
+            layer["positions"] = self._frame_to_layer_positions(new_frame)
+            self.open_layer()
 
         elif self.sequence_effect:
             self.data["frames"][self.current_frame] = new_frame
@@ -1175,6 +1182,27 @@ class VisualEffectEditor(shared.TabData):
         """
         Clears and populates layers on the dock controls.
         """
+        self.layer_tree.clear()
+
+        if not self.data["layers"]:
+            self.data["layers"].append(self._new_static_layer_data())
+
+        for index, layer in enumerate(self.data["layers"]):
+            item = QTreeWidgetItem()
+            item.setText(0, layer["name"])
+            item.setText(1, self.layer_labels.get(layer["type"], self._("Unknown")))
+            item.layer_index = index
+            if layer["type"] == effects.LAYER_STATIC:
+                item.setIcon(0, QIcon(common.generate_colour_bitmap(self.dbg, self._get_layer_colour(layer), 20)))
+            self.layer_tree.addTopLevelItem(item)
+
+        self.layer_tree.resizeColumnToContents(0)
+
+        if self.current_layer >= len(self.data["layers"]):
+            self.current_layer = len(self.data["layers"]) - 1
+
+        self.layer_tree.topLevelItem(self.current_layer).setSelected(True)
+        self._update_disabled_layer_controls()
 
     def open_layer(self):
         """
@@ -1183,44 +1211,260 @@ class VisualEffectEditor(shared.TabData):
         This will redraw the colours in the visual editor and physical device
         (if preview is enabled) based on the currently selected layer.
         """
+        selected = self.layer_tree.selectedItems()
+        if selected:
+            self.current_layer = selected[0].layer_index
+
+        self._populate_layer_properties()
+        self._draw_layered_effect()
+        self._update_disabled_layer_controls()
 
     def new_layer(self):
         """
         Create a new layer using default values and loads it.
         """
+        self.set_modified(True)
+        new_index = self.current_layer + 1
+        self.data["layers"].insert(new_index, self._new_static_layer_data())
+        self.current_layer = new_index
+        self.load_layers()
 
     def delete_layer(self):
         """
         Prompts for confirmation before deleting a layer.
         """
+        def _do_delete_layer():
+            self.set_modified(True)
+            del(self.data["layers"][self.current_layer])
+            if self.current_layer >= len(self.data["layers"]):
+                self.current_layer = len(self.data["layers"]) - 1
+            self.load_layers()
+
+        if len(self.data["layers"]) <= 1:
+            return
+
+        if self.suppress_delete_prompt:
+            return _do_delete_layer()
+
+        self.widgets.open_dialog(self.widgets.dialog_warning,
+                                 self._("Delete Layer"),
+                                 self._("Permanently delete this layer? There is no undo."),
+                                 info_text=self._("Tip: This confirmation can be suppressed via the Editor tab under Preferences."),
+                                 buttons=[QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No],
+                                 default_button=QMessageBox.StandardButton.Yes,
+                                 actions={QMessageBox.StandardButton.Yes: _do_delete_layer})
 
     def duplicate_layer(self):
         """
         Creates a new layer inheriting the data for the currently selected one
         and loads it.
         """
+        self.set_modified(True)
+        new_index = self.current_layer + 1
+        new_layer = copy.deepcopy(self._get_current_layer())
+        new_layer["name"] = self._("[] (Copy)").replace("[]", new_layer["name"])
+        self.data["layers"].insert(new_index, new_layer)
+        self.current_layer = new_index
+        self.load_layers()
 
     def raise_layer(self):
         """
         Moves the layer up by one and refreshes the visual editor.
         """
+        if self.current_layer <= 0:
+            return
+        self.set_modified(True)
+        self._swap_layer_data(-1)
 
     def lower_layer(self):
         """
         Moves the layer down by one and refreshes the visual editor.
         """
+        if self.current_layer >= len(self.data["layers"]) - 1:
+            return
+        self.set_modified(True)
+        self._swap_layer_data(1)
 
     def assign_key_to_layer(self, x, y):
         """
         User clicks on a key/LED in the visual editor. Add this to the layer
         and update the device preview.
         """
+        layer = self._get_current_layer()
+        position = [int(x), int(y)]
+        if position not in layer["positions"]:
+            layer["positions"].append(position)
+            self.set_modified(True)
+            self._draw_layered_effect()
 
     def unassign_key_to_layer(self, x, y):
         """
         User clicks on a key/LED in the visual editor. Remove this from the
         layer and update the device preview.
         """
+        layer = self._get_current_layer()
+        position = [int(x), int(y)]
+        if position in layer["positions"]:
+            layer["positions"].remove(position)
+            self.set_modified(True)
+            self._draw_layered_effect()
+
+    def _new_static_layer_data(self):
+        """
+        Return a new static layer.
+        """
+        return {
+            "name": self._("Layer []").replace("[]", str(len(self.data["layers"]) + 1)),
+            "type": effects.LAYER_STATIC,
+            "positions": [],
+            "properties": {
+                "colour": self.current_colour
+            }
+        }
+
+    def _get_current_layer(self):
+        """
+        Return the currently selected layer data.
+        """
+        return self.data["layers"][self.current_layer]
+
+    def _get_layer_colour(self, layer):
+        """
+        Return a layer's static colour, adding a default if needed.
+        """
+        colour = layer["properties"].get("colour")
+        if not colour:
+            colour = self.current_colour
+            layer["properties"]["colour"] = colour
+        return colour
+
+    def _populate_layer_properties(self):
+        """
+        Populate the properties dock for the currently selected layer.
+        """
+        layer = self._get_current_layer()
+        layout = self.dock_properties.widget().layout()
+        shared.clear_layout(layout)
+
+        name = QLineEdit()
+        name.setText(layer["name"])
+
+        def _rename_layer(new_name):
+            layer["name"] = new_name
+            item = self.layer_tree.topLevelItem(self.current_layer)
+            if item:
+                item.setText(0, new_name)
+            self.set_modified(True)
+
+        name.textChanged.connect(_rename_layer)
+        layout.addRow(self._("Name"), name)
+
+        layer_type = QComboBox()
+        layer_type.addItem(self.layer_labels[effects.LAYER_STATIC], effects.LAYER_STATIC)
+        layer_type.setEnabled(False)
+        layout.addRow(self._("Type"), layer_type)
+
+        def _set_colour(new_hex, data=None):
+            layer["properties"]["colour"] = new_hex
+            item = self.layer_tree.topLevelItem(self.current_layer)
+            if item:
+                item.setIcon(0, QIcon(common.generate_colour_bitmap(self.dbg, new_hex, 20)))
+            self.set_modified(True)
+            self._draw_layered_effect()
+
+        colour = self.widgets.create_colour_control(self._get_layer_colour(layer), _set_colour, None, self._("Layer Colour"))
+        layout.addRow(self._("Colour"), colour)
+
+    def _normalise_layer_position(self, pos):
+        """
+        Return an (x, y) tuple for stored layer positions.
+        """
+        try:
+            if isinstance(pos, dict):
+                return (int(pos["x"]), int(pos["y"]))
+            return (int(pos[0]), int(pos[1]))
+        except (KeyError, IndexError, TypeError, ValueError):
+            return (None, None)
+
+    def _frame_to_layer_positions(self, frame):
+        """
+        Convert a temporary frame dictionary into layer position storage.
+        """
+        positions = []
+        for x in frame.keys():
+            for y in frame[x].keys():
+                positions.append([int(x), int(y)])
+        return positions
+
+    def _render_layered_frame(self):
+        """
+        Render all layers into one frame dictionary.
+        """
+        frame = {}
+        for layer in reversed(self.data["layers"]):
+            if layer["type"] != effects.LAYER_STATIC:
+                continue
+
+            colour = self._get_layer_colour(layer)
+            for pos in layer["positions"]:
+                x, y = self._normalise_layer_position(pos)
+                if x is None or y is None:
+                    continue
+                frame.setdefault(str(x), {})[str(y)] = colour
+        return frame
+
+    def _draw_layered_effect(self):
+        """
+        Draw the rendered layer stack in the editor and live preview.
+        """
+        frame = self._render_layered_frame()
+        self.device_renderer.clear()
+
+        if self.matrix:
+            self.matrix.clear()
+
+        for x in frame.keys():
+            for y in frame[x].keys():
+                hex_value = frame[x][y]
+                self.device_renderer.set_pos(x, y, hex_value)
+
+                if self.matrix:
+                    try:
+                        rgb = common.hex_to_rgb(hex_value)
+                        self.matrix.set(int(x), int(y), rgb[0], rgb[1], rgb[2])
+                    except Exception as e:
+                        self._live_preview_failed(e)
+
+        if self.matrix:
+            self.matrix.draw()
+
+    def _swap_layer_data(self, relative_pos):
+        """
+        Relocate the selected layer by one position.
+        """
+        new_index = self.current_layer + relative_pos
+        current_data = copy.deepcopy(self.data["layers"][self.current_layer])
+        new_data = copy.deepcopy(self.data["layers"][new_index])
+        self.data["layers"][self.current_layer] = new_data
+        self.data["layers"][new_index] = current_data
+        self.current_layer = new_index
+        self.load_layers()
+
+    def _update_disabled_layer_controls(self):
+        """
+        Update layer toolbar/menu button states.
+        """
+        total_layers = len(self.data["layers"])
+        can_delete = total_layers > 1
+        can_raise = self.current_layer > 0
+        can_lower = self.current_layer < total_layers - 1
+
+        self.action_delete_layer.setEnabled(can_delete)
+        self.btn_layer_delete.setEnabled(can_delete)
+        self.action_layer_up.setEnabled(can_raise)
+        self.btn_layer_move_up.setEnabled(can_raise)
+        self.action_layer_down.setEnabled(can_lower)
+        self.btn_layer_move_down.setEnabled(can_lower)
 
     # ----------------------------
     # Specific to Sequence Effects

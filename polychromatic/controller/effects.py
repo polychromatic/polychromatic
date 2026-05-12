@@ -107,10 +107,6 @@ class EffectsTab(shared.CommonFileTab):
 
         dialog = shared.get_ui_widget(self.appdata, "new-effect", QDialog)
 
-        # TODO: Not all effect types are implemented, create sequence one
-        self.new_file_stage_2(dialog, effects.TYPE_SEQUENCE)
-        return
-
         btn_layered = dialog.findChild(QToolButton, "NewLayered")
         btn_scripted = dialog.findChild(QToolButton, "NewScripted")
         btn_sequence = dialog.findChild(QToolButton, "NewSequence")
@@ -146,8 +142,7 @@ class EffectsTab(shared.CommonFileTab):
         btn_scripted.clicked.connect(lambda: self.new_file_stage_2(dialog, effects.TYPE_SCRIPTED))
         btn_sequence.clicked.connect(lambda: self.new_file_stage_2(dialog, effects.TYPE_SEQUENCE))
 
-        # FIXME: Not yet implemented editors
-        btn_layered.setEnabled(False)
+        # FIXME: Scripted effects need a safe runner/editor before enabling.
         btn_scripted.setEnabled(False)
 
         dialog.open()
@@ -215,8 +210,8 @@ class EffectsTab(shared.CommonFileTab):
         # Summary
         icon_path = data["parsed"]["icon"]
         effect_type = data["type"]
-        can_edit = effect_type == effects.TYPE_SEQUENCE
-        can_play = effect_type == effects.TYPE_SEQUENCE
+        can_edit = effect_type in [effects.TYPE_LAYERED, effects.TYPE_SEQUENCE]
+        can_play = effect_type in [effects.TYPE_LAYERED, effects.TYPE_SEQUENCE]
         buttons = [
             {
                 "id": "play",
@@ -342,7 +337,7 @@ class EffectsTab(shared.CommonFileTab):
                                          self._("This file is being edited in another window. Please close that editor first."))
                 return
 
-        if effect_type == effects.TYPE_SEQUENCE:
+        if effect_type in [effects.TYPE_LAYERED, effects.TYPE_SEQUENCE]:
             self.editors[effect_path] = editor.VisualEffectEditor(self.appdata, self.fileman, effect_path)
         else:
             self.widgets.open_dialog(self.widgets.dialog_warning,
@@ -428,7 +423,7 @@ class EffectsTab(shared.CommonFileTab):
         or more hardware.
         """
         effect_type = self.current_file_data["type"]
-        if effect_type != effects.TYPE_SEQUENCE:
+        if effect_type not in [effects.TYPE_LAYERED, effects.TYPE_SEQUENCE]:
             self.widgets.open_dialog(self.widgets.dialog_warning,
                                      self._("Play Effect"),
                                      self._("This effect type cannot be played yet."))
