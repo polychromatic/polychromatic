@@ -606,9 +606,6 @@ class VisualEffectEditor(shared.TabData):
             # Populate layer dock
             self.load_layers()
 
-            # Open the first layer and populate properties dock
-            self.open_layer()
-
         elif self.sequence_effect:
             # Populate colours dock
             self.load_colours()
@@ -1206,6 +1203,7 @@ class VisualEffectEditor(shared.TabData):
         """
         Clears and populates layers on the dock controls.
         """
+        self.layer_tree.blockSignals(True)
         self.layer_tree.clear()
 
         if not self.data["layers"]:
@@ -1226,6 +1224,8 @@ class VisualEffectEditor(shared.TabData):
             self.current_layer = len(self.data["layers"]) - 1
 
         self.layer_tree.topLevelItem(self.current_layer).setSelected(True)
+        self.layer_tree.blockSignals(False)
+        self.open_layer()
         self._update_disabled_layer_controls()
 
     def open_layer(self):

@@ -510,10 +510,11 @@ class EffectMetadataEditor(shared.TabData):
             if not self._populate_devices():
                 return
 
-            # Select appropriate mapping mode
+            # Select appropriate mapping mode. New effects are handled by
+            # _device_updated(), which prefers device graphics when available.
             if self.data["map_graphic"]:
                 self.map_graphic_svg.setChecked(True)
-            else:
+            elif self.data["map_device"]:
                 self.map_graphic_grid.setChecked(True)
             self._update_graphic_preview()
 
