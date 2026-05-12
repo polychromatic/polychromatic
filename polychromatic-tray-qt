@@ -1,0 +1,586 @@
+#!/usr/bin/python3
+#
+# Polychromatic is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+"""
+Native Qt system tray applet for Polychromatic.
+
+This is intentionally independent from the GTK/AppIndicator applet while it is
+being proven. KDE/Plasma exposes Qt's QSystemTrayIcon through the native Status
+Notifier path, which also lets animated tray icons work without manually
+rewriting indicator icons.
+"""
+
+import argparse
+import atexit
+import os
+import signal
+import sys
+
+import setproctitle
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QAction, QColor, QIcon, QMovie
+from PyQt6.QtWidgets import (QApplication, QColorDialog, QMenu, QMessageBox,
+                             QSystemTrayIcon)
+
+import polychromatic.bulkapply as bulkapply
+import polychromatic.common as common
+import polychromatic.effects as effects
+import polychromatic.preferences as pref
+import polychromatic.procpid as procpid
+from polychromatic.backends._backend import Backend
+from polychromatic.base import PolychromaticBase
+
+VERSION = "0.9.7"
+
+
+class QtTrayApplet(PolychromaticBase):
+    """
+    Polychromatic tray menu rendered with Qt instead of GTK/AppIndicator.
+    """
+    def __init__(self, qapp):
+        self.qapp = qapp
+        self.tray = None
+        self.menu = None
+        self.menu_refs = []
+        self.animation_movie = None
+        self.primary_colour = None
+        self.saved_colours = []
+        self.colours_mono = []
+        self.fileman_effects = None
+        self.process = procpid.ProcessManager("tray-applet")
+
+    def start(self):
+        """
+        Initialise backend state and expose the tray icon.
+        """
+        self.init_base(__file__, sys.argv)
+        self.middleman.init()
+
+        self.saved_colours = pref.get_colour_list(self._)
+        self.colours_mono = common.get_green_shades(self._)
+        self.fileman_effects = effects.EffectFileManagement()
+
+        self._register_process()
+        self._build_tray()
+        return True
+
+    def _register_process(self):
+        """
+        Keep Polychromatic's normal one-tray-process semantics.
+        """
+        if self.process.is_another_instance_is_running():
+            self.process.stop()
+        self.process.set_component_pid()
+
+    def stop(self):
+        """
+        Release the process lock and quit the Qt application.
+        """
+        self.process.release_component_pid()
+        self.qapp.quit()
+
+    def reload(self):
+        """
+        Re-read preferences/devices and rebuild the icon/menu in-place.
+        """
+        self.dbg.stdout("Reloading tray applet...", self.dbg.action, 1)
+        self.preferences = pref.load_file(self.paths.preferences)
+        self.middleman.invalidate_cache()
+        self._set_tray_icon()
+        self._build_menu()
+
+    def _get_icon(self, folder, name):
+        return common.get_icon(folder, name)
+
+    def _icon(self, path):
+        if path and os.path.exists(path):
+            return QIcon(path)
+        return QIcon()
+
+    def _get_tray_icon_path(self):
+        return common.get_tray_icon(self.dbg, self.preferences["tray"]["icon"])
+
+    def _build_tray(self):
+        """
+        Create the QSystemTrayIcon once, then rebuild only its menu when needed.
+        """
+        if not QSystemTrayIcon.isSystemTrayAvailable():
+            self.dbg.stdout("Qt system tray is not available in this session.", self.dbg.error)
+
+        self.tray = QSystemTrayIcon()
+        self.tray.setToolTip("Polychromatic")
+        self.tray.activated.connect(self._activate_controller)
+        self._set_tray_icon()
+        self._build_menu()
+        self.tray.show()
+
+    def _set_tray_icon(self):
+        """
+        Apply a static icon, or animate a GIF using Qt's native frame timer.
+        """
+        icon_path = self._get_tray_icon_path()
+        if self.animation_movie:
+            self.animation_movie.stop()
+            self.animation_movie = None
+
+        if icon_path.lower().endswith(".gif"):
+            movie = QMovie(icon_path)
+            if movie.isValid():
+                movie.setCacheMode(QMovie.CacheMode.CacheAll)
+                # Slow animated tray icons down a little so they stay visible
+                # without spinning a CPU core on fast GIFs.
+                movie.setSpeed(65)
+                self.animation_movie = movie
+
+                def _update_icon():
+                    pixmap = self.animation_movie.currentPixmap()
+                    if not pixmap.isNull():
+                        self.tray.setIcon(QIcon(pixmap))
+
+                self.animation_movie.frameChanged.connect(lambda _frame: _update_icon())
+                self.animation_movie.start()
+                _update_icon()
+                return
+
+        self.tray.setIcon(self._icon(icon_path))
+
+    def _build_menu(self):
+        menu = QMenu()
+        self.menu = menu
+        self.menu_refs = [menu]
+
+        devices = self.middleman.get_devices()
+        if devices:
+            for device in sorted(devices, key=lambda item: item.name):
+                menu.addMenu(self._device_menu(device))
+        else:
+            action = QAction(self._("No devices found"), menu)
+            action.setEnabled(False)
+            action.setIcon(self._icon(self._get_icon("general", "unknown")))
+            menu.addAction(action)
+
+        unsupported = self.middleman.get_unsupported_devices()
+        for device in unsupported:
+            action = QAction("{0} {1}".format(self._("Unrecognised:"), device.name), menu)
+            action.setEnabled(False)
+            action.setIcon(self._icon(device.form_factor.get("icon")))
+            menu.addAction(action)
+
+        if len(devices) > 1:
+            menu.addSeparator()
+            menu.addMenu(self._bulk_menu())
+
+        menu.addSeparator()
+        self._add_action(
+            menu,
+            self._("Open Controller"),
+            self.launch_controller,
+            self._get_icon("general", "controller"),
+        )
+        self._add_action(menu, self._("Refresh"), self.reload, self._get_icon("general", "refresh"))
+        self._add_action(menu, self._("Quit"), self.stop)
+
+        self.tray.setContextMenu(menu)
+
+    def _new_menu(self, label, parent=None):
+        """
+        Create a QMenu and keep a Python reference for tray submenu lifetime.
+        """
+        menu = QMenu(label, parent)
+        self.menu_refs.append(menu)
+        return menu
+
+    def _add_action(self, menu, label, callback=None, icon_path=None, enabled=True):
+        action = QAction(label, menu)
+        action.setEnabled(enabled)
+        if icon_path:
+            action.setIcon(self._icon(icon_path))
+        if callback:
+            action.triggered.connect(lambda checked=False, fn=callback: fn())
+        menu.addAction(action)
+        return action
+
+    def _add_submenu(self, menu, label, icon_path=None, enabled=True):
+        submenu = self._new_menu(label, menu)
+        submenu.setEnabled(enabled)
+        if icon_path:
+            submenu.setIcon(self._icon(icon_path))
+        menu.addMenu(submenu)
+        return submenu
+
+    def _device_menu(self, device):
+        submenu = self._new_menu(device.name, self.menu)
+        submenu.setIcon(self._icon(device.form_factor.get("icon")))
+
+        multiple_zones = len(device.zones) > 1
+        can_set_colours = False
+
+        for zone in device.zones:
+            if multiple_zones:
+                title = QAction(zone.label, submenu)
+                title.setEnabled(False)
+                title.setIcon(self._icon(zone.icon))
+                submenu.addAction(title)
+
+            for option in zone.options:
+                if option.colours_required > 0:
+                    can_set_colours = True
+
+                if isinstance(option, (Backend.EffectOption, Backend.MultipleChoiceOption)):
+                    if option.parameters:
+                        submenu.addMenu(self._parameters_menu(option, device))
+                        for param in option.parameters:
+                            if param.colours_required > 0:
+                                can_set_colours = True
+                    else:
+                        self._add_action(
+                            submenu,
+                            option.label,
+                            lambda checked=False, opt=option, dev=device: self.apply_option(opt, None, 0, dev),
+                            option.icon,
+                        )
+                elif isinstance(option, Backend.SliderOption):
+                    submenu.addMenu(self._slider_menu(option, device))
+                elif isinstance(option, Backend.ToggleOption):
+                    submenu.addMenu(self._toggle_menu(option, device))
+
+            if multiple_zones:
+                submenu.addSeparator()
+
+        if device.dpi:
+            submenu.addMenu(self._dpi_menu(device))
+
+        if device.matrix:
+            submenu.addSeparator()
+            submenu.addMenu(self._effects_menu(device))
+
+        if can_set_colours:
+            if multiple_zones:
+                title = QAction(self._("All Zones"), submenu)
+                title.setEnabled(False)
+                title.setIcon(self._icon(device.form_factor.get("icon")))
+                submenu.addAction(title)
+            submenu.addMenu(self._colour_menu(device))
+
+        return submenu
+
+    def _parameters_menu(self, option, device):
+        submenu = self._new_menu(option.label, self.menu)
+        submenu.setIcon(self._icon(option.icon))
+        for param in option.parameters:
+            self._add_action(
+                submenu,
+                param.label,
+                lambda checked=False, opt=option, prm=param, dev=device:
+                    self.apply_option(opt, prm.data, prm.colours_required, dev),
+                param.icon,
+            )
+        return submenu
+
+    def _slider_menu(self, option, device):
+        submenu = self._new_menu(option.label, self.menu)
+        submenu.setIcon(self._icon(option.icon))
+
+        min_value = int(option.min)
+        max_value = int(option.max)
+        step = int(option.step)
+        if min_value == 0 and max_value == 100:
+            step = int((max_value - min_value) / 4)
+        elif min_value == 1 and max_value == 100:
+            step = 10
+
+        for value in range(max_value, min_value - step, 0 - step):
+            icon = option.icon
+            if option.uid == "brightness":
+                icon = self._get_icon("params", str(value))
+            suffix = option.suffix if value == 1 else option.suffix_plural
+            self._add_action(
+                submenu,
+                str(value) + suffix,
+                lambda checked=False, opt=option, val=int(value), dev=device: self.apply_option(opt, val, 0, dev),
+                icon,
+            )
+        return submenu
+
+    def _toggle_menu(self, option, device):
+        submenu = self._new_menu(option.label, self.menu)
+        submenu.setIcon(self._icon(option.icon))
+
+        label_enable = option.label_enable if option.label_enable else self._("On")
+        label_disable = option.label_disable if option.label_disable else self._("Off")
+        self._add_action(
+            submenu,
+            label_enable,
+            lambda checked=False, opt=option, dev=device: self.apply_option(opt, True, 0, dev),
+            option.icon_enable,
+        )
+        self._add_action(
+            submenu,
+            label_disable,
+            lambda checked=False, opt=option, dev=device: self.apply_option(opt, False, 0, dev),
+            option.icon_disable,
+        )
+        return submenu
+
+    def _dpi_menu(self, device):
+        submenu = self._new_menu(self._("DPI"), self.menu)
+        submenu.setIcon(self._icon(self._get_icon("general", "dpi")))
+
+        stages = device.dpi.default_stages
+        dpi_file = os.path.join(self.paths.dpi, device.name + ".list")
+        if os.path.exists(dpi_file):
+            values = []
+            with open(dpi_file, "r", encoding="utf-8") as file:
+                for line in file.readlines():
+                    try:
+                        dpi_x, dpi_y = line.split(",")
+                        values.append([int(dpi_x), int(dpi_y)])
+                    except ValueError:
+                        pass
+            if values:
+                stages = values
+
+        total = len(stages)
+        for index, value in enumerate(stages):
+            dpi_x, dpi_y = value
+            label = str(dpi_x) if dpi_x == dpi_y else "{0},{1}".format(dpi_x, dpi_y)
+            icon = None
+            if index == 0:
+                icon = self._get_icon("general", "dpi-slow")
+            elif index == total - 1:
+                icon = self._get_icon("general", "dpi-fast")
+            self._add_action(
+                submenu,
+                label,
+                lambda checked=False, dev=device, val=value: self.set_dpi(dev, val),
+                icon,
+            )
+        return submenu
+
+    def _effects_menu(self, device):
+        submenu = self._new_menu(self._("Effects"), self.menu)
+        submenu.setIcon(self._icon(self._get_icon("general", "effects")))
+        effect_items = self.fileman_effects.get_item_list_by_key_filter("map_device", device.name)
+        effect_items = sorted(effect_items, key=lambda item: item["name"])
+
+        if effect_items:
+            for item in effect_items:
+                self._add_action(
+                    submenu,
+                    item["name"],
+                    lambda checked=False, dev=device, path=item["path"]: self.set_custom_effect(dev, path),
+                    item["icon"],
+                )
+        else:
+            self._add_action(submenu, self._("No custom effects"), enabled=False)
+
+        submenu.addSeparator()
+        self._add_action(
+            submenu,
+            self._("Edit Effects..."),
+            lambda checked=False: self.launch_controller("effects"),
+            self._get_icon("general", "edit"),
+        )
+        return submenu
+
+    def _colour_menu(self, device):
+        submenu = self._new_menu(self._("Primary Colour"), self.menu)
+        submenu.setIcon(self._icon(self._get_icon("general", "palette")))
+
+        colours = self.colours_mono if device.monochromatic else self.saved_colours
+        for colour in colours:
+            try:
+                name = colour["name"]
+                hex_value = colour["hex"]
+                icon = common.generate_colour_bitmap(self.dbg, hex_value)
+                self._add_action(
+                    submenu,
+                    name,
+                    lambda checked=False, dev=device, hex_val=hex_value: self.set_colour_primary(dev, hex_val),
+                    icon,
+                )
+            except Exception:
+                self.dbg.stdout("Ignoring invalid colour data in tray menu.", self.dbg.error)
+
+        if not device.monochromatic:
+            submenu.addSeparator()
+            self._add_action(
+                submenu,
+                self._("Custom..."),
+                lambda checked=False, dev=device: self.set_custom_colour(dev),
+                self._get_icon("general", "palette"),
+            )
+            self._add_action(
+                submenu,
+                self._("Edit Colours..."),
+                lambda checked=False: self.launch_controller("colours"),
+                self._get_icon("general", "edit"),
+            )
+
+        return submenu
+
+    def _bulk_menu(self):
+        menu = self._new_menu(self._("Apply to All"), self.menu)
+        menu.setIcon(self._icon(self._get_icon("devices", "all")))
+        bulk_options = bulkapply.BulkApplyOptions(self.middleman)
+
+        self._add_bulk_submenu(
+            menu,
+            bulk_options.brightness,
+            self._("Brightness"),
+            self._get_icon("options", "brightness"),
+        )
+        self._add_bulk_submenu(menu, bulk_options.effects, self._("Effects"), self._get_icon("general", "effects"))
+        self._add_bulk_submenu(
+            menu,
+            bulk_options.colours,
+            self._("Primary Colour"),
+            self._get_icon("general", "palette"),
+        )
+        return menu
+
+    def _add_bulk_submenu(self, parent, options, label, icon):
+        if not options:
+            return
+        submenu = self._add_submenu(parent, label, icon)
+        for option in options:
+            self._add_action(submenu, option.label, option.apply, option.icon)
+
+    def _catch_command_error(self, device, err):
+        backend_name = device.backend.name
+        exception = common.get_exception_as_string(err)
+        my_fault = common.is_exception_fault_by_app(err)
+        self.dbg.stdout(exception, self.dbg.error)
+
+        if my_fault:
+            title = self._("Request Failed")
+            message = self._(
+                "There's a fault with Polychromatic's integration with [OpenRazer] "
+                "for this device or option."
+            ).replace("[OpenRazer]", backend_name)
+        else:
+            title = self._("Communication Error")
+            message = self._(
+                "While sending this command to [OpenRazer], an error occurred "
+                "outside of Polychromatic's control."
+            ).replace("[OpenRazer]", backend_name)
+
+        QMessageBox.warning(None, title, message + "\n\n" + exception)
+
+    def apply_option(self, option, param_data, param_colours, device):
+        if isinstance(option, Backend.EffectOption):
+            self.middleman.stop_software_effect(device.serial)
+
+        if self.primary_colour and (option.colours_required > 0 or param_colours > 0):
+            option.colours[0] = self.primary_colour
+
+        self.dbg.stdout("Setting option '{0}' (data: {1})".format(str(option), str(param_data)), self.dbg.action, 1)
+        try:
+            option.apply(param_data)
+        except Exception as err:
+            self._catch_command_error(device, err)
+
+    def set_colour_primary(self, device, hex_value):
+        self.primary_colour = hex_value
+        try:
+            self.middleman.set_colour_for_active_effect_device(device, hex_value)
+        except Exception as err:
+            self._catch_command_error(device, err)
+
+    def set_custom_colour(self, device):
+        colour = QColorDialog.getColor(QColor("#00ff00"), None, self._("Set Primary Colour"))
+        if colour.isValid():
+            self.set_colour_primary(device, colour.name())
+
+    def set_dpi(self, device, value):
+        dpi_x, dpi_y = value
+        try:
+            device.dpi.set(dpi_x, dpi_y)
+        except Exception as err:
+            self._catch_command_error(device, err)
+
+    def set_custom_effect(self, device, path):
+        procmgr = procpid.ProcessManager("helper")
+        procmgr.start_component(["--run-fx", path, "--device-name", device.name])
+
+    def launch_controller(self, tab=None):
+        common.execute_polychromatic_component(self.dbg, "controller", tab)
+
+    def _activate_controller(self, reason):
+        if reason in [QSystemTrayIcon.ActivationReason.Trigger,
+                      QSystemTrayIcon.ActivationReason.DoubleClick]:
+            self.launch_controller()
+
+
+def parse_parameters():
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("-h", "--help", help="Show this help message and exit", action="help")
+    parser.add_argument("-v", "--verbose", help="Be verbose to stdout", action="store_true")
+    parser.add_argument("--version", help="Print program version and exit", action="store_true")
+    parser.add_argument("--locale", help="Force a specific locale, e.g. de_DE")
+    args = parser.parse_args()
+
+    if args.version:
+        app_version, git_commit, py_version = common.get_versions(VERSION)
+        print("Polychromatic", app_version)
+        if git_commit:
+            print("Commit:", git_commit)
+        print("Python:", py_version)
+        sys.exit(0)
+
+    return args
+
+
+def main():
+    setproctitle.setproctitle("polychromatic-tray-applet")
+    args = parse_parameters()
+
+    qapp = QApplication(sys.argv)
+    qapp.setQuitOnLastWindowClosed(False)
+    qapp.setAttribute(Qt.ApplicationAttribute.AA_DontShowIconsInMenus, False)
+
+    applet = QtTrayApplet(qapp)
+    if args.verbose:
+        applet.dbg.verbose_level = 1
+        applet.dbg.stdout("Verbose enabled", applet.dbg.debug, 1)
+    if args.locale:
+        applet.reinit_locales(args.locale)
+
+    signal_flags = {
+        "reload": False,
+        "stop": False,
+    }
+
+    def _stop(_num=None, _frame=None):
+        signal_flags["stop"] = True
+
+    def _reload(_num=None, _frame=None):
+        signal_flags["reload"] = True
+
+    def _process_signals():
+        if signal_flags["stop"]:
+            signal_flags["stop"] = False
+            applet.stop()
+        if signal_flags["reload"]:
+            signal_flags["reload"] = False
+            applet.reload()
+
+    signal.signal(signal.SIGINT, _stop)
+    signal.signal(signal.SIGUSR1, _reload)
+    signal.signal(signal.SIGUSR2, _stop)
+    atexit.register(applet.process.release_component_pid)
+
+    applet.start()
+    signal_timer = QTimer(qapp)
+    signal_timer.setInterval(200)
+    signal_timer.timeout.connect(_process_signals)
+    signal_timer.start()
+    return qapp.exec()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
