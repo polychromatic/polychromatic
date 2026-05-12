@@ -1,107 +1,508 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="724" height="262" viewBox="0 0 724 262" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <rect x="1" y="1" width="722" height="260" rx="10" style="fill:#181818;stroke:#555;stroke-width:2" nochange="true"/>
-  <rect x="6" y="6" width="712" height="250" rx="7" style="fill:#222;stroke:#333;stroke-width:1" nochange="true"/>
-  <g id="x0-y0" class="LED"><rect x="8" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="26" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Esc</text></g>
-  <g id="x1-y0" class="LED"><rect x="50" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="68" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x2-y0" class="LED"><rect x="92" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="110" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F1</text></g>
-  <g id="x3-y0" class="LED"><rect x="134" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="152" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F2</text></g>
-  <g id="x4-y0" class="LED"><rect x="176" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="194" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F3</text></g>
-  <g id="x5-y0" class="LED"><rect x="218" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="236" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F4</text></g>
-  <g id="x6-y0" class="LED"><rect x="260" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="278" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F5</text></g>
-  <g id="x7-y0" class="LED"><rect x="302" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="320" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F6</text></g>
-  <g id="x8-y0" class="LED"><rect x="344" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="362" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F7</text></g>
-  <g id="x9-y0" class="LED"><rect x="386" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="404" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F8</text></g>
-  <g id="x10-y0" class="LED"><rect x="428" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="446" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F9</text></g>
-  <g id="x11-y0" class="LED"><rect x="470" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="488" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F10</text></g>
-  <g id="x12-y0" class="LED"><rect x="512" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="530" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F11</text></g>
-  <g id="x13-y0" class="LED"><rect x="554" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="572" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F12</text></g>
-  <g id="x14-y0" class="LED"><rect x="596" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="614" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Prt</text></g>
-  <g id="x15-y0" class="LED"><rect x="638" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="656" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Scr</text></g>
-  <g id="x16-y0" class="LED"><rect x="680" y="8" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="698" y="30" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Pse</text></g>
-  <g id="x0-y1" class="LED"><rect x="8" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="26" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">`</text></g>
-  <g id="x1-y1" class="LED"><rect x="50" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="68" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">1</text></g>
-  <g id="x2-y1" class="LED"><rect x="92" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="110" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">2</text></g>
-  <g id="x3-y1" class="LED"><rect x="134" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="152" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">3</text></g>
-  <g id="x4-y1" class="LED"><rect x="176" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="194" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">4</text></g>
-  <g id="x5-y1" class="LED"><rect x="218" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="236" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">5</text></g>
-  <g id="x6-y1" class="LED"><rect x="260" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="278" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">6</text></g>
-  <g id="x7-y1" class="LED"><rect x="302" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="320" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">7</text></g>
-  <g id="x8-y1" class="LED"><rect x="344" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="362" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">8</text></g>
-  <g id="x9-y1" class="LED"><rect x="386" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="404" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">9</text></g>
-  <g id="x10-y1" class="LED"><rect x="428" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="446" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">0</text></g>
-  <g id="x11-y1" class="LED"><rect x="470" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="488" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">-</text></g>
-  <g id="x12-y1" class="LED"><rect x="512" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="530" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">=</text></g>
-  <g id="x13-y1" class="LED"><rect x="554" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="572" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Bksp</text></g>
-  <g id="x14-y1" class="LED"><rect x="596" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="614" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Ins</text></g>
-  <g id="x15-y1" class="LED"><rect x="638" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="656" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Home</text></g>
-  <g id="x16-y1" class="LED"><rect x="680" y="50" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="698" y="72" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">PgUp</text></g>
-  <g id="x0-y2" class="LED"><rect x="8" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="26" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Tab</text></g>
-  <g id="x1-y2" class="LED"><rect x="50" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="68" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Q</text></g>
-  <g id="x2-y2" class="LED"><rect x="92" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="110" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">W</text></g>
-  <g id="x3-y2" class="LED"><rect x="134" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="152" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">E</text></g>
-  <g id="x4-y2" class="LED"><rect x="176" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="194" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">R</text></g>
-  <g id="x5-y2" class="LED"><rect x="218" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="236" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">T</text></g>
-  <g id="x6-y2" class="LED"><rect x="260" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="278" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Y</text></g>
-  <g id="x7-y2" class="LED"><rect x="302" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="320" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">U</text></g>
-  <g id="x8-y2" class="LED"><rect x="344" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="362" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">I</text></g>
-  <g id="x9-y2" class="LED"><rect x="386" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="404" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">O</text></g>
-  <g id="x10-y2" class="LED"><rect x="428" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="446" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">P</text></g>
-  <g id="x11-y2" class="LED"><rect x="470" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="488" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">[</text></g>
-  <g id="x12-y2" class="LED"><rect x="512" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="530" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">]</text></g>
-  <g id="x13-y2" class="LED"><rect x="554" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="572" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">\</text></g>
-  <g id="x14-y2" class="LED"><rect x="596" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="614" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Del</text></g>
-  <g id="x15-y2" class="LED"><rect x="638" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="656" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">End</text></g>
-  <g id="x16-y2" class="LED"><rect x="680" y="92" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="698" y="114" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">PgDn</text></g>
-  <g id="x0-y3" class="LED"><rect x="8" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="26" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Caps</text></g>
-  <g id="x1-y3" class="LED"><rect x="50" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="68" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">A</text></g>
-  <g id="x2-y3" class="LED"><rect x="92" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="110" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">S</text></g>
-  <g id="x3-y3" class="LED"><rect x="134" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="152" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">D</text></g>
-  <g id="x4-y3" class="LED"><rect x="176" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="194" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">F</text></g>
-  <g id="x5-y3" class="LED"><rect x="218" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="236" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">G</text></g>
-  <g id="x6-y3" class="LED"><rect x="260" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="278" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">H</text></g>
-  <g id="x7-y3" class="LED"><rect x="302" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="320" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">J</text></g>
-  <g id="x8-y3" class="LED"><rect x="344" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="362" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">K</text></g>
-  <g id="x9-y3" class="LED"><rect x="386" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="404" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">L</text></g>
-  <g id="x10-y3" class="LED"><rect x="428" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="446" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">;</text></g>
-  <g id="x11-y3" class="LED"><rect x="470" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="488" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">'</text></g>
-  <g id="x12-y3" class="LED"><rect x="512" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="530" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">#</text></g>
-  <g id="x13-y3" class="LED"><rect x="554" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="572" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Enter</text></g>
-  <g id="x14-y3" class="LED"><rect x="596" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="614" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x15-y3" class="LED"><rect x="638" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="656" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x16-y3" class="LED"><rect x="680" y="134" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="698" y="156" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x0-y4" class="LED"><rect x="8" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="26" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Shift</text></g>
-  <g id="x1-y4" class="LED"><rect x="50" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="68" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Z</text></g>
-  <g id="x2-y4" class="LED"><rect x="92" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="110" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">X</text></g>
-  <g id="x3-y4" class="LED"><rect x="134" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="152" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">C</text></g>
-  <g id="x4-y4" class="LED"><rect x="176" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="194" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">V</text></g>
-  <g id="x5-y4" class="LED"><rect x="218" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="236" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">B</text></g>
-  <g id="x6-y4" class="LED"><rect x="260" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="278" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">N</text></g>
-  <g id="x7-y4" class="LED"><rect x="302" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="320" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">M</text></g>
-  <g id="x8-y4" class="LED"><rect x="344" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="362" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">,</text></g>
-  <g id="x9-y4" class="LED"><rect x="386" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="404" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">.</text></g>
-  <g id="x10-y4" class="LED"><rect x="428" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="446" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">/</text></g>
-  <g id="x11-y4" class="LED"><rect x="470" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="488" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Shift</text></g>
-  <g id="x12-y4" class="LED"><rect x="512" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="530" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x13-y4" class="LED"><rect x="554" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="572" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Up</text></g>
-  <g id="x14-y4" class="LED"><rect x="596" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="614" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x15-y4" class="LED"><rect x="638" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="656" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x16-y4" class="LED"><rect x="680" y="176" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="698" y="198" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x0-y5" class="LED"><rect x="8" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="26" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Ctrl</text></g>
-  <g id="x1-y5" class="LED"><rect x="50" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="68" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Fn</text></g>
-  <g id="x2-y5" class="LED"><rect x="92" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="110" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Win</text></g>
-  <g id="x3-y5" class="LED"><rect x="134" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="152" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Alt</text></g>
-  <g id="x4-y5" class="LED"><rect x="176" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="194" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x5-y5" class="LED"><rect x="218" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="236" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Space</text></g>
-  <g id="x6-y5" class="LED"><rect x="260" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="278" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x7-y5" class="LED"><rect x="302" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="320" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x8-y5" class="LED"><rect x="344" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="362" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x9-y5" class="LED"><rect x="386" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="404" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Alt</text></g>
-  <g id="x10-y5" class="LED"><rect x="428" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="446" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Menu</text></g>
-  <g id="x11-y5" class="LED"><rect x="470" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="488" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Ctrl</text></g>
-  <g id="x12-y5" class="LED"><rect x="512" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="530" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Left</text></g>
-  <g id="x13-y5" class="LED"><rect x="554" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="572" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Down</text></g>
-  <g id="x14-y5" class="LED"><rect x="596" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="614" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none">Right</text></g>
-  <g id="x15-y5" class="LED"><rect x="638" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="656" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
-  <g id="x16-y5" class="LED"><rect x="680" y="218" width="36" height="36" rx="4" style="fill:#00ff00;stroke:#008000;stroke-width:1.5"/><text class="label" x="698" y="240" text-anchor="middle" style="font-family:sans-serif;font-size:8px;fill:#111;stroke:none"></text></g>
+<svg width="806" height="306" viewBox="0 0 806 306" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="case" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#303238"/><stop offset="0.48" stop-color="#191b20"/><stop offset="1" stop-color="#101115"/></linearGradient>
+    <linearGradient id="keycap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#31343a"/><stop offset="0.55" stop-color="#202329"/><stop offset="1" stop-color="#14161b"/></linearGradient>
+    <linearGradient id="keyedge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00ff00"/><stop offset="1" stop-color="#009a45"/></linearGradient>
+    <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.45"/></filter>
+  </defs>
+  <rect x="3" y="3" width="800" height="300" rx="18" style="fill:url(#case);stroke:#525761;stroke-width:2.2" nochange="true"/>
+  <rect x="13" y="14" width="780" height="278" rx="13" style="fill:#17191e;stroke:#0b0c10;stroke-width:1" nochange="true"/>
+  <path d="M24 34 C24 25 31 20 40 20 H766 C776 20 783 27 783 37 V62 H24 Z" style="fill:#3a3d44;opacity:0.24" nochange="true"/>
+  <g id="x0-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="18" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="20" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="36" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Esc</text>
+  </g>
+  <g id="x1-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="62" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="64" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x2-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="106" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="108" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="124" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">F1</text>
+  </g>
+  <g id="x3-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="150" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="152" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="168" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">F2</text>
+  </g>
+  <g id="x4-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="194" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="196" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="212" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">F3</text>
+  </g>
+  <g id="x5-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="238" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="240" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="256" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">F4</text>
+  </g>
+  <g id="x6-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="282" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="284" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="300" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">F5</text>
+  </g>
+  <g id="x7-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="326" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="328" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="344" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">F6</text>
+  </g>
+  <g id="x8-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="370" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="372" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="388" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">F7</text>
+  </g>
+  <g id="x9-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="414" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="416" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="432" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">F8</text>
+  </g>
+  <g id="x10-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="458" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="460" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="476" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">F9</text>
+  </g>
+  <g id="x11-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="502" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="504" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="520" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">F10</text>
+  </g>
+  <g id="x12-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="546" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="548" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="564" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">F11</text>
+  </g>
+  <g id="x13-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="590" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="592" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="608" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">F12</text>
+  </g>
+  <g id="x14-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="660" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="662" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="678" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Prt</text>
+  </g>
+  <g id="x15-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="704" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="706" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="722" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Scr</text>
+  </g>
+  <g id="x16-y0" class="LED" filter="url(#soft-shadow)">
+    <rect x="748" y="24" width="36" height="32" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="750" y="26" width="32" height="27" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="766" y="43" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Pse</text>
+  </g>
+  <g id="x0-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="18" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="20" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="36" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">`</text>
+  </g>
+  <g id="x1-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="62" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="64" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="80" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">1</text>
+  </g>
+  <g id="x2-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="106" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="108" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="124" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">2</text>
+  </g>
+  <g id="x3-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="150" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="152" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="168" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">3</text>
+  </g>
+  <g id="x4-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="194" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="196" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="212" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">4</text>
+  </g>
+  <g id="x5-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="238" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="240" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="256" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">5</text>
+  </g>
+  <g id="x6-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="282" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="284" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="300" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">6</text>
+  </g>
+  <g id="x7-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="326" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="328" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="344" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">7</text>
+  </g>
+  <g id="x8-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="370" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="372" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="388" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">8</text>
+  </g>
+  <g id="x9-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="414" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="416" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="432" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">9</text>
+  </g>
+  <g id="x10-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="458" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="460" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="476" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">0</text>
+  </g>
+  <g id="x11-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="502" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="504" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="520" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">-</text>
+  </g>
+  <g id="x12-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="546" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="548" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="564" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">=</text>
+  </g>
+  <g id="x13-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="580" y="72" width="54" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="582" y="74" width="50" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="607" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Bksp</text>
+  </g>
+  <g id="x14-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="660" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="662" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="678" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Ins</text>
+  </g>
+  <g id="x15-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="704" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="706" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="722" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Home</text>
+  </g>
+  <g id="x16-y1" class="LED" filter="url(#soft-shadow)">
+    <rect x="748" y="72" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="750" y="74" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="766" y="93" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">PgUp</text>
+  </g>
+  <g id="x0-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="18" y="116" width="46" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="20" y="118" width="42" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="41" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Tab</text>
+  </g>
+  <g id="x1-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="62" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="64" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="80" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">Q</text>
+  </g>
+  <g id="x2-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="106" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="108" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="124" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">W</text>
+  </g>
+  <g id="x3-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="150" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="152" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="168" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">E</text>
+  </g>
+  <g id="x4-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="194" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="196" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="212" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">R</text>
+  </g>
+  <g id="x5-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="238" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="240" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="256" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">T</text>
+  </g>
+  <g id="x6-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="282" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="284" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="300" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">Y</text>
+  </g>
+  <g id="x7-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="326" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="328" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="344" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">U</text>
+  </g>
+  <g id="x8-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="370" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="372" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="388" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">I</text>
+  </g>
+  <g id="x9-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="414" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="416" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="432" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">O</text>
+  </g>
+  <g id="x10-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="458" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="460" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="476" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">P</text>
+  </g>
+  <g id="x11-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="502" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="504" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="520" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">[</text>
+  </g>
+  <g id="x12-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="546" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="548" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="564" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">]</text>
+  </g>
+  <g id="x13-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="590" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="592" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="608" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">\</text>
+  </g>
+  <g id="x14-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="660" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="662" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="678" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Del</text>
+  </g>
+  <g id="x15-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="704" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="706" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="722" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">End</text>
+  </g>
+  <g id="x16-y2" class="LED" filter="url(#soft-shadow)">
+    <rect x="748" y="116" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="750" y="118" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="766" y="137" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">PgDn</text>
+  </g>
+  <g id="x0-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="18" y="160" width="54" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="20" y="162" width="50" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="45" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Caps</text>
+  </g>
+  <g id="x1-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="62" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="64" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="80" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">A</text>
+  </g>
+  <g id="x2-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="106" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="108" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="124" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">S</text>
+  </g>
+  <g id="x3-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="150" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="152" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="168" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">D</text>
+  </g>
+  <g id="x4-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="194" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="196" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="212" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">F</text>
+  </g>
+  <g id="x5-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="238" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="240" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="256" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">G</text>
+  </g>
+  <g id="x6-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="282" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="284" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="300" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">H</text>
+  </g>
+  <g id="x7-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="326" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="328" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="344" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">J</text>
+  </g>
+  <g id="x8-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="370" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="372" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="388" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">K</text>
+  </g>
+  <g id="x9-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="414" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="416" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="432" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">L</text>
+  </g>
+  <g id="x10-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="458" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="460" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="476" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">;</text>
+  </g>
+  <g id="x11-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="502" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="504" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="520" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">'</text>
+  </g>
+  <g id="x12-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="546" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="548" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="564" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">#</text>
+  </g>
+  <g id="x13-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="580" y="160" width="54" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="582" y="162" width="50" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="607" y="181" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:6.5px;fill:#e7e9ee;stroke:none">Enter</text>
+  </g>
+  <g id="x14-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="660" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="662" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x15-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="704" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="706" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x16-y3" class="LED" filter="url(#soft-shadow)">
+    <rect x="748" y="160" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="750" y="162" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x0-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="18" y="204" width="64" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="20" y="206" width="60" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="50" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:6.5px;fill:#e7e9ee;stroke:none">Shift</text>
+  </g>
+  <g id="x1-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="62" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="64" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="80" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">Z</text>
+  </g>
+  <g id="x2-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="106" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="108" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="124" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">X</text>
+  </g>
+  <g id="x3-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="150" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="152" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="168" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">C</text>
+  </g>
+  <g id="x4-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="194" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="196" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="212" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">V</text>
+  </g>
+  <g id="x5-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="238" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="240" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="256" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">B</text>
+  </g>
+  <g id="x6-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="282" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="284" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="300" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">N</text>
+  </g>
+  <g id="x7-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="326" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="328" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="344" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">M</text>
+  </g>
+  <g id="x8-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="370" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="372" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="388" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">,</text>
+  </g>
+  <g id="x9-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="414" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="416" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="432" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">.</text>
+  </g>
+  <g id="x10-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="458" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="460" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="476" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">/</text>
+  </g>
+  <g id="x11-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="492" y="204" width="64" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="494" y="206" width="60" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="524" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:6.5px;fill:#e7e9ee;stroke:none">Shift</text>
+  </g>
+  <g id="x12-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="546" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="548" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x13-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="590" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="592" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="608" y="225" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">Up</text>
+  </g>
+  <g id="x14-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="660" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="662" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x15-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="704" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="706" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x16-y4" class="LED" filter="url(#soft-shadow)">
+    <rect x="748" y="204" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="750" y="206" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x0-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="18" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="20" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="36" y="269" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Ctrl</text>
+  </g>
+  <g id="x1-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="62" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="64" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="80" y="269" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:8.5px;fill:#e7e9ee;stroke:none">Fn</text>
+  </g>
+  <g id="x2-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="106" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="108" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="124" y="269" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Win</text>
+  </g>
+  <g id="x3-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="150" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="152" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="168" y="269" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Alt</text>
+  </g>
+  <g id="x4-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="194" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="196" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x5-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="218" y="248" width="78" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="220" y="250" width="74" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="257" y="269" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:6.5px;fill:#e7e9ee;stroke:none">Space</text>
+  </g>
+  <g id="x6-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="282" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="284" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x7-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="326" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="328" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x8-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="370" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="372" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x9-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="414" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="416" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="432" y="269" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Alt</text>
+  </g>
+  <g id="x10-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="458" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="460" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="476" y="269" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Menu</text>
+  </g>
+  <g id="x11-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="502" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="504" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="520" y="269" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Ctrl</text>
+  </g>
+  <g id="x12-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="546" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="548" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="564" y="269" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Left</text>
+  </g>
+  <g id="x13-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="590" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="592" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="608" y="269" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:7.2px;fill:#e7e9ee;stroke:none">Down</text>
+  </g>
+  <g id="x14-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="660" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="662" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+    <text class="label" nostroke="true" x="678" y="269" text-anchor="middle" style="font-family:sans-serif;font-weight:600;font-size:6.5px;fill:#e7e9ee;stroke:none">Right</text>
+  </g>
+  <g id="x15-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="704" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="706" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
+  <g id="x16-y5" class="LED" filter="url(#soft-shadow)">
+    <rect x="748" y="248" width="36" height="36" rx="5" style="fill:url(#keyedge);stroke:#00ff88;stroke-width:1.3"/>
+    <rect x="750" y="250" width="32" height="31" rx="4" style="fill:url(#keycap);stroke:#101217;stroke-width:0.7;opacity:0.78"/>
+  </g>
 </svg>
