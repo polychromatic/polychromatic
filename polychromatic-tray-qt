@@ -19,6 +19,7 @@ import atexit
 import os
 import signal
 import sys
+from functools import partial
 
 import setproctitle
 from PyQt6.QtCore import Qt, QTimer
@@ -52,6 +53,7 @@ class QtTrayApplet(PolychromaticBase):
         self.colours_mono = []
         self.fileman_effects = None
         self.process = procpid.ProcessManager("tray-applet")
+        self._refreshing_menu = False
 
     def start(self):
         """
@@ -66,6 +68,7 @@ class QtTrayApplet(PolychromaticBase):
 
         self._register_process()
         self._build_tray()
+        self._schedule_startup_refreshes()
         return True
 
     def _register_process(self):
@@ -91,7 +94,7 @@ class QtTrayApplet(PolychromaticBase):
         self.preferences = pref.load_file(self.paths.preferences)
         self.middleman.invalidate_cache()
         self._set_tray_icon()
-        self._build_menu()
+        self._build_menu(self.menu)
 
     def _get_icon(self, folder, name):
         return common.get_icon(folder, name)
@@ -148,8 +151,13 @@ class QtTrayApplet(PolychromaticBase):
 
         self.tray.setIcon(self._icon(icon_path))
 
-    def _build_menu(self):
-        menu = QMenu()
+    def _build_menu(self, menu=None):
+        if menu:
+            menu.clear()
+        else:
+            menu = QMenu()
+            menu.aboutToShow.connect(self._refresh_menu_before_show)
+
         self.menu = menu
         self.menu_refs = [menu]
 
@@ -185,6 +193,33 @@ class QtTrayApplet(PolychromaticBase):
         self._add_action(menu, self._("Quit"), self.stop)
 
         self.tray.setContextMenu(menu)
+
+    def _schedule_startup_refreshes(self):
+        """
+        OpenRazer devices can appear in phases during login. Rebuild the menu a
+        few times after startup so the tray does not keep an early unsupported
+        receiver/mat snapshot until the user presses Refresh.
+        """
+        for delay_ms in [1500, 3000, 6000, 12000]:
+            QTimer.singleShot(delay_ms, partial(self._startup_refresh, delay_ms))
+
+    def _startup_refresh(self, delay_ms):
+        if not self.tray:
+            return
+        self.dbg.stdout("Refreshing tray device list after startup ({0}ms)".format(delay_ms), self.dbg.action, 1)
+        self.middleman.invalidate_cache()
+        self._build_menu(self.menu)
+
+    def _refresh_menu_before_show(self):
+        if self._refreshing_menu:
+            return
+
+        self._refreshing_menu = True
+        try:
+            self.middleman.invalidate_cache()
+            self._build_menu(self.menu)
+        finally:
+            self._refreshing_menu = False
 
     def _new_menu(self, label, parent=None):
         """
