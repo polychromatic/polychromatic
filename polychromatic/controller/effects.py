@@ -654,8 +654,10 @@ class EffectMetadataEditor(shared.TabData):
             self._auto_detect_suitable_graphic()
 
         # For existing effects, (re)select the correct graphic in list
-        if self.data["map_graphic"] and found_graphic_index:
+        if self.data["map_graphic"] and found_graphic_index is not None:
             self.map_graphic_list.setCurrentIndex(found_graphic_index)
+
+        self._update_graphic_preview()
 
     def _auto_detect_suitable_graphic(self):
         """
@@ -667,14 +669,15 @@ class EffectMetadataEditor(shared.TabData):
 
         # Pick graphic closely matching device name and locale (if applicable)
         device_name = self.map_device_combo.currentText()
-        for name in self.graphic_list.keys():
+        for index in range(self.map_graphic_list.count()):
+            name = self.map_graphic_list.itemText(index)
             graphic = self.graphic_list[name]
             locale = graphic["locale"]
             if name.find(device_name) != -1 and locale == current_locale:
-                self.map_graphic_list.setCurrentText(name)
+                self.map_graphic_list.setCurrentIndex(index)
 
             if name.find(device_name) != -1 and not locale:
-                self.map_graphic_list.setCurrentText(name)
+                self.map_graphic_list.setCurrentIndex(index)
 
     def _set_map_grid(self):
         """
