@@ -1052,7 +1052,9 @@ class VisualEffectEditor(shared.TabData):
     def _select_mode_common(self):
         self.tool_draw.setChecked(False)
         self.tool_eraser.setChecked(False)
-        self.tool_picker.setChecked(False)
+
+        if self.sequence_effect:
+            self.tool_picker.setChecked(False)
 
     def select_mode_draw(self):
         """
