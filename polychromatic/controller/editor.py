@@ -913,7 +913,7 @@ class VisualEffectEditor(shared.TabData):
             new_frame = {}
             layer = self._get_current_layer()
             for pos in layer["positions"]:
-                x, y = self._normalise_layer_position(pos)
+                x, y = effects.normalise_layer_position(pos)
                 if x is None or y is None:
                     continue
                 frame.setdefault(str(x), {})[str(y)] = True
@@ -1357,11 +1357,7 @@ class VisualEffectEditor(shared.TabData):
         """
         Return a layer's static colour, adding a default if needed.
         """
-        colour = layer["properties"].get("colour")
-        if not colour:
-            colour = self.current_colour
-            layer["properties"]["colour"] = colour
-        return colour
+        return effects.get_layer_colour(layer, self.current_colour)
 
     def _populate_layer_properties(self):
         """
@@ -1412,17 +1408,6 @@ class VisualEffectEditor(shared.TabData):
         self.set_modified(True)
         self._draw_layered_effect()
 
-    def _normalise_layer_position(self, pos):
-        """
-        Return an (x, y) tuple for stored layer positions.
-        """
-        try:
-            if isinstance(pos, dict):
-                return (int(pos["x"]), int(pos["y"]))
-            return (int(pos[0]), int(pos[1]))
-        except (KeyError, IndexError, TypeError, ValueError):
-            return (None, None)
-
     def _frame_to_layer_positions(self, frame):
         """
         Convert a temporary frame dictionary into layer position storage.
@@ -1433,28 +1418,11 @@ class VisualEffectEditor(shared.TabData):
                 positions.append([int(x), int(y)])
         return positions
 
-    def _render_layered_frame(self):
-        """
-        Render all layers into one frame dictionary.
-        """
-        frame = {}
-        for layer in reversed(self.data["layers"]):
-            if layer["type"] != effects.LAYER_STATIC:
-                continue
-
-            colour = self._get_layer_colour(layer)
-            for pos in layer["positions"]:
-                x, y = self._normalise_layer_position(pos)
-                if x is None or y is None:
-                    continue
-                frame.setdefault(str(x), {})[str(y)] = colour
-        return frame
-
     def _draw_layered_effect(self):
         """
         Draw the rendered layer stack in the editor and live preview.
         """
-        frame = self._render_layered_frame()
+        frame = effects.render_layered_frame(self.data["layers"], self.current_colour)
         self.device_renderer.clear()
 
         if self.matrix:

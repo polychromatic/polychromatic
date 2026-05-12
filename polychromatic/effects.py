@@ -24,6 +24,50 @@ LAYER_SPECTRUM = 14
 LAYER_CYCLE = 15
 LAYER_SCRIPT = 16
 
+DEFAULT_LAYER_COLOUR = "#00FF00"
+
+
+def normalise_layer_position(pos):
+    """
+    Return an (x, y) tuple for stored layer positions.
+    """
+    try:
+        if isinstance(pos, dict):
+            return (int(pos["x"]), int(pos["y"]))
+        return (int(pos[0]), int(pos[1]))
+    except (KeyError, IndexError, TypeError, ValueError):
+        return (None, None)
+
+
+def get_layer_colour(layer, fallback=DEFAULT_LAYER_COLOUR):
+    """
+    Return a layer's static colour, adding a default if needed.
+    """
+    properties = layer.setdefault("properties", {})
+    colour = properties.get("colour")
+    if not colour:
+        colour = fallback
+        properties["colour"] = colour
+    return colour
+
+
+def render_layered_frame(layers, fallback=DEFAULT_LAYER_COLOUR):
+    """
+    Composite static layers into one frame dictionary.
+    """
+    frame = {}
+    for layer in reversed(layers):
+        if layer.get("type") != LAYER_STATIC:
+            continue
+
+        colour = get_layer_colour(layer, fallback)
+        for pos in layer.get("positions", []):
+            x, y = normalise_layer_position(pos)
+            if x is None or y is None:
+                continue
+            frame.setdefault(str(x), {})[str(y)] = colour
+    return frame
+
 
 class EffectFileManagement(fileman.FlatFileManagement):
     """
@@ -288,7 +332,9 @@ class EffectFileManagement(fileman.FlatFileManagement):
             src_script = path.replace(".json", ".py")
             dest_script = dest_path.replace(".json", ".py")
 
-            if data["type"] == TYPE_SCRIPTED and os.path.exists(src_script):
+            if data["type"] == TYPE_SCRIPTED and \
+                    os.path.exists(src_script) and \
+                    os.path.abspath(src_script) != os.path.abspath(dest_script):
                 shutil.copy(src_script, dest_script)
         except Exception as e:
             self.dbg.stdout(
@@ -325,7 +371,7 @@ class DeviceMapGraphics(object):
         }
         """
         with open(self.map_index) as f:
-            original_svg =  json.load(f)
+            original_svg = json.load(f)
 
         parsed_svg = {}
 

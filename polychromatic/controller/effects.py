@@ -624,6 +624,7 @@ class EffectMetadataEditor(shared.TabData):
         self.dimensions_device.setText(dimensions)
 
         # Filter graphics so only compatible matrix dimensions are shown
+        self.map_graphic_list.blockSignals(True)
         self.map_graphic_list.clear()
         found_graphic_index = None
         for name in self.graphic_list.keys():
@@ -638,6 +639,7 @@ class EffectMetadataEditor(shared.TabData):
             if self.data["map_graphic"] == graphic["filename"]:
                 self.map_graphic_list.setCurrentIndex(new_index)
                 found_graphic_index = new_index
+        self.map_graphic_list.blockSignals(False)
 
         # If there are no graphics, only grid can be selected
         if self.map_graphic_list.count() > 0:
@@ -665,8 +667,11 @@ class EffectMetadataEditor(shared.TabData):
         When loading a new device and the 'graphic' option is set, determine
         the best graphic (as there could be multiple with the same cols/rows)
         """
-        self.map_graphic_list.setCurrentIndex(0)
+        if self.map_graphic_list.count() == 0:
+            return
+
         current_locale = self.i18n.get_current_locale()
+        selected_index = 0
 
         # Pick graphic closely matching device name and locale (if applicable)
         device_name = self.map_device_combo.currentText()
@@ -675,10 +680,12 @@ class EffectMetadataEditor(shared.TabData):
             graphic = self.graphic_list[name]
             locale = graphic["locale"]
             if name.find(device_name) != -1 and locale == current_locale:
-                self.map_graphic_list.setCurrentIndex(index)
+                selected_index = index
 
             if name.find(device_name) != -1 and not locale:
-                self.map_graphic_list.setCurrentIndex(index)
+                selected_index = index
+
+        self.map_graphic_list.setCurrentIndex(selected_index)
 
     def _set_map_grid(self):
         """
@@ -700,7 +707,6 @@ class EffectMetadataEditor(shared.TabData):
         """
         The graphic options have changed, refresh the preview.
         """
-        device_map = effects.DeviceMapGraphics(self.appdata)
         device_info = self.device_info[self.map_device_combo.currentIndex()]
         cols = device_info["cols"]
         rows = device_info["rows"]
@@ -708,7 +714,7 @@ class EffectMetadataEditor(shared.TabData):
 
         # -- Grid
         if self.map_graphic_grid.isChecked():
-            svg_path = device_map.get_grid_path(cols, rows)
+            svg_path = self.mapping_graphics.get_grid_path(cols, rows)
 
         # -- Graphic
         elif self.map_graphic_list.currentText() == "":
@@ -717,7 +723,7 @@ class EffectMetadataEditor(shared.TabData):
         elif self.map_graphic_svg.isChecked():
             graphic = self.graphic_list[self.map_graphic_list.currentText()]
             filename = graphic["filename"]
-            svg_path = device_map.get_graphic_path(filename)
+            svg_path = self.mapping_graphics.get_graphic_path(filename)
 
         # Load SVG into view
         if svg_path:

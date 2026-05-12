@@ -301,7 +301,7 @@ class EffectPlayback(PolychromaticBase):
         Render a static layered effect and keep the helper alive so the effect
         can be tracked/stopped like other custom effects.
         """
-        frame = self._render_layered_frame()
+        frame = effects.render_layered_frame(self.data["layers"])
         self.matrix.clear()
 
         for x in frame.keys():
@@ -312,41 +312,7 @@ class EffectPlayback(PolychromaticBase):
         self.matrix.draw()
 
         while True:
-            time.sleep(3600)
-
-    def _render_layered_frame(self):
-        """
-        Composite the layer stack into one frame dictionary.
-        """
-        frame = {}
-        for layer in reversed(self.data["layers"]):
-            if layer["type"] != effects.LAYER_STATIC:
-                continue
-
-            colour = self._get_layer_colour(layer)
-            for pos in layer["positions"]:
-                x, y = self._normalise_layer_position(pos)
-                if x is None or y is None:
-                    continue
-                frame.setdefault(str(x), {})[str(y)] = colour
-        return frame
-
-    def _get_layer_colour(self, layer):
-        """
-        Return a static layer colour with a safe fallback for old files.
-        """
-        return layer["properties"].get("colour", "#00FF00")
-
-    def _normalise_layer_position(self, pos):
-        """
-        Return an (x, y) tuple for stored layer positions.
-        """
-        try:
-            if isinstance(pos, dict):
-                return (int(pos["x"]), int(pos["y"]))
-            return (int(pos[0]), int(pos[1]))
-        except (KeyError, IndexError, TypeError, ValueError):
-            return (None, None)
+            signal.pause()
 
 
 if __name__ == "__main__":

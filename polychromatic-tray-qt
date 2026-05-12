@@ -140,7 +140,7 @@ class QtTrayApplet(PolychromaticBase):
                 self.animation_movie = movie
 
                 def _update_icon():
-                    pixmap = self.animation_movie.currentPixmap()
+                    pixmap = movie.currentPixmap()
                     if not pixmap.isNull():
                         self.tray.setIcon(QIcon(pixmap))
 
