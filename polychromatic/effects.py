@@ -234,6 +234,72 @@ class EffectFileManagement(fileman.FlatFileManagement):
 
         return None
 
+    def import_item(self, path):
+        """
+        Import an effect into the user's local effect directory.
+
+        Returns:
+            (bool, str)     success flag and imported path/error path
+        """
+        data = self.get_item(path)
+
+        if type(data) == int:
+            return (False, path)
+
+        success, new_path = self.save_item(data)
+
+        if not success:
+            return (False, new_path)
+
+        src_script = path.replace(".json", ".py")
+        dest_script = new_path.replace(".json", ".py")
+
+        if data["type"] == TYPE_SCRIPTED and os.path.exists(src_script):
+            try:
+                shutil.copy(src_script, dest_script)
+            except Exception as e:
+                self.dbg.stdout(
+                    "Import script failed: {0}\n{1}".format(src_script, common.get_exception_as_string(e)),
+                    self.dbg.error
+                )
+                if os.path.exists(new_path):
+                    os.remove(new_path)
+                return (False, src_script)
+
+        self.dbg.stdout("Import OK: " + new_path, self.dbg.success, 1)
+        return (True, new_path)
+
+    def export_item(self, path, dest_path):
+        """
+        Export an effect to a destination JSON file.
+
+        Returns:
+            (bool, str)     success flag and destination/error path
+        """
+        data = self.get_item(path)
+
+        if type(data) == int:
+            return (False, path)
+
+        try:
+            if os.path.abspath(dest_path) != os.path.abspath(path):
+                shutil.copy(path, dest_path)
+
+            src_script = path.replace(".json", ".py")
+            dest_script = dest_path.replace(".json", ".py")
+
+            if data["type"] == TYPE_SCRIPTED and os.path.exists(src_script):
+                shutil.copy(src_script, dest_script)
+        except Exception as e:
+            self.dbg.stdout(
+                "Export failed: {0}\n{1}".format(path, common.get_exception_as_string(e)),
+                self.dbg.error
+            )
+            return (False, dest_path)
+
+        self.dbg.stdout("Export OK: " + dest_path, self.dbg.success, 1)
+        return (True, dest_path)
+
 
 class DeviceMapGraphics(object):
     """

@@ -233,12 +233,12 @@ class PolychromaticHelper(PolychromaticBase):
         self.dbg.stdout(f"{device.name}: Starting playback: {effect_name}", self.dbg.success, 1)
         playback = EffectPlayback(device, device.matrix, effect_data)
 
-        if effect_type == effects.TYPE_LAYERED:
-            raise NotImplementedError()
-        elif effect_type == effects.TYPE_SCRIPTED:
-            raise NotImplementedError()
-        elif effect_type == effects.TYPE_SEQUENCE:
+        if effect_type == effects.TYPE_SEQUENCE:
             playback.play_sequence()
+        elif effect_type in [effects.TYPE_LAYERED, effects.TYPE_SCRIPTED]:
+            self.dbg.stdout(f"{device.name}: This effect type cannot be played yet.", self.dbg.warning)
+            state.clear_effect()
+            return
         else:
             self.dbg.stdout("Unknown effect type!", self.dbg.error)
             sys.exit(1)

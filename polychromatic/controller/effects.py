@@ -4,12 +4,13 @@
 This module controls the 'Effects' tab of the Controller GUI.
 """
 
-
+import os
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (QComboBox, QDialog, QDialogButtonBox, QGroupBox,
-                             QLabel, QLineEdit, QMessageBox, QPushButton,
-                             QRadioButton, QSizePolicy, QTextEdit, QToolButton)
+                             QFileDialog, QLabel, QLineEdit, QMessageBox,
+                             QPushButton, QRadioButton, QSizePolicy, QTextEdit,
+                             QToolButton)
 
 from .. import common, effects, procpid
 from . import editor, shared
@@ -31,8 +32,7 @@ class EffectsTab(shared.CommonFileTab):
         }
 
         self._add_tree_item(self.TasksBranch, self._("New Effect"), common.get_icon("general", "new"), "tasks", "new")
-        # FIXME: Not yet implemented: Import Effect
-        #self._add_tree_item(self.TasksBranch, self._("Import Effect"), common.get_icon("general", "import"), "tasks", "import")
+        self._add_tree_item(self.TasksBranch, self._("Import Effect"), common.get_icon("general", "import"), "tasks", "import")
 
         # Keep track of editor windows so garbage collection doesn't destroy them
         self.editors = {}
@@ -69,14 +69,13 @@ class EffectsTab(shared.CommonFileTab):
                     "icon_folder": "general",
                     "icon_name": "new",
                     "action": self.new_file
+                },
+                {
+                    "label": self._("Import Effect"),
+                    "icon_folder": "general",
+                    "icon_name": "import",
+                    "action": self.import_effect
                 }
-                # FIXME: Not yet implemented: Import Effect
-                #{
-                    #"label": self._("Import Effect"),
-                    #"icon_folder": "general",
-                    #"icon_name": "import",
-                    #"action": self.import_effect
-                #}
             ],
             1: []
         }
@@ -215,19 +214,22 @@ class EffectsTab(shared.CommonFileTab):
 
         # Summary
         icon_path = data["parsed"]["icon"]
+        effect_type = data["type"]
+        can_edit = effect_type == effects.TYPE_SEQUENCE
+        can_play = effect_type == effects.TYPE_SEQUENCE
         buttons = [
             {
                 "id": "play",
                 "icon": self.widgets.get_icon_qt("effects", "play"),
                 "label": self._("Play"),
-                "disabled": False,
+                "disabled": not can_play,
                 "action": self.play_effect
             },
             {
                 "id": "edit",
                 "icon": self.widgets.get_icon_qt("general", "edit"),
                 "label": self._("Edit"),
-                "disabled": False,
+                "disabled": not can_edit,
                 "action": self.edit_file
             },
             {
@@ -236,6 +238,13 @@ class EffectsTab(shared.CommonFileTab):
                 "label": self._("Clone"),
                 "disabled": False,
                 "action": self.clone_file
+            },
+            {
+                "id": "export",
+                "icon": self.widgets.get_icon_qt("general", "save"),
+                "label": self._("Export"),
+                "disabled": False,
+                "action": self.export_effect
             },
             {
                 "id": "delete",
@@ -254,7 +263,6 @@ class EffectsTab(shared.CommonFileTab):
             indicators.append({"icon": common.get_icon("effects", "author"), "label": data["author"]})
 
         # -- Effect Type
-        effect_type = data["type"]
         effect_type_name = {
             effects.TYPE_LAYERED: self._("Layered"),
             effects.TYPE_SCRIPTED: self._("Script"),
@@ -334,14 +342,83 @@ class EffectsTab(shared.CommonFileTab):
                                          self._("This file is being edited in another window. Please close that editor first."))
                 return
 
-        if effect_type in [effects.TYPE_LAYERED, effects.TYPE_SEQUENCE]:
+        if effect_type == effects.TYPE_SEQUENCE:
             self.editors[effect_path] = editor.VisualEffectEditor(self.appdata, self.fileman, effect_path)
+        else:
+            self.widgets.open_dialog(self.widgets.dialog_warning,
+                                     self._("Edit Effect"),
+                                     self._("This effect type does not have an editor yet."))
 
     def import_effect(self):
         """
-        Allows the user to create effects from other media, such as videos or images.
+        Import existing Polychromatic software effects from JSON files.
         """
-        print("stub:effects.import_effect")
+        browser = QFileDialog()
+        browser.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
+        browser.setFileMode(QFileDialog.FileMode.ExistingFiles)
+        shared.load_qt_theme(self.appdata, browser)
+
+        paths = browser.getOpenFileNames(
+            caption=self._("Import Effect"),
+            filter=self._("Polychromatic Effect") + " (*.json)"
+        )[0]
+
+        if len(paths) == 0:
+            return
+
+        imported_paths = []
+        failed_paths = []
+
+        for path in paths:
+            success, new_path = self.fileman.import_item(path)
+
+            if success:
+                imported_paths.append(new_path)
+            else:
+                failed_paths.append(new_path)
+
+        if imported_paths:
+            self.set_tab()
+            self.open_file(imported_paths[-1])
+
+        if failed_paths:
+            self.widgets.open_dialog(self.widgets.dialog_warning,
+                                     self._("Import Effect"),
+                                     self._("Some effects could not be imported."),
+                                     details="\n".join(failed_paths))
+
+    def export_effect(self):
+        """
+        Export the currently selected software effect to a JSON file.
+        """
+        default_name = os.path.basename(self.current_file_path)
+
+        browser = QFileDialog()
+        browser.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
+        browser.setFileMode(QFileDialog.FileMode.AnyFile)
+        shared.load_qt_theme(self.appdata, browser)
+
+        dest_path = browser.getSaveFileName(caption=self._("Export Effect"),
+                                            directory=default_name,
+                                            filter=self._("Polychromatic Effect") + " (*.json)")[0]
+
+        if not dest_path:
+            return
+
+        if not dest_path.endswith(".json"):
+            dest_path += ".json"
+
+        success, result_path = self.fileman.export_item(self.current_file_path, dest_path)
+
+        if success:
+            self.widgets.open_dialog(self.widgets.dialog_generic,
+                                     self._("Export Effect"),
+                                     self._("Effect exported successfully."))
+        else:
+            self.widgets.open_dialog(self.widgets.dialog_error,
+                                     self._("Export Effect"),
+                                     self._("The effect could not be exported."),
+                                     details=result_path)
 
     def play_effect(self, device_name=None):
         """
@@ -351,6 +428,12 @@ class EffectsTab(shared.CommonFileTab):
         or more hardware.
         """
         effect_type = self.current_file_data["type"]
+        if effect_type != effects.TYPE_SEQUENCE:
+            self.widgets.open_dialog(self.widgets.dialog_warning,
+                                     self._("Play Effect"),
+                                     self._("This effect type cannot be played yet."))
+            return
+
         if not device_name:
             device_name = self.current_file_data["map_device"]
 
