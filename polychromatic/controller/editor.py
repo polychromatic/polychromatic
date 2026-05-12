@@ -1217,6 +1217,7 @@ class VisualEffectEditor(shared.TabData):
         if selected:
             self.current_layer = selected[0].layer_index
 
+        self._sync_current_colour(self._get_layer_colour(self._get_current_layer()))
         self._populate_layer_properties()
         self._draw_layered_effect()
         self._update_disabled_layer_controls()
@@ -1367,15 +1368,27 @@ class VisualEffectEditor(shared.TabData):
         layout.addRow(self._("Type"), layer_type)
 
         def _set_colour(new_hex, data=None):
-            layer["properties"]["colour"] = new_hex
-            item = self.layer_tree.topLevelItem(self.current_layer)
-            if item:
-                item.setIcon(0, QIcon(common.generate_colour_bitmap(self.dbg, new_hex, 20)))
-            self.set_modified(True)
-            self._draw_layered_effect()
+            self._set_current_colour(new_hex)
 
         colour = self.widgets.create_colour_control(self._get_layer_colour(layer), _set_colour, None, self._("Layer Colour"))
         layout.addRow(self._("Colour"), colour)
+
+    def _set_current_layer_colour(self, hex_value):
+        """
+        Update the selected static layer colour.
+        """
+        if not self.layered_effect or not self.data["layers"]:
+            return
+
+        layer = self._get_current_layer()
+        layer["properties"]["colour"] = hex_value
+
+        item = self.layer_tree.topLevelItem(self.current_layer)
+        if item:
+            item.setIcon(0, QIcon(common.generate_colour_bitmap(self.dbg, hex_value, 20)))
+
+        self.set_modified(True)
+        self._draw_layered_effect()
 
     def _normalise_layer_position(self, pos):
         """
@@ -1763,22 +1776,33 @@ class VisualEffectEditor(shared.TabData):
         """
         self._swap_frame_data(1)
 
-    def _set_current_colour(self, hex_value, no_textbox_update=False):
+    def _sync_current_colour(self, hex_value, no_textbox_update=False):
         """
-        Change the colour to draw with. If the draw tool isn't selected,
-        this will automatically change.
+        Update the current colour controls without changing effect data.
         """
-        self.dbg.stdout("Brush colour changed: " + hex_value, self.dbg.debug, 1)
         self.current_colour = hex_value
         self.device_renderer.set_colour(hex_value)
-        self.select_mode_draw()
 
         # Allows the user to keep typing when directly typing hex value
         if not no_textbox_update:
+            self.current_colour_textbox.blockSignals(True)
             self.current_colour_textbox.setText(hex_value)
+            self.current_colour_textbox.blockSignals(False)
 
         self.current_colour_block.setStyleSheet("QWidget {{ background-color: {0} }}".format(hex_value))
         self._refresh_colour_tweak_controls()
+
+    def _set_current_colour(self, hex_value, no_textbox_update=False):
+        """
+        Change the colour to draw with. For layered effects, the current colour
+        is also the selected layer's static colour.
+        """
+        self.dbg.stdout("Brush colour changed: " + hex_value, self.dbg.debug, 1)
+        self._sync_current_colour(hex_value, no_textbox_update)
+        self.select_mode_draw()
+
+        if self.layered_effect:
+            self._set_current_layer_colour(hex_value)
 
     def open_colour_picker(self):
         """
