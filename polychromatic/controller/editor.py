@@ -483,23 +483,35 @@ class VisualEffectEditor(shared.TabData):
         """
         if self.layered_effect:
             # Remove frame-specific options
-            self.tool_picker.deleteLater()
-            self.action_new_frame.deleteLater()
-            self.action_delete_frame.deleteLater()
-            self.action_clone_frame.deleteLater()
-            self.action_frame_left.deleteLater()
-            self.action_frame_right.deleteLater()
-            self.playback_menu.deleteLater()
+            self._hide_editor_items([
+                self.tool_picker,
+                self.action_new_frame,
+                self.action_delete_frame,
+                self.action_clone_frame,
+                self.action_frame_left,
+                self.action_frame_right,
+                self.playback_jump_start,
+                self.playback_jump_end,
+                self.playback_prev,
+                self.playback_next,
+                self.playback_play,
+                self.playback_stop,
+                self.playback_loop
+            ])
+            self.playback_menu.menuAction().setVisible(False)
+            self.dock_frames.setVisible(False)
 
         elif self.sequence_effect:
             # Remove layer-specific options
-            self.action_new_layer.deleteLater()
-            self.action_delete_layer.deleteLater()
-            self.action_duplicate_layer.deleteLater()
-            self.action_layer_up.deleteLater()
-            self.action_layer_down.deleteLater()
-            self.dock_layers.deleteLater()
-            self.dock_properties.deleteLater()
+            self._hide_editor_items([
+                self.action_new_layer,
+                self.action_delete_layer,
+                self.action_duplicate_layer,
+                self.action_layer_up,
+                self.action_layer_down
+            ])
+            self.dock_layers.setVisible(False)
+            self.dock_properties.setVisible(False)
 
         # Window properties & geometry
         self.appdata.main_window._set_initial_window_position(self.window, "editor")
@@ -539,6 +551,16 @@ class VisualEffectEditor(shared.TabData):
         elif self.sequence_effect:
             self.dock_colours.adjustSize()
             self.dock_frames.adjustSize()
+
+    def _hide_editor_items(self, items):
+        """
+        Hide and disable actions/widgets that do not apply to this editor mode.
+        Keeping the objects alive avoids stale Qt references from shortcuts,
+        menus or shared helpers.
+        """
+        for item in items:
+            item.setEnabled(False)
+            item.setVisible(False)
 
     def init_controls(self):
         """
