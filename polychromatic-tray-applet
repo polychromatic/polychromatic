@@ -1,14 +1,29 @@
-#!/bin/sh
+#!/usr/bin/python3
 #
 # Polychromatic is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Start the native Qt tray applet. The previous GTK/AppIndicator implementation
-# is kept as polychromatic-tray-applet-gtk for testing and fallback.
+"""
+Start the native Qt tray applet.
 
-set -eu
+The previous GTK/AppIndicator implementation is kept as
+polychromatic-tray-applet-gtk for testing and fallback.
+"""
 
-script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-exec /usr/bin/python "$script_dir/polychromatic-tray-qt" "$@"
+import os
+import sys
+
+
+def main():
+    """
+    Replace this launcher with the Qt tray process.
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    tray_script = os.path.join(script_dir, "polychromatic-tray-qt")
+    os.execv(sys.executable, [sys.executable, tray_script, *sys.argv[1:]])
+
+
+if __name__ == "__main__":
+    main()
