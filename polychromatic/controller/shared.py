@@ -1460,33 +1460,56 @@ class IconPicker(PolychromaticBase):
         file_list = local_apps + system_apps
         icon_list = []
 
-        # Determine where to find application icons (from theme)
+        icon_cache = {}
         theme_name = QIcon.themeName()
         theme_paths = QIcon.themeSearchPaths()
-        search_paths = []
-        already_found = []
+        search_locations = []
 
-        search_paths.append(os.path.join(os.path.expanduser("~"), ".local", "share", "icons", "**"))
+        # Prefer user's local icon themes
+        local_icon_dir = os.path.join(os.path.expanduser("~"), ".local", "share", "icons")
+        if os.path.isdir(local_icon_dir):
+            try:
+                for theme_subdir in os.listdir(local_icon_dir):
+                    theme_path = os.path.join(local_icon_dir, theme_subdir)
+                    if not os.path.isdir(theme_path):
+                        continue
+                    # Look for app icon directories (common sizes and "scalable")
+                    for size_dir in ["48x48", "64x64", "128x128", "scalable"]:
+                        for app_dir in ["apps", "applications"]:
+                            icon_dir = os.path.join(theme_path, size_dir, app_dir)
+                            if os.path.isdir(icon_dir):
+                                search_locations.append(icon_dir)
+            except (OSError, PermissionError):
+                pass
+
+        # For looking up icons in the current icon theme
         for theme_path in theme_paths:
-            search_paths.append(os.path.join(theme_path, theme_name, "apps", "48"))
-        search_paths.append("/usr/share/icons/hicolor/48x48/apps")
-        search_paths.append("/usr/share/icons/hicolor/64x64/apps")
-        search_paths.append("/usr/share/icons/hicolor/128x128/apps")
-        search_paths.append("/usr/share/icons/hicolor/scalable/apps")
-        search_paths.append("/usr/share/pixmaps/")
+            for size in ["48", "64", "scalable"]:
+                search_locations.append(os.path.join(theme_path, theme_name, "apps", size))
 
-        def _find_theme_icon(icon_name):
-            # Prevent duplicates
-            if icon_name in already_found:
-                return None
+        # System-wide icon locations
+        search_locations.extend([
+            "/usr/share/icons/hicolor/48x48/apps",
+            "/usr/share/icons/hicolor/64x64/apps",
+            "/usr/share/icons/hicolor/128x128/apps",
+            "/usr/share/icons/hicolor/scalable/apps",
+            "/usr/share/pixmaps/",
+        ])
 
-            for search_path in search_paths:
-                for path in glob.glob(os.path.join(search_path, "*"), recursive=True):
-                    filename = os.path.splitext(os.path.basename(path))[0]
-                    if filename == icon_name and os.path.isfile(path):
-                        already_found.append(icon_name)
-                        return path
-            return None
+        # Build the icon cache
+        for search_location in search_locations:
+            if not os.path.isdir(search_location):
+                continue
+            try:
+                for filename in os.listdir(search_location):
+                    path = os.path.join(search_location, filename)
+                    if os.path.isfile(path):
+                        icon_name = os.path.splitext(filename)[0]
+                        # Only cache if not already found (prioritize earlier paths)
+                        if icon_name not in icon_cache:
+                            icon_cache[icon_name] = path
+            except (OSError, PermissionError):
+                continue
 
         def parse_launcher_for_icon(lines):
             for line in lines:
@@ -1494,23 +1517,26 @@ class IconPicker(PolychromaticBase):
                     icon = line.split("Icon=")[1].strip()
 
                     # Absolute path
-                    if os.path.exists(icon):
+                    if icon.startswith("/") and os.path.exists(icon):
                         icon_list.append(icon)
                         return
 
-                    # Search theme directories
-                    theme_icon = _find_theme_icon(icon)
-                    if theme_icon:
-                        icon_list.append(theme_icon)
+                    # Look up in cache
+                    if icon in icon_cache:
+                        icon_list.append(icon_cache[icon])
 
         for launcher_path in file_list:
-            with open(launcher_path, "r") as f:
-                parse_launcher_for_icon(f.readlines())
+            try:
+                with open(launcher_path, "r", encoding="utf-8", errors="ignore") as f:
+                    parse_launcher_for_icon(f.readlines())
+            except (IOError, OSError):
+                # Skip files that can't be read
+                pass
 
         self.dbg.stdout("Loaded {0} application icons from {1} launchers.".format(len(icon_list), len(file_list)), self.dbg.success, 1)
 
-        # Sort applications A-Z
-        return sorted(icon_list, key=lambda i: os.path.basename(i).lower())
+        # Sort applications A-Z and remove duplicates
+        return sorted(list(set(icon_list)), key=lambda i: os.path.basename(i).lower())
 
     def _get_steam_icons(self):
         """
