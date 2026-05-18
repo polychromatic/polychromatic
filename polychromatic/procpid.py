@@ -10,6 +10,7 @@ import os
 import shutil
 import signal
 import subprocess
+from threading import Thread
 
 from . import common
 
@@ -209,7 +210,8 @@ class ProcessManager():
         try:
             bin_arguments = [bin_path]
             bin_arguments += parameters
-            subprocess.Popen(bin_arguments, env=dict(os.environ))
+            p = subprocess.Popen(bin_arguments)
+            Thread(target=p.wait, daemon=True).start()
             return True
         except Exception as e:
             print("Failed to start process: " + " ".join(bin_arguments))

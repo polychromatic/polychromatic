@@ -386,7 +386,8 @@ def execute_polychromatic_component(dbg, component, controller_open=None):
         if os.path.exists(bin_path):
             dbg.stdout("Executing: " + os.path.realpath(" ".join(args)), dbg.debug, 1)
             try:
-                subprocess.Popen(args)
+                p = subprocess.Popen(args)
+                Thread(target=p.wait, daemon=True).start()
             except Exception:
                 pass
             return True
