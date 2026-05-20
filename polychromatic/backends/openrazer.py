@@ -694,6 +694,14 @@ class OpenRazerBackend(Backend):
             slider = BrightnessSlider(rzone)
             slider.label = self._("Brightness")
             slider.icon = self.get_icon("options", "brightness")
+            # Device-specific label overrides for devices whose main-zone
+            # "brightness" actually controls something else. The Razer Nari
+            # Ultimate reuses the main-zone brightness slider for its haptic
+            # motor intensity. Only the main zone is overridden — the logo
+            # zone still controls the LED and keeps the default label.
+            if rdevice.name == "Razer Nari Ultimate" and zone.zone_id == "main":
+                slider.label = self._("Haptic intensity")
+                slider.uid = "haptic_intensity"
             return slider
 
         # Device uses an on/off state
