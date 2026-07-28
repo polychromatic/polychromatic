@@ -11,6 +11,9 @@
 #   msgcat              gettext
 #   msgmerge            gettext
 #
+# The AppStream metainfo strings are extracted using the ITS rules shipped by
+# the 'appstream' package, which is already needed to validate that file.
+#
 # To test locales, run ./polychromatic-controller-dev instead.
 #
 
@@ -79,6 +82,14 @@ for py_file in $(find . -name "*.py") "polychromatic-controller" "polychromatic-
     xgettext --language=Python "${py_file}" -o "${temp_dir}/${output}.pot"
 done
 echo " done."
+
+# Extract strings from the AppStream metainfo template
+# The summary, description and screenshot captions are what software centres
+# show, so they are translated too. xgettext picks up the rules for this file
+# type from AppStream's ITS definition automatically.
+echo -e "\nGenerating locales from AppStream metainfo...\n"
+cd "${repo_root}/sources/" || exit 1
+xgettext app.polychromatic.controller.metainfo.xml.in -o "${temp_dir}/metainfo.pot"
 
 # Concatenate pots into one POT file
 cd "${temp_dir}" || exit 1
