@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component type="desktop-application">
+<component type="desktop-application" xmlns:its="http://www.w3.org/2005/11/its">
   <id>app.polychromatic.controller</id>
 
-  <name>Polychromatic</name>
+  <name its:translate="no">Polychromatic</name>
   <summary>RGB lighting management software for OpenRazer</summary>
 
   <developer id="me.horwell.luke">
-      <name>Luke Horwell</name>
+      <name its:translate="no">Luke Horwell</name>
       <url>https://luke.horwell.me</url>
   </developer>
 

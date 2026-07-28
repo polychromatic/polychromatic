@@ -9,7 +9,7 @@ if [[ -z "$(type -P appstreamcli)" ]]; then
 fi
 
 cd "$(dirname "$0")"/../sources/
-appstreamcli validate *.xml
+appstreamcli validate *.metainfo.xml.in
 result="${?}"
 
 exit "${?}"

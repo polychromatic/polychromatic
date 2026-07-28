@@ -45,7 +45,17 @@ install_data('sources/launchers/polychromatic-autostart.desktop',
 subdir('locale')
 
 # AppStream Metainfo
-metainfo_file = join_paths(meson.current_source_dir(), 'sources/app.polychromatic.controller.metainfo.xml')
+# The source file is a template. Translations are merged in at build time from
+# the message catalogues, so software centres (GNOME Software, KDE Discover)
+# show the summary, description and screenshot captions in the user's language.
+metainfo_file = i18n.merge_file(
+        input : 'sources/app.polychromatic.controller.metainfo.xml.in',
+        output : 'app.polychromatic.controller.metainfo.xml',
+        type : 'xml',
+        po_dir : 'locale',
+        install : true,
+        install_dir : join_paths(get_option('datadir'), 'metainfo'))
+
 ascli_exe = find_program('appstreamcli', required: false)
 if ascli_exe.found()
   test('validate metainfo file',
@@ -53,8 +63,7 @@ if ascli_exe.found()
         args: ['validate',
                '--no-net',
                '--pedantic',
-               metainfo_file]
+               metainfo_file],
+        depends: metainfo_file
   )
 endif
-install_data(metainfo_file,
-             install_dir : join_paths(get_option('datadir'), 'metainfo'))
