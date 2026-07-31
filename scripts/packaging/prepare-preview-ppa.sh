@@ -20,7 +20,7 @@ function process_release() {
     ./scripts/packaging/generate-debian-changelog.py "${release}" "${codename}"
     debuild -S
     debsign -k 49D6E0C94C9832E63FDBD50BEAF6D6A2C65D1D85 ../*.changes
-    dput ppa:polychromatic/preview ../*.changes
+    dput ppa:polychromatic/preview ../*.changes || true
 }
 
 process_release "24.04" "noble"     # LTS
