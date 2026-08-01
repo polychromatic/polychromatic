@@ -12,7 +12,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Source-Language: en_GB\n"
 
 #: about.ui.h:1
@@ -52,8 +53,7 @@ msgstr "Выбор цвета"
 msgid "Current"
 msgstr "Текущий"
 
-#. Colour Picker: Tooltip informing the user what the \"Change...\" button
-#. will do
+#. Colour Picker: Tooltip informing the user what the \"Change...\" button will do
 #: colour-picker.ui.h:5
 msgid "Opens the system's colour picker"
 msgstr "Открывает системный выбор цвета"
@@ -73,8 +73,7 @@ msgstr "Сохранить этот цвет в список сохранённ�
 msgid "Add"
 msgstr "Добавить"
 
-#: colour-picker.ui.h:10 editor.ui.h:83
-#: polychromatic/controller/editor.py:1562
+#: colour-picker.ui.h:10 editor.ui.h:83 polychromatic/controller/editor.py:1562
 #: polychromatic/controller/preferences.py:257 preferences.ui.h:55
 msgid "Saved Colours"
 msgstr "Сохранённые цвета"
@@ -218,8 +217,7 @@ msgstr "&Инструмент"
 msgid "Playback"
 msgstr "Воспроизведение"
 
-#: editor.ui.h:15 polychromatic-cli:426
-#: polychromatic/controller/devices.py:893
+#: editor.ui.h:15 polychromatic-cli:426 polychromatic/controller/devices.py:893
 #: polychromatic/controller/devices.py:1018
 msgid "Colours"
 msgstr "Цвета"
@@ -733,8 +731,8 @@ msgstr "Изменить триггеры..."
 #. Appears as a tooltip or in the status bar when hovered
 #: editor.ui.h:180
 msgid ""
-"Configure automation for this effect, such as time of day, or when a process"
-" is running"
+"Configure automation for this effect, such as time of day, or when a process "
+"is running"
 msgstr ""
 "Настроить автоматизацию этого эффекта, например по времени суток или при "
 "запуске процесса"
@@ -888,8 +886,7 @@ msgstr "Использовать сетку"
 msgid "Preview"
 msgstr "Предпросмотр"
 
-#. Appears at the top of the icon picker when the user selects a GIF as their
-#. tray icon
+#. Appears at the top of the icon picker when the user selects a GIF as their tray icon
 #: icon-picker.ui.h:2
 msgid "Heads up! Animated GIFs are not supported by all desktop environments."
 msgstr ""
@@ -928,8 +925,8 @@ msgstr "Удалить этот пользовательский значок и
 #. Help text when inspecting a device's matrix
 #: inspect-matrix.ui.h:2
 msgid ""
-"Use the arrow keys, click or drag on the table below to light up that LED on"
-" the physical device."
+"Use the arrow keys, click or drag on the table below to light up that LED on "
+"the physical device."
 msgstr ""
 "Используйте клавиши-стрелки, щёлкайте или проводите по таблице ниже, чтобы "
 "зажечь соответствующий светодиод на физическом устройстве."
@@ -939,10 +936,6 @@ msgstr ""
 #: loading.ui.h:2 polychromatic/controller/procviewer.py:133
 msgid "Please wait..."
 msgstr "Пожалуйста, подождите..."
-
-#: main.ui.h:1
-msgid "Polychromatic"
-msgstr "Polychromatic"
 
 #: main.ui.h:2 polychromatic/controller/devices.py:65 preferences.ui.h:13
 msgid "Devices"
@@ -1127,8 +1120,8 @@ msgstr "Служба"
 
 #: openrazer-config.ui.h:4
 msgid ""
-"These settings only apply to the OpenRazer daemon. They are not supported by"
-" this application."
+"These settings only apply to the OpenRazer daemon. They are not supported by "
+"this application."
 msgstr ""
 "Эти настройки применяются только к службе OpenRazer. Они не поддерживаются "
 "данным приложением."
@@ -1182,8 +1175,8 @@ msgstr "Моё устройство неправильно восстанавл�
 
 #: openrazer-config.ui.h:20
 msgid ""
-"If your device doesn't restore the last selected effect in Linux after using"
-" the official Razer Synapse driver in Windows, try this option."
+"If your device doesn't restore the last selected effect in Linux after using "
+"the official Razer Synapse driver in Windows, try this option."
 msgstr ""
 "Если ваше устройство не восстанавливает последний выбранный эффект в Linux "
 "после использования официального драйвера Razer Synapse в Windows, "
@@ -1889,8 +1882,8 @@ msgstr ""
 
 #: polychromatic/controller/devices.py:640
 msgid ""
-"Try restarting [OpenRazer] and Polychromatic and give it another go. If this"
-" error appears again, it might need fixing in [OpenRazer]."
+"Try restarting [OpenRazer] and Polychromatic and give it another go. If this "
+"error appears again, it might need fixing in [OpenRazer]."
 msgstr ""
 "Попробуйте перезапустить [OpenRazer] и Polychromatic и повторить попытку. "
 "Если ошибка появится снова, возможно, её нужно исправлять в [OpenRazer]."
@@ -1911,8 +1904,8 @@ msgstr "Бэкенды не установлены"
 msgid ""
 "Plug in a compatible device to control its lighting effects and features"
 msgstr ""
-"Подключите совместимое устройство, чтобы управлять его эффектами подсветки и"
-" функциями"
+"Подключите совместимое устройство, чтобы управлять его эффектами подсветки и "
+"функциями"
 
 #: polychromatic/controller/devices.py:670
 msgid "Consult the logs and troubleshooter for hints on fixing this problem"
@@ -2145,7 +2138,9 @@ msgid ""
 "3. Press the keys in sequence to record.\n"
 "4. Press FN+[M] to exit macro mode.\n"
 "\n"
-"Macros remain in memory until the openrazer-daemon process is stopped. The replay speed will be instantaneous, which can be problematic with some software/games."
+"Macros remain in memory until the openrazer-daemon process is stopped. The "
+"replay speed will be instantaneous, which can be problematic with some "
+"software/games."
 msgstr ""
 "OpenRazer предоставляет простую функцию записи макросов «на лету».\n"
 "\n"
@@ -2154,7 +2149,9 @@ msgstr ""
 "3. Нажимайте клавиши по порядку для записи.\n"
 "4. Нажмите FN+[M], чтобы выйти из режима макросов.\n"
 "\n"
-"Макросы хранятся в памяти, пока не будет остановлен процесс openrazer-daemon. Скорость воспроизведения будет мгновенной, что может создавать проблемы с некоторым ПО или играми."
+"Макросы хранятся в памяти, пока не будет остановлен процесс openrazer-"
+"daemon. Скорость воспроизведения будет мгновенной, что может создавать "
+"проблемы с некоторым ПО или играми."
 
 #: polychromatic/controller/devices.py:1374
 msgid "Usage Instructions"
@@ -2254,8 +2251,7 @@ msgstr "Сохранено в: []"
 
 #: polychromatic/controller/editor.py:863
 msgid "Reload the effect from disk? Any unsaved data will be lost!"
-msgstr ""
-"Перезагрузить эффект с диска? Все несохранённые данные будут потеряны!"
+msgstr "Перезагрузить эффект с диска? Все несохранённые данные будут потеряны!"
 
 #: polychromatic/controller/editor.py:1037
 msgid "Backend Error"
@@ -2267,8 +2263,7 @@ msgstr "Произошла ошибка при отправке кадра на 
 
 #: polychromatic/controller/editor.py:1136
 msgid "Temporarily changed the graphic. To make permanent, edit the metadata."
-msgstr ""
-"Графика изменена временно. Чтобы сохранить, отредактируйте метаданные."
+msgstr "Графика изменена временно. Чтобы сохранить, отредактируйте метаданные."
 
 #: polychromatic/controller/editor.py:1143
 #: polychromatic/controller/editor.py:1155
@@ -2310,8 +2305,8 @@ msgid ""
 "There isn't a position for (X,Y) for this device. The graphic contains "
 "incorrect metadata or is incompatible for use with this device."
 msgstr ""
-"Для этого устройства нет позиции (X,Y). Графика содержит неверные метаданные"
-" или несовместима с этим устройством."
+"Для этого устройства нет позиции (X,Y). Графика содержит неверные метаданные "
+"или несовместима с этим устройством."
 
 #: polychromatic/controller/editor.py:1602
 msgid "This LED is empty - nothing to erase here!"
@@ -2390,8 +2385,8 @@ msgstr "Файл используется"
 
 #: polychromatic/controller/effects.py:299
 msgid ""
-"This file is being edited in another window. Please switch to that window to"
-" make changes."
+"This file is being edited in another window. Please switch to that window to "
+"make changes."
 msgstr ""
 "Этот файл редактируется в другом окне. Переключитесь на то окно, чтобы "
 "вносить изменения."
@@ -2414,8 +2409,8 @@ msgid ""
 "No compatible devices found. Only individually addressable LED capable "
 "hardware can be used for effects."
 msgstr ""
-"Совместимые устройства не найдены. Для эффектов подходит только оборудование"
-" с индивидуально адресуемыми светодиодами."
+"Совместимые устройства не найдены. Для эффектов подходит только оборудование "
+"с индивидуально адресуемыми светодиодами."
 
 #: polychromatic/controller/menubar.py:153
 msgid "The menu bar is now hidden. To temporarily reveal, press Alt."
@@ -2497,17 +2492,17 @@ msgstr "Несоответствие версии сохранённых дан�
 
 #: polychromatic-controller:413
 msgid ""
-"Polychromatic's configuration (including your effects and presets) have been"
-" previously saved in a newer version of this software."
+"Polychromatic's configuration (including your effects and presets) have been "
+"previously saved in a newer version of this software."
 msgstr ""
 "Конфигурация Polychromatic (включая ваши эффекты и пресеты) ранее была "
 "сохранена в более новой версии этой программы."
 
 #: polychromatic-controller:414
 msgid ""
-"While this older software version may run as expected, there is no guarantee"
-" everything will work as a result of this newer save data. This installation"
-" is unsupported."
+"While this older software version may run as expected, there is no guarantee "
+"everything will work as a result of this newer save data. This installation "
+"is unsupported."
 msgstr ""
 "Хотя эта более старая версия программы может работать как ожидается, нет "
 "гарантии, что всё будет работать с этими более новыми сохранёнными данными. "
@@ -2515,11 +2510,11 @@ msgstr ""
 
 #: polychromatic-controller:415
 msgid ""
-"Consider updating the application, ignore this message or delete: "
-"~/.config/polychromatic"
+"Consider updating the application, ignore this message or delete: ~/.config/"
+"polychromatic"
 msgstr ""
-"Обновите приложение, проигнорируйте это сообщение или удалите: "
-"~/.config/polychromatic"
+"Обновите приложение, проигнорируйте это сообщение или удалите: ~/.config/"
+"polychromatic"
 
 #: polychromatic-controller:450
 msgid "Application"
@@ -2726,8 +2721,8 @@ msgstr ""
 
 #: polychromatic/controller/troubleshooter.py:100
 msgid ""
-"An exception was thrown while running the troubleshooter. This is probably a"
-" bug."
+"An exception was thrown while running the troubleshooter. This is probably a "
+"bug."
 msgstr ""
 "Во время работы мастера диагностики возникло исключение. Вероятно, это "
 "ошибка."
@@ -2862,8 +2857,8 @@ msgstr ""
 
 #: polychromatic-tray-applet:623
 msgid ""
-"Try restarting [OpenRazer] and Polychromatic and give it another go. If this"
-" error appears again, it's likely this needs fixing in [OpenRazer]."
+"Try restarting [OpenRazer] and Polychromatic and give it another go. If this "
+"error appears again, it's likely this needs fixing in [OpenRazer]."
 msgstr ""
 "Попробуйте перезапустить [OpenRazer] и Polychromatic и повторить попытку. "
 "Если ошибка появится снова, вероятно, её нужно исправлять в [OpenRazer]."
@@ -3068,8 +3063,8 @@ msgstr "Проверьте состояние Secure Boot (EFI)"
 
 #: polychromatic/troubleshoot/openrazer.py:270
 msgid ""
-"Secure boot is enabled. Turn it off in the system's EFI settings or sign the"
-" modules yourself."
+"Secure boot is enabled. Turn it off in the system's EFI settings or sign the "
+"modules yourself."
 msgstr ""
 "Secure Boot включён. Отключите его в настройках EFI системы или подпишите "
 "модули самостоятельно."
@@ -3095,8 +3090,8 @@ msgid ""
 "This is required so that your user account (and daemon) has permission to "
 "access the driver files in /sys/bus/hid/drivers"
 msgstr ""
-"Это необходимо, чтобы у вашей учётной записи (и службы) были права доступа к"
-" файлам драйвера в /sys/bus/hid/drivers"
+"Это необходимо, чтобы у вашей учётной записи (и службы) были права доступа к "
+"файлам драйвера в /sys/bus/hid/drivers"
 
 #: polychromatic/troubleshoot/openrazer.py:303
 #: polychromatic/troubleshoot/openrazer.py:313
@@ -3150,8 +3145,7 @@ msgstr "Ядро Linux не видит оборудование с VID 1532."
 
 #: polychromatic/troubleshoot/openrazer.py:351
 msgid "Check the device and USB port is working. Try a different port."
-msgstr ""
-"Проверьте, что устройство и порт USB работают. Попробуйте другой порт."
+msgstr "Проверьте, что устройство и порт USB работают. Попробуйте другой порт."
 
 #: polychromatic/troubleshoot/openrazer.py:371
 #: polychromatic/troubleshoot/openrazer.py:402
@@ -3205,8 +3199,7 @@ msgstr "Доступна новая версия OpenRazer."
 
 #: polychromatic/troubleshoot/openrazer.py:446
 msgid ""
-"New versions add support for more devices and address device-specific "
-"issues."
+"New versions add support for more devices and address device-specific issues."
 msgstr ""
 "Новые версии добавляют поддержку большего числа устройств и устраняют "
 "проблемы конкретных устройств."
@@ -3346,8 +3339,8 @@ msgstr "с"
 
 #: preferences.ui.h:50
 msgid ""
-"On some desktop environments, due to race conditions, it may be necessary to"
-" wait so the applet's icon or device list is loaded properly."
+"On some desktop environments, due to race conditions, it may be necessary to "
+"wait so the applet's icon or device list is loaded properly."
 msgstr ""
 "В некоторых средах рабочего стола из-за состояний гонки может потребоваться "
 "подождать, чтобы значок апплета или список устройств загрузились правильно."
@@ -3443,3 +3436,70 @@ msgstr "Проверка"
 #: troubleshooter.ui.h:8
 msgid "Copy to Clipboard"
 msgstr "Копировать в буфер обмена"
+
+#: app.polychromatic.controller.metainfo.xml.in:6
+msgid "RGB lighting management software for OpenRazer"
+msgstr "Управление RGB-подсветкой для OpenRazer"
+
+#: app.polychromatic.controller.metainfo.xml.in:31
+msgid ""
+"Polychromatic is a front-end for configuring Razer peripherals: keyboards, "
+"mice, keypads, headsets, laptops and more!"
+msgstr ""
+"Polychromatic — оболочка для настройки устройств Razer: клавиатур, мышей, "
+"кейпадов, гарнитур, ноутбуков и не только!"
+
+#: app.polychromatic.controller.metainfo.xml.in:35
+msgid ""
+"The application utilizes the effects and settings available on the firmware, "
+"including DPI, polling rate, brightness and device-specific hardware "
+"functions like Game Mode. It can view device information like firmware "
+"version, serial number, battery levels and can test individually addressable "
+"LEDs."
+msgstr ""
+"Программа пользуется эффектами и настройками, заложенными в прошивку "
+"устройства: чувствительностью (DPI), частотой опроса, яркостью и особыми "
+"возможностями вроде игрового режима. Она показывает сведения об устройстве — "
+"версию прошивки, серийный номер, уровень заряда — и умеет проверять каждый "
+"светодиод по отдельности."
+
+#: app.polychromatic.controller.metainfo.xml.in:42
+msgid ""
+"Create your own lighting effects and animations using the effect editor. "
+"Great for key mapping a game, application or for ambiance."
+msgstr ""
+"Создавайте собственные эффекты подсветки и анимации в редакторе эффектов. "
+"Удобно, чтобы подсветить раскладку клавиш под игру или программу — или "
+"просто для настроения."
+
+#: app.polychromatic.controller.metainfo.xml.in:46
+msgid ""
+"Requires OpenRazer to be installed on the host distribution. Device support "
+"is dependant on the version of OpenRazer installed."
+msgstr ""
+"Требуется установленный в системе OpenRazer. Набор поддерживаемых устройств "
+"зависит от его версии."
+
+#: app.polychromatic.controller.metainfo.xml.in:55
+msgid "The Devices tab showing the current keyboard effect"
+msgstr "Вкладка «Устройства» с текущим эффектом клавиатуры"
+
+#: app.polychromatic.controller.metainfo.xml.in:59
+msgid "Drawing a custom effect in the Effect Editor"
+msgstr "Рисование своего эффекта в редакторе эффектов"
+
+#: app.polychromatic.controller.metainfo.xml.in:63
+msgid "DPI and firmware options for a connected mouse"
+msgstr "Чувствительность и параметры прошивки подключённой мыши"
+
+#: app.polychromatic.controller.metainfo.xml.in:67
+msgid "The Effects tab showing a custom effect"
+msgstr "Вкладка «Эффекты» с собственным эффектом"
+
+#: app.polychromatic.controller.metainfo.xml.in:76
+msgid "Settings"
+msgstr "Настройки"
+
+#: app.polychromatic.controller.metainfo.xml.in:77
+msgid "HardwareSettings"
+msgstr "Настройки оборудования"
