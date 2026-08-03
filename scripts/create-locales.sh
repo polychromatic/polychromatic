@@ -93,7 +93,7 @@ xgettext app.polychromatic.controller.metainfo.xml.in -o "${temp_dir}/metainfo.p
 
 # Concatenate pots into one POT file
 cd "${temp_dir}" || exit 1
-msgcat *.pot > "${repo_root}/locale/polychromatic.pot"
+msgcat --use-first *.pot > "${repo_root}/locale/polychromatic.pot"
 
 # Append a string so the source language is set correctly
 sed -i '15 i "X-Source-Language: en_GB\\n"' "${repo_root}/locale/polychromatic.pot"
