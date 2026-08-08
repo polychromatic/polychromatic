@@ -11,7 +11,7 @@ import subprocess
 import time
 import webbrowser
 
-from PyQt6.QtCore import QMargins, QSize, Qt, QThread
+from PyQt6.QtCore import QMargins, QSize, Qt, QThread, QTimer
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWidgets import (QAbstractItemView, QButtonGroup, QCheckBox,
                              QComboBox, QDialog, QDialogButtonBox, QHBoxLayout,
@@ -433,32 +433,33 @@ class DevicesTab(shared.TabData):
         slider.setSingleStep(option.step)
         slider.setPageStep(option.step * 2)
         slider.setMaximumWidth(150)
-
-        # BUG: Qt: Ticks don't appear with stylesheet
         slider.setTickPosition(QSlider.TickPosition.TicksBelow)
         slider.setTickInterval(int(option.max / 10))
 
         label = QLabel()
-        suffix = option.suffix if option.value == 1 else option.suffix_plural
-        label.setText(str(option.value) + suffix)
 
-        # Change label while sliding
-        def _slider_moved(value):
+        def _update_label(value):
             suffix = option.suffix if value == 1 else option.suffix_plural
             label.setText(str(value) + suffix)
-        slider.sliderMoved.connect(_slider_moved)
-        slider.valueChanged.connect(_slider_moved)
 
-        # Send request once dropped
-        def _slider_dropped():
+        _update_label(option.value)
+
+        debounce_timer = QTimer()
+        debounce_timer.setSingleShot(True)
+
+        def _slider_changed(value):
+            _update_label(value)
+            debounce_timer.start(100)
+
+        def _apply_value():
             self.dbg.stdout(f"{self.current_device.name}: Applying option {option.uid} with value: {str(slider.value())}", self.dbg.action, 1)
             try:
                 option.apply(slider.value())
             except Exception as e:
                 self._catch_command_error(self.current_device, e)
 
-        slider.sliderReleased.connect(_slider_dropped)
-        slider.valueChanged.connect(_slider_dropped)
+        slider.valueChanged.connect(_slider_changed)
+        debounce_timer.timeout.connect(_apply_value)
 
         return [slider, label]
 
