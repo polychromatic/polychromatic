@@ -28,17 +28,17 @@ class TestInternals(unittest.TestCase):
         pass
 
     def test_locales_can_be_set(self):
-        i18n = locales.Locales("de_DE")
+        i18n = locales.Locales("de")
         _ = i18n.init()
-        self.assertEqual(i18n.get_current_locale(), "de_DE", "Could not set up a German locale")
+        self.assertEqual(i18n.get_current_locale(), "de", "Could not set up a German locale")
 
     def test_locales_can_translate_strings(self):
-        _ = locales.Locales("de_DE").init()
+        _ = locales.Locales("de").init()
         # EN: Breath | DE: Atem
         self.assertEqual(_("Breath"), "Atem", "Could not translate text in German")
 
     def test_locales_can_translate_colours(self):
-        _ = locales.Locales("de_DE").init()
+        _ = locales.Locales("de").init()
         if os.path.exists(self.base.paths.colours):
             os.remove(self.base.paths.colours)
         preferences.init(_)
