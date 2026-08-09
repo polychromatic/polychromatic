@@ -552,6 +552,8 @@ class OpenRazerBackend(Backend):
             form_factor_id = "gpu"
         elif device_name.find("Nommo") != -1:
             form_factor_id = "speaker"
+        elif device_name.find("Seiren") != -1:
+            form_factor_id = "microphone"
         elif device_name.find("Raptor") != -1:
             form_factor_id = "display"
 
