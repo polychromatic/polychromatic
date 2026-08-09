@@ -6,6 +6,7 @@ Handles the bulk "Apply to All" options to apply settings to all devices at once
 from . import common
 from . import middleman as mn
 from . import preferences
+from . import procpid
 from .backends._backend import Backend
 
 
@@ -37,6 +38,19 @@ class _BulkBrightness(BulkOption):
 class _BulkEffect(BulkOption):
     def apply(self, a=None):
         # 'a' is an object passed from Tray Applet. Unnecessary.
+
+        # Stop any per-device software effects before changing the lighting
+        # state of all devices.
+        for device in self.middleman.get_devices():
+            self.middleman.stop_software_effect(device.serial)
+
+        # Apply to All -> Spectrum uses one shared software clock rather than
+        # starting each device's independent hardware Spectrum effect.
+        if self.value == "spectrum":
+            process = procpid.ProcessManager("helper")
+            process.start_component(["--run-global-spectrum"])
+            return
+
         for option in self.options:
             if not option.uid == self.value:
                 continue

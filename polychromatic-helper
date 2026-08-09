@@ -30,6 +30,7 @@ be multple helper processes running simultaneously. It also is designed to be
 track alive or dead processes.
 """
 import argparse
+import colorsys
 import glob
 import setproctitle
 import os
@@ -65,6 +66,9 @@ class PolychromaticHelper(PolychromaticBase):
         elif self.args.monitor_triggers:
             self.monitor_triggers()
 
+        elif self.args.run_global_spectrum:
+            self.run_global_spectrum()
+
         elif self.args.run_fx and self.args.device_serial or self.args.device_name:
             self.run_fx(self.args.run_fx, self.args.device_name, self.args.device_serial)
 
@@ -85,6 +89,7 @@ class PolychromaticHelper(PolychromaticBase):
         parser.add_argument("--autostart", action="store_true")
         parser.add_argument("--monitor-triggers", action="store_true")
         parser.add_argument("--run-fx", action="store")
+        parser.add_argument("--run-global-spectrum", action="store_true")
 
         # Custom effects only
         parser.add_argument("-n", "--device-name", action="store")
@@ -186,6 +191,201 @@ class PolychromaticHelper(PolychromaticBase):
         This process should always be running when there is at least one trigger set.
         """
         print("stub:Helpers.monitor_triggers")
+
+    def run_global_spectrum(self):
+        """
+        Drive all compatible OpenRazer matrices from one software Spectrum
+        clock.
+
+        Custom mode is activated once at startup. During playback, only RGB
+        frame data is transmitted. Re-activating custom mode every frame can
+        cause visible flickering on some devices, including the Seiren V3
+        Chroma.
+        """
+        cycle_seconds = 10.0
+        fps = 20.0
+        frame_time = 1.0 / fps
+
+        process = procpid.ProcessManager("global-spectrum")
+        stop_requested = False
+
+        def stop_global_spectrum(signum, frame):
+            nonlocal stop_requested
+            stop_requested = True
+
+        signal.signal(signal.SIGUSR2, stop_global_spectrum)
+
+        devices = []
+
+        self.dbg.stdout(
+            "Preparing synchronized software Spectrum...",
+            self.dbg.action,
+            1
+        )
+
+        for device in self.middleman.get_devices():
+            matrix = device.matrix
+
+            if not matrix:
+                continue
+
+            try:
+                matrix.init()
+
+                rdevice = matrix._rdevice
+                advanced = rdevice.fx.advanced
+                lighting = advanced._lighting_dbus
+
+                devices.append({
+                    "device": device,
+                    "matrix": matrix,
+                    "advanced": advanced,
+                    "lighting": lighting,
+                })
+
+                self.dbg.stdout(
+                    "{0}: Added matrix ({1}x{2})".format(
+                        device.name,
+                        matrix.rows,
+                        matrix.cols
+                    ),
+                    self.dbg.success,
+                    1
+                )
+
+            except (AttributeError, NotImplementedError) as e:
+                self.dbg.stdout(
+                    "{0}: Global Spectrum unsupported: {1}".format(
+                        device.name,
+                        e
+                    ),
+                    self.dbg.warning,
+                    1
+                )
+
+        if not devices:
+            self.dbg.stdout(
+                "No compatible matrix devices were found.",
+                self.dbg.error
+            )
+            return
+
+        def set_colour(entry, red, green, blue):
+            matrix = entry["matrix"]
+
+            for y in range(matrix.rows):
+                for x in range(matrix.cols):
+                    matrix.set(
+                        x,
+                        y,
+                        red,
+                        green,
+                        blue
+                    )
+
+        def get_colour(timestamp, start):
+            elapsed = timestamp - start
+            hue = (elapsed / cycle_seconds) % 1.0
+
+            red_f, green_f, blue_f = colorsys.hsv_to_rgb(
+                hue,
+                1.0,
+                1.0
+            )
+
+            return (
+                round(red_f * 255),
+                round(green_f * 255),
+                round(blue_f * 255),
+            )
+
+        self.dbg.stdout(
+            "Preparing initial synchronized frame...",
+            self.dbg.action,
+            1
+        )
+
+        start = time.monotonic()
+        red, green, blue = get_colour(start, start)
+
+        # Fill every local matrix before transmitting anything.
+        for entry in devices:
+            set_colour(
+                entry,
+                red,
+                green,
+                blue
+            )
+
+        # Send the initial frame to every device.
+        for entry in devices:
+            entry["lighting"].setKeyRow(
+                bytes(entry["advanced"].matrix)
+            )
+
+        # IMPORTANT:
+        #
+        # Activate custom mode exactly once. The normal OpenRazer
+        # advanced.draw() path calls setCustom() after every frame. That
+        # produces visible flickering on the Seiren V3 Chroma when used for
+        # continuous software rendering.
+        self.dbg.stdout(
+            "Activating custom mode...",
+            self.dbg.action,
+            1
+        )
+
+        for entry in devices:
+            entry["lighting"].setCustom()
+
+        self.dbg.stdout(
+            "Synchronizing {0} device(s) at {1:.0f} FPS.".format(
+                len(devices),
+                fps
+            ),
+            self.dbg.success,
+            1
+        )
+
+        process.set_component_pid()
+
+        try:
+            while not stop_requested:
+                frame_start = time.monotonic()
+
+                # ONE master colour calculated from ONE clock.
+                red, green, blue = get_colour(
+                    frame_start,
+                    start
+                )
+
+                # Update every local matrix first.
+                for entry in devices:
+                    set_colour(
+                        entry,
+                        red,
+                        green,
+                        blue
+                    )
+
+                # FRAME DATA ONLY.
+                #
+                # Do not call matrix.draw() or advanced.draw() here because
+                # those paths also re-issue the custom-effect activation
+                # command.
+                for entry in devices:
+                    entry["lighting"].setKeyRow(
+                        bytes(entry["advanced"].matrix)
+                    )
+
+                elapsed = time.monotonic() - frame_start
+                remaining = frame_time - elapsed
+
+                if remaining > 0:
+                    time.sleep(remaining)
+
+        finally:
+            process.release_component_pid()
 
     def run_fx(self, path, name, serial):
         """
