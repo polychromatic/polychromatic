@@ -158,16 +158,27 @@ class PolychromaticHelper(PolychromaticBase):
             self.dbg.stdout("Activating login trigger...", self.dbg.action, 1)
             print("stub:login trigger")
 
-        # -- Resume effect states (if any)
+        # -- Resume software-controlled lighting state (if any)
         if not login_trigger_set:
             procmgr = procpid.ProcessManager("helper")
-            for device_json in state_files:
-                serial = os.path.basename(device_json).replace(".json", "")
-                state = procpid.DeviceSoftwareState(serial)
-                effect = state.get_effect()
-                if effect:
-                    self.dbg.stdout("Resuming effect '{0}' on device serial '{1}'.".format(effect["name"], serial), self.dbg.action, 1)
-                    procmgr.start_component(["--run-fx", effect["path"], "--device-serial", serial])
+            global_state = procpid.GlobalSpectrumState()
+
+            if global_state.is_active():
+                self.dbg.stdout(
+                    "Resuming synchronized global Spectrum.",
+                    self.dbg.action,
+                    1
+                )
+                procmgr.start_component(["--run-global-spectrum"])
+
+            else:
+                for device_json in state_files:
+                    serial = os.path.basename(device_json).replace(".json", "")
+                    state = procpid.DeviceSoftwareState(serial)
+                    effect = state.get_effect()
+                    if effect:
+                        self.dbg.stdout("Resuming effect '{0}' on device serial '{1}'.".format(effect["name"], serial), self.dbg.action, 1)
+                        procmgr.start_component(["--run-fx", effect["path"], "--device-serial", serial])
 
         # Start Tray Applet
         if self.preferences["tray"]["autostart"]:

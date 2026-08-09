@@ -47,8 +47,13 @@ class _BulkEffect(BulkOption):
         # Apply to All -> Spectrum uses one shared software clock rather than
         # starting each device's independent hardware Spectrum effect.
         if self.value == "spectrum":
+            state = procpid.GlobalSpectrumState()
+            state.set_active()
+
             process = procpid.ProcessManager("helper")
-            process.start_component(["--run-global-spectrum"])
+            if not process.start_component(["--run-global-spectrum"]):
+                state.clear_active()
+
             return
 
         for option in self.options:
