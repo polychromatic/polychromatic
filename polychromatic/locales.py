@@ -12,6 +12,12 @@ class Locales(object):
     Supports localisation throughout the application by utilising gettext.
     The "_" object is used for processing strings.
     """
+    locale_dirs = [
+        "/usr/local/share/locale",
+        "/usr/share/locale",
+        "/app/share/locale",
+    ]
+
     def __init__(self, force_locale=""):
         self.force_locale = force_locale
         self.locale = force_locale
@@ -25,23 +31,39 @@ class Locales(object):
         Returns:
             gettext.translation() bound to an i18n variable.
         """
-        is_relative = os.path.exists(os.path.join(os.path.dirname(__file__), "..", "data", "img"))
-        relative_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "locale/"))
+        languages = [self.locale] if self.force_locale else None
 
-        # For development or a standalone "opt" build
-        if is_relative and self.force_locale:
-            self.translation = gettext.translation("polychromatic", localedir=relative_path, fallback=True, languages=[self.locale])
-        elif is_relative:
-            self.translation = gettext.translation("polychromatic", localedir=relative_path, fallback=True)
-
-        # For packaged/system-wide installs
-        elif not is_relative and self.force_locale:
-            self.translation = gettext.translation("polychromatic", fallback=True, languages=[self.locale])
-        else:
-            self.translation = gettext.translation("polychromatic", fallback=True)
+        self.translation = gettext.translation("polychromatic",
+                                               localedir=self.get_locale_path(languages),
+                                               languages=languages,
+                                               fallback=True)
 
         self._ = self.translation.gettext
         return self._
+
+    def get_locale_path(self, languages=None):
+        """
+        Returns the directory holding the message catalogues, or None to leave
+        gettext to its own default.
+
+        For packaged installs, gettext derives its default from the Python
+        interpreter's prefix, which is only the application's prefix when the
+        two are installed together. Inside a Flatpak they are not: the
+        application is under /app while the interpreter comes from the runtime's
+        /usr, so every translation goes unused unless the directory is named.
+        """
+        module_path = __file__
+
+        # For development or a standalone "opt" build
+        if os.path.exists(os.path.join(os.path.dirname(module_path), "../data/img/")):
+            return os.path.abspath(os.path.join(os.path.dirname(module_path), "../locale/"))
+
+        # For packaged/system-wide installs
+        for directory in self.locale_dirs:
+            if gettext.find("polychromatic", directory, languages):
+                return directory
+
+        return None
 
     def get_current_locale(self):
         """
