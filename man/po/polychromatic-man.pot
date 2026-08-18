@@ -1,0 +1,630 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: "
+"https://github.com/polychromatic/polychromatic/issues\n"
+"POT-Creation-Date: 2026-08-16 02:24+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:2
+#, markdown-text
+msgid "polychromatic-cli(1)"
+msgstr ""
+
+#. type: Title #
+#: polychromatic-cli.1.scd:3 polychromatic-controller.1.scd:3
+#: polychromatic-helper.1.scd:3 polychromatic-tray-applet.1.scd:3
+#, markdown-text, no-wrap
+msgid "NAME"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:6 polychromatic-controller.1.scd:6
+#: polychromatic-helper.1.scd:6 polychromatic-tray-applet.1.scd:6
+#, markdown-text
+msgid "Polychromatic - RGB lighting management software for GNU/Linux"
+msgstr ""
+
+#. type: Title #
+#: polychromatic-cli.1.scd:7 polychromatic-controller.1.scd:7
+#: polychromatic-helper.1.scd:7 polychromatic-tray-applet.1.scd:7
+#, markdown-text, no-wrap
+msgid "SYNOPSIS"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:10
+#, markdown-text, no-wrap
+msgid "*polychromatic-cli* [OPTIONS]\n"
+msgstr ""
+
+#. type: Title #
+#: polychromatic-cli.1.scd:11 polychromatic-controller.1.scd:11
+#: polychromatic-helper.1.scd:11 polychromatic-tray-applet.1.scd:11
+#, markdown-text, no-wrap
+msgid "DESCRIPTION"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:15
+#, markdown-text
+msgid ""
+"This is the command line interface for configuring device options and "
+"retrieving status information from connected hardware."
+msgstr ""
+
+#. type: Title #
+#: polychromatic-cli.1.scd:16 polychromatic-controller.1.scd:16
+#: polychromatic-helper.1.scd:21 polychromatic-tray-applet.1.scd:16
+#, markdown-text, no-wrap
+msgid "OPTIONS"
+msgstr ""
+
+#. type: Title ##
+#: polychromatic-cli.1.scd:18
+#, markdown-text, no-wrap
+msgid "DEVICE SELECTION"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:22
+#, markdown-text, no-wrap
+msgid ""
+"\tUse the following arguments to select the devices to read/set changes "
+"to.\n"
+"\tOmitting these arguments selects all devices.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:25
+#, markdown-text, no-wrap
+msgid ""
+"\t*-d*, *--device* <ID>\n"
+"\t\tSelect the device by form factor.\n"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "accessory"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "display"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "fan"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "gpu"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "headset"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "keyboard"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "keypad"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "laptop"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "mouse"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "mousemat"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "ram"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "speaker"
+msgstr ""
+
+#. type: Bullet: '		- '
+#: polychromatic-cli.1.scd:39
+#, markdown-text
+msgid "stand"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:42
+#, markdown-text, no-wrap
+msgid ""
+"\t*-n*, *--name* <NAME>\n"
+"\t\tSelect a device by its full name, such as \"Razer BlackWidow Chroma\"\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:45
+#, markdown-text, no-wrap
+msgid ""
+"\t*-s*, *--serial* <SERIAL>\n"
+"\t\tSelect a device by its serial string.\n"
+msgstr ""
+
+#. type: Title ##
+#: polychromatic-cli.1.scd:46
+#, markdown-text, no-wrap
+msgid "DEVICE INFORMATION"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:50
+#, markdown-text, no-wrap
+msgid ""
+"\t*-l*, *--list-devices*\n"
+"\t\tList the selected device(s) and their zone(s)\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:53
+#, markdown-text, no-wrap
+msgid ""
+"\t*-k*, *--list-options*\n"
+"\t\tList supported parameters and current settings in a table.\n"
+msgstr ""
+
+#. type: Title ##
+#: polychromatic-cli.1.scd:54
+#, markdown-text, no-wrap
+msgid "DEVICE OPERATION"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:59
+#, markdown-text, no-wrap
+msgid ""
+"\t*-z*, *--zone* <ID>\n"
+"\t\tMake a change to the specified zone. Some hardware have multiple\n"
+"\t\tlighting regions. When omitted, all zones will be selected.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:62
+#, markdown-text, no-wrap
+msgid ""
+"\t*-o*, *--option* <ID>\n"
+"\t\tSet an option on the device. For example, \"static\"\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:64
+#, markdown-text, no-wrap
+msgid "\t\tSome options require a _--parameter_ and/or _--colour_, see below.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:68
+#, markdown-text, no-wrap
+msgid ""
+"\t*-p*, *--parameter* <ID>\n"
+"\t\tSet a parameter for the specified option if applicable. For example,\n"
+"\t\tfor a wave effect, use \"right\" or its numerical value (1).\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:72
+#, markdown-text, no-wrap
+msgid ""
+"\t\tNumerical values are useful when setting multiple devices "
+"simultaneously\n"
+"\t\tthat do not share the same ID, such as a mouse's wave is \"up\" (1) or\n"
+"\t\t\"down\" (2) instead of \"right\" (1) and \"left\" (2).\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:75
+#, markdown-text, no-wrap
+msgid ""
+"\t*-c*, *--colours* <#RRGGBB>[,#RRGGBB...]\n"
+"\t\tSet a colour for the specified option if applicable.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:79
+#, markdown-text, no-wrap
+msgid ""
+"\t\tThe input only accepts 6 byte hexadecimal values, such as #00FF00.\n"
+"\t\tThe hash must be escaped or wrapped in quotes to avoid being "
+"interpreted\n"
+"\t\tas a comment by your shell. Alternately, the hash can be omitted.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:81
+#, markdown-text, no-wrap
+msgid "\t\tMultiple colours may be specified using a comma.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:85
+#, markdown-text, no-wrap
+msgid ""
+"\t*-e*, *--effect* <NAME/PATH>\n"
+"\t\tPlays a custom software effect by its name or an absolute path to\n"
+"\t\tthe file.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:87
+#, markdown-text, no-wrap
+msgid "\t\tNot to be confused with an _--option_ for hardware effects, see above.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:91
+#, markdown-text, no-wrap
+msgid ""
+"\t*--dpi* <X>[,Y]\n"
+"\t\tSets the DPI (dots per inch) of a mouse. The axis can be set\n"
+"\t\tindependently, otherwise the same value will be used for both X/Y.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:93
+#, markdown-text, no-wrap
+msgid "\t\tDPI is responsible for the speed of the mouse cursor.\n"
+msgstr ""
+
+#. type: Title #
+#: polychromatic-cli.1.scd:94
+#, markdown-text, no-wrap
+msgid "MISCELLANEOUS"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:98
+#, markdown-text, no-wrap
+msgid ""
+"\t*-h*, *--help*\n"
+"\t\tShows the help information.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:101
+#, markdown-text, no-wrap
+msgid ""
+"\t*-v*, *--verbose*\n"
+"\t\tPrints more details about the application's operation.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:107
+#, markdown-text, no-wrap
+msgid ""
+"\t*--version*\n"
+"\t\tPrints version information:\n"
+"\t\t\t- Software version\n"
+"\t\t\t- Commit hash (when run from the repository directory)\n"
+"\t\t\t- Python version\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:111
+#, markdown-text, no-wrap
+msgid ""
+"\t*--no-pretty-column*\n"
+"\t\tDisables the pretty column function of the program. This may be "
+"required\n"
+"\t\tfor compatibility with specific terminals and consoles.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-cli.1.scd:114
+#, markdown-text, no-wrap
+msgid ""
+"\t*--locale [lang]*\n"
+"\t\tForce the application to display in a specific locale.\n"
+"\t\tFor example, \"fr_FR\" or \"nl\".\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-controller.1.scd:2
+#, markdown-text
+msgid "polychromatic-controller(1)"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-controller.1.scd:10
+#, markdown-text, no-wrap
+msgid "*polychromatic-controller* [OPTIONS]\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-controller.1.scd:15
+#, markdown-text
+msgid ""
+"This is the main graphical user interface portion of Polychromatic, based on "
+"PyQt6. All features of the software are accessible here."
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-controller.1.scd:20 polychromatic-tray-applet.1.scd:20
+#, markdown-text, no-wrap
+msgid ""
+"*-h*, *--help*\n"
+"\tShows the help information.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-controller.1.scd:23 polychromatic-helper.1.scd:25
+#: polychromatic-tray-applet.1.scd:23
+#, markdown-text, no-wrap
+msgid ""
+"*-v*, *--verbose*\n"
+"\tPrints more details about the application's operation.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-controller.1.scd:30
+#, markdown-text, no-wrap
+msgid ""
+"*--version*\n"
+"\tPrints version information:\n"
+"\t\t- Software version\n"
+"\t\t- Commit hash (when run from the repository directory)\n"
+"\t\t- Python version\n"
+"\t\t- Qt version\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-controller.1.scd:34 polychromatic-tray-applet.1.scd:34
+#, markdown-text, no-wrap
+msgid ""
+"*--locale [lang]*\n"
+"\tForce the application to display in a specific locale.\n"
+"\tFor example, \"fr_FR\" or \"nl\".\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-controller.1.scd:37
+#, markdown-text, no-wrap
+msgid ""
+"*--open [tab/dialog]*\n"
+"\tOpens the software to a specific a tab or dialog.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-controller.1.scd:39
+#, markdown-text, no-wrap
+msgid "\t_Tab_: devices, effects\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-controller.1.scd:41
+#, markdown-text, no-wrap
+msgid "\t_Dialog_: preferences, troubleshoot, colours\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-controller.1.scd:42
+#, markdown-text, no-wrap
+msgid "\tAfter a dialog is closed, the software will quit.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-helper.1.scd:2
+#, markdown-text
+msgid "polychromatic-helper(1)"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-helper.1.scd:10
+#, markdown-text, no-wrap
+msgid "*polychromatic-helper* [OPTIONS]\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-helper.1.scd:15
+#, markdown-text
+msgid ""
+"This is the \"helper\" runtime for handling background tasks, like autostart "
+"behaviours and running of custom effects."
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-helper.1.scd:18
+#, markdown-text
+msgid ""
+"This software does not contain driver code to directly control hardware by "
+"itself. In this version, only OpenRazer is supported."
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-helper.1.scd:20
+#, markdown-text
+msgid "The user is not expected to interact with this executable."
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-helper.1.scd:31
+#, markdown-text, no-wrap
+msgid ""
+"*--version*\n"
+"\tPrints version information:\n"
+"\t\t- Software version\n"
+"\t\t- Commit hash (when run from the repository directory)\n"
+"\t\t- Python version\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-helper.1.scd:35
+#, markdown-text, no-wrap
+msgid ""
+"*--autostart*\n"
+"\tTo be run when the user logs into the desktop environment.\n"
+"\t\t- If enabled, start the tray applet.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-helper.1.scd:38
+#, markdown-text, no-wrap
+msgid ""
+"_--monitor-triggers_\n"
+"\tUnused in this version.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-helper.1.scd:42
+#, markdown-text, no-wrap
+msgid ""
+"*--run-fx* <PATH>\n"
+"\tRuns a Polychromatic effect stored in JSON format.\n"
+"\tRequires the *-n* or *-s* parameters below to specify the device.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-helper.1.scd:46
+#, markdown-text, no-wrap
+msgid ""
+"*-n* <DEVICE_NAME>\n"
+"\tSelect the desired device name (full string)\n"
+"\tFor example, \"Razer BlackWidow Chroma\"\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-helper.1.scd:48
+#, markdown-text, no-wrap
+msgid ""
+"*-s* <DEVICE_SERIAL>\n"
+"\tSelect the desired device by its serial string.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-tray-applet.1.scd:2
+#, markdown-text
+msgid "polychromatic-tray-applet(1)"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-tray-applet.1.scd:10
+#, markdown-text, no-wrap
+msgid "*polychromatic-tray-applet* [OPTIONS]\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-tray-applet.1.scd:15
+#, markdown-text
+msgid ""
+"This is the tray applet interface for convenient access to device options "
+"through an AppIndicator or GTK Status Icon."
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-tray-applet.1.scd:30
+#, markdown-text, no-wrap
+msgid ""
+"*--version*\n"
+"\tPrints version information:\n"
+"\t\t- Software version\n"
+"\t\t- Commit hash (when run from the repository directory)\n"
+"\t\t- Python version\n"
+"\t\t- GTK version\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-tray-applet.1.scd:38
+#, markdown-text, no-wrap
+msgid ""
+"*--force-appindicator*\n"
+"\tOverride the user's preferences and start the tray applet using the\n"
+"\tAppIndicator3 bindings.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-tray-applet.1.scd:43
+#, markdown-text, no-wrap
+msgid ""
+"*--force-ayatana*\n"
+"\tOverride the user's preferences and start the tray applet using the\n"
+"\tAyatana Indicator bindings. This is the default option and is widely "
+"compatible\n"
+"\twith most desktop environments.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-tray-applet.1.scd:48
+#, markdown-text, no-wrap
+msgid ""
+"*--force-gtk-status*\n"
+"\tOverride the user's preferences and start the tray applet using the\n"
+"\tlegacy GTK Status Icon. This is a deprecated GTK feature, but may work\n"
+"\ton distributions where application indicators are not supported.\n"
+msgstr ""
+
+#. type: Title #
+#: polychromatic-tray-applet.1.scd:49
+#, markdown-text, no-wrap
+msgid "NOTES"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-tray-applet.1.scd:55
+#, markdown-text, no-wrap
+msgid ""
+"\tSome desktop enviroments (such as GNOME) have deprecated support for\n"
+"\tindicators and system tray. In this scenario, the user may need to "
+"install\n"
+"\tan additional package provided by their distribution that restores the\n"
+"\tfunctionality, or sacrifice this feature.\n"
+msgstr ""
+
+#. type: Plain text
+#: polychromatic-tray-applet.1.scd:59
+#, markdown-text, no-wrap
+msgid ""
+"\tIt is observed that on some desktop environments and fast computers,\n"
+"\ta race condition prevents the indicator/applet from displaying as "
+"expected\n"
+"\t(including the wrong theme, or large icons). In this scenario, set a "
+"delay\n"
+"\tin _preferences.json_ by a few seconds.\n"
+msgstr ""

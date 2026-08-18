@@ -28,6 +28,8 @@ provide this in a separate `pyqt6-dev-tools` package.
 | `ninja`           | Build system
 | `meson`           | Build system
 | `intltool`        | Compiling translations
+| `scdoc`           | Compiling man pages
+| `po4a`            | Translating man pages
 | `git`             | Version control
 
 

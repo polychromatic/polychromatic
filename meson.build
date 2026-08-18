@@ -25,6 +25,15 @@ install_man('man/polychromatic-controller.1',
             'man/polychromatic-cli.1',
             'man/polychromatic-helper.1')
 
+# Translated manual pages, assembled by scripts/build-man-pages.sh
+foreach man_lang : ['ru']
+    install_data(join_paths('man', man_lang, 'polychromatic-controller.1'),
+                 join_paths('man', man_lang, 'polychromatic-tray-applet.1'),
+                 join_paths('man', man_lang, 'polychromatic-cli.1'),
+                 join_paths('man', man_lang, 'polychromatic-helper.1'),
+                 install_dir : join_paths(get_option('mandir'), man_lang, 'man1'))
+endforeach
+
 install_subdir('data',
                install_dir : join_paths(get_option('datadir'), 'polychromatic'),
                strip_directory : true)
