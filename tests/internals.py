@@ -32,6 +32,11 @@ class TestInternals(unittest.TestCase):
         _ = i18n.init()
         self.assertEqual(i18n.get_current_locale(), "de", "Could not set up a German locale")
 
+    def test_locales_path_can_be_found(self):
+        i18n = locales.Locales("de")
+        expected = os.path.abspath(os.path.join(os.path.dirname(locales.__file__), "..", "locale"))
+        self.assertEqual(i18n.get_locale_path(["de"]), expected, "Could not locate the message catalogues")
+
     def test_locales_can_translate_strings(self):
         _ = locales.Locales("de").init()
         # EN: Breath | DE: Atem
