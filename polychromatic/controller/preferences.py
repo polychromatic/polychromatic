@@ -6,7 +6,9 @@ This module controls the 'Preferences' window of the Controller GUI.
 
 import configparser
 import os
+import unicodedata
 
+from PyQt6.QtCore import QLocale
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox,
                              QDoubleSpinBox, QLabel, QMessageBox, QPushButton,
@@ -87,6 +89,8 @@ class PreferencesWindow(shared.TabData):
         for option in self.options:
             self._load_option(option[0], option[1], option[2], option[3], option[4])
 
+        self._load_languages()
+
         self.dialog.findChild(QPushButton, "SavedColoursButton").clicked.connect(self.modify_colours)
         self.dialog.findChild(QPushButton, "SavedColoursReset").clicked.connect(self.reset_colours)
 
@@ -111,6 +115,7 @@ class PreferencesWindow(shared.TabData):
             self.prompt_restart = True
 
         self.dialog.findChild(QCheckBox, "UseSystemQtTheme").stateChanged.connect(_cb_set_restart_flag)
+        self.dialog.findChild(QComboBox, "LanguageCombo").currentIndexChanged.connect(_cb_set_restart_flag)
 
         # Restart the tray applet after changing these options
         def _cb_set_applet_flag(i):
@@ -153,6 +158,43 @@ class PreferencesWindow(shared.TabData):
         # Show time!
         self.dialog.findChild(QTabWidget, "PreferencesTabs").setCurrentIndex(open_tab if open_tab else 0)
         self.dialog.open()
+
+    def _load_languages(self):
+        """
+        Populates the language dropdown with the languages installed on this
+        system, under their own native name.
+        """
+        combo = self.dialog.findChild(QComboBox, "LanguageCombo")
+        languages = []
+
+        for code in self.i18n.get_installed_languages():
+            name = QLocale(code).nativeLanguageName()
+
+            # Qt doesn't know this language, show the code as-is
+            if not name:
+                languages.append([code, code])
+                continue
+
+            # Some names come back in lowercase, but capitalising them is only
+            # correct for scripts that use case in running text.
+            if unicodedata.name(name[0], "").split(" ")[0] in ["LATIN", "CYRILLIC", "GREEK"]:
+                name = name[0].upper() + name[1:]
+
+            languages.append([name, code])
+
+        # Qt tells some languages apart by name already ("British English"), so
+        # only add the country when two entries would otherwise read the same.
+        names = [language[0] for language in languages]
+        for language in languages:
+            if names.count(language[0]) > 1:
+                language[0] = "{0} ({1})".format(language[0], QLocale(language[1]).nativeTerritoryName())
+
+        combo.addItem(self._("Follow System Language"), "")
+        for name, code in sorted(languages):
+            combo.addItem(name, code)
+
+        index = combo.findData(self.pref_data["controller"]["language"])
+        combo.setCurrentIndex(index if index >= 0 else 0)
 
     def _load_option(self, group, item, qcontrol, qid, inverted):
         """
@@ -204,6 +246,10 @@ class PreferencesWindow(shared.TabData):
         self.dbg.stdout("Saving preferences...", self.dbg.action, 1)
         for option in self.options:
             self._set_option(option[0], option[1], option[2], option[3], option[4])
+
+        language = self.dialog.findChild(QComboBox, "LanguageCombo").currentData()
+        self.pref_data["controller"]["language"] = language
+        self.appdata.preferences["controller"]["language"] = language
 
         result = pref.save_file(self.paths.preferences, self.pref_data)
         if result:
