@@ -360,6 +360,13 @@ class Middleman(object):
         Prior to applying a hardware effect, make sure any software effects
         have stopped.
         """
+        global_state = procpid.GlobalSpectrumState()
+        global_state.clear_active()
+
+        global_process = procpid.ProcessManager("global-spectrum")
+        if global_process.is_another_instance_is_running():
+            global_process.stop()
+
         process = procpid.ProcessManager(serial)
         state = procpid.DeviceSoftwareState(serial)
 
