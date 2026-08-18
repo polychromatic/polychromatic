@@ -41,6 +41,42 @@ class Locales(object):
         self._ = self.translation.gettext
         return self._
 
+    def get_installed_languages(self):
+        """
+        Returns a sorted list of language codes that have a message catalogue
+        present on this system, e.g. ["de", "fr", "ru"].
+
+        Users may remove languages they don't need, so the catalogues on disk
+        are the source of truth, not the LINGUAS file at build time.
+        """
+        found = ["en_GB"]
+        relative_path = self._get_relative_path()
+        directories = [relative_path] if relative_path else self.locale_dirs
+
+        for directory in directories:
+            try:
+                names = os.listdir(directory)
+            except OSError:
+                continue
+
+            for name in names:
+                if os.path.exists(os.path.join(directory, name, "LC_MESSAGES", "polychromatic.mo")):
+                    found.append(name)
+
+        return sorted(set(found))
+
+    def _get_relative_path(self):
+        """
+        Returns the locale directory for a development or standalone "opt"
+        build, or None when the application is installed system-wide.
+        """
+        module_path = os.path.dirname(__file__)
+
+        if os.path.exists(os.path.join(module_path, "../data/img/")):
+            return os.path.abspath(os.path.join(module_path, "../locale/"))
+
+        return None
+
     def get_locale_path(self, languages=None):
         """
         Returns the directory holding the message catalogues, or None to leave
@@ -52,11 +88,10 @@ class Locales(object):
         application is under /app while the interpreter comes from the runtime's
         /usr, so every translation goes unused unless the directory is named.
         """
-        module_path = __file__
-
         # For development or a standalone "opt" build
-        if os.path.exists(os.path.join(os.path.dirname(module_path), "../data/img/")):
-            return os.path.abspath(os.path.join(os.path.dirname(module_path), "../locale/"))
+        relative_path = self._get_relative_path()
+        if relative_path:
+            return relative_path
 
         # For packaged/system-wide installs
         for directory in self.locale_dirs:
