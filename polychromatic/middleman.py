@@ -64,8 +64,11 @@ class Middleman(object):
                 self.backends.append(backend)
             else:
                 self.bad_init.append(backend)
-        except (ImportError, ModuleNotFoundError):
-            self.not_installed.append("openrazer")
+        except ImportError as e:
+            if common.is_missing_module(e, "openrazer.client"):
+                self.not_installed.append("openrazer")
+            else:
+                self.import_errors["openrazer"] = common.get_exception_as_string(e)
         except Exception as e:
             self.import_errors["openrazer"] = common.get_exception_as_string(e)
 

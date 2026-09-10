@@ -98,3 +98,57 @@ class TestMiddleman(unittest.TestCase):
         zone = device.zones[0]
         self.middleman.set_colour_for_active_effect_zone(zone, "#0000FF")
         self.assertEqual(expected_option.colours[0], "#0000FF")
+
+
+class TestBackendImportErrors(unittest.TestCase):
+    def import_failures(self):
+        return [
+            (ModuleNotFoundError('Missing openrazer', name='openrazer'), False),
+            (ModuleNotFoundError('Missing client', name='openrazer.client'), False),
+            (ModuleNotFoundError('Missing dbus', name='dbus'), True),
+            (ModuleNotFoundError('Missing internal', name='openrazer.client.internal'), True),
+            (ModuleNotFoundError('Unknown module'), True),
+            (ImportError('Cannot import symbol', name='openrazer.client'), True),
+        ]
+
+    def test_backend_import_classification(self):
+        from unittest.mock import patch
+        import builtins
+
+        original_import = builtins.__import__
+        for error, present in self.import_failures():
+            with self.subTest(error=error):
+                def fail_backend(name, *args, **kwargs):
+                    if name == 'polychromatic.backends.openrazer':
+                        raise error
+                    return original_import(name, *args, **kwargs)
+
+                manager = middleman.Middleman()
+                with patch('builtins.__import__', side_effect=fail_backend):
+                    manager.init()
+                self.assertEqual(manager.not_installed, [] if present else ['openrazer'])
+                self.assertEqual('openrazer' in manager.import_errors, present)
+                if present:
+                    self.assertIn(str(error), manager.import_errors['openrazer'])
+                self.assertIn('openrazer', manager.troubleshooters)
+
+    def test_troubleshooter_import_classification(self):
+        from unittest.mock import patch
+        import builtins
+        import importlib.util
+
+        original_import = builtins.__import__
+        path = os.path.join(os.path.dirname(middleman.__file__), 'troubleshoot', 'openrazer.py')
+        for error, present in self.import_failures():
+            with self.subTest(error=error):
+                def fail_backend(name, *args, **kwargs):
+                    if name == 'openrazer':
+                        raise error
+                    return original_import(name, *args, **kwargs)
+
+                spec = importlib.util.spec_from_file_location('polychromatic.troubleshoot._test_import', path)
+                module = importlib.util.module_from_spec(spec)
+                with patch('builtins.__import__', side_effect=fail_backend):
+                    spec.loader.exec_module(module)
+                self.assertEqual(module.PYTHON_LIB_PRESENT, present)
+                self.assertFalse(module.PYTHON_LIB_WORKING)

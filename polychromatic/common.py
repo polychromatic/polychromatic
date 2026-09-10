@@ -36,6 +36,13 @@ FORM_FACTORS = [
 
 
 
+def is_missing_module(error, module_name):
+    """Distinguish an absent module (or parent) from a broken dependency import."""
+    return (isinstance(error, ModuleNotFoundError) and error.name is not None
+            and (module_name == error.name or module_name.startswith(error.name + ".")))
+
+
+
 class Debugging(object):
     """
     Outputs pretty debugging details to the terminal.

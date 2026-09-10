@@ -29,10 +29,10 @@ try:
     from openrazer import client as rclient
     PYTHON_LIB_PRESENT = True
     PYTHON_LIB_WORKING = True
-except ModuleNotFoundError:
-    PYTHON_LIB_PRESENT = False
+except ImportError as e:
+    PYTHON_LIB_PRESENT = not common.is_missing_module(e, "openrazer.client")
     PYTHON_LIB_WORKING = False
-except (ImportError, Exception):
+except Exception:
     PYTHON_LIB_PRESENT = True
     PYTHON_LIB_WORKING = False
 
