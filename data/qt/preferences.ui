@@ -83,6 +83,25 @@
             <number>10</number>
            </property>
            <item row="0" column="0">
+            <widget class="QLabel" name="LanguageLabel">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string extracomment="Preferences Label">Language</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="LanguageCombo"/>
+           </item>
+           <item row="1" column="0">
             <widget class="QLabel" name="AppearanceLabel">
              <property name="minimumSize">
               <size>
@@ -98,7 +117,7 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
+           <item row="1" column="1">
             <widget class="QWidget" name="UseSystemQtThemeGroup" native="true">
              <layout class="QVBoxLayout" name="UseSystemQtThemeGroup_Layout">
               <property name="spacing">
@@ -148,7 +167,7 @@
              </layout>
             </widget>
            </item>
-           <item row="1" column="1">
+           <item row="2" column="1">
             <widget class="QWidget" name="AlwaysHideMenuBarGroup" native="true">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -204,7 +223,7 @@
              </layout>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="3" column="0">
             <widget class="QLabel" name="DevicesLabel">
              <property name="minimumSize">
               <size>
@@ -217,7 +236,7 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="3" column="1">
             <widget class="QWidget" name="DownloadDeviceImagesGroup" native="true">
              <layout class="QVBoxLayout" name="DownloadDeviceImagesGroup_Layout">
               <property name="spacing">
@@ -267,7 +286,7 @@
              </layout>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="ToolbarStyleLabel">
              <property name="minimumSize">
               <size>
@@ -283,7 +302,7 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="4" column="1">
             <widget class="QComboBox" name="ToolbarStyle">
              <item>
               <property name="text">
@@ -312,7 +331,7 @@
              </item>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="5" column="0">
             <widget class="QLabel" name="LandingTabLabel">
              <property name="minimumSize">
               <size>
@@ -325,7 +344,7 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="5" column="1">
             <widget class="QComboBox" name="LandingTabCombo">
              <item>
               <property name="text">
@@ -365,7 +384,7 @@
              </item>
             </widget>
            </item>
-           <item row="5" column="0">
+           <item row="6" column="0">
             <widget class="QLabel" name="WindowBehaviourLabel">
              <property name="minimumSize">
               <size>
@@ -378,7 +397,7 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="6" column="1">
             <widget class="QComboBox" name="WindowBehaviourCombo">
              <property name="currentText">
               <string>Always open in the center</string>

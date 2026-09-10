@@ -36,6 +36,11 @@ class PolychromaticBase(object):
     pref.init(_)
     preferences = pref.load_file(paths.preferences)
 
+    # A language set in the preferences takes priority over the system's
+    if preferences["controller"]["language"]:
+        i18n = Locales(preferences["controller"]["language"])
+        _ = i18n.init()
+
     # Devices
     middleman = Middleman()
 

@@ -37,6 +37,10 @@ class TestInternals(unittest.TestCase):
         expected = os.path.abspath(os.path.join(os.path.dirname(locales.__file__), "..", "locale"))
         self.assertEqual(i18n.get_locale_path(["de"]), expected, "Could not locate the message catalogues")
 
+    def test_locales_installed_can_be_listed(self):
+        i18n = locales.Locales()
+        self.assertIn("de", i18n.get_installed_languages(), "Could not list the installed languages")
+
     def test_locales_can_translate_strings(self):
         _ = locales.Locales("de").init()
         # EN: Breath | DE: Atem
