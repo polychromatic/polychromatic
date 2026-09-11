@@ -1490,6 +1490,13 @@ class OpenRazerBackend(Backend):
         options = []
 
         if rdevice.has("scroll_mode"):
+            if rdevice.has("scroll_mode_options"):
+                # Introduced in OpenRazer >=3.13.0*
+                modes = rdevice.scroll_mode_options
+            else:
+                # OpenRazer <=3.12.0, all mice shared two options
+                modes = ["tactile", "free_spin"]
+
             tactile = Backend.Option.Parameter()
             tactile.data = 0
             tactile.label = self._("Tactile")
@@ -1499,6 +1506,10 @@ class OpenRazerBackend(Backend):
             free_spin.data = 1
             free_spin.label = self._("Free Spin")
 
+            precision_tactile = Backend.Option.Parameter()
+            precision_tactile.data = 2
+            precision_tactile.label = self._("Precision Tactile")
+
             class ScrollMode(Backend.MultipleChoiceOption):
                 def __init__(self, rdevice):
                     super().__init__()
@@ -1507,6 +1518,7 @@ class OpenRazerBackend(Backend):
                 def refresh(self):
                     tactile.active = rdevice.scroll_mode == 0
                     free_spin.active = rdevice.scroll_mode == 1
+                    precision_tactile.active = rdevice.scroll_mode == 2
 
                 def apply(self, value):
                     self._rdevice.scroll_mode = int(value)
@@ -1515,8 +1527,16 @@ class OpenRazerBackend(Backend):
             scroll_mode.uid = "scroll_mode"
             scroll_mode.label = self._("Scroll Mode")
             scroll_mode.icon = self.get_icon("devices", "mouse")
-            scroll_mode.parameters = [tactile, free_spin]
+            scroll_mode.parameters = []
             scroll_mode.refresh()
+
+            if "tactile" in modes:
+                scroll_mode.parameters.append(tactile)
+            if "free_spin" in modes:
+                scroll_mode.parameters.append(free_spin)
+            if "precision_tactile" in modes:
+                scroll_mode.parameters.append(precision_tactile)
+
             options.append(scroll_mode)
 
         if rdevice.has("scroll_acceleration"):
