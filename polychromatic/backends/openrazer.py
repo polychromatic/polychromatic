@@ -604,6 +604,10 @@ class OpenRazerBackend(Backend):
         if str(device.name).find("Ultimate") != -1 and device.type == "keyboard":
             return True
 
+        # Razer Pro Type Ultra keyboards only output #FFFFFF
+        if str(device.name).find("Pro Type Ultra") != -1 and device.type == "keyboard":
+            return True
+
         return False
 
     def _map_zone_id_to_rzone(self, rdevice, zone):
@@ -1062,6 +1066,11 @@ class OpenRazerBackend(Backend):
             option.label = self._("Static")
             option.icon = self.get_icon("options", "static")
             options.append(option)
+
+            # Razer Pro Type Ultra keyboards can only output #FFFFFF
+            if str(rdevice.name).find("Pro Type Ultra") != -1 and rdevice.type == "keyboard":
+                option.colours_required = 0
+                option.colours = ["#FFFFFF"]
 
         if has_breath_random or has_breath_mono or has_breath_single or has_breath_dual or has_breath_triple:
             class BreathOption(Backend.EffectOption):
