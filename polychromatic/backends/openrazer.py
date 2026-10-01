@@ -123,12 +123,14 @@ class OpenRazerBackend(Backend):
             if pid in reg_pids:
                 continue
 
-            # Ignore Kitty headphones duplicate: 1532:0521 [Headset], 1532:0F19 [Chroma] (#328)
-            if pid == "0521":
-                continue
-
             # Ignore devices with no RGB support
-            elif pid in ["0511", "9051"]: # Razer Seiren, Razer Phone 2
+            if pid in [
+                "0521", # Razer Kraken Kitty Edition (0F19 is Chroma, 0521 is Headset) (#328)
+                "0511", # Razer Seiren
+                "9051", # Razer Phone 2
+                "0f2f", # USB 2.0 Hub
+                "0f30", # USB 3.1 Hub
+            ]:
                 continue
 
             device = Backend.UnknownDeviceItem()
