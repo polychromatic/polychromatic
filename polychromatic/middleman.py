@@ -353,6 +353,7 @@ class Middleman(object):
             hex_value   (str)   New #RRGGBB string
             colour_pos  (int)   (Optional) Position to append. 0 = Primary, 1 = Secondary, etc
         """
+        device.refresh()
         for zone in device.zones:
             option = self.get_active_effect(zone)
             if option:
