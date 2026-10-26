@@ -128,8 +128,8 @@ class OpenRazerBackend(Backend):
                 "0521", # Razer Kraken Kitty Edition (0F19 is Chroma, 0521 is Headset) (#328)
                 "0511", # Razer Seiren
                 "9051", # Razer Phone 2
-                "0f2f", # USB 2.0 Hub
-                "0f30", # USB 3.1 Hub
+                "0F2F", # USB 2.0 Hub
+                "0F30", # USB 3.1 Hub
             ]:
                 continue
 
