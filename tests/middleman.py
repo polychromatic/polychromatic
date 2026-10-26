@@ -5,6 +5,7 @@ import polychromatic.common as common
 import polychromatic.locales as locales
 import polychromatic.middleman as middleman
 import polychromatic.preferences as preferences
+from polychromatic.backends._backend import Backend
 
 import os
 import unittest
@@ -98,6 +99,45 @@ class TestMiddleman(unittest.TestCase):
         zone = device.zones[0]
         self.middleman.set_colour_for_active_effect_zone(zone, "#0000FF")
         self.assertEqual(expected_option.colours[0], "#0000FF")
+
+
+class TestActiveEffectColours(unittest.TestCase):
+    def test_device_colour_refreshes_active_effect(self):
+        class Effect(Backend.EffectOption):
+            def __init__(self, active=False):
+                super().__init__()
+                self.active = active
+                self.colours = ["#00FF00", "#0000FF"]
+                self.applied_colours = None
+
+            def apply(self):
+                self.applied_colours = list(self.colours)
+
+        class Device(Backend.DeviceItem):
+            def refresh(self):
+                for zone in self.zones:
+                    zone.options[0].active = False
+                    zone.options[1].active = True
+
+        for stale_active in [False, True]:
+            for colour_pos in [0, 1]:
+                with self.subTest(stale_active=stale_active, colour_pos=colour_pos):
+                    device = Device()
+                    device.zones = []
+                    for zone_id in ["main", "secondary"]:
+                        zone = Backend.DeviceItem.Zone()
+                        zone.zone_id = zone_id
+                        zone.options = [Effect(stale_active), Effect()]
+                        device.zones.append(zone)
+
+                    manager = middleman.Middleman()
+                    manager.set_colour_for_active_effect_device(device, "#FF69B4", colour_pos)
+
+                    expected = ["#00FF00", "#0000FF"]
+                    expected[colour_pos] = "#FF69B4"
+                    for zone in device.zones:
+                        self.assertIsNone(zone.options[0].applied_colours)
+                        self.assertEqual(zone.options[1].applied_colours, expected)
 
 
 class TestBackendImportErrors(unittest.TestCase):
