@@ -695,6 +695,7 @@ class OpenRazerBackend(Backend):
 
                 def apply(self, new_value):
                     self._rzone.brightness = float(new_value)
+                    self.value = int(new_value)
 
             slider = BrightnessSlider(rzone)
             slider.label = self._("Brightness")
@@ -1435,6 +1436,7 @@ class OpenRazerBackend(Backend):
                 def apply(self, new_value):
                     self._rdevice.set_idle_time(int(new_value) * 60)
                     self._persistence.save("idle_time", int(new_value) * 60)
+                    self.value = int(new_value)
 
             class IdleTimeOptionSetGet(IdleTimeOptionSetOnly):
                 def refresh(self):
@@ -1470,6 +1472,7 @@ class OpenRazerBackend(Backend):
                 def apply(self, new_value):
                     self._rdevice.set_low_battery_threshold(int(new_value))
                     self._persistence.save("low_battery_threshold", int(new_value))
+                    self.value = int(new_value)
 
             class LowBatteryThresholdOptionSetGet(LowBatteryThresholdOptionSetOnly):
                 def refresh(self):
