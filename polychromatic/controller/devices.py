@@ -44,6 +44,7 @@ class DevicesTab(shared.TabData):
 
         # Session
         self.current_device = None
+        self.summary_widget = None
         self.load_thread = None
 
         # UI Elements
@@ -289,6 +290,7 @@ class DevicesTab(shared.TabData):
         of the specified device.
         """
         self.current_device = device
+        self.summary_widget = None
 
         self.set_cursor_busy()
         layout = self.Contents.layout()
@@ -319,7 +321,8 @@ class DevicesTab(shared.TabData):
             ])
             return
 
-        layout.addWidget(self._get_device_summary_widget(device))
+        self.summary_widget = self._get_device_summary_widget(device)
+        layout.addWidget(self.summary_widget)
 
         for zone in device.zones:
             widgets = []
@@ -409,6 +412,19 @@ class DevicesTab(shared.TabData):
         """
         self.open_device(self.current_device)
 
+    def _refresh_summary_widget(self):
+        """
+        Rebuilds the summary heading from the device's cached state,
+        without reloading the page.
+        """
+        if not self.summary_widget:
+            return
+
+        new_widget = self._get_device_summary_widget(self.current_device)
+        self.Contents.layout().replaceWidget(self.summary_widget, new_widget)
+        self.summary_widget.deleteLater()
+        self.summary_widget = new_widget
+
     def _create_row_control(self, option):
         """
         Returns a list of widgets for the specified option.
@@ -457,6 +473,10 @@ class DevicesTab(shared.TabData):
                 option.apply(slider.value())
             except Exception as e:
                 self._catch_command_error(self.current_device, e)
+                return
+
+            if option.uid == "brightness":
+                self._refresh_summary_widget()
 
         slider.valueChanged.connect(_slider_changed)
         debounce_timer.timeout.connect(_apply_value)
