@@ -381,7 +381,7 @@ class DevicesTab(shared.TabData):
             if first_zone:
                 # -- Mouse DPI
                 if device.dpi:
-                    widgets.append(self.special_controls.create_dpi_control(device))
+                    widgets.append(self.special_controls.create_dpi_control(device, self._refresh_summary_widget))
 
                 # TODO: Button to set compatible software effects - or as "Custom" effect?
 
@@ -1197,7 +1197,7 @@ class SpecialControls(shared.TabData):
     def __init__(self, appdata):
         super().__init__(appdata)
 
-    def create_dpi_control(self, device):
+    def create_dpi_control(self, device, on_changed=None):
         """
         Creates a sophicated control for setting the DPI X/Y values.
 
@@ -1278,6 +1278,7 @@ class SpecialControls(shared.TabData):
         def _update_stage_controls():
             for button in self.stage_buttons_group.buttons():
                 button.setChecked(slider_x.value() == slider_y.value() == button.dpi_value)
+            on_changed()
 
         def _slider_x_moved(value):
             value_x.setText(str(value))
@@ -1307,6 +1308,7 @@ class SpecialControls(shared.TabData):
             # Sync state with stages buttons
             for button in self.stage_buttons_group.buttons():
                 button.setChecked(slider_x.value() == button.dpi_value[0] and slider_y.value() == button.dpi_value[1])
+            on_changed()
 
         # Some mice have a zero Y axis
         if device.name in ["Razer Basilisk Essential"]:
@@ -1349,6 +1351,7 @@ class SpecialControls(shared.TabData):
             slider_x.setValue(dpi_x)
             slider_y.setValue(dpi_y)
             button.setChecked(True)
+            on_changed()
 
         def _edit_dpi_stages():
             self.dpi_editor = DPIStageEditor(self.appdata, device)

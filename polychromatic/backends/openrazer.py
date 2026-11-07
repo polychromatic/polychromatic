@@ -333,7 +333,9 @@ class OpenRazerBackend(Backend):
                 self.y = self._rdevice.dpi[1]
 
             def set(self, x, y):
-                self._rdevice.dpi = (int(x), int(y))
+                self.x = int(x)
+                self.y = int(y)
+                self._rdevice.dpi = (self.x, self.y)
 
         class SyncDPI(DPI):
             def __init__(self, rdevice):
