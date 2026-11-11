@@ -7,6 +7,7 @@ import sys
 import unittest
 
 import internals
+import bulkapply
 import effects
 import fx
 import middleman
@@ -15,6 +16,7 @@ loader = unittest.TestLoader()
 suite  = unittest.TestSuite()
 
 suite.addTests(loader.loadTestsFromModule(internals))
+suite.addTests(loader.loadTestsFromModule(bulkapply))
 suite.addTests(loader.loadTestsFromModule(effects))
 suite.addTests(loader.loadTestsFromModule(fx))
 suite.addTests(loader.loadTestsFromModule(middleman))
