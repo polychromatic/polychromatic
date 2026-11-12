@@ -131,6 +131,7 @@ class OpenRazerBackend(Backend):
                 "0F2F", # USB 2.0 Hub
                 "0F30", # USB 3.1 Hub
                 "48F0", # Razer Base Station V2 Chroma (0F20 is Chroma)
+                "0E06", # Razer Kiyo X (webcam)
             ]:
                 continue
 
