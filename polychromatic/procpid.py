@@ -248,6 +248,50 @@ class ProcessManager():
             procmgr.reload(pid_file)
 
 
+class GlobalSpectrumState(object):
+    """
+    Tracks whether synchronized Apply to All Spectrum should be restored
+    automatically at login.
+
+    This state is global rather than tied to a device serial, so it is stored
+    outside the per-device states directory.
+    """
+    def __init__(self):
+        self.state_path = os.path.join(
+            common.paths.config,
+            "global-spectrum.json"
+        )
+
+    def is_active(self):
+        """
+        Return True when synchronized global Spectrum should be restored.
+        """
+        if not os.path.exists(self.state_path):
+            return False
+
+        try:
+            with open(self.state_path) as f:
+                state = json.load(f)
+            return bool(state.get("active", False))
+        except Exception:
+            print("Ignoring bad data: ", self.state_path)
+            return False
+
+    def set_active(self):
+        """
+        Remember that synchronized global Spectrum is the desired state.
+        """
+        with open(self.state_path, "w") as f:
+            f.write(json.dumps({"active": True}))
+
+    def clear_active(self):
+        """
+        Stop restoring synchronized global Spectrum at future logins.
+        """
+        if os.path.exists(self.state_path):
+            os.remove(self.state_path)
+
+
 class DeviceSoftwareState(object):
     """
     Tracks the active custom software effect or preset for a specified device,
