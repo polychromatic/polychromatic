@@ -131,7 +131,7 @@ jobs:
       run: |
         git clone https://github.com/openrazer/openrazer --depth=1 "$GITHUB_WORKSPACE/openrazer"
         sudo add-apt-repository ppa:openrazer/daily
-        sudo apt-get install openrazer-daemon python3-openrazer dbus-x11
+        sudo apt-get install openrazer-daemon python3-openrazer dbus-user-session
 
     - name: Build Locales
       run: |
@@ -144,8 +144,9 @@ jobs:
 
     - name: Run Integration Tests with OpenRazer
       run: |
-        eval $(sudo dbus-launch --sh-syntax)
-        sudo -E ./tests/openrazer/run_daemon.sh "$GITHUB_WORKSPACE/openrazer"
+        sudo usermod -aG plugdev "$(id -un)"
+        sudo -u "$(id -un)" env GITHUB_WORKSPACE="$GITHUB_WORKSPACE" dbus-run-session -- ./tests/openrazer/run_daemon.sh "$GITHUB_WORKSPACE/openrazer"
+
 
   push_to_preview_ppa:
     name: 'Package / Debian'
