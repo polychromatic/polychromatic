@@ -85,6 +85,7 @@ class BulkApplyOptions(object):
         """
         brightness = []
         effects = []
+        effect_devices = {}
         has_colours = False
 
         for device in self.devices:
@@ -94,11 +95,12 @@ class BulkApplyOptions(object):
                         brightness.append(option)
                     elif isinstance(option, Backend.EffectOption):
                         effects.append(option)
+                        effect_devices.setdefault(option.uid, set()).add(device.serial)
                     if option.colours_required > 0:
                         has_colours = True
 
         self._populate_bulk_brightness(brightness)
-        self._populate_bulk_effects(effects)
+        self._populate_bulk_effects(effects, effect_devices)
         self._populate_bulk_colours(has_colours)
 
     def _populate_bulk_brightness(self, options):
@@ -115,21 +117,19 @@ class BulkApplyOptions(object):
             icon = common.get_icon("params", str(value))
             self.brightness.append(_BulkBrightness(options, self.middleman, label, icon, value))
 
-    def _populate_bulk_effects(self, options):
+    def _populate_bulk_effects(self, options, effect_devices):
         """
         Builds new BulkOption() objects that apply an effect across all devices and zones.
+
+        effect_devices maps each effect's uid to the serials of the devices that
+        support it. A device with several zones offering the same effect (e.g. a
+        mouse with logo, scroll and side LEDs) only counts once.
         """
         self.effects = []
         uids = []
-        occurrences = {}
         effects = {}
 
         for option in options:
-            try:
-                occurrences[option.uid] += 1
-            except KeyError:
-                occurrences[option.uid] = 1
-
             # Already added item?
             if option.uid in uids:
                 continue
@@ -141,8 +141,8 @@ class BulkApplyOptions(object):
 
         # If the effect can't apply to all devices, add an asterisk
         total_devices = len(self.devices)
-        for uid in occurrences.keys():
-            if occurrences[uid] < total_devices:
+        for uid, serials in effect_devices.items():
+            if len(serials) < total_devices:
                 effects.get(uid).label += "*"
                 self.mix_match = True
 
